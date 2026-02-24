@@ -1,69 +1,81 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "E:\\CSharp Projects\\LLMDesktopAssistant\\",
+  "WorkspaceRootPath": "D:\\My CSharp projects\\LLMDesktopAssistant\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\speech\\whisperspeechrecognizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\speech\\whisperspeechrecognizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\speech\\keyboardtriggerspeechprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\speech\\keyboardtriggerspeechprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\modules\\dynamicmoduletracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\modules\\dynamicmoduletracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\llmdesktopassistant.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\llmdesktopassistant.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\modules\\modulemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\modules\\modulemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\modules\\modulemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\modules\\dynamicmoduletracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\modules\\dynamicmoduletracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mvvm\\testview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mvvm\\testview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\pluginmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\pluginmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\speech\\keyboardtriggerspeechprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\speech\\keyboardtriggerspeechprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mvvm\\testviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mvvm\\testviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\speech\\whisperspeechrecognizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\speech\\whisperspeechrecognizer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\utils\\reflectionutility.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\utils\\reflectionutility.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\modules\\idynamicmodule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\modules\\idynamicmodule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mvvm\\viewlocator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mvvm\\viewlocator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\modules\\dynamicmoduleattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\modules\\dynamicmoduleattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\llm\\illmprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\llm\\illmprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\llmdesktopassistant.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\llmdesktopassistant.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\initializers\\pythonmodule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\initializers\\pythonmodule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\initializers\\pythonmodule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|e:\\csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mvvm\\testview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mvvm\\testview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mvvm\\testview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\pluginmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\pluginmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mvvm\\testviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mvvm\\testviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\utils\\reflectionutility.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\utils\\reflectionutility.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mvvm\\viewlocator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mvvm\\viewlocator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|d:\\my csharp projects\\llmdesktopassistant\\llmdesktopassistant\\mvvm\\testview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{778141B9-C966-4D3B-9A5F-431B2BAA45AE}|LLMDesktopAssistant\\LLMDesktopAssistant.csproj|solutionrelative:llmdesktopassistant\\mvvm\\testview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
@@ -74,15 +86,20 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 13,
+          "SelectedChildIndex": 14,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DynamicModuleAttribute.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\DynamicModuleAttribute.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Modules\\DynamicModuleAttribute.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\DynamicModuleAttribute.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\Modules\\DynamicModuleAttribute.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAABwAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-24T12:00:13.105Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Bookmark",
@@ -98,6 +115,10 @@
             },
             {
               "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
@@ -106,7 +127,7 @@
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:254354193:0:{71f361cc-493f-47c0-923f-f2570b6f8618}"
+              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
             },
             {
               "$type": "Bookmark",
@@ -121,102 +142,138 @@
               "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "DynamicModuleTracker.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\DynamicModuleTracker.cs",
-              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Modules\\DynamicModuleTracker.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\DynamicModuleTracker.cs",
-              "RelativeToolTip": "LLMDesktopAssistant\\Modules\\DynamicModuleTracker.cs",
-              "ViewState": "AgIAAGwAAAAAAAAAAAAAAHUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T22:47:13.322Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:254354193:0:{71f361cc-493f-47c0-923f-f2570b6f8618}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "LLMDesktopAssistant",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\LLMDesktopAssistant.csproj",
-              "RelativeDocumentMoniker": "LLMDesktopAssistant\\LLMDesktopAssistant.csproj",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\LLMDesktopAssistant.csproj",
-              "RelativeToolTip": "LLMDesktopAssistant\\LLMDesktopAssistant.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-02-23T22:44:48.598Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "WhisperSpeechRecognizer.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Speech\\WhisperSpeechRecognizer.cs",
-              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Speech\\WhisperSpeechRecognizer.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Speech\\WhisperSpeechRecognizer.cs",
-              "RelativeToolTip": "LLMDesktopAssistant\\Speech\\WhisperSpeechRecognizer.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAAABQAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T22:32:12.097Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "KeyboardTriggerSpeechProvider.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Speech\\KeyboardTriggerSpeechProvider.cs",
-              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Speech\\KeyboardTriggerSpeechProvider.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Speech\\KeyboardTriggerSpeechProvider.cs",
-              "RelativeToolTip": "LLMDesktopAssistant\\Speech\\KeyboardTriggerSpeechProvider.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAAAD0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T21:57:15.051Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
               "Title": "ModuleManager.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\ModuleManager.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\ModuleManager.cs",
               "RelativeDocumentMoniker": "LLMDesktopAssistant\\Modules\\ModuleManager.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\ModuleManager.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\ModuleManager.cs",
               "RelativeToolTip": "LLMDesktopAssistant\\Modules\\ModuleManager.cs",
-              "ViewState": "AgIAAHsAAAAAAAAAAAAuwHoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAGEAAAAAAAAAAAAAAHIAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-23T15:15:50.231Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DynamicModuleTracker.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\DynamicModuleTracker.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Modules\\DynamicModuleTracker.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\DynamicModuleTracker.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\Modules\\DynamicModuleTracker.cs",
+              "ViewState": "AgIAAHgAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T22:47:13.322Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ILLMProvider.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\LLM\\ILLMProvider.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\LLM\\ILLMProvider.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\LLM\\ILLMProvider.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\LLM\\ILLMProvider.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-24T11:34:48.022Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "IDynamicModule.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\IDynamicModule.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Modules\\IDynamicModule.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Modules\\IDynamicModule.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\Modules\\IDynamicModule.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-24T11:22:56.478Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 4,
+              "Title": "WhisperSpeechRecognizer.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Speech\\WhisperSpeechRecognizer.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Speech\\WhisperSpeechRecognizer.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Speech\\WhisperSpeechRecognizer.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\Speech\\WhisperSpeechRecognizer.cs",
+              "ViewState": "AgIAAFEAAAAAAAAAAAAAAFoAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-24T08:51:10.07Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "LLMDesktopAssistant.csproj",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\LLMDesktopAssistant.csproj",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\LLMDesktopAssistant.csproj",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\LLMDesktopAssistant.csproj",
+              "RelativeToolTip": "LLMDesktopAssistant\\LLMDesktopAssistant.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-23T22:44:48.598Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "KeyboardTriggerSpeechProvider.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Speech\\KeyboardTriggerSpeechProvider.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Speech\\KeyboardTriggerSpeechProvider.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Speech\\KeyboardTriggerSpeechProvider.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\Speech\\KeyboardTriggerSpeechProvider.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAAE0AAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T21:57:15.051Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MainWindow.xaml.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "LLMDesktopAssistant\\MainWindow.xaml.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MainWindow.xaml.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MainWindow.xaml.cs",
               "RelativeToolTip": "LLMDesktopAssistant\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-22T20:37:34.076Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 17,
               "Title": "MainWindow.xaml",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MainWindow.xaml",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MainWindow.xaml",
               "RelativeDocumentMoniker": "LLMDesktopAssistant\\MainWindow.xaml",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MainWindow.xaml",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MainWindow.xaml",
               "RelativeToolTip": "LLMDesktopAssistant\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-02-23T12:41:58.358Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-23T12:41:58.358Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 16,
               "Title": "App.xaml",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\App.xaml",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\App.xaml",
               "RelativeDocumentMoniker": "LLMDesktopAssistant\\App.xaml",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\App.xaml",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\App.xaml",
               "RelativeToolTip": "LLMDesktopAssistant\\App.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-02-23T18:05:52.941Z",
@@ -224,106 +281,98 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 11,
               "Title": "TestView.xaml.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestView.xaml.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestView.xaml.cs",
               "RelativeDocumentMoniker": "LLMDesktopAssistant\\MVVM\\TestView.xaml.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestView.xaml.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestView.xaml.cs",
               "RelativeToolTip": "LLMDesktopAssistant\\MVVM\\TestView.xaml.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T18:21:50.907Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-23T18:21:50.907Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "TestView.xaml",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestView.xaml",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\MVVM\\TestView.xaml",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestView.xaml",
+              "RelativeToolTip": "LLMDesktopAssistant\\MVVM\\TestView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-02-23T18:21:42.474Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "TestViewModel.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestViewModel.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\MVVM\\TestViewModel.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestViewModel.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\MVVM\\TestViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T18:21:11.798Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 15,
-              "Title": "TestView.xaml",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestView.xaml",
-              "RelativeDocumentMoniker": "LLMDesktopAssistant\\MVVM\\TestView.xaml",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestView.xaml",
-              "RelativeToolTip": "LLMDesktopAssistant\\MVVM\\TestView.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-02-23T18:21:42.474Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "TestViewModel.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestViewModel.cs",
-              "RelativeDocumentMoniker": "LLMDesktopAssistant\\MVVM\\TestViewModel.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\TestViewModel.cs",
-              "RelativeToolTip": "LLMDesktopAssistant\\MVVM\\TestViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T18:21:11.798Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
               "Title": "ViewLocator.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\ViewLocator.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\ViewLocator.cs",
               "RelativeDocumentMoniker": "LLMDesktopAssistant\\MVVM\\ViewLocator.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\ViewLocator.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\MVVM\\ViewLocator.cs",
               "RelativeToolTip": "LLMDesktopAssistant\\MVVM\\ViewLocator.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAAAAsAAAAOAAAAAAAAAA==",
+              "ViewState": "AgIAACUAAAAAAAAAAABBwAsAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T17:16:45.225Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "ReflectionUtility.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Utils\\ReflectionUtility.cs",
-              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Utils\\ReflectionUtility.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Utils\\ReflectionUtility.cs",
-              "RelativeToolTip": "LLMDesktopAssistant\\Utils\\ReflectionUtility.cs",
-              "ViewState": "AgIAAHQBAAAAAAAAAAAAAIwBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T16:56:07.552Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "App.xaml.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\App.xaml.cs",
-              "RelativeDocumentMoniker": "LLMDesktopAssistant\\App.xaml.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\App.xaml.cs",
-              "RelativeToolTip": "LLMDesktopAssistant\\App.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T15:37:30.276Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "PluginManager.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\PluginManager.cs",
-              "RelativeDocumentMoniker": "LLMDesktopAssistant\\PluginManager.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\PluginManager.cs",
-              "RelativeToolTip": "LLMDesktopAssistant\\PluginManager.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAAAD0AAAACAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T14:46:50.12Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-23T17:16:45.225Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 14,
-              "Title": "PythonModule.cs",
-              "DocumentMoniker": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Initializers\\PythonModule.cs",
-              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Initializers\\PythonModule.cs",
-              "ToolTip": "E:\\CSharp Projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Initializers\\PythonModule.cs",
-              "RelativeToolTip": "LLMDesktopAssistant\\Initializers\\PythonModule.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABgAAAA+AAAAAAAAAA==",
+              "Title": "ReflectionUtility.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Utils\\ReflectionUtility.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Utils\\ReflectionUtility.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Utils\\ReflectionUtility.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\Utils\\ReflectionUtility.cs",
+              "ViewState": "AgIAAHIBAAAAAAAAAABBwIwBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-23T08:58:17.505Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-23T16:56:07.552Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\App.xaml.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\App.xaml.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\App.xaml.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\App.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T15:37:30.276Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "PluginManager.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\PluginManager.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\PluginManager.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\PluginManager.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\PluginManager.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAABBwD0AAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T14:46:50.12Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "PythonModule.cs",
+              "DocumentMoniker": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Initializers\\PythonModule.cs",
+              "RelativeDocumentMoniker": "LLMDesktopAssistant\\Initializers\\PythonModule.cs",
+              "ToolTip": "D:\\My CSharp projects\\LLMDesktopAssistant\\LLMDesktopAssistant\\Initializers\\PythonModule.cs",
+              "RelativeToolTip": "LLMDesktopAssistant\\Initializers\\PythonModule.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABAAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T08:58:17.505Z"
             }
           ]
         }

@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace LLMDesktopAssistant.Modules
 {
@@ -15,7 +16,7 @@ namespace LLMDesktopAssistant.Modules
 		/// <summary>
 		/// Gets the current module associated with this tracker.
 		/// </summary>
-		public abstract IDynamicModule NonGenericModule { get; }
+		public abstract IDynamicModule? NonGenericModule { get; }
 
 		/// <summary>
 		/// Gets a set of available IDs for this tracker. These IDs can be used to identify the module.
@@ -25,8 +26,12 @@ namespace LLMDesktopAssistant.Modules
 		/// <summary>
 		/// Gets or sets the ID of the current module associated with this tracker. These IDs can be used to identify the module.
 		/// </summary>
-		public abstract string ModuleId { get; set; }
+		public abstract string? ModuleId { get; set; }
 
+		/// <summary>
+		/// Initializes the current module. Can be called only once at <see cref="ModuleManager"/> initialization.
+		/// </summary>
+		public abstract void Initialize();
 	}
 
 	/// <summary>
@@ -36,14 +41,14 @@ namespace LLMDesktopAssistant.Modules
 	public sealed class DynamicModuleTracker<T> : DynamicModuleTracker
 		where T : IDynamicModule
 	{
-		private readonly ImmutableDictionary<string, Type> _registry;
+		private readonly ImmutableDictionary<string, DynamicModuleTypeInfo> _registry;
 
-		private T _module;
-		private string _moduleId;
+		private T? _module;
+		private string? _moduleId;
 
-		public override IDynamicModule NonGenericModule => _module;
+		public override IDynamicModule? NonGenericModule => _module;
 		public override ImmutableHashSet<string> AvailableIds { get; }
-		public override string ModuleId
+		public override string? ModuleId
 		{
 			get => _moduleId;
 			set => SetFromId(value);
@@ -52,55 +57,114 @@ namespace LLMDesktopAssistant.Modules
 		/// <summary>
 		/// Gets the current module associated with this tracker.
 		/// </summary>
-		public T Module => _module;
+		public T? Module => _module;
 
 		/// <summary>
 		/// Event that is raised when the module changes. The first parameter is the old value and the second parameter is the new value.
 		/// </summary>
-		public event Action<T?, T>? OnChanged;
+		public event Action<T?, T?>? OnChanged;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DynamicModuleTracker{T}"/> class.
 		/// </summary>
 		/// <param name="registry">A dictionary that maps IDs to module types.</param>
 		/// <exception cref="ArgumentException">The registry is null or empty.</exception>
-		public DynamicModuleTracker(ImmutableDictionary<string, Type> registry)
+		public DynamicModuleTracker(IEnumerable<DynamicModuleTypeInfo> registry)
 		{
 			ArgumentNullException.ThrowIfNull(registry);
-			if (registry.IsEmpty)
-				throw new ArgumentException("The registry cannot be empty.", nameof(registry));
 
-			_registry = registry;
+			_registry = registry.ToImmutableDictionary(k => k.Id, v => v);
 			AvailableIds = [.. _registry.Keys];
 
-			_moduleId = registry.Keys.First();
-			_module = (T)Activator.CreateInstance(_registry[_moduleId])!;
+			DynamicModuleTypeInfo? defaultModule = null;
+			int? maxPriority = null;
+			foreach (var typeInfo in _registry.Values)
+			{
+				if (typeInfo.DefaultPriority.HasValue)
+				{
+					if (maxPriority.HasValue)
+					{
+						if (maxPriority.Value < typeInfo.DefaultPriority.Value)
+						{
+							maxPriority = typeInfo.DefaultPriority;
+							defaultModule = typeInfo;
+						}
+					}
+					else
+					{
+						maxPriority = typeInfo.DefaultPriority;
+						defaultModule = typeInfo;
+					}
+				}
+			}
+
+			if (defaultModule != null)
+			{
+				_moduleId = defaultModule.Id;
+				_module = (T)Activator.CreateInstance(defaultModule.Type)!;
+			}
 		}
 
-		private void Set(T module, string moduleId)
+		private void Set(T? module, string? moduleId)
 		{
 			var previousModule = _module;
 			_moduleId = moduleId;
 			_module = module;
 
-			previousModule?.Shutdown();
-			module.Initialize();
+			try
+			{
+				previousModule?.Shutdown();
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Failed shutting down module '{module}': {errmsg}\n{st}", previousModule, ex.Message, ex.StackTrace);
+			}
 
-			OnChanged?.Invoke(previousModule, module);
+			try
+			{
+				module?.Initialize();
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Failed initializing module '{module}': {errmsg}\n{st}", module, ex.Message, ex.StackTrace);
+				module = default;
+			}
+
+			if (!Equals(previousModule, module))
+				OnChanged?.Invoke(previousModule, module);
+		}
+
+		private bool _initialized = false;
+
+		public override void Initialize()
+		{
+			if (_initialized)
+				throw new InvalidOperationException("Dynamic module tracker is already initialized!");
+
+			try
+			{
+				_module?.Initialize();
+			}
+			catch (Exception ex)
+			{
+				_module = default;
+				_moduleId = null;
+				Log.Error(ex, "Failed initializing module '{module}': {errmsg}\n{st}", _module, ex.Message, ex.StackTrace);
+			}
 		}
 
 		/// <summary>
 		/// Sets the module from an ID. If the ID is not found in the registry, does nothing.
 		/// </summary>
 		/// <param name="id">The ID of the module to set.</param>
-		public void TrySetFromId(string id)
+		public void TrySetFromId(string? id)
 		{
 			ArgumentNullException.ThrowIfNull(id);
 
-			if (!_registry.TryGetValue(id, out var type))
+			if (!_registry.TryGetValue(id, out var typeInfo))
 				return;
 
-			var newModule = (T)Activator.CreateInstance(type)!;
+			var newModule = (T)Activator.CreateInstance(typeInfo.Type)!;
 			Set(newModule, id);
 		}
 
@@ -109,15 +173,31 @@ namespace LLMDesktopAssistant.Modules
 		/// </summary>
 		/// <param name="id">The ID of the module to set.</param>
 		/// <exception cref="ArgumentException">The module with the specified ID was not found in the registry.</exception>
-		public void SetFromId(string id)
+		public void SetFromId(string? id)
 		{
-			ArgumentNullException.ThrowIfNull(id);
+			if (id == null)
+			{
+				Set(default, null);
+				return;
+			}
 
-			if (!_registry.TryGetValue(id, out var type))
+			if (!_registry.TryGetValue(id, out var typeInfo))
 				throw new ArgumentException($"Module not found. Id: {id}", nameof(id));
 
-			var newModule = (T)Activator.CreateInstance(type)!;
+			var newModule = (T)Activator.CreateInstance(typeInfo.Type)!;
 			Set(newModule, id);
+		}
+
+		/// <summary>
+		/// Gets the current module and ensures that it will not be <see langword="null"/>.
+		/// </summary>
+		/// <returns>Current module that is not <see langword="null"/>.</returns>
+		/// <exception cref="ModuleRequiredException">Current module is <see langword="null"/>.</exception>
+		public T Require()
+		{
+			if (_module is null)
+				throw new ModuleRequiredException($"{typeof(T).FullName} is required for this operation");
+			return _module;
 		}
 	}
 }

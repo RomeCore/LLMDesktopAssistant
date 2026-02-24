@@ -19,8 +19,31 @@
 		public Type CategoryType { get; } = categoryType;
 
 		/// <summary>
+		/// Gets or sets the value
+		/// </summary>
+		public bool IsDefault
+		{
+			get => DefaultPriority.HasValue;
+			set
+			{
+				if (value != IsDefault)
+				{
+					if (value)
+						DefaultPriority = int.MinValue;
+					else
+						DefaultPriority = null;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the priority of default module creation. If set to <see langword="null"/>, the module will not try to be created.
+		/// </summary>
+		public int? DefaultPriority { get; set; } = null;
+
+		/// <summary>
 		/// Gets or sets the order in which the module should be initialized.
 		/// </summary>
-		public int Order { get; set; }
+		public int Order { get; set; } = 0;
 	}
 }

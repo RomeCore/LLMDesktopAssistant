@@ -34,37 +34,36 @@ namespace LLMDesktopAssistant.Speech
 
 			_micStream.DataAvailable += (s, e) =>
 			{
-				var buf = e.Buffer;
-				var len = e.BytesRecorded;
-
-				var samples = new short[len / 2];
-				Buffer.BlockCopy(buf, 0, samples, 0, len);
-
-				float[] floatSamples = new float[samples.Length];
-
-				for (int i = 0; i < samples.Length; i++)
-				{
-					float normalizedSample = samples[i] / 32768f;
-					floatSamples[i] = normalizedSample;
-				}
-
 				if (KeyboardUtils.IsKeyDown(System.Windows.Forms.Keys.Space))
 				{
+					var buf = e.Buffer;
+					var len = e.BytesRecorded;
+
+					var samples = new short[len / 2];
+					Buffer.BlockCopy(buf, 0, samples, 0, len);
+
+					float[] floatSamples = new float[samples.Length];
+
+					for (int i = 0; i < samples.Length; i++)
+					{
+						float normalizedSample = samples[i] / 32768f;
+						floatSamples[i] = normalizedSample;
+					}
+
 					accumulatedAudioData.AddRange(floatSamples);
 				}
 				else if (accumulatedAudioData.Count > 0)
 				{
-					accumulatedAudioData.AddRange(floatSamples);
-
 					var audioSamples = accumulatedAudioData.ToArray();
 					accumulatedAudioData.Clear();
 					var recognizer = _recognizer.Module;
 
-					Task.Run(async () =>
-					{
-						var result = await recognizer.RecognizeSpeechAsync(audioSamples);
-						OnSpeechReceived?.Invoke(result);
-					});
+					if (recognizer != null)
+						Task.Run(async () =>
+						{
+							var result = await recognizer.RecognizeSpeechAsync(audioSamples);
+							OnSpeechReceived?.Invoke(result);
+						});
 				}
 			};
 

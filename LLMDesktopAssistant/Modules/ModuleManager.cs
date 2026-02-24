@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -24,8 +25,8 @@ namespace LLMDesktopAssistant.Modules
 
 		private static State _state;
 		private static ImmutableUniqueTypeDictionary<IModule> _modules = null!;
-		private static ImmutableDictionary<Type, ImmutableDictionary<string, Type>> _dynamicModuleRegistry = null!;
-		private static ImmutableDictionary<Type, DynamicModuleTracker> _dynamicModuleTrackers = null!;
+		private static ImmutableDictionary<Type, ImmutableList<DynamicModuleTypeInfo>> _dynamicModuleRegistry = null!;
+		private static ConcurrentDictionary<Type, DynamicModuleTracker> _dynamicModuleTrackers = null!;
 		
 		/// <summary>
 		/// Gets the collection of all registered modules.
@@ -71,41 +72,53 @@ namespace LLMDesktopAssistant.Modules
 				})
 				.ToList();
 
-			_modules = new ImmutableUniqueTypeDictionary<IModule>(modules);
-
 			_dynamicModuleRegistry = ReflectionUtility.GetTypesWithAttribute<IDynamicModule, DynamicModuleAttribute>()
 				.OrderBy(t => t.Attribute.Order)
 				.GroupBy(t => t.Attribute.CategoryType)
 				.ToImmutableDictionary(g => g.Key, 
-					g => g.ToImmutableDictionary(t => t.Attribute.Id, t => t.Type));
+					g => g.Select(v => new DynamicModuleTypeInfo(v.Attribute.Id, v.Type, v.Attribute.DefaultPriority))
+						.ToImmutableList());
 
 			// Validate
 
 			var invalidDynModules = new List<string>();
 			foreach (var (categoryType, category) in _dynamicModuleRegistry)
 			{
-				foreach (var (id, type) in category)
+				foreach (var typeInfo in category)
 				{
-					if (!categoryType.IsAssignableFrom(type))
-						invalidDynModules.Add($"Dynamic module '{type.Name}' with ID '{id}' cannod be assigned to category '{categoryType.Name}'.");
+					if (!categoryType.IsAssignableFrom(typeInfo.Type))
+						invalidDynModules.Add($"Dynamic module '{typeInfo.Type.Name}' with ID '{typeInfo.Id}' cannod be assigned to category '{categoryType.Name}'.");
 				}
 			}
 			if (invalidDynModules.Count > 0)
 				throw new Exception("Invalid dynamic modules found: " + string.Join(", ", invalidDynModules));
 
-			_dynamicModuleTrackers = _dynamicModuleRegistry.ToImmutableDictionary(t => t.Key,
+			_dynamicModuleTrackers = new(
+				_dynamicModuleRegistry.ToDictionary(t => t.Key,
 				t =>
 				{
 					var trackerType = typeof(DynamicModuleTracker<>).MakeGenericType(t.Key);
 					var tracker = (DynamicModuleTracker)Activator.CreateInstance(trackerType, t.Value)!;
 					return tracker;
-				});
+				}));
 
-			foreach (var module in _modules)
-				module.Initialize();
+			var validModules = new List<IModule>();
+			foreach (var module in modules)
+			{
+				try
+				{
+					module.Initialize();
+					validModules.Add(module);
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Failed initializing module '{module}': {errmsg}\n{st}", module, ex.Message, ex.StackTrace);
+				}
+			}
+			_modules = new(validModules);
 
 			foreach (var tracker in _dynamicModuleTrackers.Values)
-				tracker.NonGenericModule.Initialize();
+				tracker.Initialize();
 
 			_state = State.Initialized;
 		}
@@ -122,7 +135,7 @@ namespace LLMDesktopAssistant.Modules
 				module.Shutdown();
 
 			foreach (var tracker in _dynamicModuleTrackers.Values)
-				tracker.NonGenericModule.Shutdown();
+				tracker.NonGenericModule?.Shutdown();
 
 			_state = State.Shutdown;
 		}
@@ -157,10 +170,22 @@ namespace LLMDesktopAssistant.Modules
 		/// <typeparam name="T">The category type of the dynamic module to retrieve.</typeparam>
 		/// <returns>The dynamic module.</returns>
 		/// <exception cref="ModuleNotFoundException">The specified category type is not registered.</exception>
-		public static T GetDynamic<T>()
+		public static T? TryGetDynamic<T>()
 			where T : IDynamicModule
 		{
 			return GetDynamicTracker<T>().Module;
+		}
+
+		/// <summary>
+		/// Gets a dynamic module of the specified category type. Throws an exception if no such category type is registered.
+		/// </summary>
+		/// <typeparam name="T">The category type of the dynamic module to retrieve.</typeparam>
+		/// <returns>The dynamic module.</returns>
+		/// <exception cref="ModuleNotFoundException">The specified category type is not registered.</exception>
+		public static T GetDynamic<T>()
+			where T : IDynamicModule
+		{
+			return GetDynamicTracker<T>().Module ?? throw new ModuleNotFoundException($"No module of category type '{typeof(T).FullName}' is present.");
 		}
 
 		/// <summary>
@@ -172,12 +197,11 @@ namespace LLMDesktopAssistant.Modules
 		public static DynamicModuleTracker<T> GetDynamicTracker<T>()
 			where T : IDynamicModule
 		{
-			var categoryType = typeof(T);
-			if (!_dynamicModuleTrackers.TryGetValue(categoryType, out var _tracker))
-				throw new ModuleNotFoundException($"No dynamic module of category '{typeof(T).FullName}' is registered.");
-
-			var tracker = (DynamicModuleTracker<T>)_tracker;
-			return tracker;
+			return (DynamicModuleTracker<T>)_dynamicModuleTrackers.GetOrAdd(typeof(T), static categoryType =>
+			{
+				var trackerType = typeof(DynamicModuleTracker<>).MakeGenericType(typeof(T));
+				return (DynamicModuleTracker<T>)Activator.CreateInstance(trackerType, Enumerable.Empty<DynamicModuleTypeInfo>())!;
+			});
 		}
 	}
 }
