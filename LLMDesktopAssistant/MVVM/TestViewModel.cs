@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.MVVM
 {
-	[View(typeof(TestView))]
+	[ViewModelFor(typeof(TestView))]
 	public class TestViewModel
 	{
 		public string Name { get; set; } = "John Doe";

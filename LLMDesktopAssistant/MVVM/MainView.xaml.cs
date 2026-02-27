@@ -15,9 +15,9 @@ using System.Windows.Shapes;
 
 namespace LLMDesktopAssistant.MVVM
 {
-	public partial class TestView : UserControl
+	public partial class MainView : UserControl
 	{
-		public TestView()
+		public MainView()
 		{
 			InitializeComponent();
 		}

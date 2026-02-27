@@ -4,6 +4,7 @@ namespace LLMDesktopAssistant.Modules
 {
 	/// <summary>
 	/// Represents an application module that is created by the application.
+	/// Implementations should be marked by <see cref="ModuleAttribute"/> to be automatically created by the application.
 	/// </summary>
 	public interface IModule
 	{

@@ -13,11 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.MVVM
+namespace LLMDesktopAssistant.Tabs
 {
-	public partial class TestView : UserControl
+	[TabTool("sample")]
+	public partial class SampleTab : UserControl
 	{
-		public TestView()
+		public SampleTab()
 		{
 			InitializeComponent();
 		}

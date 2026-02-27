@@ -2,7 +2,34 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <Compile Update="LLM\AssistantMessageReasoningPartView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\AssistantMessageTextPartView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\AssistantMessageToolPartView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\ChatView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\ConversationTurnView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\ToolCallView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\UserMessageView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="MVVM\MainView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="MVVM\TestView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Tabs\SampleTab.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

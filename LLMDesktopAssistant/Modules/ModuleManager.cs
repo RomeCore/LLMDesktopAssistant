@@ -64,6 +64,7 @@ namespace LLMDesktopAssistant.Modules
 				throw new InvalidOperationException("ModuleManager is already initialized.");
 
 			var modules = ReflectionUtility.GetTypesWithAttribute<IModule, ModuleAttribute>()
+				.ValidateParameterlessConstructors()
 				.OrderBy(t => t.Attribute.Order)
 				.Select(t => t.Type)
 				.Instantiate<IModule>((t, ex) =>
@@ -73,6 +74,7 @@ namespace LLMDesktopAssistant.Modules
 				.ToList();
 
 			_dynamicModuleRegistry = ReflectionUtility.GetTypesWithAttribute<IDynamicModule, DynamicModuleAttribute>()
+				.ValidateParameterlessConstructors()
 				.OrderBy(t => t.Attribute.Order)
 				.GroupBy(t => t.Attribute.CategoryType)
 				.ToImmutableDictionary(g => g.Key, 
@@ -148,8 +150,9 @@ namespace LLMDesktopAssistant.Modules
 		public static T? TryGet<T>()
 			where T : IModule
 		{
-			CheckInitialized();
-			return _modules.TryGet<T>();
+			if (_state == State.Initialized)
+				return _modules.TryGet<T>();
+			return default;
 		}
 
 		/// <summary>
@@ -162,6 +165,19 @@ namespace LLMDesktopAssistant.Modules
 		{
 			CheckInitialized();
 			return _modules.TryGet<T>() ?? throw new ModuleNotFoundException($"No module of type '{typeof(T).FullName}' is registered.");
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		public static IEnumerable<T> GetAll<T>()
+			where T : IModule
+		{
+			if (_state == State.Initialized)
+				return _modules.GetAll<T>();
+			return [];
 		}
 
 		/// <summary>
@@ -197,6 +213,7 @@ namespace LLMDesktopAssistant.Modules
 		public static DynamicModuleTracker<T> GetDynamicTracker<T>()
 			where T : IDynamicModule
 		{
+			CheckInitialized();
 			return (DynamicModuleTracker<T>)_dynamicModuleTrackers.GetOrAdd(typeof(T), static categoryType =>
 			{
 				var trackerType = typeof(DynamicModuleTracker<>).MakeGenericType(typeof(T));

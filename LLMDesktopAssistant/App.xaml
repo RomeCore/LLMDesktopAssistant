@@ -10,17 +10,16 @@
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 
-				<!-- Material Design Theme -->
-
-				<materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
-				<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
-
-
 				<!-- MahApps.Metro Theme -->
 
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Purple.xaml" />
+
+				<!-- Material Design Theme -->
+
+				<materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
+				<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
 
 			</ResourceDictionary.MergedDictionaries>
 
@@ -48,6 +47,10 @@
 				<Setter Property="ItemTemplateSelector" 
 						Value="{StaticResource ViewLocator}"/>
 			</Style>
+
+			<!-- Converters -->
+
+			<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
 		</ResourceDictionary>
 	</Application.Resources>

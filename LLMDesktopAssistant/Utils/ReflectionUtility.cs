@@ -388,11 +388,49 @@ namespace LLMDesktopAssistant.Utils
 		}
 
 		/// <summary>
+		/// Filters types in the collection to have a parameterless constructor.
+		/// </summary>
+		public static IEnumerable<TypeAttributePair<TAttr>> FilterParameterlessConstructors<TAttr>(
+			this IEnumerable<TypeAttributePair<TAttr>> types, Action<Type> filterHandler)
+			where TAttr : Attribute
+		{
+			foreach (var typePair in types)
+			{
+				var type = typePair.Type;
+				if (type.IsAbstract || type.IsInterface)
+					filterHandler(type);
+				else if (type.GetConstructor(Type.EmptyTypes) is not ConstructorInfo paramLessCstr
+					|| !paramLessCstr.IsPublic)
+					filterHandler(type);
+				else
+					yield return typePair;
+			}
+		}
+
+		/// <summary>
 		/// Ensures that all types in the collection have a parameterless constructor. Throws an exception if any do not.
 		/// </summary>
 		public static IEnumerable<Type> ValidateParameterlessConstructors(this IEnumerable<Type> types)
 		{
 			List<Type> resultTypes;
+			List<Type> errorTypes = [];
+
+			resultTypes = types.FilterParameterlessConstructors(errorTypes.Add).ToList();
+
+			if (errorTypes.Count > 0)
+				throw new Exception($"The following types do not have a public parameterless constructor: {string.Join(", ", errorTypes.Select(t => t.FullName))}");
+			
+			return resultTypes;
+		}
+
+		/// <summary>
+		/// Ensures that all types in the collection have a parameterless constructor. Throws an exception if any do not.
+		/// </summary>
+		public static IEnumerable<TypeAttributePair<TAttr>> ValidateParameterlessConstructors<TAttr>(
+			this IEnumerable<TypeAttributePair<TAttr>> types)
+			where TAttr : Attribute
+		{
+			List<TypeAttributePair<TAttr>> resultTypes;
 			List<Type> errorTypes = [];
 
 			resultTypes = types.FilterParameterlessConstructors(errorTypes.Add).ToList();
