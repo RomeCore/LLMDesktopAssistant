@@ -9,8 +9,8 @@ namespace LLMDesktopAssistant.Speech
 	/// <summary>
 	/// Class that uses the Whisper speech recognition model to recognize speech.
 	/// </summary>
-	[DynamicModule("WhisperSpeechRecognizer", typeof(ISpeechRecognizer), IsDefault = true)]
-	public class WhisperSpeechRecognizer : ISpeechRecognizer
+	[DynamicModule("WhisperSpeechRecognizer", typeof(IUserSpeechRecognizer), IsDefault = true)]
+	public class WhisperSpeechRecognizer : IUserSpeechRecognizer
 	{
 		WhisperFactory? _factory = null;
 		WhisperProcessor? _processor = null;

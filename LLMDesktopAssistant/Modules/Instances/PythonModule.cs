@@ -9,7 +9,8 @@ using Python.Runtime;
 
 namespace LLMDesktopAssistant.Modules.Instances
 {
-	[Module]
+	// TODO: Include this later
+	// [Module]
 	public class PythonModule : Module
 	{
 		public override void Initialize()

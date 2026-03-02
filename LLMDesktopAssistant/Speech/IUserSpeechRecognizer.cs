@@ -3,9 +3,9 @@
 namespace LLMDesktopAssistant.Speech
 {
 	/// <summary>
-	/// Interface for speech recognizer.
+	/// Interface for user speech recognizer.
 	/// </summary>
-	public interface ISpeechRecognizer : IDynamicModule
+	public interface IUserSpeechRecognizer : IDynamicModule
 	{
 		/// <summary>
 		/// Recognizes speech from audio samples.

@@ -19,12 +19,19 @@ namespace LLMDesktopAssistant
 
 		public App()
 		{
+			NewtonsoftSchemaHacker.Hack();
+
 			AllocConsole();
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Debug()
 				.WriteTo.Console()
 				.WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
 				.CreateLogger();
+		}
+
+		protected override void OnStartup(StartupEventArgs e)
+		{
+			base.OnStartup(e);
 
 			PluginManager.LoadPluginsInto(AppDomain.CurrentDomain);
 			ReflectionUtility.Initialize(AppDomain.CurrentDomain);

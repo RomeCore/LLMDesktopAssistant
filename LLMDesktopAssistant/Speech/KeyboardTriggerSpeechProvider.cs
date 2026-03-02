@@ -13,10 +13,10 @@ namespace LLMDesktopAssistant.Speech
 	/// <summary>
 	/// Class that listens for keyboard input, listens to microphone input and triggers speech events.
 	/// </summary>
-	[DynamicModule("KeyboardTriggerSpeechProvider", typeof(ISpeechProvider))]
-	public class KeyboardTriggerSpeechProvider : ISpeechProvider
+	[DynamicModule("KeyboardTriggerSpeechProvider", typeof(IUserSpeechProvider))]
+	public class KeyboardTriggerSpeechProvider : IUserSpeechProvider
 	{
-		private DynamicModuleTracker<ISpeechRecognizer> _recognizer = null!;
+		private DynamicModuleTracker<IUserSpeechRecognizer> _recognizer = null!;
 		private List<float> accumulatedAudioData = [];
 		private WaveInEvent _micStream = null!;
 
@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Speech
 
 		public void Initialize()
 		{
-			_recognizer = ModuleManager.GetDynamicTracker<ISpeechRecognizer>();
+			_recognizer = ModuleManager.GetDynamicTracker<IUserSpeechRecognizer>();
 
 			_micStream = new WaveInEvent
 			{

@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.MVVM
 
 		public MainViewModel()
 		{
-			var tabs = TabToolManager.Instantiate();
+			var tabs = TabToolManager.TabToolViews;
 			Tabs = new(tabs.Select(t => new TabItem
 			{
 				Header = LocalizationManager.LocalizeStatic(t.Key),

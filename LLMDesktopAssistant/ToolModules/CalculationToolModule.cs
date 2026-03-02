@@ -1,0 +1,73 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Reflection;
+using System.Threading.Tasks;
+using LLMDesktopAssistant.Modules;
+using RCLargeLanguageModels.Tools;
+using RCParsing;
+using LLMDesktopAssistant.Calculation;
+
+namespace LLMDesktopAssistant.ToolModules
+{
+	[Module]
+	public class CalculationToolModule : ToolModule
+	{
+		private readonly FunctionTool _calculateTool;
+
+		public CalculationToolModule()
+		{
+			_calculateTool = FunctionTool.From(Calculate, "calculate", """
+				Evaluate a mathematical expression. Examples:
+
+				1 + 2 * -(3^2 / e)
+				sin(pi/2) + cos(pi/3)
+				integral(x^2 + 1, x, 0, 10)
+				derivative(x^2 + 1, x, 5)
+				sin(9+2i)
+
+				All supported constants:
+
+				NaN, pi, inf, eps, phi, tau, g, e, c, gamma
+
+				All supported functions:
+				
+				Normal:
+				
+				asinh, acosh, tan, atanh, atan2, cbrt, sign, floor, ceil, round, trunc, mod,
+				gamma, factorial, integral, derivative
+				
+				Complex:
+
+				mag, conjugate, minmag, maxmag, compgamma
+
+				Normal and complex:
+
+				sin, sinh, asin, cos, cosh, acos, tanh, atan,
+				sind, cosd, tand, asind, acosd, atand,
+				ln, log, log2, logb, exp, pow, sqrt,
+				abs, min, max
+				""");
+		}
+
+		private ToolResult Calculate([Description("Expression to evaluate")] string expression)
+		{
+			try
+			{
+				var result = Calculator.ParseValue(expression);
+				return new ToolResult(result.ToString());
+			}
+			catch (ParsingException pex)
+			{
+				return new ToolResult(pex.Message);
+			}
+		}
+
+		public override IEnumerable<ITool> GetTools()
+		{
+			return [_calculateTool];
+		}
+	}
+}

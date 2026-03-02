@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="1.4.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
     <PackageReference Include="InputSimulator" Version="1.0.4" NoWarn="NU1701" />
     <PackageReference Include="LLTSharp" Version="1.2.0" />
     <PackageReference Include="MahApps.Metro" Version="2.4.11" />

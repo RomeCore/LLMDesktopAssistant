@@ -8,13 +8,15 @@ namespace LLMDesktopAssistant.ToolModules
 	[Module]
 	public class ExampleToolModule : ToolModule
 	{
-		private readonly FunctionTool _printTool, _copyTool, _genGUIDTool;
+		private readonly List<FunctionTool> _tools;
 
 		public ExampleToolModule()
 		{
-			_printTool = FunctionTool.From(Print, "print", "Prints a message to the console.");
-			_copyTool = FunctionTool.From(Copy, "copy", "Copies a piece of text to the clipboard.");
-			_genGUIDTool = FunctionTool.From(GenerateGUID, "generateGUID", "Generates a globally unique identifier (GUID).");
+			var printTool = FunctionTool.From(Print, "print", "Prints a message to the console.");
+			var copyTool = FunctionTool.From(Copy, "copy", "Copies a piece of text to the clipboard.");
+			var genGUIDTool = FunctionTool.From(GenerateGUID, "generateGUID", "Generates a globally unique identifier (GUID).");
+			
+			_tools = [printTool, copyTool, genGUIDTool];
 		}
 
 		private ToolResult Print([Description("Message to print")] string message)
@@ -39,7 +41,7 @@ namespace LLMDesktopAssistant.ToolModules
 
 		public override IEnumerable<ITool> GetTools()
 		{
-			return [_printTool, _copyTool, _genGUIDTool];
+			return _tools;
 		}
 	}
 }

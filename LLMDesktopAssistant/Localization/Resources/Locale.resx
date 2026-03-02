@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="browser" xml:space="preserve">
+    <value>Browser</value>
+  </data>
+  <data name="calculate" xml:space="preserve">
+    <value>Calculate</value>
+  </data>
   <data name="chat" xml:space="preserve">
     <value>Chat</value>
   </data>

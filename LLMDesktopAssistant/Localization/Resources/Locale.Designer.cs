@@ -61,6 +61,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Browser.
+        /// </summary>
+        public static string browser {
+            get {
+                return ResourceManager.GetString("browser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Calculate.
+        /// </summary>
+        public static string calculate {
+            get {
+                return ResourceManager.GetString("calculate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Chat.
         /// </summary>
         public static string chat {

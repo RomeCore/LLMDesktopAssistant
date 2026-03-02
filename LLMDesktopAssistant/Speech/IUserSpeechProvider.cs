@@ -8,9 +8,9 @@ using LLMDesktopAssistant.Modules;
 namespace LLMDesktopAssistant.Speech
 {
 	/// <summary>
-	/// Interface for speech provider.
+	/// Interface for user speech provider.
 	/// </summary>
-	public interface ISpeechProvider : IDynamicModule
+	public interface IUserSpeechProvider : IDynamicModule
 	{
 		/// <summary>
 		/// Event triggered when speech is received, e.g. from a microphone or other input device.

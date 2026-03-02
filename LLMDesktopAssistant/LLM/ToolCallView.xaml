@@ -9,35 +9,60 @@
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
 
+	<UserControl.Resources>
+		<Style x:Key="ToolIconStyle" TargetType="materialDesign:PackIcon">
+			<Setter Property="Width" Value="20"/>
+			<Setter Property="Height" Value="20"/>
+			<Setter Property="Kind" Value="Hammer"/>
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding Status}" Value="Success">
+					<Setter Property="Kind" Value="CheckCircle"/>
+				</DataTrigger>
+				<DataTrigger Binding="{Binding Status}" Value="Failure">
+					<Setter Property="Kind" Value="AlertCircle"/>
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+	</UserControl.Resources>
+
 	<Grid Margin="0,2">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto"/>
 			<ColumnDefinition Width="Auto"/>
 		</Grid.ColumnDefinitions>
 
-		<!-- Tool Icon based on status -->
-		<materialDesign:PackIcon Grid.Column="0"
-						Width="20" Height="20"
-						Margin="0,0,4,0">
+		<!-- Container for icon/progress -->
+		<Grid Grid.Column="0" Width="20" Height="20" Margin="0,0,4,0">
+			<!-- Progress bar for InProgress state (visible only when status is InProgress) -->
+			<ProgressBar 
+				IsIndeterminate="True"
+				Value="35">
+				<ProgressBar.Style>
+					<Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignCircularProgressBar}">
+						<Setter Property="Visibility" Value="Collapsed"/>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Status}" Value="InProgress">
+								<Setter Property="Visibility" Value="Visible"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</ProgressBar.Style>
+			</ProgressBar>
 
-			<materialDesign:PackIcon.Style>
-				<Style TargetType="materialDesign:PackIcon">
-					<Setter Property="Kind" Value="Hammer"/>
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding Status}" Value="InProgress">
-							<Setter Property="Kind" Value="Loading"/>
-						</DataTrigger>
-						<DataTrigger Binding="{Binding Status}" Value="Success">
-							<Setter Property="Kind" Value="CheckCircle"/>
-						</DataTrigger>
-						<DataTrigger Binding="{Binding Status}" Value="Failure">
-							<Setter Property="Kind" Value="AlertCircle"/>
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</materialDesign:PackIcon.Style>
-
-		</materialDesign:PackIcon>
+			<!-- Static icons for other states (visible when status is not InProgress) -->
+			<materialDesign:PackIcon>
+				<materialDesign:PackIcon.Style>
+					<Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource ToolIconStyle}">
+						<Setter Property="Visibility" Value="Visible"/>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Status}" Value="InProgress">
+								<Setter Property="Visibility" Value="Collapsed"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</materialDesign:PackIcon.Style>
+			</materialDesign:PackIcon>
+		</Grid>
 
 		<!-- Tool Name -->
 		<TextBlock Grid.Column="1"
@@ -45,5 +70,4 @@
 				   FontWeight="Medium"
 				   VerticalAlignment="Center"/>
 	</Grid>
-
 </UserControl>

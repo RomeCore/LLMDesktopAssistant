@@ -187,6 +187,9 @@ namespace LLMDesktopAssistant.LLM
 								toolPart.ToolCalls.Add(toolCallVm);
 							});
 
+							Log.Debug("LLM called function '{name}' (tool call id: {id}) with arguments: {args}.",
+								toolCall.ToolName, toolCall.Id, functionCall.Args.ToString());
+
 							var executionTask = tool.ExecuteAsync(functionCall.Args, cts)
 								.ContinueWith(t =>
 								{
@@ -200,12 +203,19 @@ namespace LLMDesktopAssistant.LLM
 											toolCallVm.Status = ToolCallStatus.Success;
 									});
 
+									ToolResult toolMsgContent;
+
 									if (t.IsCanceled)
-										toolMessageMap[toolCall] = new ToolMessage("CANCELLED", toolCall.Id, toolCall.ToolName);
+										toolMsgContent = "CANCELLED";
 									else if (t.IsFaulted)
-										toolMessageMap[toolCall] = new ToolMessage("ERROR", toolCall.Id, toolCall.ToolName);
+										toolMsgContent = "ERROR";
 									else
-										toolMessageMap[toolCall] = new ToolMessage(t.Result, toolCall.Id, toolCall.ToolName);
+										toolMsgContent = t.Result;
+
+									Log.Debug("LLM function '{name}' (tool call id: {id}) completed with result: '{result}'.",
+										toolCall.ToolName, toolCall.Id, toolMsgContent.Content);
+
+									toolMessageMap[toolCall] = new ToolMessage(toolMsgContent, toolCall.Id, toolCall.ToolName);
 								}, cts);
 							toolExecutionTasks.Add(executionTask);
 
@@ -239,6 +249,7 @@ namespace LLMDesktopAssistant.LLM
 				}
 
 				await assistantMessage;
+				Log.Debug("Received message: {msg}", assistantMessage.Content);
 
 				if (toolExecutionTasks.Count > 0)
 				{

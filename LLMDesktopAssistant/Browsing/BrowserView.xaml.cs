@@ -13,12 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.Tabs
+namespace LLMDesktopAssistant.Browsing
 {
-	// [TabTool("sample")]
-	public partial class SampleTab : UserControl
+	/// <summary>
+	/// Логика взаимодействия для BrowserView.xaml
+	/// </summary>
+	public partial class BrowserView : UserControl
 	{
-		public SampleTab()
+		public BrowserView()
 		{
 			InitializeComponent();
 		}
