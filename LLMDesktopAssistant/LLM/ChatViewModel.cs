@@ -25,6 +25,16 @@ namespace LLMDesktopAssistant.LLM
 	{
 		private CancellationTokenSource? _sendCts;
 
+		private ObservableCollection<ToolModule> _additionalTools = [];
+		/// <summary>
+		/// Gets or sets the collection of additional tool modules.
+		/// </summary>
+		public ObservableCollection<ToolModule> AdditionalTools
+		{
+			get => _additionalTools;
+			set => SetProperty(ref _additionalTools, value);
+		}
+
 		private ObservableCollection<ConversationTurnViewModel> _turns = [];
 		/// <summary>
 		/// Gets or sets the collection of conversation turns.
@@ -65,6 +75,10 @@ namespace LLMDesktopAssistant.LLM
 				{
 					Log.Error(ex, "An error occurred while sending a message: {error}.", ex);
 				}
+				finally
+				{
+					Turns.Last().State = ConversationTurnState.Complete;
+				}
 			});
 		}
 
@@ -89,6 +103,7 @@ namespace LLMDesktopAssistant.LLM
 			var llm = ModuleManager.GetDynamic<ILLMProvider>().GetLLM();
 
 			var allTools = new ToolSet(ModuleManager.GetAll<ToolModule>()
+				.Concat(AdditionalTools)
 				.Where(t => t.Enabled)
 				.SelectMany(t => t.GetTools()));
 			// Add existing LLM's tools.
@@ -102,6 +117,7 @@ namespace LLMDesktopAssistant.LLM
 
 			var turn = new ConversationTurnViewModel();
 			Turns.Add(turn);
+			turn.State = ConversationTurnState.Processing;
 			UserInput = string.Empty;
 
 			InvokeUI(() =>
@@ -174,8 +190,9 @@ namespace LLMDesktopAssistant.LLM
 
 							var toolCallVm = new ToolCallViewModel
 							{
+								Status = ToolCallStatus.InProgress,
 								ToolName = toolCall.ToolName,
-								Status = ToolCallStatus.InProgress
+								Arguments = functionCall.Args.ToString()
 							};
 							InvokeUI(() =>
 							{
@@ -187,22 +204,9 @@ namespace LLMDesktopAssistant.LLM
 								toolPart.ToolCalls.Add(toolCallVm);
 							});
 
-							Log.Debug("LLM called function '{name}' (tool call id: {id}) with arguments: {args}.",
-								toolCall.ToolName, toolCall.Id, functionCall.Args.ToString());
-
 							var executionTask = tool.ExecuteAsync(functionCall.Args, cts)
 								.ContinueWith(t =>
 								{
-									InvokeUI(() =>
-									{
-										if (t.IsCanceled)
-											toolCallVm.Status = ToolCallStatus.Failure;
-										else if (t.IsFaulted)
-											toolCallVm.Status = ToolCallStatus.Failure;
-										else
-											toolCallVm.Status = ToolCallStatus.Success;
-									});
-
 									ToolResult toolMsgContent;
 
 									if (t.IsCanceled)
@@ -212,8 +216,17 @@ namespace LLMDesktopAssistant.LLM
 									else
 										toolMsgContent = t.Result;
 
-									Log.Debug("LLM function '{name}' (tool call id: {id}) completed with result: '{result}'.",
-										toolCall.ToolName, toolCall.Id, toolMsgContent.Content);
+									InvokeUI(() =>
+									{
+										if (t.IsCanceled)
+											toolCallVm.Status = ToolCallStatus.Failure;
+										else if (t.IsFaulted)
+											toolCallVm.Status = ToolCallStatus.Failure;
+										else
+											toolCallVm.Status = ToolCallStatus.Success;
+
+										toolCallVm.Result = toolMsgContent.Content;
+									});
 
 									toolMessageMap[toolCall] = new ToolMessage(toolMsgContent, toolCall.Id, toolCall.ToolName);
 								}, cts);

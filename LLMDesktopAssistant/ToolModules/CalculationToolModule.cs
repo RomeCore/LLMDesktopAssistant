@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.ToolModules
 
 		public CalculationToolModule()
 		{
-			_calculateTool = FunctionTool.From(Calculate, "calculate", """
+			_calculateTool = FunctionTool.From(Calculate, "calculation-calculate", """
 				Evaluate a mathematical expression. Examples:
 
 				1 + 2 * -(3^2 / e)
@@ -57,7 +57,25 @@ namespace LLMDesktopAssistant.ToolModules
 			try
 			{
 				var result = Calculator.ParseValue(expression);
-				return new ToolResult(result.ToString());
+				var formatted = string.Empty;
+
+				if (result.Imaginary != 0)
+				{
+					if (result.Imaginary > 0)
+					{
+						formatted = $"{result.Real} + {result.Imaginary}i";
+					}
+					else
+					{
+						formatted = $"{result.Real} - {-result.Imaginary}i";
+					}
+				}
+				else
+				{
+					formatted = result.Real.ToString();
+				}
+
+				return new ToolResult(formatted);
 			}
 			catch (ParsingException pex)
 			{

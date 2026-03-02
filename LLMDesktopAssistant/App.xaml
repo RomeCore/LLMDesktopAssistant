@@ -4,6 +4,7 @@
 			 xmlns:local="clr-namespace:LLMDesktopAssistant"
 			 xmlns:mvvm="clr-namespace:LLMDesktopAssistant.MVVM"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+			 xmlns:converters="clr-namespace:LLMDesktopAssistant.Converters"
 			 StartupUri="MainWindow.xaml">
 
 	<Application.Resources>
@@ -51,6 +52,9 @@
 			<!-- Converters -->
 
 			<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+			<converters:ConversationTurnStateToBooleanConverter x:Key="ConversationTurnStateToBooleanConverter"/>
+			<converters:StringNonEmptyToBooleanConverter x:Key="StringNonEmptyToBooleanConverter"/>
+			<converters:StringNonEmptyToVisiblityConverter x:Key="StringNonEmptyToVisiblityConverter"/>
 
 		</ResourceDictionary>
 	</Application.Resources>

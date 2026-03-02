@@ -1,4 +1,6 @@
-﻿using LLMDesktopAssistant.MVVM;
+﻿using LLMDesktopAssistant.LLM;
+using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.ToolModules;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 
@@ -29,9 +31,24 @@ namespace LLMDesktopAssistant.Browsing
 			set => SetProperty(ref _webView, value);
 		}
 
+		private ChatViewModel _chat = new();
+		/// <summary>
+		/// The LLM chat that applicated to this browser tab.
+		/// </summary>
+		public ChatViewModel Chat
+		{
+			get => _chat;
+			set => SetProperty(ref _chat, value);
+		}
+
 		/// <summary>
 		/// Gets the CoreWebView2 object associated with the WebView2 control.
 		/// </summary>
 		public CoreWebView2 CoreWebView2 => WebView.CoreWebView2;
+
+		public BrowserTabViewModel()
+		{
+			_chat.AdditionalTools.Add(new BrowserToolModule(this));
+		}
 	}
 }

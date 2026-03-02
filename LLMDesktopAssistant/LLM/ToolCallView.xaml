@@ -64,10 +64,43 @@
 			</materialDesign:PackIcon>
 		</Grid>
 
-		<!-- Tool Name -->
-		<TextBlock Grid.Column="1"
-				   Text="{loc:Loc {Binding ToolName}}"
-				   FontWeight="Medium"
-				   VerticalAlignment="Center"/>
+		<materialDesign:PopupBox Grid.Column="1">
+			
+			<materialDesign:PopupBox.ToggleContent>
+				<TextBlock Text="{loc:Loc {Binding ToolName}}"
+						   FontWeight="Medium"
+						   VerticalAlignment="Center"/>
+			</materialDesign:PopupBox.ToggleContent>
+
+			<materialDesign:PopupBox.PopupContent>
+
+				<ScrollViewer VerticalScrollBarVisibility="Auto"
+							  HorizontalScrollBarVisibility="Auto">
+
+					<StackPanel Orientation="Vertical">
+
+						<StackPanel Orientation="Vertical"
+							Visibility="{Binding Arguments, Converter={StaticResource StringNonEmptyToVisiblityConverter}}">
+
+							<Label Content="{loc:Loc tool-arguments}"/>
+							<Label Content="{Binding Arguments}" FontFamily="Cascadia Code"/>
+
+						</StackPanel>
+
+						<StackPanel Orientation="Vertical"
+							Visibility="{Binding Result, Converter={StaticResource StringNonEmptyToVisiblityConverter}}">
+
+							<Label Content="{loc:Loc tool-result}"/>
+							<Label Content="{Binding Result}" FontFamily="Cascadia Code"/>
+
+						</StackPanel>
+
+					</StackPanel>
+
+				</ScrollViewer>
+				
+			</materialDesign:PopupBox.PopupContent>
+			
+		</materialDesign:PopupBox>
 	</Grid>
 </UserControl>

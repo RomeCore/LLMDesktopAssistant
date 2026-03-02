@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM"
+			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
@@ -52,13 +53,13 @@
 						<!-- Attach Button -->
 						<Button Grid.Column="0"
 								Style="{StaticResource MaterialDesignIconButton}"
-								ToolTip="Attach file">
+								ToolTip="{loc:Loc chat-attach_file_hint}">
 							<materialDesign:PackIcon Kind="Paperclip"/>
 						</Button>
 
 						<!-- Text Input -->
 						<TextBox Grid.Column="1"
-								 materialDesign:HintAssist.Hint="Type your message..."
+								 materialDesign:HintAssist.Hint="{loc:Loc chat-input_hint}"
 								 materialDesign:TextFieldAssist.HasClearButton="True"
 								 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
 								 Text="{Binding UserInput, Mode=TwoWay}"
@@ -73,7 +74,7 @@
 						<Button Grid.Column="2"
 								Style="{StaticResource MaterialDesignIconButton}"
 								Command="{Binding SendMessageCommand}"
-								ToolTip="Send message">
+								ToolTip="{loc:Loc chat-send_button_hint}">
 							<materialDesign:PackIcon Kind="Send"/>
 						</Button>
 					</Grid>
@@ -83,7 +84,7 @@
 				<Button Grid.Column="1"
 						Style="{StaticResource MaterialDesignIconButton}"
 						Margin="8,0,0,0"
-						ToolTip="Settings">
+						ToolTip="{loc:Loc chat-settings_hint}">
 					<materialDesign:PackIcon Kind="Cog"/>
 				</Button>
 			</Grid>

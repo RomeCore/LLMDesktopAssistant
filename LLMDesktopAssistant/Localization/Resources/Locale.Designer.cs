@@ -70,11 +70,38 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Browser: Execute script.
+        /// </summary>
+        public static string browser_execute_javascript {
+            get {
+                return ResourceManager.GetString("browser-execute_javascript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Browser: Get markup.
+        /// </summary>
+        public static string browser_get_html {
+            get {
+                return ResourceManager.GetString("browser-get_html", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Browser: Navigate to URI.
+        /// </summary>
+        public static string browser_navigate_to_uri {
+            get {
+                return ResourceManager.GetString("browser-navigate_to_uri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Calculate.
         /// </summary>
-        public static string calculate {
+        public static string calculation_calculate {
             get {
-                return ResourceManager.GetString("calculate", resourceCulture);
+                return ResourceManager.GetString("calculation-calculate", resourceCulture);
             }
         }
         
@@ -88,11 +115,119 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Attach file....
+        /// </summary>
+        public static string chat_attach_file_hint {
+            get {
+                return ResourceManager.GetString("chat-attach_file_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter your message....
+        /// </summary>
+        public static string chat_input_hint {
+            get {
+                return ResourceManager.GetString("chat-input_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Send message.
+        /// </summary>
+        public static string chat_send_button_hint {
+            get {
+                return ResourceManager.GetString("chat-send_button_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Settings.
+        /// </summary>
+        public static string chat_settings_hint {
+            get {
+                return ResourceManager.GetString("chat-settings_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy to clipboard.
+        /// </summary>
+        public static string general_copy {
+            get {
+                return ResourceManager.GetString("general-copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generate GUID.
+        /// </summary>
+        public static string general_generateGUID {
+            get {
+                return ResourceManager.GetString("general-generateGUID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generate random decimal number.
+        /// </summary>
+        public static string general_GenerateRandomFloat {
+            get {
+                return ResourceManager.GetString("general-GenerateRandomFloat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generate random integer.
+        /// </summary>
+        public static string general_generateRandomInteger {
+            get {
+                return ResourceManager.GetString("general-generateRandomInteger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Print.
         /// </summary>
-        public static string print {
+        public static string general_print {
             get {
-                return ResourceManager.GetString("print", resourceCulture);
+                return ResourceManager.GetString("general-print", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter text.
+        /// </summary>
+        public static string input_enter_text {
+            get {
+                return ResourceManager.GetString("input-enter_text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move mouse.
+        /// </summary>
+        public static string input_move_mouse {
+            get {
+                return ResourceManager.GetString("input-move_mouse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move mouse.
+        /// </summary>
+        public static string input_move_mouse_delta {
+            get {
+                return ResourceManager.GetString("input-move_mouse_delta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Press key.
+        /// </summary>
+        public static string input_press_key {
+            get {
+                return ResourceManager.GetString("input-press_key", resourceCulture);
             }
         }
         
@@ -111,6 +246,69 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string title {
             get {
                 return ResourceManager.GetString("title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tool arguments:.
+        /// </summary>
+        public static string tool_arguments {
+            get {
+                return ResourceManager.GetString("tool-arguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tool result:.
+        /// </summary>
+        public static string tool_result {
+            get {
+                return ResourceManager.GetString("tool-result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Download.
+        /// </summary>
+        public static string web_download {
+            get {
+                return ResourceManager.GetString("web-download", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на GET request.
+        /// </summary>
+        public static string web_get {
+            get {
+                return ResourceManager.GetString("web-get", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Web parse.
+        /// </summary>
+        public static string web_parse {
+            get {
+                return ResourceManager.GetString("web-parse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на POST request.
+        /// </summary>
+        public static string web_post {
+            get {
+                return ResourceManager.GetString("web-post", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Check web status.
+        /// </summary>
+        public static string web_status {
+            get {
+                return ResourceManager.GetString("web-status", resourceCulture);
             }
         }
     }

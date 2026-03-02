@@ -18,6 +18,13 @@ namespace LLMDesktopAssistant.LLM
 	[ViewModelFor(typeof(ToolCallView))]
 	public class ToolCallViewModel : ViewModelBase
 	{
+		private ToolCallStatus _status = ToolCallStatus.None;
+		public ToolCallStatus Status
+		{
+			get => _status;
+			set => SetProperty(ref _status, value);
+		}
+
 		private string _toolName = string.Empty;
 		public string ToolName
 		{
@@ -25,11 +32,18 @@ namespace LLMDesktopAssistant.LLM
 			set => SetProperty(ref _toolName, value);
 		}
 
-		private ToolCallStatus _status = ToolCallStatus.None;
-		public ToolCallStatus Status
+		private string _arguments = string.Empty;
+		public string Arguments
 		{
-			get => _status;
-			set => SetProperty(ref _status, value);
+			get => _arguments;
+			set => SetProperty(ref _arguments, value);
+		}
+
+		private string _result = string.Empty;
+		public string Result
+		{
+			get => _result;
+			set => SetProperty(ref _result, value);
 		}
 	}
 }

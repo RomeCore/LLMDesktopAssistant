@@ -12,24 +12,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MaterialDesignThemes.Wpf;
+using LLMDesktopAssistant.MVVM;
 
 namespace LLMDesktopAssistant.Browsing
 {
-	public partial class BrowserView : UserControl
+	[ViewFor(typeof(BrowserTabViewModel))]
+	public partial class BrowserTabView : UserControl
 	{
-		public BrowserView()
+		public BrowserTabView()
 		{
 			InitializeComponent();
-
-			ChatToggleButton.Checked += (s, e) =>
-			{
-				DrawerHost.OpenDrawerCommand.Execute(Dock.Right, ChatToggleButton);
-			};
-			ChatToggleButton.Unchecked += (s, e) =>
-			{
-				DrawerHost.CloseDrawerCommand.Execute(Dock.Right, ChatToggleButton);
-			};
 		}
 	}
 }

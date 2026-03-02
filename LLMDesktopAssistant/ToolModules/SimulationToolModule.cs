@@ -10,7 +10,7 @@ using WindowsInput.Native;
 
 namespace LLMDesktopAssistant.ToolModules
 {
-	[Module]
+	// [Module]
 	public class SimulationToolModule : ToolModule
 	{
 		private readonly List<FunctionTool> _tools;

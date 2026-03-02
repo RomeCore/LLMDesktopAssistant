@@ -120,19 +120,85 @@
   <data name="browser" xml:space="preserve">
     <value>Browser</value>
   </data>
-  <data name="calculate" xml:space="preserve">
+  <data name="browser-execute_javascript" xml:space="preserve">
+    <value>Browser: Execute script</value>
+  </data>
+  <data name="browser-get_html" xml:space="preserve">
+    <value>Browser: Get markup</value>
+  </data>
+  <data name="browser-navigate_to_uri" xml:space="preserve">
+    <value>Browser: Navigate to URI</value>
+  </data>
+  <data name="calculation-calculate" xml:space="preserve">
     <value>Calculate</value>
   </data>
   <data name="chat" xml:space="preserve">
     <value>Chat</value>
   </data>
-  <data name="print" xml:space="preserve">
+  <data name="chat-attach_file_hint" xml:space="preserve">
+    <value>Attach file...</value>
+  </data>
+  <data name="chat-input_hint" xml:space="preserve">
+    <value>Enter your message...</value>
+  </data>
+  <data name="chat-send_button_hint" xml:space="preserve">
+    <value>Send message</value>
+  </data>
+  <data name="chat-settings_hint" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="general-copy" xml:space="preserve">
+    <value>Copy to clipboard</value>
+  </data>
+  <data name="general-generateGUID" xml:space="preserve">
+    <value>Generate GUID</value>
+  </data>
+  <data name="general-GenerateRandomFloat" xml:space="preserve">
+    <value>Generate random decimal number</value>
+  </data>
+  <data name="general-generateRandomInteger" xml:space="preserve">
+    <value>Generate random integer</value>
+  </data>
+  <data name="general-print" xml:space="preserve">
     <value>Print</value>
+  </data>
+  <data name="input-enter_text" xml:space="preserve">
+    <value>Enter text</value>
+  </data>
+  <data name="input-move_mouse" xml:space="preserve">
+    <value>Move mouse</value>
+  </data>
+  <data name="input-move_mouse_delta" xml:space="preserve">
+    <value>Move mouse</value>
+  </data>
+  <data name="input-press_key" xml:space="preserve">
+    <value>Press key</value>
   </data>
   <data name="sample" xml:space="preserve">
     <value>Sample</value>
   </data>
   <data name="title" xml:space="preserve">
     <value>RomeCore's desktop temple</value>
+  </data>
+  <data name="tool-arguments" xml:space="preserve">
+    <value>Tool arguments:</value>
+  </data>
+  <data name="tool-result" xml:space="preserve">
+    <value>Tool result:</value>
+  </data>
+  <data name="web-download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="web-get" xml:space="preserve">
+    <value>GET request</value>
+  </data>
+  <data name="web-parse" xml:space="preserve">
+    <value>Web parse</value>
+  </data>
+  <data name="web-post" xml:space="preserve">
+    <value>POST request</value>
+  </data>
+  <data name="web-status" xml:space="preserve">
+    <value>Check web status</value>
   </data>
 </root>

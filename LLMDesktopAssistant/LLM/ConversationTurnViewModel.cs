@@ -4,6 +4,13 @@ using RCLargeLanguageModels.Messages;
 
 namespace LLMDesktopAssistant.LLM
 {
+	public enum ConversationTurnState
+	{
+		None,
+		Processing,
+		Complete
+	}
+
 	[ViewModelFor(typeof(ConversationTurnView))]
 	public class ConversationTurnViewModel : ViewModelBase
 	{
@@ -25,6 +32,13 @@ namespace LLMDesktopAssistant.LLM
 		{
 			get => _assistantMessageParts;
 			set => SetProperty(ref _assistantMessageParts, value);
+		}
+
+		private ConversationTurnState _state;
+		public ConversationTurnState State
+		{
+			get => _state;
+			set => SetProperty(ref _state, value);
 		}
 
 		private ObservableCollection<IMessage> _messages = [];
