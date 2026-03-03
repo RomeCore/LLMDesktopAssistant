@@ -151,6 +151,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute Lua script.
+        /// </summary>
+        public static string execute_lua {
+            get {
+                return ResourceManager.GetString("execute-lua", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy to clipboard.
         /// </summary>
         public static string general_copy {
@@ -286,6 +295,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Fetch HTML.
+        /// </summary>
+        public static string web_get_html {
+            get {
+                return ResourceManager.GetString("web-get_html", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Web parse.
         /// </summary>
         public static string web_parse {
@@ -300,6 +318,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string web_post {
             get {
                 return ResourceManager.GetString("web-post", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Web search.
+        /// </summary>
+        public static string web_search {
+            get {
+                return ResourceManager.GetString("web-search", resourceCulture);
             }
         }
         

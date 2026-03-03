@@ -147,6 +147,9 @@
   <data name="chat-settings_hint" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="execute-lua" xml:space="preserve">
+    <value>Execute Lua script</value>
+  </data>
   <data name="general-copy" xml:space="preserve">
     <value>Copy to clipboard</value>
   </data>
@@ -192,11 +195,17 @@
   <data name="web-get" xml:space="preserve">
     <value>GET request</value>
   </data>
+  <data name="web-get_html" xml:space="preserve">
+    <value>Fetch HTML</value>
+  </data>
   <data name="web-parse" xml:space="preserve">
     <value>Web parse</value>
   </data>
   <data name="web-post" xml:space="preserve">
     <value>POST request</value>
+  </data>
+  <data name="web-search" xml:space="preserve">
+    <value>Web search</value>
   </data>
   <data name="web-status" xml:space="preserve">
     <value>Check web status</value>

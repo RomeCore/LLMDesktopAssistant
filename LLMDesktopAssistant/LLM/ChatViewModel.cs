@@ -262,7 +262,6 @@ namespace LLMDesktopAssistant.LLM
 				}
 
 				await assistantMessage;
-				Log.Debug("Received message: {msg}", assistantMessage.Content);
 
 				if (toolExecutionTasks.Count > 0)
 				{

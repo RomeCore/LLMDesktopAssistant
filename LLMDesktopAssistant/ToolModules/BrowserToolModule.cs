@@ -11,6 +11,7 @@ using Ganss.Xss;
 using LLMDesktopAssistant.Browsing;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.Tabs;
+using LLMDesktopAssistant.Utils;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using RCLargeLanguageModels.Tools;
@@ -20,15 +21,11 @@ namespace LLMDesktopAssistant.ToolModules
 	public class BrowserToolModule : ToolModule
 	{
 		private readonly BrowserTabViewModel _browserTab;
-		private readonly HtmlSanitizer _sanitizer;
 		private readonly List<FunctionTool> _tools;
 
 		public BrowserToolModule(BrowserTabViewModel browserTab)
 		{
 			_browserTab = browserTab;
-			_sanitizer = new HtmlSanitizer
-			{
-			};
 
 			_tools = [];
 			_tools.Add(FunctionTool.From(NavigateToUrl, "browser-navigate_to_uri", "Navigates to a specified URL"));
@@ -40,8 +37,9 @@ namespace LLMDesktopAssistant.ToolModules
 		{
 			var tcs = new TaskCompletionSource<ToolResult>();
 
-			App.Current.Dispatcher.BeginInvoke(() =>
+			App.Current.Dispatcher.BeginInvoke(async () =>
 			{
+				await _browserTab.WebView.EnsureCoreWebView2Async();
 				_browserTab.CoreWebView2.NavigationCompleted += NavigationCompleted;
 				_browserTab.CoreWebView2.Navigate(url);
 
@@ -66,21 +64,24 @@ namespace LLMDesktopAssistant.ToolModules
 			return tcs.Task;
 		}
 
-		public async Task<ToolResult> GetHTML()
+		public async Task<ToolResult> GetHTML(
+			[Description("Whether to sanitize HTML to remove extra data")] bool sanitize = true)
 		{
 			const string script = "document.documentElement.outerHTML";
 
 			string result = string.Empty;
 			await await App.Current.Dispatcher.InvokeAsync(async () =>
 			{
+				await _browserTab.WebView.EnsureCoreWebView2Async();
 				var coreWeb = _browserTab.CoreWebView2;
 				result = await coreWeb.ExecuteScriptAsync(script).ConfigureAwait(true);
 			});
 
 			result = Regex.Unescape(result)[1..^1];
-			result = _sanitizer.Sanitize(result);
+			if (sanitize)
+				result = HtmlUtils.Sanitize(result);
 
-			const int maxCharacters = 50000;
+			const int maxCharacters = 40000;
 			if (result.Length > maxCharacters)
 				result = result[0..maxCharacters] + $" ... and {result.Length - maxCharacters} characters more...";
 
@@ -92,6 +93,7 @@ namespace LLMDesktopAssistant.ToolModules
 			string result = string.Empty;
 			await await App.Current.Dispatcher.InvokeAsync(async () =>
 			{
+				await _browserTab.WebView.EnsureCoreWebView2Async();
 				var coreWeb = _browserTab.CoreWebView2;
 				result = await coreWeb.ExecuteScriptAsync(script).ConfigureAwait(true);
 			});

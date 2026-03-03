@@ -1,9 +1,18 @@
 ﻿using System.ComponentModel;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
+using AngleSharp;
+using Ganss.Xss;
 using LLMDesktopAssistant.Modules;
+using LLMDesktopAssistant.Utils;
+using Newtonsoft.Json.Linq;
+using RCLargeLanguageModels.Security;
 using RCLargeLanguageModels.Tools;
+using RCParsing;
 
 namespace LLMDesktopAssistant.ToolModules
 {
@@ -15,24 +24,24 @@ namespace LLMDesktopAssistant.ToolModules
 
 		public WebRequestToolModule()
 		{
-			_tools = [];
 			_httpClient = new HttpClient();
 
-			// Добавляем базовые заголовки для имитации браузера
 			_httpClient.DefaultRequestHeaders.Add("User-Agent",
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
 			_httpClient.DefaultRequestHeaders.Add("Accept",
 				"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
 			_httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.5");
-			_httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
 			_httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
 			_httpClient.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 
+			_tools = [];
 			_tools.Add(FunctionTool.From(GetRequest, "web-get", "Perform a GET request to a specified URL."));
 			_tools.Add(FunctionTool.From(PostRequest, "web-post", "Perform a POST request to a specified URL with JSON data."));
 			_tools.Add(FunctionTool.From(DownloadFile, "web-download", "Download a file from a specified URL."));
 			_tools.Add(FunctionTool.From(CheckWebsiteStatus, "web-status", "Check if a website is accessible and return status code."));
+			_tools.Add(FunctionTool.From(GetHtml, "web-get_html", "Fetch HTML content from a specified URL."));
 			_tools.Add(FunctionTool.From(ParseHtml, "web-parse", "Fetch HTML content and parse specific elements by tag or class."));
+			_tools.Add(FunctionTool.From(Search, "web-search", "Search through the web using query."));
 		}
 
 		private async Task<ToolResult> GetRequest(
@@ -55,6 +64,10 @@ namespace LLMDesktopAssistant.ToolModules
 				var response = await _httpClient.SendAsync(request);
 				var responseContent = await response.Content.ReadAsStringAsync();
 
+				const int maxCharacters = 35000;
+				if (responseContent.Length > maxCharacters)
+					responseContent = responseContent[0..maxCharacters] + $" ... and {responseContent.Length - maxCharacters} characters more...";
+
 				var result = $"""
 					Status code: {(int)response.StatusCode}
 					Status description: {response.StatusCode.ToString()}
@@ -74,13 +87,25 @@ namespace LLMDesktopAssistant.ToolModules
 
 		private async Task<ToolResult> PostRequest(
 			[Description("URL to send POST request to")] string url,
-			[Description("JSON data to send in the request body")] string jsonData,
+			[Description("Content data to send in the request body")] string content,
+			[Description("Optional: Additional headers as JSON string (e.g., {\"Authorization\": \"Bearer token\"})")] string headersJson = "",
 			[Description("Content type (default: application/json)")] string contentType = "application/json")
 		{
 			try
 			{
-				var content = new StringContent(jsonData, Encoding.UTF8, contentType);
-				var response = await _httpClient.PostAsync(url, content);
+				using var request = new HttpRequestMessage(HttpMethod.Get, url);
+				request.Content = new StringContent(content, Encoding.UTF8, contentType);
+
+				if (!string.IsNullOrEmpty(headersJson))
+				{
+					var headers = JsonSerializer.Deserialize<Dictionary<string, string>>(headersJson);
+					foreach (var header in headers!)
+					{
+						request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+					}
+				}
+
+				var response = await _httpClient.SendAsync(request);
 				var responseContent = await response.Content.ReadAsStringAsync();
 
 				var result = $"""
@@ -184,60 +209,90 @@ namespace LLMDesktopAssistant.ToolModules
 			}
 		}
 
-		private async Task<ToolResult> ParseHtml(
+		private async Task<ToolResult> GetHtml(
 			[Description("URL to fetch HTML from")] string url,
-			[Description("Tag name to parse (e.g., 'div', 'a', 'p')")] string tagName = "",
-			[Description("Class name to filter by")] string className = "",
-			[Description("Attribute to extract (e.g., 'href', 'src', 'title')")] string attribute = "")
+			[Description("Whether to sanitize HTML to remove extra data")] bool sanitize = true)
 		{
 			try
 			{
-				var html = await _httpClient.GetStringAsync(url);
-				var results = new List<Dictionary<string, object>>();
+				var config = Configuration.Default.WithDefaultLoader();
+				var context = BrowsingContext.New(config);
+				var document = await context.OpenAsync(url);
 
-				// Simple HTML parsing using regex (for more complex parsing, consider HtmlAgilityPack)
-				var matches = System.Text.RegularExpressions.Regex.Matches(
-					html,
-					$@"<{tagName}[^>]*class=[""']([^""']*{className}*[^""']*)[""'][^>]*>(.*?)</{tagName}>",
-					System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline
-				);
+				var html = document.Body?.OuterHtml ?? string.Empty;
 
-				foreach (System.Text.RegularExpressions.Match match in matches)
-				{
-					var result = new Dictionary<string, object>
-					{
-						["FullMatch"] = match.Value,
-						["Content"] = match.Groups[2].Value.Trim()
-					};
+				if (sanitize)
+					html = HtmlUtils.Sanitize(html);
 
-					// Extract attribute if specified
-					if (!string.IsNullOrEmpty(attribute))
-					{
-						var attrMatch = System.Text.RegularExpressions.Regex.Match(
-							match.Value,
-							$@"{attribute}=[""']([^""']*)[""']",
-							System.Text.RegularExpressions.RegexOptions.IgnoreCase
-						);
-						if (attrMatch.Success)
-						{
-							result[$"Attribute_{attribute}"] = attrMatch.Groups[1].Value;
-						}
-					}
+				const int maxCharacters = 35000;
+				if (html.Length > maxCharacters)
+					html = html[0..maxCharacters] + $" ... and {html.Length - maxCharacters} characters more...";
 
-					results.Add(result);
-				}
+				return new ToolResult(html);
+			}
+			catch (Exception ex)
+			{
+				return new ToolResult($"Error getting HTML: {ex.Message}");
+			}
+		}
+		
+		private async Task<ToolResult> ParseHtml(
+			[Description("URL to fetch HTML from")] string url,
+			[Description("The query selector to select values with")] string selector)
+		{
+			try
+			{
+				var config = Configuration.Default.WithDefaultLoader();
+				var context = BrowsingContext.New(config);
+				var document = await context.OpenAsync(url);
+				var elements = document.QuerySelectorAll(selector);
+				var contents = elements.Select(m => m.TextContent);
 
-				return new ToolResult(JsonSerializer.Serialize(new
-				{
-					Url = url,
-					TotalMatches = results.Count,
-					Results = results,
-					Preview = results.Count > 0 ? results[0] : null
-				}, new JsonSerializerOptions { WriteIndented = true }));
+				var result = string.Join("\n\n", contents);
+				const int maxCharacters = 35000;
+				if (result.Length > maxCharacters)
+					result = result[0..maxCharacters] + $" ... and {result.Length - maxCharacters} characters more...";
+
+				return new ToolResult(result);
 			}
 			catch (Exception ex)
 			{
 				return new ToolResult($"Error parsing HTML: {ex.Message}");
+			}
+		}
+		
+		private async Task<ToolResult> Search(
+			[Description("The query to search by")] string query,
+			[Description("The maximum number of results to return")] int maxResults = 10,
+			[Description("Whether to provide summary about every returned page")] bool provideSummary = false)
+		{
+			try
+			{
+				var request = new HttpRequestMessage(HttpMethod.Post, "https://api.langsearch.com/v1/web-search");
+
+				var apiKey = new EnvironmentTokenAccessor("LANGSEARCH_API_KEY").GetToken();
+				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+				var body = new JsonObject
+				{
+					["query"] = query,
+					["freshness"] = "noLimit",
+					["summary"] = false,
+					["count"] = maxResults,
+				};
+				request.Content = JsonContent.Create(body);
+				var response = await _httpClient.SendAsync(request);
+				var responseContent = await response.Content.ReadAsStringAsync();
+				var responseJson = JObject.Parse(responseContent);
+
+				var pageData = responseJson?["data"]?["webPages"]?["value"];
+				var result = pageData?.ToString() ?? "No results";
+
+				return new ToolResult(result);
+			}
+			catch (Exception ex)
+			{
+				return new ToolResult($"Error using search: {ex.Message}");
 			}
 		}
 

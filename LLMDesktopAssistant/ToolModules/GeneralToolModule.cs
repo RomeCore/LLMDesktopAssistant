@@ -43,9 +43,9 @@ namespace LLMDesktopAssistant.ToolModules
 		}
 
 		private ToolResult GenerateRandomInteger([Description("The minimum inclusive value")] long minValue,
-			[Description("The maximum exclusive value")] long maxValue)
+			[Description("The maximum inclusive value")] long maxValue)
 		{
-			var value = Random.Shared.NextInt64(minValue, maxValue);
+			var value = Random.Shared.NextInt64(minValue, maxValue + 1);
 			return new ToolResult(value.ToString());
 		}
 
