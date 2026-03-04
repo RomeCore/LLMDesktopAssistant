@@ -8,25 +8,28 @@
     <Compile Update="Browsing\BrowserView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\AssistantMessageReasoningPartView.xaml.cs">
+    <Compile Update="LLM\MVVM\AssistantMessageReasoningPartView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\AssistantMessageTextPartView.xaml.cs">
+    <Compile Update="LLM\MVVM\AssistantMessageTextPartView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\AssistantMessageToolPartView.xaml.cs">
+    <Compile Update="LLM\MVVM\AssistantMessageToolPartView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\ChatView.xaml.cs">
+    <Compile Update="LLM\MVVM\AssistantMessageView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\ConversationTurnView.xaml.cs">
+    <Compile Update="LLM\MVVM\ChatView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\ToolCallView.xaml.cs">
+    <Compile Update="LLM\MVVM\MessageSequenceView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\UserMessageView.xaml.cs">
+    <Compile Update="LLM\MVVM\ToolCallView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\MVVM\UserMessageView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="MVVM\MainView.xaml.cs">

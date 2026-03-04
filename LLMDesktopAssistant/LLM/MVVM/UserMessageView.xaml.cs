@@ -13,11 +13,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
-	public partial class AssistantMessageToolPartView : UserControl
+	public partial class UserMessageView : UserControl
 	{
-		public AssistantMessageToolPartView()
+		public UserMessageView()
 		{
 			InitializeComponent();
 		}

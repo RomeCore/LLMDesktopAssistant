@@ -14,11 +14,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LLMDesktopAssistant.MVVM;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
-	public partial class ChatView : UserControl
+	public partial class AssistantMessageReasoningPartView : UserControl
 	{
-		public ChatView()
+		public AssistantMessageReasoningPartView()
 		{
 			InitializeComponent();
 		}

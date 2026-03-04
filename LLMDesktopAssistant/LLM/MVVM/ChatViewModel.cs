@@ -17,13 +17,23 @@ using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 using Serilog;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
 	[ViewModelFor(typeof(ChatView))]
 	[TabTool("chat")]
 	public class ChatViewModel : ViewModelBase
 	{
 		private CancellationTokenSource? _sendCts;
+
+		private string _systemPrompt = "You are a helpful assistant.";
+		/// <summary>
+		/// Gets or sets the system prompt that will be used as a starting point for conversation.
+		/// </summary>
+		public string SystemPrompt
+		{
+			get => _systemPrompt;
+			set => SetProperty(ref _systemPrompt, value);
+		}
 
 		private ObservableCollection<ToolModule> _additionalTools = [];
 		/// <summary>
@@ -35,14 +45,14 @@ namespace LLMDesktopAssistant.LLM
 			set => SetProperty(ref _additionalTools, value);
 		}
 
-		private ObservableCollection<ConversationTurnViewModel> _turns = [];
+		private MessageSequenceViewModel _messageSequence = new();
 		/// <summary>
-		/// Gets or sets the collection of conversation turns.
+		/// Gets or sets the message sequence that represents the conversation history.
 		/// </summary>
-		public ObservableCollection<ConversationTurnViewModel> Turns
+		public MessageSequenceViewModel MessageSequence
 		{
-			get => _turns;
-			set => SetProperty(ref _turns, value);
+			get => _messageSequence;
+			set => SetProperty(ref _messageSequence, value);
 		}
 
 		private string _userInput = string.Empty;
@@ -77,7 +87,8 @@ namespace LLMDesktopAssistant.LLM
 				}
 				finally
 				{
-					Turns.Last().State = ConversationTurnState.Complete;
+					// TODO
+					// Turns.Last().State = ConversationTurnState.Complete;
 				}
 			});
 		}
@@ -92,13 +103,7 @@ namespace LLMDesktopAssistant.LLM
 			_sendCts?.Cancel(); // Cancel any previous send operation
 			_sendCts = CancellationTokenSource.CreateLinkedTokenSource(cts);
 			cts = _sendCts.Token;
-
-			var userMessage = new UserMessage(UserInput);
-
-			var messages = new List<IMessage>();
-			messages.Add(new SystemMessage(GetSystemMessageContent()));
-			messages.AddRange(Turns.SelectMany(turn => turn.Messages));
-			messages.Add(userMessage);
+			var sequence = MessageSequence;
 
 			var llm = ModuleManager.GetDynamic<ILLMProvider>().GetLLM();
 
@@ -106,78 +111,30 @@ namespace LLMDesktopAssistant.LLM
 				.Concat(AdditionalTools)
 				.Where(t => t.Enabled)
 				.SelectMany(t => t.GetTools()));
+
 			// Add existing LLM's tools.
 			foreach (var tool in llm.Tools)
 				allTools.Add(tool);
 			llm = llm.WithTools(allTools);
 
+			var userMessage = new UserMessage(UserInput);
+			var messages = new List<IMessage>();
+			messages.Add(new SystemMessage(SystemPrompt));
+			messages.AddRange(sequence.Messages);
+			messages.Add(userMessage);
+
 			var response = await llm.ChatStreamingAsync(messages, cts);
 			var assistantMessage = response.Message;
-			messages.Add(assistantMessage);
-
-			var turn = new ConversationTurnViewModel();
-			Turns.Add(turn);
-			turn.State = ConversationTurnState.Processing;
 			UserInput = string.Empty;
 
-			InvokeUI(() =>
-			{
-				turn.Messages.Add(userMessage);
-				turn.UserMessage = new UserMessageViewModel(userMessage);
-			});
-
-			void AddAssistantMessage(PartialAssistantMessage assistantMessage)
-			{
-				InvokeUI(() =>
-				{
-					turn.Messages.Add(assistantMessage);
-					if (!string.IsNullOrEmpty(assistantMessage.ReasoningContent))
-					{
-						turn.AssistantMessageParts.Add(new AssistantMessageReasoningPartViewModel(assistantMessage));
-					}
-					if (!string.IsNullOrEmpty(assistantMessage.Content))
-					{
-						turn.AssistantMessageParts.Add(new AssistantMessageTextPartViewModel(assistantMessage));
-					}
-				});
-
-				bool hasReasoning = false, hasContent = false;
-
-				void PartHandler(object? s, AssistantMessageDelta e)
-				{
-					InvokeUI(() =>
-					{
-						if (!hasReasoning && !string.IsNullOrEmpty(assistantMessage.ReasoningContent))
-						{
-							turn.AssistantMessageParts.Add(new AssistantMessageReasoningPartViewModel(assistantMessage));
-							hasReasoning = true;
-						}
-						if (!hasContent && !string.IsNullOrEmpty(assistantMessage.Content))
-						{
-							turn.AssistantMessageParts.Add(new AssistantMessageTextPartViewModel(assistantMessage));
-							hasContent = true;
-						}
-					});
-				}
-				void CompletedHandler(object? s, CompletedEventArgs e)
-				{
-					assistantMessage.PartAdded -= PartHandler;
-					assistantMessage.Completed -= CompletedHandler;
-				}
-				if (!assistantMessage.CompletionToken.IsCompleted)
-				{
-					assistantMessage.PartAdded += PartHandler;
-					assistantMessage.Completed += CompletedHandler;
-				}
-			}
-
-			AddAssistantMessage(assistantMessage);
+			sequence.Messages.Add(userMessage);
+			sequence.Messages.Add(assistantMessage);
+			messages.Add(assistantMessage);
 
 			while (true)
 			{
 				ConcurrentDictionary<IToolCall, IToolMessage> toolMessageMap = [];
 				List<Task> toolExecutionTasks = [];
-				AssistantMessageToolPartViewModel? toolPart = null;
 
 				void ProcessToolCall(IToolCall toolCall)
 				{
@@ -187,22 +144,6 @@ namespace LLMDesktopAssistant.LLM
 
 							var tool = allTools.Get(toolCall.ToolName) as FunctionTool ??
 								throw new InvalidOperationException($"FunctionTool '{functionCall.ToolName}' not found in the current toolset.");
-
-							var toolCallVm = new ToolCallViewModel
-							{
-								Status = ToolCallStatus.InProgress,
-								ToolName = toolCall.ToolName,
-								Arguments = functionCall.Args.ToString()
-							};
-							InvokeUI(() =>
-							{
-								if (toolPart == null)
-								{
-									toolPart = new AssistantMessageToolPartViewModel();
-									turn.AssistantMessageParts.Add(toolPart);
-								}
-								toolPart.ToolCalls.Add(toolCallVm);
-							});
 
 							var executionTask = tool.ExecuteAsync(functionCall.Args, cts)
 								.ContinueWith(t =>
@@ -216,19 +157,8 @@ namespace LLMDesktopAssistant.LLM
 									else
 										toolMsgContent = t.Result;
 
-									InvokeUI(() =>
-									{
-										if (t.IsCanceled)
-											toolCallVm.Status = ToolCallStatus.Failure;
-										else if (t.IsFaulted)
-											toolCallVm.Status = ToolCallStatus.Failure;
-										else
-											toolCallVm.Status = ToolCallStatus.Success;
-
-										toolCallVm.Result = toolMsgContent.Content;
-									});
-
-									toolMessageMap[toolCall] = new ToolMessage(toolMsgContent, toolCall.Id, toolCall.ToolName);
+									var toolMessage = new ToolMessage(toolMsgContent, toolCall.Id, toolCall.ToolName);
+									toolMessageMap[toolCall] = toolMessage;
 								}, cts);
 							toolExecutionTasks.Add(executionTask);
 
@@ -273,37 +203,19 @@ namespace LLMDesktopAssistant.LLM
 					{
 						var toolMessage = toolMessageMap[toolCall];
 						messages.Add(toolMessage);
-						InvokeUI(() =>
-						{
-							turn.Messages.Add(toolMessage);
-						});
+						sequence.Messages.Add(toolMessage);
 					}
 
 					response = await llm.ChatStreamingAsync(messages, cts);
 					assistantMessage = response.Message;
 					messages.Add(assistantMessage);
-
-					AddAssistantMessage(assistantMessage);
+					sequence.Messages.Add(assistantMessage);
 				}
 				else
 				{
 					break;
 				}
 			}
-		}
-
-		private static void InvokeUI(Action action)
-		{
-			App.Current.Dispatcher.Invoke(action);
-		}
-
-		private static string GetSystemMessageContent()
-		{
-			return $"""
-				You are a helpful assistant.
-
-				Current date and time: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}.
-				""";
 		}
 	}
 }

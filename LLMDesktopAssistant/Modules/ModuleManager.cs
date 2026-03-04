@@ -95,6 +95,8 @@ namespace LLMDesktopAssistant.Modules
 			if (invalidDynModules.Count > 0)
 				throw new Exception("Invalid dynamic modules found: " + string.Join(", ", invalidDynModules));
 
+			_state = State.Initialized;
+
 			_dynamicModuleTrackers = new(
 				_dynamicModuleRegistry.ToDictionary(t => t.Key,
 				t =>
@@ -104,25 +106,12 @@ namespace LLMDesktopAssistant.Modules
 					return tracker;
 				}));
 
-			var validModules = new List<IModule>();
-			foreach (var module in modules)
-			{
-				try
-				{
-					module.Initialize();
-					validModules.Add(module);
-				}
-				catch (Exception ex)
-				{
-					Log.Error(ex, "Failed initializing module '{module}': {errmsg}\n{st}", module, ex.Message, ex.StackTrace);
-				}
-			}
-			_modules = new(validModules);
+			_modules = new(modules);
 
+			foreach (var module in _modules)
+				module.Initialize();
 			foreach (var tracker in _dynamicModuleTrackers.Values)
 				tracker.Initialize();
-
-			_state = State.Initialized;
 		}
 
 		/// <summary>

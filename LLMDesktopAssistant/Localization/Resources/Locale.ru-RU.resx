@@ -150,6 +150,12 @@
   <data name="execute-lua" xml:space="preserve">
     <value>Выполнить Lua скрипт</value>
   </data>
+  <data name="execute-python" xml:space="preserve">
+    <value>Выполнить Python скрипт</value>
+  </data>
+  <data name="execute-python_venv_shell" xml:space="preserve">
+    <value>Выполнить скрипт в виртуальном окружении Python</value>
+  </data>
   <data name="general-copy" xml:space="preserve">
     <value>Скопировать в буфер обмена</value>
   </data>

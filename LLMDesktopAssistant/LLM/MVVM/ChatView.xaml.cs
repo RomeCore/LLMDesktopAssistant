@@ -12,12 +12,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LLMDesktopAssistant.MVVM;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
-	public partial class AssistantMessageTextPartView : UserControl
+	public partial class ChatView : UserControl
 	{
-		public AssistantMessageTextPartView()
+		public ChatView()
 		{
 			InitializeComponent();
 		}

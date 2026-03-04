@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using LLMDesktopAssistant.MVVM;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
 	[ViewModelFor(typeof(AssistantMessageToolPartView))]
 	public class AssistantMessageToolPartViewModel : AssistantMessagePartViewModel

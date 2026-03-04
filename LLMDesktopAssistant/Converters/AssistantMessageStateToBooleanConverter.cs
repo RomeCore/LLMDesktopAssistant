@@ -6,15 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using LLMDesktopAssistant.LLM;
+using LLMDesktopAssistant.LLM.MVVM;
 
 namespace LLMDesktopAssistant.Converters
 {
-	public class ConversationTurnStateToBooleanConverter : IValueConverter
+	public class AssistantMessageStateToBooleanConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (value is ConversationTurnState state)
-				return state == ConversationTurnState.Processing;
+			if (value is AssistantMessageState state)
+				return state == AssistantMessageState.Processing;
 			return value;
 		}
 

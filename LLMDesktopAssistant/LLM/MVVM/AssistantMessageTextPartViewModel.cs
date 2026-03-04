@@ -1,7 +1,7 @@
 ﻿using LLMDesktopAssistant.MVVM;
 using RCLargeLanguageModels.Messages;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
 	[ViewModelFor(typeof(AssistantMessageTextPartView))]
 	public class AssistantMessageTextPartViewModel : AssistantMessagePartViewModel

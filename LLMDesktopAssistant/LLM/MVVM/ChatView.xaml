@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="LLMDesktopAssistant.LLM.ChatView"
+﻿<UserControl x:Class="LLMDesktopAssistant.LLM.MVVM.ChatView"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM"
+			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM.MVVM"
 			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 mc:Ignorable="d" 
@@ -21,9 +21,7 @@
 					  PanningMode="VerticalOnly"
 					  materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
 
-			<ItemsControl ItemsSource="{Binding Turns}"
-						  Margin="24,16">
-			</ItemsControl>
+			<ContentControl Content="{Binding MessageSequence}"/>
 		</ScrollViewer>
 
 		<!-- Input Area -->

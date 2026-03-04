@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.MVVM;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
 	public abstract class AssistantMessagePartViewModel : ViewModelBase
 	{

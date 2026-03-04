@@ -15,29 +15,27 @@ namespace LLMDesktopAssistant.Scripting
 	public class LuaInterpreterToolModule : ToolModule
 	{
 		private readonly List<FunctionTool> _tools;
-		private readonly Script _lua;
+		private LuaModule _lua = null!;
 
 		public LuaInterpreterToolModule()
 		{
-			_lua = new Script(CoreModules.Preset_SoftSandbox);
-
 			_tools = [];
 			_tools.Add(FunctionTool.From(ExecuteLua, "execute-lua", "Executes Lua and returns the script result along with messages printed by 'print' function."));
+		}
+
+		public override void Initialize()
+		{
+			_lua = ModuleManager.Get<LuaModule>();
 		}
 
 		public ToolResult ExecuteLua(string lua)
 		{
 			try
 			{
-				var printPool = new List<string>();
-
-				var prevPrint = _lua.Options.DebugPrint;
-				_lua.Options.DebugPrint = str => printPool.Add(str);
-				var scriptResult = _lua.DoString(lua)?.ToString() ?? "nil";
-				_lua.Options.DebugPrint = prevPrint;
+				var scriptResult = _lua.Execute(lua, out var printOutput);
 
 				var resultBuilder = new StringBuilder();
-				foreach (var message in printPool)
+				foreach (var message in printOutput)
 					resultBuilder.AppendLine(message);
 				resultBuilder.Append($"Script successfully returned: {scriptResult}");
 

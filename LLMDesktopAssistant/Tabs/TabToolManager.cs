@@ -22,6 +22,7 @@ namespace LLMDesktopAssistant.Tabs
 		{
 			var tabTools = ReflectionUtility.GetTypesWithAttribute<object, TabToolAttribute>()
 				.ValidateParameterlessConstructors()
+				.OrderBy(t => t.Attribute.Order)
 				.ToImmutableDictionary(t => t.Attribute.Id, t => t.Type);
 
 			_tabTools = tabTools.ToImmutableDictionary(t => t.Key, t =>

@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.ToolModules
 	/// <summary>
 	/// Base class for all tool modules. It provides a method to retrieve tools for the LLM assistant.
 	/// </summary>
-	public abstract class ToolModule : IModule
+	public abstract class ToolModule : Module
 	{
 		/// <summary>
 		/// Gets or sets a value indicating whether the module is enabled. Default is true.

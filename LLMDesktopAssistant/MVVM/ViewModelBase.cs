@@ -11,5 +11,9 @@ namespace LLMDesktopAssistant.MVVM
 	/// </summary>
 	public class ViewModelBase : NotifyPropertyChanged
 	{
+		protected static void InvokeUI(Action action)
+		{
+			App.Current.Dispatcher.Invoke(action);
+		}
 	}
 }

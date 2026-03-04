@@ -52,7 +52,7 @@
 			<!-- Converters -->
 
 			<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-			<converters:ConversationTurnStateToBooleanConverter x:Key="ConversationTurnStateToBooleanConverter"/>
+			<converters:AssistantMessageStateToBooleanConverter x:Key="AssistantMessageStateToBooleanConverter"/>
 			<converters:StringNonEmptyToBooleanConverter x:Key="StringNonEmptyToBooleanConverter"/>
 			<converters:StringNonEmptyToVisiblityConverter x:Key="StringNonEmptyToVisiblityConverter"/>
 

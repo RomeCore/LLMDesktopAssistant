@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
 	/// <summary>
-	/// Логика взаимодействия для ToolCallView.xaml
+	/// Логика взаимодействия для MessageSequenceView.xaml
 	/// </summary>
-	public partial class ToolCallView : UserControl
+	public partial class MessageSequenceView : UserControl
 	{
-		public ToolCallView()
+		public MessageSequenceView()
 		{
 			InitializeComponent();
 		}

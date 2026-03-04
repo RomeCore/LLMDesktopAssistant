@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.MVVM;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
 	public enum ToolCallStatus
 	{
@@ -30,6 +30,13 @@ namespace LLMDesktopAssistant.LLM
 		{
 			get => _toolName;
 			set => SetProperty(ref _toolName, value);
+		}
+
+		private string _toolCallId = string.Empty;
+		public string ToolCallId
+		{
+			get => _toolCallId;
+			set => SetProperty(ref _toolCallId, value);
 		}
 
 		private string _arguments = string.Empty;

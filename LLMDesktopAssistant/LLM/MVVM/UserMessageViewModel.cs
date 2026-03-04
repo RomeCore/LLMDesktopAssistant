@@ -1,10 +1,10 @@
 ﻿using LLMDesktopAssistant.MVVM;
 using RCLargeLanguageModels.Messages;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
 	[ViewModelFor(typeof(UserMessageView))]
-	public class UserMessageViewModel : ViewModelBase
+	public class UserMessageViewModel : MessageViewModelBase
 	{
 		private string _text = string.Empty;
 		public string Text

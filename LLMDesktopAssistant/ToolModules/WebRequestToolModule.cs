@@ -277,7 +277,7 @@ namespace LLMDesktopAssistant.ToolModules
 				{
 					["query"] = query,
 					["freshness"] = "noLimit",
-					["summary"] = false,
+					["summary"] = provideSummary,
 					["count"] = maxResults,
 				};
 				request.Content = JsonContent.Create(body);

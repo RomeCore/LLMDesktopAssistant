@@ -1,4 +1,5 @@
 ﻿using LLMDesktopAssistant.LLM;
+using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;
 using Microsoft.Web.WebView2.Core;

@@ -160,6 +160,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute Python script.
+        /// </summary>
+        public static string execute_python {
+            get {
+                return ResourceManager.GetString("execute-python", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute shell script in Python virt. environment.
+        /// </summary>
+        public static string execute_python_venv_shell {
+            get {
+                return ResourceManager.GetString("execute-python_venv_shell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy to clipboard.
         /// </summary>
         public static string general_copy {
