@@ -8,23 +8,27 @@ namespace LLMDesktopAssistant.ToolModules
 	[Module]
 	public class GeneralToolModule : ToolModule
 	{
-		private readonly List<FunctionTool> _tools;
-
 		public GeneralToolModule()
 		{
-			var printTool = FunctionTool.From(Print, "general-print", "Prints a message to the console.");
-			var copyTool = FunctionTool.From(Copy, "general-copy", "Copies a piece of text to the clipboard.");
-			var genGUIDTool = FunctionTool.From(GenerateGUID, "general-generateGUID", "Generates a globally unique identifier (GUID).");
-			var genRandIntTool = FunctionTool.From(GenerateRandomInteger, "general-generateRandomInteger", "Generates a random integer number.");
-			var genRandFloatTool = FunctionTool.From(GenerateRandomFloat, "general-GenerateRandomFloat", "Generates a random floating-point number.");
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(Copy, "general-copy", "Copies a piece of text to the clipboard, use when neccessary.")
+			});
 			
-			_tools = [printTool, copyTool, genGUIDTool, genRandIntTool, genRandFloatTool];
-		}
-
-		private ToolResult Print([Description("Message to print")] string message)
-		{
-			Console.WriteLine(message);
-			return new ToolResult("Success!");
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(GenerateGUID, "general-generate_GUID", "Generates a globally unique identifier (GUID).")
+			});
+			
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(GenerateRandomInteger, "general-generate_random_integer", "Generates a random integer number.")
+			});
+			
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(GenerateRandomFloat, "general-generate_random_float", "Generates a random floating-point number.")
+			});
 		}
 
 		private ToolResult Copy([Description("Text to copy")] string text)
@@ -55,11 +59,6 @@ namespace LLMDesktopAssistant.ToolModules
 			var range = maxValue - minValue;
 			var value = Random.Shared.NextDouble() * range + minValue;
 			return new ToolResult(value.ToString());
-		}
-
-		public override IEnumerable<ITool> GetTools()
-		{
-			return _tools;
 		}
 	}
 }

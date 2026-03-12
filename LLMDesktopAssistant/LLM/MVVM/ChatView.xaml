@@ -66,6 +66,8 @@
 								 TextWrapping="Wrap"
 								 AcceptsReturn="True"
 								 MaxHeight="120"
+								 Foreground="{DynamicResource MaterialDesignBody}"
+								 FontSize="16"
 								 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
 						<!-- Send Button -->

@@ -13,7 +13,7 @@ using LLMDesktopAssistant.Tabs;
 namespace LLMDesktopAssistant.Browsing
 {
 	[ViewModelFor(typeof(BrowserView))]
-	[TabTool("browser")]
+	[TabTool("browser", Order = 10)]
 	public class BrowserViewModel : ViewModelBase
 	{
 		private class TabCollection : IEnumerable<TabItem>, INotifyCollectionChanged

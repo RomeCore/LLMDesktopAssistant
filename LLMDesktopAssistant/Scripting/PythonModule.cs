@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.Modules;
+using MoonSharp.Interpreter;
 using Serilog;
 
 namespace LLMDesktopAssistant.Scripting
@@ -37,7 +38,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		/// <param name="script">The Python script to execute.</param>
 		/// <returns>The result of the script execution.</returns>
-		public async Task<(string stdOut, string? stdErr)> RunScript(string script)
+		public async Task<ShellExecutionResult> RunScript(string script)
 		{
 			var venvPath = PythonVenvPath;
 			var activateBat = Path.Combine(venvPath, "Scripts", "activate.bat");
@@ -57,51 +58,11 @@ namespace LLMDesktopAssistant.Scripting
 			File.WriteAllText(tempPyFile, script);
 
 			// cmd /c "call activate.bat && <command>"
-			var cmd = $"/c \"call \"{activateBat}\" && python \"{tempPyFile}\"\"";
+			var cmd = $"call \"{activateBat}\" && python \"{tempPyFile}\"";
 
-			var psi = new ProcessStartInfo
-			{
-				FileName = "cmd.exe",
-				Arguments = cmd,
-				WorkingDirectory = venvPath,
-				RedirectStandardOutput = true,
-				RedirectStandardError = true,
-				StandardOutputEncoding = Encoding.UTF8,
-				StandardErrorEncoding = Encoding.UTF8,
-				UseShellExecute = false,
-				CreateNoWindow = true
-			};
-
-			using var process = new Process { StartInfo = psi };
-
-			process.Start();
-
-			var stdoutTask = process.StandardOutput.ReadToEndAsync();
-			var stderrTask = process.StandardError.ReadToEndAsync();
-
-			await Task.WhenAll(stdoutTask, stderrTask);
-			await process.WaitForExitAsync();
-
+			var result = await ShellExecutor.ExecuteAsync(cmd, workDir: venvPath);
 			File.Delete(tempPyFile);
-
-			if (process.ExitCode != 0)
-			{
-				Log.Error(
-					"Python script failed (exit {code})\nSTDOUT:\n{out}\nSTDERR:\n{err}",
-					process.ExitCode,
-					stdoutTask.Result,
-					stderrTask.Result
-				);
-
-				return (stdoutTask.Result, stderrTask.Result);
-			}
-
-			Log.Information(
-				"Python script completed successfully\n{out}",
-				stdoutTask.Result
-			);
-
-			return (stdoutTask.Result, null);
+			return result;
 		}
 
 		/// <summary>
@@ -109,7 +70,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		/// <param name="shellScript">The shell script to run.</param>
 		/// <returns>The result of the script execution contained in a tuple with the standard output and standard error. The standard error is null if there is no error.</returns>
-		public async Task<(string stdOut, string? stdErr)> RunVenv(string shellScript)
+		public async Task<ShellExecutionResult> RunVenv(string shellScript)
 		{
 			var venvPath = PythonVenvPath;
 			var activateBat = Path.Combine(venvPath, "Scripts", "activate.bat");
@@ -118,47 +79,10 @@ namespace LLMDesktopAssistant.Scripting
 				throw new FileNotFoundException("activate.bat not found", activateBat);
 
 			// cmd /c "call activate.bat && <command>"
-			var cmd = $"/c \"call \"{activateBat}\" && {shellScript}\"";
+			var cmd = $"call \"{activateBat}\" && {shellScript}";
 
-			var psi = new ProcessStartInfo
-			{
-				FileName = "cmd.exe",
-				Arguments = cmd,
-				WorkingDirectory = venvPath,
-				RedirectStandardOutput = true,
-				RedirectStandardError = true,
-				UseShellExecute = false,
-				CreateNoWindow = true
-			};
-
-			using var process = new Process { StartInfo = psi };
-
-			process.Start();
-
-			var stdoutTask = process.StandardOutput.ReadToEndAsync();
-			var stderrTask = process.StandardError.ReadToEndAsync();
-
-			await Task.WhenAll(stdoutTask, stderrTask);
-			await process.WaitForExitAsync();
-
-			if (process.ExitCode != 0)
-			{
-				Log.Error(
-					"Venv command failed (exit {code})\nSTDOUT:\n{out}\nSTDERR:\n{err}",
-					process.ExitCode,
-					stdoutTask.Result,
-					stderrTask.Result
-				);
-
-				return (stdoutTask.Result, stderrTask.Result);
-			}
-
-			Log.Information(
-				"Venv command completed successfully\n{out}",
-				stdoutTask.Result
-			);
-
-			return (stdoutTask.Result, null);
+			var result = await ShellExecutor.ExecuteAsync(cmd, workDir: venvPath);
+			return result;
 		}
 	}
 }

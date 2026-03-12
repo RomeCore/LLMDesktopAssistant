@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.LLM.Serialization
@@ -8,7 +8,7 @@ namespace LLMDesktopAssistant.LLM.Serialization
 		public string Type { get; set; } = string.Empty;
 		public string ToolName { get; set; } = string.Empty;
 		public string ToolCallId { get; set; } = string.Empty;
-		public JToken Arguments { get; set; } = JValue.CreateNull();
+		public JsonNode Arguments { get; set; } = JsonValue.Create<string?>(null)!;
 
 		public ToolCallDTO()
 		{

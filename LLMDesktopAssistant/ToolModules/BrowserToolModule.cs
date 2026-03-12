@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -21,16 +22,25 @@ namespace LLMDesktopAssistant.ToolModules
 	public class BrowserToolModule : ToolModule
 	{
 		private readonly BrowserTabViewModel _browserTab;
-		private readonly List<FunctionTool> _tools;
 
 		public BrowserToolModule(BrowserTabViewModel browserTab)
 		{
 			_browserTab = browserTab;
 
-			_tools = [];
-			_tools.Add(FunctionTool.From(NavigateToUrl, "browser-navigate_to_uri", "Navigates to a specified URL"));
-			_tools.Add(FunctionTool.From(GetHTML, "browser-get_html", "Retrieves the HTML content of the current page"));
-			_tools.Add(FunctionTool.From(ExecuteJavaScript, "browser-execute_javascript", "Executes JavaScript in the current page. Can return 'null' when script does not ends with line that returns value"));
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(NavigateToUrl, "browser-navigate_to_uri", "Navigates to a specified URL")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(GetHTML, "browser-get_html", "Retrieves the HTML content of the current page")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(ExecuteJavaScript, "browser-execute_javascript", "Executes JavaScript in the current page. Can return 'null' when script does not ends with line that returns value")
+			});
 		}
 
 		public Task<ToolResult> NavigateToUrl([Description("URL to navigate to")] string url)
@@ -47,11 +57,11 @@ namespace LLMDesktopAssistant.ToolModules
 				{
 					if (e.IsSuccess)
 					{
-						tcs.SetResult($"Navigation successful. Status code: {e.HttpStatusCode}.");
+						tcs.SetResult(new ToolResult(ToolResultStatus.Success, $"Navigation successful. Status code: {e.HttpStatusCode}."));
 					}
 					else
 					{
-						tcs.SetResult($"Navigation not successful. Status code: {e.HttpStatusCode}, {e.WebErrorStatus}");
+						tcs.SetResult(new ToolResult(ToolResultStatus.Error, $"Navigation not successful. Status code: {e.HttpStatusCode}, {e.WebErrorStatus}"));
 					}
 
 					App.Current.Dispatcher.Invoke(() =>
@@ -99,11 +109,6 @@ namespace LLMDesktopAssistant.ToolModules
 			});
 
 			return new ToolResult(result ?? "Failed to execute JavaScript.");
-		}
-
-		public override IEnumerable<ITool> GetTools()
-		{
-			return _tools;
 		}
 	}
 }

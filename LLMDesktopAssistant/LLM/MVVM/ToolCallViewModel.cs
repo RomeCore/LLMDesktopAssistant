@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.MVVM;
 
 namespace LLMDesktopAssistant.LLM.MVVM
@@ -10,9 +12,12 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	public enum ToolCallStatus
 	{
 		None,
+		UserAsked,
 		InProgress,
 		Success,
-		Failure
+		Cancelled,
+		Error,
+		NoResult
 	}
 
 	[ViewModelFor(typeof(ToolCallView))]
@@ -51,6 +56,51 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		{
 			get => _result;
 			set => SetProperty(ref _result, value);
+		}
+
+		public ICommand ApproveCommand { get; }
+		public void Approve()
+		{
+			Status = ToolCallStatus.InProgress;
+			_userDecisionTcs?.TrySetResult(true);
+		}
+
+		public ICommand CancelCommand { get; }
+		public void Cancel()
+		{
+			Status = ToolCallStatus.Cancelled;
+			_userDecisionTcs?.TrySetResult(false);
+		}
+
+		public ToolCallViewModel()
+		{
+			ApproveCommand = new RelayCommand(Approve);
+			CancelCommand = new RelayCommand(Cancel);
+		}
+
+		private TaskCompletionSource<bool>? _userDecisionTcs;
+		public async Task<bool> AskUserAsync(CancellationToken cancellationToken)
+		{
+			if (_userDecisionTcs != null)
+				throw new InvalidOperationException("A user decision is already in progress.");
+
+			_userDecisionTcs = new TaskCompletionSource<bool>();
+			Status = ToolCallStatus.UserAsked;
+
+			using (cancellationToken.Register(() =>
+			{
+				_userDecisionTcs.TrySetCanceled(cancellationToken);
+			}))
+			{
+				try
+				{
+					return await _userDecisionTcs.Task;
+				}
+				finally
+				{
+					_userDecisionTcs = null;
+				}
+			}
 		}
 	}
 }

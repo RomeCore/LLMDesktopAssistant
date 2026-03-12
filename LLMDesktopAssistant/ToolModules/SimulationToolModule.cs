@@ -13,13 +13,11 @@ namespace LLMDesktopAssistant.ToolModules
 	// [Module]
 	public class SimulationToolModule : ToolModule
 	{
-		private readonly List<FunctionTool> _tools;
 		private readonly InputSimulator _inputSimulator;
 		private readonly Dictionary<string, VirtualKeyCode> _keyMap;
 
 		public SimulationToolModule()
 		{
-			_tools = [];
 			_inputSimulator = new();
 
 			_keyMap = new Dictionary<string, VirtualKeyCode>(StringComparer.OrdinalIgnoreCase);
@@ -40,10 +38,25 @@ namespace LLMDesktopAssistant.ToolModules
 				_keyMap[transformedName] = keyCode;
 			}
 
-			_tools.Add(FunctionTool.From(MoveMouse, "input-move_mouse", "Move mouse to a specified position."));
-			_tools.Add(FunctionTool.From(MoveMouseDelta, "input-move_mouse_delta", "Move mouse by a specified position delta."));
-			_tools.Add(FunctionTool.From(PressKey, "input-press_key", "Press a specified key"));
-			_tools.Add(FunctionTool.From(EnterText, "input-enter_text", "Enter text."));
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(MoveMouse, "input-move_mouse", "Move mouse to a specified position.")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(MoveMouseDelta, "input-move_mouse_delta", "Move mouse by a specified position delta.")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(PressKey, "input-press_key", "Press a specified key")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(EnterText, "input-enter_text", "Enter text.")
+			});
 		}
 
 		private ToolResult MoveMouse([Description("X coordinate")] int x, [Description("Y coordinate")] int y)
@@ -72,11 +85,6 @@ namespace LLMDesktopAssistant.ToolModules
 		{
 			_inputSimulator.Keyboard.TextEntry(text);
 			return new ToolResult("Success.");
-		}
-
-		public override IEnumerable<ITool> GetTools()
-		{
-			return _tools;
 		}
 	}
 }

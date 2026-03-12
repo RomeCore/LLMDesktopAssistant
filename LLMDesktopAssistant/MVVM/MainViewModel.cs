@@ -24,11 +24,13 @@ namespace LLMDesktopAssistant.MVVM
 
 		public MainViewModel()
 		{
-			var tabs = TabToolManager.TabToolViews;
-			Tabs = new(tabs.Select(t => new TabItem
+			var tabs = TabToolManager.TabTools;
+			Tabs = new(tabs
+				.OrderBy(t => t.Value.Order)
+				.Select(t => new TabItem
 			{
 				Header = LocalizationManager.LocalizeStatic(t.Key),
-				Content = t.Value
+				Content = t.Value.View
 			}));
 		}
 	}

@@ -14,13 +14,15 @@ namespace LLMDesktopAssistant.Scripting
 	[Module]
 	public class LuaInterpreterToolModule : ToolModule
 	{
-		private readonly List<FunctionTool> _tools;
 		private LuaModule _lua = null!;
 
 		public LuaInterpreterToolModule()
 		{
-			_tools = [];
-			_tools.Add(FunctionTool.From(ExecuteLua, "execute-lua", "Executes Lua and returns the script result along with messages printed by 'print' function."));
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(ExecuteLua, "execute-lua", "Executes Lua and returns the script result along with messages printed by 'print' function."),
+				AskForConfirmation = true
+			});
 		}
 
 		public override void Initialize()
@@ -45,11 +47,6 @@ namespace LLMDesktopAssistant.Scripting
 			{
 				return new ToolResult($"Got error while executing Lua: {ex.Message}");
 			}
-		}
-
-		public override IEnumerable<ITool> GetTools()
-		{
-			return _tools;
 		}
 	}
 }

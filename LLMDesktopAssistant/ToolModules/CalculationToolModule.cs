@@ -15,11 +15,11 @@ namespace LLMDesktopAssistant.ToolModules
 	[Module]
 	public class CalculationToolModule : ToolModule
 	{
-		private readonly FunctionTool _calculateTool;
-
 		public CalculationToolModule()
 		{
-			_calculateTool = FunctionTool.From(Calculate, "calculation-calculate", """
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(Calculate, "calculation-calculate", """
 				Evaluate a mathematical expression. Examples:
 
 				1 + 2 * -(3^2 / e)
@@ -49,7 +49,8 @@ namespace LLMDesktopAssistant.ToolModules
 				sind, cosd, tand, asind, acosd, atand,
 				ln, log, log2, logb, exp, pow, sqrt,
 				abs, min, max
-				""");
+				""")
+			});
 		}
 
 		private ToolResult Calculate([Description("Expression to evaluate")] string expression)
@@ -79,13 +80,8 @@ namespace LLMDesktopAssistant.ToolModules
 			}
 			catch (ParsingException pex)
 			{
-				return new ToolResult(pex.Message);
+				return new ToolResult(ToolResultStatus.Error, pex.Message);
 			}
-		}
-
-		public override IEnumerable<ITool> GetTools()
-		{
-			return [_calculateTool];
 		}
 	}
 }

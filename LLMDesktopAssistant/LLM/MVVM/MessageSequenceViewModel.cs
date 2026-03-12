@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.MVVM;
 using Microsoft.Extensions.AI;
@@ -16,6 +17,12 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	[ViewModelFor(typeof(MessageSequenceView))]
 	public class MessageSequenceViewModel : ViewModelBase
 	{
+		private static readonly JsonSerializerOptions _toolCallSerializerOptions = new JsonSerializerOptions
+		{
+			Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),
+			WriteIndented = true
+		};
+
 		private readonly ObservableCollection<MessageViewModelBase> _messageViewModels = [];
 		/// <summary>
 		/// Collection of message view models that represent the sequence of messages.
@@ -106,7 +113,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 													Status = ToolCallStatus.InProgress,
 													ToolName = t.ToolName,
 													ToolCallId = t.Id,
-													Arguments = t is FunctionToolCall ftc ? ftc.Args.ToString() : string.Empty
+													Arguments = t is FunctionToolCall ftc ? ftc.Args.ToJsonString(_toolCallSerializerOptions) : string.Empty
 												}))
 									};
 									lastAssistantMessageVm.MessageParts.Add(toolPartViewModel);
@@ -146,7 +153,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 													Status = ToolCallStatus.InProgress,
 													ToolName = toolCall.ToolName,
 													ToolCallId = toolCall.Id,
-													Arguments = toolCall is FunctionToolCall ftc ? ftc.Args.ToString() : string.Empty
+													Arguments = toolCall is FunctionToolCall ftc ? ftc.Args.ToJsonString(_toolCallSerializerOptions) : string.Empty
 												});
 										}
 									});
@@ -172,7 +179,14 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 							if (toolCall != null)
 							{
-								toolCall.Status = ToolCallStatus.Success;
+								toolCall.Status = toolMessage.Status switch
+								{
+									ToolResultStatus.Success => ToolCallStatus.Success,
+									ToolResultStatus.Cancelled => ToolCallStatus.Cancelled,
+									ToolResultStatus.Error => ToolCallStatus.Error,
+									ToolResultStatus.NoResult => ToolCallStatus.NoResult,
+									_ => ToolCallStatus.None,
+								};
 								toolCall.Result = toolMessage.Content ?? string.Empty;
 							}
 						}
@@ -180,6 +194,30 @@ namespace LLMDesktopAssistant.LLM.MVVM
 						break;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Asks the user to execute a specific tool call.
+		/// </summary>
+		/// <param name="toolCall">The tool call to execute.</param>
+		/// <returns>A boolean indicating whether the user confirmed the execution of the tool call.</returns>
+		public async Task<bool> AskToolExecuteAsync(IToolCall toolCall, CancellationToken cancellationToken = default)
+		{
+			var lastAssistantMessageVm = _messageViewModels.LastOrDefault() as AssistantMessageViewModel;
+			if (lastAssistantMessageVm == null)
+				return false;
+
+			var toolCallVM = lastAssistantMessageVm.MessageParts
+				.OfType<AssistantMessageToolPartViewModel>()
+				.SelectMany(t => t.ToolCalls)
+				.FirstOrDefault(t => t.ToolCallId == toolCall.Id);
+
+			if (toolCallVM != null)
+			{
+				return await toolCallVM.AskUserAsync(cancellationToken);
+			}
+
+			return false;
 		}
 	}
 }

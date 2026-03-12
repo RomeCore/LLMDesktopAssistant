@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="agent-ask_question" xml:space="preserve">
+    <value>Спросить агента</value>
+  </data>
+  <data name="agent-call" xml:space="preserve">
+    <value>Вызвать агента</value>
+  </data>
   <data name="browser" xml:space="preserve">
     <value>Браузер</value>
   </data>
@@ -154,7 +160,10 @@
     <value>Выполнить Python скрипт</value>
   </data>
   <data name="execute-python_venv_shell" xml:space="preserve">
-    <value>Выполнить скрипт в виртуальном окружении Python</value>
+    <value>Выполнить Shell скрипт в виртуальном окружении Python</value>
+  </data>
+  <data name="execute-shell" xml:space="preserve">
+    <value>Выполнить Shell скрипт</value>
   </data>
   <data name="general-copy" xml:space="preserve">
     <value>Скопировать в буфер обмена</value>
@@ -194,6 +203,9 @@
   </data>
   <data name="tool-result" xml:space="preserve">
     <value>Результат:</value>
+  </data>
+  <data name="voice_chat" xml:space="preserve">
+    <value>Голосовой чат</value>
   </data>
   <data name="web-download" xml:space="preserve">
     <value>Скачать</value>

@@ -61,6 +61,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Ask agent.
+        /// </summary>
+        public static string agent_ask_question {
+            get {
+                return ResourceManager.GetString("agent-ask_question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Call agent.
+        /// </summary>
+        public static string agent_call {
+            get {
+                return ResourceManager.GetString("agent-call", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Browser.
         /// </summary>
         public static string browser {
@@ -169,11 +187,20 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Execute shell script in Python virt. environment.
+        ///   Ищет локализованную строку, похожую на Execute Shell script in Python virt. environment.
         /// </summary>
         public static string execute_python_venv_shell {
             get {
                 return ResourceManager.GetString("execute-python_venv_shell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute Shell script.
+        /// </summary>
+        public static string execute_shell {
+            get {
+                return ResourceManager.GetString("execute-shell", resourceCulture);
             }
         }
         
@@ -291,6 +318,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string tool_result {
             get {
                 return ResourceManager.GetString("tool-result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Voice chat.
+        /// </summary>
+        public static string voice_chat {
+            get {
+                return ResourceManager.GetString("voice_chat", resourceCulture);
             }
         }
         

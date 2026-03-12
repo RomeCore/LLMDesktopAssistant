@@ -9,9 +9,9 @@ using AngleSharp;
 using Ganss.Xss;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.Utils;
-using Newtonsoft.Json.Linq;
 using RCLargeLanguageModels.Security;
 using RCLargeLanguageModels.Tools;
+using RCLargeLanguageModels.Utilities;
 using RCParsing;
 
 namespace LLMDesktopAssistant.ToolModules
@@ -19,7 +19,12 @@ namespace LLMDesktopAssistant.ToolModules
 	[Module]
 	public class WebRequestToolModule : ToolModule
 	{
-		private readonly List<FunctionTool> _tools;
+		private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+		{
+			Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),
+			WriteIndented = true
+		};
+
 		private readonly HttpClient _httpClient;
 
 		public WebRequestToolModule()
@@ -34,14 +39,40 @@ namespace LLMDesktopAssistant.ToolModules
 			_httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
 			_httpClient.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
 
-			_tools = [];
-			_tools.Add(FunctionTool.From(GetRequest, "web-get", "Perform a GET request to a specified URL."));
-			_tools.Add(FunctionTool.From(PostRequest, "web-post", "Perform a POST request to a specified URL with JSON data."));
-			_tools.Add(FunctionTool.From(DownloadFile, "web-download", "Download a file from a specified URL."));
-			_tools.Add(FunctionTool.From(CheckWebsiteStatus, "web-status", "Check if a website is accessible and return status code."));
-			_tools.Add(FunctionTool.From(GetHtml, "web-get_html", "Fetch HTML content from a specified URL."));
-			_tools.Add(FunctionTool.From(ParseHtml, "web-parse", "Fetch HTML content and parse specific elements by tag or class."));
-			_tools.Add(FunctionTool.From(Search, "web-search", "Search through the web using query."));
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(GetRequest, "web-get", "Perform a GET request to a specified URL.")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(PostRequest, "web-post", "Perform a POST request to a specified URL with JSON data.")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(DownloadFile, "web-download", "Download a file from a specified URL.")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(CheckWebsiteStatus, "web-status", "Check if a website is accessible and return status code.")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(GetHtml, "web-get_html", "Fetch HTML content from a specified URL.")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(ParseHtml, "web-parse", "Fetch HTML content and parse specific elements by tag or class.")
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(Search, "web-search", "Search through the web using query.")
+			});
 		}
 
 		private async Task<ToolResult> GetRequest(
@@ -81,7 +112,7 @@ namespace LLMDesktopAssistant.ToolModules
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult($"Error performing GET request: {ex.Message}");
+				return new ToolResult(ToolResultStatus.Error, $"Error performing GET request: {ex.Message}");
 			}
 		}
 
@@ -121,7 +152,7 @@ namespace LLMDesktopAssistant.ToolModules
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult($"Error performing POST request: {ex.Message}");
+				return new ToolResult(ToolResultStatus.Error, $"Error performing POST request: {ex.Message}");
 			}
 		}
 
@@ -170,7 +201,7 @@ namespace LLMDesktopAssistant.ToolModules
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult($"Error downloading file: {ex.Message}");
+				return new ToolResult(ToolResultStatus.Error, $"Error downloading file: {ex.Message}");
 			}
 		}
 
@@ -205,7 +236,7 @@ namespace LLMDesktopAssistant.ToolModules
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult($"Error checking website status: {ex.Message}");
+				return new ToolResult(ToolResultStatus.Error, $"Error checking website status: {ex.Message}");
 			}
 		}
 
@@ -232,7 +263,7 @@ namespace LLMDesktopAssistant.ToolModules
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult($"Error getting HTML: {ex.Message}");
+				return new ToolResult(ToolResultStatus.Error, $"Error getting HTML: {ex.Message}");
 			}
 		}
 		
@@ -257,7 +288,7 @@ namespace LLMDesktopAssistant.ToolModules
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult($"Error parsing HTML: {ex.Message}");
+				return new ToolResult(ToolResultStatus.Error, $"Error parsing HTML: {ex.Message}");
 			}
 		}
 		
@@ -282,26 +313,19 @@ namespace LLMDesktopAssistant.ToolModules
 				};
 				request.Content = JsonContent.Create(body);
 				var response = await _httpClient.SendAsync(request);
-				var responseContent = await response.Content.ReadAsStringAsync();
-				var responseJson = JObject.Parse(responseContent);
+				var responseContent = await response.ParseContentAsync<JsonObject>();
 
-				var pageData = responseJson?["data"]?["webPages"]?["value"];
-				var result = pageData?.ToString() ?? "No results";
+				var pageData = responseContent?["data"]?["webPages"]?["value"];
+				var result = pageData?.ToJsonString(_jsonSerializerOptions) ?? "No results";
 
 				return new ToolResult(result);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult($"Error using search: {ex.Message}");
+				return new ToolResult(ToolResultStatus.Error, $"Error using search: {ex.Message}");
 			}
 		}
 
-		public override IEnumerable<ITool> GetTools()
-		{
-			return _tools;
-		}
-
-		// Optional: Dispose HttpClient when module is disposed
 		public void Dispose()
 		{
 			_httpClient?.Dispose();

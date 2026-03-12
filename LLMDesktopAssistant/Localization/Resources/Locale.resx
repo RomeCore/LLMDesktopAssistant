@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="agent-ask_question" xml:space="preserve">
+    <value>Ask agent</value>
+  </data>
+  <data name="agent-call" xml:space="preserve">
+    <value>Call agent</value>
+  </data>
   <data name="browser" xml:space="preserve">
     <value>Browser</value>
   </data>
@@ -154,7 +160,10 @@
     <value>Execute Python script</value>
   </data>
   <data name="execute-python_venv_shell" xml:space="preserve">
-    <value>Execute shell script in Python virt. environment</value>
+    <value>Execute Shell script in Python virt. environment</value>
+  </data>
+  <data name="execute-shell" xml:space="preserve">
+    <value>Execute Shell script</value>
   </data>
   <data name="general-copy" xml:space="preserve">
     <value>Copy to clipboard</value>
@@ -194,6 +203,9 @@
   </data>
   <data name="tool-result" xml:space="preserve">
     <value>Tool result:</value>
+  </data>
+  <data name="voice_chat" xml:space="preserve">
+    <value>Voice chat</value>
   </data>
   <data name="web-download" xml:space="preserve">
     <value>Download</value>

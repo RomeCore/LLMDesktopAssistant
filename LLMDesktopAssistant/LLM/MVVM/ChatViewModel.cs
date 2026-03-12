@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,9 @@ using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Tabs;
 using LLMDesktopAssistant.ToolModules;
 using Microsoft.Extensions.AI;
+using RCLargeLanguageModels;
+using RCLargeLanguageModels.Agents;
+using RCLargeLanguageModels.Clients.Ollama;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
@@ -19,13 +23,73 @@ using Serilog;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
+	public class ChatToolExecutor : LLMToolExecutor
+	{
+		private readonly ChatViewModel _viewModel;
+		private readonly ChatLLMInfo _llmInfo;
+		
+		public ChatToolExecutor(ChatViewModel vm)
+		{
+			_viewModel = vm;
+			_llmInfo = _viewModel.GetConfiguredLLM();
+
+			LLM = _llmInfo.LLM;
+			AddMessages([new SystemMessage(vm.SystemPrompt), .. vm.MessageSequence.Messages]);
+		}
+
+		protected override async Task<ToolResult?> OnToolExecutionBegin(ITool tool, IToolCall toolCall, CancellationToken cancellationToken)
+		{
+			if (_llmInfo.ToolInfos.TryGetValue(tool.Name, out var toolInfo))
+			{
+				if (toolInfo.AskForConfirmation)
+				{
+					if (await _viewModel.MessageSequence.AskToolExecuteAsync(toolCall, cancellationToken))
+						return await base.OnToolExecutionBegin(tool, toolCall, cancellationToken);
+					else
+						return new ToolResult(ToolResultStatus.Cancelled, "User cancelled the tool execution.");
+				}
+			}
+
+			return await base.OnToolExecutionBegin(tool, toolCall, cancellationToken);
+		}
+
+		protected override ToolResult OnToolExecutionEnd(ITool tool, IToolCall toolCall, Task<ToolResult> resultTask)
+		{
+			if (resultTask.IsFaulted)
+				return new ToolResult(ToolResultStatus.Error, resultTask.Exception?.InnerException?.Message ?? "An unknown error occurred.");
+			else if (resultTask.IsCanceled)
+				return new ToolResult(ToolResultStatus.Cancelled, "The tool execution was cancelled.");
+			else if (resultTask.IsCompletedSuccessfully)
+				return resultTask.Result;
+
+			return base.OnToolExecutionEnd(tool, toolCall, resultTask);
+		}
+	}
+
+	/// <summary>
+	/// Manages the state and behavior of a LLM in the chat session.
+	/// </summary>
+	public class ChatLLMInfo
+	{
+		/// <summary>
+		/// The large language model used for the chat session.
+		/// </summary>
+		public required LLModel LLM { get; init; }
+
+		/// <summary>
+		/// The tools available for use in the chat session.
+		/// </summary>
+		public required ImmutableDictionary<string, ToolInfo> ToolInfos { get; init; }
+	}
+
 	[ViewModelFor(typeof(ChatView))]
-	[TabTool("chat")]
+	[TabTool("chat", Order = 0)]
 	public class ChatViewModel : ViewModelBase
 	{
 		private CancellationTokenSource? _sendCts;
 
-		private string _systemPrompt = "You are a helpful assistant.";
+		private string _systemPrompt = "Ты виртуальный ассистент в чате с пользователем. " +
+			"Используй инструмент 'agent-ask_question', чтобы не засорять чат лишними вызовами инструментов при ответах на вопросы, на которые ты не знаешь ответов.";
 		/// <summary>
 		/// Gets or sets the system prompt that will be used as a starting point for conversation.
 		/// </summary>
@@ -45,15 +109,10 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _additionalTools, value);
 		}
 
-		private MessageSequenceViewModel _messageSequence = new();
 		/// <summary>
-		/// Gets or sets the message sequence that represents the conversation history.
+		/// Gets the message sequence that represents the conversation history.
 		/// </summary>
-		public MessageSequenceViewModel MessageSequence
-		{
-			get => _messageSequence;
-			set => SetProperty(ref _messageSequence, value);
-		}
+		public MessageSequenceViewModel MessageSequence { get; } = new MessageSequenceViewModel();
 
 		private string _userInput = string.Empty;
 		/// <summary>
@@ -91,6 +150,60 @@ namespace LLMDesktopAssistant.LLM.MVVM
 					// Turns.Last().State = ConversationTurnState.Complete;
 				}
 			});
+
+			AdditionalTools = [ new AgenticToolModule() ];
+		}
+
+		/// <summary>
+		/// Returns the configured LLM model. This method can be overridden to provide custom configuration.
+		/// </summary>
+		/// <returns>The configured LLM model.</returns>
+		public virtual ChatLLMInfo GetConfiguredLLM()
+		{
+			var llm = ModuleManager.GetDynamic<ILLMProvider>().GetLLM();
+
+			var toolInfos = ModuleManager.GetAll<ToolModule>()
+				.Concat(AdditionalTools)
+				.Where(t => t.Enabled)
+				.SelectMany(t => t.GetTools())
+				.ToList();
+
+			var allTools = new ToolSet(toolInfos.Select(i => i.Tool));
+
+			// Add existing LLM's tools.
+			foreach (var tool in llm.Tools)
+				allTools.Add(tool);
+			llm = llm.WithTools(allTools);
+
+			return new ChatLLMInfo
+			{
+				LLM = llm,
+				ToolInfos = toolInfos.ToImmutableDictionary(k => k.Tool.Name)
+			};
+		}
+
+		/// <summary>
+		/// Sends a message to the LLM and updates the conversation turns.
+		/// </summary>
+		/// <param name="userMessage">The user message to be sent.</param>
+		/// <param name="cts">The cancellation token to monitor for cancellation requests.</param>
+		/// <returns>A task that represents the asynchronous operation.</returns>
+		public async Task SendMessageAsync(IUserMessage userMessage, CancellationToken cts = default)
+		{
+			_sendCts?.Cancel(); // Cancel any previous send operation
+			_sendCts = CancellationTokenSource.CreateLinkedTokenSource(cts);
+			cts = _sendCts.Token;
+			var sequence = MessageSequence;
+
+			var executor = new ChatToolExecutor(this);
+			sequence.Messages.Add(userMessage);
+
+			await foreach (var message in executor.GenerateStreamingResponseAsync(userMessage, cts))
+			{
+				sequence.Messages.Add(message);
+				if (message is PartialAssistantMessage pam)
+					await pam;
+			}
 		}
 
 		/// <summary>
@@ -98,124 +211,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		/// <param name="cts">The cancellation token to monitor for cancellation requests.</param>
 		/// <returns>A task that represents the asynchronous operation.</returns>
-		public async Task SendMessageAsync(CancellationToken cts)
+		public Task SendMessageAsync(CancellationToken cts = default)
 		{
-			_sendCts?.Cancel(); // Cancel any previous send operation
-			_sendCts = CancellationTokenSource.CreateLinkedTokenSource(cts);
-			cts = _sendCts.Token;
-			var sequence = MessageSequence;
-
-			var llm = ModuleManager.GetDynamic<ILLMProvider>().GetLLM();
-
-			var allTools = new ToolSet(ModuleManager.GetAll<ToolModule>()
-				.Concat(AdditionalTools)
-				.Where(t => t.Enabled)
-				.SelectMany(t => t.GetTools()));
-
-			// Add existing LLM's tools.
-			foreach (var tool in llm.Tools)
-				allTools.Add(tool);
-			llm = llm.WithTools(allTools);
-
 			var userMessage = new UserMessage(UserInput);
-			var messages = new List<IMessage>();
-			messages.Add(new SystemMessage(SystemPrompt));
-			messages.AddRange(sequence.Messages);
-			messages.Add(userMessage);
-
-			var response = await llm.ChatStreamingAsync(messages, cts);
-			var assistantMessage = response.Message;
 			UserInput = string.Empty;
-
-			sequence.Messages.Add(userMessage);
-			sequence.Messages.Add(assistantMessage);
-			messages.Add(assistantMessage);
-
-			while (true)
-			{
-				ConcurrentDictionary<IToolCall, IToolMessage> toolMessageMap = [];
-				List<Task> toolExecutionTasks = [];
-
-				void ProcessToolCall(IToolCall toolCall)
-				{
-					switch (toolCall)
-					{
-						case FunctionToolCall functionCall:
-
-							var tool = allTools.Get(toolCall.ToolName) as FunctionTool ??
-								throw new InvalidOperationException($"FunctionTool '{functionCall.ToolName}' not found in the current toolset.");
-
-							var executionTask = tool.ExecuteAsync(functionCall.Args, cts)
-								.ContinueWith(t =>
-								{
-									ToolResult toolMsgContent;
-
-									if (t.IsCanceled)
-										toolMsgContent = "CANCELLED";
-									else if (t.IsFaulted)
-										toolMsgContent = "ERROR";
-									else
-										toolMsgContent = t.Result;
-
-									var toolMessage = new ToolMessage(toolMsgContent, toolCall.Id, toolCall.ToolName);
-									toolMessageMap[toolCall] = toolMessage;
-								}, cts);
-							toolExecutionTasks.Add(executionTask);
-
-							break;
-
-						default:
-							throw new InvalidOperationException($"Unknown tool call type: {toolCall.GetType()}.");
-					}
-				}
-
-				foreach (var toolCall in assistantMessage.ToolCalls)
-				{
-					ProcessToolCall(toolCall);
-				}
-
-				void PartHandler(object? s, AssistantMessageDelta e)
-				{
-					if (e.NewToolCalls?.Count > 0)
-						foreach (var toolCall in e.NewToolCalls)
-							ProcessToolCall(toolCall);
-				}
-				void CompletedHandler(object? s, CompletedEventArgs e)
-				{
-					assistantMessage.PartAdded -= PartHandler;
-					assistantMessage.Completed -= CompletedHandler;
-				}
-				if (!assistantMessage.CompletionToken.IsCompleted)
-				{
-					assistantMessage.PartAdded += PartHandler;
-					assistantMessage.Completed += CompletedHandler;
-				}
-
-				await assistantMessage;
-
-				if (toolExecutionTasks.Count > 0)
-				{
-					await Task.WhenAll(toolExecutionTasks);
-
-					// Send the tool results back to the LLM.
-
-					foreach (var toolCall in assistantMessage.ToolCalls)
-					{
-						var toolMessage = toolMessageMap[toolCall];
-						messages.Add(toolMessage);
-						sequence.Messages.Add(toolMessage);
-					}
-
-					response = await llm.ChatStreamingAsync(messages, cts);
-					assistantMessage = response.Message;
-					messages.Add(assistantMessage);
-					sequence.Messages.Add(assistantMessage);
-				}
-				else
-				{
-					break;
-				}
-			}
+			return SendMessageAsync(userMessage, cts);
 		}
 	}
 }

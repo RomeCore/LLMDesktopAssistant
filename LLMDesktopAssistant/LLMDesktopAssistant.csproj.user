@@ -8,6 +8,12 @@
     <Compile Update="Browsing\BrowserView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\MarkdownControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\StreamingMarkdownControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="LLM\MVVM\AssistantMessageReasoningPartView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -30,6 +36,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="LLM\MVVM\UserMessageView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\MVVM\VoiceChatView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="MVVM\MainView.xaml.cs">

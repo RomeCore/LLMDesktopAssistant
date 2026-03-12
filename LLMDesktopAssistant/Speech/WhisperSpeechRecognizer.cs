@@ -9,15 +9,15 @@ namespace LLMDesktopAssistant.Speech
 	/// <summary>
 	/// Class that uses the Whisper speech recognition model to recognize speech.
 	/// </summary>
-	[DynamicModule("WhisperSpeechRecognizer", typeof(IUserSpeechRecognizer), IsDefault = true)]
-	public class WhisperSpeechRecognizer : IUserSpeechRecognizer
+	[DynamicModule("WhisperSpeechRecognizer", typeof(ISpeechRecognizer), IsDefault = true)]
+	public class WhisperSpeechRecognizer : ISpeechRecognizer
 	{
 		WhisperFactory? _factory = null;
 		WhisperProcessor? _processor = null;
 
 		public void Initialize()
 		{
-			var modelFileName = "models/whisper/ggml-tiny.bin";
+			var modelFileName = "models/whisper/ggml-base.bin";
 
 			Directory.CreateDirectory("models");
 			Directory.CreateDirectory("models/whisper");

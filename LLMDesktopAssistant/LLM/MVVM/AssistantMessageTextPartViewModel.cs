@@ -1,5 +1,6 @@
 ﻿using LLMDesktopAssistant.MVVM;
 using RCLargeLanguageModels.Messages;
+using RCLargeLanguageModels.Tasks;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -13,6 +14,13 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _text, value);
 		}
 
+		private bool _completed = true;
+		public bool Completed
+		{
+			get => _completed;
+			set => SetProperty(ref _completed, value);
+		}
+
 		public AssistantMessageTextPartViewModel()
 		{
 		}
@@ -20,15 +28,32 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public AssistantMessageTextPartViewModel(IAssistantMessage message)
 		{
 			Text = message.Content ?? string.Empty;
+
 			if (message is PartialAssistantMessage pMessage)
 			{
-				pMessage.PartAdded += (s, e) =>
+				if (!pMessage.CompletionToken.IsCompleted)
 				{
-					App.Current.Dispatcher.Invoke(() =>
+					Completed = false;
+					void OnPartAdded(object? s, AssistantMessageDelta e)
 					{
-						Text = message.Content ?? string.Empty;
-					});
-				};
+						App.Current.Dispatcher.Invoke(() =>
+						{
+							Text = message.Content ?? string.Empty;
+						});
+					}
+					void OnCompleted(object? s, CompletedEventArgs e)
+					{
+						pMessage.PartAdded -= OnPartAdded;
+						pMessage.Completed -= OnCompleted;
+						Completed = true;
+					}
+					pMessage.PartAdded += OnPartAdded;
+					pMessage.Completed += OnCompleted;
+				}
+				else
+				{
+					Completed = true;
+				}
 			}
 		}
 	}

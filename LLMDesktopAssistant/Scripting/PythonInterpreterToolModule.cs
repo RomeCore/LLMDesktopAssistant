@@ -13,14 +13,21 @@ namespace LLMDesktopAssistant.Scripting
 	[Module]
 	public class PythonInterpreterToolModule : ToolModule
 	{
-		private readonly List<FunctionTool> _tools;
 		private PythonModule _python = null!;
 
 		public PythonInterpreterToolModule()
 		{
-			_tools = [];
-			_tools.Add(FunctionTool.From(Execute, "execute-python", "Executes Python and returns the script result."));
-			_tools.Add(FunctionTool.From(ExecuteVenvShell, "execute-python_venv_shell", "Executes Windows shell script in a Python's virtual environment. Useful for installing packages via 'pip'."));
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(Execute, "execute-python", "Executes Python and returns the script result."),
+				AskForConfirmation = true
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(ExecuteVenvShell, "execute-python_venv_shell", "Executes Windows shell script in a Python's virtual environment. Useful for installing packages via 'pip'."),
+				AskForConfirmation = true
+			});
 		}
 
 		public override void Initialize()
@@ -32,21 +39,22 @@ namespace LLMDesktopAssistant.Scripting
 		{
 			try
 			{
-				var (stdout, stderr) = await _python.RunScript(python);
+				var result = await _python.RunScript(python);
 
 				var resultBuilder = new StringBuilder();
-				resultBuilder.Append(stdout);
-				if (stderr != null)
+				resultBuilder.Append(result.StdOut);
+				if (!string.IsNullOrEmpty(result.StdErr))
 				{
 					resultBuilder.AppendLine().AppendLine("Errors:");
-					resultBuilder.Append(stderr);
+					resultBuilder.Append(result.StdErr);
 				}
 
-				return new ToolResult(resultBuilder.ToString());
+				var status = result.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
+				return new ToolResult(status, resultBuilder.ToString());
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult($"Got error while executing Python: {ex.Message}");
+				return new ToolResult(ToolResultStatus.Error, $"Got error while executing Python: {ex.Message}");
 			}
 		}
 
@@ -54,27 +62,23 @@ namespace LLMDesktopAssistant.Scripting
 		{
 			try
 			{
-				var (stdout, stderr) = await _python.RunVenv(shellScript);
+				var result = await _python.RunVenv(shellScript);
 
 				var resultBuilder = new StringBuilder();
-				resultBuilder.Append(stdout);
-				if (stderr != null)
+				resultBuilder.Append(result.StdOut);
+				if (!string.IsNullOrEmpty(result.StdErr))
 				{
 					resultBuilder.AppendLine().AppendLine("Errors:");
-					resultBuilder.Append(stderr);
+					resultBuilder.Append(result.StdErr);
 				}
 
-				return new ToolResult(resultBuilder.ToString());
+				var status = result.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
+				return new ToolResult(status, resultBuilder.ToString());
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult($"Got error while executing Lua: {ex.Message}");
+				return new ToolResult(ToolResultStatus.Error, $"Got error while executing Lua: {ex.Message}");
 			}
-		}
-
-		public override IEnumerable<ITool> GetTools()
-		{
-			return _tools;
 		}
 	}
 }

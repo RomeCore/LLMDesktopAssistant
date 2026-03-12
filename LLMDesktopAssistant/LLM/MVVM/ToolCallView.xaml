@@ -11,14 +11,20 @@
 
 	<UserControl.Resources>
 		<Style x:Key="ToolIconStyle" TargetType="materialDesign:PackIcon">
-			<Setter Property="Width" Value="20"/>
-			<Setter Property="Height" Value="20"/>
+			<Setter Property="Width" Value="24"/>
+			<Setter Property="Height" Value="24"/>
 			<Setter Property="Kind" Value="Hammer"/>
 			<Style.Triggers>
+				<DataTrigger Binding="{Binding Status}" Value="UserAsked">
+					<Setter Property="Kind" Value="QuestionMarkCircle"/>
+				</DataTrigger>
 				<DataTrigger Binding="{Binding Status}" Value="Success">
 					<Setter Property="Kind" Value="CheckCircle"/>
 				</DataTrigger>
-				<DataTrigger Binding="{Binding Status}" Value="Failure">
+				<DataTrigger Binding="{Binding Status}" Value="Cancelled">
+					<Setter Property="Kind" Value="CancelCircle"/>
+				</DataTrigger>
+				<DataTrigger Binding="{Binding Status}" Value="Error">
 					<Setter Property="Kind" Value="AlertCircle"/>
 				</DataTrigger>
 			</Style.Triggers>
@@ -26,13 +32,15 @@
 	</UserControl.Resources>
 
 	<Grid Margin="0,2">
+		
 		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
 			<ColumnDefinition Width="Auto"/>
 			<ColumnDefinition Width="Auto"/>
 		</Grid.ColumnDefinitions>
 
 		<!-- Container for icon/progress -->
-		<Grid Grid.Column="0" Width="20" Height="20" Margin="0,0,4,0">
+		<Grid Grid.Column="0" Width="24" Height="24" Margin="0,0,4,0">
 			<!-- Progress bar for InProgress state (visible only when status is InProgress) -->
 			<ProgressBar 
 				IsIndeterminate="True"
@@ -68,6 +76,7 @@
 			
 			<materialDesign:PopupBox.ToggleContent>
 				<TextBlock Text="{loc:Loc {Binding ToolName}}"
+						   FontSize="16"
 						   FontWeight="Medium"
 						   VerticalAlignment="Center"/>
 			</materialDesign:PopupBox.ToggleContent>
@@ -82,7 +91,8 @@
 						<StackPanel Orientation="Vertical"
 							Visibility="{Binding Arguments, Converter={StaticResource StringNonEmptyToVisiblityConverter}}">
 
-							<Label Content="{loc:Loc tool-arguments}"/>
+							<Label Content="{loc:Loc tool-arguments}"
+								   FontSize="16"/>
 							<Label Content="{Binding Arguments}" FontFamily="Cascadia Code"/>
 
 						</StackPanel>
@@ -90,7 +100,8 @@
 						<StackPanel Orientation="Vertical"
 							Visibility="{Binding Result, Converter={StaticResource StringNonEmptyToVisiblityConverter}}">
 
-							<Label Content="{loc:Loc tool-result}"/>
+							<Label Content="{loc:Loc tool-result}"
+								   FontSize="16"/>
 							<Label Content="{Binding Result}" FontFamily="Cascadia Code"/>
 
 						</StackPanel>
@@ -102,5 +113,40 @@
 			</materialDesign:PopupBox.PopupContent>
 			
 		</materialDesign:PopupBox>
+
+		<StackPanel Grid.Column="2"
+					Orientation="Horizontal"
+					Margin="8,0,0,0">
+
+			<StackPanel.Style>
+				<Style TargetType="StackPanel">
+					<Setter Property="Visibility" Value="Collapsed"/>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding Status}" Value="UserAsked">
+							<Setter Property="Visibility" Value="Visible"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</StackPanel.Style>
+
+			<Button Width="20"
+					Height="20"
+					Margin="0,0,4,0"
+					Command="{Binding ApproveCommand}"
+					Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+
+				<materialDesign:PackIcon Kind="Check"/>
+			</Button>
+
+			<Button Width="20"
+					Height="20"
+					Command="{Binding CancelCommand}"
+					Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}">
+
+				<materialDesign:PackIcon Kind="Close"/>
+			</Button>
+
+		</StackPanel>
+
 	</Grid>
 </UserControl>

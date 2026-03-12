@@ -10,45 +10,47 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Tabs
 {
+	public class TabToolInfo
+	{
+		public required string Id { get; init; }
+		public required int Order { get; init; }
+		public required object Content { get; init; }
+		public required object View { get; init; }
+	}
+
 	/// <summary>
 	/// Manages tools for the application that can be displayed in tabs.
 	/// </summary>
 	public static class TabToolManager
 	{
-		private static readonly ImmutableDictionary<string, object> _tabTools;
-		private static readonly ImmutableDictionary<string, object> _tabToolViews;
+		private static readonly ImmutableDictionary<string, TabToolInfo> _tabTools;
 
 		static TabToolManager()
 		{
 			var tabTools = ReflectionUtility.GetTypesWithAttribute<object, TabToolAttribute>()
 				.ValidateParameterlessConstructors()
 				.OrderBy(t => t.Attribute.Order)
-				.ToImmutableDictionary(t => t.Attribute.Id, t => t.Type);
+				.ToImmutableDictionary(t => t.Attribute.Id, t => t);
 
 			_tabTools = tabTools.ToImmutableDictionary(t => t.Key, t =>
 			{
-				var value = t.Value.Instantiate();
-				return value;
-			});
+				var value = t.Value.Type.Instantiate();
+				var view = value is FrameworkElement fe ? fe : ViewLocator.Resolve(value) ?? value;
 
-			_tabToolViews = _tabTools.ToImmutableDictionary(t => t.Key, t =>
-			{
-				var value = t.Value;
-				if (value is FrameworkElement fe)
-					return fe;
-				return ViewLocator.Resolve(value) ?? value;
+				return new TabToolInfo
+				{
+					Id = t.Key,
+					Order = t.Value.Attribute.Order,
+					Content = value,
+					View = view
+				};
 			});
 		}
 
 		/// <summary>
 		/// Gets the instances of all tab tools.
 		/// </summary>
-		public static ImmutableDictionary<string, object> TabTools => _tabTools;
-
-		/// <summary>
-		/// Gets the instances of all tab tool views.
-		/// </summary>
-		public static ImmutableDictionary<string, object> TabToolViews => _tabToolViews;
+		public static ImmutableDictionary<string, TabToolInfo> TabTools => _tabTools;
 
 		/// <summary>
 		/// Gets the instance of a specific tab tool.
@@ -62,7 +64,7 @@ namespace LLMDesktopAssistant.Tabs
 		{
 			if (_tabTools.TryGetValue(id, out var tabTool))
 			{
-				if (tabTool is T result)
+				if (tabTool.Content is T result)
 					return result;
 				throw new InvalidCastException($"Cannot cast '{tabTool.GetType()}' to '{typeof(T)}'.");
 			}
@@ -79,9 +81,9 @@ namespace LLMDesktopAssistant.Tabs
 		/// <exception cref="KeyNotFoundException">Thrown when no tool is found with the specified ID.</exception>
 		public static T GetView<T>(string id)
 		{
-			if (_tabToolViews.TryGetValue(id, out var tabTool))
+			if (_tabTools.TryGetValue(id, out var tabTool))
 			{
-				if (tabTool is T result)
+				if (tabTool.View is T result)
 					return result;
 				throw new InvalidCastException($"Cannot cast '{tabTool.GetType()}' to '{typeof(T)}'.");
 			}

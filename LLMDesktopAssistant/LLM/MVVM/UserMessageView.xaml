@@ -17,11 +17,8 @@
 			MaxWidth="500">
 
 		<TextBlock Text="{Binding Text}"
-				   TextWrapping="Wrap"
 				   Foreground="{DynamicResource MaterialDesignBody}"
-				   FontSize="14"
-				   LineHeight="20"
-				   LineStackingStrategy="BlockLineHeight"/>
+				   Style="{StaticResource UserMessageContentStyle}"/>
 
 	</Border>
 	

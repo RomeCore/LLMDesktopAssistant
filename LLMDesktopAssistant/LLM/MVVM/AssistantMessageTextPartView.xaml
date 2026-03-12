@@ -5,13 +5,12 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+			 xmlns:controls="clr-namespace:LLMDesktopAssistant.Controls"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
 
-	<TextBlock Text="{Binding Text}"
-			   TextWrapping="Wrap"
-			   FontSize="14"
-			   LineHeight="20"
-			   LineStackingStrategy="BlockLineHeight"/>
-	
+	<controls:StreamingMarkdownControl MarkdownText="{Binding Text}"
+									   Completed="{Binding Completed}"
+									   Margin="0,5"/>
+
 </UserControl>

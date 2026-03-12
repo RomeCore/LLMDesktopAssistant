@@ -19,8 +19,6 @@ namespace LLMDesktopAssistant
 
 		public App()
 		{
-			NewtonsoftSchemaHacker.Hack();
-
 			AllocConsole();
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Debug()
