@@ -9,6 +9,7 @@ using AngleSharp;
 using Ganss.Xss;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.Utils;
+using RCLargeLanguageModels.Json.Schema;
 using RCLargeLanguageModels.Security;
 using RCLargeLanguageModels.Tools;
 using RCLargeLanguageModels.Utilities;
@@ -41,12 +42,7 @@ namespace LLMDesktopAssistant.ToolModules
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(GetRequest, "web-get", "Perform a GET request to a specified URL.")
-			});
-
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(PostRequest, "web-post", "Perform a POST request to a specified URL with JSON data.")
+				Tool = FunctionTool.From(WebRequest, "web-request", "Perform a request to a specified URL and method.")
 			});
 
 			AddTool(new ToolInfo
@@ -75,13 +71,28 @@ namespace LLMDesktopAssistant.ToolModules
 			});
 		}
 
-		private async Task<ToolResult> GetRequest(
-			[Description("URL to send GET request to")] string url,
-			[Description("Optional: Additional headers as JSON string (e.g., {\"Authorization\": \"Bearer token\"})")] string headersJson = "")
+		private async Task<ToolResult> WebRequest(
+			[Description("Method of the request"), Enum(["GET", "POST", "PUT", "DELETE"])] string method,
+			[Description("URL to send request to")] string url,
+			[Description("Optional: Additional headers as JSON string (e.g., {\"Authorization\": \"Bearer token\"})")] string headersJson = "",
+			[Description("Optional: Request content")] string content = "",
+			[Description("Content type (default: application/json)")] string contentType = "application/json")
 		{
 			try
 			{
-				using var request = new HttpRequestMessage(HttpMethod.Get, url);
+				var httpMethod = method switch
+				{
+					"GET" => HttpMethod.Get,
+					"POST" => HttpMethod.Post,
+					"PUT" => HttpMethod.Put,
+					"DELETE" => HttpMethod.Delete,
+					_ => throw new ArgumentException("Invalid HTTP method", nameof(method))
+				};
+
+				using var request = new HttpRequestMessage(httpMethod, url);
+
+				if (!string.IsNullOrEmpty(content))
+					request.Content = new StringContent(content, Encoding.UTF8, contentType);
 
 				if (!string.IsNullOrEmpty(headersJson))
 				{
@@ -113,46 +124,6 @@ namespace LLMDesktopAssistant.ToolModules
 			catch (Exception ex)
 			{
 				return new ToolResult(ToolResultStatus.Error, $"Error performing GET request: {ex.Message}");
-			}
-		}
-
-		private async Task<ToolResult> PostRequest(
-			[Description("URL to send POST request to")] string url,
-			[Description("Content data to send in the request body")] string content,
-			[Description("Optional: Additional headers as JSON string (e.g., {\"Authorization\": \"Bearer token\"})")] string headersJson = "",
-			[Description("Content type (default: application/json)")] string contentType = "application/json")
-		{
-			try
-			{
-				using var request = new HttpRequestMessage(HttpMethod.Get, url);
-				request.Content = new StringContent(content, Encoding.UTF8, contentType);
-
-				if (!string.IsNullOrEmpty(headersJson))
-				{
-					var headers = JsonSerializer.Deserialize<Dictionary<string, string>>(headersJson);
-					foreach (var header in headers!)
-					{
-						request.Headers.TryAddWithoutValidation(header.Key, header.Value);
-					}
-				}
-
-				var response = await _httpClient.SendAsync(request);
-				var responseContent = await response.Content.ReadAsStringAsync();
-
-				var result = $"""
-					Status code: {(int)response.StatusCode}
-					Status description: {response.StatusCode.ToString()}
-					Headers: {JsonSerializer.Serialize(response.Headers)}
-					Content length: {responseContent.Length}
-					Content:
-					{responseContent}
-					""";
-
-				return new ToolResult(result);
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error performing POST request: {ex.Message}");
 			}
 		}
 

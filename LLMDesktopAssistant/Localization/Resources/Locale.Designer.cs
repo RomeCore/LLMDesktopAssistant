@@ -376,6 +376,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Web request.
+        /// </summary>
+        public static string web_request {
+            get {
+                return ResourceManager.GetString("web-request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Web search.
         /// </summary>
         public static string web_search {

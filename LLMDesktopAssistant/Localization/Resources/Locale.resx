@@ -222,6 +222,9 @@
   <data name="web-post" xml:space="preserve">
     <value>POST request</value>
   </data>
+  <data name="web-request" xml:space="preserve">
+    <value>Web request</value>
+  </data>
   <data name="web-search" xml:space="preserve">
     <value>Web search</value>
   </data>
