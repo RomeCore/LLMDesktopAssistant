@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.LLM.Conversations.Models
 		public int SelectedNode { get; set; } = 0;
 
 		/// <summary>
-		/// The identifiers pointing to next nodes in the conversation.
+		/// The identifiers pointing to next <see cref="MessageNode"/> in the conversation.
 		/// </summary>
 		public int[] NextNodes { get; set; } = [];
 	}

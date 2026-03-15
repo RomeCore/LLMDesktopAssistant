@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.LLM.Conversations.Models
 		public int Id { get; set; }
 
 		/// <summary>
-		/// The identifier that leads to target message associated with this node.
+		/// The identifier that leads to target <see cref="Message"/> associated with this node.
 		/// </summary>
 		public int MessageId {  get; set; }
 

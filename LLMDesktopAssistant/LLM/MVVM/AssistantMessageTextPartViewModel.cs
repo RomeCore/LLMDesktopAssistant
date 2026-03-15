@@ -46,6 +46,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 						pMessage.PartAdded -= OnPartAdded;
 						pMessage.Completed -= OnCompleted;
 						Completed = true;
+						Console.WriteLine(Text);
 					}
 					pMessage.PartAdded += OnPartAdded;
 					pMessage.Completed += OnCompleted;
@@ -53,6 +54,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				else
 				{
 					Completed = true;
+					Console.WriteLine(Text);
 				}
 			}
 		}
