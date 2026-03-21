@@ -6,13 +6,13 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using LiteDB;
-using LLMDesktopAssistant.LLM.Conversations.Models;
+using LLMDesktopAssistant.LLM.Data.Models;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.LLM.Conversations
+namespace LLMDesktopAssistant.LLM.Data
 {
 	/// <summary>
 	/// Manages the database for storing and retrieving conversation data.

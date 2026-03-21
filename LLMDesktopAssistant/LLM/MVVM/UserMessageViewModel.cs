@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Conversations;
+﻿using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.MVVM;
 using RCLargeLanguageModels.Messages;
 

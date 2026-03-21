@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.LLM.Conversations
+﻿namespace LLMDesktopAssistant.LLM.Data
 {
 	/// <summary>
 	/// The exception that is thrown when the data in the conversation database is corrupted.

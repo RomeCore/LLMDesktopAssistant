@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Conversations;
+using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;

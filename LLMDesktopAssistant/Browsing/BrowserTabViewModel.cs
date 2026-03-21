@@ -1,5 +1,5 @@
 ﻿using LLMDesktopAssistant.LLM;
-using LLMDesktopAssistant.LLM.Conversations;
+using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;

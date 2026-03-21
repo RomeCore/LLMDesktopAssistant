@@ -1,6 +1,6 @@
 ﻿using RCLargeLanguageModels.Messages;
 
-namespace LLMDesktopAssistant.LLM.Conversations
+namespace LLMDesktopAssistant.LLM.Data
 {
 	/// <summary>
 	/// Represents a message wrapper for with conversation metadata (order and branch indices).

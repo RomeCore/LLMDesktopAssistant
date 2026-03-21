@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using LiteDB;
-using LLMDesktopAssistant.LLM.Conversations.Models;
+using LLMDesktopAssistant.LLM.Data.Models;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
@@ -16,7 +16,7 @@ using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.LLM.Conversations
+namespace LLMDesktopAssistant.LLM.Data
 {
 	/// <summary>
 	/// Manages conversation and its associated data using a conversation database.
@@ -62,7 +62,7 @@ namespace LLMDesktopAssistant.LLM.Conversations
 			IToolCall toolCall;
 			IToolMessage? toolMessage = null;
 
-			if (toolCallModel.ToolType == ToolType.Function)
+			if (toolCallModel.ToolType == ToolTypeModel.Function)
 			{
 				var arguments = System.Text.Json.JsonSerializer.Deserialize<JsonNode>(toolCallModel.FunctionArguments);
 				toolCall = new FunctionToolCall(toolCallModel.ToolCallId, toolCallModel.ToolName, arguments!);
@@ -74,10 +74,10 @@ namespace LLMDesktopAssistant.LLM.Conversations
 
 			ToolResultStatus? status = toolCallModel.ResultStatus switch
 			{
-				ToolStatus.Success => ToolResultStatus.Success,
-				ToolStatus.Cancelled => ToolResultStatus.Cancelled,
-				ToolStatus.Error => ToolResultStatus.Error,
-				ToolStatus.NoResult => ToolResultStatus.NoResult,
+				ToolStatusModel.Success => ToolResultStatus.Success,
+				ToolStatusModel.Cancelled => ToolResultStatus.Cancelled,
+				ToolStatusModel.Error => ToolResultStatus.Error,
+				ToolStatusModel.NoResult => ToolResultStatus.NoResult,
 				_ => null
 			};
 			var content = toolCallModel.ResultContent ?? "Tool gained no result.";
@@ -92,11 +92,11 @@ namespace LLMDesktopAssistant.LLM.Conversations
 		private List<IMessage> CreateMessages(MessageModel messageModel)
 		{
 			var messages = new List<IMessage>();
-			if (messageModel.Role == Models.Role.User)
+			if (messageModel.Role == Models.RoleModel.User)
 			{
 				messages.Add(new UserMessage(messageModel.Content));
 			}
-			else if (messageModel.Role == Models.Role.Assistant)
+			else if (messageModel.Role == Models.RoleModel.Assistant)
 			{
 				List<IToolCall> toolCalls = [];
 				List<IToolMessage> toolMessages = [];
@@ -123,11 +123,11 @@ namespace LLMDesktopAssistant.LLM.Conversations
 
 		private int GetCountOfMessages(MessageModel messageModel)
 		{
-			if (messageModel.Role == Models.Role.User)
+			if (messageModel.Role == Models.RoleModel.User)
 			{
 				return 1;
 			}
-			else if (messageModel.Role == Models.Role.Assistant)
+			else if (messageModel.Role == Models.RoleModel.Assistant)
 			{
 				return 1 + _database.ToolCalls.Count(t => t.MessageId == messageModel.Id && t.ResultStatus != null);
 			}
@@ -139,7 +139,7 @@ namespace LLMDesktopAssistant.LLM.Conversations
 
 		private ExtendedMessage CreateExMessage(MessageModel messageModel)
 		{
-			if (messageModel.Role == Models.Role.User)
+			if (messageModel.Role == Models.RoleModel.User)
 			{
 				return new ExtendedMessage
 				{
@@ -240,7 +240,7 @@ namespace LLMDesktopAssistant.LLM.Conversations
 				MessageId = messageId,
 				ToolCallId = toolCall.Id,
 				ToolName = toolCall.ToolName,
-				ToolType = ToolType.Function,
+				ToolType = ToolTypeModel.Function,
 				FunctionArguments = functionToolCall.Args.ToJsonString()
 			};
 			_database.ToolCalls.Insert(toolCallModel);
@@ -265,7 +265,7 @@ namespace LLMDesktopAssistant.LLM.Conversations
 				var model = new MessageModel
 				{
 					Content = userMessage.Content ?? string.Empty,
-					Role = Models.Role.User,
+					Role = Models.RoleModel.User,
 					CreatedAt = DateTime.Now
 				};
 				addFunc(extendedMessage, model);
@@ -276,7 +276,7 @@ namespace LLMDesktopAssistant.LLM.Conversations
 				{
 					Content = assistantMessage.Content ?? string.Empty,
 					HiddenContent = assistantMessage.ReasoningContent,
-					Role = Models.Role.Assistant,
+					Role = Models.RoleModel.Assistant,
 					CreatedAt = DateTime.Now
 				};
 				var messageId = addFunc(extendedMessage, model);
@@ -315,11 +315,11 @@ namespace LLMDesktopAssistant.LLM.Conversations
 				toolCallModel.ResultContent = toolMessage.Content ?? "Tool gained no result.";
 				toolCallModel.ResultStatus = toolMessage.Status switch
 				{
-					ToolResultStatus.Success => ToolStatus.Success,
-					ToolResultStatus.Cancelled => ToolStatus.Cancelled,
-					ToolResultStatus.Error => ToolStatus.Error,
-					ToolResultStatus.NoResult => ToolStatus.NoResult,
-					_ => ToolStatus.NoResult
+					ToolResultStatus.Success => ToolStatusModel.Success,
+					ToolResultStatus.Cancelled => ToolStatusModel.Cancelled,
+					ToolResultStatus.Error => ToolStatusModel.Error,
+					ToolResultStatus.NoResult => ToolStatusModel.NoResult,
+					_ => ToolStatusModel.NoResult
 				};
 				_database.ToolCalls.Update(toolCallModel);
 

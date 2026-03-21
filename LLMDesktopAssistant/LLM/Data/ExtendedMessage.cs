@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using RCLargeLanguageModels.Messages;
 
-namespace LLMDesktopAssistant.LLM.Conversations
+namespace LLMDesktopAssistant.LLM.Data
 {
 	public class ExtendedMessage
 	{

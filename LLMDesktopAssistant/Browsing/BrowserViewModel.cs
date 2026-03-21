@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using LLMDesktopAssistant.LLM.Conversations;
+using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Tabs;
 
@@ -72,7 +72,7 @@ namespace LLMDesktopAssistant.Browsing
 			var db = new ConversationDatabase("conversations/browser.db");
 
 			if (db.Conversations.FindById(1) == null)
-				db.Conversations.Insert(new LLM.Conversations.Models.ConversationModel
+				db.Conversations.Insert(new LLM.Data.Models.ConversationModel
 				{
 					Id = 1,
 					SystemInstructions = "You are a helpful assistant."

@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Conversations;
-using LLMDesktopAssistant.LLM.Conversations.Models;
+using LLMDesktopAssistant.LLM.Data;
+using LLMDesktopAssistant.LLM.Data.Models;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.MVVM;
 

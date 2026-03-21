@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
 
-namespace LLMDesktopAssistant.LLM.Conversations.Models
+namespace LLMDesktopAssistant.LLM.Data.Models
 {
 	/// <summary>
 	/// The attachment that can be applied to message. Used mostly for display purposes.
@@ -31,6 +31,6 @@ namespace LLMDesktopAssistant.LLM.Conversations.Models
 		/// <summary>
 		/// Gets or sets the type of the attachment.
 		/// </summary>
-		public AttachmentType Type { get; set; }
+		public AttachmentTypeModel Type { get; set; }
 	}
 }

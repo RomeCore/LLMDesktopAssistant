@@ -1,6 +1,6 @@
 ﻿using LiteDB;
 
-namespace LLMDesktopAssistant.LLM.Conversations.Models
+namespace LLMDesktopAssistant.LLM.Data.Models
 {
 	/// <summary>
 	/// Represents a model for a tool call inside the database.
@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.LLM.Conversations.Models
 		/// <summary>
 		/// Gets or sets the tool type that this tool call is associated to.
 		/// </summary>
-		public ToolType ToolType { get; set; } = ToolType.Function;
+		public ToolTypeModel ToolType { get; set; } = ToolTypeModel.Function;
 
 		/// <summary>
 		/// Gets or sets the tool name that being/been called.
@@ -41,7 +41,7 @@ namespace LLMDesktopAssistant.LLM.Conversations.Models
 		/// <summary>
 		/// Gets or sets the result status of the tool call, valid when tool call is executed.
 		/// </summary>
-		public ToolStatus? ResultStatus { get; set; }
+		public ToolStatusModel? ResultStatus { get; set; }
 
 		/// <summary>
 		/// Gets or sets the result content of the tool call, valid when tool call is executed.

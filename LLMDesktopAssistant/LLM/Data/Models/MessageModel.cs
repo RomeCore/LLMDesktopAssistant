@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
 
-namespace LLMDesktopAssistant.LLM.Conversations.Models
+namespace LLMDesktopAssistant.LLM.Data.Models
 {
 	/// <summary>
 	/// Represents a message in a conversation inside a database.
@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.LLM.Conversations.Models
 		/// <summary>
 		/// Gets or sets the role of the message that describes its type.
 		/// </summary>
-		public Role Role { get; set; }
+		public RoleModel Role { get; set; }
 
 		/// <summary>
 		/// Gets or sets the hidden content of the message, this can be RAG content or reasoning content.

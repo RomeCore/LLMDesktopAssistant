@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.LLM.Conversations;
+using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.MVVM;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tasks;
