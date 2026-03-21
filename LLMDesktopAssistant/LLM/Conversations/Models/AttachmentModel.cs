@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.LLM.Conversations.Models
 	/// <summary>
 	/// The attachment that can be applied to message. Used mostly for display purposes.
 	/// </summary>
-	public class Attachment
+	public class AttachmentModel
 	{
 		/// <summary>
 		/// The unique identifier for the attachment.

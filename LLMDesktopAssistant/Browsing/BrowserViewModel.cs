@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using LLMDesktopAssistant.LLM.Conversations;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Tabs;
 
@@ -68,7 +69,17 @@ namespace LLMDesktopAssistant.Browsing
 		{
 			ObservableTabs = new TabCollection(this);
 
-			var tab = new BrowserTabViewModel { Title = "Home" };
+			var db = new ConversationDatabase("conversations/browser.db");
+
+			if (db.Conversations.FindById(1) == null)
+				db.Conversations.Insert(new LLM.Conversations.Models.ConversationModel
+				{
+					Id = 1,
+					SystemInstructions = "You are a helpful assistant."
+				});
+			var conversationManager = new ConversationManager(db, 1);
+
+			var tab = new BrowserTabViewModel(conversationManager) { Title = "Home" };
 			tab.WebView.Source = new Uri("https://www.google.com");
 			TabItems.Add(tab);
 		}

@@ -3,9 +3,9 @@
 namespace LLMDesktopAssistant.LLM.Conversations.Models
 {
 	/// <summary>
-	/// 
+	/// Represents a model for a tool call inside the database.
 	/// </summary>
-	public class ToolCall
+	public sealed class ToolCallModel
 	{
 		/// <summary>
 		/// The unique identifier for the tool call.

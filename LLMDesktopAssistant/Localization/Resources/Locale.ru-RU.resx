@@ -153,6 +153,9 @@
   <data name="chat-settings_hint" xml:space="preserve">
     <value>Найстройки</value>
   </data>
+  <data name="chats" xml:space="preserve">
+    <value>Чаты</value>
+  </data>
   <data name="execute-lua" xml:space="preserve">
     <value>Выполнить Lua скрипт</value>
   </data>
@@ -191,6 +194,9 @@
   </data>
   <data name="input-press_key" xml:space="preserve">
     <value>Нажать клавишу</value>
+  </data>
+  <data name="new_chat" xml:space="preserve">
+    <value>Новый чат</value>
   </data>
   <data name="sample" xml:space="preserve">
     <value>Образец</value>

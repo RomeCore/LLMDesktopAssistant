@@ -9,23 +9,13 @@
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
 
-	<Border Grid.Column="1"
-			Margin="40,8"
-			HorizontalAlignment="Left"
-			Padding="12,8"
-			Background="{DynamicResource MaterialDesignCardBackground}"
-			CornerRadius="16 16 16 4"
-			MaxWidth="600"
-			controls:ProcessingAnimationBehavior.NormalColor="#FF454545"
-			controls:ProcessingAnimationBehavior.ProcessingColor="#FF777777"
-			controls:ProcessingAnimationBehavior.IsProcessing="{Binding State, Converter={StaticResource AssistantMessageStateToBooleanConverter}}"
-			controls:ProcessingAnimationBehavior.AnimationSpeed="0.8">
+	<StackPanel Orientation="Vertical"
+				Margin="40,8">
 
-		<ItemsControl ItemsSource="{Binding MessageParts}"
-					  Foreground="{DynamicResource MaterialDesignBody}"
-					  HorizontalContentAlignment="Left">
-		</ItemsControl>
+		<ContentControl Content="{Binding ReasoningPart}"/>
+		<ContentControl Content="{Binding TextPart}"/>
+		<ContentControl Content="{Binding ToolPart}" Foreground="White"/>
 
-	</Border>
+	</StackPanel>
 
 </UserControl>

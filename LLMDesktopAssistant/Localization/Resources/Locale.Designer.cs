@@ -169,6 +169,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Chats.
+        /// </summary>
+        public static string chats {
+            get {
+                return ResourceManager.GetString("chats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Execute Lua script.
         /// </summary>
         public static string execute_lua {
@@ -282,6 +291,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string input_press_key {
             get {
                 return ResourceManager.GetString("input-press_key", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на New chat.
+        /// </summary>
+        public static string new_chat {
+            get {
+                return ResourceManager.GetString("new_chat", resourceCulture);
             }
         }
         

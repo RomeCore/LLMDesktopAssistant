@@ -8,9 +8,9 @@ using LiteDB;
 namespace LLMDesktopAssistant.LLM.Conversations.Models
 {
 	/// <summary>
-	/// 
+	/// Represents a message in a conversation inside a database.
 	/// </summary>
-	public class Message
+	public class MessageModel
 	{
 		/// <summary>
 		/// The unique identifier for the message.
@@ -36,7 +36,7 @@ namespace LLMDesktopAssistant.LLM.Conversations.Models
 		/// <summary>
 		/// Gets or sets the summary of this message and previous messages until another summary (and including it).
 		/// </summary>
-		public string? Summary { get; set; }
+		public string? SummaryOfPrevMessages { get; set; }
 
 		/// <summary>
 		/// Gets or sets the time that this message is created at.

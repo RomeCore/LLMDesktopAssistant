@@ -103,18 +103,21 @@ namespace LLMDesktopAssistant.ToolModules
 			}
 
 			llm = llm.WithTools(tools);
-			var messages = new List<IMessage>
+			var executor = new LLMToolExecutor
 			{
-				new SystemMessage(systemPrompt)
+				LLMProvider = llm,
+				Memory = new SlidingChatMemory
+				{
+					ReturnLastNMessages = 20,
+					SystemInstructions = systemPrompt
+				}
 			};
-			var executor = new LLMToolExecutor(llm, messages);
 
 			try
 			{
-				var responseMessages = await executor.GenerateResponseAsync(new UserMessage(userMessage), cancellationToken);
-				var lastMessage = responseMessages.Last();
+				var responseMessage = await executor.GenerateResponseAsync(new UserMessage(userMessage), cancellationToken);
 
-				return new ToolResult(ToolResultStatus.Success, $"Agent responded with: {lastMessage.Content}.");
+				return new ToolResult(ToolResultStatus.Success, $"Agent responded with: {responseMessage.Content}.");
 			}
 			catch (Exception ex)
 			{

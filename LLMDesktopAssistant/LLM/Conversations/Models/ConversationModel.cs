@@ -7,7 +7,10 @@ using LiteDB;
 
 namespace LLMDesktopAssistant.LLM.Conversations.Models
 {
-	public sealed class Conversation
+	/// <summary>
+	/// Represents a conversation model in the database.
+	/// </summary>
+	public sealed class ConversationModel
 	{
 		/// <summary>
 		/// The unique identifier for the сonversation.
@@ -26,8 +29,13 @@ namespace LLMDesktopAssistant.LLM.Conversations.Models
 		public string SystemInstructions { get; set; } = string.Empty;
 
 		/// <summary>
-		/// Gets or sets the ID that points to the <see cref="MessageRootNode"/>.
+		/// The ID of the root node in the conversation tree. Can be -1 if there is no elements in the conversation.
 		/// </summary>
-		public int RootNodeId { get; set; }
+		public int RootNodeId { get; set; } = -1;
+
+		/// <summary>
+		/// The ID of the leaf node of the currently selected branch in the conversation tree. Can be -1 if there is no elements in the conversation.
+		/// </summary>
+		public int LeafNodeId { get; set; } = -1;
 	}
 }

@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.LLM.Conversations;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Tabs;
 using LLMDesktopAssistant.ToolModules;
 using Microsoft.Extensions.AI;
 using RCLargeLanguageModels;
@@ -33,8 +33,77 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			_viewModel = vm;
 			_llmInfo = _viewModel.GetConfiguredLLM();
 
-			LLM = _llmInfo.LLM;
-			AddMessages([new SystemMessage(vm.SystemPrompt), .. vm.MessageSequence.Messages]);
+			LLMProvider = _llmInfo.LLM;
+			Memory = _viewModel.ConversationManager.CreateMemory(Memory as SummarizingChatMemory);
+
+			var scm = (SummarizingChatMemory)Memory;
+			scm.Summarizer ??= new StatelessAgent
+			{
+				SystemInstructions = """
+					You are a conversation memory summarizer used inside an AI system.
+
+					Your task is to compress a conversation into a concise but information-dense summary that will be used as long-term memory for future interactions.
+
+					CRITICAL REQUIREMENTS:
+
+					1. Preserve all important information:
+					   - User goals, intents, and requests
+					   - Key facts and constraints
+					   - Decisions that were made
+					   - Unresolved questions or tasks
+					   - Important context needed for future responses
+
+					2. Preserve technical details when present:
+					   - Code logic, architecture decisions, APIs
+					   - Error messages and their causes
+					   - Tool usage results and outcomes
+
+					3. Maintain continuity:
+					   - If a previous summary is provided, integrate it with new information
+					   - Do NOT repeat information unnecessarily
+					   - Do NOT contradict earlier context
+
+					4. Remove unimportant content:
+					   - Small talk
+					   - Repetitions
+					   - Irrelevant details
+
+					5. Be structured and compact:
+					   - Use clear sections if helpful
+					   - Prefer bullet points for dense information
+					   - Avoid long prose
+
+					6. Be precise:
+					   - Do not generalize important details
+					   - Do not invent information
+					   - Do not omit critical steps in reasoning or workflow
+
+					7. Tool usage handling:
+					   - If tools were used, include:
+					     - What tool was used
+					     - Why it was used
+					     - The result of the tool
+
+					OUTPUT FORMAT:
+
+					Return only the summary text.
+
+					The summary should be compact but complete enough so that another AI can continue the conversation without needing the original messages.
+					""",
+				LLMProvider = _llmInfo.LLM
+			};
+		}
+
+		public void OnTurnEnded()
+		{
+			_viewModel.ConversationManager.ImportSummaryFromMemory((SummarizingChatMemory)Memory!);
+		}
+
+		protected override void OnMessageReceived(IMessage message)
+		{
+			base.OnMessageReceived(message);
+
+			_viewModel.ConversationManager.AppendMessage(message);
 		}
 
 		protected override async Task<ToolResult?> OnToolExecutionBegin(ITool tool, IToolCall toolCall, CancellationToken cancellationToken)
@@ -53,7 +122,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			return await base.OnToolExecutionBegin(tool, toolCall, cancellationToken);
 		}
 
-		protected override ToolResult OnToolExecutionEnd(ITool tool, IToolCall toolCall, Task<ToolResult> resultTask)
+		protected override async Task<ToolResult> OnToolExecutionEnd(ITool tool, IToolCall toolCall, Task<ToolResult> resultTask, CancellationToken cancellationToken)
 		{
 			if (resultTask.IsFaulted)
 				return new ToolResult(ToolResultStatus.Error, resultTask.Exception?.InnerException?.Message ?? "An unknown error occurred.");
@@ -62,7 +131,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			else if (resultTask.IsCompletedSuccessfully)
 				return resultTask.Result;
 
-			return base.OnToolExecutionEnd(tool, toolCall, resultTask);
+			return await base.OnToolExecutionEnd(tool, toolCall, resultTask, cancellationToken);
 		}
 	}
 
@@ -83,7 +152,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	}
 
 	[ViewModelFor(typeof(ChatView))]
-	[TabTool("chat", Order = 0)]
 	public class ChatViewModel : ViewModelBase
 	{
 		private CancellationTokenSource? _sendCts;
@@ -112,7 +180,12 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// <summary>
 		/// Gets the message sequence that represents the conversation history.
 		/// </summary>
-		public MessageSequenceViewModel MessageSequence { get; } = new MessageSequenceViewModel();
+		public MessageSequenceViewModel MessageSequence { get; }
+
+		/// <summary>
+		/// Gets the conversation manager that manages the current conversation.
+		/// </summary>
+		public ConversationManager ConversationManager { get; }
 
 		private string _userInput = string.Empty;
 		/// <summary>
@@ -132,7 +205,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ChatViewModel"/> class.
 		/// </summary>
-		public ChatViewModel()
+		public ChatViewModel(ConversationManager conversationManager)
 		{
 			SendMessageCommand = new AsyncRelayCommand(async ct =>
 			{
@@ -150,6 +223,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 					// Turns.Last().State = ConversationTurnState.Complete;
 				}
 			});
+
+			ConversationManager = conversationManager;
+			MessageSequence = new MessageSequenceViewModel(conversationManager);
 
 			AdditionalTools = [ new AgenticToolModule() ];
 		}
@@ -190,19 +266,19 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// <returns>A task that represents the asynchronous operation.</returns>
 		public async Task SendMessageAsync(IUserMessage userMessage, CancellationToken cts = default)
 		{
-			_sendCts?.Cancel(); // Cancel any previous send operation
-			_sendCts = CancellationTokenSource.CreateLinkedTokenSource(cts);
-			cts = _sendCts.Token;
-			var sequence = MessageSequence;
-
-			var executor = new ChatToolExecutor(this);
-			sequence.Messages.Add(userMessage);
-
-			await foreach (var message in executor.GenerateStreamingResponseAsync(userMessage, cts))
+			try
 			{
-				sequence.Messages.Add(message);
-				if (message is PartialAssistantMessage pam)
-					await pam;
+				_sendCts?.Cancel(); // Cancel any previous send operation
+				_sendCts = CancellationTokenSource.CreateLinkedTokenSource(cts);
+				cts = _sendCts.Token;
+
+				var executor = new ChatToolExecutor(this);
+				await executor.GenerateStreamingResponseAsync(userMessage, cts);
+				executor.OnTurnEnded();
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "An error occurred while sending a message: {error}.", ex);
 			}
 		}
 
@@ -218,4 +294,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			return SendMessageAsync(userMessage, cts);
 		}
 	}
+
+
+
+
+
 }

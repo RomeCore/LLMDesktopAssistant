@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using LLMDesktopAssistant.LLM.Conversations;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Speech;
@@ -13,14 +14,16 @@ using RCLargeLanguageModels.Messages;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
-	[TabTool("voice_chat", Order = -10)]
+	// [TabTool("voice_chat", Order = -10)]
 	[ViewModelFor(typeof(VoiceChatView))]
 	public class VoiceChatViewModel : ViewModelBase
 	{
-		public ChatViewModel ChatViewModel { get; } = new ChatViewModel();
+		public ChatViewModel ChatViewModel { get; }
 
-		public VoiceChatViewModel()
+		public VoiceChatViewModel(ConversationManager conversationManager)
 		{
+			ChatViewModel = new ChatViewModel(conversationManager);
+
 			var tracker = ModuleManager.GetDynamicTracker<IUserSpeechProvider>();
 			tracker.OnChanged += (o, n) =>
 			{
@@ -38,7 +41,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				"Отвечай в формате простого текста без использования разметки Markdown. " +
 				"Имей ввиду, что распознавание речи пользователя может ошибаться и он может отправлять сообщения с ошибками. " +
 				"Ты можешь использовать нецензурные выражения.";
-			ChatViewModel.MessageSequence.Messages.CollectionChanged += Messages_CollectionChanged;
+			ChatViewModel.ConversationManager.CollectionChanged += Messages_CollectionChanged;
 		}
 
 		private async void OnSpeechReceived(string obj)

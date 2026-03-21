@@ -47,6 +47,9 @@
     <Compile Update="MVVM\TestView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Tabs\Chat\ChatManagerView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Tabs\SampleTab.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

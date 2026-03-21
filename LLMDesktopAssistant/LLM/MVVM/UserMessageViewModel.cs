@@ -1,4 +1,5 @@
-﻿using LLMDesktopAssistant.MVVM;
+﻿using LLMDesktopAssistant.LLM.Conversations;
+using LLMDesktopAssistant.MVVM;
 using RCLargeLanguageModels.Messages;
 
 namespace LLMDesktopAssistant.LLM.MVVM
@@ -13,13 +14,12 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _text, value);
 		}
 
-		public UserMessageViewModel()
+		public UserMessageViewModel(ConversationMessage conversationMessage)
 		{
-		}
+			if (conversationMessage.Message.Message is not IUserMessage userMessage)
+				throw new InvalidOperationException("Invalid message type. Expected IUserMessage.");
 
-		public UserMessageViewModel(IUserMessage message)
-		{
-			Text = message.Content ?? string.Empty;
+			Text = userMessage.Content ?? string.Empty;
 		}
 	}
 }

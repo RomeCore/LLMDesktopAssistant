@@ -1,4 +1,5 @@
 ﻿using LLMDesktopAssistant.LLM;
+using LLMDesktopAssistant.LLM.Conversations;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;
@@ -32,7 +33,7 @@ namespace LLMDesktopAssistant.Browsing
 			set => SetProperty(ref _webView, value);
 		}
 
-		private ChatViewModel _chat = new();
+		private ChatViewModel _chat;
 		/// <summary>
 		/// The LLM chat that applicated to this browser tab.
 		/// </summary>
@@ -47,8 +48,9 @@ namespace LLMDesktopAssistant.Browsing
 		/// </summary>
 		public CoreWebView2 CoreWebView2 => WebView.CoreWebView2;
 
-		public BrowserTabViewModel()
+		public BrowserTabViewModel(ConversationManager conversationManager)
 		{
+			_chat = new ChatViewModel(conversationManager);
 			_chat.AdditionalTools.Add(new BrowserToolModule(this));
 		}
 	}

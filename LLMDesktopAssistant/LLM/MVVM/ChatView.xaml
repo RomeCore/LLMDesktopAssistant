@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM.MVVM"
+			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Controls"
 			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 mc:Ignorable="d" 
@@ -19,7 +20,8 @@
 		<ScrollViewer Grid.Row="0"
 					  VerticalScrollBarVisibility="Auto"
 					  PanningMode="VerticalOnly"
-					  materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
+					  materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True"
+					  ctrl:ScrollViewerBehavior.AutoScrollEnabled="True">
 
 			<ContentControl Content="{Binding MessageSequence}"/>
 		</ScrollViewer>
