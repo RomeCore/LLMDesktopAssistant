@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Generates a response to the provided user message asynchronously.
 		/// </summary>
 		/// <remarks>
-		/// Implementations should add messages directly to the <see cref="Chat"/> instance.
+		/// Implementations should add messages to the <see cref="IChatStorageService"/>.
 		/// </remarks>
 		/// <param name="userMessage">The user message to process.</param>
 		/// <param name="cancellationToken">Token for cancellation of the operation.</param>

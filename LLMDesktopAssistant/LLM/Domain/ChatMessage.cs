@@ -23,9 +23,14 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _content, value);
 		}
 
+		private string? _summaryOfPrevMessages;
 		/// <summary>
 		/// Gets or sets the summary of previous messages. Used for memory context.
 		/// </summary>
-		public string? SummaryOfPrevMessages { get; set; }
+		public string? SummaryOfPrevMessages
+		{
+			get => _summaryOfPrevMessages;
+			set => SetProperty(ref _summaryOfPrevMessages, value);
+		}
 	}
 }
