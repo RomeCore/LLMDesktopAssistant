@@ -11,6 +11,11 @@
 		public required ChatMessage Message { get; init; }
 
 		/// <summary>
+		/// Gets or sets the index of the message in the chat history (e.g. the index in the <see cref="Chat.Messages"/> collection).
+		/// </summary>
+		public required int MessageIndex { get; init; }
+
+		/// <summary>
 		/// Gets or sets the index of the selected branch.
 		/// </summary>
 		public int SelectedBranchIndex { get; init; } = 0;

@@ -15,23 +15,23 @@ namespace LLMDesktopAssistant.LLM.Services
 	{
 		public ChatServicesBuilder()
 		{
-			this.AddSingleton<Chat>();
+			this.AddScoped<Chat>();
 		}
 	}
 
 	/// <summary>
-	/// Interface for chat execution service.
+	/// Interface for chat storage service. This service is responsible for storing and retrieving chat data.
 	/// </summary>
-	public interface IChatExecutionService
+	public interface IChatStorageService
 	{
 		/// <summary>
-		/// Generates a response to the provided user message asynchronously.
+		/// Initializes the storage service asynchronously.
+		/// This method should load chat data (settings and messages) into the <see cref="Chat"/>.
 		/// </summary>
-		/// <param name="userMessage">The user message to process.</param>
 		/// <param name="cancellationToken">Token for cancellation of the operation.</param>
-		/// <returns>A task representing the asynchronous operation that will produce a response message.</returns>
-		Task<AssistantMessage> GenerateResponseAsync(UserMessage userMessage, CancellationToken cancellationToken = default);
+		/// <returns>A task representing the asynchronous operation.</returns>
+		Task InitializeAsync(CancellationToken cancellationToken = default);
+
+		void AppendMessage(ChatMessage message);
 	}
-
-
 }
