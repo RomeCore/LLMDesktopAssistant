@@ -10,10 +10,10 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <summary>
 		/// Loads chat data (settings and messages) into the <see cref="Chat"/>.
 		/// </summary>
-		void Load();
+		void Reload();
 
 		/// <summary>
-		/// Appends message to the storage and <see cref="Chat"/>.
+		/// Appends message to the storage and the <see cref="Chat"/>.
 		/// </summary>
 		/// <param name="message"></param>
 		void AppendMessage(ChatMessage message);
@@ -31,5 +31,11 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <param name="editIndex"></param>
 		/// <param name="newMessage"></param>
 		void EditMessage(int editIndex, ChatMessage newMessage);
+
+		/// <summary>
+		/// Places a new branch at the specified message index. The previous message becomes a leaf of the current chat.
+		/// </summary>
+		/// <param name="messageIndex"></param>
+		void PlaceNewBranch(int messageIndex);
 	}
 }

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -12,7 +14,14 @@ namespace LLMDesktopAssistant.LLM.Services
 	{
 		public static void AddChatServices(this IServiceCollection services)
 		{
-			services.AddScoped<Chat>();
+			services.TryAddScoped<Chat>();
+			services.TryAddScoped<IChatOperationService, ChatOperationService>();
+			services.TryAddScoped<IChatExecutionService, ChatExecutionService>();
+			services.TryAddScoped<IChatStorageService, ChatStorageService>();
+			services.TryAddScoped<IMessageConverter, MessageConverter>();
+			services.TryAddScoped<IPromptChatBuilder, PromptChatBuilder>();
+			services.TryAddScoped<IToolExecutionService, ToolExecutionService>();
+			services.TryAddScoped<ILLMProvider, LLMProvider>();
 		}
 	}
 }

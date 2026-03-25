@@ -8,6 +8,6 @@
 		/// <summary>
 		/// The collection of attachments associated with the user message. These can include images or files.
 		/// </summary>
-		public List<Attachment> Attachments { get; } = [];
+		public List<Attachment> Attachments { get; set; } = [];
 	}
 }

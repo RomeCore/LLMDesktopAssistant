@@ -1,28 +1,28 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.MVVM;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.MVVM;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
-	public enum ToolCallStatus
-	{
-		None,
-		UserAsked,
-		InProgress,
-		Success,
-		Cancelled,
-		Error,
-		NoResult
-	}
-
 	[ViewModelFor(typeof(ToolCallView))]
 	public class ToolCallViewModel : ViewModelBase
 	{
+		private static readonly JsonSerializerOptions _toolCallSerializerOptions = new JsonSerializerOptions
+		{
+			Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),
+			WriteIndented = true
+		};
+
+		private readonly ToolCall toolCall;
+
 		private ToolCallStatus _status = ToolCallStatus.None;
 		public ToolCallStatus Status
 		{
@@ -51,8 +51,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _arguments, value);
 		}
 
-		private string _result = string.Empty;
-		public string Result
+		private string? _result = string.Empty;
+		public string? Result
 		{
 			get => _result;
 			set => SetProperty(ref _result, value);
@@ -61,45 +61,58 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public ICommand ApproveCommand { get; }
 		public void Approve()
 		{
-			Status = ToolCallStatus.InProgress;
-			_userDecisionTcs?.TrySetResult(true);
+			toolCall.UserAskCompletionSource?.TrySetResult(true);
 		}
 
 		public ICommand CancelCommand { get; }
 		public void Cancel()
 		{
-			Status = ToolCallStatus.Cancelled;
-			_userDecisionTcs?.TrySetResult(false);
+			toolCall.UserAskCompletionSource?.TrySetResult(false);
 		}
 
-		public ToolCallViewModel()
+		public ToolCallViewModel(ToolCall toolCall)
 		{
+			this.toolCall = toolCall;
+
 			ApproveCommand = new RelayCommand(Approve);
 			CancelCommand = new RelayCommand(Cancel);
-		}
 
-		private TaskCompletionSource<bool>? _userDecisionTcs;
-		public async Task<bool> AskUserAsync(CancellationToken cancellationToken)
-		{
-			if (_userDecisionTcs != null)
-				throw new InvalidOperationException("A user decision is already in progress.");
-
-			_userDecisionTcs = new TaskCompletionSource<bool>();
-			Status = ToolCallStatus.UserAsked;
-
-			using (cancellationToken.Register(() =>
+			ToolName = toolCall.ToolName;
+			ToolCallId = toolCall.Id;
+			Arguments = toolCall.Arguments.ToJsonString(_toolCallSerializerOptions);
+			Status = toolCall.Status switch
 			{
-				_userDecisionTcs.TrySetCanceled(cancellationToken);
-			}))
+				ToolStatus.NotExecuted => ToolCallStatus.None,
+				ToolStatus.Executing => ToolCallStatus.InProgress,
+				ToolStatus.WaitingForApproval => ToolCallStatus.UserAsked,
+				ToolStatus.Success => ToolCallStatus.Success,
+				ToolStatus.Error => ToolCallStatus.Error,
+				ToolStatus.Cancelled => ToolCallStatus.Cancelled,
+				_ => ToolCallStatus.None
+			};
+			Result = toolCall.ResultContent;
+
+			if (!toolCall.IsCompleted)
 			{
-				try
+				void OnToolCallPropertyChanged(object? s, PropertyChangedEventArgs e)
 				{
-					return await _userDecisionTcs.Task;
+					InvokeUI(() =>
+					{
+						Status = toolCall.Status switch
+						{
+							ToolStatus.NotExecuted => ToolCallStatus.None,
+							ToolStatus.Executing => ToolCallStatus.InProgress,
+							ToolStatus.WaitingForApproval => ToolCallStatus.UserAsked,
+							ToolStatus.Success => ToolCallStatus.Success,
+							ToolStatus.Error => ToolCallStatus.Error,
+							ToolStatus.Cancelled => ToolCallStatus.Cancelled,
+							_ => ToolCallStatus.None
+						};
+						Result = toolCall.ResultContent;
+					});
 				}
-				finally
-				{
-					_userDecisionTcs = null;
-				}
+				toolCall.PropertyChanged += OnToolCallPropertyChanged;
+				toolCall.CompletionToken.OnCompleted(() => toolCall.PropertyChanged -= OnToolCallPropertyChanged);
 			}
 		}
 	}

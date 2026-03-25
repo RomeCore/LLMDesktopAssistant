@@ -32,5 +32,15 @@ namespace LLMDesktopAssistant.LLM.Domain
 			get => _summaryOfPrevMessages;
 			set => SetProperty(ref _summaryOfPrevMessages, value);
 		}
+
+		private int? _tokenCount;
+		/// <summary>
+		/// Gets or sets the token count of the message. Used for memory context. If not set, it will be calculated based on the content.
+		/// </summary>
+		public int? TokenCount
+		{
+			get => _tokenCount;
+			set => SetProperty(ref _tokenCount, value);
+		}
 	}
 }

@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Emoji.Wpf;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Controls
@@ -52,6 +53,7 @@ namespace LLMDesktopAssistant.Controls
 			newValue ??= string.Empty;
 
 			MarkdownContent.Document = MarkdownParser.ParseDocument(newValue);
+			MarkdownContent.Document.SubstituteGlyphs();
 		}
 	}
 }

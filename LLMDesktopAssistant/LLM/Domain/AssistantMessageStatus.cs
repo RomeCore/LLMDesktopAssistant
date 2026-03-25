@@ -18,16 +18,29 @@
 		/// <summary>
 		/// The message has been successfully processed.
 		/// </summary>
-		Successful,
+		Success,
 
 		/// <summary>
 		/// The message processing failed.
 		/// </summary>
-		Failed,
+		Error,
 
 		/// <summary>
 		/// The message was cancelled by the user.
 		/// </summary>
-		CancelledByUser
+		Cancelled
+	}
+
+	public static class AssistantMessageStatusExtensions
+	{
+		/// <summary>
+		/// Determines if the given message status is a terminal state, meaning it is finished.
+		/// </summary>
+		/// <param name="status">The message status to check.</param>
+		/// <returns>True if the status is terminal, otherwise false.</returns>
+		public static bool IsTerminal(this AssistantMessageStatus status)
+		{
+			return status == AssistantMessageStatus.Success || status == AssistantMessageStatus.Error || status == AssistantMessageStatus.Cancelled;
+		}
 	}
 }

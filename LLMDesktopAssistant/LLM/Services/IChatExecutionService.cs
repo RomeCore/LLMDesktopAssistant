@@ -3,19 +3,15 @@
 namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
-	/// Interface for chat execution service.
+	/// Interface for chat execution service that calls LLM services, executes tools, plans and puts result messages into a <see cref="Chat"/>.
 	/// </summary>
 	public interface IChatExecutionService
 	{
 		/// <summary>
-		/// Generates a response to the provided user message asynchronously.
+		/// Generates a response asynchronously and puts it into a <see cref="IChatStorageService"/>.
 		/// </summary>
-		/// <remarks>
-		/// Implementations should add messages to the <see cref="IChatStorageService"/>.
-		/// </remarks>
-		/// <param name="userMessage">The user message to process.</param>
 		/// <param name="cancellationToken">Token for cancellation of the operation.</param>
 		/// <returns>A task representing the asynchronous operation.</returns>
-		Task GenerateResponseAsync(UserMessage userMessage, CancellationToken cancellationToken = default);
+		Task GenerateResponseAsync(CancellationToken cancellationToken = default);
 	}
 }

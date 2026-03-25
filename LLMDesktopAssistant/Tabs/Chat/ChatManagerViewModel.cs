@@ -8,8 +8,12 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.LLM.Data.Models;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.ToolModules;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.Tabs.Chat
 {
@@ -17,8 +21,10 @@ namespace LLMDesktopAssistant.Tabs.Chat
 	[TabTool("chat")]
 	public class ChatManagerViewModel : ViewModelBase
 	{
+		public IServiceProvider ServiceProvider { get; }
 		public ConversationDatabase Database { get; }
 
+		private IServiceScope? _currentChatScope;
 		private ChatViewModel? _currentChat;
 		public ChatViewModel? CurrentChat
 		{
@@ -46,6 +52,12 @@ namespace LLMDesktopAssistant.Tabs.Chat
 		public ChatManagerViewModel()
 		{
 			Database = new ConversationDatabase("conversations/chat.db");
+
+			var serviceBuilder = new ServiceCollection();
+			serviceBuilder.AddSingleton(Database);
+			serviceBuilder.AddChatServices();
+
+			ServiceProvider = serviceBuilder.BuildServiceProvider();
 
 			EnsureDefaultConversation();
 			LoadConversations();
@@ -77,8 +89,17 @@ namespace LLMDesktopAssistant.Tabs.Chat
 
 		private void OpenConversation(int id)
 		{
-			var manager = new ConversationManager(Database, id);
-			CurrentChat = new ChatViewModel(manager);
+			_currentChatScope?.Dispose();
+			CurrentChat?.Chat.Dispose();
+
+			_currentChatScope = ServiceProvider.CreateScope();
+
+			var chat = _currentChatScope.ServiceProvider.GetRequiredService<LLM.Domain.Chat>();
+			chat.Id = id;
+			chat.AdditionalToolModules.Add(new AgenticToolModule());
+			_currentChatScope.ServiceProvider.GetRequiredService<IChatStorageService>().Reload();
+
+			CurrentChat = new ChatViewModel(chat);
 		}
 
 		private void CreateConversation()

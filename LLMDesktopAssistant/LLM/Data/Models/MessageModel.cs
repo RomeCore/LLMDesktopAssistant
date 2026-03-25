@@ -24,14 +24,24 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		public RoleModel Role { get; set; }
 
 		/// <summary>
+		/// Gets or sets the status of the message.
+		/// </summary>
+		public MessageStatusModel Status { get; set; }
+
+		/// <summary>
 		/// Gets or sets the hidden content of the message, this can be RAG content or reasoning content.
 		/// </summary>
-		public string? HiddenContent { get; set; }
+		public string? ReasoningContent { get; set; }
 
 		/// <summary>
 		/// Gets or sets the main content of the message.
 		/// </summary>
 		public string Content { get; set; } = string.Empty;
+
+		/// <summary>
+		/// Gets or sets the error associated with the message, if any.
+		/// </summary>
+		public string? Error { get; set; }
 
 		/// <summary>
 		/// Gets or sets the summary of this message and previous messages until another summary (and including it).

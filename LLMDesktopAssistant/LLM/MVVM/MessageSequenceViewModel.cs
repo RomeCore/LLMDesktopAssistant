@@ -7,12 +7,9 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.LLM.Data;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Utils;
-using Microsoft.Extensions.AI;
-using RCLargeLanguageModels.Messages;
-using RCLargeLanguageModels.Tasks;
-using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -26,17 +23,17 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public ReadOnlyObservableCollection<MessageViewModelBase> MessageViewModels { get; }
 
 		/// <summary>
-		/// The conversation manager associated with this message sequence.
+		/// The chat instance associated with this message sequence.
 		/// </summary>
-		public ConversationManager ConversationManager { get; }
+		public Chat Chat { get; }
 
-		public MessageSequenceViewModel(ConversationManager conversationManager)
+		public MessageSequenceViewModel(Chat chat)
 		{
 			MessageViewModels = new ReadOnlyObservableCollection<MessageViewModelBase>(_messageViewModels);
-			ConversationManager = conversationManager;
+			Chat = chat;
 
-			_messageViewModels.AddRange(ConversationManager.Messages.Select(CreateMessageViewModel));
-			ConversationManager.CollectionChanged += OnMessagesCollectionChanged;
+			_messageViewModels.AddRange(Chat.Messages.Select(CreateMessageViewModel));
+			Chat.Messages.CollectionChanged += OnMessagesCollectionChanged;
 		}
 
 		private void OnMessagesCollectionChanged(object? s, NotifyCollectionChangedEventArgs e)
@@ -48,7 +45,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 					case NotifyCollectionChangedAction.Add:
 
 						_messageViewModels.InsertRange(e.NewStartingIndex,
-							e.NewItems!.Cast<ConversationMessage>().Select(CreateMessageViewModel));
+							e.NewItems!.Cast<BranchedMessage>().Select(CreateMessageViewModel));
 
 						break;
 
@@ -67,7 +64,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 						_messageViewModels.RemoveRange(e.OldStartingIndex, e.OldItems!.Count);
 
 						_messageViewModels.InsertRange(e.NewStartingIndex,
-							e.NewItems!.Cast<ConversationMessage>().Select(CreateMessageViewModel));
+							e.NewItems!.Cast<BranchedMessage>().Select(CreateMessageViewModel));
 
 						break;
 
@@ -79,7 +76,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 					case NotifyCollectionChangedAction.Reset:
 
-						_messageViewModels.ReplaceRange(ConversationManager.Messages.Select(CreateMessageViewModel));
+						_messageViewModels.ReplaceRange(Chat.Messages.Select(CreateMessageViewModel));
 
 						break;
 				}
@@ -87,17 +84,17 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			});
 		}
 
-		private MessageViewModelBase CreateMessageViewModel(ConversationMessage conversationMessage)
+		private MessageViewModelBase CreateMessageViewModel(BranchedMessage branchedMessage)
 		{
-			var message = conversationMessage.Message.Message;
+			var message = branchedMessage.Message;
 
-			if (message is IUserMessage)
+			if (message is UserMessage)
 			{
-				return new UserMessageViewModel(conversationMessage);
+				return new UserMessageViewModel(branchedMessage, Chat);
 			}
-			else if (message is IAssistantMessage)
+			else if (message is AssistantMessage)
 			{
-				return new AssistantMessageViewModel(conversationMessage);
+				return new AssistantMessageViewModel(branchedMessage, Chat);
 			}
 			else
 			{
@@ -108,27 +105,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		private void OnMessageViewModelRemoved(MessageViewModelBase viewModel)
 		{
 			viewModel.OnRemoved();
-		}
-
-		/// <summary>
-		/// Asks the user to execute a specific tool call.
-		/// </summary>
-		/// <param name="toolCall">The tool call to execute.</param>
-		/// <returns>A boolean indicating whether the user confirmed the execution of the tool call.</returns>
-		public async Task<bool> AskToolExecuteAsync(IToolCall toolCall, CancellationToken cancellationToken = default)
-		{
-			var lastAssistantMessageVm = _messageViewModels.LastOrDefault() as AssistantMessageViewModel;
-			if (lastAssistantMessageVm == null)
-				return false;
-
-			var toolCallVM = lastAssistantMessageVm.ToolPart?.ToolCalls.FirstOrDefault(t => t.ToolCallId == toolCall.Id);
-
-			if (toolCallVM != null)
-			{
-				return await toolCallVM.AskUserAsync(cancellationToken);
-			}
-
-			return false;
 		}
 	}
 }

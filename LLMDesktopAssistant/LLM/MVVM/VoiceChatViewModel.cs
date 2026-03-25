@@ -5,12 +5,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.LLM.Data;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Speech;
 using LLMDesktopAssistant.Tabs;
 using LLMDesktopAssistant.Utils;
-using RCLargeLanguageModels.Messages;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -20,9 +20,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	{
 		public ChatViewModel ChatViewModel { get; }
 
-		public VoiceChatViewModel(ConversationManager conversationManager)
+		public VoiceChatViewModel(Chat chat)
 		{
-			ChatViewModel = new ChatViewModel(conversationManager);
+			ChatViewModel = new ChatViewModel(chat);
 
 			var tracker = ModuleManager.GetDynamicTracker<IUserSpeechProvider>();
 			tracker.OnChanged += (o, n) =>
@@ -35,39 +35,36 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			if (tracker.Module != null)
 				tracker.Module.OnSpeechReceived += OnSpeechReceived;
 
-			ChatViewModel.SystemPrompt =
+			chat.SystemPrompt =
 				"Ты - виртуальный голосовой помощник Niggalink AI. " +
 				"Разговаривай как чертов робо-ниггер. " +
 				"Отвечай в формате простого текста без использования разметки Markdown. " +
 				"Имей ввиду, что распознавание речи пользователя может ошибаться и он может отправлять сообщения с ошибками. " +
 				"Ты можешь использовать нецензурные выражения.";
-			ChatViewModel.ConversationManager.CollectionChanged += Messages_CollectionChanged;
+			ChatViewModel.Chat.Messages.CollectionChanged += Messages_CollectionChanged;
 		}
 
-		private async void OnSpeechReceived(string obj)
+		private async void OnSpeechReceived(string speech)
 		{
-			await ChatViewModel.SendMessageAsync(new UserMessage(obj));
+			await ChatViewModel.GenerateResponseAsync(new UserInput { Content = speech });
 		}
 
 		private void Messages_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
 			if (e.NewItems != null)
 			{
-				foreach (var message in e.NewItems.OfType<IAssistantMessage>())
+				foreach (var message in e.NewItems.OfType<AssistantMessage>())
 				{
-					if (message is PartialAssistantMessage partialMessage)
-						SpeakMessage(partialMessage);
-					else
-						SpeakMessage(message);
+					SpeakMessage(message);
 				}
 			}
 		}
 
-		private async void SpeakMessage(PartialAssistantMessage message)
+		private async void SpeakMessage(AssistantMessage message)
 		{
 			var buffer = new StringBuilder();
 
-			await foreach (var part in message)
+			/*await foreach (var part in message)
 			{
 				if (string.IsNullOrEmpty(part.DeltaContent))
 					continue;
@@ -76,19 +73,12 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				var speechableText = MarkdownParser.ParseSpeechablePlainTextStreaming(buffer);
 				if (!string.IsNullOrWhiteSpace(speechableText))
 					SpeechQueue.Enqueue(speechableText);
-			}
+			}*/
 
 			var remaining = buffer.ToString();
 			var remainingSpeechableText = MarkdownParser.ParseSpeechablePlainText(remaining);
 			if (!string.IsNullOrWhiteSpace(remainingSpeechableText))
 				SpeechQueue.Enqueue(remainingSpeechableText);
-		}
-
-		private void SpeakMessage(IAssistantMessage message)
-		{
-			var speechableText = MarkdownParser.ParseSpeechablePlainText(message.Content ?? string.Empty);
-			if (!string.IsNullOrWhiteSpace(speechableText))
-				SpeechQueue.Enqueue(speechableText);
 		}
 	}
 }

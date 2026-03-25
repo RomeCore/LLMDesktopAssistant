@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using RCLargeLanguageModels.Tasks;
+using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -10,7 +11,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// <summary>
 		/// Gets or sets the name of the tool being called.
 		/// </summary>
-		public required string Name { get; init; }
+		public required string ToolName { get; init; }
 
 		/// <summary>
 		/// Gets or sets the ID of the tool call.
@@ -41,5 +42,28 @@ namespace LLMDesktopAssistant.LLM.Domain
 			get => _resultContent;
 			set => SetProperty(ref _resultContent, value);
 		}
+
+		private TaskCompletionSource<bool>? _userAskCompletionSource;
+		/// <summary>
+		/// Gets or sets the task completion source for user interaction.
+		/// </summary>
+		public TaskCompletionSource<bool>? UserAskCompletionSource
+		{
+			get => _userAskCompletionSource;
+			set => SetProperty(ref _userAskCompletionSource, value);
+		}
+
+		/// <summary>
+		/// Gets or sets the completion token associated with this tool call.
+		/// </summary>
+		public required CompletionToken CompletionToken { get; init; }
+
+		/// <summary>
+		/// Gets a value indicating whether the tool call has been completed (e.g. not processing or pending).
+		/// This means this tool call has finished or been loaded from database.
+		/// </summary>
+		public bool IsCompleted => CompletionToken.IsCompleted;
+
+		public CompletionToken GetAwaiter() => CompletionToken;
 	}
 }

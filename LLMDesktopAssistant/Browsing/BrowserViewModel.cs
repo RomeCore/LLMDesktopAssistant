@@ -8,8 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using LLMDesktopAssistant.LLM.Data;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Tabs;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.Browsing
 {
@@ -77,9 +80,16 @@ namespace LLMDesktopAssistant.Browsing
 					Id = 1,
 					SystemInstructions = "You are a helpful assistant."
 				});
-			var conversationManager = new ConversationManager(db, 1);
 
-			var tab = new BrowserTabViewModel(conversationManager) { Title = "Home" };
+			var serviceBuilder = new ServiceCollection();
+			serviceBuilder.AddSingleton(db);
+			serviceBuilder.AddChatServices();
+			var services = serviceBuilder.BuildServiceProvider();
+
+			var chat = services.GetRequiredService<Chat>();
+			chat.Id = 1;
+
+			var tab = new BrowserTabViewModel(chat) { Title = "Home" };
 			tab.WebView.Source = new Uri("https://www.google.com");
 			TabItems.Add(tab);
 		}

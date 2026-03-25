@@ -1,5 +1,6 @@
 ﻿using LLMDesktopAssistant.LLM;
 using LLMDesktopAssistant.LLM.Data;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;
@@ -48,10 +49,10 @@ namespace LLMDesktopAssistant.Browsing
 		/// </summary>
 		public CoreWebView2 CoreWebView2 => WebView.CoreWebView2;
 
-		public BrowserTabViewModel(ConversationManager conversationManager)
+		public BrowserTabViewModel(Chat chat)
 		{
-			_chat = new ChatViewModel(conversationManager);
-			_chat.AdditionalTools.Add(new BrowserToolModule(this));
+			_chat = new ChatViewModel(chat);
+			chat.AdditionalToolModules.Add(new BrowserToolModule(this));
 		}
 	}
 }

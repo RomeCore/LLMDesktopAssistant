@@ -8,7 +8,7 @@
 		/// <summary>
 		/// The tool is currently pending and has not yet started.
 		/// </summary>
-		Pending,
+		NotExecuted,
 
 		/// <summary>
 		/// The tool is currently waiting for user's approval before proceeding.
@@ -23,16 +23,21 @@
 		/// <summary>
 		/// The tool has completed successfully.
 		/// </summary>
-		Successful,
+		Success,
 
 		/// <summary>
 		/// The tool has failed to complete.
 		/// </summary>
-		Failed,
+		Error,
 
 		/// <summary>
 		/// The tool was cancelled by the user.
 		/// </summary>
-		CancelledByUser
+		Cancelled,
+
+		/// <summary>
+		/// The tool did not produce any result.
+		/// </summary>
+		NoResult
 	}
 }

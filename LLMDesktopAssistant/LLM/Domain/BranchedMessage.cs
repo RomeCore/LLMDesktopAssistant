@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Represents a branched message in the chat.
 	/// </summary>
-	public class BranchedMessage
+	public class BranchedMessage : Disposable
 	{
 		/// <summary>
 		/// Gets or sets the message content.
@@ -24,5 +24,13 @@
 		/// Gets or sets the count of available branches for current message.
 		/// </summary>
 		public int AvailableBranchesCount { get; init; } = 1;
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				Message.Dispose();
+		}
 	}
 }

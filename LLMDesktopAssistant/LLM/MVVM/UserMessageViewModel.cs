@@ -1,6 +1,6 @@
 ﻿using LLMDesktopAssistant.LLM.Data;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.MVVM;
-using RCLargeLanguageModels.Messages;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -14,9 +14,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _text, value);
 		}
 
-		public UserMessageViewModel(ConversationMessage conversationMessage)
+		public UserMessageViewModel(BranchedMessage branchedMessage, Chat chat)
 		{
-			if (conversationMessage.Message.Message is not IUserMessage userMessage)
+			if (branchedMessage.Message is not UserMessage userMessage)
 				throw new InvalidOperationException("Invalid message type. Expected IUserMessage.");
 
 			Text = userMessage.Content ?? string.Empty;

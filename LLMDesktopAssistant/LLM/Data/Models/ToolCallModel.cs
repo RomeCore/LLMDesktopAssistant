@@ -19,11 +19,6 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		public int MessageId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the tool type that this tool call is associated to.
-		/// </summary>
-		public ToolTypeModel ToolType { get; set; } = ToolTypeModel.Function;
-
-		/// <summary>
 		/// Gets or sets the tool name that being/been called.
 		/// </summary>
 		public string ToolName { get; set; } = string.Empty;
@@ -41,17 +36,11 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		/// <summary>
 		/// Gets or sets the result status of the tool call, valid when tool call is executed.
 		/// </summary>
-		public ToolStatusModel? ResultStatus { get; set; }
+		public ToolStatusModel Status { get; set; }
 
 		/// <summary>
 		/// Gets or sets the result content of the tool call, valid when tool call is executed.
 		/// </summary>
 		public string? ResultContent { get; set; }
-
-		/// <summary>
-		/// Gets or sets the MarkDown-formatted result content of the tool call.
-		/// Used for display purposes, can be null when normal content should be used.
-		/// </summary>
-		public string? FormattedResultContent { get; set; }
 	}
 }

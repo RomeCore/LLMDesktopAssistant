@@ -2,6 +2,7 @@
 {
 	public enum ToolStatusModel
 	{
+		NotExecuted,
 		Success,
 		Cancelled,
 		Error,

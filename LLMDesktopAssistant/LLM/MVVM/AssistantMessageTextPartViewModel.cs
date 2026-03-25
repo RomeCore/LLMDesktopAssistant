@@ -1,6 +1,6 @@
-﻿using LLMDesktopAssistant.MVVM;
-using RCLargeLanguageModels.Messages;
-using RCLargeLanguageModels.Tasks;
+﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.MVVM;
+using System.ComponentModel;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -25,37 +25,32 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		{
 		}
 
-		public AssistantMessageTextPartViewModel(IAssistantMessage message)
+		public AssistantMessageTextPartViewModel(AssistantMessage message)
 		{
 			Text = message.Content ?? string.Empty;
 
-			if (message is PartialAssistantMessage pMessage)
+			if (!message.IsCompleted)
 			{
-				if (!pMessage.CompletionToken.IsCompleted)
+				Completed = false;
+
+				void PropertyChangedHandler(object? s, PropertyChangedEventArgs e)
 				{
-					Completed = false;
-					void OnPartAdded(object? s, AssistantMessageDelta e)
+					InvokeUI(() =>
 					{
-						App.Current.Dispatcher.Invoke(() =>
-						{
-							Text = message.Content ?? string.Empty;
-						});
-					}
-					void OnCompleted(object? s, CompletedEventArgs e)
-					{
-						pMessage.PartAdded -= OnPartAdded;
-						pMessage.Completed -= OnCompleted;
-						Completed = true;
-						Console.WriteLine(Text);
-					}
-					pMessage.PartAdded += OnPartAdded;
-					pMessage.Completed += OnCompleted;
+						Text = message.Content ?? string.Empty;
+					});
 				}
-				else
+
+				message.PropertyChanged += PropertyChangedHandler;
+				message.CompletionToken.OnCompleted(() =>
 				{
 					Completed = true;
-					Console.WriteLine(Text);
-				}
+					message.PropertyChanged -= PropertyChangedHandler;
+				});
+			}
+			else
+			{
+				Completed = true;
 			}
 		}
 	}

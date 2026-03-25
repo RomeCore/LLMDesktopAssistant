@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 using RCParsing.Utils;
-using Uniquest.Backend;
 
 namespace LLMDesktopAssistant
 {

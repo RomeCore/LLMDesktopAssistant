@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using RCLargeLanguageModels.Tasks;
+using System.Collections.ObjectModel;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -16,6 +17,11 @@ namespace LLMDesktopAssistant.LLM.Domain
 			get => _reasoningContent;
 			set => SetProperty(ref _reasoningContent, value);
 		}
+
+		/// <summary>
+		/// The collection of tool calls associated with this message. If no tool calls were made, this property is an empty collection.
+		/// </summary>
+		public ObservableCollection<ToolCall> ToolCalls { get; } = [];
 
 		private AssistantMessageStatus _status = AssistantMessageStatus.Pending;
 		/// <summary>
@@ -38,8 +44,25 @@ namespace LLMDesktopAssistant.LLM.Domain
 		}
 
 		/// <summary>
-		/// The collection of tool calls associated with this message. If no tool calls were made, this property is an empty collection.
+		/// Gets or sets the completion token associated with this message.
 		/// </summary>
-		public ObservableCollection<ToolCall> ToolCalls { get; } = [];
+		public required CompletionToken CompletionToken { get; init; }
+
+		/// <summary>
+		/// Gets a value indicating whether the message has been completed (e.g. not streaming).
+		/// This means this message has finished streaming or been loaded from database.
+		/// </summary>
+		public bool IsCompleted => CompletionToken.IsCompleted;
+
+		public CompletionToken GetAwaiter() => CompletionToken;
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				foreach (var toolCall in ToolCalls)
+					toolCall.Dispose();
+		}
 	}
 }

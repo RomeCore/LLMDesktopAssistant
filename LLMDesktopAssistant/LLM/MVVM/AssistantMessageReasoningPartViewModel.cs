@@ -1,5 +1,5 @@
-﻿using LLMDesktopAssistant.MVVM;
-using RCLargeLanguageModels.Messages;
+﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.MVVM;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -17,19 +17,16 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		{
 		}
 
-		public AssistantMessageReasoningPartViewModel(IAssistantMessage message)
+		public AssistantMessageReasoningPartViewModel(AssistantMessage message)
 		{
 			ReasoningText = message.ReasoningContent ?? string.Empty;
-			if (message is PartialAssistantMessage pMessage)
+			message.PropertyChanged += (s, e) =>
 			{
-				pMessage.PartAdded += (s, e) =>
+				App.Current.Dispatcher.Invoke(() =>
 				{
-					App.Current.Dispatcher.Invoke(() =>
-					{
-						ReasoningText = message.ReasoningContent ?? string.Empty;
-					});
-				};
-			}
+					ReasoningText = message.ReasoningContent ?? string.Empty;
+				});
+			};
 		}
 	}
 }

@@ -6,6 +6,7 @@
 			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
+			 xmlns:controls="clr-namespace:LLMDesktopAssistant.Controls"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
 
@@ -72,7 +73,7 @@
 			</materialDesign:PackIcon>
 		</Grid>
 
-		<materialDesign:PopupBox Grid.Column="1">
+		<materialDesign:PopupBox Grid.Column="1" PopupMode="Click">
 			
 			<materialDesign:PopupBox.ToggleContent>
 				<TextBlock Text="{loc:Loc {Binding ToolName}}"
@@ -102,7 +103,7 @@
 
 							<Label Content="{loc:Loc tool-result}"
 								   FontSize="16"/>
-							<Label Content="{Binding Result}" FontFamily="Cascadia Code"/>
+							<controls:MarkdownControl MarkdownText="{Binding Result}"/>
 
 						</StackPanel>
 
