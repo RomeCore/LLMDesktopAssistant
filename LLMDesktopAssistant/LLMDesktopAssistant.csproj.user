@@ -35,6 +35,9 @@
     <Compile Update="LLM\MVVM\ToolCallView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="LLM\MVVM\UserInputView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="LLM\MVVM\UserMessageView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -16,11 +16,10 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	[ViewModelFor(typeof(MessageSequenceView))]
 	public class MessageSequenceViewModel : ViewModelBase
 	{
-		private readonly RangeObservableCollection<MessageViewModelBase> _messageViewModels = [];
 		/// <summary>
 		/// Collection of message view models that represent the sequence of messages.
 		/// </summary>
-		public ReadOnlyObservableCollection<MessageViewModelBase> MessageViewModels { get; }
+		public RangeObservableCollection<MessageViewModelBase> MessageViewModels { get; }
 
 		/// <summary>
 		/// The chat instance associated with this message sequence.
@@ -29,10 +28,10 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		public MessageSequenceViewModel(Chat chat)
 		{
-			MessageViewModels = new ReadOnlyObservableCollection<MessageViewModelBase>(_messageViewModels);
+			MessageViewModels = new RangeObservableCollection<MessageViewModelBase>();
 			Chat = chat;
 
-			_messageViewModels.AddRange(Chat.Messages.Select(CreateMessageViewModel));
+			MessageViewModels.AddRange(Chat.Messages.Select(CreateMessageViewModel));
 			Chat.Messages.CollectionChanged += OnMessagesCollectionChanged;
 		}
 
@@ -44,7 +43,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				{
 					case NotifyCollectionChangedAction.Add:
 
-						_messageViewModels.InsertRange(e.NewStartingIndex,
+						MessageViewModels.InsertRange(e.NewStartingIndex,
 							e.NewItems!.Cast<BranchedMessage>().Select(CreateMessageViewModel));
 
 						break;
@@ -52,31 +51,31 @@ namespace LLMDesktopAssistant.LLM.MVVM
 					case NotifyCollectionChangedAction.Remove:
 
 						for (int i = e.OldStartingIndex; i < e.OldStartingIndex + e.OldItems!.Count; i++)
-							OnMessageViewModelRemoved(_messageViewModels[i]);
-						_messageViewModels.RemoveRange(e.OldStartingIndex, e.OldItems!.Count);
+							OnMessageViewModelRemoved(MessageViewModels[i]);
+						MessageViewModels.RemoveRange(e.OldStartingIndex, e.OldItems!.Count);
 
 						break;
 
 					case NotifyCollectionChangedAction.Replace:
 
 						for (int i = e.OldStartingIndex; i < e.OldStartingIndex + e.OldItems!.Count; i++)
-							OnMessageViewModelRemoved(_messageViewModels[i]);
-						_messageViewModels.RemoveRange(e.OldStartingIndex, e.OldItems!.Count);
+							OnMessageViewModelRemoved(MessageViewModels[i]);
+						MessageViewModels.RemoveRange(e.OldStartingIndex, e.OldItems!.Count);
 
-						_messageViewModels.InsertRange(e.NewStartingIndex,
+						MessageViewModels.InsertRange(e.NewStartingIndex,
 							e.NewItems!.Cast<BranchedMessage>().Select(CreateMessageViewModel));
 
 						break;
 
 					case NotifyCollectionChangedAction.Move:
 
-						_messageViewModels.Move(e.OldStartingIndex, e.NewStartingIndex);
+						MessageViewModels.Move(e.OldStartingIndex, e.NewStartingIndex);
 
 						break;
 
 					case NotifyCollectionChangedAction.Reset:
 
-						_messageViewModels.ReplaceRange(Chat.Messages.Select(CreateMessageViewModel));
+						MessageViewModels.Reset(Chat.Messages.Select(CreateMessageViewModel));
 
 						break;
 				}

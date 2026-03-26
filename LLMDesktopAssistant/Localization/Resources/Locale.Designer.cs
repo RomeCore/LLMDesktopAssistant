@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
     // с помощью такого средства, как ResGen или Visual Studio.
     // Чтобы добавить или удалить член, измените файл .ResX и снова запустите ResGen
     // с параметром /str или перестройте свой проект VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Locale {
@@ -196,6 +196,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Get Python installed packages.
+        /// </summary>
+        public static string execute_python_get_installed_packages_list {
+            get {
+                return ResourceManager.GetString("execute-python-get_installed_packages_list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Execute Shell script in Python virt. environment.
         /// </summary>
         public static string execute_python_venv_shell {
@@ -223,29 +232,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Generate GUID.
-        /// </summary>
-        public static string general_generateGUID {
-            get {
-                return ResourceManager.GetString("general-generateGUID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Generate random decimal number.
         /// </summary>
-        public static string general_GenerateRandomFloat {
+        public static string general_generate_random_float {
             get {
-                return ResourceManager.GetString("general-GenerateRandomFloat", resourceCulture);
+                return ResourceManager.GetString("general-generate_random_float", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Ищет локализованную строку, похожую на Generate random integer.
         /// </summary>
-        public static string general_generateRandomInteger {
+        public static string general_generate_random_integer {
             get {
-                return ResourceManager.GetString("general-generateRandomInteger", resourceCulture);
+                return ResourceManager.GetString("general-generate_random_integer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generate GUID.
+        /// </summary>
+        public static string general_generateGUID {
+            get {
+                return ResourceManager.GetString("general-generateGUID", resourceCulture);
             }
         }
         
@@ -300,6 +309,33 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string new_chat {
             get {
                 return ResourceManager.GetString("new_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Reasoning process.
+        /// </summary>
+        public static string reasoning {
+            get {
+                return ResourceManager.GetString("reasoning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Regenerate.
+        /// </summary>
+        public static string regenerate {
+            get {
+                return ResourceManager.GetString("regenerate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Resend.
+        /// </summary>
+        public static string resend {
+            get {
+                return ResourceManager.GetString("resend", resourceCulture);
             }
         }
         

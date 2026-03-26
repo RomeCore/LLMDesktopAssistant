@@ -12,12 +12,13 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Tabs;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.Browsing
 {
 	[ViewModelFor(typeof(BrowserView))]
-	[TabTool("browser", Order = 10)]
+	[TabTool("browser", Icon = PackIconKind.Web, Order = 10)]
 	public class BrowserViewModel : ViewModelBase
 	{
 		private class TabCollection : IEnumerable<TabItem>, INotifyCollectionChanged
@@ -87,7 +88,7 @@ namespace LLMDesktopAssistant.Browsing
 			var services = serviceBuilder.BuildServiceProvider();
 
 			var chat = services.GetRequiredService<Chat>();
-			chat.Id = 1;
+			chat.ChatId = 1;
 
 			var tab = new BrowserTabViewModel(chat) { Title = "Home" };
 			tab.WebView.Source = new Uri("https://www.google.com");

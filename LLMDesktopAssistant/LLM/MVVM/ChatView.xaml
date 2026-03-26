@@ -39,48 +39,7 @@
 					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
 
-				<materialDesign:Card Grid.Column="0"
-									 Padding="8,4"
-									 materialDesign:ShadowAssist.Darken="True">
-
-					<Grid>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto"/>
-							<ColumnDefinition Width="*"/>
-							<ColumnDefinition Width="Auto"/>
-						</Grid.ColumnDefinitions>
-
-						<!-- Attach Button -->
-						<Button Grid.Column="0"
-								Style="{StaticResource MaterialDesignIconButton}"
-								ToolTip="{loc:Loc chat-attach_file_hint}">
-							<materialDesign:PackIcon Kind="Paperclip"/>
-						</Button>
-
-						<!-- Text Input -->
-						<TextBox Grid.Column="1"
-								 materialDesign:HintAssist.Hint="{loc:Loc chat-input_hint}"
-								 materialDesign:TextFieldAssist.HasClearButton="True"
-								 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-								 Text="{Binding UserInput, Mode=TwoWay}"
-								 Margin="8,0"
-								 VerticalAlignment="Center"
-								 TextWrapping="Wrap"
-								 AcceptsReturn="True"
-								 MaxHeight="120"
-								 Foreground="{DynamicResource MaterialDesignBody}"
-								 FontSize="16"
-								 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-
-						<!-- Send Button -->
-						<Button Grid.Column="2"
-								Style="{StaticResource MaterialDesignIconButton}"
-								Command="{Binding SendMessageCommand}"
-								ToolTip="{loc:Loc chat-send_button_hint}">
-							<materialDesign:PackIcon Kind="Send"/>
-						</Button>
-					</Grid>
-				</materialDesign:Card>
+				<ContentControl Content="{Binding UserInput}"/>
 
 				<!-- Settings Button -->
 				<Button Grid.Column="1"

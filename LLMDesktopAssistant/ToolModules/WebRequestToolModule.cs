@@ -1,11 +1,4 @@
-﻿using System.ComponentModel;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using AngleSharp;
+﻿using AngleSharp;
 using Ganss.Xss;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.Utils;
@@ -14,6 +7,13 @@ using RCLargeLanguageModels.Security;
 using RCLargeLanguageModels.Tools;
 using RCLargeLanguageModels.Utilities;
 using RCParsing;
+using System.ComponentModel;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.ToolModules
 {
@@ -116,7 +116,9 @@ namespace LLMDesktopAssistant.ToolModules
 					Headers: {JsonSerializer.Serialize(response.Headers)}
 					Content length: {responseContent.Length}
 					Content:
+					```
 					{responseContent}
+					```
 					""";
 
 				return new ToolResult(result);
@@ -230,7 +232,12 @@ namespace LLMDesktopAssistant.ToolModules
 				if (html.Length > maxCharacters)
 					html = html[0..maxCharacters] + $" ... and {html.Length - maxCharacters} characters more...";
 
-				return new ToolResult(html);
+				var result = $"""
+					```html
+					{html}
+					```
+					""";
+				return new ToolResult(result);
 			}
 			catch (Exception ex)
 			{
@@ -250,11 +257,16 @@ namespace LLMDesktopAssistant.ToolModules
 				var elements = document.QuerySelectorAll(selector);
 				var contents = elements.Select(m => m.TextContent);
 
-				var result = string.Join("\n\n", contents);
+				var html = string.Join("\n\n", contents);
 				const int maxCharacters = 35000;
-				if (result.Length > maxCharacters)
-					result = result[0..maxCharacters] + $" ... and {result.Length - maxCharacters} characters more...";
+				if (html.Length > maxCharacters)
+					html = html[0..maxCharacters] + $" ... and {html.Length - maxCharacters} characters more...";
 
+				var result = $"""
+					```html
+					{html}
+					```
+					""";
 				return new ToolResult(result);
 			}
 			catch (Exception ex)
@@ -286,10 +298,26 @@ namespace LLMDesktopAssistant.ToolModules
 				var response = await _httpClient.SendAsync(request);
 				var responseContent = await response.ParseContentAsync<JsonObject>();
 
-				var pageData = responseContent?["data"]?["webPages"]?["value"];
-				var result = pageData?.ToJsonString(_jsonSerializerOptions) ?? "No results";
+				var pageData = responseContent?["data"]?["webPages"]?["value"]!;
 
-				return new ToolResult(result);
+				var sb = new StringBuilder();
+
+				foreach (var item in (JsonArray)pageData)
+				{
+					var name = item?["name"]?.ToString() ?? "Unknown";
+					var url = item?["url"]?.ToString() ?? "Unknown";
+					var snippet = item?["snippet"]?.ToString();
+					var summary = item?["summary"]?.ToString();
+
+					sb.AppendLine($"**{name}**: [{url}]");
+					if (summary == null)
+						sb.AppendLine(snippet);
+					else
+						sb.AppendLine(summary);
+					sb.AppendLine();
+				}
+
+				return new ToolResult(sb.ToString().Trim());
 			}
 			catch (Exception ex)
 			{

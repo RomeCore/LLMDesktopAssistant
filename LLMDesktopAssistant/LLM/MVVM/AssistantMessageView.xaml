@@ -4,17 +4,61 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM.MVVM"
+			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
 			 xmlns:controls="clr-namespace:LLMDesktopAssistant.Controls"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
 
 	<StackPanel Orientation="Vertical"
-				Margin="40,8">
+			VerticalAlignment="Top"
+			Margin="40,8">
 
 		<ContentControl Content="{Binding ReasoningPart}"/>
 		<ContentControl Content="{Binding TextPart}"/>
-		<ContentControl Content="{Binding ToolPart}" Foreground="White"/>
+		<ContentControl Content="{Binding ToolPart}" Foreground="{DynamicResource MaterialDesignBody}"/>
+
+		<StackPanel Orientation="Horizontal"
+					HorizontalAlignment="Left"
+					Visibility="{Binding CompletedVisibility}">
+
+			<Button Style="{StaticResource MaterialDesignIconButton}"
+					Command="{Binding RegenerateCommand}"
+					Width="24" Height="24"
+					ToolTip="{loc:Loc regenerate}">
+				<materialDesign:PackIcon Kind="Refresh"/>
+			</Button>
+
+			<StackPanel Orientation="Horizontal"
+						Visibility="{Binding BranchSelectionVisibility}">
+
+				<Button Style="{StaticResource MaterialDesignIconButton}"
+						Command="{Binding SwitchBranchCommand}"
+						CommandParameter="{Binding PreviousBranchIndex}"
+						Width="24" Height="24">
+					<materialDesign:PackIcon Kind="ChevronLeft"/>
+				</Button>
+
+				<ComboBox ItemsSource="{Binding BranchIndices}"
+						  SelectedItem="{Binding SelectedBranchIndex}"
+						  Foreground="{DynamicResource MaterialDesignBody}"/>
+
+				<Button Style="{StaticResource MaterialDesignIconButton}"
+						Command="{Binding SwitchBranchCommand}"
+						CommandParameter="{Binding NextBranchIndex}"
+						Width="24" Height="24">
+					<materialDesign:PackIcon Kind="ChevronRight"/>
+				</Button>
+
+			</StackPanel>
+
+		</StackPanel>
+
+		<Grid Visibility="{Binding NotCompletedVisibility}">
+
+			<ProgressBar IsIndeterminate="True" Height="5" Margin="0,5"/>
+
+		</Grid>
 
 	</StackPanel>
 

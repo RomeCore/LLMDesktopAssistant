@@ -13,12 +13,13 @@ using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.Tabs.Chat
 {
 	[ViewModelFor(typeof(ChatManagerView))]
-	[TabTool("chat")]
+	[TabTool("chat", Icon = PackIconKind.Message)]
 	public class ChatManagerViewModel : ViewModelBase
 	{
 		public IServiceProvider ServiceProvider { get; }
@@ -95,7 +96,7 @@ namespace LLMDesktopAssistant.Tabs.Chat
 			_currentChatScope = ServiceProvider.CreateScope();
 
 			var chat = _currentChatScope.ServiceProvider.GetRequiredService<LLM.Domain.Chat>();
-			chat.Id = id;
+			chat.ChatId = id;
 			chat.AdditionalToolModules.Add(new AgenticToolModule());
 			_currentChatScope.ServiceProvider.GetRequiredService<IChatStorageService>().Reload();
 

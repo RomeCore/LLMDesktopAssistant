@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			ConversationDatabase database
 		) : IChatStorageService
 	{
-		readonly int conversationId = chat.Id;
+		readonly int conversationId = chat.ChatId;
 
 		public void Reload()
 		{
@@ -48,7 +48,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				currentNodeId = nodeModel.SelectedNodeId;
 			}
 
-			chat.Messages.ReplaceRange(messages);
+			chat.Messages.Reset(messages);
 		}
 
 		public void AppendMessage(ChatMessage chatMessage)

@@ -34,44 +34,20 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		public Chat Chat { get; }
 
-		private string _userInput = string.Empty;
 		/// <summary>
-		/// Gets or sets the user input to be sent in the next conversation turn.
+		/// Gets the user input to be sent in the next conversation turn.
 		/// </summary>
-		public string UserInput
-		{
-			get => _userInput;
-			set => SetProperty(ref _userInput, value);
-		}
-
-		/// <summary>
-		/// Command to send a message. This command is bound to the UI and triggers the SendMessage method.
-		/// </summary>
-		public ICommand SendMessageCommand { get; }
+		public UserInputViewModel UserInput { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ChatViewModel"/> class.
 		/// </summary>
 		public ChatViewModel(Chat chat)
 		{
-			SendMessageCommand = new AsyncRelayCommand(async ct =>
-			{
-				try
-				{
-					await SendCurrentUserInputAsync(ct);
-				}
-				catch (Exception ex)
-				{
-					Log.Error(ex, "An error occurred while sending a message: {error}.", ex);
-				}
-				finally
-				{
-					// TODO
-					// Turns.Last().State = ConversationTurnState.Complete;
-				}
-			});
+			var sendMessageCommand = new AsyncRelayCommand(SendCurrentUserInputAsync);
 
 			Chat = chat;
+			UserInput = new UserInputViewModel(sendMessageCommand);
 			MessageSequence = new MessageSequenceViewModel(chat);
 		}
 
@@ -128,11 +104,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// <returns>A task that represents the asynchronous operation.</returns>
 		public Task SendCurrentUserInputAsync(CancellationToken cts = default)
 		{
-			var userInput = new UserInput
-			{
-				Content = _userInput
-			};
-			UserInput = string.Empty;
+			var userInput = UserInput.Peek();
 			return GenerateResponseAsync(userInput, cts);
 		}
 	}

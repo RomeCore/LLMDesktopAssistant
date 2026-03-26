@@ -15,12 +15,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	[ViewModelFor(typeof(ToolCallView))]
 	public class ToolCallViewModel : ViewModelBase
 	{
-		private static readonly JsonSerializerOptions _toolCallSerializerOptions = new JsonSerializerOptions
-		{
-			Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),
-			WriteIndented = true
-		};
-
 		private readonly ToolCall toolCall;
 
 		private ToolCallStatus _status = ToolCallStatus.None;
@@ -79,7 +73,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 			ToolName = toolCall.ToolName;
 			ToolCallId = toolCall.Id;
-			Arguments = toolCall.Arguments.ToJsonString(_toolCallSerializerOptions);
+			Arguments = ToolCallArgumentFormatter.FormatToMarkdown(toolCall.Arguments);
 			Status = toolCall.Status switch
 			{
 				ToolStatus.NotExecuted => ToolCallStatus.None,

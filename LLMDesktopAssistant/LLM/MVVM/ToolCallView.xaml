@@ -3,7 +3,7 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM"
+			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM.MVVM"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
 			 xmlns:controls="clr-namespace:LLMDesktopAssistant.Controls"
@@ -30,6 +30,22 @@
 				</DataTrigger>
 			</Style.Triggers>
 		</Style>
+
+		<DataTemplate x:Key="MarkdownResultTemplate">
+			<controls:MarkdownControl MarkdownText="{Binding}"/>
+		</DataTemplate>
+
+		<DataTemplate x:Key="PlainTextResultTemplate">
+			<TextBlock Text="{Binding}"
+					   FontFamily="Cascadia Code"
+					   FontSize="14"
+					   TextWrapping="Wrap"/>
+		</DataTemplate>
+
+		<local:ToolResultTemplateSelector x:Key="ToolResultTemplateSelector"
+										  MarkdownTemplate="{StaticResource MarkdownResultTemplate}"
+										  PlainTextTemplate="{StaticResource PlainTextResultTemplate}"
+										  Threshold="1"/>
 	</UserControl.Resources>
 
 	<Grid Margin="0,2">
@@ -90,20 +106,25 @@
 					<StackPanel Orientation="Vertical">
 
 						<StackPanel Orientation="Vertical"
-							Visibility="{Binding Arguments, Converter={StaticResource StringNonEmptyToVisiblityConverter}}">
+									Visibility="{Binding Arguments, Converter={StaticResource StringNonEmptyToVisiblityConverter}}">
 
 							<Label Content="{loc:Loc tool-arguments}"
 								   FontSize="16"/>
-							<Label Content="{Binding Arguments}" FontFamily="Cascadia Code"/>
+
+							<controls:MarkdownControl MarkdownText="{Binding Arguments}"
+													  Margin="5,0"/>
 
 						</StackPanel>
 
 						<StackPanel Orientation="Vertical"
-							Visibility="{Binding Result, Converter={StaticResource StringNonEmptyToVisiblityConverter}}">
+									Visibility="{Binding Result, Converter={StaticResource StringNonEmptyToVisiblityConverter}}">
 
 							<Label Content="{loc:Loc tool-result}"
 								   FontSize="16"/>
-							<controls:MarkdownControl MarkdownText="{Binding Result}"/>
+
+							<ContentControl Content="{Binding Result}"
+											Margin="5,0"
+											ContentTemplateSelector="{StaticResource ToolResultTemplateSelector}"/>
 
 						</StackPanel>
 

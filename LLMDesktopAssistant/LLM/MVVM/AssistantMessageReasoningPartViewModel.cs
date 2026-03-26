@@ -1,5 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.MVVM;
+using System.ComponentModel;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -13,6 +15,14 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _reasoningText, value);
 		}
 
+		private bool _completed = true;
+		public bool Completed
+		{
+			get => _completed;
+			set => SetProperty(ref _completed, value);
+		}
+		public bool NotCompleted => !_completed;
+
 		public AssistantMessageReasoningPartViewModel()
 		{
 		}
@@ -20,13 +30,35 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public AssistantMessageReasoningPartViewModel(AssistantMessage message)
 		{
 			ReasoningText = message.ReasoningContent ?? string.Empty;
-			message.PropertyChanged += (s, e) =>
+
+			if (!message.IsCompleted)
 			{
-				App.Current.Dispatcher.Invoke(() =>
+				Completed = false;
+
+				void PropertyChangedHandler(object? s, PropertyChangedEventArgs e)
 				{
-					ReasoningText = message.ReasoningContent ?? string.Empty;
+					InvokeUI(() =>
+					{
+						ReasoningText = message.ReasoningContent ?? string.Empty;
+					});
+				}
+
+				message.PropertyChanged += PropertyChangedHandler;
+				message.CompletionToken.OnCompleted(() =>
+				{
+					InvokeUI(() =>
+					{
+						Completed = true;
+						RaisePropertyChanged(nameof(NotCompleted));
+					});
+
+					message.PropertyChanged -= PropertyChangedHandler;
 				});
-			};
+			}
+			else
+			{
+				Completed = true;
+			}
 		}
 	}
 }

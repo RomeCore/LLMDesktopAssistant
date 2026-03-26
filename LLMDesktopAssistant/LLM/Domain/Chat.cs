@@ -17,7 +17,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// <summary>
 		/// Gets or sets the unique identifier for the chat session. Used mostly for database purposes.
 		/// </summary>
-		public int Id { get; set; }
+		public int ChatId { get; set; }
 
 		/// <summary>
 		/// The collection of messages in the chat session.

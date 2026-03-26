@@ -4,9 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tabs;
+using MaterialDesignThemes.Wpf;
 
 namespace LLMDesktopAssistant.MVVM
 {
@@ -29,9 +31,28 @@ namespace LLMDesktopAssistant.MVVM
 				.OrderBy(t => t.Value.Order)
 				.Select(t => new TabItem
 			{
-				Header = LocalizationManager.LocalizeStatic(t.Key),
+				Header = BuildHeader(t.Value),
 				Content = t.Value.View
 			}));
+		}
+
+		private object BuildHeader(TabToolInfo tabTool)
+		{
+			var stackPanel = new StackPanel
+			{
+				Orientation = Orientation.Vertical
+			};
+
+			stackPanel.Children.Add(new PackIcon
+			{
+				Width = 24,
+				Height = 24,
+				Kind = tabTool.Icon,
+				HorizontalAlignment = HorizontalAlignment.Center
+			});
+			stackPanel.Children.Add(new TextBlock { Text = LocalizationManager.LocalizeStatic(tabTool.Id) });
+
+			return stackPanel;
 		}
 	}
 }

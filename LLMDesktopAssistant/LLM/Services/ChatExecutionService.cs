@@ -3,6 +3,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
+using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -91,32 +92,39 @@ namespace LLMDesktopAssistant.LLM.Services
 				responseMessage.PartAdded += PartHandler;
 				try
 				{
-					await responseMessage;
-					domainResponseMessage.Status = AssistantMessageStatus.Success;
-				}
-				catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
-				{
-					domainResponseMessage.Status = AssistantMessageStatus.Cancelled;
-				}
-				catch (OperationCanceledException)
-				{
-					domainResponseMessage.Status = AssistantMessageStatus.Cancelled;
-				}
-				catch (Exception ex)
-				{
-					domainResponseMessage.Error = ex.Message;
-					domainResponseMessage.Status = AssistantMessageStatus.Error;
+					try
+					{
+						await responseMessage;
+						domainResponseMessage.Status = AssistantMessageStatus.Success;
+					}
+					catch (OperationCanceledException)
+					{
+						domainResponseMessage.Status = AssistantMessageStatus.Cancelled;
+					}
+					catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
+					{
+						domainResponseMessage.Status = AssistantMessageStatus.Cancelled;
+					}
+					catch (Exception ex)
+					{
+						domainResponseMessage.Error = ex.ToString();
+						domainResponseMessage.Status = AssistantMessageStatus.Error;
+					}
+					finally
+					{
+						responseMessage.PartAdded -= PartHandler;
+					}
 				}
 				finally
 				{
-					responseMessage.PartAdded -= PartHandler;
+					await Task.WhenAll(toolExecutionTasks);
 					completionSource.Complete();
+					Log.Information("Message finished with status: {Status}, error: {Error}, tool call count: {ToolCallCount}",
+						domainResponseMessage.Status, domainResponseMessage.Error, domainResponseMessage.ToolCalls.Count);
 				}
 
 				if (toolExecutionTasks.Count == 0)
 					break;
-
-				await Task.WhenAll(toolExecutionTasks);
 
 				inputMessages = promptBuilder.Build();
 				response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);

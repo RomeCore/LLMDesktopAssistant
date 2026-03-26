@@ -4,22 +4,63 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM.MVVM"
+			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
 
-	<Border Grid.Column="1"
-			Margin="40,8"
-			HorizontalAlignment="Right"
-			Padding="12,8"
-			Background="{DynamicResource MaterialDesignCardBackground}"
-			CornerRadius="16 16 4 16"
-			MaxWidth="500">
+	<StackPanel Orientation="Vertical"
+			VerticalAlignment="Top"
+			Margin="40,8">
 
-		<TextBlock Text="{Binding Text}"
-				   Foreground="{DynamicResource MaterialDesignBody}"
-				   Style="{StaticResource UserMessageContentStyle}"/>
+		<Border Grid.Column="1"
+				HorizontalAlignment="Right"
+				VerticalAlignment="Top"
+				Padding="12,8"
+				Background="{DynamicResource MaterialDesignCardBackground}"
+				CornerRadius="16 16 4 16"
+				MaxWidth="500">
 
-	</Border>
-	
+			<TextBlock Text="{Binding Text}"
+					   Foreground="{DynamicResource MaterialDesignBody}"
+					   Style="{StaticResource UserMessageContentStyle}"/>
+
+		</Border>
+
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+			<Button Style="{StaticResource MaterialDesignIconButton}"
+					Command="{Binding RegenerateCommand}"
+					Width="24" Height="24"
+					ToolTip="{loc:Loc resend}">
+				<materialDesign:PackIcon Kind="ArrowUDownLeft"/>
+			</Button>
+
+			<StackPanel Orientation="Horizontal"
+					Visibility="{Binding BranchSelectionVisibility}">
+
+				<Button Style="{StaticResource MaterialDesignIconButton}"
+						Command="{Binding SwitchBranchCommand}"
+						CommandParameter="{Binding PreviousBranchIndex}"
+						Width="24" Height="24">
+					<materialDesign:PackIcon Kind="ChevronLeft"/>
+				</Button>
+
+				<ComboBox ItemsSource="{Binding BranchIndices}"
+						  SelectedItem="{Binding SelectedBranchIndex}"
+						  Foreground="{DynamicResource MaterialDesignBody}"/>
+
+				<Button Style="{StaticResource MaterialDesignIconButton}"
+						Command="{Binding SwitchBranchCommand}"
+						CommandParameter="{Binding NextBranchIndex}"
+						Width="24" Height="24">
+					<materialDesign:PackIcon Kind="ChevronRight"/>
+				</Button>
+
+			</StackPanel>
+
+		</StackPanel>
+
+	</StackPanel>
+
 </UserControl>

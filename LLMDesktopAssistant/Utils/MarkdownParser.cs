@@ -23,7 +23,7 @@ namespace LLMDesktopAssistant.Utils
 		{
 			_pipeline = new MarkdownPipelineBuilder()
 				.UseSupportedExtensions()
-				.UseEmojiAndSmiley()
+				.UseEmojiAndSmiley(enableSmileys: false)
 				.UseMathematics()
 				.Build();
 		}

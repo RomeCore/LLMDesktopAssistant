@@ -1,6 +1,11 @@
-﻿using LLMDesktopAssistant.LLM.Data;
+﻿using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MVVM;
+using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
+using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -14,7 +19,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _text, value);
 		}
 
-		public UserMessageViewModel(BranchedMessage branchedMessage, Chat chat)
+		public UserMessageViewModel(BranchedMessage branchedMessage, Chat chat) : base(branchedMessage, chat)
 		{
 			if (branchedMessage.Message is not UserMessage userMessage)
 				throw new InvalidOperationException("Invalid message type. Expected IUserMessage.");

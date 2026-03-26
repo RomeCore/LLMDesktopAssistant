@@ -1,6 +1,9 @@
-﻿using LLMDesktopAssistant.LLM.Data;
+﻿using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MVVM;
+using Microsoft.Extensions.DependencyInjection;
 using RCLargeLanguageModels.Tools;
 using System;
 using System.Collections.Generic;
@@ -11,12 +14,23 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
 	[ViewModelFor(typeof(AssistantMessageView))]
 	public class AssistantMessageViewModel : MessageViewModelBase
 	{
+		private bool _isCompleted;
+		public bool IsCompleted
+		{
+			get => _isCompleted;
+			private set => SetProperty(ref _isCompleted, value);
+		}
+		public Visibility CompletedVisibility => IsCompleted ? Visibility.Visible : Visibility.Collapsed;
+		public Visibility NotCompletedVisibility => IsCompleted ? Visibility.Collapsed : Visibility.Visible;
+
 		private AssistantMessageReasoningPartViewModel? _reasoningPart;
 		public AssistantMessageReasoningPartViewModel? ReasoningPart
 		{
@@ -38,12 +52,10 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			private set => SetProperty(ref _toolPart, value);
 		}
 
-		public AssistantMessageViewModel(BranchedMessage branchedMessage, Chat chat)
+		public AssistantMessageViewModel(BranchedMessage branchedMessage, Chat chat) : base(branchedMessage, chat)
 		{
 			if (branchedMessage.Message is not AssistantMessage assistantMessage)
 				throw new InvalidOperationException("Invalid message type. Expected IAssistantMessage.");
-
-
 
 			if (!string.IsNullOrEmpty(assistantMessage.ReasoningContent))
 			{
@@ -62,6 +74,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				};
 			}
 
+			IsCompleted = assistantMessage.IsCompleted;
 			if (!assistantMessage.IsCompleted)
 			{
 				void OnMessagePropertyChanged(object? s, PropertyChangedEventArgs e)
@@ -70,11 +83,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 					{
 						if (ReasoningPart == null && !string.IsNullOrEmpty(assistantMessage.ReasoningContent))
 						{
-							ReasoningPart ??= new AssistantMessageReasoningPartViewModel(assistantMessage);
+							ReasoningPart = new AssistantMessageReasoningPartViewModel(assistantMessage);
 						}
 						if (TextPart == null && !string.IsNullOrEmpty(assistantMessage.Content))
 						{
-							TextPart ??= new AssistantMessageTextPartViewModel(assistantMessage);
+							TextPart = new AssistantMessageTextPartViewModel(assistantMessage);
 						}
 					});
 				}
@@ -83,11 +96,14 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				{
 					if (e.NewItems != null)
 					{
-						ToolPart ??= new AssistantMessageToolPartViewModel();
-						foreach (ToolCall toolCall in e.NewItems)
+						InvokeUI(() =>
 						{
-							ToolPart.ToolCalls.Add(new ToolCallViewModel(toolCall));
-						}
+							ToolPart ??= new AssistantMessageToolPartViewModel();
+							foreach (ToolCall toolCall in e.NewItems)
+							{
+								ToolPart.ToolCalls.Add(new ToolCallViewModel(toolCall));
+							}
+						});
 					}
 				}
 
@@ -98,6 +114,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				{
 					assistantMessage.PropertyChanged -= OnMessagePropertyChanged;
 					assistantMessage.ToolCalls.CollectionChanged -= OnToolCallsChanged;
+					IsCompleted = true;
+					RaisePropertyChanged(nameof(CompletedVisibility));
+					RaisePropertyChanged(nameof(NotCompletedVisibility));
 				});
 			}
 		}

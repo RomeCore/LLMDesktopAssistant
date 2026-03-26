@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			return new LLMInfo
 			{
-				LLM = new LLModel(deepseek, "deepseek-chat"),
+				LLM = new LLModel(deepseek, "deepseek-reasoner"),
 				Tools = tools,
 				ContextSize = 160000
 			};

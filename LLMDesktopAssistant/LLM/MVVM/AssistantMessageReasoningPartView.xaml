@@ -3,40 +3,46 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM.MVVM"
+			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM"
+			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+			 xmlns:controls="clr-namespace:LLMDesktopAssistant.Controls"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
 
 	<Expander Padding="0"
-		  BorderThickness="0"
-		  Background="Transparent">
+			  BorderThickness="0"
+			  Background="Transparent"
+			  IsExpanded="{Binding NotCompleted, Mode=OneWay}"
+			  materialDesign:ExpanderAssist.HorizontalHeaderPadding="0"
+			  materialDesign:ExpanderAssist.ExpanderButtonPosition="Start">
+
+		<Expander.Style>
+			<Style TargetType="Expander"
+				   BasedOn="{StaticResource MaterialDesignExpander}">
+				<Setter Property="materialDesign:ExpanderAssist.ExpanderButtonContent"
+						Value="{materialDesign:PackIcon Kind=Brain, Size=24}" />
+				<Style.Triggers>
+					<Trigger Property="IsExpanded"
+							 Value="True">
+						<Setter Property="materialDesign:ExpanderAssist.ExpanderButtonContent"
+								Value="{materialDesign:PackIcon Kind=Minus, Size=24}" />
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+		</Expander.Style>
 
 		<Expander.Header>
-			<Grid Margin="8,4">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="Auto"/>
-				</Grid.ColumnDefinitions>
-
-				<materialDesign:PackIcon Grid.Column="0"
-									Kind="Brain"
-									Width="20" Height="20"
-									Margin="0,0,8,0"/>
-
-				<TextBlock Grid.Column="1"
-					   Text="Reasoning process"
-					   FontWeight="Medium"
-					   FontSize="12"/>
-			</Grid>
+			<TextBlock Text="{loc:Loc reasoning}"
+					   FontSize="16"
+					   Margin="5,0,0,0"/>
 		</Expander.Header>
 
-		<TextBlock Text="{Binding ReasoningText}"
-				   TextWrapping="Wrap"
-				   FontStyle="Italic"
-				   FontSize="13"
-				   Opacity="0.9"/>
+		<controls:StreamingMarkdownControl MarkdownText="{Binding ReasoningText}"
+										   Completed="{Binding Completed}"
+										   Opacity="0.7"
+										   Margin="0,5"/>
+
 	</Expander>
 	
 </UserControl>

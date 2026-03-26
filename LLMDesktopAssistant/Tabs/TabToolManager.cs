@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Utils;
+using MaterialDesignThemes.Wpf;
 
 namespace LLMDesktopAssistant.Tabs
 {
 	public class TabToolInfo
 	{
 		public required string Id { get; init; }
+		public required PackIconKind Icon { get; init; }
 		public required int Order { get; init; }
 		public required object Content { get; init; }
 		public required object View { get; init; }
@@ -40,6 +42,7 @@ namespace LLMDesktopAssistant.Tabs
 				return new TabToolInfo
 				{
 					Id = t.Key,
+					Icon = t.Value.Attribute.Icon,
 					Order = t.Value.Attribute.Order,
 					Content = value,
 					View = view
