@@ -18,7 +18,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			services.TryAddScoped<IChatOperationService, ChatOperationService>();
 			services.TryAddScoped<IChatExecutionService, ChatExecutionService>();
 			services.TryAddScoped<IChatStorageService, ChatStorageService>();
-			services.TryAddScoped<IMessageConverter, MessageConverter>();
 			services.TryAddScoped<IPromptChatBuilder, PromptChatBuilder>();
 			services.TryAddScoped<IToolExecutionService, ToolExecutionService>();
 			services.TryAddScoped<ILLMProvider, LLMProvider>();

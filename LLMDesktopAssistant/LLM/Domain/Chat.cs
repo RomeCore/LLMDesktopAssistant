@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 	/// <summary>
 	/// Represents a chat session.
 	/// </summary>
-	public class Chat(IServiceProvider services) : Disposable
+	public class Chat(IServiceProvider services) : NotifyPropertyChanged
 	{
 		/// <summary>
 		/// Gets the service provider used to resolve dependencies.
@@ -23,6 +23,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// The collection of messages in the chat session.
 		/// </summary>
 		public RangeObservableCollection<BranchedMessage> Messages { get; } = [];
+
+		private CancellationTokenSource? _generationCts;
+		/// <summary>
+		/// Gets or sets the current message generation <see cref="CancellationTokenSource"/>.
+		/// </summary>
+		public CancellationTokenSource? GenerationCts
+		{
+			get => _generationCts;
+			set => SetProperty(ref _generationCts, value);
+		}
 
 		/// <summary>
 		/// Gets or sets the system prompt for the chat session. Used to provide context and instructions to the model.

@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\splash-screen.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AngleSharp" Version="1.4.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
@@ -43,8 +47,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Settings\" />
     <Folder Include="Notes\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="Assets\splash-screen.jpg" />
   </ItemGroup>
 
   <ItemGroup>

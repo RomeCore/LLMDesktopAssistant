@@ -1,4 +1,5 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+﻿using System;
+using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -15,7 +16,10 @@ namespace LLMDesktopAssistant.LLM.Services
 			_cts?.Cancel();
 			_cts?.Dispose();
 
-			_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+			chat.GenerationCts?.Dispose();
+			chat.GenerationCts = new CancellationTokenSource();
+			_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken,
+				chat.GenerationCts?.Token ?? default);
 			cancellationToken = _cts.Token;
 
 			await executor.GenerateResponseAsync(cancellationToken);
@@ -26,7 +30,10 @@ namespace LLMDesktopAssistant.LLM.Services
 			_cts?.Cancel();
 			_cts?.Dispose();
 
-			_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+			chat.GenerationCts?.Dispose();
+			chat.GenerationCts = new CancellationTokenSource();
+			_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken,
+				chat.GenerationCts?.Token ?? default);
 			cancellationToken = _cts.Token;
 
 			storage.AppendMessage(new UserMessage
@@ -44,7 +51,10 @@ namespace LLMDesktopAssistant.LLM.Services
 			_cts?.Cancel();
 			_cts?.Dispose();
 
-			_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+			chat.GenerationCts?.Dispose();
+			chat.GenerationCts = new CancellationTokenSource();
+			_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken,
+				chat.GenerationCts?.Token ?? default);
 			cancellationToken = _cts.Token;
 
 			storage.EditMessage(messageIndex, new UserMessage
@@ -62,7 +72,10 @@ namespace LLMDesktopAssistant.LLM.Services
 			_cts?.Cancel();
 			_cts?.Dispose();
 
-			_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+			chat.GenerationCts?.Dispose();
+			chat.GenerationCts = new CancellationTokenSource();
+			_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken,
+				chat.GenerationCts?.Token ?? default);
 			cancellationToken = _cts.Token;
 
 			var targetMessage = chat.Messages[messageIndex].Message;
@@ -93,7 +106,9 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			_cts?.Cancel();
 			_cts?.Dispose();
+			chat.GenerationCts?.Dispose();
 			_cts = null;
+			chat.GenerationCts = null;
 
 			storage.SwitchBranch(messageIndex, branchIndex);
 		}

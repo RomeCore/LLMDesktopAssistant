@@ -262,6 +262,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					SummaryOfPrevMessages = message.SummaryOfPrevMessages,
 					Content = userMessage.Content,
+					LLMProvidedContent = userMessage.LLMProvidedContent,
 					CreatedAt = DateTime.Now,
 					Role = RoleModel.User
 				};
@@ -384,7 +385,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				var result = new UserMessage
 				{
-					Content = messageModel.Content
+					Content = messageModel.Content,
+					LLMProvidedContent = messageModel.LLMProvidedContent
 				};
 
 				return result;

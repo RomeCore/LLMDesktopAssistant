@@ -29,7 +29,7 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		public MessageStatusModel Status { get; set; }
 
 		/// <summary>
-		/// Gets or sets the hidden content of the message, this can be RAG content or reasoning content.
+		/// Gets or sets the reasoning content of the assisntant message.
 		/// </summary>
 		public string? ReasoningContent { get; set; }
 
@@ -37,6 +37,12 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		/// Gets or sets the main content of the message.
 		/// </summary>
 		public string Content { get; set; } = string.Empty;
+
+		/// <summary>
+		/// Gets or sets the content that will be provided to LLM.
+		/// Can include attachments, various notes, etc.
+		/// </summary>
+		public string? LLMProvidedContent { get; set; }
 
 		/// <summary>
 		/// Gets or sets the error associated with the message, if any.

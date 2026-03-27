@@ -44,10 +44,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		public ChatViewModel(Chat chat)
 		{
-			var sendMessageCommand = new AsyncRelayCommand(SendCurrentUserInputAsync);
-
 			Chat = chat;
-			UserInput = new UserInputViewModel(sendMessageCommand);
+			UserInput = new UserInputViewModel(this);
 			MessageSequence = new MessageSequenceViewModel(chat);
 		}
 
@@ -95,17 +93,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				Log.Error(ex, "An error occurred while sending a message: {error}.", ex);
 			}
-		}
-
-		/// <summary>
-		/// Sends a message to the LLM and updates the conversation turns.
-		/// </summary>
-		/// <param name="cts">The cancellation token to monitor for cancellation requests.</param>
-		/// <returns>A task that represents the asynchronous operation.</returns>
-		public Task SendCurrentUserInputAsync(CancellationToken cts = default)
-		{
-			var userInput = UserInput.Peek();
-			return GenerateResponseAsync(userInput, cts);
 		}
 	}
 }
