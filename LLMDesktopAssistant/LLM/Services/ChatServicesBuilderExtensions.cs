@@ -25,7 +25,6 @@ namespace LLMDesktopAssistant.LLM.Services
 				templateLibrary.ImportFromAssembly(typeof(ChatServicesBuilderExtensions).Assembly);
 				return templateLibrary;
 			});
-			services.TryAddSingleton<ILLModelList, DefaultLLModelList>();
 
 			services.TryAddScoped<Chat>();
 			services.TryAddScoped<IChatOperationService, ChatOperationService>();

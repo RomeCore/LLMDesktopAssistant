@@ -10,6 +10,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Messages;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.MVVM;

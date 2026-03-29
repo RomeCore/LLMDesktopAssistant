@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
     // с помощью такого средства, как ResGen или Visual Studio.
     // Чтобы добавить или удалить член, измените файл .ResX и снова запустите ResGen
     // с параметром /str или перестройте свой проект VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Locale {
@@ -174,6 +174,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string chats {
             get {
                 return ResourceManager.GetString("chats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Empty.
+        /// </summary>
+        public static string empty_model {
+            get {
+                return ResourceManager.GetString("empty_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Error: {0}.
+        /// </summary>
+        public static string error_model {
+            get {
+                return ResourceManager.GetString("error_model", resourceCulture);
             }
         }
         
@@ -345,6 +363,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string sample {
             get {
                 return ResourceManager.GetString("sample", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select model.
+        /// </summary>
+        public static string select_model {
+            get {
+                return ResourceManager.GetString("select_model", resourceCulture);
             }
         }
         

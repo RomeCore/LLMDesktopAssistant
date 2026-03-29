@@ -36,19 +36,31 @@ namespace LLMDesktopAssistant.LLM.Services
 		public async Task ContinueGenerationAsync(CancellationToken cancellationToken = default)
 		{
 			cancellationToken = UpdateCTS(cancellationToken);
-			await executor.GenerateResponseAsync(cancellationToken);
-			ClearCTS();
+			try
+			{
+				await executor.GenerateResponseAsync(cancellationToken);
+			}
+			finally
+			{
+				ClearCTS();
+			}
 		}
 
 		public async Task SendUserInputAsync(UserInput userInput, CancellationToken cancellationToken = default)
 		{
 			cancellationToken = UpdateCTS(cancellationToken);
-			storage.AppendMessage(new UserMessage
+			try
 			{
-				Content = userInput.Content,
-			});
-			await executor.GenerateResponseAsync(cancellationToken);
-			ClearCTS();
+				storage.AppendMessage(new UserMessage
+				{
+					Content = userInput.Content,
+				});
+				await executor.GenerateResponseAsync(cancellationToken);
+			}
+			finally
+			{
+				ClearCTS();
+			}
 		}
 
 		public async Task SendEditedUserInputAsync(int messageIndex, UserInput userInput, CancellationToken cancellationToken = default)
@@ -57,12 +69,18 @@ namespace LLMDesktopAssistant.LLM.Services
 				throw new ArgumentOutOfRangeException(nameof(messageIndex));
 
 			cancellationToken = UpdateCTS(cancellationToken);
-			storage.EditMessage(messageIndex, new UserMessage
+			try
 			{
-				Content = userInput.Content,
-			});
-			await executor.GenerateResponseAsync(cancellationToken);
-			ClearCTS();
+				storage.EditMessage(messageIndex, new UserMessage
+				{
+					Content = userInput.Content,
+				});
+				await executor.GenerateResponseAsync(cancellationToken);
+			}
+			finally
+			{
+				ClearCTS();
+			}
 		}
 
 		public async Task RegenerateMessageAsync(int messageIndex, CancellationToken cancellationToken = default)
@@ -71,22 +89,28 @@ namespace LLMDesktopAssistant.LLM.Services
 				throw new ArgumentOutOfRangeException(nameof(messageIndex));
 
 			cancellationToken = UpdateCTS(cancellationToken);
-			var targetMessage = chat.Messages[messageIndex].Message;
+			try
+			{
+				var targetMessage = chat.Messages[messageIndex].Message;
 
-			if (targetMessage is UserMessage)
-			{
-				throw new InvalidOperationException("Cannot regenerate a user message.");
+				if (targetMessage is UserMessage)
+				{
+					throw new InvalidOperationException("Cannot regenerate a user message.");
+				}
+				else if (targetMessage is AssistantMessage)
+				{
+					if (messageIndex < chat.Messages.Count)
+						storage.PlaceNewBranch(messageIndex);
+					await executor.GenerateResponseAsync(cancellationToken);
+				}
+				else
+				{
+					throw new InvalidOperationException("Invalid message type.");
+				}
 			}
-			else if (targetMessage is AssistantMessage)
+			finally
 			{
-				if (messageIndex < chat.Messages.Count)
-					storage.PlaceNewBranch(messageIndex);
-				await executor.GenerateResponseAsync(cancellationToken);
 				ClearCTS();
-			}
-			else
-			{
-				throw new InvalidOperationException("Invalid message type.");
 			}
 		}
 
@@ -96,13 +120,19 @@ namespace LLMDesktopAssistant.LLM.Services
 				throw new ArgumentOutOfRangeException(nameof(messageIndex));
 
 			cancellationToken = UpdateCTS(cancellationToken);
-			var targetMessage = chat.Messages[messageIndex].Message;
+			try
+			{
+				var targetMessage = chat.Messages[messageIndex].Message;
 
-			var nextMessageIndex = messageIndex + 1;
-			if (nextMessageIndex < chat.Messages.Count)
-				storage.PlaceNewBranch(nextMessageIndex);
-			await executor.GenerateResponseAsync(cancellationToken);
-			ClearCTS();
+				var nextMessageIndex = messageIndex + 1;
+				if (nextMessageIndex < chat.Messages.Count)
+					storage.PlaceNewBranch(nextMessageIndex);
+				await executor.GenerateResponseAsync(cancellationToken);
+			}
+			finally
+			{
+				ClearCTS();
+			}
 		}
 
 		public void SwitchBranch(int messageIndex, int branchIndex)

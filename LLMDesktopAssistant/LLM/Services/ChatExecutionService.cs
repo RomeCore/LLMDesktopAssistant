@@ -121,6 +121,9 @@ namespace LLMDesktopAssistant.LLM.Services
 					{
 						await Task.WhenAll(toolExecutionTasks);
 					}
+					catch
+					{
+					}
 					finally
 					{
 						completionSource.Complete();

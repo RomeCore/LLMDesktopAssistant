@@ -3,7 +3,9 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using LLMDesktopAssistant.Utils;
+using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
+using RCParsing.Building.ErrorRecoveryStrategies;
 
 namespace LLMDesktopAssistant.Settings
 {
@@ -19,18 +21,17 @@ namespace LLMDesktopAssistant.Settings
 		/// </summary>
 		public const int SaveDebounceDelayMs = 500;
 
-		/// <summary>
-		/// The default ID used for settings instances without an explicit identifier.
-		/// </summary>
-		public const string DefaultId = "$default";
-
 		private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
 		{
 			WriteIndented = true,
 			ReferenceHandler = ReferenceHandler.Preserve,
 			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
 			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-			Converters = { new JsonStringEnumConverter() }
+			Converters =
+			{
+				new JsonStringEnumConverter(),
+				new JsonLLModelDescriptorConverter()
+			}
 		};
 
 		private readonly string _name;
@@ -68,6 +69,7 @@ namespace LLMDesktopAssistant.Settings
 			foreach (var (id, obj) in data ?? [])
 			{
 				var tracker = new ChangeTracker(obj, SaveDebounced);
+				obj.Id = id;
 				_objects.TryAdd(id, (obj, tracker));
 			}
 		}
@@ -106,20 +108,23 @@ namespace LLMDesktopAssistant.Settings
 		/// <summary>
 		/// Retrieves a settings instance by ID, creating a new one if it doesn't exist.
 		/// </summary>
-		/// <param name="id">The unique identifier for the settings instance. Defaults to "$default".</param>
+		/// <param name="id">The unique identifier for the settings instance. Defaults to <see cref="SettingsObject.DefaultId"/>.</param>
 		/// <returns>The settings instance for the specified ID.</returns>
 		/// <exception cref="ArgumentException">Thrown when the ID is null or whitespace.</exception>
 		/// <remarks>
 		/// Settings instances are cached and reused. Subsequent calls with the same ID return the cached instance.
 		/// Changes to the returned object trigger automatic saving after a debounce delay.
 		/// </remarks>
-		public TSettings Get(string id = DefaultId)
+		public TSettings Get(string id = SettingsObject.DefaultId)
 		{
 			if (string.IsNullOrWhiteSpace(id))
 				throw new ArgumentException("Id cannot be null or whitespace.", nameof(id));
 			return _objects.GetOrAdd(id, id =>
 			{
-				var obj = new TSettings();
+				var obj = new TSettings
+				{
+					Id = id
+				};
 				var tracker = new ChangeTracker(obj, SaveDebounced);
 				return (obj, tracker);
 			}).Item1;
@@ -131,7 +136,7 @@ namespace LLMDesktopAssistant.Settings
 		/// <param name="id">The unique identifier for the settings instance to remove.</param>
 		/// <returns>true if the settings instance was found and removed; otherwise, false.</returns>
 		/// <exception cref="ArgumentException">Thrown when the ID is null or whitespace.</exception>
-		public bool Remove(string id)
+		public bool Remove(string id = SettingsObject.DefaultId)
 		{
 			if (string.IsNullOrWhiteSpace(id))
 				throw new ArgumentException("Id cannot be null or whitespace.", nameof(id));

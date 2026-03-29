@@ -75,7 +75,7 @@ namespace LLMDesktopAssistant.Tabs.Chat
 				Database.Conversations.Insert(new ConversationModel
 				{
 					Id = 1,
-					SystemInstructions = "You are a helpful assistant.",
+					SettingsProfile = ChatSettings.DefaultId,
 					Title = "General"
 				});
 			}
@@ -109,7 +109,7 @@ namespace LLMDesktopAssistant.Tabs.Chat
 
 			var model = new ConversationModel
 			{
-				SystemInstructions = "You are a helpful assistant.",
+				SettingsProfile = ChatSettings.DefaultId,
 				Title = $"Chat {now:HH:mm dd.MM}"
 			};
 

@@ -37,7 +37,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			if (tracker.Module != null)
 				tracker.Module.OnSpeechReceived += OnSpeechReceived;
 
-			chat.SystemPrompt =
+			var SystemPrompt =
 				"Ты - виртуальный голосовой помощник Niggalink AI. " +
 				"Разговаривай как чертов робо-ниггер. " +
 				"Отвечай в формате простого текста без использования разметки Markdown. " +

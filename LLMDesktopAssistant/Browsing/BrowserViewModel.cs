@@ -78,8 +78,7 @@ namespace LLMDesktopAssistant.Browsing
 			if (db.Conversations.FindById(1) == null)
 				db.Conversations.Insert(new LLM.Data.Models.ConversationModel
 				{
-					Id = 1,
-					SystemInstructions = "You are a helpful assistant."
+					Id = 1
 				});
 
 			var serviceBuilder = new ServiceCollection();

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using LLMDesktopAssistant.LLM;
-using LLMDesktopAssistant.LLM.MVVM;
+using LLMDesktopAssistant.LLM.MVVM.Messages;
 
 namespace LLMDesktopAssistant.Converters
 {

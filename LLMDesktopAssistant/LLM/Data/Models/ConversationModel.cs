@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
+using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.LLM.Data.Models
 {
@@ -24,9 +25,10 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		public string Title { get; set; } = string.Empty;
 
 		/// <summary>
-		/// Gets or sets the base system instructions for this conversation.
+		/// Get or sets the settings profile ID that is currently used by this conversation.
+		/// Used for accessing the <see cref=""/>
 		/// </summary>
-		public string SystemInstructions { get; set; } = string.Empty;
+		public string SettingsProfile { get; set; } = ChatSettings.DefaultId;
 
 		/// <summary>
 		/// The ID of the root node in the conversation tree. Can be -1 if there is no elements in the conversation.

@@ -15,6 +15,8 @@ namespace LLMDesktopAssistant.LLM.Services
 	{
 		public LLMInfo GetChatLLM()
 		{
+			var model = chat.Settings.ChatModel.Current ?? throw new Exception("Model is not set.");
+
 			var toolModules = ModuleManager.GetAll<ToolModule>();
 
 			var tools = toolModules
@@ -25,7 +27,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			return new LLMInfo
 			{
-				LLM = new LLModel(deepseek_chat),
+				LLM = new LLModel(model),
 				Tools = tools,
 				ContextSize = 160000
 			};
@@ -33,9 +35,11 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public LLMInfo GetSummarizationLLM()
 		{
+			var model = chat.Settings.SummarizerModel.Current ?? throw new Exception("Summarizer model is not set.");
+
 			return new LLMInfo
 			{
-				LLM = new LLModel(deepseek, "deepseek-chat"),
+				LLM = new LLModel(model),
 				ContextSize = 160000
 			};
 		}

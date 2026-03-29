@@ -6,18 +6,16 @@ using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Settings
 {
-	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
-	public class SettingsObjectAttribute : Attribute
-	{
-		public string Id { get; }
-
-		public SettingsObjectAttribute(string id)
-		{
-			Id = id;
-		}
-	}
-
 	public abstract class SettingsObject : NotifyPropertyChanged
 	{
+		/// <summary>
+		/// The default ID used for settings instances without an explicit identifier.
+		/// </summary>
+		public const string DefaultId = "-default";
+
+		/// <summary>
+		/// Gets the current ID of this
+		/// </summary>
+		public string Id { get; internal set; } = DefaultId;
 	}
 }

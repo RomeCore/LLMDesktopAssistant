@@ -14,31 +14,34 @@
     <Compile Update="Controls\StreamingMarkdownControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\MVVM\AssistantMessageReasoningPartView.xaml.cs">
+    <Compile Update="Controls\LLModelSelectorControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\MVVM\AssistantMessageTextPartView.xaml.cs">
+    <Compile Update="LLM\MVVM\Messages\AssistantMessageReasoningPartView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\MVVM\AssistantMessageToolPartView.xaml.cs">
+    <Compile Update="LLM\MVVM\Messages\AssistantMessageTextPartView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\MVVM\AssistantMessageView.xaml.cs">
+    <Compile Update="LLM\MVVM\Messages\AssistantMessageToolPartView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\MVVM\Messages\AssistantMessageView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="LLM\MVVM\ChatView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\MVVM\MessageSequenceView.xaml.cs">
+    <Compile Update="LLM\MVVM\Messages\MessageSequenceView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\MVVM\ToolCallView.xaml.cs">
+    <Compile Update="LLM\MVVM\Messages\ToolCallView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="LLM\MVVM\UserInputView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\MVVM\UserMessageView.xaml.cs">
+    <Compile Update="LLM\MVVM\Messages\UserMessageView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="LLM\MVVM\VoiceChatView.xaml.cs">

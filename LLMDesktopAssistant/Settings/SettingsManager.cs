@@ -73,14 +73,14 @@ namespace LLMDesktopAssistant.Settings
 		/// Retrieves a settings instance by ID, creating a new one if it doesn't exist.
 		/// </summary>
 		/// <typeparam name="TSettings">The settings type, must inherit from <see cref="SettingsObject"/> and have a parameterless constructor.</typeparam>
-		/// <param name="id">The unique identifier for the settings instance. Defaults to "$default".</param>
+		/// <param name="id">The unique identifier for the settings instance. Defaults to <see cref="SettingsObject.DefaultId"/>.</param>
 		/// <returns>The settings instance for the specified ID.</returns>
 		/// <exception cref="ArgumentException">Thrown when the ID is null or whitespace.</exception>
 		/// <remarks>
 		/// Settings instances are cached and reused. Subsequent calls with the same ID return the cached instance.
 		/// Changes to the returned object are automatically persisted to disk after a debounce delay.
 		/// </remarks>
-		public static TSettings Get<TSettings>(string id = SettingsCategory<TSettings>.DefaultId)
+		public static TSettings Get<TSettings>(string id = SettingsObject.DefaultId)
 			where TSettings : SettingsObject, new()
 		{
 			var category = GetCategory<TSettings>();
@@ -91,10 +91,10 @@ namespace LLMDesktopAssistant.Settings
 		/// Removes a settings instance by ID and disposes it.
 		/// </summary>
 		/// <typeparam name="TSettings">The settings type, must inherit from <see cref="SettingsObject"/> and have a parameterless constructor.</typeparam>
-		/// <param name="id">The unique identifier for the settings instance to remove. Defaults to "$default".</param>
+		/// <param name="id">The unique identifier for the settings instance to remove. Defaults to <see cref="SettingsObject.DefaultId"/>.</param>
 		/// <returns>true if the settings instance was found and removed; otherwise, false.</returns>
 		/// <exception cref="ArgumentException">Thrown when the ID is null or whitespace.</exception>
-		public static bool Remove<TSettings>(string id = SettingsCategory<TSettings>.DefaultId)
+		public static bool Remove<TSettings>(string id = SettingsObject.DefaultId)
 			where TSettings : SettingsObject, new()
 		{
 			var category = GetCategory<TSettings>();

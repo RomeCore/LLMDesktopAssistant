@@ -1,6 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.LLM.Data.Models;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Settings;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
 using System.Collections.Concurrent;
@@ -18,6 +19,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		) : Disposable, IChatStorageService
 	{
 		readonly int conversationId = chat.ChatId;
+		Action? _mainUnsubscriber;
 		readonly MultiValueDictionary<ChatMessage, Action> _unsubscribers = [];
 
 		public void Reload()
@@ -32,12 +34,12 @@ namespace LLMDesktopAssistant.LLM.Services
 					Id = conversationId,
 					LeafNodeId = -1,
 					RootNodeId = -1,
-					SystemInstructions = "You are a helpful assistant."
+					SettingsProfile = ChatSettings.DefaultId
 				};
 				database.Conversations.Insert(conversation);
 			}
 
-			chat.SystemPrompt = conversation.SystemInstructions;
+			chat.Settings = SettingsManager.Get<ChatSettings>(conversation.SettingsProfile);
 			var currentNodeId = conversation.RootNodeId;
 
 			while (currentNodeId != -1)
@@ -50,6 +52,20 @@ namespace LLMDesktopAssistant.LLM.Services
 				currentNodeId = nodeModel.SelectedNodeId;
 			}
 
+			_mainUnsubscriber?.Invoke();
+			void ChatPropertyChanged(object? s, PropertyChangedEventArgs e)
+			{
+				conversation = database.Conversations.FindById(conversationId);
+				conversation.SettingsProfile = chat.Settings.Id;
+
+				database.Conversations.Update(conversation);
+			}
+			chat.PropertyChanged += ChatPropertyChanged;
+			_mainUnsubscriber = () =>
+			{
+				chat.PropertyChanged -= ChatPropertyChanged;
+			};
+
 			for (int i = 0; i < chat.Messages.Count; i++)
 				Unsubscribe(chat.Messages[i].Message);
 			chat.Messages.Reset(messages);
@@ -59,6 +75,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			base.Dispose(disposing);
 
+			_mainUnsubscriber?.Invoke();
 			for (int i = 0; i < chat.Messages.Count; i++)
 				Unsubscribe(chat.Messages[i].Message);
 		}

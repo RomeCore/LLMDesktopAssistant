@@ -2,34 +2,10 @@
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.ToolModules;
 using LLMDesktopAssistant.Utils;
-using RCLargeLanguageModels;
+using Microsoft.VisualBasic;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
-	public class ChatSettings : SettingsObject
-	{
-		private LLModelDescriptor? _chatModel;
-		public LLModelDescriptor? ChatModel
-		{
-			get => _chatModel;
-			set => SetProperty(ref _chatModel, value);
-		}
-
-		private LLModelDescriptor? _summarizerModel;
-		public LLModelDescriptor? SummarizerModel
-		{
-			get => _summarizerModel;
-			set => SetProperty(ref _summarizerModel, value);
-		}
-
-		private string? _systemInstructions;
-		public string? SystemInstructions
-		{
-			get => _systemInstructions;
-			set => SetProperty(ref _systemInstructions, value);
-		}
-	}
-
 	/// <summary>
 	/// Represents a chat session.
 	/// </summary>
@@ -59,6 +35,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _generationCts;
 			set => SetProperty(ref _generationCts, value);
+		}
+
+		private ChatSettings _settings = SettingsManager.Get<ChatSettings>();
+		/// <summary>
+		/// Gets or sets the chat settings.
+		/// </summary>
+		public ChatSettings Settings
+		{
+			get => _settings;
+			set => SetProperty(ref _settings, value);
 		}
 
 		/// <summary>

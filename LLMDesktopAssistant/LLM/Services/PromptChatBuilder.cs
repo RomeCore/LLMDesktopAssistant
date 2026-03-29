@@ -51,7 +51,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			var template = templates.TryRetrieveBestWithFallback("system_prompt", language) as ITextTemplate;
 			var context = new
 			{
-				instructions = chat.SystemPrompt ?? "You are a helpful assistant.",
+				instructions = chat.Settings.SystemInstructions ?? "You are a helpful assistant.",
 				summary = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages
 			};
 			return template!.Render(context);

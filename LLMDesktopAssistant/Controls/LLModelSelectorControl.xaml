@@ -1,0 +1,86 @@
+﻿<UserControl x:Class="LLMDesktopAssistant.Controls.LLModelSelectorControl"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:local="clr-namespace:LLMDesktopAssistant.Controls"
+			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Controls"
+			 xmlns:conv="clr-namespace:LLMDesktopAssistant.Converters"
+			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
+			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+			 mc:Ignorable="d" 
+			 d:DesignHeight="450" d:DesignWidth="800">
+	
+	<UserControl.Resources>
+
+		<BooleanToVisibilityConverter x:Key="btvConv"/>
+		<conv:BooleanToBrushConverter True="White" False="DarkRed" x:Key="btbConv"/>
+		<conv:FallbackMultiConverter x:Key="fallbackConv"/>
+
+		<DataTemplate x:Key="AIModelTemplate" DataType="modelc:LLModelDescriptorTracked">
+			<StackPanel Orientation="Horizontal">
+
+				<TextBlock Foreground="{Binding Available, Converter={StaticResource btbConv}}" Margin="0,0,3,0">
+
+					<TextBlock.Text>
+						<MultiBinding Converter="{StaticResource fallbackConv}">
+							<Binding Path="Current.DisplayName" FallbackValue="{x:Null}" />
+							<Binding Path="FullName" />
+						</MultiBinding>
+					</TextBlock.Text>
+
+				</TextBlock>
+
+				<!--
+				<i:PathIcon Visibility="{Binding Path=IsReasoning, Converter={StaticResource btvConv}}" 
+								Data="{DynamicResource LightbulbOn}" VerticalAlignment="Stretch" Margin="1,0" Width="12" Height="12"/>
+				<i:PathIcon Visibility="{Binding Path=SupportsTools, Converter={StaticResource btvConv}}" 
+								Data="{DynamicResource Wrench}" VerticalAlignment="Stretch" Margin="1,0" Width="12" Height="12"/>
+				<i:PathIcon Visibility="{Binding Path=SupportsEmbeddings, Converter={StaticResource btvConv}}" 
+								Data="{DynamicResource DatabaseExport}" VerticalAlignment="Stretch" Margin="1,0" Width="12" Height="12"/>
+				-->
+			</StackPanel>
+		</DataTemplate>
+
+		<DataTemplate x:Key="FirstTemplate" DataType="local:ComboBoxFirstItemModel">
+			<TextBlock Text="{Binding Title}"/>
+		</DataTemplate>
+
+		<DataTemplate x:Key="HeaderTemplate" DataType="local:ComboBoxHeaderItemModel">
+			<StackPanel Opacity="0.6">
+				<Rectangle Height="1" MinWidth="100" Fill="Gray" HorizontalAlignment="Stretch" Margin="2,3,2,3"/>
+				<TextBlock Text="{Binding Title}"/>
+			</StackPanel>
+		</DataTemplate>
+
+		<DataTemplate x:Key="EmptyTemplate" DataType="local:ComboBoxEmptyItemModel">
+			<TextBlock Foreground="Gray" Text="{Binding Title}"/>
+		</DataTemplate>
+
+		<DataTemplate x:Key="ErrorTemplate" DataType="local:ComboBoxErrorItemModel">
+			<TextBlock Foreground="DarkRed" Text="{Binding Title}"/>
+		</DataTemplate>
+
+		<local:ComboBoxTemplateSelector x:Key="CBTemplateSelector"
+										AIModelTemplate="{StaticResource AIModelTemplate}"
+										FirstTemplate="{StaticResource FirstTemplate}"
+										HeaderTemplate="{StaticResource HeaderTemplate}"
+										EmptyTemplate="{StaticResource EmptyTemplate}"
+										ErrorTemplate="{StaticResource ErrorTemplate}" />
+	</UserControl.Resources>
+
+	<StackPanel Orientation="Horizontal" Height="24" >
+		<local:ExtendedComboBox x:Name="Selector"
+				  Style="{StaticResource MaterialDesignComboBox}"
+				  ItemTemplateSelector="{StaticResource CBTemplateSelector}"/>
+
+		<Button x:Name="RefreshButton" 
+				Click="RefreshButton_Click" 
+				MinWidth="24"
+				Margin="3,0,0,0"
+				Padding="0"
+				DockPanel.Dock="Right">
+			<materialDesign:PackIcon Kind="Refresh"/>
+		</Button>
+	</StackPanel>
+</UserControl>

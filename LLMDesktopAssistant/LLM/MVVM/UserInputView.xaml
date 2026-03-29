@@ -42,7 +42,6 @@
 				 materialDesign:TextFieldAssist.HasClearButton="True"
 				 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
 				 Text="{Binding Text, Mode=TwoWay}"
-				 Margin="8,0"
 				 VerticalAlignment="Center"
 				 TextWrapping="Wrap"
 				 AcceptsReturn="True"
@@ -58,6 +57,10 @@
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="Auto"/>
 			</Grid.ColumnDefinitions>
+			
+			<!-- Model Selector -->
+			<ctrl:LLModelSelectorControl Grid.Column="0"
+										 SelectedModel="{Binding Chat.Settings.ChatModel, Mode=TwoWay}"/>
 
 			<!-- Attach Button -->
 			<Button Grid.Column="1"

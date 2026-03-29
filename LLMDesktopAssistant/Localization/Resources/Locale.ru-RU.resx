@@ -156,6 +156,12 @@
   <data name="chats" xml:space="preserve">
     <value>Чаты</value>
   </data>
+  <data name="empty_model" xml:space="preserve">
+    <value>Пусто</value>
+  </data>
+  <data name="error_model" xml:space="preserve">
+    <value>Ошибка: {0}</value>
+  </data>
   <data name="execute-lua" xml:space="preserve">
     <value>Выполнить Lua скрипт</value>
   </data>
@@ -212,6 +218,9 @@
   </data>
   <data name="sample" xml:space="preserve">
     <value>Образец</value>
+  </data>
+  <data name="select_model" xml:space="preserve">
+    <value>Выберите модель</value>
   </data>
   <data name="title" xml:space="preserve">
     <value>Niggalink AI</value>
