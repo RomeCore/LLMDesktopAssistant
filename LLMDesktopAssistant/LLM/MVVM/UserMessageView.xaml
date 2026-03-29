@@ -36,6 +36,13 @@
 				<materialDesign:PackIcon Kind="ArrowUDownLeft"/>
 			</Button>
 
+			<Button Style="{StaticResource MaterialDesignIconButton}"
+					Command="{Binding EditCommand}"
+					Width="24" Height="24"
+					ToolTip="{loc:Loc edit}">
+				<materialDesign:PackIcon Kind="Edit"/>
+			</Button>
+
 			<StackPanel Orientation="Horizontal"
 					Visibility="{Binding BranchSelectionVisibility}">
 

@@ -22,14 +22,14 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	[ViewModelFor(typeof(AssistantMessageView))]
 	public class AssistantMessageViewModel : MessageViewModelBase
 	{
+		private readonly AssistantMessage _assistantMessage;
+
 		private bool _isCompleted;
 		public bool IsCompleted
 		{
 			get => _isCompleted;
 			private set => SetProperty(ref _isCompleted, value);
 		}
-		public Visibility CompletedVisibility => IsCompleted ? Visibility.Visible : Visibility.Collapsed;
-		public Visibility NotCompletedVisibility => IsCompleted ? Visibility.Collapsed : Visibility.Visible;
 
 		private AssistantMessageReasoningPartViewModel? _reasoningPart;
 		public AssistantMessageReasoningPartViewModel? ReasoningPart
@@ -52,10 +52,20 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			private set => SetProperty(ref _toolPart, value);
 		}
 
-		public AssistantMessageViewModel(BranchedMessage branchedMessage, Chat chat) : base(branchedMessage, chat)
+		private string? _error;
+		public string? Error
+		{
+			get => _error;
+			set => SetProperty(ref _error, value);
+		}
+
+		public bool ContainsToolCalls => _assistantMessage.ToolCalls.Count > 0;
+
+		public AssistantMessageViewModel(BranchedMessage branchedMessage, ChatViewModel chatVM) : base(branchedMessage, chatVM)
 		{
 			if (branchedMessage.Message is not AssistantMessage assistantMessage)
 				throw new InvalidOperationException("Invalid message type. Expected IAssistantMessage.");
+			_assistantMessage = assistantMessage;
 
 			if (!string.IsNullOrEmpty(assistantMessage.ReasoningContent))
 			{
@@ -73,6 +83,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 						assistantMessage.ToolCalls.Select(t => new ToolCallViewModel(t)))
 				};
 			}
+			Error = assistantMessage.Error;
 
 			IsCompleted = assistantMessage.IsCompleted;
 			if (!assistantMessage.IsCompleted)
@@ -89,6 +100,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 						{
 							TextPart = new AssistantMessageTextPartViewModel(assistantMessage);
 						}
+						Error = assistantMessage.Error;
 					});
 				}
 
@@ -103,6 +115,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 							{
 								ToolPart.ToolCalls.Add(new ToolCallViewModel(toolCall));
 							}
+							RaisePropertyChanged(nameof(ContainsToolCalls));
 						});
 					}
 				}

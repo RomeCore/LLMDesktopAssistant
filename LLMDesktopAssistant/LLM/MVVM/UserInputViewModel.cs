@@ -16,15 +16,77 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	[ViewModelFor(typeof(UserInputView))]
 	public class UserInputViewModel : ViewModelBase
 	{
-		private string _text = string.Empty;
-		/// <summary>
-		/// Gets or sets the user input to be sent in the next conversation turn.
-		/// </summary>
-		public string Text
+		private class SendMessageCommandObject : ICommand
 		{
-			get => _text;
-			set => SetProperty(ref _text, value);
+			public event EventHandler? CanExecuteChanged;
+
+			private readonly UserInputViewModel _vm;
+			public SendMessageCommandObject(UserInputViewModel vm)
+			{
+				_vm = vm;
+				_vm.Chat.SubscribeChanged(nameof(Chat.GenerationCts), _ =>
+				{
+					InvokeUI(() =>
+					{
+						CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+					});
+				});
+			}
+
+			public bool CanExecute(object? parameter)
+			{
+				return _vm.Chat.GenerationCts == null;
+			}
+
+			public async void Execute(object? parameter)
+			{
+				try
+				{
+					await _vm.SendCurrentUserInputAsync();
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Failed to send message: {Error}", ex.Message);
+				}
+			}
 		}
+
+		private class CancelGenerationCommandObject : ICommand
+		{
+			public event EventHandler? CanExecuteChanged;
+
+			private readonly UserInputViewModel _vm;
+			public CancelGenerationCommandObject(UserInputViewModel vm)
+			{
+				_vm = vm;
+				_vm.Chat.SubscribeChanged(nameof(Chat.GenerationCts), _ =>
+				{
+					InvokeUI(() =>
+					{
+						CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+					});
+				});
+			}
+
+			public bool CanExecute(object? parameter)
+			{
+				return _vm.Chat.GenerationCts != null;
+			}
+
+			public void Execute(object? parameter)
+			{
+				try
+				{
+					_vm.Chat.GenerationCts?.Cancel();
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Failed to cancel generation: {Error}", ex.Message);
+				}
+			}
+		}
+
+
 
 		/// <summary>
 		/// Gets the conversation manager that manages the current conversation.
@@ -41,16 +103,64 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		public ICommand SendMessageCommand { get; }
 
+		/// <summary>
+		/// Command to cancel the current generation. This command is bound to the UI and triggers the CancelGeneration method.
+		/// </summary>
+		public ICommand CancelGenerationCommand { get; }
+
+
+
+		private string _text = string.Empty;
+		private string _prevText = string.Empty;
+		/// <summary>
+		/// Gets or sets the user input to be sent in the next conversation turn.
+		/// </summary>
+		public string Text
+		{
+			get => _text;
+			set => SetProperty(ref _text, value);
+		}
+
+		private BranchedMessage? _editingMessage = null;
+		/// <summary>
+		/// Gets or sets the message that is currently being edited, if any.
+		/// </summary>
+		public BranchedMessage? EditingMessage
+		{
+			get => _editingMessage;
+			private set => SetProperty(ref _editingMessage, value);
+		}
+
+		private bool _isGenerating = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether the current message is being generated.
+		/// </summary>
+		public bool IsGenerating
+		{
+			get => _isGenerating;
+			private set => SetProperty(ref _isGenerating, value);
+		}
+
 		public UserInputViewModel(ChatViewModel chatVM)
 		{
 			Chat = chatVM.Chat;
 			ChatViewModel = chatVM;
-			SendMessageCommand = new AsyncRelayCommand(SendCurrentUserInputAsync);
+			SendMessageCommand = new SendMessageCommandObject(this);
+			CancelGenerationCommand = new CancelGenerationCommandObject(this);
+
+			IsGenerating = Chat.GenerationCts != null;
+			Chat.SubscribeChanged(nameof(Chat.GenerationCts), _ =>
+			{
+				InvokeUI(() =>
+				{
+					IsGenerating = Chat.GenerationCts != null;
+				});
+			});
 		}
 
 
 
-		public UserInput? Peek()
+		public UserInput? GetCurrentUserInput()
 		{
 			if (IsEmpty())
 				return null;
@@ -60,26 +170,30 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			};
 		}
 
-		public UserInput? Pop()
+		public void EditMessage(BranchedMessage branchedMessage)
 		{
-			if (IsEmpty())
-				return null;
-			var result = new UserInput
+			if (branchedMessage.Message is not UserMessage userMessage)
+				throw new ArgumentException("The branched message does not contain a user message.");
+
+			if (EditingMessage != null)
 			{
-				Content = _text,
-			};
-			Clear();
-			return result;
+				_prevText = _text;
+			}
+			EditingMessage = branchedMessage;
+			Text = userMessage.Content;
 		}
 
-		public void Push(UserInput userInput)
-		{
-
-		}
-
-		private void Clear()
+		public void Clear()
 		{
 			Text = string.Empty;
+			EditingMessage = null;
+		}
+
+		public void EndEditing()
+		{
+			Text = _prevText;
+			_prevText = string.Empty;
+			EditingMessage = null;
 		}
 
 		public bool IsEmpty()
@@ -96,9 +210,18 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// <returns>A task that represents the asynchronous operation.</returns>
 		public Task SendCurrentUserInputAsync(CancellationToken cts = default)
 		{
-			var userInput = Pop();
+			var userInput = GetCurrentUserInput();
+			var editingMessage = EditingMessage;
+
+			EndEditing();
 			if (userInput != null)
-				return ChatViewModel.GenerateResponseAsync(userInput, cts);
+			{
+				var chatOperator = Chat.Services.GetRequiredService<IChatOperationService>();
+				if (editingMessage != null)
+					return chatOperator.SendEditedUserInputAsync(editingMessage.MessageIndex, userInput, cts);
+				return chatOperator.SendUserInputAsync(userInput, cts);
+			}
+
 			return Task.CompletedTask;
 		}
 	}

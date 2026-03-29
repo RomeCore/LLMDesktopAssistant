@@ -349,7 +349,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на RomeCore&apos;s desktop temple.
+        ///   Ищет локализованную строку, похожую на Niggalink AI.
         /// </summary>
         public static string title {
             get {

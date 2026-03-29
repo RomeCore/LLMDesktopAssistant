@@ -10,47 +10,88 @@
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
 
-	<materialDesign:Card Grid.Column="0"
-				 Padding="8,4"
-				 materialDesign:ShadowAssist.Darken="True">
+	<UserControl.Resources>
 
-		<Grid>
+		<Style x:Key="ControlButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
+
+			<Setter Property="Width" Value="32"/>
+			<Setter Property="Height" Value="32"/>
+			<Setter Property="Margin" Value="4"/>
+
+		</Style>
+
+		<Style x:Key="ControlButtonIcon" TargetType="materialDesign:PackIcon">
+
+			<Setter Property="Width" Value="24"/>
+			<Setter Property="Height" Value="24"/>
+
+		</Style>
+
+	</UserControl.Resources>
+
+	<Grid>
+
+		<Grid.RowDefinitions>
+			<RowDefinition/>
+			<RowDefinition Height="auto"/>
+		</Grid.RowDefinitions>
+
+		<!-- Text Input -->
+		<TextBox Grid.Row="0"
+				 materialDesign:HintAssist.Hint="{loc:Loc chat-input_hint}"
+				 materialDesign:TextFieldAssist.HasClearButton="True"
+				 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+				 Text="{Binding Text, Mode=TwoWay}"
+				 Margin="8,0"
+				 VerticalAlignment="Center"
+				 TextWrapping="Wrap"
+				 AcceptsReturn="True"
+				 MaxHeight="120"
+				 Foreground="{DynamicResource MaterialDesignBody}"
+				 FontSize="16"
+				 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+
+		<Grid Grid.Row="1">
 			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="Auto"/>
 			</Grid.ColumnDefinitions>
 
 			<!-- Attach Button -->
-			<Button Grid.Column="0"
-					Style="{StaticResource MaterialDesignIconButton}"
+			<Button Grid.Column="1"
+					Style="{StaticResource ControlButton}"
 					ToolTip="{loc:Loc chat-attach_file_hint}">
-				<materialDesign:PackIcon Kind="Paperclip"/>
+
+				<materialDesign:PackIcon Kind="Paperclip"
+										 Style="{StaticResource ControlButtonIcon}"/>
 			</Button>
 
-			<!-- Text Input -->
-			<TextBox Grid.Column="1"
-					 materialDesign:HintAssist.Hint="{loc:Loc chat-input_hint}"
-					 materialDesign:TextFieldAssist.HasClearButton="True"
-					 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-					 Text="{Binding Text, Mode=TwoWay}"
-					 Margin="8,0"
-					 VerticalAlignment="Center"
-					 TextWrapping="Wrap"
-					 AcceptsReturn="True"
-					 MaxHeight="120"
-					 Foreground="{DynamicResource MaterialDesignBody}"
-					 FontSize="16"
-					 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+			<!-- Send and Cancel Button -->
+			<Grid Grid.Column="3">
 
-			<!-- Send Button -->
-			<Button Grid.Column="2"
-					Style="{StaticResource MaterialDesignIconButton}"
-					Command="{Binding SendMessageCommand}"
-					ToolTip="{loc:Loc chat-send_button_hint}">
-				<materialDesign:PackIcon Kind="Send"/>
-			</Button>
+				<Button Style="{StaticResource ControlButton}"
+						Command="{Binding SendMessageCommand}"
+						Visibility="{Binding IsGenerating, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
+						ToolTip="{loc:Loc chat-send_button_hint}">
+
+					<materialDesign:PackIcon Kind="Send"
+											 Style="{StaticResource ControlButtonIcon}"/>
+				</Button>
+
+				<Button Style="{StaticResource ControlButton}"
+						Command="{Binding CancelGenerationCommand}"
+						Visibility="{Binding IsGenerating, Converter={StaticResource BooleanToVisibilityConverter}}"
+						ToolTip="{loc:Loc chat-stop_button_hint}">
+
+					<materialDesign:PackIcon Kind="Stop"
+											 Style="{StaticResource ControlButtonIcon}"/>
+				</Button>
+
+			</Grid>
+
 		</Grid>
-	</materialDesign:Card>
+	</Grid>
 
 </UserControl>

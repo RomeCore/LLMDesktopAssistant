@@ -22,17 +22,17 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public RangeObservableCollection<MessageViewModelBase> MessageViewModels { get; }
 
 		/// <summary>
-		/// The chat instance associated with this message sequence.
+		/// The chat view model instance associated with this message sequence.
 		/// </summary>
-		public Chat Chat { get; }
+		public ChatViewModel ChatViewModel { get; }
 
-		public MessageSequenceViewModel(Chat chat)
+		public MessageSequenceViewModel(ChatViewModel chatVM)
 		{
 			MessageViewModels = new RangeObservableCollection<MessageViewModelBase>();
-			Chat = chat;
+			ChatViewModel = chatVM;
 
-			MessageViewModels.AddRange(Chat.Messages.Select(CreateMessageViewModel));
-			Chat.Messages.CollectionChanged += OnMessagesCollectionChanged;
+			MessageViewModels.AddRange(chatVM.Chat.Messages.Select(CreateMessageViewModel));
+			chatVM.Chat.Messages.CollectionChanged += OnMessagesCollectionChanged;
 		}
 
 		private void OnMessagesCollectionChanged(object? s, NotifyCollectionChangedEventArgs e)
@@ -75,7 +75,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 					case NotifyCollectionChangedAction.Reset:
 
-						MessageViewModels.Reset(Chat.Messages.Select(CreateMessageViewModel));
+						MessageViewModels.Reset(ChatViewModel.Chat.Messages.Select(CreateMessageViewModel));
 
 						break;
 				}
@@ -89,11 +89,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 			if (message is UserMessage)
 			{
-				return new UserMessageViewModel(branchedMessage, Chat);
+				return new UserMessageViewModel(branchedMessage, ChatViewModel);
 			}
 			else if (message is AssistantMessage)
 			{
-				return new AssistantMessageViewModel(branchedMessage, Chat);
+				return new AssistantMessageViewModel(branchedMessage, ChatViewModel);
 			}
 			else
 			{

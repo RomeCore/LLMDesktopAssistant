@@ -4,6 +4,7 @@ using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients.Deepseek;
+using RCLargeLanguageModels.Clients.OpenAI;
 using RCLargeLanguageModels.Security;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Immutable;
@@ -12,8 +13,6 @@ namespace LLMDesktopAssistant.LLM.Services
 {
 	public class LLMProvider(Chat chat) : ILLMProvider
 	{
-		static readonly DeepSeekClient deepseek = new(new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
-
 		public LLMInfo GetChatLLM()
 		{
 			var toolModules = ModuleManager.GetAll<ToolModule>();
@@ -26,7 +25,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			return new LLMInfo
 			{
-				LLM = new LLModel(deepseek, "deepseek-reasoner"),
+				LLM = new LLModel(deepseek_chat),
 				Tools = tools,
 				ContextSize = 160000
 			};

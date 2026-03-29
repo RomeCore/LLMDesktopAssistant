@@ -12,7 +12,7 @@
 	<materialDesign:DrawerHost>
 
 		<materialDesign:DrawerHost.RightDrawerContent>
-			<DockPanel Width="260">
+			<DockPanel Width="320">
 
 				<StackPanel Orientation="Horizontal" Margin="8" DockPanel.Dock="Top">
 					<TextBlock Text="{loc:Loc chats}"

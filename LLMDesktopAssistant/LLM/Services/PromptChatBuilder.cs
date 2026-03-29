@@ -1,12 +1,17 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
+using LLTSharp;
+using LLTSharp.Locale;
+using LLTSharp.Metadata;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
+using System.Globalization;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
 	public class PromptChatBuilder(
-		Chat chat
+		Chat chat,
+		TemplateLibrary templates
 		) : IPromptChatBuilder
 	{
 		private ToolResultStatus ConvertToolStatus(ToolStatus status)
@@ -35,12 +40,43 @@ namespace LLMDesktopAssistant.LLM.Services
 			};
 		}
 
+		private LanguageMetadata GetCurrentLanguageMetadata()
+		{
+			return new LanguageMetadata(new LanguageCode(CultureInfo.CurrentCulture));
+		}
+
+		private string BuildSystemPrompt(string? summaryOfPrevMessages)
+		{
+			var language = GetCurrentLanguageMetadata();
+			var template = templates.TryRetrieveBestWithFallback("system_prompt", language) as ITextTemplate;
+			var context = new
+			{
+				instructions = chat.SystemPrompt ?? "You are a helpful assistant.",
+				summary = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages
+			};
+			return template!.Render(context);
+		}
+
+		private string UpdateUserLLMProvidedContent(Domain.UserMessage message)
+		{
+			var language = GetCurrentLanguageMetadata();
+			var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
+			var context = new
+			{
+				time_sent = message.CreatedAt.ToString(),
+				attachments = (object?)null,
+				content = message.Content
+			};
+			return template!.Render(context);
+		}
+
 		private List<IMessage> Convert(ChatMessage message)
 		{
 			if (message is Domain.UserMessage userMessage)
 			{
+				userMessage.LLMProvidedContent ??= UpdateUserLLMProvidedContent(userMessage);
 				var resultMessage = new RCLargeLanguageModels.Messages.UserMessage(
-						userMessage.LLMProvidedContent ?? userMessage.Content
+						userMessage.LLMProvidedContent
 					);
 				return [resultMessage];
 			}
@@ -73,7 +109,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			List<IMessage> messages = [];
 
-			string systemPrompt = chat.SystemPrompt ?? "You are a helpful assistant.";
+			string? summaryOfPrevMessages = null;
 
 			for (int i = chat.Messages.Count - 1; i >= 0; i--)
 			{
@@ -81,18 +117,14 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				if (!string.IsNullOrWhiteSpace(message.SummaryOfPrevMessages))
 				{
-					systemPrompt = $"""
-						{systemPrompt}
-
-						There is summary of previous messages in the conversation:
-						{message.SummaryOfPrevMessages}
-						""";
+					summaryOfPrevMessages = message.SummaryOfPrevMessages;
 					break;
 				}
 
 				messages.InsertRange(0, Convert(message));
 			}
 
+			string systemPrompt = BuildSystemPrompt(summaryOfPrevMessages);
 			messages.Insert(0, new SystemMessage(systemPrompt));
 
 			return messages;

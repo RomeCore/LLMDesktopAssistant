@@ -17,16 +17,27 @@
 		<ContentControl Content="{Binding ReasoningPart}"/>
 		<ContentControl Content="{Binding TextPart}"/>
 		<ContentControl Content="{Binding ToolPart}" Foreground="{DynamicResource MaterialDesignBody}"/>
+		<Label Content="{Binding Error}"
+			   Foreground="Red"
+			   Visibility="{Binding Error, Converter={StaticResource StringNonEmptyToVisiblityConverter}}"/>
 
 		<StackPanel Orientation="Horizontal"
 					HorizontalAlignment="Left"
-					Visibility="{Binding CompletedVisibility}">
+					Visibility="{Binding IsCompleted, Converter={StaticResource BooleanToVisibilityConverter}}">
 
 			<Button Style="{StaticResource MaterialDesignIconButton}"
 					Command="{Binding RegenerateCommand}"
 					Width="24" Height="24"
 					ToolTip="{loc:Loc regenerate}">
 				<materialDesign:PackIcon Kind="Refresh"/>
+			</Button>
+
+			<Button Style="{StaticResource MaterialDesignIconButton}"
+					Command="{Binding ResendCommand}"
+					Visibility="{Binding ContainsToolCalls, Converter={StaticResource BooleanToVisibilityConverter}}"
+					Width="24" Height="24"
+					ToolTip="{loc:Loc resend}">
+				<materialDesign:PackIcon Kind="ArrowUDownLeft"/>
 			</Button>
 
 			<StackPanel Orientation="Horizontal"
@@ -54,7 +65,7 @@
 
 		</StackPanel>
 
-		<Grid Visibility="{Binding NotCompletedVisibility}">
+		<Grid Visibility="{Binding IsCompleted, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
 
 			<ProgressBar IsIndeterminate="True" Height="5" Margin="0,5"/>
 

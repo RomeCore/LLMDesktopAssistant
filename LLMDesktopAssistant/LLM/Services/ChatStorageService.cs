@@ -1,6 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.LLM.Data.Models;
 using LLMDesktopAssistant.LLM.Domain;
+using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
 using System.Collections.Concurrent;
 using System.Collections.Specialized;
@@ -14,9 +15,10 @@ namespace LLMDesktopAssistant.LLM.Services
 	public class ChatStorageService(
 			Chat chat,
 			ConversationDatabase database
-		) : IChatStorageService
+		) : Disposable, IChatStorageService
 	{
 		readonly int conversationId = chat.ChatId;
+		readonly MultiValueDictionary<ChatMessage, Action> _unsubscribers = [];
 
 		public void Reload()
 		{
@@ -48,7 +50,17 @@ namespace LLMDesktopAssistant.LLM.Services
 				currentNodeId = nodeModel.SelectedNodeId;
 			}
 
+			for (int i = 0; i < chat.Messages.Count; i++)
+				Unsubscribe(chat.Messages[i].Message);
 			chat.Messages.Reset(messages);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			for (int i = 0; i < chat.Messages.Count; i++)
+				Unsubscribe(chat.Messages[i].Message);
 		}
 
 		public void AppendMessage(ChatMessage chatMessage)
@@ -158,6 +170,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!database.Database.Commit())
 				throw new InvalidOperationException("Failed to commit transaction.");
 
+			for (int i = messageIndex; i < chat.Messages.Count; i++)
+				Unsubscribe(chat.Messages[i].Message);
 			chat.Messages.ReplaceRange(messageIndex, chat.Messages.Count - messageIndex, subsequentMessages);
 		}
 
@@ -209,6 +223,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!database.Database.Commit())
 				throw new InvalidOperationException("Failed to commit transaction.");
 
+			for (int i = editIndex; i < chat.Messages.Count; i++)
+				Unsubscribe(chat.Messages[i].Message);
 			chat.Messages.ReplaceRange(editIndex, chat.Messages.Count - editIndex, [CreateBranchedMessage(newNode, newMessage, editIndex)]);
 		}
 
@@ -249,104 +265,93 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!database.Database.Commit())
 				throw new InvalidOperationException("Failed to commit transaction.");
 
+			for (int i = messageIndex; i < chat.Messages.Count; i++)
+				Unsubscribe(chat.Messages[i].Message);
 			chat.Messages.RemoveRange(messageIndex, chat.Messages.Count - messageIndex);
 		}
 
 
 
-		private MessageModel CreateAndInsertMessageModel(ChatMessage message)
+		private ToolCallModel CreateAndInsertToolCallModel(ToolCall toolCall, MessageModel model)
+		{
+			var toolCallModel = new ToolCallModel
+			{
+				MessageId = model.Id,
+				ToolCallId = toolCall.Id,
+				ToolName = toolCall.ToolName,
+				FunctionArguments = JsonSerializer.Serialize(toolCall.Arguments),
+				ResultContent = toolCall.ResultContent,
+				Status = toolCall.Status switch
+				{
+					ToolStatus.NotExecuted => ToolStatusModel.NotExecuted,
+					ToolStatus.Success => ToolStatusModel.Success,
+					ToolStatus.Error => ToolStatusModel.Error,
+					ToolStatus.Cancelled => ToolStatusModel.Cancelled,
+					_ => ToolStatusModel.NotExecuted,
+				}
+			};
+
+			database.ToolCalls.Insert(toolCallModel);
+
+			return toolCallModel;
+		}
+
+		private void SubscribeToolCall(ToolCall toolCall, AssistantMessage assistantMessage, ToolCallModel model)
+		{
+			void OnToolCallPropertyChanged(object? sender, PropertyChangedEventArgs e)
+			{
+				model.ResultContent = toolCall.ResultContent;
+				model.Status = toolCall.Status switch
+				{
+					ToolStatus.NotExecuted => ToolStatusModel.NotExecuted,
+					ToolStatus.Success => ToolStatusModel.Success,
+					ToolStatus.Error => ToolStatusModel.Error,
+					ToolStatus.Cancelled => ToolStatusModel.Cancelled,
+					_ => ToolStatusModel.NotExecuted,
+				};
+
+				database.ToolCalls.Update(model);
+			}
+			toolCall.PropertyChanged += OnToolCallPropertyChanged;
+
+			_unsubscribers.Add(assistantMessage, () =>
+			{
+				toolCall.PropertyChanged -= OnToolCallPropertyChanged;
+			});
+		}
+
+		private void CreateAndInsertToolCallModelAndSubscribe(ToolCall toolCall, AssistantMessage assistantMessage, MessageModel model)
+		{
+			var toolCallModel = CreateAndInsertToolCallModel(toolCall, model);
+
+			SubscribeToolCall(toolCall, assistantMessage, toolCallModel);
+		}
+
+		private void SubscribeMessage(ChatMessage message, MessageModel model)
 		{
 			if (message is UserMessage userMessage)
 			{
-				var model = new MessageModel
-				{
-					SummaryOfPrevMessages = message.SummaryOfPrevMessages,
-					Content = userMessage.Content,
-					LLMProvidedContent = userMessage.LLMProvidedContent,
-					CreatedAt = DateTime.Now,
-					Role = RoleModel.User
-				};
-
-				database.Messages.Insert(model);
-
 				void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 				{
+					model.CreatedAt = userMessage.CreatedAt;
 					model.SummaryOfPrevMessages = userMessage.SummaryOfPrevMessages;
 					model.Content = userMessage.Content;
+					model.LLMProvidedContent = userMessage.LLMProvidedContent;
 
 					database.Messages.Update(model);
 				}
 				userMessage.PropertyChanged += MessagePropertyChanged;
 
-				return model;
+				_unsubscribers.Add(userMessage, () =>
+				{
+					userMessage.PropertyChanged -= MessagePropertyChanged;
+				});
 			}
 			else if (message is AssistantMessage assistantMessage)
 			{
-				var model = new MessageModel
-				{
-					SummaryOfPrevMessages = assistantMessage.SummaryOfPrevMessages,
-					ReasoningContent = assistantMessage.ReasoningContent,
-					Content = assistantMessage.Content,
-					CreatedAt = DateTime.Now,
-					Error = assistantMessage.Error,
-					Status = assistantMessage.Status switch
-					{
-						AssistantMessageStatus.Pending => MessageStatusModel.Pending,
-						AssistantMessageStatus.Success => MessageStatusModel.Success,
-						AssistantMessageStatus.Error => MessageStatusModel.Error,
-						AssistantMessageStatus.Cancelled => MessageStatusModel.Cancelled,
-						_ => MessageStatusModel.Pending
-					},
-					Role = RoleModel.Assistant
-				};
-
-				database.Messages.Insert(model);
-
-				void AddToolCall(ToolCall toolCall)
-				{
-					var toolCallModel = new ToolCallModel
-					{
-						MessageId = model.Id,
-						ToolCallId = toolCall.Id,
-						ToolName = toolCall.ToolName,
-						FunctionArguments = JsonSerializer.Serialize(toolCall.Arguments),
-						ResultContent = toolCall.ResultContent,
-						Status = toolCall.Status switch
-						{
-							ToolStatus.NotExecuted => ToolStatusModel.NotExecuted,
-							ToolStatus.Success => ToolStatusModel.Success,
-							ToolStatus.Error => ToolStatusModel.Error,
-							ToolStatus.Cancelled => ToolStatusModel.Cancelled,
-							_ => ToolStatusModel.NotExecuted,
-						}
-					};
-
-					database.ToolCalls.Insert(toolCallModel);
-
-					void OnToolCallPropertyChanged(object? sender, PropertyChangedEventArgs e)
-					{
-						toolCallModel.ResultContent = toolCall.ResultContent;
-						toolCallModel.Status = toolCall.Status switch
-						{
-							ToolStatus.NotExecuted => ToolStatusModel.NotExecuted,
-							ToolStatus.Success => ToolStatusModel.Success,
-							ToolStatus.Error => ToolStatusModel.Error,
-							ToolStatus.Cancelled => ToolStatusModel.Cancelled,
-							_ => ToolStatusModel.NotExecuted,
-						};
-
-						database.ToolCalls.Update(toolCallModel);
-					}
-					toolCall.PropertyChanged += OnToolCallPropertyChanged;
-				}
-
-				foreach (var toolCall in assistantMessage.ToolCalls)
-				{
-					AddToolCall(toolCall);
-				}
-
 				void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 				{
+					model.CreatedAt = assistantMessage.CreatedAt;
 					model.SummaryOfPrevMessages = assistantMessage.SummaryOfPrevMessages;
 					model.ReasoningContent = assistantMessage.ReasoningContent;
 					model.Content = assistantMessage.Content;
@@ -366,10 +371,79 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					if (e.NewItems != null)
 						foreach (ToolCall newToolCall in e.NewItems)
-							AddToolCall(newToolCall);
+							CreateAndInsertToolCallModelAndSubscribe(newToolCall, assistantMessage, model);
 				}
 				assistantMessage.PropertyChanged += MessagePropertyChanged;
 				assistantMessage.ToolCalls.CollectionChanged += ToolCallCollectionChanged;
+
+				_unsubscribers.Add(assistantMessage, () =>
+				{
+					assistantMessage.PropertyChanged -= MessagePropertyChanged;
+					assistantMessage.ToolCalls.CollectionChanged -= ToolCallCollectionChanged;
+				});
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException(nameof(message), "Invalid message type");
+			}
+		}
+
+		private void Unsubscribe(ChatMessage message)
+		{
+			if (_unsubscribers.TryGetValue(message, out var actions))
+				foreach (var unsub in actions)
+					unsub.Invoke();
+			message.Dispose();
+			_unsubscribers.Remove(message);
+		}
+
+		private MessageModel CreateAndInsertMessageModel(ChatMessage message)
+		{
+			if (message is UserMessage userMessage)
+			{
+				var model = new MessageModel
+				{
+					CreatedAt = userMessage.CreatedAt,
+					SummaryOfPrevMessages = message.SummaryOfPrevMessages,
+					Content = userMessage.Content,
+					LLMProvidedContent = userMessage.LLMProvidedContent,
+					Role = RoleModel.User
+				};
+
+				database.Messages.Insert(model);
+
+				SubscribeMessage(message, model);
+
+				return model;
+			}
+			else if (message is AssistantMessage assistantMessage)
+			{
+				var model = new MessageModel
+				{
+					CreatedAt = assistantMessage.CreatedAt,
+					SummaryOfPrevMessages = assistantMessage.SummaryOfPrevMessages,
+					ReasoningContent = assistantMessage.ReasoningContent,
+					Content = assistantMessage.Content,
+					Error = assistantMessage.Error,
+					Status = assistantMessage.Status switch
+					{
+						AssistantMessageStatus.Pending => MessageStatusModel.Pending,
+						AssistantMessageStatus.Success => MessageStatusModel.Success,
+						AssistantMessageStatus.Error => MessageStatusModel.Error,
+						AssistantMessageStatus.Cancelled => MessageStatusModel.Cancelled,
+						_ => MessageStatusModel.Pending
+					},
+					Role = RoleModel.Assistant
+				};
+
+				database.Messages.Insert(model);
+
+				foreach (var toolCall in assistantMessage.ToolCalls)
+				{
+					CreateAndInsertToolCallModelAndSubscribe(toolCall, assistantMessage, model);
+				}
+
+				SubscribeMessage(message, model);
 
 				return model;
 			}
@@ -389,6 +463,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					LLMProvidedContent = messageModel.LLMProvidedContent
 				};
 
+				SubscribeMessage(result, messageModel);
+
 				return result;
 			}
 			else if (messageModel.Role == RoleModel.Assistant)
@@ -397,18 +473,21 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					ReasoningContent = messageModel.ReasoningContent,
 					Content = messageModel.Content,
-					CompletionToken = CompletionToken.Success
+					CompletionToken = CompletionToken.Success,
+					Error = messageModel.Error
 				};
 
-				foreach (var tcModel in database.ToolCalls.Find(t => t.MessageId == messageModel.Id))
+				var toolCallModels = database.ToolCalls.Find(t => t.MessageId == messageModel.Id).ToList();
+
+				foreach (var toolCallModel in toolCallModels)
 				{
-					result.ToolCalls.Add(new ToolCall
+					var toolCall = new ToolCall
 					{
-						Id = tcModel.ToolCallId,
-						ToolName = tcModel.ToolName,
-						Arguments = JsonNode.Parse(tcModel.FunctionArguments)!,
-						ResultContent = tcModel.ResultContent,
-						Status = tcModel.Status switch
+						Id = toolCallModel.ToolCallId,
+						ToolName = toolCallModel.ToolName,
+						Arguments = JsonNode.Parse(toolCallModel.FunctionArguments)!,
+						ResultContent = toolCallModel.ResultContent,
+						Status = toolCallModel.Status switch
 						{
 							ToolStatusModel.NotExecuted => ToolStatus.NotExecuted,
 							ToolStatusModel.Success => ToolStatus.Success,
@@ -418,8 +497,14 @@ namespace LLMDesktopAssistant.LLM.Services
 							_ => ToolStatus.NotExecuted
 						},
 						CompletionToken = CompletionToken.Success
-					});
+					};
+
+					result.ToolCalls.Add(toolCall);
+
+					SubscribeToolCall(toolCall, result, toolCallModel);
 				}
+
+				SubscribeMessage(result, messageModel);
 
 				return result;
 			}
@@ -429,7 +514,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		private BranchedMessage CreateBranchedMessage(MessageNodeModel nodeModel, ChatMessage exMessage, int messageIndex)
+		private BranchedMessage CreateBranchedMessage(MessageNodeModel nodeModel, ChatMessage message, int messageIndex)
 		{
 			var sameOrderNodes = database.MessageNodes.Find(n => n.ParentId == nodeModel.ParentId &&
 				n.IsRootNode == nodeModel.IsRootNode).Select(n => n.Id).OrderBy(i => i).ToList();
@@ -437,7 +522,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			return new BranchedMessage
 			{
-				Message = exMessage,
+				Message = message,
 				MessageIndex = messageIndex,
 				AvailableBranchesCount = sameOrderNodes.Count,
 				SelectedBranchIndex = selectedNode

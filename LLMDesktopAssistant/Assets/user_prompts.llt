@@ -1,0 +1,37 @@
+﻿@template user_message_prompt
+{
+	@metadata
+	{
+		lang: 'en'
+	}
+	@if time_sent
+	{
+		Message sent at: @time_sent
+	}
+	@if attachments
+	{
+		Attachments:
+		@attachments
+	}
+
+	@content
+}
+
+@template user_message_prompt
+{
+	@metadata
+	{
+		lang: 'ru'
+	}
+	@if time_sent
+	{
+		Сообщение отправлено в: @time_sent
+	}
+	@if attachments
+	{
+		Вложения:
+		@attachments
+	}
+
+	@content
+}

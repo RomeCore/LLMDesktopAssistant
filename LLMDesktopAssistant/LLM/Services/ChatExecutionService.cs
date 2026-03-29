@@ -83,7 +83,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					foreach (var toolCall in delta.NewToolCalls ?? [])
 						ProcessToolCall(toolCall);
 				}
-
+				
 				domainResponseMessage.Content = responseMessage.Content;
 				domainResponseMessage.ReasoningContent = responseMessage.ReasoningContent;
 				foreach (var toolCall in responseMessage.ToolCalls)
@@ -117,10 +117,16 @@ namespace LLMDesktopAssistant.LLM.Services
 				}
 				finally
 				{
-					await Task.WhenAll(toolExecutionTasks);
-					completionSource.Complete();
-					Log.Information("Message finished with status: {Status}, error: {Error}, tool call count: {ToolCallCount}",
-						domainResponseMessage.Status, domainResponseMessage.Error, domainResponseMessage.ToolCalls.Count);
+					try
+					{
+						await Task.WhenAll(toolExecutionTasks);
+					}
+					finally
+					{
+						completionSource.Complete();
+						Log.Information("Message finished with status: {Status}, error: {Error}, tool call count: {ToolCallCount}",
+							domainResponseMessage.Status, domainResponseMessage.Error, domainResponseMessage.ToolCalls.Count);
+					}
 				}
 
 				if (toolExecutionTasks.Count == 0)

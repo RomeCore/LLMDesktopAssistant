@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		private readonly IChatOperationService chatOperator;
 
 		public ICommand RegenerateCommand { get; }
+		public ICommand ResendCommand { get; }
 		public ICommand SwitchBranchCommand { get; }
 
 		public IEnumerable<int> BranchIndices =>
@@ -33,18 +34,26 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public bool BranchSelectionAvailable => branchedMessage.AvailableBranchesCount > 1;
 		public Visibility BranchSelectionVisibility => BranchSelectionAvailable ? Visibility.Visible : Visibility.Collapsed;
 
+		public ChatViewModel ChatViewModel { get; }
+
 		public virtual void OnRemoved()
 		{
 		}
 
-		public MessageViewModelBase(BranchedMessage branchedMessage, Chat chat)
+		public MessageViewModelBase(BranchedMessage branchedMessage, ChatViewModel chatVM)
 		{
 			this.branchedMessage = branchedMessage;
-			chatOperator = chat.Services.GetRequiredService<IChatOperationService>();
+			ChatViewModel = chatVM;
+			chatOperator = chatVM.Chat.Services.GetRequiredService<IChatOperationService>();
 
 			RegenerateCommand = new RelayCommand(() =>
 			{
-				chatOperator.RegenerateOrResendMessageAsync(branchedMessage.MessageIndex);
+				chatOperator.RegenerateMessageAsync(branchedMessage.MessageIndex);
+			});
+
+			ResendCommand = new RelayCommand(() =>
+			{
+				chatOperator.ResendMessageAsync(branchedMessage.MessageIndex);
 			});
 
 			SwitchBranchCommand = new RelayCommand<int>(branchIndex =>

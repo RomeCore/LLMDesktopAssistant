@@ -1,9 +1,35 @@
 ﻿using System.Collections.ObjectModel;
+using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.ToolModules;
 using LLMDesktopAssistant.Utils;
+using RCLargeLanguageModels;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
+	public class ChatSettings : SettingsObject
+	{
+		private LLModelDescriptor? _chatModel;
+		public LLModelDescriptor? ChatModel
+		{
+			get => _chatModel;
+			set => SetProperty(ref _chatModel, value);
+		}
+
+		private LLModelDescriptor? _summarizerModel;
+		public LLModelDescriptor? SummarizerModel
+		{
+			get => _summarizerModel;
+			set => SetProperty(ref _summarizerModel, value);
+		}
+
+		private string? _systemInstructions;
+		public string? SystemInstructions
+		{
+			get => _systemInstructions;
+			set => SetProperty(ref _systemInstructions, value);
+		}
+	}
+
 	/// <summary>
 	/// Represents a chat session.
 	/// </summary>
@@ -27,6 +53,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 		private CancellationTokenSource? _generationCts;
 		/// <summary>
 		/// Gets or sets the current message generation <see cref="CancellationTokenSource"/>.
+		/// Use this  to cancel the current message generation (inference) task.
 		/// </summary>
 		public CancellationTokenSource? GenerationCts
 		{
@@ -35,19 +62,9 @@ namespace LLMDesktopAssistant.LLM.Domain
 		}
 
 		/// <summary>
-		/// Gets or sets the system prompt for the chat session. Used to provide context and instructions to the model.
-		/// </summary>
-		public string? SystemPrompt { get; set; }
-
-		/// <summary>
 		/// Gets or sets the list of tool modules that are available for use in the chat session.
 		/// </summary>
 		public List<ToolModule> AdditionalToolModules { get; set; } = [];
-
-		/// <summary>
-		/// The list of properties associated with the chat session. These can include additional settings or configurations that affect the behavior of the chat session.
-		/// </summary>
-		public ObservableCollection<ChatProperty> Properties { get; } = [];
 
 
 		protected override void Dispose(bool disposing)

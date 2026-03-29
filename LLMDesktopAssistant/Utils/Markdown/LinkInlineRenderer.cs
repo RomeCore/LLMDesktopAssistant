@@ -53,7 +53,9 @@ namespace LLMDesktopAssistant.Utils.Markdown
 				{
 					Template = controlTemplate,
 					Command = OpenLinkCommand,
-					CommandParameter = url
+					CommandParameter = url,
+					Width = 200,
+					Height = 200
 				};
 				renderer.WriteInline(new InlineUIContainer(childUIElement));
 			}

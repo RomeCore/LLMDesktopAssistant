@@ -56,7 +56,12 @@
 
 			<!-- Converters -->
 
-			<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+			<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
+													 True="Visible"
+													 False="Collapsed"/>
+			<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverterInverted"
+													 True="Collapsed"
+													 False="Visible"/>
 			<converters:AssistantMessageStateToBooleanConverter x:Key="AssistantMessageStateToBooleanConverter"/>
 			<converters:StringNonEmptyToBooleanConverter x:Key="StringNonEmptyToBooleanConverter"/>
 			<converters:StringNonEmptyToVisiblityConverter x:Key="StringNonEmptyToVisiblityConverter"/>

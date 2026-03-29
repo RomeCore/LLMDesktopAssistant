@@ -8,6 +8,7 @@ using RCLargeLanguageModels.Tools;
 using RCLargeLanguageModels.Utilities;
 using RCParsing;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -67,7 +68,7 @@ namespace LLMDesktopAssistant.ToolModules
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(Search, "web-search", "Search through the web using query.")
+				Tool = FunctionTool.From(Search_SearXNG, "web-search", "Search through the web using query.")
 			});
 		}
 
@@ -275,10 +276,10 @@ namespace LLMDesktopAssistant.ToolModules
 			}
 		}
 		
-		private async Task<ToolResult> Search(
+		private async Task<ToolResult> Search_LangSearch(
 			[Description("The query to search by")] string query,
 			[Description("The maximum number of results to return")] int maxResults = 10,
-			[Description("Whether to provide summary about every returned page")] bool provideSummary = false)
+			[Description("Whether to show long text summaries for results")] bool provideSummary = false)
 		{
 			try
 			{
@@ -296,6 +297,7 @@ namespace LLMDesktopAssistant.ToolModules
 				};
 				request.Content = JsonContent.Create(body);
 				var response = await _httpClient.SendAsync(request);
+				response.EnsureSuccessStatusCode();
 				var responseContent = await response.ParseContentAsync<JsonObject>();
 
 				var pageData = responseContent?["data"]?["webPages"]?["value"]!;
@@ -322,6 +324,104 @@ namespace LLMDesktopAssistant.ToolModules
 			catch (Exception ex)
 			{
 				return new ToolResult(ToolResultStatus.Error, $"Error using search: {ex.Message}");
+			}
+		}
+
+		private async Task<ToolResult> Search_Jina(
+			[Description("The query to search by")] string query,
+			[Description("The page number to return results for")] int page = 1)
+		{
+			try
+			{
+				var encodedQuery = Uri.EscapeDataString(query);
+				var request = new HttpRequestMessage(
+					HttpMethod.Get,
+					$"https://s.jina.ai/?q={encodedQuery}&page={page}");
+				request.Headers.Add("X-Respond-With", "no-content");
+
+				var apiKey = new EnvironmentTokenAccessor("JINA_API_KEY").GetToken();
+				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+				var response = await _httpClient.SendAsync(request);
+				response.EnsureSuccessStatusCode();
+				var responseContent = await response.Content.ReadAsStringAsync();
+
+				// Jina AI returns plain markdown text that suitable for LLM, so we can just return it directly.
+				return new ToolResult(responseContent);
+			}
+			catch (Exception ex)
+			{
+				return new ToolResult(ToolResultStatus.Error, $"Error using search: {ex.Message}");
+			}
+		}
+
+		private async Task<ToolResult> Search_SearXNG(
+			[Description("The query to search by")] string query,
+			[Description("The page number to return results for"), Range(1, 10)] int page = 1,
+			[Enum(["general", "images", "videos", "news", "map", "music", "it", "science", "files", "social media"])] string category = "general",
+			[Description("Language code (auto, en, ru, etc.)")] string language = "auto",
+			[Enum(["day", "week", "month", "year"])] string timeRange = "",
+			[Enum(["none", "moderate", "strict"])] string safeSearch = "none")
+		{
+			try
+			{
+				var searxngUrl = new EnvironmentTokenAccessor("SEARXNG_URL").GetToken() ?? "http://localhost:8080";
+
+				int safeSearchIndex = safeSearch switch
+				{
+					"none" => 0,
+					"moderate" => 1,
+					"strict" => 2,
+					_ => throw new ArgumentException("Invalid safe search option", nameof(safeSearch))
+				};
+				var parameters = new Dictionary<string, string>
+				{
+					["q"] = query,
+					["pageno"] = page.ToString(),
+					["format"] = "json",
+					["categories"] = category,
+					["language"] = language,
+					["safesearch"] = safeSearchIndex.ToString()
+				};
+
+				if (!string.IsNullOrEmpty(timeRange))
+				{
+					parameters["time_range"] = timeRange;
+				}
+
+				var queryString = string.Join("&", parameters.Select(p => $"{Uri.EscapeDataString(p.Key)}={Uri.EscapeDataString(p.Value)}"));
+				var requestUrl = $"{searxngUrl}/search?{queryString}";
+
+				using var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+
+				request.Headers.Add("Accept", "application/json");
+
+				var response = await _httpClient.SendAsync(request);
+				response.EnsureSuccessStatusCode();
+				var responseContent = await response.ParseContentAsync<JsonObject>();
+
+				var results = responseContent?["results"]!;
+				var sb = new StringBuilder();
+
+				foreach (var item in ((JsonArray)results).Take(50))
+				{
+					var title = item?["title"]?.ToString() ?? "Unknown";
+					var url = item?["url"]?.ToString() ?? "Unknown";
+					var content = item?["content"]?.ToString();
+					var imgSrc = item?["img_src"]?.ToString();
+
+					sb.AppendLine($"[{title}]({url}):");
+					if (!string.IsNullOrEmpty(imgSrc))
+						sb.AppendLine($"![Image]({imgSrc})");
+					sb.AppendLine(content);
+					sb.AppendLine();
+				}
+
+				return new ToolResult(sb.ToString().Trim());
+			}
+			catch (Exception ex)
+			{
+				return new ToolResult(ToolResultStatus.Error, $"Error using SearXNG search: {ex.Message}");
 			}
 		}
 

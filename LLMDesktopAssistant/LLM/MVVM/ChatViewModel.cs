@@ -22,8 +22,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	[ViewModelFor(typeof(ChatView))]
 	public class ChatViewModel : ViewModelBase
 	{
-		private CancellationTokenSource? _sendCts;
-
 		/// <summary>
 		/// Gets the message sequence that represents the conversation history.
 		/// </summary>
@@ -46,53 +44,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		{
 			Chat = chat;
 			UserInput = new UserInputViewModel(this);
-			MessageSequence = new MessageSequenceViewModel(chat);
-		}
-
-		/// <summary>
-		/// Sends a message to the LLM and updates the conversation turns.
-		/// </summary>
-		/// <param name="userMessage">The user message to be sent.</param>
-		/// <param name="cts">The cancellation token to monitor for cancellation requests.</param>
-		/// <returns>A task that represents the asynchronous operation.</returns>
-		public async Task GenerateResponseAsync(CancellationToken cts = default)
-		{
-			try
-			{
-				_sendCts?.Cancel(); // Cancel any previous send operation
-				_sendCts = CancellationTokenSource.CreateLinkedTokenSource(cts);
-				cts = _sendCts.Token;
-
-				var chatOperator = Chat.Services.GetRequiredService<IChatOperationService>();
-				await chatOperator.ContinueGenerationAsync(cts);
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex, "An error occurred while sending a message: {error}.", ex);
-			}
-		}
-
-		/// <summary>
-		/// Sends a message to the LLM and updates the conversation turns.
-		/// </summary>
-		/// <param name="userMessage">The user message to be sent.</param>
-		/// <param name="cts">The cancellation token to monitor for cancellation requests.</param>
-		/// <returns>A task that represents the asynchronous operation.</returns>
-		public async Task GenerateResponseAsync(UserInput userInput, CancellationToken cts = default)
-		{
-			try
-			{
-				_sendCts?.Cancel(); // Cancel any previous send operation
-				_sendCts = CancellationTokenSource.CreateLinkedTokenSource(cts);
-				cts = _sendCts.Token;
-
-				var chatOperator = Chat.Services.GetRequiredService<IChatOperationService>();
-				await chatOperator.SendUserInputAsync(userInput, cts);
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex, "An error occurred while sending a message: {error}.", ex);
-			}
+			MessageSequence = new MessageSequenceViewModel(this);
 		}
 	}
 }

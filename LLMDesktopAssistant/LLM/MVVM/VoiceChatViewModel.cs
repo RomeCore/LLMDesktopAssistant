@@ -6,11 +6,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Speech;
 using LLMDesktopAssistant.Tabs;
 using LLMDesktopAssistant.Utils;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -46,7 +48,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		private async void OnSpeechReceived(string speech)
 		{
-			await ChatViewModel.GenerateResponseAsync(new UserInput { Content = speech });
+			await ChatViewModel.Chat.Services.GetRequiredService<IChatOperationService>().SendUserInputAsync(new UserInput { Content = speech });
 		}
 
 		private void Messages_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

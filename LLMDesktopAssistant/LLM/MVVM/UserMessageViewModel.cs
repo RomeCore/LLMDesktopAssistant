@@ -19,12 +19,19 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _text, value);
 		}
 
-		public UserMessageViewModel(BranchedMessage branchedMessage, Chat chat) : base(branchedMessage, chat)
+		public ICommand EditCommand { get; }
+
+		public UserMessageViewModel(BranchedMessage branchedMessage, ChatViewModel chatVM) : base(branchedMessage, chatVM)
 		{
 			if (branchedMessage.Message is not UserMessage userMessage)
 				throw new InvalidOperationException("Invalid message type. Expected IUserMessage.");
 
 			Text = userMessage.Content ?? string.Empty;
+
+			EditCommand = new RelayCommand(() =>
+			{
+				chatVM.UserInput.EditMessage(branchedMessage);
+			});
 		}
 	}
 }

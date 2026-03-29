@@ -10,10 +10,15 @@
 		/// </summary>
 		public List<Attachment> Attachments { get; set; } = [];
 
+		private string? _llmProvidedContent;
 		/// <summary>
 		/// Gets or sets the content that will be provided to LLM and should not be displayed.
 		/// Can include attachments, various notes, etc.
 		/// </summary>
-		public string? LLMProvidedContent { get; set; }
+		public string? LLMProvidedContent
+		{
+			get => _llmProvidedContent;
+			set => SetProperty(ref _llmProvidedContent, value);
+		}
 	}
 }

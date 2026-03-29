@@ -7,7 +7,8 @@ namespace LLMDesktopAssistant.LLM.Services
 		Task ContinueGenerationAsync(CancellationToken cancellationToken = default);
 		Task SendUserInputAsync(UserInput userInput, CancellationToken cancellationToken = default);
 		Task SendEditedUserInputAsync(int messageIndex, UserInput userInput, CancellationToken cancellationToken = default);
-		Task RegenerateOrResendMessageAsync(int messageIndex, CancellationToken cancellationToken = default);
+		Task ResendMessageAsync(int messageIndex, CancellationToken cancellationToken = default);
+		Task RegenerateMessageAsync(int messageIndex, CancellationToken cancellationToken = default);
 		void SwitchBranch(int messageIndex, int branchIndex);
 	}
 }

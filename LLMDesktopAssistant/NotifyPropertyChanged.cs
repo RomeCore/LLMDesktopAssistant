@@ -82,6 +82,12 @@ namespace LLMDesktopAssistant
 		{
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			PropertyChanged = null;
+		}
+
 		/// <summary>
 		/// Raises the PropertyChanged event for a specific property.
 		/// </summary>
@@ -147,11 +153,16 @@ namespace LLMDesktopAssistant
 		{
 		}
 
-		private IDisposable Subscribe(string propertyName, Action<object, object?, object?> handler)
+		private void Subscribe(string propertyName, Action<object, object?, object?> handler, out IDisposable unsubscriber)
 		{
 			ArgumentNullException.ThrowIfNull(propertyName);
-			_propertyChangedEvt.Subscribe(propertyName, this, handler, out var unsubscriber);
-			return unsubscriber;
+			_propertyChangedEvt.Subscribe(propertyName, this, handler, out unsubscriber);
+		}
+
+		private void Subscribe(string propertyName, Action<object, object?, object?> handler)
+		{
+			ArgumentNullException.ThrowIfNull(propertyName);
+			_propertyChangedEvt.Subscribe(propertyName, this, handler);
 		}
 
 		/// <summary>
@@ -161,10 +172,10 @@ namespace LLMDesktopAssistant
 		/// <param name="handler">The event handler to subscribe.</param>
 		/// <returns>A disposable object that can be disposed to unsubscribe from the event.</returns>
 		/// <exception cref="ArgumentNullException">The propertyName or handler parameter is null.</exception>
-		public IDisposable SubscribeChanged(string propertyName, Action<object?> handler)
+		public void SubscribeChanged(string propertyName, Action<object?> handler)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler(newValue);
-			return Subscribe(propertyName, _handler);
+			Subscribe(propertyName, _handler);
 		}
 
 		/// <summary>
@@ -174,10 +185,10 @@ namespace LLMDesktopAssistant
 		/// <param name="handler">The event handler to subscribe.</param>
 		/// <returns>A disposable object that can be disposed to unsubscribe from the event.</returns>
 		/// <exception cref="ArgumentNullException">The propertyName or handler parameter is null.</exception>
-		public IDisposable SubscribeChanged(string propertyName, Action<object?, object?> handler)
+		public void SubscribeChanged(string propertyName, Action<object?, object?> handler)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler(oldValue, newValue);
-			return Subscribe(propertyName, _handler);
+			Subscribe(propertyName, _handler);
 		}
 
 		/// <summary>
@@ -187,10 +198,10 @@ namespace LLMDesktopAssistant
 		/// <param name="handler">The event handler to subscribe.</param>
 		/// <returns>A disposable object that can be disposed to unsubscribe from the event.</returns>
 		/// <exception cref="ArgumentNullException">The propertyName or handler parameter is null.</exception>
-		public IDisposable SubscribeChanged<T>(string propertyName, Action<T?> handler)
+		public void SubscribeChanged<T>(string propertyName, Action<T?> handler)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler((T?)newValue);
-			return Subscribe(propertyName, _handler);
+			Subscribe(propertyName, _handler);
 		}
 
 		/// <summary>
@@ -200,10 +211,10 @@ namespace LLMDesktopAssistant
 		/// <param name="handler">The event handler to subscribe.</param>
 		/// <returns>A disposable object that can be disposed to unsubscribe from the event.</returns>
 		/// <exception cref="ArgumentNullException">The propertyName or handler parameter is null.</exception>
-		public IDisposable SubscribeChanged<T>(string propertyName, Action<T?, T?> handler)
+		public void SubscribeChanged<T>(string propertyName, Action<T?, T?> handler)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler((T?)oldValue, (T?)newValue);
-			return Subscribe(propertyName, _handler);
+			Subscribe(propertyName, _handler);
 		}
 
 		/// <summary>
@@ -213,10 +224,75 @@ namespace LLMDesktopAssistant
 		/// <param name="handler">The event handler to subscribe.</param>
 		/// <returns>A disposable object that can be disposed to unsubscribe from the event.</returns>
 		/// <exception cref="ArgumentNullException">The propertyName or handler parameter is null.</exception>
-		public IDisposable SubscribeChanged<T>(string propertyName, Action<object, T?, T?> handler)
+		public void SubscribeChanged<T>(string propertyName, Action<object, T?, T?> handler)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler(i, (T?)oldValue, (T?)newValue);
-			return Subscribe(propertyName, _handler);
+			Subscribe(propertyName, _handler);
+		}
+
+		/// <summary>
+		/// Subscribes to a property change event.
+		/// </summary>
+		/// <param name="propertyName">The name of the property to subscribe to.</param>
+		/// <param name="handler">The event handler to subscribe.</param>
+		/// <returns>A disposable object that can be disposed to unsubscribe from the event.</returns>
+		/// <exception cref="ArgumentNullException">The propertyName or handler parameter is null.</exception>
+		public void SubscribeChanged(string propertyName, Action<object?> handler, out IDisposable unsubscriber)
+		{
+			void _handler(object i, object? oldValue, object? newValue) => handler(newValue);
+			Subscribe(propertyName, _handler, out unsubscriber);
+		}
+
+		/// <summary>
+		/// Subscribes to a property change event.
+		/// </summary>
+		/// <param name="propertyName">The name of the property to subscribe to.</param>
+		/// <param name="handler">The event handler to subscribe.</param>
+		/// <returns>A disposable object that can be disposed to unsubscribe from the event.</returns>
+		/// <exception cref="ArgumentNullException">The propertyName or handler parameter is null.</exception>
+		public void SubscribeChanged(string propertyName, Action<object?, object?> handler, out IDisposable unsubscriber)
+		{
+			void _handler(object i, object? oldValue, object? newValue) => handler(oldValue, newValue);
+			Subscribe(propertyName, _handler, out unsubscriber);
+		}
+
+		/// <summary>
+		/// Subscribes to a property change event.
+		/// </summary>
+		/// <param name="propertyName">The name of the property to subscribe to.</param>
+		/// <param name="handler">The event handler to subscribe.</param>
+		/// <returns>A disposable object that can be disposed to unsubscribe from the event.</returns>
+		/// <exception cref="ArgumentNullException">The propertyName or handler parameter is null.</exception>
+		public void SubscribeChanged<T>(string propertyName, Action<T?> handler, out IDisposable unsubscriber)
+		{
+			void _handler(object i, object? oldValue, object? newValue) => handler((T?)newValue);
+			Subscribe(propertyName, _handler, out unsubscriber);
+		}
+
+		/// <summary>
+		/// Subscribes to a property change event.
+		/// </summary>
+		/// <param name="propertyName">The name of the property to subscribe to.</param>
+		/// <param name="handler">The event handler to subscribe.</param>
+		/// <returns>A disposable object that can be disposed to unsubscribe from the event.</returns>
+		/// <exception cref="ArgumentNullException">The propertyName or handler parameter is null.</exception>
+		public void SubscribeChanged<T>(string propertyName, Action<T?, T?> handler, out IDisposable unsubscriber)
+		{
+			void _handler(object i, object? oldValue, object? newValue) => handler((T?)oldValue, (T?)newValue);
+			Subscribe(propertyName, _handler, out unsubscriber);
+		}
+
+		/// <summary>
+		/// Subscribes to a property change event.
+		/// </summary>
+		/// <param name="propertyName">The name of the property to subscribe to.</param>
+		/// <param name="handler">The event handler to subscribe.</param>
+		/// <returns>A disposable object that can be disposed to unsubscribe from the event.</returns>
+		/// <exception cref="ArgumentNullException">The propertyName or handler parameter is null.</exception>
+		public void SubscribeChanged<T>(string propertyName, Action<object, T?, T?> handler, out IDisposable unsubscriber)
+		{
+			void _handler(object i, object? oldValue, object? newValue) => handler(i, (T?)oldValue, (T?)newValue);
+			Subscribe(propertyName, _handler, out unsubscriber);
 		}
 	}
 }

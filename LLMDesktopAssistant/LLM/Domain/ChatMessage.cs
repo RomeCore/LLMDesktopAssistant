@@ -13,6 +13,13 @@ namespace LLMDesktopAssistant.LLM.Domain
 	/// </summary>
 	public abstract class ChatMessage : NotifyPropertyChanged
 	{
+		private DateTime _createdAt = DateTime.Now;
+		public DateTime CreatedAt
+		{
+			get => _createdAt;
+			set => SetProperty(ref _createdAt, value);
+		}
+
 		private string _content = string.Empty;
 		/// <summary>
 		/// Gets or sets the content of the message.
