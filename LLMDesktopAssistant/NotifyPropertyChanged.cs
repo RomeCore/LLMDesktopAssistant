@@ -94,10 +94,11 @@ namespace LLMDesktopAssistant
 		/// <param name="propertyName">The name of the property that has changed.</param>
 		/// <param name="oldValue">The old value of the property.</param>
 		/// <param name="newValue">The new value of the property.</param>
-		protected void RaisePropertyChanged(string propertyName, object? oldValue = null, object? newValue = null)
+		protected void RaisePropertyChanged(string? propertyName, object? oldValue = null, object? newValue = null)
 		{
 			OnPropertyChanged(propertyName, oldValue, newValue);
-			_propertyChangedEvt.Call(propertyName, (c, e) => e(c, oldValue, newValue));
+			if (propertyName != null)
+				_propertyChangedEvt.Call(propertyName, (c, e) => e(c, oldValue, newValue));
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
@@ -149,7 +150,7 @@ namespace LLMDesktopAssistant
 		/// <param name="propertyName">The name of the property that has changed.</param>
 		/// <param name="oldValue">The old value of the property.</param>
 		/// <param name="newValue">The new value of the property.</param>
-		protected virtual void OnPropertyChanged(string propertyName, object? oldValue = null, object? newValue = null)
+		protected virtual void OnPropertyChanged(string? propertyName, object? oldValue = null, object? newValue = null)
 		{
 		}
 

@@ -28,20 +28,22 @@
 						   VerticalAlignment="Center"/>
 
 				<Grid Grid.Column="1"
-					  Visibility="{Binding IsCreatingNewId, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
+					  Visibility="{Binding IsEditingId, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
 
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition/>
+						<ColumnDefinition Width="auto"/>
 						<ColumnDefinition Width="auto"/>
 						<ColumnDefinition Width="auto"/>
 					</Grid.ColumnDefinitions>
 
 					<ComboBox Grid.Column="0"
 							  MinWidth="150"
+							  Margin="0,0,5,0"
 							  VerticalAlignment="Center"
 							  SelectedItem="{Binding CurrentId}"
 							  ItemsSource="{Binding Ids}"
-							  Visibility="{Binding IsCreatingNewId, Converter={StaticResource BooleanToVisibilityConverterInverted}}"/>
+							  Visibility="{Binding IsEditingId, Converter={StaticResource BooleanToVisibilityConverterInverted}}"/>
 
 					<Button Grid.Column="1"
 							Command="{Binding CreateNewIdCommand}"
@@ -63,10 +65,20 @@
 
 					</Button>
 
+					<Button Grid.Column="3"
+							Command="{Binding RemoveIdCommand}"
+							Style="{StaticResource MaterialDesignIconForegroundButton}"
+							Width="24" Height="24">
+
+						<materialDesign:PackIcon Kind="Remove"
+							 Width="16" Height="16"/>
+
+					</Button>
+
 				</Grid>
 
 				<Grid Grid.Column="1"
-					  Visibility="{Binding IsCreatingNewId, Converter={StaticResource BooleanToVisibilityConverter}}">
+					  Visibility="{Binding IsEditingId, Converter={StaticResource BooleanToVisibilityConverter}}">
 
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition/>
@@ -80,7 +92,7 @@
 							 Text="{Binding NewId}"/>
 
 					<Button Grid.Column="1"
-							Command="{Binding ConfirmNewIdCommand}"
+							Command="{Binding ConfirmEditIdCommand}"
 							Style="{StaticResource MaterialDesignIconForegroundButton}"
 							Width="24" Height="24">
 
@@ -90,7 +102,7 @@
 					</Button>
 
 					<Button Grid.Column="2"
-							Command="{Binding CancelNewIdCommand}"
+							Command="{Binding CancelEditIdCommand}"
 							Style="{StaticResource MaterialDesignIconForegroundButton}"
 							Width="24" Height="24">
 

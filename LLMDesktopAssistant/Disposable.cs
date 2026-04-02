@@ -65,9 +65,9 @@ namespace LLMDesktopAssistant
 		{
 			if (!_isDisposed)
 			{
+				_isDisposed = true;
 				OnDispose?.Invoke(this, EventArgs.Empty);
 				OnDispose = null;
-				_isDisposed = true;
 				Dispose(disposing);
 			}
 		}

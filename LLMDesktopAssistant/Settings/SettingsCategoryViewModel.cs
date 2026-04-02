@@ -14,26 +14,27 @@ namespace LLMDesktopAssistant.Settings
 	public class SettingsCategoryViewModel<TSettings> : ViewModelBase
 		where TSettings : SettingsObject, new()
 	{
-		private enum IdManipulationMode
+		private enum IdEditMode
 		{
 			Create,
 			Rename
 		}
 
-
 		private readonly Func<TSettings, ViewModelBase> _vmFactory;
 		private readonly Action<TSettings>? _changed;
+		private readonly string _defaultIdLocalized = Locale.settings_default_id;
 
 		public static SettingsCategory<TSettings> Category { get; } = SettingsManager.GetCategory<TSettings>();
 
 		public IEnumerable<string> Ids => Category.GetAvailableIds().Select(c => c == SettingsObject.DefaultId ? 
 			Locale.settings_default_id : c);
 
+		private IdEditMode _mode = IdEditMode.Create;
 		private bool _isCreatingNewId = false;
 		/// <summary>
 		/// Gets or sets a value indicating whether the user is creating a new settings ID.
 		/// </summary>
-		public bool IsCreatingNewId
+		public bool IsEditingId
 		{
 			get => _isCreatingNewId;
 			set => SetProperty(ref _isCreatingNewId, value);
@@ -56,19 +57,17 @@ namespace LLMDesktopAssistant.Settings
 		public string CurrentId
 		{
 			get => Current == null || Current.Id == SettingsObject.DefaultId ?
-				Locale.settings_default_id : Current.Id;
+				_defaultIdLocalized : Current.Id;
 			set
 			{
-				if (Current != null && (value == Current.Id ||
-					(value == Locale.settings_default_id && Current.Id == SettingsObject.DefaultId)))
-					return;
-				if (value == Locale.settings_default_id || string.IsNullOrWhiteSpace(value))
+				if (value == _defaultIdLocalized || string.IsNullOrWhiteSpace(value))
 					value = SettingsObject.DefaultId;
+				if (Current != null && value == Current.Id)
+					return;
 
 				Current = Category.Get(value);
 				CurrentViewModel = _vmFactory(Current);
-				RaisePropertyChanged(nameof(Ids));
-				RaisePropertyChanged(nameof(CurrentId));
+				RaisePropertyChanged(null);
 				_changed?.Invoke(Current);
 			}
 		}
@@ -82,8 +81,9 @@ namespace LLMDesktopAssistant.Settings
 
 		public ICommand CreateNewIdCommand { get; }
 		public ICommand RenameIdCommand { get; }
-		public ICommand ConfirmNewIdCommand { get; }
-		public ICommand CancelNewIdCommand { get; }
+		public ICommand RemoveIdCommand { get; }
+		public ICommand ConfirmEditIdCommand { get; }
+		public ICommand CancelEditIdCommand { get; }
 
 		public SettingsCategoryViewModel(Func<TSettings, ViewModelBase> vmFactory,
 			Action<TSettings>? changed = null, string initialId = SettingsObject.DefaultId)
@@ -94,25 +94,60 @@ namespace LLMDesktopAssistant.Settings
 
 			CreateNewIdCommand = new RelayCommand(() =>
 			{
-				IsCreatingNewId = true;
+				_mode = IdEditMode.Create;
+				IsEditingId = true;
 				NewId = null;
 			});
 			RenameIdCommand = new RelayCommand(() =>
 			{
-
+				_mode = IdEditMode.Rename;
+				IsEditingId = true;
+				NewId = null;
 			});
-			ConfirmNewIdCommand = new RelayCommand(() =>
+			RemoveIdCommand = new RelayCommand(() =>
 			{
-				if (!string.IsNullOrWhiteSpace(NewId))
+				if (Category.Remove(Current.Id))
 				{
-					CurrentId = NewId;
-					IsCreatingNewId = false;
-					NewId = null;
+					_current = null!;
+					CurrentId = _defaultIdLocalized;
 				}
 			});
-			CancelNewIdCommand = new RelayCommand(() =>
+			ConfirmEditIdCommand = new RelayCommand(() =>
 			{
-				IsCreatingNewId = false;
+				switch (_mode)
+				{
+					case IdEditMode.Create:
+
+						if (!string.IsNullOrWhiteSpace(NewId))
+						{
+							CurrentId = NewId;
+							IsEditingId = false;
+							NewId = null;
+						}
+
+						break;
+
+					case IdEditMode.Rename:
+
+						if (NewId == _defaultIdLocalized)
+							NewId = SettingsObject.DefaultId;
+						if (!string.IsNullOrWhiteSpace(NewId) &&
+							NewId != CurrentId &&
+							Category.Rename(Current.Id, NewId))
+						{
+							Category.Get(SettingsObject.DefaultId); // Ensure default settings are loaded if they were renamed.
+							RaisePropertyChanged(nameof(Ids));
+							RaisePropertyChanged(nameof(CurrentId));
+							IsEditingId = false;
+							NewId = null;
+						}
+
+						break;
+				}
+			});
+			CancelEditIdCommand = new RelayCommand(() =>
+			{
+				IsEditingId = false;
 				NewId = null;
 			});
 		}

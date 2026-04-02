@@ -281,16 +281,26 @@ namespace LLMDesktopAssistant.Calculation
 					b => b.Literal("|").Rule("expr").Literal("|")
 						.Transform(v => (MathParameterMap p) => Complex.Abs(v.GetValue<Func<MathParameterMap, Complex>>(index: 1)(p)))
 				)
+				.Optional(b => b.Literal("!")) // Factorial
 				.Optional(b => b.Rule("term")) // For support 2(2 + 3) or 2i
-				
+
 				.Transform(v =>
 				{
 					var firstTerm = v.GetValue<Func<MathParameterMap, Complex>>(index: 0);
-					var secondTerm = v.TryGetValue<Func<MathParameterMap, Complex>>(index: 1);
+					var secondTerm = v.TryGetValue<Func<MathParameterMap, Complex>>(index: 2);
+					var hasFactorial = v[1].Length != 0;
 
+					var result = firstTerm;
 					if (secondTerm != null)
-						return (MathParameterMap p) => firstTerm(p) * secondTerm(p);
-					return firstTerm;
+					{
+						result = (MathParameterMap p) => firstTerm(p) * secondTerm(p);
+					}
+					if (hasFactorial)
+					{
+						var inner = result;
+						result = (MathParameterMap p) => Factorial((int)inner(p).Real);
+					}
+					return result;
 				});
 
 			builder.CreateRule("op_pow")
@@ -403,7 +413,11 @@ namespace LLMDesktopAssistant.Calculation
 
 			double result = 1.0;
 			for (long i = 2; i <= n; i++)
+			{
 				result *= i;
+				if (result > double.PositiveInfinity)
+					return result;
+			}
 
 			return result;
 		}

@@ -150,6 +150,28 @@ namespace LLMDesktopAssistant.Settings
 		}
 
 		/// <summary>
+		/// Renames a settings instance by ID and updates its identifier.
+		/// </summary>
+		/// <param name="idFrom">The current unique identifier for the settings instance. Defaults to <see cref="SettingsObject.DefaultId"/>.</param>
+		/// <param name="idTo">The new unique identifier for the settings instance. Defaults to <see cref="SettingsObject.DefaultId"/>.</param>
+		/// <returns>true if the settings instance was found and renamed; otherwise, false.</returns>
+		/// <exception cref="ArgumentException">Thrown when either ID is null or whitespace.</exception>
+		public bool Rename(string idFrom, string idTo)
+		{
+			if (string.IsNullOrWhiteSpace(idFrom))
+				throw new ArgumentException("Id cannot be null or whitespace.", nameof(idFrom));
+			if (string.IsNullOrWhiteSpace(idTo))
+				throw new ArgumentException("Id cannot be null or whitespace.", nameof(idTo));
+			if (_objects.ContainsKey(idTo))
+				return false;
+			if (!_objects.TryRemove(idFrom, out var objTuple))
+				return false;
+			_objects.TryAdd(idTo, objTuple);
+			objTuple.Item1.Id = idTo;
+			return true;
+		}
+
+		/// <summary>
 		/// Retrieves all available setting IDs currently loaded in memory.
 		/// </summary>
 		/// <returns>An array of setting IDs.</returns>
