@@ -25,6 +25,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				templateLibrary.ImportFromAssembly(typeof(ChatServicesBuilderExtensions).Assembly);
 				return templateLibrary;
 			});
+			services.TryAddSingleton<IChatManagementService, ChatManagementService>();
 
 			services.TryAddScoped<Chat>();
 			services.TryAddScoped<IChatOperationService, ChatOperationService>();
@@ -32,7 +33,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			services.TryAddScoped<IChatStorageService, ChatStorageService>();
 			services.TryAddScoped<IPromptChatBuilder, PromptChatBuilder>();
 			services.TryAddScoped<IToolExecutionService, ToolExecutionService>();
-			services.TryAddScoped<ILLMProvider, LLMProvider>();
+			services.TryAddScoped<IToolsetBuildingService, ToolsetBuildingService>();
+			services.TryAddScoped<ILLMBuildingService, LLMBuildingService>();
 		}
 	}
 }

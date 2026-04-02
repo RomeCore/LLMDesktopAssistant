@@ -6,7 +6,12 @@
 	- Tables, Codeblocks, Blockquotes, etc.
 	- Math formulas, via `$...$` or `$$...$$`
 	- Images, via `![alt text](url)`
-
+	
+	@if personality
+	{
+		Act as:
+		@personality
+	}
 	@if summary
 	{
 		There is summary of previous messages in the conversation:

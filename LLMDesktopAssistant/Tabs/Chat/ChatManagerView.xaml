@@ -14,22 +14,19 @@
 		<materialDesign:DrawerHost.RightDrawerContent>
 			<DockPanel Width="320">
 
-				<StackPanel Orientation="Horizontal" Margin="8" DockPanel.Dock="Top">
+				<StackPanel Orientation="Horizontal"
+							Margin="8"
+							DockPanel.Dock="Top">
 					<TextBlock Text="{loc:Loc chats}"
 							   Foreground="{DynamicResource MaterialDesignBody}"
 							   FontSize="18"
 							   VerticalAlignment="Center"
 							   Margin="8"/>
 
-					<Button Command="{Binding CreateConversationCommand}"
-							Style="{StaticResource MaterialDesignIconButton}"
-							ToolTip="{loc:Loc new_chat}">
-						<materialDesign:PackIcon Kind="Plus"/>
-					</Button>
 				</StackPanel>
 
-				<ListBox ItemsSource="{Binding Conversations}"
-						 SelectedItem="{Binding SelectedConversation}"
+				<ListBox ItemsSource="{Binding Chats}"
+						 SelectedItem="{Binding SelectedChat}"
 						 Style="{StaticResource MaterialDesignChoiceChipListBox}"
 						 Margin="8">
 
@@ -38,7 +35,9 @@
 							
 							<DockPanel>
 
-
+								<Label Content="{Binding LastModifiedAt}"
+									   Opacity="0.5"
+									   DockPanel.Dock="Right"/>
 
 								<Label Content="{Binding Title}"/>
 
@@ -61,20 +60,30 @@
 			<!-- TOP BAR -->
 			<DockPanel Background="{DynamicResource MaterialDesignPaper}">
 
-				<TextBlock Text="{Binding SelectedConversation.Title}"
+				<StackPanel DockPanel.Dock="Right"
+							HorizontalAlignment="Right"
+							Orientation="Horizontal">
+
+					<Button Command="{Binding CreateConversationCommand}"
+							Style="{StaticResource MaterialDesignIconButton}"
+							ToolTip="{loc:Loc new_chat}">
+						<materialDesign:PackIcon Kind="Plus"/>
+					</Button>
+					
+					<Button Style="{StaticResource MaterialDesignIconButton}"
+						Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+						<materialDesign:PackIcon Kind="Menu"/>
+					</Button>
+
+				</StackPanel>
+
+				<TextBlock Text="{Binding SelectedChat.Title}"
 						   Foreground="{DynamicResource MaterialDesignBody}"
 						   VerticalAlignment="Center"
 						   DockPanel.Dock="Left"
 						   Margin="16,0,0,0"
 						   FontSize="16"/>
 
-				<Button Style="{StaticResource MaterialDesignIconButton}"
-						Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
-						DockPanel.Dock="Right"
-						HorizontalAlignment="Right">
-					<materialDesign:PackIcon Kind="Menu"/>
-				</Button>
-				
 			</DockPanel>
 
 			<!-- CHAT -->

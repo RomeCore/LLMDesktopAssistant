@@ -11,36 +11,31 @@ using System.Collections.Immutable;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
-	public class LLMProvider(Chat chat) : ILLMProvider
+	public class LLMBuildingService(
+		Chat chat,
+		IToolsetBuildingService toolsetBuilder
+		) : ILLMBuildingService
 	{
-		public LLMInfo GetChatLLM()
+		public LLMInfo BuildChatLLM()
 		{
 			var model = chat.Settings.ChatModel.Current ?? throw new Exception("Model is not set.");
-
-			var toolModules = ModuleManager.GetAll<ToolModule>();
-
-			var tools = toolModules
-				.Concat(chat.AdditionalToolModules ?? [])
-				.Where(m => m != null && m.Enabled)
-				.SelectMany(m => m.GetTools())
-				.ToImmutableDictionary(t => t.Tool.Name);
 
 			return new LLMInfo
 			{
 				LLM = new LLModel(model),
-				Tools = tools,
-				ContextSize = 160000
+				Tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Tool.Name),
+				ContextSize = model.ContextLength != -1 ? model.ContextLength : 160000
 			};
 		}
 
-		public LLMInfo GetSummarizationLLM()
+		public LLMInfo BuildSummarizationLLM()
 		{
 			var model = chat.Settings.SummarizerModel.Current ?? throw new Exception("Summarizer model is not set.");
 
 			return new LLMInfo
 			{
 				LLM = new LLModel(model),
-				ContextSize = 160000
+				ContextSize = model.ContextLength != -1 ? model.ContextLength : 160000
 			};
 		}
 	}

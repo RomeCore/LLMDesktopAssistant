@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.ToolModules
 		{
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(Calculate, "calculation-calculate", """
+				Tool = FunctionTool.From(Calculate, "calculate", """
 				Evaluate a mathematical expression. Examples:
 
 				1 + 2 * -(3^2 / e)
@@ -49,7 +49,8 @@ namespace LLMDesktopAssistant.ToolModules
 				sind, cosd, tand, asind, acosd, atand,
 				ln, log, log2, logb, exp, pow, sqrt,
 				abs, min, max
-				""")
+				"""),
+				Category = "calculation"
 			});
 		}
 

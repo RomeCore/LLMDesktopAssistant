@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Settings
@@ -16,6 +17,7 @@ namespace LLMDesktopAssistant.Settings
 		/// <summary>
 		/// Gets the current ID of this
 		/// </summary>
+		[JsonIgnore]
 		public string Id { get; internal set; } = DefaultId;
 	}
 }

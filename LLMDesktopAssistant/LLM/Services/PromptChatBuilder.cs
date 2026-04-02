@@ -52,6 +52,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			var context = new
 			{
 				instructions = chat.Settings.SystemInstructions ?? "You are a helpful assistant.",
+				personality = chat.Settings.Personality,
 				summary = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages
 			};
 			return template!.Render(context);
@@ -110,15 +111,27 @@ namespace LLMDesktopAssistant.LLM.Services
 			List<IMessage> messages = [];
 
 			string? summaryOfPrevMessages = null;
+			bool encounteredUserMessage = false;
 
 			for (int i = chat.Messages.Count - 1; i >= 0; i--)
 			{
 				var message = chat.Messages[i].Message;
 
+				if (message is Domain.UserMessage userMessage)
+				{
+					encounteredUserMessage = true;
+					if (summaryOfPrevMessages != null)
+					{
+						messages.InsertRange(0, Convert(message));
+						break;
+					}
+				}
+
 				if (!string.IsNullOrWhiteSpace(message.SummaryOfPrevMessages))
 				{
 					summaryOfPrevMessages = message.SummaryOfPrevMessages;
-					break;
+					if (encounteredUserMessage)
+						break;
 				}
 
 				messages.InsertRange(0, Convert(message));

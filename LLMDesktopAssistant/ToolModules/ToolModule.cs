@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.ToolModules
 		/// Adds a tool to this module.
 		/// </summary>
 		/// <param name="tool">The tool to add.</param>
-		protected void AddTool(ITool tool)
+		protected void AddTool(FunctionTool tool)
 		{
 			_tools.Add(new ToolInfo
 			{

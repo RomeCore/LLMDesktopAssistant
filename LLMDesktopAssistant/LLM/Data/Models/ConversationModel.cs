@@ -39,5 +39,15 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		/// The ID of the leaf node of the currently selected branch in the conversation tree. Can be -1 if there is no elements in the conversation.
 		/// </summary>
 		public int LeafNodeId { get; set; } = -1;
+
+		/// <summary>
+		/// The date and time when the conversation was created.
+		/// </summary>
+		public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+		/// <summary>
+		/// The date and time when the conversation was last modified.
+		/// </summary>
+		public DateTime LastModifiedAt { get; set; } = DateTime.Now;
 	}
 }

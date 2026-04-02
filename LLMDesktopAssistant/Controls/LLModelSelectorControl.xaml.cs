@@ -260,7 +260,7 @@ namespace LLMDesktopAssistant.Controls
 					if (model == prevSelected)
 						found = true;
 
-			if (!found && prevSelected != null)
+			if (!found && prevSelected != null && prevSelected != LLModelDescriptorTracked.Empty)
 			{
 				Selector.Items.Add(prevSelected);
 				Selector.SelectedItem = prevSelected;

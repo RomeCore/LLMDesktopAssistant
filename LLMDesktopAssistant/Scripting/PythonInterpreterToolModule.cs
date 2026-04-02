@@ -20,19 +20,25 @@ namespace LLMDesktopAssistant.Scripting
 		{
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(Execute, "execute-python", "Executes Python and returns the script result."),
+				Tool = FunctionTool.From(Execute, "execute-python",
+					"Executes Python and returns output of the executed code (e.g., print('Hello World!') should return 'Hello World!')."),
+				Category = "scripting",
 				AskForConfirmation = true
 			});
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(ExecuteVenvShell, "execute-python_venv_shell", "Executes Windows shell script in a Python's virtual environment. Useful for installing packages via 'pip'."),
+				Tool = FunctionTool.From(ExecuteVenvShell, "execute-python_venv_shell",
+					"Executes Windows shell script in a Python's virtual environment. Useful for installing packages via 'pip'."),
+				Category = "scripting",
 				AskForConfirmation = true
 			});
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(GetInstalledPackagesList, "execute-python-get_installed_packages_list", "Returns the list of installed packages in the current Python's virtual environment."),
+				Tool = FunctionTool.From(GetInstalledPackagesList, "python-get_installed_packages_list",
+					"Returns the list of installed packages in the current Python's virtual environment."),
+				Category = "scripting",
 				AskForConfirmation = false
 			});
 		}

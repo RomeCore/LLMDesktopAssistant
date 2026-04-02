@@ -123,6 +123,12 @@
   <data name="agent-call" xml:space="preserve">
     <value>Вызвать агента</value>
   </data>
+  <data name="ask_for_confirmation" xml:space="preserve">
+    <value>Спрашивать</value>
+  </data>
+  <data name="ask_for_confirmation_tooltip" xml:space="preserve">
+    <value>Спрашивать перед выполнением инструмента</value>
+  </data>
   <data name="browser" xml:space="preserve">
     <value>Браузер</value>
   </data>
@@ -135,7 +141,7 @@
   <data name="browser-navigate_to_uri" xml:space="preserve">
     <value>Браузер: Навигация по адресу</value>
   </data>
-  <data name="calculation-calculate" xml:space="preserve">
+  <data name="calculate" xml:space="preserve">
     <value>Вычислить</value>
   </data>
   <data name="chat" xml:space="preserve">
@@ -156,6 +162,9 @@
   <data name="chats" xml:space="preserve">
     <value>Чаты</value>
   </data>
+  <data name="chat_model_hint" xml:space="preserve">
+    <value>Модель чата</value>
+  </data>
   <data name="empty_model" xml:space="preserve">
     <value>Пусто</value>
   </data>
@@ -168,7 +177,7 @@
   <data name="execute-python" xml:space="preserve">
     <value>Выполнить Python скрипт</value>
   </data>
-  <data name="execute-python-get_installed_packages_list" xml:space="preserve">
+  <data name="python-get_installed_packages_list" xml:space="preserve">
     <value>Получить список установленных пакетов Python</value>
   </data>
   <data name="execute-python_venv_shell" xml:space="preserve">
@@ -177,16 +186,16 @@
   <data name="execute-shell" xml:space="preserve">
     <value>Выполнить Shell скрипт</value>
   </data>
-  <data name="general-copy" xml:space="preserve">
+  <data name="copy" xml:space="preserve">
     <value>Скопировать в буфер обмена</value>
   </data>
-  <data name="general-generateGUID" xml:space="preserve">
+  <data name="generate_GUID" xml:space="preserve">
     <value>Сгенерировать GUID</value>
   </data>
-  <data name="general-generate_random_float" xml:space="preserve">
+  <data name="generate_random_float" xml:space="preserve">
     <value>Сгенерировать дробное число</value>
   </data>
-  <data name="general-generate_random_integer" xml:space="preserve">
+  <data name="generate_random_integer" xml:space="preserve">
     <value>Сгенерировать целое число</value>
   </data>
   <data name="general-print" xml:space="preserve">
@@ -207,6 +216,9 @@
   <data name="new_chat" xml:space="preserve">
     <value>Новый чат</value>
   </data>
+  <data name="personality_hint" xml:space="preserve">
+    <value>Персона</value>
+  </data>
   <data name="reasoning" xml:space="preserve">
     <value>Мышление</value>
   </data>
@@ -222,6 +234,18 @@
   <data name="select_model" xml:space="preserve">
     <value>Выберите модель</value>
   </data>
+  <data name="settings_default_id" xml:space="preserve">
+    <value>По умолчанию</value>
+  </data>
+  <data name="settings_profile" xml:space="preserve">
+    <value>Профиль:</value>
+  </data>
+  <data name="summarizer_model_hint" xml:space="preserve">
+    <value>Модель суммаризации</value>
+  </data>
+  <data name="system_instructions_hint" xml:space="preserve">
+    <value>Системные инструкции</value>
+  </data>
   <data name="title" xml:space="preserve">
     <value>Niggalink AI</value>
   </data>
@@ -230,6 +254,9 @@
   </data>
   <data name="tool-result" xml:space="preserve">
     <value>Результат:</value>
+  </data>
+  <data name="tools_hint" xml:space="preserve">
+    <value>Инструменты</value>
   </data>
   <data name="voice_chat" xml:space="preserve">
     <value>Голосовой чат</value>
@@ -257,5 +284,41 @@
   </data>
   <data name="web-status" xml:space="preserve">
     <value>Проверить веб-статус</value>
+  </data>
+  <data name="general" xml:space="preserve">
+    <value>Общие</value>
+  </data>
+  <data name="input" xml:space="preserve">
+    <value>Ввод</value>
+  </data>
+  <data name="calculation" xml:space="preserve">
+    <value>Вычисление</value>
+  </data>
+  <data name="agents" xml:space="preserve">
+    <value>Агенты</value>
+  </data>
+  <data name="web" xml:space="preserve">
+    <value>Веб</value>
+  </data>
+  <data name="chat_settings_general" xml:space="preserve">
+    <value>Общие</value>
+  </data>
+  <data name="chat_settings_tools" xml:space="preserve">
+    <value>Инструменты</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="enable" xml:space="preserve">
+    <value>Включить</value>
+  </data>
+  <data name="tool_name_suffix_hint" xml:space="preserve">
+    <value>{0} инструментов</value>
+  </data>
+  <data name="reset" xml:space="preserve">
+    <value>Сбросить</value>
+  </data>
+  <data name="scripting" xml:space="preserve">
+    <value>Скриптинг</value>
   </data>
 </root>

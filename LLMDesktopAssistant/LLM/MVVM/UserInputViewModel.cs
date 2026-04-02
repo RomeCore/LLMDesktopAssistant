@@ -2,6 +2,8 @@
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Settings;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
@@ -99,12 +101,17 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public ChatViewModel ChatViewModel { get; }
 
 		/// <summary>
-		/// Command to send a message. This command is bound to the UI and triggers the SendMessage method.
+		/// Command to open settings.
+		/// </summary>
+		public ICommand OpenSettingsCommand { get; }
+
+		/// <summary>
+		/// Command to send a message.
 		/// </summary>
 		public ICommand SendMessageCommand { get; }
 
 		/// <summary>
-		/// Command to cancel the current generation. This command is bound to the UI and triggers the CancelGeneration method.
+		/// Command to cancel the current generation.
 		/// </summary>
 		public ICommand CancelGenerationCommand { get; }
 
@@ -145,6 +152,15 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		{
 			Chat = chatVM.Chat;
 			ChatViewModel = chatVM;
+
+			OpenSettingsCommand = new AsyncRelayCommand(async () =>
+			{
+				var viewModel = new SettingsCategoryViewModel<ChatSettings>(cs => new ChatSettingsViewModel(cs, Chat),
+					newSettings => Chat.Settings = newSettings, Chat.Settings.Id);
+				if (ViewLocator.Resolve(viewModel) is object view)
+					await DialogHost.Show(view);
+			});
+
 			SendMessageCommand = new SendMessageCommandObject(this);
 			CancelGenerationCommand = new CancelGenerationCommandObject(this);
 

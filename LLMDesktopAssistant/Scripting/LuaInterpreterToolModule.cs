@@ -21,6 +21,7 @@ namespace LLMDesktopAssistant.Scripting
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(ExecuteLua, "execute-lua", "Executes Lua and returns the script result along with messages printed by 'print' function."),
+				Category = "scripting",
 				AskForConfirmation = true
 			});
 		}

@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.Scripting
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(ExecuteShell, "execute-shell", "Executes Windows shell script."),
+				Category = "scripting",
 				AskForConfirmation = true
 			});
 		}

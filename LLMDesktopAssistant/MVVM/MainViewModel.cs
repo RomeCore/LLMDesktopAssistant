@@ -34,6 +34,7 @@ namespace LLMDesktopAssistant.MVVM
 				Header = BuildHeader(t.Value),
 				Content = t.Value.View
 			}));
+			SelectedTab = Tabs.FirstOrDefault();
 		}
 
 		private object BuildHeader(TabToolInfo tabTool)

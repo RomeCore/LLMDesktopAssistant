@@ -17,6 +17,9 @@
     <Compile Update="Controls\LLModelSelectorControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="LLM\MVVM\ChatSettingsView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="LLM\MVVM\Messages\AssistantMessageReasoningPartView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -51,6 +54,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="MVVM\TestView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Settings\SettingsCategoryView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Tabs\Chat\ChatManagerView.xaml.cs">

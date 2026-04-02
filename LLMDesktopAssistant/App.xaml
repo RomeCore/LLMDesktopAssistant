@@ -45,14 +45,6 @@
 				<Setter Property="ItemTemplateSelector" 
 						Value="{StaticResource ViewLocator}"/>
 			</Style>
-			<Style TargetType="ListBox">
-				<Setter Property="ItemTemplateSelector" 
-						Value="{StaticResource ViewLocator}"/>
-			</Style>
-			<Style TargetType="TabControl">
-				<Setter Property="ItemTemplateSelector" 
-						Value="{StaticResource ViewLocator}"/>
-			</Style>
 
 			<!-- Converters -->
 

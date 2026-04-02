@@ -7,9 +7,15 @@
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
-	<TabControl ItemsSource="{Binding Tabs}"
-				SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
-				materialDesign:ColorZoneAssist.Mode="PrimaryMid"
-				TabStripPlacement="Left"
-				Style="{StaticResource MaterialDesignNavigationRailTabControl}" />
+
+	<materialDesign:DialogHost CloseOnClickAway="True">
+
+		<TabControl ItemsSource="{Binding Tabs}"
+					SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+					materialDesign:ColorZoneAssist.Mode="PrimaryMid"
+					TabStripPlacement="Left"
+					Style="{StaticResource MaterialDesignNavigationRailTabControl}" />
+
+	</materialDesign:DialogHost>
+	
 </UserControl>

@@ -15,6 +15,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 

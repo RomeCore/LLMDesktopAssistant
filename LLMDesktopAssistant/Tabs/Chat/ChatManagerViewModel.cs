@@ -11,6 +11,7 @@ using LLMDesktopAssistant.LLM.Data.Models;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;
 using MaterialDesignThemes.Wpf;
@@ -24,6 +25,7 @@ namespace LLMDesktopAssistant.Tabs.Chat
 	{
 		public IServiceProvider ServiceProvider { get; }
 		public ConversationDatabase Database { get; }
+		public IChatManagementService ManagementService { get; }
 
 		private IServiceScope? _currentChatScope;
 		private ChatViewModel? _currentChat;
@@ -33,15 +35,15 @@ namespace LLMDesktopAssistant.Tabs.Chat
 			private set => SetProperty(ref _currentChat, value);
 		}
 
-		public ObservableCollection<ConversationModel> Conversations { get; } = new();
+		public ObservableCollection<ChatInfo> Chats { get; } = [];
 
-		private ConversationModel? _selectedConversation;
-		public ConversationModel? SelectedConversation
+		private ChatInfo? _selectedChat;
+		public ChatInfo? SelectedChat
 		{
-			get => _selectedConversation;
+			get => _selectedChat;
 			set
 			{
-				if (SetProperty(ref _selectedConversation, value) && value != null)
+				if (SetProperty(ref _selectedChat, value) && value != null)
 				{
 					OpenConversation(value.Id);
 				}
@@ -57,67 +59,45 @@ namespace LLMDesktopAssistant.Tabs.Chat
 			var serviceBuilder = new ServiceCollection();
 			serviceBuilder.AddSingleton(Database);
 			serviceBuilder.AddChatServices();
-
 			ServiceProvider = serviceBuilder.BuildServiceProvider();
 
-			EnsureDefaultConversation();
-			LoadConversations();
+			ManagementService = ServiceProvider.GetRequiredService<IChatManagementService>();
 
 			CreateConversationCommand = new RelayCommand(CreateConversation);
 
-			SelectedConversation = Conversations.FirstOrDefault();
+			Initialize();
 		}
 
-		private void EnsureDefaultConversation()
+		private void Initialize()
 		{
-			if (Database.Conversations.FindById(1) == null)
-			{
-				Database.Conversations.Insert(new ConversationModel
-				{
-					Id = 1,
-					SettingsProfile = ChatSettings.DefaultId,
-					Title = "General"
-				});
-			}
+			ManagementService.ClearEmptyChats();
+			LoadConversations();
+			CreateConversation();
 		}
 
 		private void LoadConversations()
 		{
-			Conversations.Clear();
-			foreach (var conv in Database.Conversations.FindAll())
-				Conversations.Add(conv);
+			Chats.Clear();
+			foreach (var chat in ManagementService.GetChats().OrderByDescending(c => c.LastModifiedAt))
+				Chats.Add(chat);
 		}
 
 		private void OpenConversation(int id)
 		{
 			_currentChatScope?.Dispose();
-			CurrentChat?.Chat.Dispose();
-
-			_currentChatScope = ServiceProvider.CreateScope();
+			_currentChatScope = ManagementService.OpenChatScope(id);
 
 			var chat = _currentChatScope.ServiceProvider.GetRequiredService<LLM.Domain.Chat>();
-			chat.ChatId = id;
 			chat.AdditionalToolModules.Add(new AgenticToolModule());
-			_currentChatScope.ServiceProvider.GetRequiredService<IChatStorageService>().Reload();
 
 			CurrentChat = new ChatViewModel(chat);
 		}
 
 		private void CreateConversation()
 		{
-			var now = DateTime.Now;
-
-			var model = new ConversationModel
-			{
-				SettingsProfile = ChatSettings.DefaultId,
-				Title = $"Chat {now:HH:mm dd.MM}"
-			};
-
-			var id = Database.Conversations.Insert(model);
-			model.Id = id;
-
-			Conversations.Add(model);
-			SelectedConversation = model;
+			var newChat = ManagementService.CreateChat(Locale.new_chat);
+			Chats.Insert(0, newChat);
+			SelectedChat = newChat;
 		}
 	}
 }

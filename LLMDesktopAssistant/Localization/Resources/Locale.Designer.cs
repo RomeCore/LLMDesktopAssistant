@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
     // с помощью такого средства, как ResGen или Visual Studio.
     // Чтобы добавить или удалить член, измените файл .ResX и снова запустите ResGen
     // с параметром /str или перестройте свой проект VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Locale {
@@ -79,6 +79,33 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Agents.
+        /// </summary>
+        public static string agents {
+            get {
+                return ResourceManager.GetString("agents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ask.
+        /// </summary>
+        public static string ask_for_confirmation {
+            get {
+                return ResourceManager.GetString("ask_for_confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Whether to ask before executing tool.
+        /// </summary>
+        public static string ask_for_confirmation_tooltip {
+            get {
+                return ResourceManager.GetString("ask_for_confirmation_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Browser.
         /// </summary>
         public static string browser {
@@ -117,9 +144,18 @@ namespace LLMDesktopAssistant.Localization.Resources {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Calculate.
         /// </summary>
-        public static string calculation_calculate {
+        public static string calculate {
             get {
-                return ResourceManager.GetString("calculation-calculate", resourceCulture);
+                return ResourceManager.GetString("calculate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Calculation.
+        /// </summary>
+        public static string calculation {
+            get {
+                return ResourceManager.GetString("calculation", resourceCulture);
             }
         }
         
@@ -151,11 +187,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Chat model.
+        /// </summary>
+        public static string chat_model_hint {
+            get {
+                return ResourceManager.GetString("chat_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Send message.
         /// </summary>
         public static string chat_send_button_hint {
             get {
                 return ResourceManager.GetString("chat-send_button_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на General.
+        /// </summary>
+        public static string chat_settings_general {
+            get {
+                return ResourceManager.GetString("chat_settings_general", resourceCulture);
             }
         }
         
@@ -169,6 +223,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Tools.
+        /// </summary>
+        public static string chat_settings_tools {
+            get {
+                return ResourceManager.GetString("chat_settings_tools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Chats.
         /// </summary>
         public static string chats {
@@ -178,11 +241,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy to clipboard.
+        /// </summary>
+        public static string copy {
+            get {
+                return ResourceManager.GetString("copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Empty.
         /// </summary>
         public static string empty_model {
             get {
                 return ResourceManager.GetString("empty_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable.
+        /// </summary>
+        public static string enable {
+            get {
+                return ResourceManager.GetString("enable", resourceCulture);
             }
         }
         
@@ -214,15 +295,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Get Python installed packages.
-        /// </summary>
-        public static string execute_python_get_installed_packages_list {
-            get {
-                return ResourceManager.GetString("execute-python-get_installed_packages_list", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Execute Shell script in Python virt. environment.
         /// </summary>
         public static string execute_python_venv_shell {
@@ -241,38 +313,11 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Copy to clipboard.
+        ///   Ищет локализованную строку, похожую на General.
         /// </summary>
-        public static string general_copy {
+        public static string general {
             get {
-                return ResourceManager.GetString("general-copy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Generate random decimal number.
-        /// </summary>
-        public static string general_generate_random_float {
-            get {
-                return ResourceManager.GetString("general-generate_random_float", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Generate random integer.
-        /// </summary>
-        public static string general_generate_random_integer {
-            get {
-                return ResourceManager.GetString("general-generate_random_integer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Generate GUID.
-        /// </summary>
-        public static string general_generateGUID {
-            get {
-                return ResourceManager.GetString("general-generateGUID", resourceCulture);
+                return ResourceManager.GetString("general", resourceCulture);
             }
         }
         
@@ -282,6 +327,42 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string general_print {
             get {
                 return ResourceManager.GetString("general-print", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generate GUID.
+        /// </summary>
+        public static string generate_GUID {
+            get {
+                return ResourceManager.GetString("generate_GUID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generate random decimal number.
+        /// </summary>
+        public static string generate_random_float {
+            get {
+                return ResourceManager.GetString("generate_random_float", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generate random integer.
+        /// </summary>
+        public static string generate_random_integer {
+            get {
+                return ResourceManager.GetString("generate_random_integer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Input.
+        /// </summary>
+        public static string input {
+            get {
+                return ResourceManager.GetString("input", resourceCulture);
             }
         }
         
@@ -322,11 +403,38 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Name.
+        /// </summary>
+        public static string name {
+            get {
+                return ResourceManager.GetString("name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на New chat.
         /// </summary>
         public static string new_chat {
             get {
                 return ResourceManager.GetString("new_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Personality.
+        /// </summary>
+        public static string personality_hint {
+            get {
+                return ResourceManager.GetString("personality_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Get Python installed packages.
+        /// </summary>
+        public static string python_get_installed_packages_list {
+            get {
+                return ResourceManager.GetString("python-get_installed_packages_list", resourceCulture);
             }
         }
         
@@ -358,6 +466,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Reset.
+        /// </summary>
+        public static string reset {
+            get {
+                return ResourceManager.GetString("reset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Sample.
         /// </summary>
         public static string sample {
@@ -367,11 +484,56 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Scripting.
+        /// </summary>
+        public static string scripting {
+            get {
+                return ResourceManager.GetString("scripting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Select model.
         /// </summary>
         public static string select_model {
             get {
                 return ResourceManager.GetString("select_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Default.
+        /// </summary>
+        public static string settings_default_id {
+            get {
+                return ResourceManager.GetString("settings_default_id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Profile:.
+        /// </summary>
+        public static string settings_profile {
+            get {
+                return ResourceManager.GetString("settings_profile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Summarizer model.
+        /// </summary>
+        public static string summarizer_model_hint {
+            get {
+                return ResourceManager.GetString("summarizer_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на System instructions.
+        /// </summary>
+        public static string system_instructions_hint {
+            get {
+                return ResourceManager.GetString("system_instructions_hint", resourceCulture);
             }
         }
         
@@ -394,6 +556,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} tools.
+        /// </summary>
+        public static string tool_name_suffix_hint {
+            get {
+                return ResourceManager.GetString("tool_name_suffix_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Tool result:.
         /// </summary>
         public static string tool_result {
@@ -403,11 +574,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Tools.
+        /// </summary>
+        public static string tools_hint {
+            get {
+                return ResourceManager.GetString("tools_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Voice chat.
         /// </summary>
         public static string voice_chat {
             get {
                 return ResourceManager.GetString("voice_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Web.
+        /// </summary>
+        public static string web {
+            get {
+                return ResourceManager.GetString("web", resourceCulture);
             }
         }
         

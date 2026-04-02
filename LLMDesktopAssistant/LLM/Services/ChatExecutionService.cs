@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IChatStorageService storage,
 		IPromptChatBuilder promptBuilder,
 		IToolExecutionService toolExecutor,
-		ILLMProvider llmProvider)
+		ILLMBuildingService llmProvider)
 
 		: IChatExecutionService
 	{
@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 			cancellationToken = _cts.Token;
 
-			var llmInfo = llmProvider.GetChatLLM();
+			var llmInfo = llmProvider.BuildChatLLM();
 			var llm = llmInfo.LLM;
 			var toolset = new ImmutableToolSet(llmInfo.Tools.Values.Select(t => t.Tool));
 

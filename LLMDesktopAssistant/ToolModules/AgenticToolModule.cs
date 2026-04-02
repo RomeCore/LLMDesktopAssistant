@@ -19,12 +19,14 @@ namespace LLMDesktopAssistant.ToolModules
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(AskQuestionAsync, "agent-ask_question", "Asks a question using another LLM agent. This tool is useful in general chats between LLM and user, to prevent storing excessive tool calls and token consumption in main user chat."),
+				Category = "agents",
 				AskForConfirmation = true
 			});
 			
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(CallAgentAsync, "agent-call", "Calls another LLM agent with provided system message and user message with set of allowed tools."),
+				Category = "agents",
 				AskForConfirmation = true
 			});
 		}

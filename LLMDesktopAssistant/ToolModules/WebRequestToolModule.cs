@@ -43,32 +43,38 @@ namespace LLMDesktopAssistant.ToolModules
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(WebRequest, "web-request", "Perform a request to a specified URL and method.")
+				Tool = FunctionTool.From(WebRequest, "web-request", "Perform a request to a specified URL and method."),
+				Category = "web"
 			});
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(DownloadFile, "web-download", "Download a file from a specified URL.")
+				Tool = FunctionTool.From(DownloadFile, "web-download", "Download a file from a specified URL."),
+				Category = "web"
 			});
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(CheckWebsiteStatus, "web-status", "Check if a website is accessible and return status code.")
+				Tool = FunctionTool.From(CheckWebsiteStatus, "web-status", "Check if a website is accessible and return status code."),
+				Category = "web"
 			});
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(GetHtml, "web-get_html", "Fetch HTML content from a specified URL.")
+				Tool = FunctionTool.From(GetHtml, "web-get_html", "Fetch HTML content from a specified URL."),
+				Category = "web"
 			});
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(ParseHtml, "web-parse", "Fetch HTML content and parse specific elements by tag or class.")
+				Tool = FunctionTool.From(ParseHtml, "web-parse", "Fetch HTML content and parse specific elements by tag or class."),
+				Category = "web"
 			});
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(Search_SearXNG, "web-search", "Search through the web using query.")
+				Tool = FunctionTool.From(Search_SearXNG, "web-search", "Search through the web using query."),
+				Category = "web"
 			});
 		}
 

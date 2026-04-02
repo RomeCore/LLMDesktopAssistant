@@ -10,7 +10,7 @@ using WindowsInput.Native;
 
 namespace LLMDesktopAssistant.ToolModules
 {
-	// [Module]
+	[Module]
 	public class SimulationToolModule : ToolModule
 	{
 		private readonly InputSimulator _inputSimulator;
@@ -40,22 +40,30 @@ namespace LLMDesktopAssistant.ToolModules
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(MoveMouse, "input-move_mouse", "Move mouse to a specified position.")
+				Tool = FunctionTool.From(MoveMouse, "input-move_mouse", "Move mouse to a specified position."),
+				Category = "input",
+				Enabled = false
 			});
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(MoveMouseDelta, "input-move_mouse_delta", "Move mouse by a specified position delta.")
+				Tool = FunctionTool.From(MoveMouseDelta, "input-move_mouse_delta", "Move mouse by a specified position delta."),
+				Category = "input",
+				Enabled = false
 			});
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(PressKey, "input-press_key", "Press a specified key")
+				Tool = FunctionTool.From(PressKey, "input-press_key", "Press a specified key"),
+				Category = "input",
+				Enabled = false
 			});
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(EnterText, "input-enter_text", "Enter text.")
+				Tool = FunctionTool.From(EnterText, "input-enter_text", "Enter text."),
+				Category = "input",
+				Enabled = false
 			});
 		}
 

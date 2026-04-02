@@ -12,22 +12,26 @@ namespace LLMDesktopAssistant.ToolModules
 		{
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(Copy, "general-copy", "Copies a piece of text to the clipboard, use when neccessary.")
+				Tool = FunctionTool.From(Copy, "copy", "Copies a piece of text to the clipboard, use when neccessary."),
+				Category = "general"
 			});
 			
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(GenerateGUID, "general-generate_GUID", "Generates a globally unique identifier (GUID).")
+				Tool = FunctionTool.From(GenerateGUID, "generate_GUID", "Generates a globally unique identifier (GUID)."),
+				Category = "general"
 			});
 			
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(GenerateRandomInteger, "general-generate_random_integer", "Generates a random integer number.")
+				Tool = FunctionTool.From(GenerateRandomInteger, "generate_random_integer", "Generates a random integer number."),
+				Category = "general"
 			});
 			
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(GenerateRandomFloat, "general-generate_random_float", "Generates a random floating-point number.")
+				Tool = FunctionTool.From(GenerateRandomFloat, "generate_random_float", "Generates a random floating-point number."),
+				Category = "general"
 			});
 		}
 

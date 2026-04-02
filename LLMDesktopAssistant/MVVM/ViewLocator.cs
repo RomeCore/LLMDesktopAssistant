@@ -68,13 +68,36 @@ namespace LLMDesktopAssistant.MVVM
 		public static ViewLocator Instance { get; } = new ViewLocator();
 
 		/// <summary>
+		/// Resolves the view type for a given view model type.
+		/// </summary>
+		/// <param name="viewModelType">The type of the view model.</param>
+		/// <returns>The type of the view, or null if no mapping is found.</returns>
+		public static Type? ResolveViewType(Type? viewModelType)
+		{
+			if (viewModelType == null)
+				return null;
+
+			if (_ViewModel_to_View_map.TryGetValue(viewModelType, out var viewType))
+				return viewType;
+
+			if (viewModelType.IsGenericType)
+			{
+				viewModelType = viewModelType.GetGenericTypeDefinition();
+				if (_ViewModel_to_View_map.TryGetValue(viewModelType, out viewType))
+					return viewType;
+			}
+
+			return null;
+		}
+
+		/// <summary>
 		/// Selects the appropriate data template based on the view model.
 		/// </summary>
 		/// <param name="viewModel">The view model.</param>
 		/// <returns>The data template for the specified view model.</returns>
 		public static object? Resolve(object? viewModel)
 		{
-			if (viewModel != null && _ViewModel_to_View_map.TryGetValue(viewModel.GetType(), out var viewType))
+			if (ResolveViewType(viewModel?.GetType()) is Type viewType)
 			{
 				var view = Activator.CreateInstance(viewType);
 				if (view is FrameworkElement fe)

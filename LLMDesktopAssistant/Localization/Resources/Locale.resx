@@ -123,6 +123,12 @@
   <data name="agent-call" xml:space="preserve">
     <value>Call agent</value>
   </data>
+  <data name="ask_for_confirmation" xml:space="preserve">
+    <value>Ask</value>
+  </data>
+  <data name="ask_for_confirmation_tooltip" xml:space="preserve">
+    <value>Whether to ask before executing tool</value>
+  </data>
   <data name="browser" xml:space="preserve">
     <value>Browser</value>
   </data>
@@ -135,7 +141,7 @@
   <data name="browser-navigate_to_uri" xml:space="preserve">
     <value>Browser: Navigate to URI</value>
   </data>
-  <data name="calculation-calculate" xml:space="preserve">
+  <data name="calculate" xml:space="preserve">
     <value>Calculate</value>
   </data>
   <data name="chat" xml:space="preserve">
@@ -156,6 +162,9 @@
   <data name="chats" xml:space="preserve">
     <value>Chats</value>
   </data>
+  <data name="chat_model_hint" xml:space="preserve">
+    <value>Chat model</value>
+  </data>
   <data name="empty_model" xml:space="preserve">
     <value>Empty</value>
   </data>
@@ -168,7 +177,7 @@
   <data name="execute-python" xml:space="preserve">
     <value>Execute Python script</value>
   </data>
-  <data name="execute-python-get_installed_packages_list" xml:space="preserve">
+  <data name="python-get_installed_packages_list" xml:space="preserve">
     <value>Get Python installed packages</value>
   </data>
   <data name="execute-python_venv_shell" xml:space="preserve">
@@ -177,16 +186,16 @@
   <data name="execute-shell" xml:space="preserve">
     <value>Execute Shell script</value>
   </data>
-  <data name="general-copy" xml:space="preserve">
+  <data name="copy" xml:space="preserve">
     <value>Copy to clipboard</value>
   </data>
-  <data name="general-generateGUID" xml:space="preserve">
+  <data name="generate_GUID" xml:space="preserve">
     <value>Generate GUID</value>
   </data>
-  <data name="general-generate_random_float" xml:space="preserve">
+  <data name="generate_random_float" xml:space="preserve">
     <value>Generate random decimal number</value>
   </data>
-  <data name="general-generate_random_integer" xml:space="preserve">
+  <data name="generate_random_integer" xml:space="preserve">
     <value>Generate random integer</value>
   </data>
   <data name="general-print" xml:space="preserve">
@@ -207,6 +216,9 @@
   <data name="new_chat" xml:space="preserve">
     <value>New chat</value>
   </data>
+  <data name="personality_hint" xml:space="preserve">
+    <value>Personality</value>
+  </data>
   <data name="reasoning" xml:space="preserve">
     <value>Reasoning process</value>
   </data>
@@ -222,6 +234,18 @@
   <data name="select_model" xml:space="preserve">
     <value>Select model</value>
   </data>
+  <data name="settings_default_id" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="settings_profile" xml:space="preserve">
+    <value>Profile:</value>
+  </data>
+  <data name="summarizer_model_hint" xml:space="preserve">
+    <value>Summarizer model</value>
+  </data>
+  <data name="system_instructions_hint" xml:space="preserve">
+    <value>System instructions</value>
+  </data>
   <data name="title" xml:space="preserve">
     <value>Niggalink AI</value>
   </data>
@@ -230,6 +254,9 @@
   </data>
   <data name="tool-result" xml:space="preserve">
     <value>Tool result:</value>
+  </data>
+  <data name="tools_hint" xml:space="preserve">
+    <value>Tools</value>
   </data>
   <data name="voice_chat" xml:space="preserve">
     <value>Voice chat</value>
@@ -257,5 +284,41 @@
   </data>
   <data name="web-status" xml:space="preserve">
     <value>Check web status</value>
+  </data>
+  <data name="general" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="input" xml:space="preserve">
+    <value>Input</value>
+  </data>
+  <data name="calculation" xml:space="preserve">
+    <value>Calculation</value>
+  </data>
+  <data name="agents" xml:space="preserve">
+    <value>Agents</value>
+  </data>
+  <data name="web" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="chat_settings_general" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="chat_settings_tools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="enable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="tool_name_suffix_hint" xml:space="preserve">
+    <value>{0} tools</value>
+  </data>
+  <data name="reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="scripting" xml:space="preserve">
+    <value>Scripting</value>
   </data>
 </root>

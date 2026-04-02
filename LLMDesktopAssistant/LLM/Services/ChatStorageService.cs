@@ -34,7 +34,9 @@ namespace LLMDesktopAssistant.LLM.Services
 					Id = conversationId,
 					LeafNodeId = -1,
 					RootNodeId = -1,
-					SettingsProfile = ChatSettings.DefaultId
+					SettingsProfile = ChatSettings.DefaultId,
+					CreatedAt = DateTime.Now,
+					LastModifiedAt = DateTime.Now
 				};
 				database.Conversations.Insert(conversation);
 			}
@@ -100,6 +102,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				});
 				conversation.RootNodeId = nodeId;
 				conversation.LeafNodeId = nodeId;
+				conversation.LastModifiedAt = DateTime.Now;
 				database.Conversations.Update(conversation);
 			}
 			else
@@ -114,6 +117,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				leafNode.SelectedNodeId = nodeId;
 				conversation.LeafNodeId = nodeId;
+				conversation.LastModifiedAt = DateTime.Now;
 				database.MessageNodes.Update(leafNode);
 				database.Conversations.Update(conversation);
 			}
@@ -182,6 +186,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 
 			conversation.LeafNodeId = leafId;
+			conversation.LastModifiedAt = DateTime.Now;
 			database.Conversations.Update(conversation);
 
 			if (!database.Database.Commit())
@@ -235,6 +240,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 
 			conversation.LeafNodeId = newNodeId;
+			conversation.LastModifiedAt = DateTime.Now;
 			database.Conversations.Update(conversation);
 
 			if (!database.Database.Commit())
@@ -277,6 +283,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				conversation.RootNodeId = -1;
 
 			conversation.LeafNodeId = newLeafNodeId;
+			conversation.LastModifiedAt = DateTime.Now;
 			database.Conversations.Update(conversation);
 
 			if (!database.Database.Commit())

@@ -53,6 +53,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 		public List<ToolModule> AdditionalToolModules { get; set; } = [];
 
 
+
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
