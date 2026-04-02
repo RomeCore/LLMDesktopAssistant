@@ -3,6 +3,7 @@ using System.Reflection;
 using RCParsing;
 using RCParsing.Building;
 using RCParsing.Building.ParserRules;
+using RCParsing.TokenPatterns;
 
 namespace LLMDesktopAssistant.Calculation
 {
@@ -149,7 +150,7 @@ namespace LLMDesktopAssistant.Calculation
 			// Basic terms
 
 			builder.CreateRule("number")
-				.Number<double>(signed: false)
+				.Number<double>(NumberFlags.UnsignedScientific)
 
 				.Transform(v =>
 				{

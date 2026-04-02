@@ -53,7 +53,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		{
 			_settings = settings;
 			_toolInfo = tool;
-			Name = tool.Tool.Name;
+			Name = tool.DisplayName ?? tool.Tool.Name;
 			Description = tool.Tool.Description;
 			Category = tool.Category;
 			ResetCommand = new RelayCommand(Reset);

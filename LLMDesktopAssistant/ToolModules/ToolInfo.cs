@@ -13,6 +13,11 @@ namespace LLMDesktopAssistant.ToolModules
 		public required FunctionTool Tool { get; init; }
 
 		/// <summary>
+		/// Gets or sets the user-friendly display name of the tool. If not set, the tool's name will be used as the display name.
+		/// </summary>
+		public string? DisplayName { get; init; }
+
+		/// <summary>
 		/// Gets or sets the category of the tool. Defaults to "general".
 		/// </summary>
 		public string Category { get; init; } = "general";

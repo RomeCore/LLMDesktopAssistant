@@ -42,6 +42,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.AutoActivation" Version="10.4.0" />
     <PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" Version="2.0.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3800.47" />
+    <PackageReference Include="ModelContextProtocol" Version="1.2.0" />
     <PackageReference Include="MoonSharp" Version="2.0.0" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NHotkey.Wpf" Version="4.0.0" />

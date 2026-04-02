@@ -73,7 +73,7 @@ namespace LLMDesktopAssistant.ToolModules
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(Search_SearXNG, "web-search", "Search through the web using query."),
+				Tool = FunctionTool.From(Search_Jina, "web-search", "Search through the web using query."),
 				Category = "web"
 			});
 		}
