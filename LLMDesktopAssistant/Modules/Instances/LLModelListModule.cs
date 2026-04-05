@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RCLargeLanguageModels.Clients;
 using RCLargeLanguageModels.Clients.Deepseek;
+using RCLargeLanguageModels.Clients.Ollama;
 using RCLargeLanguageModels.Clients.OpenAI;
 using RCLargeLanguageModels.Security;
 
@@ -27,6 +28,7 @@ namespace LLMDesktopAssistant.Modules.Instances
 
 		static readonly DeepSeekClient deepseek = new(new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
 		static readonly OpenrouterClient openrouter = new(new EnvironmentTokenAccessor("OPENROUTER_API_KEY"));
+		static readonly OllamaClient ollama = new();
 
 		public LLMClientRegistry Registry { get; private set; } = null!;
 
@@ -42,6 +44,7 @@ namespace LLMDesktopAssistant.Modules.Instances
 			});
 			Registry.Register(deepseek);
 			Registry.Register(openrouter);
+			Registry.Register(ollama);
 		}
 	}
 }

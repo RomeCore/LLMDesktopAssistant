@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using LLMDesktopAssistant.LLM.Domain;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tasks;
@@ -14,9 +15,10 @@ namespace LLMDesktopAssistant.LLM.Services
 		IChatStorageService storage,
 		IPromptChatBuilder promptBuilder,
 		IToolExecutionService toolExecutor,
-		ILLMBuildingService llmProvider)
-
-		: IChatExecutionService
+		ILLMBuildingService llmBuilder,
+		IToolsetBuildingService toolsetBuilder,
+		IMCPManagementService mcpManager
+	) : IChatExecutionService
 	{
 		private CancellationTokenSource? _cts = null;
 
@@ -28,11 +30,13 @@ namespace LLMDesktopAssistant.LLM.Services
 			_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 			cancellationToken = _cts.Token;
 
-			var llmInfo = llmProvider.BuildChatLLM();
+			await mcpManager.EnsureCurrentMCPConnectionsAsync(cancellationToken);
+			var llmInfo = llmBuilder.BuildChatLLM();
 			var llm = llmInfo.LLM;
-			var toolset = new ImmutableToolSet(llmInfo.Tools.Values.Select(t => t.Tool));
 
 			var inputMessages = promptBuilder.Build();
+			var tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Tool.Name);
+			var toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
 			var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 			var responseMessage = response.Message;
 
@@ -67,7 +71,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					};
 					domainResponseMessage.ToolCalls.Add(domainToolCall);
 
-					var toolExecTask = toolExecutor.ExecuteAsync(domainToolCall, llmInfo, cancellationToken)
+					var toolExecTask = toolExecutor.ExecuteAsync(domainToolCall, llmInfo, tools, cancellationToken)
 						.ContinueWith(t => toolCallCompletionSource.Complete(), cancellationToken: cancellationToken);
 					lock (lockObj)
 						toolExecutionTasks.Add(toolExecTask);
@@ -136,6 +140,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					break;
 
 				inputMessages = promptBuilder.Build();
+				tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Tool.Name);
+				toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
 				response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				responseMessage = response.Message;
 

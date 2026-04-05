@@ -17,7 +17,13 @@
     <Compile Update="Controls\LLModelSelectorControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="LLM\MVVM\ChatSettingsView.xaml.cs">
+    <Compile Update="LLM\MVVM\Settings\ChatGeneralSettingsView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\MVVM\Settings\ChatMCPSettingsView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\MVVM\Settings\ChatSettingsView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="LLM\MVVM\Messages\AssistantMessageReasoningPartView.xaml.cs">
@@ -41,6 +47,9 @@
     <Compile Update="LLM\MVVM\Messages\ToolCallView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="LLM\MVVM\Settings\ChatToolSettingsView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="LLM\MVVM\UserInputView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -48,6 +57,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="LLM\MVVM\VoiceChatView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="MCP\MCPManagerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="MVVM\MainView.xaml.cs">

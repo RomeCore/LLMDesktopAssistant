@@ -24,10 +24,5 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// Gets or sets the maximum number of tokens that can be processed in a single request.
 		/// </summary>
 		public int ContextSize { get; init; } = 128000;
-
-		/// <summary>
-		/// Gets or sets the tools available to the language model.
-		/// </summary>
-		public ImmutableDictionary<string, ToolInfo> Tools { get; init; } = ImmutableDictionary<string, ToolInfo>.Empty;
 	}
 }

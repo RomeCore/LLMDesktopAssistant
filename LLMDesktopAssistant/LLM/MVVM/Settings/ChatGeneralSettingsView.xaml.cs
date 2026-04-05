@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.LLM.MVVM
+namespace LLMDesktopAssistant.LLM.MVVM.Settings
 {
 	/// <summary>
-	/// Логика взаимодействия для ChatSettingsView.xaml
+	/// Логика взаимодействия для ChatGeneralSettingsView.xaml
 	/// </summary>
-	public partial class ChatSettingsView : UserControl
+	public partial class ChatGeneralSettingsView : UserControl
 	{
-		public ChatSettingsView()
+		public ChatGeneralSettingsView()
 		{
 			InitializeComponent();
 		}

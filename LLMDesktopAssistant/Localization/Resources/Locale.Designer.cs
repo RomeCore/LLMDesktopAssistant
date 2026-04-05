@@ -178,6 +178,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable MCP.
+        /// </summary>
+        public static string chat_enable_mcp {
+            get {
+                return ResourceManager.GetString("chat-enable_mcp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable tools.
+        /// </summary>
+        public static string chat_enable_tools {
+            get {
+                return ResourceManager.GetString("chat-enable_tools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Enter your message....
         /// </summary>
         public static string chat_input_hint {
@@ -223,6 +241,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на MCP.
+        /// </summary>
+        public static string chat_settings_mcp {
+            get {
+                return ResourceManager.GetString("chat_settings_mcp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Tools.
         /// </summary>
         public static string chat_settings_tools {
@@ -241,11 +268,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Connect.
+        /// </summary>
+        public static string connect {
+            get {
+                return ResourceManager.GetString("connect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy to clipboard.
         /// </summary>
         public static string copy {
             get {
                 return ResourceManager.GetString("copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Disconnect.
+        /// </summary>
+        public static string disconnect {
+            get {
+                return ResourceManager.GetString("disconnect", resourceCulture);
             }
         }
         
@@ -277,11 +322,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute Bash script.
+        /// </summary>
+        public static string execute_bash {
+            get {
+                return ResourceManager.GetString("execute-bash", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Execute Lua script.
         /// </summary>
         public static string execute_lua {
             get {
                 return ResourceManager.GetString("execute-lua", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute Powershell script.
+        /// </summary>
+        public static string execute_powershell {
+            get {
+                return ResourceManager.GetString("execute-powershell", resourceCulture);
             }
         }
         
@@ -309,6 +372,51 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string execute_shell {
             get {
                 return ResourceManager.GetString("execute-shell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на File system.
+        /// </summary>
+        public static string filesystem {
+            get {
+                return ResourceManager.GetString("filesystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete file.
+        /// </summary>
+        public static string fs_delete_file {
+            get {
+                return ResourceManager.GetString("fs-delete_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на List files in directory.
+        /// </summary>
+        public static string fs_list_directory {
+            get {
+                return ResourceManager.GetString("fs-list_directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read file.
+        /// </summary>
+        public static string fs_read_file {
+            get {
+                return ResourceManager.GetString("fs-read_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Write file.
+        /// </summary>
+        public static string fs_write_file {
+            get {
+                return ResourceManager.GetString("fs-write_file", resourceCulture);
             }
         }
         
@@ -399,6 +507,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string input_press_key {
             get {
                 return ResourceManager.GetString("input-press_key", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Connection type.
+        /// </summary>
+        public static string mcp_connection_type {
+            get {
+                return ResourceManager.GetString("mcp-connection_type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Endpoint.
+        /// </summary>
+        public static string mcp_endpoint {
+            get {
+                return ResourceManager.GetString("mcp-endpoint", resourceCulture);
             }
         }
         
@@ -498,6 +624,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string select_model {
             get {
                 return ResourceManager.GetString("select_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select working directory.
+        /// </summary>
+        public static string select_working_directory {
+            get {
+                return ResourceManager.GetString("select_working_directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Settings.
+        /// </summary>
+        public static string settings {
+            get {
+                return ResourceManager.GetString("settings", resourceCulture);
             }
         }
         
@@ -669,6 +813,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string web_status {
             get {
                 return ResourceManager.GetString("web-status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Working directory.
+        /// </summary>
+        public static string working_directory_hint {
+            get {
+                return ResourceManager.GetString("working_directory_hint", resourceCulture);
             }
         }
     }

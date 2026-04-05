@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Settings;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Settings;
 using MaterialDesignThemes.Wpf;
@@ -106,6 +108,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public ICommand OpenSettingsCommand { get; }
 
 		/// <summary>
+		/// Command to open MCP manager.
+		/// </summary>
+		public ICommand OpenMCPManagerCommand { get; }
+
+		/// <summary>
 		/// Command to send a message.
 		/// </summary>
 		public ICommand SendMessageCommand { get; }
@@ -157,6 +164,13 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				var viewModel = new SettingsCategoryViewModel<ChatSettings>(cs => new ChatSettingsViewModel(cs, Chat),
 					newSettings => Chat.Settings = newSettings, Chat.Settings.Id);
+				if (ViewLocator.Resolve(viewModel) is object view)
+					await DialogHost.Show(view);
+			});
+
+			OpenMCPManagerCommand = new AsyncRelayCommand(async () =>
+			{
+				var viewModel = new MCPManagerViewModel();
 				if (ViewLocator.Resolve(viewModel) is object view)
 					await DialogHost.Show(view);
 			});

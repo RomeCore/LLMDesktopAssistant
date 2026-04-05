@@ -1,23 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Modules;
+using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.ToolModules;
-using MaterialDesignThemes.Wpf;
-using Python.Runtime;
+using LLMDesktopAssistant.Utils;
+using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tools;
+using System.Text;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
-	[Module]
 	public class PythonInterpreterToolModule : ToolModule
 	{
-		private PythonModule _python = null!;
+		private readonly PythonModule _python;
+		private readonly Chat _chat;
 
-		public PythonInterpreterToolModule()
+		public PythonInterpreterToolModule(Chat chat)
 		{
+			_python = ModuleManager.Get<PythonModule>();
+			_chat = chat;
+
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(Execute, "execute-python",
@@ -43,16 +44,11 @@ namespace LLMDesktopAssistant.Scripting
 			});
 		}
 
-		public override void Initialize()
-		{
-			_python = ModuleManager.Get<PythonModule>();
-		}
-
 		public async Task<ToolResult> Execute(string python)
 		{
 			try
 			{
-				var result = await _python.RunScript(python);
+				var result = await _python.RunScript(python, _chat.Settings.WorkingDirectory.ToNullIfWhiteSpace());
 
 				var resultBuilder = new StringBuilder();
 				resultBuilder.Append(result.StdOut);
@@ -75,7 +71,7 @@ namespace LLMDesktopAssistant.Scripting
 		{
 			try
 			{
-				var result = await _python.RunVenv(shell);
+				var result = await _python.RunVenv(shell, _chat.Settings.WorkingDirectory.ToNullIfWhiteSpace());
 
 				var resultBuilder = new StringBuilder();
 				resultBuilder.Append(result.StdOut);
@@ -98,7 +94,7 @@ namespace LLMDesktopAssistant.Scripting
 		{
 			try
 			{
-				var result = await _python.RunVenv("pip list");
+				var result = await _python.RunVenv("pip list", _chat.Settings.WorkingDirectory.ToNullIfWhiteSpace());
 				var status = result.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
 				return new ToolResult(status, result.StdOut);
 			}

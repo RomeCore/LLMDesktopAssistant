@@ -17,20 +17,29 @@ namespace LLMDesktopAssistant.Scripting
 		/// <summary>
 		/// Gets the path to the virtual environment directory.
 		/// </summary>
-		public string PythonVenvPath { get; }
+		public string VenvPath { get; }
+
+		/// <summary>
+		/// Gets the path to the 'activate' script for the virtual environment.
+		/// </summary>
+		public string ActivateVenvPath { get; }
 
 		/// <summary>
 		/// Gets the path to the temporary script files.
 		/// </summary>
-		public string PythonTempScriptPath { get; }
+		public string TempScriptsPath { get; }
 
 		public PythonModule()
 		{
-			PythonVenvPath = Path.GetFullPath("python/venv");
-			PythonTempScriptPath = Path.GetFullPath("python/temp");
+			VenvPath = Path.GetFullPath("python/venv");
+			ActivateVenvPath = Path.Combine(VenvPath, "Scripts", "activate.bat");
+			TempScriptsPath = Path.GetFullPath("python/temp");
 
-			Directory.CreateDirectory(PythonVenvPath);
-			Directory.CreateDirectory(PythonTempScriptPath);
+			if (!File.Exists(ActivateVenvPath))
+				throw new FileNotFoundException($"{Path.GetFileName(ActivateVenvPath)} not found", ActivateVenvPath);
+
+			Directory.CreateDirectory(VenvPath);
+			Directory.CreateDirectory(TempScriptsPath);
 		}
 
 		/// <summary>
@@ -38,14 +47,8 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		/// <param name="script">The Python script to execute.</param>
 		/// <returns>The result of the script execution.</returns>
-		public async Task<ShellExecutionResult> RunScript(string script)
+		public async Task<ProcessExecutionResult> RunScript(string script, string? workDir = null)
 		{
-			var venvPath = PythonVenvPath;
-			var activateBat = Path.Combine(venvPath, "Scripts", "activate.bat");
-
-			if (!File.Exists(activateBat))
-				throw new FileNotFoundException("activate.bat not found", activateBat);
-
 			script = $"""
 				import sys
 				sys.stdout.reconfigure(encoding="utf-8")
@@ -54,15 +57,19 @@ namespace LLMDesktopAssistant.Scripting
 				{script}
 				""";
 
-			var tempPyFile = Path.GetFullPath(Path.Combine(PythonTempScriptPath, $"{Guid.NewGuid()}.py"));
+			var tempPyFile = Path.GetFullPath(Path.Combine(TempScriptsPath, $"{Guid.NewGuid()}.py"));
 			File.WriteAllText(tempPyFile, script);
 
-			// cmd /c "call activate.bat && <command>"
-			var cmd = $"call \"{activateBat}\" && python \"{tempPyFile}\"";
-
-			var result = await ShellExecutor.ExecuteAsync(cmd, workDir: venvPath);
-			File.Delete(tempPyFile);
-			return result;
+			try
+			{
+				// cmd /c "call activate.bat && <command>"
+				var cmd = $"call \"{ActivateVenvPath}\" && python \"{tempPyFile}\"";
+				return await ShellExecutor.ExecuteWindowsAsync(cmd, workDir: workDir ?? VenvPath);
+			}
+			finally
+			{
+				File.Delete(tempPyFile);
+			}
 		}
 
 		/// <summary>
@@ -70,19 +77,11 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		/// <param name="shellScript">The shell script to run.</param>
 		/// <returns>The result of the script execution contained in a tuple with the standard output and standard error. The standard error is null if there is no error.</returns>
-		public async Task<ShellExecutionResult> RunVenv(string shellScript)
+		public async Task<ProcessExecutionResult> RunVenv(string shellScript, string? workDir = null)
 		{
-			var venvPath = PythonVenvPath;
-			var activateBat = Path.Combine(venvPath, "Scripts", "activate.bat");
-
-			if (!File.Exists(activateBat))
-				throw new FileNotFoundException("activate.bat not found", activateBat);
-
 			// cmd /c "call activate.bat && <command>"
-			var cmd = $"call \"{activateBat}\" && {shellScript}";
-
-			var result = await ShellExecutor.ExecuteAsync(cmd, workDir: venvPath);
-			return result;
+			var cmd = $"call \"{ActivateVenvPath}\" && {shellScript}";
+			return await ShellExecutor.ExecuteWindowsAsync(cmd, workDir: workDir ?? VenvPath);
 		}
 	}
 }

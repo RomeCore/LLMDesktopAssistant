@@ -1,5 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels.Tools;
+using System.Collections.Immutable;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -15,6 +17,6 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <param name="llmInfo">The information about the language model to use.</param>
 		/// <param name="cancellationToken">Token for cancellation of the operation.</param>
 		/// <returns>A task representing the asynchronous operation.</returns>
-		Task ExecuteAsync(ToolCall toolCall, LLMInfo llmInfo, CancellationToken cancellationToken = default);
+		Task ExecuteAsync(ToolCall toolCall, LLMInfo llmInfo, ImmutableDictionary<string, ToolInfo> tools, CancellationToken cancellationToken = default);
 	}
 }

@@ -1,7 +1,9 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.ToolModules;
 using Microsoft.Extensions.DependencyInjection;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tools;
+using System.Collections.Immutable;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -9,7 +11,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	{
 		readonly IToolExecutionHook? hook = services.GetService<IToolExecutionHook>();
 
-		public async Task ExecuteAsync(ToolCall toolCall, LLMInfo llmInfo, CancellationToken cancellationToken = default)
+		public async Task ExecuteAsync(ToolCall toolCall, LLMInfo llmInfo, ImmutableDictionary<string, ToolInfo> tools, CancellationToken cancellationToken = default)
 		{
 			ToolResult? result = null;
 
@@ -33,7 +35,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				}
 			}
 
-			if (!llmInfo.Tools.TryGetValue(toolCall.ToolName, out var toolInfo))
+			if (!tools.TryGetValue(toolCall.ToolName, out var toolInfo))
 				throw new InvalidOperationException($"Tool '{toolCall.ToolName}' not found.");
 			if (toolInfo.Tool is not FunctionTool functionTool)
 				throw new InvalidOperationException($"Tool '{toolCall.ToolName}' is not a function tool.");

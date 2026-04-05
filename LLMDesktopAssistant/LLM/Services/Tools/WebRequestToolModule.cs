@@ -1,6 +1,8 @@
 ﻿using AngleSharp;
 using Ganss.Xss;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Modules;
+using LLMDesktopAssistant.ToolModules;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels.Json.Schema;
 using RCLargeLanguageModels.Security;
@@ -9,6 +11,7 @@ using RCLargeLanguageModels.Utilities;
 using RCParsing;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -16,9 +19,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace LLMDesktopAssistant.ToolModules
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
-	[Module]
 	public class WebRequestToolModule : ToolModule
 	{
 		private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
@@ -28,10 +30,12 @@ namespace LLMDesktopAssistant.ToolModules
 		};
 
 		private readonly HttpClient _httpClient;
+		private readonly Chat _chat;
 
-		public WebRequestToolModule()
+		public WebRequestToolModule(Chat chat)
 		{
 			_httpClient = new HttpClient();
+			_chat = chat;
 
 			_httpClient.DefaultRequestHeaders.Add("User-Agent",
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
@@ -49,7 +53,7 @@ namespace LLMDesktopAssistant.ToolModules
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(DownloadFile, "web-download", "Download a file from a specified URL."),
+				Tool = FunctionTool.From(DownloadFile, "web-download", "Download a file from a specified URL into the working directory."),
 				Category = "web"
 			});
 
@@ -73,7 +77,7 @@ namespace LLMDesktopAssistant.ToolModules
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(Search_Jina, "web-search", "Search through the web using query."),
+				Tool = FunctionTool.From(Search_SearXNG, "web-search", "Search through the web using query."),
 				Category = "web"
 			});
 		}
@@ -138,7 +142,7 @@ namespace LLMDesktopAssistant.ToolModules
 
 		private async Task<ToolResult> DownloadFile(
 			[Description("URL of the file to download")] string url,
-			[Description("Local path to save the file")] string savePath,
+			[Description("Local working directory path to save the file")] string savePath,
 			[Description("Optional: Additional headers as JSON string")] string headersJson = "")
 		{
 			try
@@ -158,20 +162,12 @@ namespace LLMDesktopAssistant.ToolModules
 				response.EnsureSuccessStatusCode();
 
 				var fileBytes = await response.Content.ReadAsByteArrayAsync();
-
-				// Ensure directory exists
-				var directory = System.IO.Path.GetDirectoryName(savePath);
-				if (!string.IsNullOrEmpty(directory) && !System.IO.Directory.Exists(directory))
-				{
-					System.IO.Directory.CreateDirectory(directory);
-				}
-
-				await System.IO.File.WriteAllBytesAsync(savePath, fileBytes);
+				savePath = Path.Combine(_chat.Settings.GetWorkingDirectory(), savePath);
+				await File.WriteAllBytesAsync(savePath, fileBytes);
 
 				var result = $"""
 					Status code: {(int)response.StatusCode}
 					Status description: {response.StatusCode.ToString()}
-					FilePath: {savePath}
 					FileSize: {fileBytes.Length}
 					Content type: {response.Content.Headers.ContentType?.ToString()}
 					Content length: {fileBytes.Length}

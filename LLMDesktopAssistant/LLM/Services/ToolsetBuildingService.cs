@@ -1,13 +1,19 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+﻿using AngleSharp.Common;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.ToolModules;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
 	/// The default implementation of the <see cref="IToolsetBuildingService"/> interface.
 	/// </summary>
-	public class ToolsetBuildingService(Chat chat) : IToolsetBuildingService
+	public class ToolsetBuildingService(
+		Chat chat,
+		IMCPManagementService mcpManager,
+		IServiceProvider services
+		) : IToolsetBuildingService
 	{
 		public IEnumerable<ToolInfo> BuildTools()
 		{
@@ -44,6 +50,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			return toolModules
 				.Concat(chat.AdditionalToolModules ?? [])
+				.Concat(services.GetServices<ToolModule>())
+				.Concat(mcpManager.GetMCPToolModules())
 				.SelectMany(m => m.GetTools()
 					.Select(t =>
 					{

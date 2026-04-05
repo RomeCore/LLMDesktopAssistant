@@ -3,7 +3,7 @@ using ModelContextProtocol.Client;
 
 namespace LLMDesktopAssistant.MCP
 {
-	public class MCPConnection : Disposable
+	public class MCPConnection : IAsyncDisposable
 	{
 		public MCPServerInfo Info { get; }
 		public McpClient Client { get; }
@@ -27,13 +27,24 @@ namespace LLMDesktopAssistant.MCP
 			switch (mcpInfo.ConnectionType)
 			{
 				case MCPConnectionType.Stdio:
-					var fullPath = Path.GetFullPath(mcpInfo.Endpoint);
-					var directory = Path.GetDirectoryName(fullPath) ?? throw new InvalidOperationException($"Could not determine directory from path: {fullPath}");
-					transport = new StdioClientTransport(new StdioClientTransportOptions
+
+					if (IsExecutableFile(mcpInfo.Endpoint))
 					{
-						Command = fullPath,
-						WorkingDirectory = directory
-					});
+						var fullPath = Path.GetFullPath(mcpInfo.Endpoint);
+						var directory = Path.GetDirectoryName(fullPath);
+						transport = new StdioClientTransport(new StdioClientTransportOptions
+						{
+							Command = fullPath,
+							WorkingDirectory = directory
+						});
+					}
+					else
+					{
+						transport = new StdioClientTransport(new StdioClientTransportOptions
+						{
+							Command = mcpInfo.Endpoint
+						});
+					}
 					break;
 				case MCPConnectionType.Remote:
 					transport = new HttpClientTransport(new HttpClientTransportOptions
@@ -47,6 +58,16 @@ namespace LLMDesktopAssistant.MCP
 			}
 			var client = await McpClient.CreateAsync(transport, cancellationToken: cancellationToken);
 			return new MCPConnection(mcpInfo, client);
+		}
+
+		private static bool IsExecutableFile(string path)
+		{
+			return File.Exists(path) && Path.GetExtension(path).ToLower() == ".exe";
+		}
+
+		public async ValueTask DisposeAsync()
+		{
+			await Client.DisposeAsync();
 		}
 	}
 }

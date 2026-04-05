@@ -48,6 +48,7 @@
 
 			<!-- Converters -->
 
+			<converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
 			<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
 													 True="Visible"
 													 False="Collapsed"/>
@@ -57,6 +58,8 @@
 			<converters:AssistantMessageStateToBooleanConverter x:Key="AssistantMessageStateToBooleanConverter"/>
 			<converters:StringNonEmptyToBooleanConverter x:Key="StringNonEmptyToBooleanConverter"/>
 			<converters:StringNonEmptyToVisiblityConverter x:Key="StringNonEmptyToVisiblityConverter"/>
+			<converters:NotnullToVisibilityConverter x:Key="NotnullToVisibilityConverter"/>
+			<converters:NotnullToVisibilityConverter Invert="True" x:Key="NotnullToVisibilityConverterInverted"/>
 
 		</ResourceDictionary>
 	</Application.Resources>

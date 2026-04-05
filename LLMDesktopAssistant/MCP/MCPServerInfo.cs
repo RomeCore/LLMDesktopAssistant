@@ -13,6 +13,26 @@ namespace LLMDesktopAssistant.MCP
 	/// </summary>
 	public class MCPServerInfo : NotifyPropertyChanged
 	{
+		private Guid _id = Guid.NewGuid();
+		/// <summary>
+		/// Unique identifier for this server configuration.
+		/// </summary>
+		public Guid Id
+		{
+			get => _id;
+			set => SetProperty(ref _id, value);
+		}
+
+		private string _name = string.Empty;
+		/// <summary>
+		/// A user-friendly name for the MCP server configuration. This is used for display purposes in the UI to help users identify different server configurations.
+		/// </summary>
+		public string Name
+		{
+			get => _name;
+			set => SetProperty(ref _name, value);
+		}
+
 		private MCPConnectionType _connectionType = MCPConnectionType.Undefined;
 		/// <summary>
 		/// The type of connection to use when connecting to the MCP server. This determines how the client will communicate with the server (e.g., stdio, HTTP, etc.).
@@ -33,14 +53,22 @@ namespace LLMDesktopAssistant.MCP
 			set => SetProperty(ref _endpoint, value);
 		}
 
-		private string _name = string.Empty;
-		/// <summary>
-		/// A user-friendly name for the MCP server configuration. This is used for display purposes in the UI to help users identify different server configurations.
-		/// </summary>
-		public string Name
+		public override bool Equals(object? obj)
 		{
-			get => _name;
-			set => SetProperty(ref _name, value);
+			return obj is MCPServerInfo other &&
+				ConnectionType == other.ConnectionType &&
+				Endpoint == other.Endpoint &&
+				Name == other.Name;
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(ConnectionType, Endpoint, Name);
+		}
+
+		public override string ToString()
+		{
+			return $"{Name} ({ConnectionType}: {Endpoint})";
 		}
 	}
 }

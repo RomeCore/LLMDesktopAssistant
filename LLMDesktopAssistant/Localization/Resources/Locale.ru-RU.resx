@@ -321,4 +321,55 @@
   <data name="scripting" xml:space="preserve">
     <value>Скриптинг</value>
   </data>
+  <data name="chat_settings_mcp" xml:space="preserve">
+    <value>MCP</value>
+  </data>
+  <data name="mcp-endpoint" xml:space="preserve">
+    <value>Команда/URL</value>
+  </data>
+  <data name="connect" xml:space="preserve">
+    <value>Подключиться</value>
+  </data>
+  <data name="disconnect" xml:space="preserve">
+    <value>Отключиться</value>
+  </data>
+  <data name="mcp-connection_type" xml:space="preserve">
+    <value>Способ подключения</value>
+  </data>
+  <data name="chat-enable_tools" xml:space="preserve">
+    <value>Включить инструменты</value>
+  </data>
+  <data name="chat-enable_mcp" xml:space="preserve">
+    <value>Включить MCP</value>
+  </data>
+  <data name="working_directory_hint" xml:space="preserve">
+    <value>Рабочая папка</value>
+  </data>
+  <data name="select_working_directory" xml:space="preserve">
+    <value>Выберите рабочую папку</value>
+  </data>
+  <data name="filesystem" xml:space="preserve">
+    <value>Файловая система</value>
+  </data>
+  <data name="execute-bash" xml:space="preserve">
+    <value>Выполнить Bash скрипт</value>
+  </data>
+  <data name="execute-powershell" xml:space="preserve">
+    <value>Выполнить Powershell скрипт</value>
+  </data>
+  <data name="settings" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="fs-read_file" xml:space="preserve">
+    <value>Прочитать файл</value>
+  </data>
+  <data name="fs-write_file" xml:space="preserve">
+    <value>Записать в файл</value>
+  </data>
+  <data name="fs-delete_file" xml:space="preserve">
+    <value>Удалить файл</value>
+  </data>
+  <data name="fs-list_directory" xml:space="preserve">
+    <value>Чтение файлов в директории</value>
+  </data>
 </root>

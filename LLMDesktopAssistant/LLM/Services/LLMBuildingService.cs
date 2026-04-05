@@ -12,8 +12,7 @@ using System.Collections.Immutable;
 namespace LLMDesktopAssistant.LLM.Services
 {
 	public class LLMBuildingService(
-		Chat chat,
-		IToolsetBuildingService toolsetBuilder
+		Chat chat
 		) : ILLMBuildingService
 	{
 		public LLMInfo BuildChatLLM()
@@ -23,7 +22,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			return new LLMInfo
 			{
 				LLM = new LLModel(model),
-				Tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Tool.Name),
 				ContextSize = model.ContextLength != -1 ? model.ContextLength : 160000
 			};
 		}

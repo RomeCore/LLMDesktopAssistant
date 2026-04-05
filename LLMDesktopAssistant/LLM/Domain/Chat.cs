@@ -2,7 +2,7 @@
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.ToolModules;
 using LLMDesktopAssistant.Utils;
-using Microsoft.VisualBasic;
+using LLMDesktopAssistant.LLM.Services;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -16,13 +16,24 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// </summary>
 		public IServiceProvider Services { get; } = services;
 
+		private int _chatId = -1;
 		/// <summary>
 		/// Gets or sets the unique identifier for the chat session. Used mostly for database purposes.
 		/// </summary>
-		public int ChatId { get; set; }
+		public int ChatId
+		{
+			get => _chatId;
+			set
+			{
+				if (_chatId != -1)
+					throw new InvalidOperationException("ChatId cannot be changed once set.");
+				_chatId = value;
+			}
+		}
 
 		/// <summary>
 		/// The collection of messages in the chat session.
+		/// These are managed by <see cref="IChatStorageService"/>.
 		/// </summary>
 		public RangeObservableCollection<BranchedMessage> Messages { get; } = [];
 

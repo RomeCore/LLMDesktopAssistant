@@ -4,22 +4,16 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Utils;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
-using RCLargeLanguageModels.Tools;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace LLMDesktopAssistant.LLM.MVVM
+namespace LLMDesktopAssistant.LLM.MVVM.Settings
 {
 	public class ToolAdditionalTemplateSelector : DataTemplateSelector
 	{
@@ -187,20 +181,38 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		}
 	}
 
-	[ViewModelFor(typeof(ChatSettingsView))]
-	public class ChatSettingsViewModel : ViewModelBase
+	[ViewModelFor(typeof(ChatToolSettingsView))]
+	public class ChatToolSettingsViewModel : ViewModelBase
 	{
+		public ChatSettingsViewModel Parent { get; }
 		public ChatSettings Settings { get; }
 
-		public ImmutableList<ToolCategoryViewModel> ToolCategories { get; }
-
-		public ChatSettingsViewModel(ChatSettings settings, Chat chat)
+		private RangeObservableCollection<ToolCategoryViewModel> _toolCategories = [];
+		public ICollection<ToolCategoryViewModel> ToolCategories
 		{
-			Settings = settings;
+			get => _toolCategories;
+			set
+			{
+				_toolCategories.Reset(value);
+				RaisePropertyChanged(nameof(ToolCategories));
+			}
+		}
 
-			var toolBuilder = chat.Services.GetRequiredService<IToolsetBuildingService>();
+		public ChatToolSettingsViewModel(ChatSettingsViewModel parent)
+		{
+			Parent = parent;
+			Settings = parent.Settings;
+			UpdateTools();
+		}
+
+		public void UpdateTools()
+		{
+			var toolBuilder = Parent.Chat.Services.GetRequiredService<IToolsetBuildingService>();
 			var tools = toolBuilder.GetAvailableTools();
-			var toolVMs = tools.Select(t => new ToolItemViewModel(t, settings));
+			var toolVMs = tools.Select(t => new ToolItemViewModel(t, Settings));
+
+			foreach (var category in ToolCategories)
+				category.Dispose();
 
 			ToolCategories = toolVMs
 				.GroupBy(t => t.Category)

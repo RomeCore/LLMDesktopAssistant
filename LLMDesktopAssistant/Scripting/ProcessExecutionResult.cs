@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Represents the result of a Windows shell command execution.
 	/// </summary>
-	public class ShellExecutionResult
+	public class ProcessExecutionResult
 	{
 		/// <summary>
 		/// Gets the standard output of the command.

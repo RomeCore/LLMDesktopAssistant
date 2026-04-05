@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.Modules;
@@ -16,6 +17,11 @@ namespace LLMDesktopAssistant.ToolModules
 		private readonly List<ToolInfo> _tools = [];
 
 		/// <summary>
+		/// Gets the backing list of tools provided by this module.
+		/// </summary>
+		protected List<ToolInfo> Tools => _tools;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether the module is enabled. Default is true.
 		/// When this tool module is disabled, it will not be considered when retrieving tools for the LLM assistant.
 		/// </summary>
@@ -25,21 +31,27 @@ namespace LLMDesktopAssistant.ToolModules
 		/// Adds a tool to this module.
 		/// </summary>
 		/// <param name="tool">The tool to add.</param>
-		protected void AddTool(FunctionTool tool)
-		{
-			_tools.Add(new ToolInfo
-			{
-				Tool = tool
-			});
-		}
-
-		/// <summary>
-		/// Adds a tool to this module.
-		/// </summary>
-		/// <param name="tool">The tool to add.</param>
 		protected void AddTool(ToolInfo tool)
 		{
 			_tools.Add(tool);
+		}
+
+		/// <summary>
+		/// Removes all tools from this module.
+		/// </summary>
+		protected void ClearTools()
+		{
+			_tools.Clear();
+		}
+
+		/// <summary>
+		/// Replaces the current collection of tools with the specified sequence.
+		/// </summary>
+		/// <param name="tools">The sequence of tools to set as the new collection. Cannot be null.</param>
+		protected void ReplaceTools(IEnumerable<ToolInfo> tools)
+		{
+			_tools.Clear();
+			_tools.AddRange(tools);
 		}
 
 		/// <summary>
