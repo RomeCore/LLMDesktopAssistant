@@ -13,24 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.LLM.MVVM
+namespace LLMDesktopAssistant.LLM.MVVM.Attachments
 {
-	public partial class UserInputView : UserControl
+	/// <summary>
+	/// Логика взаимодействия для AttachmentView.xaml
+	/// </summary>
+	public partial class AttachmentView : UserControl
 	{
-		public UserInputView()
+		public AttachmentView()
 		{
 			InitializeComponent();
-
-			this.AllowDrop = true;
-			this.Drop += OnDrop;
-		}
-
-		private async void OnDrop(object sender, DragEventArgs e)
-		{
-			if (DataContext is UserInputViewModel vm)
-			{
-				await vm.AcceptDropAsync(e);
-			}
 		}
 	}
 }

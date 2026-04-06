@@ -32,12 +32,22 @@
 	<Grid>
 
 		<Grid.RowDefinitions>
+			<RowDefinition Height="auto"/>
 			<RowDefinition/>
 			<RowDefinition Height="auto"/>
 		</Grid.RowDefinitions>
 
+		<!-- Attachments panel -->
+		<ItemsControl Grid.Row="0" ItemsSource="{Binding Attachments}" ItemTemplateSelector="{StaticResource ViewLocator}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel Orientation="Horizontal"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+		</ItemsControl>
+
 		<!-- Text Input -->
-		<TextBox Grid.Row="0"
+		<TextBox Grid.Row="1"
 				 materialDesign:HintAssist.Hint="{loc:Loc chat-input_hint}"
 				 materialDesign:TextFieldAssist.HasClearButton="True"
 				 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
@@ -50,7 +60,8 @@
 				 FontSize="16"
 				 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
-		<DockPanel Grid.Row="1" Margin="0,5,0,0">
+		<!-- Buttons Panel -->
+		<DockPanel Grid.Row="2" Margin="0,5,0,0">
 
 			<!-- Model Selector -->
 			<ctrl:LLModelSelectorControl DockPanel.Dock="Left"
@@ -79,6 +90,7 @@
 			<!-- Attach Button -->
 			<Button DockPanel.Dock="Left"
 					Style="{StaticResource ControlButton}"
+					Command="{Binding OpenAttachmentsManagerCommand}"
 					ToolTip="{loc:Loc chat-attach_file_hint}">
 
 				<materialDesign:PackIcon Kind="Paperclip"

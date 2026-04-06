@@ -54,6 +54,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				storage.AppendMessage(new UserMessage
 				{
 					Content = userInput.Content,
+					Attachments = userInput.Attachments
 				});
 				await executor.GenerateResponseAsync(cancellationToken);
 			}
@@ -74,6 +75,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				storage.EditMessage(messageIndex, new UserMessage
 				{
 					Content = userInput.Content,
+					Attachments = userInput.Attachments
 				});
 				await executor.GenerateResponseAsync(cancellationToken);
 			}

@@ -24,13 +24,33 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		public int MessageId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the display name of the attachment.
+		/// Gets or sets the title of the attachment.
+		/// This is used for display purposes in UI components.
 		/// </summary>
-		public string DisplayName { get; set; } = string.Empty;
+		public string Title { get; set; } = string.Empty;
 
 		/// <summary>
-		/// Gets or sets the type of the attachment.
+		/// Gets or sets the source URL of the attachment.
+		/// This can be a web URL, a local path or a reference to the MCP resource (example: mcp:server_name://some/resource/name.txt).
 		/// </summary>
-		public AttachmentTypeModel Type { get; set; }
+		public string SourceUrl { get; set; } = string.Empty;
+
+		/// <summary>
+		/// Gets or sets the local path relative to the working folder (see <c>Chat.Settings.WorkingFolder</c>).
+		/// This is where attachment file is copied and can be used for tools like Python, Filesystem, Shell interpreters, etc.
+		/// </summary>
+		public string LocalPath { get; set; } = string.Empty;
+
+		/// <summary>
+		/// Gets or sets the size of the attachment in bytes.
+		/// </summary>
+		public int Size { get; set; } = 0;
+
+		/// <summary>
+		/// Gets or sets the preview content of the attachment.
+		/// This will be shown to the LLM if available.
+		/// May contain entire file contents, first few lines, hex binary representation, image or sound description, etc.
+		/// </summary>
+		public string? PreviewContent { get; set; } = null;
 	}
 }

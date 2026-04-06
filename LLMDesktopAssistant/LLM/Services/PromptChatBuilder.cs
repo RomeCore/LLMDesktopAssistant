@@ -65,10 +65,11 @@ namespace LLMDesktopAssistant.LLM.Services
 			var context = new
 			{
 				time_sent = message.CreatedAt.ToString(),
-				attachments = (object?)null,
+				attachments = message.Attachments,
 				content = message.Content
 			};
-			return template!.Render(context);
+			var result = template!.Render(context);
+			return result;
 		}
 
 		private List<IMessage> Convert(ChatMessage message)

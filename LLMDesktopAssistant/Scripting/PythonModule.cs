@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.Modules;
+using LLMDesktopAssistant.Utils;
 using MoonSharp.Interpreter;
 using Serilog;
 
@@ -24,22 +25,15 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		public string ActivateVenvPath { get; }
 
-		/// <summary>
-		/// Gets the path to the temporary script files.
-		/// </summary>
-		public string TempScriptsPath { get; }
-
 		public PythonModule()
 		{
 			VenvPath = Path.GetFullPath("python/venv");
 			ActivateVenvPath = Path.Combine(VenvPath, "Scripts", "activate.bat");
-			TempScriptsPath = Path.GetFullPath("python/temp");
 
 			if (!File.Exists(ActivateVenvPath))
 				throw new FileNotFoundException($"{Path.GetFileName(ActivateVenvPath)} not found", ActivateVenvPath);
 
 			Directory.CreateDirectory(VenvPath);
-			Directory.CreateDirectory(TempScriptsPath);
 		}
 
 		/// <summary>
@@ -57,7 +51,7 @@ namespace LLMDesktopAssistant.Scripting
 				{script}
 				""";
 
-			var tempPyFile = Path.GetFullPath(Path.Combine(TempScriptsPath, $"{Guid.NewGuid()}.py"));
+			var tempPyFile = Path.GetFullPath(Path.Combine(Directories.TempScripts, $"{Guid.NewGuid()}.py"));
 			File.WriteAllText(tempPyFile, script);
 
 			try

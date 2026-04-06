@@ -38,6 +38,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			services.TryAddScoped<IToolExecutionService, ToolExecutionService>();
 			services.TryAddScoped<IToolsetBuildingService, ToolsetBuildingService>();
 			services.TryAddScoped<ILLMBuildingService, LLMBuildingService>();
+			services.TryAddScoped<IAttachmentApplicationService, AttachmentApplicationService>();
 
 			services.AddScoped<ToolModule, PythonInterpreterToolModule>();
 			services.AddScoped<ToolModule, ShellInterpreterToolModule>();

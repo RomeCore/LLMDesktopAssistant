@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LLMDesktopAssistant.Utils;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -32,8 +33,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// <returns>The result of the command execution.</returns>
 		public static async Task<ProcessExecutionResult> ExecuteWindowsScriptAsync(string script, string? workDir = null)
 		{
-			Directory.CreateDirectory("temp/scripts/");
-			var tempFile = Path.Combine(Environment.CurrentDirectory, "temp/scripts/", $"{Guid.NewGuid()}.bat");
+			var tempFile = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.bat");
 			File.WriteAllText(tempFile, script);
 
 			try
@@ -66,8 +66,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// <returns>The result of the command execution.</returns>
 		public static async Task<ProcessExecutionResult> ExecuteWindowsPSScriptAsync(string script, string? workDir = null)
 		{
-			Directory.CreateDirectory("temp/scripts/");
-			var tempFile = Path.Combine(Environment.CurrentDirectory, "temp/scripts/", $"{Guid.NewGuid()}.ps1");
+			var tempFile = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.ps1");
 			File.WriteAllText(tempFile, script);
 
 			try
@@ -117,8 +116,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// <returns>The result of the command execution.</returns>
 		public static async Task<ProcessExecutionResult> ExecuteBashScriptAsync(string script, string? workDir = null)
 		{
-			Directory.CreateDirectory("temp/scripts/");
-			string tempScript = Path.Combine(Environment.CurrentDirectory, "temp/scripts/", $"{Guid.NewGuid()}.sh");
+			string tempScript = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.sh");
 
 			// Add shebang and make script executable-friendly
 			script = script.Replace("\r\n", "\n"); // Ensure Unix-style line endings

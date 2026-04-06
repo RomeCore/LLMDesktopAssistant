@@ -2,6 +2,7 @@
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients;
+using System.IO;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -58,9 +59,9 @@ namespace LLMDesktopAssistant.LLM.Domain
 		}
 
 		/// <summary>
-		/// Returns the working directory for the chatbot. If no working directory is specified, returns the current directory.
+		/// Returns the working directory for the chatbot. If no working directory is specified, returns the default directory.
 		/// </summary>
-		public string GetWorkingDirectory() => WorkingDirectory ?? Environment.CurrentDirectory;
+		public string GetWorkingDirectory() => WorkingDirectory ?? Path.GetFullPath(Directories.DefaultWorkingDirectory);
 
 		private readonly RangeObservableCollection<ToolChange> _toolChanges = [];
 		/// <summary>

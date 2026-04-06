@@ -1,4 +1,6 @@
-﻿namespace LLMDesktopAssistant.LLM.Domain
+﻿using System.Collections.Immutable;
+
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents a user message in the chat session.
@@ -8,7 +10,7 @@
 		/// <summary>
 		/// The collection of attachments associated with the user message. These can include images or files.
 		/// </summary>
-		public List<Attachment> Attachments { get; set; } = [];
+		public ImmutableList<Attachment> Attachments { get; init; } = [];
 
 		private string? _llmProvidedContent;
 		/// <summary>

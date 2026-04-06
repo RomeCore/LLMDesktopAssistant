@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		{
 			try
 			{
-				var workDir = _chat.Settings.WorkingDirectory.ToNullIfWhiteSpace();
+				var workDir = _chat.Settings.GetWorkingDirectory();
 				var result = shell.Contains('\n') ?
 					await ShellExecutor.ExecuteWindowsScriptAsync(shell, workDir) :
 					await ShellExecutor.ExecuteWindowsAsync(shell, workDir);
@@ -78,7 +78,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		{
 			try
 			{
-				var workDir = _chat.Settings.WorkingDirectory.ToNullIfWhiteSpace();
+				var workDir = _chat.Settings.GetWorkingDirectory();
 				var result = powershell.Contains('\n') ?
 					await ShellExecutor.ExecuteWindowsPSScriptAsync(powershell, workDir) :
 					await ShellExecutor.ExecuteWindowsPSAsync(powershell, workDir);
@@ -104,7 +104,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		{
 			try
 			{
-				var workDir = _chat.Settings.WorkingDirectory.ToNullIfWhiteSpace();
+				var workDir = _chat.Settings.GetWorkingDirectory();
 				var result = bash.Contains('\n') ?
 					await ShellExecutor.ExecuteBashScriptAsync(bash, workDir) :
 					await ShellExecutor.ExecuteBashAsync(bash, workDir);

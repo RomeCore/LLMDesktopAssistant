@@ -459,8 +459,10 @@ namespace LLMDesktopAssistant.Utils
 
 			if (PreferResetForRangeOperations)
 				RaiseChangedEvents(EventArgsCache.ResetCollectionChanged);
-			else
+			else if (oldItems.Count > 0)
 				RaiseChangedEvents(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, itemsList, oldItems, 0));
+			else
+				RaiseChangedEvents(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemsList, 0));
 		}
 
 		/// <summary>

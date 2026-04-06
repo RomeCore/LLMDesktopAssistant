@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LLMDesktopAssistant.LLM.MVVM.Attachments;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,11 +14,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.LLM.MVVM
+namespace LLMDesktopAssistant.LLM.MVVM.Attachments
 {
-	public partial class UserInputView : UserControl
+	public partial class AttachmentsManagerView : UserControl
 	{
-		public UserInputView()
+		public AttachmentsManagerView()
 		{
 			InitializeComponent();
 
@@ -25,11 +26,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			this.Drop += OnDrop;
 		}
 
-		private async void OnDrop(object sender, DragEventArgs e)
+		private void OnDrop(object sender, DragEventArgs e)
 		{
-			if (DataContext is UserInputViewModel vm)
+			if (DataContext is AttachmentsManagerViewModel vm)
 			{
-				await vm.AcceptDropAsync(e);
+				vm.AcceptDrop(e);
 			}
 		}
 	}

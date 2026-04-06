@@ -1,18 +1,22 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Attachments;
 using LLMDesktopAssistant.LLM.MVVM.Settings;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.MVVM
@@ -113,6 +117,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public ICommand OpenMCPManagerCommand { get; }
 
 		/// <summary>
+		/// Command to open attachments manager.
+		/// </summary>
+		public ICommand OpenAttachmentsManagerCommand { get; }
+
+		/// <summary>
 		/// Command to send a message.
 		/// </summary>
 		public ICommand SendMessageCommand { get; }
@@ -135,6 +144,17 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _text, value);
 		}
 
+		private readonly RangeObservableCollection<AttachmentViewModel> _attachments = [];
+		private ImmutableList<Attachment> _prevAttachments = [];
+		/// <summary>
+		/// Gets or sets the attachments or additional buttons to be displayed with the current message.
+		/// </summary>
+		public ICollection<AttachmentViewModel> Attachments
+		{
+			get => _attachments;
+			set => _attachments.Reset(value);
+		}
+
 		private BranchedMessage? _editingMessage = null;
 		/// <summary>
 		/// Gets or sets the message that is currently being edited, if any.
@@ -155,6 +175,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			private set => SetProperty(ref _isGenerating, value);
 		}
 
+
+
 		public UserInputViewModel(ChatViewModel chatVM)
 		{
 			Chat = chatVM.Chat;
@@ -171,6 +193,13 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			OpenMCPManagerCommand = new AsyncRelayCommand(async () =>
 			{
 				var viewModel = new MCPManagerViewModel();
+				if (ViewLocator.Resolve(viewModel) is object view)
+					await DialogHost.Show(view);
+			});
+
+			OpenAttachmentsManagerCommand = new AsyncRelayCommand(async () =>
+			{
+				var viewModel = new AttachmentsManagerViewModel(this);
 				if (ViewLocator.Resolve(viewModel) is object view)
 					await DialogHost.Show(view);
 			});
@@ -197,6 +226,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			return new UserInput
 			{
 				Content = _text,
+				Attachments = _attachments.Select(a => a.Attachment).ToImmutableList(),
 			};
 		}
 
@@ -208,27 +238,42 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			if (EditingMessage != null)
 			{
 				_prevText = _text;
+				_prevAttachments = _attachments.Select(am => am.Attachment).ToImmutableList();
 			}
 			EditingMessage = branchedMessage;
 			Text = userMessage.Content;
+			Attachments = userMessage.Attachments.Select(a => new AttachmentViewModel(this, a)).ToList();
 		}
 
 		public void Clear()
 		{
 			Text = string.Empty;
+			Attachments = [];
 			EditingMessage = null;
 		}
 
 		public void EndEditing()
 		{
 			Text = _prevText;
+			Attachments = _prevAttachments.Select(a => new AttachmentViewModel(this, a)).ToList();
 			_prevText = string.Empty;
+			_prevAttachments = [];
 			EditingMessage = null;
 		}
 
 		public bool IsEmpty()
 		{
-			return string.IsNullOrWhiteSpace(_text);
+			return string.IsNullOrWhiteSpace(_text) && Attachments.Count > 0;
+		}
+
+		public async Task AcceptDropAsync(DragEventArgs args)
+		{
+			var viewModel = new AttachmentsManagerViewModel(this);
+			if (ViewLocator.Resolve(viewModel) is object view)
+			{
+				viewModel.AcceptDrop(args);
+				await DialogHost.Show(view);
+			}
 		}
 
 

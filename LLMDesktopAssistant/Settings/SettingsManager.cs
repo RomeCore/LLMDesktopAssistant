@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Utils;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -18,15 +19,7 @@ namespace LLMDesktopAssistant.Settings
 	/// </summary>
 	public static class SettingsManager
 	{
-		private static readonly string _mainDirectory;
 		private static readonly ConcurrentDictionary<Type, object> _categories = [];
-
-		static SettingsManager()
-		{
-			var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-			_mainDirectory = Path.Combine(baseDir, "settings");
-			Directory.CreateDirectory(_mainDirectory);
-		}
 
 		private static string GetCategoryName(Type type)
 		{
@@ -53,7 +46,7 @@ namespace LLMDesktopAssistant.Settings
 			return (SettingsCategory<TSettings>)_categories.GetOrAdd(typeof(TSettings), _ =>
 			{
 				var name = GetCategoryName(typeof(TSettings));
-				return new SettingsCategory<TSettings>(name, _mainDirectory);
+				return new SettingsCategory<TSettings>(name, Directories.Settings);
 			});
 		}
 

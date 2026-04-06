@@ -3,6 +3,7 @@ using LLMDesktopAssistant.LLM.Data;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Input;
@@ -19,6 +20,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Messages
 			set => SetProperty(ref _text, value);
 		}
 
+		private readonly RangeObservableCollection<Attachment> _attachments = [];
+		public ICollection<Attachment> Attachments
+		{
+			get => _attachments;
+			set => _attachments.Reset(value);
+		}
+
 		public ICommand EditCommand { get; }
 
 		public UserMessageViewModel(BranchedMessage branchedMessage, ChatViewModel chatVM) : base(branchedMessage, chatVM)
@@ -27,6 +35,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Messages
 				throw new InvalidOperationException("Invalid message type. Expected IUserMessage.");
 
 			Text = userMessage.Content ?? string.Empty;
+			Attachments = userMessage.Attachments;
 
 			EditCommand = new RelayCommand(() =>
 			{

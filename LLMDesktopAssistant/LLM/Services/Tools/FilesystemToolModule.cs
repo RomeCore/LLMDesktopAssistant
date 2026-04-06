@@ -49,23 +49,13 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 		private string ResolvePath(string path)
 		{
-			if (string.IsNullOrWhiteSpace(_chat.Settings.WorkingDirectory))
-				throw new InvalidOperationException("Working directory is not set.");
-
-			var baseDir = Path.GetFullPath(_chat.Settings.WorkingDirectory);
+			var baseDir = Path.GetFullPath(_chat.Settings.GetWorkingDirectory());
 			var fullPath = Path.GetFullPath(Path.Combine(baseDir, path));
 
 			if (!fullPath.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase))
 				throw new AccessViolationException("Access outside working directory is not allowed.");
 
 			return fullPath;
-		}
-
-		public override IEnumerable<ToolInfo> GetTools()
-		{
-			if (!string.IsNullOrWhiteSpace(_chat.Settings.WorkingDirectory) && Directory.Exists(_chat.Settings.WorkingDirectory))
-				return base.GetTools();
-			return [];
 		}
 
 		public ToolResult ReadFile(string path)

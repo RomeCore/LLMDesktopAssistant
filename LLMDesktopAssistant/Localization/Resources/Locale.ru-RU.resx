@@ -372,4 +372,10 @@
   <data name="fs-list_directory" xml:space="preserve">
     <value>Чтение файлов в директории</value>
   </data>
+  <data name="ok" xml:space="preserve">
+    <value>Ок</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
 </root>

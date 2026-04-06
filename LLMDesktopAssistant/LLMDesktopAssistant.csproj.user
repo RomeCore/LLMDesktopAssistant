@@ -17,6 +17,12 @@
     <Compile Update="Controls\LLModelSelectorControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="LLM\MVVM\Attachments\AttachmentsManagerView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="LLM\MVVM\Attachments\AttachmentView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="LLM\MVVM\Settings\ChatGeneralSettingsView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

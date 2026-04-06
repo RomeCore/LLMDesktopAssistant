@@ -5,6 +5,7 @@ using LLMDesktopAssistant.Settings;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
 using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json;
@@ -435,6 +436,21 @@ namespace LLMDesktopAssistant.LLM.Services
 				};
 
 				database.Messages.Insert(model);
+				int messageId = model.Id;
+
+				foreach (var attachment in userMessage.Attachments)
+				{
+					var attachmentModel = new AttachmentModel
+					{
+						MessageId = messageId,
+						Title = attachment.Title,
+						SourceUrl = attachment.SourceUrl,
+						LocalPath = attachment.LocalPath,
+						Size = attachment.Size,
+						PreviewContent = attachment.PreviewContent
+					};
+					database.Attachments.Insert(attachmentModel);
+				}
 
 				SubscribeMessage(message, model);
 
@@ -481,10 +497,21 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			if (messageModel.Role == RoleModel.User)
 			{
+				var attachments = database.Attachments.Find(a => a.MessageId == messageModel.Id)
+					.Select(am => new Attachment
+					{
+						Title = am.Title,
+						SourceUrl = am.SourceUrl,
+						LocalPath = am.LocalPath,
+						Size = am.Size,
+						PreviewContent = am.PreviewContent
+					});
+
 				var result = new UserMessage
 				{
 					Content = messageModel.Content,
-					LLMProvidedContent = messageModel.LLMProvidedContent
+					LLMProvidedContent = messageModel.LLMProvidedContent,
+					Attachments = attachments.ToImmutableList()
 				};
 
 				SubscribeMessage(result, messageModel);

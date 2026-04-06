@@ -48,7 +48,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		{
 			try
 			{
-				var result = await _python.RunScript(python, _chat.Settings.WorkingDirectory.ToNullIfWhiteSpace());
+				var result = await _python.RunScript(python, _chat.Settings.GetWorkingDirectory());
 
 				var resultBuilder = new StringBuilder();
 				resultBuilder.Append(result.StdOut);
@@ -71,7 +71,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		{
 			try
 			{
-				var result = await _python.RunVenv(shell, _chat.Settings.WorkingDirectory.ToNullIfWhiteSpace());
+				var result = await _python.RunVenv(shell, _chat.Settings.GetWorkingDirectory());
 
 				var resultBuilder = new StringBuilder();
 				resultBuilder.Append(result.StdOut);
@@ -94,7 +94,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		{
 			try
 			{
-				var result = await _python.RunVenv("pip list", _chat.Settings.WorkingDirectory.ToNullIfWhiteSpace());
+				var result = await _python.RunVenv("pip list", _chat.Settings.GetWorkingDirectory());
 				var status = result.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
 				return new ToolResult(status, result.StdOut);
 			}
