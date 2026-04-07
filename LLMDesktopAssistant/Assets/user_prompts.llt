@@ -6,25 +6,26 @@
 	}
 	@if time_sent
 	{
-		Message sent at: @time_sent
+		[MESSAGE SENT AT: @time_sent]
 	}
 	@if attachments
 	{
-		[Attachments (they also can be accessed via various tools, like python, shell or filesystem)]:
+		[ATTACHMENTS]
 		@foreach attachment in attachments
 		{
-			File name inside working directory: @attachment.LocalPath
+			[ATTACHMENT]
+			File: @attachment.LocalPath
 			Size: @attachment.DisplaySize
 			@if attachment.PreviewContent
 			{
 				@attachment.PreviewContent
 			}
 		}
+		[END OF ATTACHMENTS]
 		Note that attachments also can be accessed via various tools, like python, shell or filesystem.
-		Look at the preview content to understand the structure of the attachmetns (if it's available).
-		[Attachments section ends here]
+		Look at the preview or full content to understand the structure of the attachments (if it's available).
 	}
 
-	User message:
+	[USER MESSAGE]
 	@content
 }

@@ -72,14 +72,14 @@ namespace LLMDesktopAssistant.LLM.Services
 			return result;
 		}
 
-		private List<IMessage> Convert(ChatMessage message)
+		public IEnumerable<IMessage> ConvertMessage(ChatMessage message)
 		{
 			if (message is Domain.UserMessage userMessage)
 			{
 				userMessage.LLMProvidedContent ??= UpdateUserLLMProvidedContent(userMessage);
 				var resultMessage = new RCLargeLanguageModels.Messages.UserMessage(
-						userMessage.LLMProvidedContent
-					);
+					userMessage.LLMProvidedContent
+				);
 				return [resultMessage];
 			}
 			else if (message is Domain.AssistantMessage assistantMessage)
@@ -123,7 +123,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					encounteredUserMessage = true;
 					if (summaryOfPrevMessages != null)
 					{
-						messages.InsertRange(0, Convert(message));
+						messages.InsertRange(0, ConvertMessage(message));
 						break;
 					}
 				}
@@ -134,8 +134,10 @@ namespace LLMDesktopAssistant.LLM.Services
 					if (encounteredUserMessage)
 						break;
 				}
-
-				messages.InsertRange(0, Convert(message));
+				if (summaryOfPrevMessages == null)
+				{
+					messages.InsertRange(0, ConvertMessage(message));
+				}
 			}
 
 			string systemPrompt = BuildSystemPrompt(summaryOfPrevMessages);

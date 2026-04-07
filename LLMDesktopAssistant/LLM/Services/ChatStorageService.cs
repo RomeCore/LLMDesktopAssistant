@@ -447,6 +447,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						SourceUrl = attachment.SourceUrl,
 						LocalPath = attachment.LocalPath,
 						Size = attachment.Size,
+						AdditionalInfo = attachment.AdditionalInfo,
 						PreviewContent = attachment.PreviewContent
 					};
 					database.Attachments.Insert(attachmentModel);
@@ -504,6 +505,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						SourceUrl = am.SourceUrl,
 						LocalPath = am.LocalPath,
 						Size = am.Size,
+						AdditionalInfo = am.AdditionalInfo,
 						PreviewContent = am.PreviewContent
 					});
 
@@ -511,6 +513,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					Content = messageModel.Content,
 					LLMProvidedContent = messageModel.LLMProvidedContent,
+					SummaryOfPrevMessages = messageModel.SummaryOfPrevMessages,
 					Attachments = attachments.ToImmutableList()
 				};
 
@@ -524,6 +527,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					ReasoningContent = messageModel.ReasoningContent,
 					Content = messageModel.Content,
+					SummaryOfPrevMessages = messageModel.SummaryOfPrevMessages,
 					CompletionToken = CompletionToken.Success,
 					Error = messageModel.Error
 				};

@@ -378,4 +378,25 @@
   <data name="cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="fs-get_file_info" xml:space="preserve">
+    <value>Get file info</value>
+  </data>
+  <data name="fs-read_binary_file" xml:space="preserve">
+    <value>Read binary file</value>
+  </data>
+  <data name="fs-grep" xml:space="preserve">
+    <value>Filesystem grep search</value>
+  </data>
+  <data name="fs-open_file" xml:space="preserve">
+    <value>Open file</value>
+  </data>
+  <data name="fs-write_binary_file" xml:space="preserve">
+    <value>Write binary file</value>
+  </data>
+  <data name="fs-read_document_file" xml:space="preserve">
+    <value>Read document</value>
+  </data>
+  <data name="fs-apply_diff" xml:space="preserve">
+    <value>Apply patch to file</value>
+  </data>
 </root>

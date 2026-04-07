@@ -11,12 +11,12 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Gets the chat large language model.
 		/// </summary>
 		/// <returns>The chat large language model.</returns>
-		LLMInfo BuildChatLLM();
+		LLMInfo? BuildChatLLM();
 
 		/// <summary>
 		/// Gets the large language model for summarization.
 		/// </summary>
 		/// <returns>The large language model for summarization.</returns>
-		LLMInfo BuildSummarizationLLM();
+		LLMInfo? BuildSummarizationLLM();
 	}
 }

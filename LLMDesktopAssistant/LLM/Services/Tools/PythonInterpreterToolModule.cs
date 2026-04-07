@@ -22,7 +22,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(Execute, "execute-python",
-					"Executes Python and returns output of the executed code (e.g., print('Hello World!') should return 'Hello World!')."),
+					"Executes Python and returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!')."),
 				Category = "scripting",
 				AskForConfirmation = true
 			});

@@ -13,27 +13,31 @@ namespace LLMDesktopAssistant.LLM.Services
 {
 	public class LLMBuildingService(
 		Chat chat
-		) : ILLMBuildingService
+	) : ILLMBuildingService
 	{
-		public LLMInfo BuildChatLLM()
+		public LLMInfo? BuildChatLLM()
 		{
-			var model = chat.Settings.ChatModel.Current ?? throw new Exception("Model is not set.");
+			var model = chat.Settings.ChatModel.Current;
+			if (model is null)
+				return null;
 
 			return new LLMInfo
 			{
 				LLM = new LLModel(model),
-				ContextSize = model.ContextLength != -1 ? model.ContextLength : 160000
+				ContextSize = model.ContextLength != -1 ? model.ContextLength : 128000
 			};
 		}
 
-		public LLMInfo BuildSummarizationLLM()
+		public LLMInfo? BuildSummarizationLLM()
 		{
-			var model = chat.Settings.SummarizerModel.Current ?? throw new Exception("Summarizer model is not set.");
+			var model = chat.Settings.SummarizerModel.Current;
+			if (model is null)
+				return null;
 
 			return new LLMInfo
 			{
 				LLM = new LLModel(model),
-				ContextSize = model.ContextLength != -1 ? model.ContextLength : 160000
+				ContextSize = model.ContextLength != -1 ? model.ContextLength : 128000
 			};
 		}
 	}

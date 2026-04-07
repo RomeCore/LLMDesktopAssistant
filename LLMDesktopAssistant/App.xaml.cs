@@ -31,6 +31,7 @@ namespace LLMDesktopAssistant
 		{
 			base.OnStartup(e);
 
+			Directories.EnsureAll();
 			PluginManager.LoadPluginsInto(AppDomain.CurrentDomain);
 			ReflectionUtility.Initialize(AppDomain.CurrentDomain);
 			ModuleManager.Initialize();

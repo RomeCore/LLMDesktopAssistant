@@ -26,7 +26,7 @@
 		/// <summary>
 		/// Gets or sets the size of the attachment in bytes.
 		/// </summary>
-		public required int Size { get; init; }
+		public required long Size { get; init; }
 
 		/// <summary>
 		/// Gets the display size of the attachment in a human-readable format.
@@ -60,6 +60,11 @@
 				return result;
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets any additional information about the attachment to be sent to the LLM.
+		/// </summary>
+		public string? AdditionalInfo { get; init; } = null;
 
 		/// <summary>
 		/// Gets or sets the preview content of the attachment.

@@ -15,6 +15,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IChatStorageService storage,
 		IPromptChatBuilder promptBuilder,
 		IToolExecutionService toolExecutor,
+		IChatSummarizationService summarizer,
 		ILLMBuildingService llmBuilder,
 		IToolsetBuildingService toolsetBuilder,
 		IMCPManagementService mcpManager
@@ -31,7 +32,10 @@ namespace LLMDesktopAssistant.LLM.Services
 			cancellationToken = _cts.Token;
 
 			await mcpManager.EnsureCurrentMCPConnectionsAsync(cancellationToken);
+
 			var llmInfo = llmBuilder.BuildChatLLM();
+			if (llmInfo == null)
+				throw new InvalidOperationException("Chat LLM is not configured. Please configure it first.");
 			var llm = llmInfo.LLM;
 
 			var inputMessages = promptBuilder.Build();
@@ -72,7 +76,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					domainResponseMessage.ToolCalls.Add(domainToolCall);
 
 					var toolExecTask = toolExecutor.ExecuteAsync(domainToolCall, llmInfo, tools, cancellationToken)
-						.ContinueWith(t => toolCallCompletionSource.Complete(), cancellationToken: cancellationToken);
+						.ContinueWith(t => toolCallCompletionSource.Complete(), cancellationToken: default);
 					lock (lockObj)
 						toolExecutionTasks.Add(toolExecTask);
 				}
@@ -98,7 +102,12 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					try
 					{
-						await responseMessage;
+						await response;
+
+						var usageMetadata = response.UsageMetadata;
+						if (usageMetadata != null)
+							await summarizer.TrySummarizeChat(llmInfo, usageMetadata);
+
 						domainResponseMessage.Status = AssistantMessageStatus.Success;
 					}
 					catch (OperationCanceledException)

@@ -44,7 +44,12 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		/// <summary>
 		/// Gets or sets the size of the attachment in bytes.
 		/// </summary>
-		public int Size { get; set; } = 0;
+		public long Size { get; set; } = 0;
+
+		/// <summary>
+		/// Gets or sets any additional information about the attachment to be sent to the LLM.
+		/// </summary>
+		public string? AdditionalInfo { get; set; }
 
 		/// <summary>
 		/// Gets or sets the preview content of the attachment.

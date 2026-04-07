@@ -17,9 +17,15 @@
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 
-		<ListView ItemsSource="{Binding Drafts}">
+		<ItemsControl ItemsSource="{Binding Drafts}">
 
-			<ListView.ItemTemplate>
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+
+			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 
 					<materialDesign:Card Margin="5" Padding="10">
@@ -52,9 +58,9 @@
 					</materialDesign:Card>
 
 				</DataTemplate>
-			</ListView.ItemTemplate>
+			</ItemsControl.ItemTemplate>
 
-		</ListView>
+		</ItemsControl>
 
 		<Button Grid.Row="1"
 				Content="Apply"

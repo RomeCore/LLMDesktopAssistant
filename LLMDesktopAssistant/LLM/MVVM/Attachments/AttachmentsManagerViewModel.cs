@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Utils;
 using MaterialDesignThemes.Wpf;

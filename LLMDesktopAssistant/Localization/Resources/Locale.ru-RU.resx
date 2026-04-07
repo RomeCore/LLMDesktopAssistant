@@ -378,4 +378,25 @@
   <data name="cancel" xml:space="preserve">
     <value>Отмена</value>
   </data>
+  <data name="fs-get_file_info" xml:space="preserve">
+    <value>Получить информацию о файле</value>
+  </data>
+  <data name="fs-read_binary_file" xml:space="preserve">
+    <value>Прочитать бинарный файл</value>
+  </data>
+  <data name="fs-grep" xml:space="preserve">
+    <value>Поиск grep в файловой системе</value>
+  </data>
+  <data name="fs-open_file" xml:space="preserve">
+    <value>Открыть файл</value>
+  </data>
+  <data name="fs-write_binary_file" xml:space="preserve">
+    <value>Записать в бинарный файл</value>
+  </data>
+  <data name="fs-read_document_file" xml:space="preserve">
+    <value>Прочитать документ</value>
+  </data>
+  <data name="fs-apply_diff" xml:space="preserve">
+    <value>Применить изменения к файлу</value>
+  </data>
 </root>

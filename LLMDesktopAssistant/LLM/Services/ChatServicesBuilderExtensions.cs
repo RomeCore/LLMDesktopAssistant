@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LLMDesktopAssistant.LLM.Domain;
+﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.ToolModules;
 using LLTSharp;
 using LLTSharp.Locale;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using RCLargeLanguageModels.Statistics;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -28,12 +30,15 @@ namespace LLMDesktopAssistant.LLM.Services
 				return templateLibrary;
 			});
 			services.TryAddSingleton<IChatManagementService, ChatManagementService>();
+			services.TryAddSingleton<IDocumentReadingService, DocumentReadingService>();
+			services.TryAddSingleton<IMessageTokenSerializationSchema>(MessageTokenSerializationSchema.Default);
 
 			services.AddScoped<Chat>();
 			services.TryAddScoped<IMCPManagementService, MCPManagementService>();
 			services.TryAddScoped<IChatOperationService, ChatOperationService>();
 			services.TryAddScoped<IChatExecutionService, ChatExecutionService>();
 			services.TryAddScoped<IChatStorageService, ChatStorageService>();
+			services.TryAddScoped<IChatSummarizationService, ChatSummarizationService>();
 			services.TryAddScoped<IPromptChatBuilder, PromptChatBuilder>();
 			services.TryAddScoped<IToolExecutionService, ToolExecutionService>();
 			services.TryAddScoped<IToolsetBuildingService, ToolsetBuildingService>();

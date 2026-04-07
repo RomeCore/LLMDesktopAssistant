@@ -394,11 +394,38 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Apply patch to file.
+        /// </summary>
+        public static string fs_apply_diff {
+            get {
+                return ResourceManager.GetString("fs-apply_diff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Delete file.
         /// </summary>
         public static string fs_delete_file {
             get {
                 return ResourceManager.GetString("fs-delete_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Get file info.
+        /// </summary>
+        public static string fs_get_file_info {
+            get {
+                return ResourceManager.GetString("fs-get_file_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Filesystem grep search.
+        /// </summary>
+        public static string fs_grep {
+            get {
+                return ResourceManager.GetString("fs-grep", resourceCulture);
             }
         }
         
@@ -412,11 +439,47 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Open file.
+        /// </summary>
+        public static string fs_open_file {
+            get {
+                return ResourceManager.GetString("fs-open_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read binary file.
+        /// </summary>
+        public static string fs_read_binary_file {
+            get {
+                return ResourceManager.GetString("fs-read_binary_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read document.
+        /// </summary>
+        public static string fs_read_document_file {
+            get {
+                return ResourceManager.GetString("fs-read_document_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Read file.
         /// </summary>
         public static string fs_read_file {
             get {
                 return ResourceManager.GetString("fs-read_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Write binary file.
+        /// </summary>
+        public static string fs_write_binary_file {
+            get {
+                return ResourceManager.GetString("fs-write_binary_file", resourceCulture);
             }
         }
         

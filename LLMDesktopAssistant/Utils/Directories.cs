@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.Utils
 
 		public const string DefaultWorkingDirectory = "working_dir/";
 
-		static Directories()
+		public static void EnsureAll()
 		{
 			Directory.CreateDirectory(TempScripts);
 			Directory.CreateDirectory(Settings);

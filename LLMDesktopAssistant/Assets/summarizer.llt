@@ -1,4 +1,4 @@
-﻿@template summarization
+﻿@template summarization_prompt
 {
 	`````
 	You are a conversation memory summarizer used inside an AI system.
