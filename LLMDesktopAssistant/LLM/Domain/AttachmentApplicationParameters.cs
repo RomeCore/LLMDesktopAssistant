@@ -19,32 +19,32 @@
 			set => SetProperty(ref _sourceUrl, value);
 		}
 
-		private int _startLineIndex = 0;
-		public int StartLineIndex
+		private int _startLine = 1;
+		public int StartLine
 		{
-			get => _startLineIndex;
-			set => SetProperty(ref _startLineIndex, value);
+			get => _startLine;
+			set => SetProperty(ref _startLine, value);
 		}
 
-		private int _lineCount = 10;
-		public int LineCount
+		private int _endLine = 100;
+		public int EndLine
 		{
-			get => _lineCount;
-			set => SetProperty(ref _lineCount, value);
+			get => _endLine;
+			set => SetProperty(ref _endLine, value);
 		}
 
-		private int _startByteIndex = 0;
-		public int StartByteIndex
+		private int _startByte = 1;
+		public int StartByte
 		{
-			get => _startByteIndex;
-			set => SetProperty(ref _startByteIndex, value);
+			get => _startByte;
+			set => SetProperty(ref _startByte, value);
 		}
 
-		private int _byteCount = 100;
-		public int ByteCount
+		private int _endByte = 1024;
+		public int EndByte
 		{
-			get => _byteCount;
-			set => SetProperty(ref _byteCount, value);
+			get => _endByte;
+			set => SetProperty(ref _endByte, value);
 		}
 	}
 }

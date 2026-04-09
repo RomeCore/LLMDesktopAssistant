@@ -28,6 +28,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _summarizerModel, value);
 		}
 
+		private LLModelDescriptorTracked _agenticModel = LLModelDescriptorTracked.Empty;
+		/// <summary>
+		/// The model to to use for 
+		/// </summary>
+		public LLModelDescriptorTracked AgenticModel
+		{
+			get => _agenticModel;
+			set => SetProperty(ref _agenticModel, value);
+		}
+
 		private string? _systemInstructions;
 		/// <summary>
 		/// Instructions to the model on how it should behave.
@@ -63,6 +73,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// </summary>
 		public string GetWorkingDirectory() => WorkingDirectory ?? Path.GetFullPath(Directories.DefaultWorkingDirectory);
 
+		private bool _enableTools = true;
+		/// <summary>
+		/// Whether to use tools in the chat.
+		/// </summary>
+		public bool EnableTools
+		{
+			get => _enableTools;
+			set => SetProperty(ref _enableTools, value);
+		}
+
 		private readonly RangeObservableCollection<ToolChange> _toolChanges = [];
 		/// <summary>
 		/// Gets or sets the tool changes.
@@ -73,9 +93,19 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => _toolChanges.Reset(value);
 		}
 
+		private bool _enableMcp = true;
+		/// <summary>
+		/// Whether to use the MCP servers for additional tools and resources.
+		/// </summary>
+		public bool EnableMcp
+		{
+			get => _enableMcp;
+			set => SetProperty(ref _enableMcp, value);
+		}
+
 		private readonly RangeObservableCollection<Guid> _usedMcpServers = [];
 		/// <summary>
-		/// Gets or sets the used mcp server Ids.
+		/// Gets or sets the used MCP server Ids.
 		/// </summary>
 		public ICollection<Guid> UsedMcpServers
 		{

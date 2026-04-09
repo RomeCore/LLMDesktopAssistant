@@ -1,12 +1,15 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.MVVM;
 using System.ComponentModel;
+using System.Windows.Threading;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Messages
 {
 	[ViewModelFor(typeof(AssistantMessageTextPartView))]
 	public class AssistantMessageTextPartViewModel : AssistantMessagePartViewModel
 	{
+		private DispatcherOperation? _currentUpdateOperation;
+
 		private string _text = string.Empty;
 		public string Text
 		{
@@ -20,6 +23,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Messages
 			get => _completed;
 			set => SetProperty(ref _completed, value);
 		}
+		public bool NotCompleted => !_completed;
 
 		public AssistantMessageTextPartViewModel()
 		{
@@ -35,8 +39,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Messages
 
 				void PropertyChangedHandler(object? s, PropertyChangedEventArgs e)
 				{
-					InvokeUI(() =>
+					_currentUpdateOperation = BeginInvokeUI(() =>
 					{
+						_currentUpdateOperation?.Abort();
 						Text = message.Content ?? string.Empty;
 					});
 				}
@@ -44,7 +49,14 @@ namespace LLMDesktopAssistant.LLM.MVVM.Messages
 				message.PropertyChanged += PropertyChangedHandler;
 				message.CompletionToken.OnCompleted(() =>
 				{
-					Completed = true;
+					BeginInvokeUI(() =>
+					{
+						_currentUpdateOperation?.Abort();
+						_currentUpdateOperation = null;
+						Completed = true;
+						RaisePropertyChanged(nameof(NotCompleted));
+					});
+
 					message.PropertyChanged -= PropertyChangedHandler;
 				});
 			}

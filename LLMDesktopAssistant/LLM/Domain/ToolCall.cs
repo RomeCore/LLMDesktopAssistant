@@ -14,6 +14,11 @@ namespace LLMDesktopAssistant.LLM.Domain
 		public required string ToolName { get; init; }
 
 		/// <summary>
+		/// Gets or sets the title of the tool being called. Used for display purposes.
+		/// </summary>
+		public required string? Title { get; init; }
+
+		/// <summary>
 		/// Gets or sets the ID of the tool call.
 		/// </summary>
 		public required string Id { get; init; }

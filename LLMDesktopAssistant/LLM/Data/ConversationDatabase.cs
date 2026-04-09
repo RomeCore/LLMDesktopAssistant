@@ -17,7 +17,7 @@ namespace LLMDesktopAssistant.LLM.Data
 	/// <summary>
 	/// Manages the database for storing and retrieving conversation data.
 	/// </summary>
-	public class ConversationDatabase
+	public class ConversationDatabase : IDisposable
 	{
 		public ILiteDatabase Database { get; }
 		public ILiteCollection<ConversationModel> Conversations { get; }
@@ -43,6 +43,14 @@ namespace LLMDesktopAssistant.LLM.Data
 			Attachments.EnsureIndex(x => x.MessageId);
 			ToolCalls.EnsureIndex(x => x.MessageId);
 			ToolCalls.EnsureIndex(x => x.ToolCallId);
+		}
+
+		/// <summary>
+		/// Disposes the database connection.
+		/// </summary>
+		public void Dispose()
+		{
+			Database?.Dispose();
 		}
 	}
 }

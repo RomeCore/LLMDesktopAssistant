@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 using LLTSharp;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Metadata;
@@ -13,7 +13,8 @@ namespace LLMDesktopAssistant.LLM.Services
 		ILLMBuildingService llmBuilder,
 		IPromptChatBuilder promptBuilder,
 		IMessageTokenSerializationSchema messageSerializer,
-		TemplateLibrary templates
+		TemplateLibrary templates,
+		IUsageStatsCollector usageStatsCollector
 		) : IChatSummarizationService
 	{
 		/// <summary>
@@ -33,8 +34,6 @@ namespace LLMDesktopAssistant.LLM.Services
 				var modelContextLength = usedLLM.ContextSize;
 				var totalTokensUsed = lastUsageMetadata.TotalTokens;
 				// If the total tokens used is less than Threshold% of the model's context size, do not summarize
-				Log.Information("Total tokens used: {totalTokensUsed}, model context length: {modelContextLength}",
-					totalTokensUsed, modelContextLength);
 				if (totalTokensUsed < modelContextLength * Threshold)
 					return;
 
@@ -55,13 +54,60 @@ namespace LLMDesktopAssistant.LLM.Services
 				if (lastIncludedMessage is null)
 					throw new InvalidOperationException("No messages were included in the summarizer input.");
 
+				var timeRequested = DateTime.Now;
 				var summary = await summarizationLLM.LLM.ChatAsync(messages);
+				var timeFinished = DateTime.Now;
+
+				var summaryUsageMetadata = summary.UsageMetadata;
+				if (summaryUsageMetadata != null)
+				{
+					if (summaryUsageMetadata is IUsageCacheMetadata usageCacheMetadata)
+					{
+						usageStatsCollector.RecordUsage(
+							model: summarizationLLM.LLM.Name,
+							inputTokens: summaryUsageMetadata.InputTokens,
+							outputTokens: summaryUsageMetadata.OutputTokens,
+							cacheHitTokens: usageCacheMetadata.InputCacheHitTokens,
+							cacheMissTokens: usageCacheMetadata.InputCacheMissTokens,
+							durationMs: (long)(timeFinished - timeRequested).TotalMilliseconds,
+							success: true);
+					}
+					else
+					{
+						usageStatsCollector.RecordUsage(
+							model: summarizationLLM.LLM.Name,
+							inputTokens: summaryUsageMetadata.InputTokens,
+							outputTokens: summaryUsageMetadata.OutputTokens,
+							durationMs: (long)(timeFinished - timeRequested).TotalMilliseconds,
+							success: true);
+					}
+				}
+
 				lastIncludedMessage.SummaryOfPrevMessages = summary.Content;
 				Log.Information("Chat summarized successfully. Summary length: {Length}", summary.Content?.Length);
 			}
 			catch (Exception ex)
 			{
 				Log.Error(ex, "Failed to summarize chat: {Error}", ex.Message);
+
+				try
+				{
+					var summarizationLLM = llmBuilder.BuildSummarizationLLM();
+					if (summarizationLLM != null)
+					{
+						usageStatsCollector.RecordUsage(
+							model: summarizationLLM.LLM.Name,
+							inputTokens: 0,
+							outputTokens: 0,
+							durationMs: 0,
+							success: false,
+							errorMessage: ex.Message);
+					}
+				}
+				catch (Exception recordEx)
+				{
+					Log.Error(recordEx, "Failed to record usage statistics for failed summarization");
+				}
 			}
 		}
 

@@ -118,7 +118,7 @@ namespace LLMDesktopAssistant.Settings
 				{
 					case IdEditMode.Create:
 
-						if (!string.IsNullOrWhiteSpace(NewId))
+						if (!string.IsNullOrWhiteSpace(NewId) && Category.Copy(Current.Id, NewId))
 						{
 							CurrentId = NewId;
 							IsEditingId = false;

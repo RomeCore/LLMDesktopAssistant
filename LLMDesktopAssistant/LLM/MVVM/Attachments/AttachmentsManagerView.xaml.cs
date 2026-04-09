@@ -26,12 +26,46 @@ namespace LLMDesktopAssistant.LLM.MVVM.Attachments
 			this.Drop += OnDrop;
 		}
 
+		private void OnUrlInputKeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Enter && DataContext is AttachmentsManagerViewModel vm)
+			{
+				vm.AddUrlCommand.Execute(null);
+				e.Handled = true;
+			}
+		}
+
+		private void OnDragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop) ||
+				e.Data.GetDataPresent(DataFormats.Text))
+			{
+				e.Effects = DragDropEffects.Copy;
+				DropOverlay.Visibility = Visibility.Visible;
+			}
+			else
+			{
+				e.Effects = DragDropEffects.None;
+			}
+
+			e.Handled = true;
+		}
+
+		private void OnDragLeave(object sender, DragEventArgs e)
+		{
+			DropOverlay.Visibility = Visibility.Collapsed;
+		}
+
 		private void OnDrop(object sender, DragEventArgs e)
 		{
+			DropOverlay.Visibility = Visibility.Collapsed;
+
 			if (DataContext is AttachmentsManagerViewModel vm)
 			{
 				vm.AcceptDrop(e);
 			}
+
+			e.Handled = true;
 		}
 	}
 }

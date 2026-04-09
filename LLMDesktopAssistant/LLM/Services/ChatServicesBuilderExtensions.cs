@@ -1,4 +1,5 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Data;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.ToolModules;
@@ -32,6 +33,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			services.TryAddSingleton<IChatManagementService, ChatManagementService>();
 			services.TryAddSingleton<IDocumentReadingService, DocumentReadingService>();
 			services.TryAddSingleton<IMessageTokenSerializationSchema>(MessageTokenSerializationSchema.Default);
+			services.TryAddSingleton<IUsageStatsCollector, UsageStatsCollector>();
 
 			services.AddScoped<Chat>();
 			services.TryAddScoped<IMCPManagementService, MCPManagementService>();
@@ -44,11 +46,14 @@ namespace LLMDesktopAssistant.LLM.Services
 			services.TryAddScoped<IToolsetBuildingService, ToolsetBuildingService>();
 			services.TryAddScoped<ILLMBuildingService, LLMBuildingService>();
 			services.TryAddScoped<IAttachmentApplicationService, AttachmentApplicationService>();
+			services.TryAddScoped<IMetaToolManagementService, MetaToolManagementService>();
 
 			services.AddScoped<ToolModule, PythonInterpreterToolModule>();
 			services.AddScoped<ToolModule, ShellInterpreterToolModule>();
 			services.AddScoped<ToolModule, FilesystemToolModule>();
 			services.AddScoped<ToolModule, WebRequestToolModule>();
+			services.AddScoped<ToolModule, AgenticToolModule>();
+			services.AddScoped<ToolModule, MetaToolModule>();
 		}
 	}
 }

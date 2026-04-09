@@ -44,11 +44,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			});
 		}
 
-		public async Task<ToolResult> Execute(string python)
+		public async Task<ToolResult> Execute(string python, CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				var result = await _python.RunScript(python, _chat.Settings.GetWorkingDirectory());
+				var result = await _python.RunScript(python, _chat.Settings.GetWorkingDirectory(), cancellationToken);
 
 				var resultBuilder = new StringBuilder();
 				resultBuilder.Append(result.StdOut);
@@ -67,11 +67,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			}
 		}
 
-		public async Task<ToolResult> ExecuteVenvShell(string shell)
+		public async Task<ToolResult> ExecuteVenvShell(string shell, CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				var result = await _python.RunVenv(shell, _chat.Settings.GetWorkingDirectory());
+				var result = await _python.RunVenv(shell, _chat.Settings.GetWorkingDirectory(), cancellationToken);
 
 				var resultBuilder = new StringBuilder();
 				resultBuilder.Append(result.StdOut);
@@ -90,11 +90,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			}
 		}
 
-		public async Task<ToolResult> GetInstalledPackagesList()
+		public async Task<ToolResult> GetInstalledPackagesList(CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				var result = await _python.RunVenv("pip list", _chat.Settings.GetWorkingDirectory());
+				var result = await _python.RunVenv("pip list", _chat.Settings.GetWorkingDirectory(), cancellationToken);
 				var status = result.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
 				return new ToolResult(status, result.StdOut);
 			}

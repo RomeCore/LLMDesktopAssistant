@@ -88,6 +88,114 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Applicate.
+        /// </summary>
+        public static string application_applicate_hint {
+            get {
+                return ResourceManager.GetString("application-applicate_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Semantic description.
+        /// </summary>
+        public static string application_description {
+            get {
+                return ResourceManager.GetString("application-description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на End byte.
+        /// </summary>
+        public static string application_end_byte {
+            get {
+                return ResourceManager.GetString("application-end_byte", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на End line.
+        /// </summary>
+        public static string application_end_line {
+            get {
+                return ResourceManager.GetString("application-end_line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Full contents.
+        /// </summary>
+        public static string application_full_contents {
+            get {
+                return ResourceManager.GetString("application-full_contents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Full hexadecimal dump.
+        /// </summary>
+        public static string application_full_hexadecimal {
+            get {
+                return ResourceManager.GetString("application-full_hexadecimal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Partial hexadecimal dump.
+        /// </summary>
+        public static string application_hexadecimal_partial {
+            get {
+                return ResourceManager.GetString("application-hexadecimal_partial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Application mode.
+        /// </summary>
+        public static string application_mode_hint {
+            get {
+                return ResourceManager.GetString("application-mode_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Only reference.
+        /// </summary>
+        public static string application_only_reference {
+            get {
+                return ResourceManager.GetString("application-only_reference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Partial contents.
+        /// </summary>
+        public static string application_partial_contents {
+            get {
+                return ResourceManager.GetString("application-partial_contents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Start byte.
+        /// </summary>
+        public static string application_start_byte {
+            get {
+                return ResourceManager.GetString("application-start_byte", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Start line.
+        /// </summary>
+        public static string application_start_line {
+            get {
+                return ResourceManager.GetString("application-start_line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Ask.
         /// </summary>
         public static string ask_for_confirmation {
@@ -102,6 +210,42 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string ask_for_confirmation_tooltip {
             get {
                 return ResourceManager.GetString("ask_for_confirmation_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Add URL.
+        /// </summary>
+        public static string attachment_add_url_hint {
+            get {
+                return ResourceManager.GetString("attachment-add_url_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Attach files.
+        /// </summary>
+        public static string attachment_attach_files_hint {
+            get {
+                return ResourceManager.GetString("attachment-attach_files_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Drop files here.
+        /// </summary>
+        public static string attachment_drop_files_here {
+            get {
+                return ResourceManager.GetString("attachment-drop_files_here", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Attachment URL.
+        /// </summary>
+        public static string attachment_url_hint {
+            get {
+                return ResourceManager.GetString("attachment-url_hint", resourceCulture);
             }
         }
         
@@ -210,15 +354,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string chat_input_hint {
             get {
                 return ResourceManager.GetString("chat-input_hint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Chat model.
-        /// </summary>
-        public static string chat_model_hint {
-            get {
-                return ResourceManager.GetString("chat_model_hint", resourceCulture);
             }
         }
         
@@ -601,6 +736,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Meta-tools.
+        /// </summary>
+        public static string metatools {
+            get {
+                return ResourceManager.GetString("metatools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Name.
         /// </summary>
         public static string name {
@@ -727,6 +871,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Agentic model.
+        /// </summary>
+        public static string settings_agentic_model_hint {
+            get {
+                return ResourceManager.GetString("settings-agentic_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Chat model.
+        /// </summary>
+        public static string settings_chat_model_hint {
+            get {
+                return ResourceManager.GetString("settings-chat_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Default.
         /// </summary>
         public static string settings_default_id {
@@ -745,11 +907,38 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Summarization threshold (tokens).
+        /// </summary>
+        public static string settings_summarization_threshold {
+            get {
+                return ResourceManager.GetString("settings-summarization_threshold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Summarizer model.
         /// </summary>
-        public static string summarizer_model_hint {
+        public static string settings_summarizer_model_hint {
             get {
-                return ResourceManager.GetString("summarizer_model_hint", resourceCulture);
+                return ResourceManager.GetString("settings-summarizer_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable MCP.
+        /// </summary>
+        public static string settings_use_mcp {
+            get {
+                return ResourceManager.GetString("settings-use_mcp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable tools.
+        /// </summary>
+        public static string settings_use_tools {
+            get {
+                return ResourceManager.GetString("settings-use_tools", resourceCulture);
             }
         }
         
@@ -799,11 +988,65 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на MCP.
+        /// </summary>
+        public static string tool_source_mcp {
+            get {
+                return ResourceManager.GetString("tool-source_mcp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Meta.
+        /// </summary>
+        public static string tool_source_meta {
+            get {
+                return ResourceManager.GetString("tool-source_meta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Create or update tool.
+        /// </summary>
+        public static string tools_create_or_update {
+            get {
+                return ResourceManager.GetString("tools-create_or_update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Tools.
         /// </summary>
         public static string tools_hint {
             get {
                 return ResourceManager.GetString("tools_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на List meta-tools.
+        /// </summary>
+        public static string tools_list {
+            get {
+                return ResourceManager.GetString("tools-list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Remove tool.
+        /// </summary>
+        public static string tools_remove {
+            get {
+                return ResourceManager.GetString("tools-remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Rename tool.
+        /// </summary>
+        public static string tools_rename {
+            get {
+                return ResourceManager.GetString("tools-rename", resourceCulture);
             }
         }
         

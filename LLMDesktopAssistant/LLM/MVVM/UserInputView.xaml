@@ -8,6 +8,7 @@
 			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 mc:Ignorable="d" 
+			 Background="Transparent"
 			 d:DesignHeight="450" d:DesignWidth="800">
 
 	<UserControl.Resources>
@@ -38,7 +39,9 @@
 		</Grid.RowDefinitions>
 
 		<!-- Attachments panel -->
-		<ItemsControl Grid.Row="0" ItemsSource="{Binding Attachments}" ItemTemplateSelector="{StaticResource ViewLocator}">
+		<ItemsControl Grid.Row="0"
+					  ItemsSource="{Binding Attachments}"
+					  ItemTemplateSelector="{StaticResource ViewLocator}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<WrapPanel Orientation="Horizontal"/>
@@ -55,7 +58,8 @@
 				 VerticalAlignment="Center"
 				 TextWrapping="Wrap"
 				 AcceptsReturn="True"
-				 MaxHeight="120"
+				 MaxHeight="150"
+				 Margin="0,3"
 				 Foreground="{DynamicResource MaterialDesignBody}"
 				 FontSize="16"
 				 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
@@ -118,6 +122,15 @@
 				</Button>
 
 			</Grid>
+
+			<Button DockPanel.Dock="Right" HorizontalAlignment="Right"
+					Style="{StaticResource ControlButton}"
+					Command="{Binding CancelEditCommand}"
+					ToolTip="{loc:Loc chat-cancel_edit_hint}">
+
+				<materialDesign:PackIcon Kind="EditOff"
+										 Style="{StaticResource ControlButtonIcon}"/>
+			</Button>
 
 		</DockPanel>
 		

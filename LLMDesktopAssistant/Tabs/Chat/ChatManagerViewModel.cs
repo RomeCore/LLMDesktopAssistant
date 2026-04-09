@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -23,10 +23,6 @@ namespace LLMDesktopAssistant.Tabs.Chat
 	[TabTool("chat", Icon = PackIconKind.Message)]
 	public class ChatManagerViewModel : ViewModelBase
 	{
-		public IServiceProvider ServiceProvider { get; }
-		public ConversationDatabase Database { get; }
-		public IChatManagementService ManagementService { get; }
-
 		private IServiceScope? _currentChatScope;
 		private ChatViewModel? _currentChat;
 		public ChatViewModel? CurrentChat
@@ -54,15 +50,6 @@ namespace LLMDesktopAssistant.Tabs.Chat
 
 		public ChatManagerViewModel()
 		{
-			Database = new ConversationDatabase("conversations/chat.db");
-
-			var serviceBuilder = new ServiceCollection();
-			serviceBuilder.AddSingleton(Database);
-			serviceBuilder.AddChatServices();
-			ServiceProvider = serviceBuilder.BuildServiceProvider();
-
-			ManagementService = ServiceProvider.GetRequiredService<IChatManagementService>();
-
 			CreateConversationCommand = new RelayCommand(CreateConversation);
 
 			Initialize();
@@ -70,7 +57,7 @@ namespace LLMDesktopAssistant.Tabs.Chat
 
 		private void Initialize()
 		{
-			ManagementService.ClearEmptyChats();
+			ChatServices.ManagementService.ClearEmptyChats();
 			LoadConversations();
 			CreateConversation();
 		}
@@ -78,24 +65,21 @@ namespace LLMDesktopAssistant.Tabs.Chat
 		private void LoadConversations()
 		{
 			Chats.Clear();
-			foreach (var chat in ManagementService.GetChats().OrderByDescending(c => c.LastModifiedAt))
+			foreach (var chat in ChatServices.ManagementService.GetChats().OrderByDescending(c => c.LastModifiedAt))
 				Chats.Add(chat);
 		}
 
 		private void OpenConversation(int id)
 		{
 			_currentChatScope?.Dispose();
-			_currentChatScope = ManagementService.OpenChatScope(id);
-
+			_currentChatScope = ChatServices.ManagementService.OpenChatScope(id);
 			var chat = _currentChatScope.ServiceProvider.GetRequiredService<LLM.Domain.Chat>();
-			chat.AdditionalToolModules.Add(new AgenticToolModule());
-
 			CurrentChat = new ChatViewModel(chat);
 		}
 
 		private void CreateConversation()
 		{
-			var newChat = ManagementService.CreateChat(Locale.new_chat);
+			var newChat = ChatServices.ManagementService.CreateChat(Locale.new_chat);
 			Chats.Insert(0, newChat);
 			SelectedChat = newChat;
 		}

@@ -79,6 +79,7 @@ namespace LLMDesktopAssistant.MCP
 			var toolInfo = new ToolInfo
 			{
 				Tool = new FunctionTool(name, mcpTool.Description, argSchema, CreateFunctionExecutor(connection, mcpTool)),
+				Source = ToolSource.MCP,
 				DisplayName = mcpTool.Title ?? mcpTool.Name,
 				Category = connection.Info.Name
 			};

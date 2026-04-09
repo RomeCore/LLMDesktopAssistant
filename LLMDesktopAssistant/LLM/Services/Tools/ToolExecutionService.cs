@@ -5,7 +5,7 @@ using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Immutable;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	public class ToolExecutionService(IServiceProvider services) : IToolExecutionService
 	{

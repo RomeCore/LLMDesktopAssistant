@@ -24,6 +24,11 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		public string ToolName { get; set; } = string.Empty;
 
 		/// <summary>
+		/// Gets or sets the title of the tool. Used for display purposes. Can be null if not applicable.
+		/// </summary>
+		public string? Title { get; set; } = null;
+
+		/// <summary>
 		/// Gets or sets the LLM API-specific tool call id that used by LLM to correctly bind each tool call to the tool message.
 		/// </summary>
 		public string ToolCallId { get; set; } = string.Empty;

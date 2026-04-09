@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.ToolModules;
 using LLMDesktopAssistant.Utils.Files;
@@ -80,6 +80,17 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 			AddTool(new ToolInfo
 			{
+				Tool = FunctionTool.From(ReplaceInFile, "fs-replace",
+					"""
+					Replaces all occurrences of a string in a text file.
+					Returns detailed information about applied changes including line numbers.
+					"""),
+				Category = "filesystem",
+				AskForConfirmation = true
+			});
+
+			AddTool(new ToolInfo
+			{
 				Tool = FunctionTool.From(ListDirectory, "fs-list_directory",
 					"Lists files and directories inside working directory path."),
 				Category = "filesystem",
@@ -105,7 +116,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(Grep, "fs-grep",
-					"Searches for pattern in files using regex."),
+					"""
+					Searches for pattern in files using regex.
+					Use this tool with care, as it can be slow and resource-intensive.
+					"""),
 				Category = "filesystem",
 				AskForConfirmation = false
 			});
@@ -155,34 +169,36 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		public ToolResult ReadFile(
 			string path,
 			[Description("The 1-based index of the first line to read.")]
-			int lineStart = 1,
-			int lineCount = 300,
+			int startLine = 1,
+			[Description("The 1-based index of the last line to read.")]
+			int endLine = 300,
+			[Description("The maximum length of each line to read.")]
 			int maxLineLength = 2000,
+			[Description("Whether to include line numbers before every line in format '   1: *line content*'.")]
 			bool showLineNumbers = false)
 		{
 			try
 			{
 				var fullPath = ResolvePath(path);
-
 				if (!File.Exists(fullPath))
 					return new ToolResult(ToolResultStatus.Error, "File not found.");
+				if (endLine < startLine)
+					return new ToolResult(ToolResultStatus.Error, "Invalid line range.");
 
 				var (lines, totalLines) = FileUtils.ReadLinesChunk(
 					fullPath,
-					lineStart,
-					lineCount,
+					startLine,
+					endLine - startLine + 1,
 					maxLineLength,
 					showLineNumbers);
 
 				if (lines.Count == 0)
 					return new ToolResult(ToolResultStatus.Success, "No content.");
 
-				var endLine = lineStart + lines.Count - 1;
-
 				var output = $"""
 					File: {path}
 					Total lines: {totalLines}
-					Showing: {lineStart}-{endLine}
+					Showing: {startLine}-{startLine + lines.Count - 1}
 					Contents:
 					{string.Join(Environment.NewLine, lines)}
 					""";
@@ -199,18 +215,22 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			string path,
 			[Description("The 1-based index of the first byte to read.")]
 			int startByte = 1,
-			int bytesCount = 4096)
+			int endByte = 4096)
 		{
 			try
 			{
 				var fullPath = ResolvePath(path);
-
 				if (!File.Exists(fullPath))
 					return new ToolResult(ToolResultStatus.Error, "File not found.");
+				if (endByte < startByte)
+					return new ToolResult(ToolResultStatus.Error, "Invalid byte range.");
 
 				var fileInfo = new FileInfo(fullPath);
 
-				var (lines, read) = FileUtils.ReadHexChunk(fullPath, startByte, bytesCount);
+				var (lines, read) = FileUtils.ReadHexChunk(
+					fullPath,
+					startByte,
+					endByte - startByte + 1);
 
 				if (read == 0)
 					return new ToolResult(ToolResultStatus.Success, "No content.");
@@ -233,17 +253,23 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 		public ToolResult ReadDocumentFile(
 			string path,
+			[Description("The 1-based index of the first page to read.")]
 			int startPage = 1,
-			int pageCount = 30)
+			[Description("The 1-based index of the last page to read.")]
+			int endPage = 30)
 		{
 			try
 			{
 				var fullPath = ResolvePath(path);
-
 				if (!File.Exists(fullPath))
 					return new ToolResult(ToolResultStatus.Error, "File not found.");
+				if (endPage < startPage)
+					return new ToolResult(ToolResultStatus.Error, "Invalid page range.");
 
-				var text = _documentReader.ExtractText(fullPath, startPage, pageCount);
+				var text = _documentReader.ExtractText(
+					fullPath,
+					startPage,
+					endPage - startPage + 1);
 
 				return new ToolResult(ToolResultStatus.Success, text);
 			}
@@ -331,7 +357,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			string path,
 			[Description("Range of lines to delete, e.g. '10-20' or '10'. If not specified, no lines will be deleted.")]
 			string? deleteLines = null,
+			[Description("The line number at which to insert text. Must be specified if 'insertText' is provided.")]
 			int? insertAtLine = null,
+			[Description("The text to insert at the specified line. Must be specified if 'insertAtLine' is provided.")]
 			string? insertText = null)
 		{
 			try
@@ -446,9 +474,148 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			return (startLine, endLine);
 		}
 
+		public ToolResult ReplaceInFile(
+			string path,
+			[Description("The string to search for. If null or empty, no replacement will be performed.")]
+			string? oldString = null,
+			[Description("The replacement string. If null, the oldString will be removed (replaced with empty string).")]
+			string? newString = null)
+		{
+			try
+			{
+				var fullPath = ResolvePath(path);
+
+				if (!File.Exists(fullPath))
+					return new ToolResult(ToolResultStatus.Error, "File not found.");
+
+				// Check if file is binary
+				if (FileUtils.IsBinaryFile(fullPath))
+					return new ToolResult(ToolResultStatus.Error, "Cannot replace text in binary files. Use fs-write_binary_file instead.");
+
+				if (string.IsNullOrEmpty(oldString))
+					return new ToolResult(ToolResultStatus.Error, "oldString parameter cannot be null or empty.");
+
+				// Read the file content
+				var content = File.ReadAllText(fullPath);
+				var lines = content.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
+
+				// Track changes
+				var changes = new List<(int lineNumber, string oldLine, string newLine)>();
+				var newLines = new List<string>();
+				var totalReplacements = 0;
+
+				for (int i = 0; i < lines.Length; i++)
+				{
+					var line = lines[i];
+					var lineNumber = i + 1;
+
+					if (line.Contains(oldString))
+					{
+						var newLine = line.Replace(oldString, newString ?? "");
+						var count = CountOccurrences(line, oldString);
+						totalReplacements += count;
+
+						changes.Add((lineNumber, line, newLine));
+						newLines.Add(newLine);
+					}
+					else
+					{
+						newLines.Add(line);
+					}
+				}
+
+				if (totalReplacements == 0)
+				{
+					return new ToolResult(ToolResultStatus.Success,
+						$"No occurrences of '{oldString}' found in file '{path}'.");
+				}
+
+				// Write the modified content back
+				var newContent = string.Join(Environment.NewLine, newLines);
+				File.WriteAllText(fullPath, newContent);
+
+				// Build detailed report
+				var report = new StringBuilder();
+				report.AppendLine($"Successfully replaced '{oldString}' with '{newString ?? "(empty)"}' in file '{path}'");
+				report.AppendLine($"Summary:");
+				report.AppendLine($"  Total lines modified: {changes.Count}");
+				report.AppendLine($"  Total replacements: {totalReplacements}");
+				report.AppendLine($"  File size before: {content.Length} bytes");
+				report.AppendLine($"  File size after: {newContent.Length} bytes");
+
+				if (changes.Count <= 10) // Show all changes if 10 or less
+				{
+					report.AppendLine();
+					report.AppendLine($"Detailed changes:");
+					foreach (var change in changes)
+					{
+						report.AppendLine($"  Line {change.lineNumber}:");
+						report.AppendLine($"    Before: {Truncate(change.oldLine, 80)}");
+						report.AppendLine($"    After:  {Truncate(change.newLine, 80)}");
+						report.AppendLine();
+					}
+				}
+				else // Show only first 5 and last 5 changes
+				{
+					report.AppendLine();
+					report.AppendLine($"First 5 changes:");
+					for (int i = 0; i < Math.Min(5, changes.Count); i++)
+					{
+						var change = changes[i];
+						report.AppendLine($"  Line {change.lineNumber}: {Truncate(change.oldLine, 60)} → {Truncate(change.newLine, 60)}");
+					}
+
+					if (changes.Count > 10)
+					{
+						report.AppendLine($"   ... and {changes.Count - 10} more lines");
+					}
+
+					if (changes.Count > 5)
+					{
+						report.AppendLine($"📝 Last 5 changes:");
+						for (int i = Math.Max(5, changes.Count - 5); i < changes.Count; i++)
+						{
+							var change = changes[i];
+							report.AppendLine($"  Line {change.lineNumber}: {Truncate(change.oldLine, 60)} → {Truncate(change.newLine, 60)}");
+						}
+					}
+				}
+
+				return new ToolResult(ToolResultStatus.Success, report.ToString());
+			}
+			catch (Exception ex)
+			{
+				return new ToolResult(ToolResultStatus.Error, $"Error replacing text in file: {ex.Message}");
+			}
+		}
+
+		private int CountOccurrences(string text, string search)
+		{
+			int count = 0;
+			int index = 0;
+			while ((index = text.IndexOf(search, index, StringComparison.Ordinal)) != -1)
+			{
+				index += search.Length;
+				count++;
+			}
+			return count;
+		}
+
+		private string Truncate(string text, int maxLength)
+		{
+			if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
+				return text;
+
+			return text.Substring(0, maxLength - 3) + "...";
+		}
+
 		public ToolResult ListDirectory(
 			string path = "",
-			int maxDepth = 2,
+			[Description("The maximum depth of directories to include in the listing. 1 = current directory only.")]
+			int maxDepth = 1,
+			[Description("The number of entries to skip before starting the list.")]
+			int offset = 0,
+			[Description("The maximum number of entries to return.")]
 			int maxEntries = 200)
 		{
 			try
@@ -517,7 +684,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				sb.AppendLine($"MaxDepth: {maxDepth}, MaxEntries: {maxEntries}");
 				sb.AppendLine();
 
-				Traverse(fullPath, 0, "");
+				Traverse(fullPath, 1, "");
 
 				if (truncated)
 				{
@@ -589,23 +756,34 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		public ToolResult Grep(
 			string pattern,
 			string path,
+			[Description("The maximum count of matched files to return.")]
+			int limitFiles = 20,
+			[Description("The maximum count of matched lines per file to return.")]
+			int limitLinesPerFile = 20,
 			bool ignoreCase = false,
 			bool lineNumbers = false,
+			[Description("Whether to return non-matched lines instead of matched lines.")]
 			bool invert = false,
+			[Description("Whether to return only regex matches instead of entire lines.")]
 			bool onlyMatching = false,
 			int beforeContext = 0,
 			int afterContext = 0,
 			bool recursive = false,
-			[Description("The file extensions to include in search. Examples: '.cs', '.txt' etc.")]
-			string[]? includeExtensions = null)
+			[Description("The file extensions to allow in search. Examples: '.cs', '.txt' etc. HIGHLY RECOMMENDED to use this parameter!")]
+			string[]? allowedExtensions = null,
+			CancellationToken cancellationToken = default)
 		{
 			try
 			{
+				var workingDirectory = _chat.Settings.GetWorkingDirectory();
 				var fullPath = ResolvePath(path);
-				var regexOptions = ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
-				var regex = new Regex(pattern, regexOptions);
+				var regexIgnoreCaseOptions = ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
+				var regex = new Regex(pattern, regexIgnoreCaseOptions | RegexOptions.Compiled);
 
 				var filesToSearch = new List<string>();
+
+				var results = new List<string>();
+				int totalFilesMatched = 0;
 
 				if (File.Exists(fullPath))
 				{
@@ -613,25 +791,28 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				}
 				else if (Directory.Exists(fullPath))
 				{
-					if (!recursive)
-						return new ToolResult(ToolResultStatus.Error,
-							"Path is a directory. Use recursive=true to search inside.");
-
 					var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-					var allFiles = Directory.GetFiles(fullPath, "*.*", searchOption);
+					var allFiles = Directory.GetFiles(fullPath, "*", searchOption);
 
 					foreach (var file in allFiles)
 					{
-						if (includeExtensions != null && includeExtensions.Length > 0)
+						if (allowedExtensions != null && allowedExtensions.Length > 0)
 						{
 							var ext = Path.GetExtension(file);
-							if (!includeExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
+							if (!allowedExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
 								continue;
 						}
 
-						// Skip binary files automatically
-						if (!FileUtils.IsBinaryFile(file))
-							filesToSearch.Add(file);
+						try
+						{
+							// Skip binary files automatically
+							if (!FileUtils.IsBinaryFile(file))
+								filesToSearch.Add(file);
+						}
+						catch (Exception ex)
+						{
+							results.Add($"Error checking file {file}: {ex.Message}");
+						}
 					}
 				}
 				else
@@ -639,17 +820,22 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					return new ToolResult(ToolResultStatus.Error, "File or directory not found.");
 				}
 
-				var results = new List<string>();
-
 				foreach (var file in filesToSearch)
 				{
-					var fileMatches = SearchInFile(file, regex, invert, onlyMatching,
-													lineNumbers, beforeContext, afterContext);
+					cancellationToken.ThrowIfCancellationRequested();
+
+					var relativePath = Path.GetRelativePath(workingDirectory, file);
+					var fileMatches = SearchInFile(workingDirectory, file, regex, limitLinesPerFile, invert, onlyMatching,
+													lineNumbers, beforeContext, afterContext, cancellationToken);
 					if (fileMatches.Count > 0)
 					{
 						if (filesToSearch.Count > 1)
-							results.Add($"\n--- {file} ---");
+							results.Add($"\n--- {relativePath} ---");
 						results.AddRange(fileMatches);
+
+						totalFilesMatched++;
+						if (totalFilesMatched >= limitFiles)
+							break;
 					}
 				}
 
@@ -665,78 +851,99 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		}
 
 		private List<string> SearchInFile(
+			string workDir,
 			string filePath,
 			Regex regex,
+			int limitLinesPerFile,
 			bool invert,
 			bool onlyMatching,
 			bool showLineNumbers,
 			int beforeContext,
-			int afterContext)
+			int afterContext,
+			CancellationToken cancellationToken = default)
 		{
-			var lines = File.ReadAllLines(filePath);
+			string[] lines = File.ReadAllLines(filePath);
+			try
+			{
+				lines = File.ReadAllLines(filePath);
+			}
+			catch
+			{
+				var relativePath = Path.GetRelativePath(workDir, filePath);
+				return [$"Cannot read file {relativePath}: it may be corrupted or taken by another process."];
+			}
+
 			var matches = new List<string>();
+			int count = 0;
 
 			for (int i = 0; i < lines.Length; i++)
 			{
+				cancellationToken.ThrowIfCancellationRequested();
+
 				var line = lines[i];
 				var isMatch = regex.IsMatch(line);
 
-				if (invert) isMatch = !isMatch;
+				if (invert)
+					isMatch = !isMatch;
 
-				if (isMatch)
+				if (!isMatch)
+					continue;
+
+				// Add context lines before
+				if (beforeContext > 0)
 				{
-					// Add context lines before
-					if (beforeContext > 0)
+					int contextStart = Math.Max(0, i - beforeContext);
+					for (int ctx = contextStart; ctx < i; ctx++)
 					{
-						int contextStart = Math.Max(0, i - beforeContext);
-						for (int ctx = contextStart; ctx < i; ctx++)
-						{
-							if (!matches.Contains($"{ctx + 1}-ctx: {lines[ctx]}"))
-							{
-								if (showLineNumbers)
-									matches.Add($"{ctx + 1}: {lines[ctx]}");
-								else
-									matches.Add(lines[ctx]);
-							}
-						}
-					}
-
-					// Add the matching line
-					if (onlyMatching)
-					{
-						var matchesCollection = regex.Matches(line);
-						foreach (Match m in matchesCollection)
+						if (!matches.Contains($"{ctx + 1}: {lines[ctx]}"))
 						{
 							if (showLineNumbers)
-								matches.Add($"{i + 1}: {m.Value}");
+								matches.Add($"{ctx + 1}: {lines[ctx]}");
 							else
-								matches.Add(m.Value);
-						}
-					}
-					else
-					{
-						if (showLineNumbers)
-							matches.Add($"{i + 1}: {line}");
-						else
-							matches.Add(line);
-					}
-
-					// Add context lines after
-					if (afterContext > 0)
-					{
-						int contextEnd = Math.Min(lines.Length, i + afterContext + 1);
-						for (int ctx = i + 1; ctx < contextEnd; ctx++)
-						{
-							if (!matches.Contains($"{ctx + 1}-ctx: {lines[ctx]}"))
-							{
-								if (showLineNumbers)
-									matches.Add($"{ctx + 1}: {lines[ctx]}");
-								else
-									matches.Add(lines[ctx]);
-							}
+								matches.Add(lines[ctx]);
 						}
 					}
 				}
+
+				// Add the matching line
+				if (onlyMatching)
+				{
+					var matchesCollection = regex.Matches(line);
+					foreach (Match m in matchesCollection)
+					{
+						if (showLineNumbers)
+							matches.Add($"{i + 1}: {m.Value}");
+						else
+							matches.Add(m.Value);
+					}
+				}
+				else
+				{
+					if (showLineNumbers)
+						matches.Add($"{i + 1}: {line}");
+					else
+						matches.Add(line);
+				}
+
+				// Add context lines after
+				if (afterContext > 0)
+				{
+					int contextEnd = Math.Min(lines.Length, i + afterContext + 1);
+					for (int ctx = i + 1; ctx < contextEnd; ctx++)
+					{
+						if (!matches.Contains($"{ctx + 1}: {lines[ctx]}"))
+						{
+							if (showLineNumbers)
+								matches.Add($"{ctx + 1}: {lines[ctx]}");
+							else
+								matches.Add(lines[ctx]);
+						}
+					}
+				}
+
+				count++;
+				if (count >= limitLinesPerFile)
+					break;
 			}
 
 			return matches;

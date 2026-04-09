@@ -360,7 +360,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		private async Task<ToolResult> Search_SearXNG(
 			[Description("The query to search by")] string query,
 			[Description("The page number to return results for"), Range(1, 10)] int page = 1,
-			[Enum(["general", "images", "videos", "news", "map", "music", "it", "science", "files", "social media"])] string category = "general",
+			[Enum(["general", "images", "videos",
+				// There are some garbage categories that LLM likes to use, filter them out.
+				// "news", "map", "music", "it", "science", "files", "social media"
+				])] string category = "general",
 			[Description("Language code (auto, en, ru, etc.)")] string language = "auto",
 			[Enum(["day", "week", "month", "year"])] string timeRange = "",
 			[Enum(["none", "moderate", "strict"])] string safeSearch = "none")

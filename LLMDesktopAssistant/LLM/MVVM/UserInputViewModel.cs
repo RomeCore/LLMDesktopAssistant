@@ -59,6 +59,41 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			}
 		}
 
+		private class CancelEditCommandObject : ICommand
+		{
+			public event EventHandler? CanExecuteChanged;
+
+			private readonly UserInputViewModel _vm;
+			public CancelEditCommandObject(UserInputViewModel vm)
+			{
+				_vm = vm;
+				_vm.SubscribeChanged(nameof(UserInputViewModel.EditingMessage), _ =>
+				{
+					InvokeUI(() =>
+					{
+						CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+					});
+				});
+			}
+
+			public bool CanExecute(object? parameter)
+			{
+				return _vm.EditingMessage != null;
+			}
+
+			public void Execute(object? parameter)
+			{
+				try
+				{
+					_vm.EndEditing();
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Failed to cancel edit: {Error}", ex.Message);
+				}
+			}
+		}
+
 		private class CancelGenerationCommandObject : ICommand
 		{
 			public event EventHandler? CanExecuteChanged;
@@ -125,6 +160,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// Command to send a message.
 		/// </summary>
 		public ICommand SendMessageCommand { get; }
+
+		/// <summary>
+		/// Command to cancel edit of the current message.
+		/// </summary>
+		public ICommand CancelEditCommand { get; }
 
 		/// <summary>
 		/// Command to cancel the current generation.
@@ -205,6 +245,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			});
 
 			SendMessageCommand = new SendMessageCommandObject(this);
+			CancelEditCommand = new CancelEditCommandObject(this);
 			CancelGenerationCommand = new CancelGenerationCommandObject(this);
 
 			IsGenerating = Chat.GenerationCts != null;

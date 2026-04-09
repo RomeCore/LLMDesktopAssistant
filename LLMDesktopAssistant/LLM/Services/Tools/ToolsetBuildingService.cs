@@ -4,7 +4,7 @@ using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.ToolModules;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	/// <summary>
 	/// The default implementation of the <see cref="IToolsetBuildingService"/> interface.
@@ -12,11 +12,15 @@ namespace LLMDesktopAssistant.LLM.Services
 	public class ToolsetBuildingService(
 		Chat chat,
 		IMCPManagementService mcpManager,
+		IMetaToolManagementService metaToolManager,
 		IServiceProvider services
 		) : IToolsetBuildingService
 	{
 		public IEnumerable<ToolInfo> BuildTools()
 		{
+			if (!chat.Settings.EnableTools)
+				return [];
+
 			var tools = GetAvailableTools();
 			var result = new List<ToolInfo>();
 
@@ -30,6 +34,8 @@ namespace LLMDesktopAssistant.LLM.Services
 						{
 							Tool = toolInfo.Tool,
 							Category = toolInfo.Category,
+							DisplayName = toolInfo.DisplayName,
+							Source = toolInfo.Source,
 							Enabled = true,
 							AskForConfirmation = change.AskForConfirmation ?? toolInfo.AskForConfirmation
 						});
@@ -49,9 +55,12 @@ namespace LLMDesktopAssistant.LLM.Services
 			var toolModules = ModuleManager.GetAll<ToolModule>();
 
 			return toolModules
+
+				// Tool modules
 				.Concat(chat.AdditionalToolModules ?? [])
 				.Concat(services.GetServices<ToolModule>())
 				.Concat(mcpManager.GetMCPToolModules())
+
 				.SelectMany(m => m.GetTools()
 					.Select(t =>
 					{
@@ -59,10 +68,16 @@ namespace LLMDesktopAssistant.LLM.Services
 						{
 							Tool = t.Tool,
 							Category = t.Category,
+							DisplayName = t.DisplayName,
+							Source = t.Source,
 							Enabled = m.Enabled && t.Enabled,
 							AskForConfirmation = t.AskForConfirmation
 						};
 					}))
+
+				// Tools
+				.Concat(metaToolManager.GetMetaTools())
+
 				.ToList();
 		}
 	}

@@ -1,7 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	public interface IToolExecutionHook
 	{

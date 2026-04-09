@@ -69,18 +69,20 @@
 										ErrorTemplate="{StaticResource ErrorTemplate}" />
 	</UserControl.Resources>
 
-	<StackPanel Orientation="Horizontal" Height="24" >
+	<StackPanel Orientation="Horizontal" Height="32" >
 		<local:ExtendedComboBox x:Name="Selector"
 				  Style="{StaticResource MaterialDesignComboBox}"
 				  ItemTemplateSelector="{StaticResource CBTemplateSelector}"/>
 
 		<Button x:Name="RefreshButton" 
 				Click="RefreshButton_Click" 
-				MinWidth="24"
+				Style="{StaticResource MaterialDesignIconButton}"
+				Width="32" Height="32"
 				Margin="3,0,0,0"
 				Padding="0"
 				DockPanel.Dock="Right">
-			<materialDesign:PackIcon Kind="Refresh"/>
+			<materialDesign:PackIcon Kind="Refresh"
+									 Width="24" Height="24"/>
 		</Button>
 	</StackPanel>
 </UserControl>

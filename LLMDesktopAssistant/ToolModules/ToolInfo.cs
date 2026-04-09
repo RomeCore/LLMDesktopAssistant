@@ -23,6 +23,11 @@ namespace LLMDesktopAssistant.ToolModules
 		public string Category { get; init; } = "general";
 
 		/// <summary>
+		/// Gets or sets the source of the tool. Defaults to "native".
+		/// </summary>
+		public ToolSource Source { get; init; } = ToolSource.Native;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether the tool is enabled. Defaults to true.
 		/// </summary>
 		public bool Enabled { get; init; } = true;

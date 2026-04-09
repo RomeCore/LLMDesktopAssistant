@@ -32,7 +32,8 @@
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
 							<materialDesign:Card Content="{Binding Title}"
-												 Margin="3"/>
+												 Style="{StaticResource MaterialDesignOutlinedCard}"
+												 Padding="2"/>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>

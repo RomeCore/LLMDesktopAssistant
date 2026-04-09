@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -162,7 +162,7 @@
   <data name="chats" xml:space="preserve">
     <value>Chats</value>
   </data>
-  <data name="chat_model_hint" xml:space="preserve">
+  <data name="settings-chat_model_hint" xml:space="preserve">
     <value>Chat model</value>
   </data>
   <data name="empty_model" xml:space="preserve">
@@ -240,7 +240,7 @@
   <data name="settings_profile" xml:space="preserve">
     <value>Profile:</value>
   </data>
-  <data name="summarizer_model_hint" xml:space="preserve">
+  <data name="settings-summarizer_model_hint" xml:space="preserve">
     <value>Summarizer model</value>
   </data>
   <data name="system_instructions_hint" xml:space="preserve">
@@ -398,5 +398,89 @@
   </data>
   <data name="fs-apply_diff" xml:space="preserve">
     <value>Apply patch to file</value>
+  </data>
+  <data name="settings-use_mcp" xml:space="preserve">
+    <value>Enable MCP</value>
+  </data>
+  <data name="settings-use_tools" xml:space="preserve">
+    <value>Enable tools</value>
+  </data>
+  <data name="application-only_reference" xml:space="preserve">
+    <value>Only reference</value>
+  </data>
+  <data name="application-mode_hint" xml:space="preserve">
+    <value>Application mode</value>
+  </data>
+  <data name="application-full_contents" xml:space="preserve">
+    <value>Full contents</value>
+  </data>
+  <data name="application-partial_contents" xml:space="preserve">
+    <value>Partial contents</value>
+  </data>
+  <data name="application-full_hexadecimal" xml:space="preserve">
+    <value>Full hexadecimal dump</value>
+  </data>
+  <data name="application-hexadecimal_partial" xml:space="preserve">
+    <value>Partial hexadecimal dump</value>
+  </data>
+  <data name="application-description" xml:space="preserve">
+    <value>Semantic description</value>
+  </data>
+  <data name="application-start_line" xml:space="preserve">
+    <value>Start line</value>
+  </data>
+  <data name="application-end_line" xml:space="preserve">
+    <value>End line</value>
+  </data>
+  <data name="application-start_byte" xml:space="preserve">
+    <value>Start byte</value>
+  </data>
+  <data name="application-end_byte" xml:space="preserve">
+    <value>End byte</value>
+  </data>
+  <data name="application-applicate_hint" xml:space="preserve">
+    <value>Applicate</value>
+  </data>
+  <data name="settings-summarization_threshold" xml:space="preserve">
+    <value>Summarization threshold (tokens)</value>
+  </data>
+  <data name="attachment-drop_files_here" xml:space="preserve">
+    <value>Drop files here</value>
+  </data>
+  <data name="attachment-url_hint" xml:space="preserve">
+    <value>Attachment URL</value>
+  </data>
+  <data name="attachment-add_url_hint" xml:space="preserve">
+    <value>Add URL</value>
+  </data>
+  <data name="attachment-attach_files_hint" xml:space="preserve">
+    <value>Attach files</value>
+  </data>
+  <data name="metatools" xml:space="preserve">
+    <value>Meta-tools</value>
+  </data>
+  <data name="tools-create_or_update" xml:space="preserve">
+    <value>Create or update tool</value>
+  </data>
+  <data name="tools-rename" xml:space="preserve">
+    <value>Rename tool</value>
+  </data>
+  <data name="tools-remove" xml:space="preserve">
+    <value>Remove tool</value>
+  </data>
+  <data name="tools-list" xml:space="preserve">
+    <value>List meta-tools</value>
+  </data>
+  <data name="tool-source_mcp" xml:space="preserve">
+    <value>MCP</value>
+  </data>
+  <data name="tool-source_meta" xml:space="preserve">
+    <value>Meta</value>
+  </data>
+  <data name="settings-agentic_model_hint" xml:space="preserve">
+    <value>Agentic model</value>
+  </data>
+  <data name="fs-replace" xml:space="preserve">
+    <value>Replace text in file</value>
   </data>
 </root>

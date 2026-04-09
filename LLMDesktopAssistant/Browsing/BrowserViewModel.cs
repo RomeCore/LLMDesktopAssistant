@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,7 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace LLMDesktopAssistant.Browsing
 {
 	[ViewModelFor(typeof(BrowserView))]
-	[TabTool("browser", Icon = PackIconKind.Web, Order = 10)]
+	// [TabTool("browser", Icon = PackIconKind.Web, Order = 10)]
 	public class BrowserViewModel : ViewModelBase
 	{
 		private class TabCollection : IEnumerable<TabItem>, INotifyCollectionChanged
@@ -74,6 +74,7 @@ namespace LLMDesktopAssistant.Browsing
 			ObservableTabs = new TabCollection(this);
 
 			var db = new ConversationDatabase("conversations/browser.db");
+			var usageDatabase = new UsageDatabase("conversations/browser-usage.db");
 
 			if (db.Conversations.FindById(1) == null)
 				db.Conversations.Insert(new LLM.Data.Models.ConversationModel
@@ -83,6 +84,7 @@ namespace LLMDesktopAssistant.Browsing
 
 			var serviceBuilder = new ServiceCollection();
 			serviceBuilder.AddSingleton(db);
+			serviceBuilder.AddSingleton(usageDatabase);
 			serviceBuilder.AddChatServices();
 			var services = serviceBuilder.BuildServiceProvider();
 

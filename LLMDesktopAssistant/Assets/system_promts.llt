@@ -4,8 +4,10 @@
 
 	You also can use advanced Markdown formatting:
 	- Tables, Codeblocks, Blockquotes, etc.
-	- Math formulas, via `$...$` or `$$...$$`
+	- Math formulas, via `$latex$` or `$$latex$$`
 	- Images, via `![alt text](url)`
+
+	You also can call multiple tools in one message.
 	
 	@if personality
 	{

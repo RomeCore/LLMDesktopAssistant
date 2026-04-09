@@ -172,6 +172,33 @@ namespace LLMDesktopAssistant.Settings
 		}
 
 		/// <summary>
+		/// Copies a settings instance by ID and creates a new one with the specified identifier.
+		/// </summary>
+		/// <param name="idFrom">The unique identifier for the settings instance to copy.</param>
+		/// <param name="idTo">The unique identifier for the new settings instance.</param>
+		/// <returns>true if the settings instance was found and copied; otherwise, false.</returns>
+		/// <exception cref="ArgumentException">Thrown when either ID is null or whitespace.</exception>
+		public bool Copy(string idFrom, string idTo)
+		{
+			if (string.IsNullOrWhiteSpace(idFrom))
+				throw new ArgumentException("Id cannot be null or whitespace.", nameof(idFrom));
+			if (string.IsNullOrWhiteSpace(idTo))
+				throw new ArgumentException("Id cannot be null or whitespace.", nameof(idTo));
+			if (_objects.ContainsKey(idTo))
+				return false;
+			if (!_objects.TryGetValue(idFrom, out var objTuple))
+				return false;
+
+			var serialized = JsonSerializer.Serialize(objTuple.Item1, _jsonOptions);
+			var copy = JsonSerializer.Deserialize<TSettings>(serialized, _jsonOptions)
+				?? throw new InvalidOperationException("Failed to deserialize copied settings.");
+			copy.Id = idTo;
+			var tracker = new ChangeTracker(copy, SaveDebounced);
+			_objects.TryAdd(idTo, (copy, tracker));
+			return true;
+		}
+
+		/// <summary>
 		/// Retrieves all available setting IDs currently loaded in memory.
 		/// </summary>
 		/// <returns>An array of setting IDs.</returns>

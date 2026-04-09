@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,14 +17,71 @@ using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Attachments
 {
+	public class AttachmentApplicationModeViewModel
+	{
+		public required string Title { get; init; }
+		public required AttachmentApplicationMode Mode { get; init; }
+		public bool HasLineSelections { get; init; } = false;
+		public bool HasByteSelections { get; init; } = false;
+	}
+
 	public class AttachmentDraftViewModel : ViewModelBase
 	{
 		private readonly IAttachmentApplicationService _service;
 
+		public AttachmentsManagerViewModel Manager { get; }
 		public string SourceUrl { get; }
+		public string? Title { get; }
 		public AttachmentApplicationParameters Parameters { get; }
-		public ImmutableList<AttachmentApplicationMode> AvailableModes { get; } =
-			Enum.GetValues<AttachmentApplicationMode>().ToImmutableList();
+
+		public ImmutableList<AttachmentApplicationModeViewModel> AvailableModes { get; } =
+			[
+				new AttachmentApplicationModeViewModel
+				{
+					Title = "application-only_reference",
+					Mode = AttachmentApplicationMode.OnlyReference
+				},
+				new AttachmentApplicationModeViewModel
+				{
+					Title = "application-full_contents",
+					Mode = AttachmentApplicationMode.FullContents
+				},
+				new AttachmentApplicationModeViewModel
+				{
+					Title = "application-partial_contents",
+					Mode = AttachmentApplicationMode.PartialContents,
+					HasLineSelections = true
+				},
+				new AttachmentApplicationModeViewModel
+				{
+					Title = "application-full_hexadecimal",
+					Mode = AttachmentApplicationMode.FullHexadecimal
+				},
+				new AttachmentApplicationModeViewModel
+				{
+					Title = "application-hexadecimal_partial",
+					Mode = AttachmentApplicationMode.HexadecimalPartial,
+					HasByteSelections = true
+				},
+				new AttachmentApplicationModeViewModel
+				{
+					Title = "application-description",
+					Mode = AttachmentApplicationMode.Description
+				}
+			];
+
+		public AttachmentApplicationModeViewModel SelectedMode
+		{
+			get => AvailableModes.FirstOrDefault(x => x.Mode == Parameters.Mode, AvailableModes[0]);
+			set
+			{
+				if (value.Mode != Parameters.Mode)
+				{
+					Parameters.Mode = value.Mode;
+					RaisePropertyChanged(nameof(SelectedMode));
+				}
+			}
+		}
 
 		private bool _isLoading;
 		public bool IsLoading
@@ -32,18 +90,31 @@ namespace LLMDesktopAssistant.LLM.MVVM.Attachments
 			set => SetProperty(ref _isLoading, value);
 		}
 
-		public AttachmentDraftViewModel(string url, IAttachmentApplicationService service)
+		public ICommand ApplyCommand { get; }
+		public ICommand RemoveCommand { get; }
+
+		public AttachmentDraftViewModel(AttachmentsManagerViewModel parent,
+			string url, IAttachmentApplicationService service)
 		{
+			Manager = parent;
 			SourceUrl = url;
+			Title = Path.GetFileName(url);
 			_service = service;
 			Parameters = new AttachmentApplicationParameters
 			{
 				SourceUrl = url
 			};
+
+			ApplyCommand = new AsyncRelayCommand(ApplyAsync);
+			RemoveCommand = new RelayCommand(Remove);
 		}
 
 		public async Task InitializeAsync()
 		{
+			// Just return without recommended parameters.
+			if (!IsLoading)
+				return;
+
 			IsLoading = true;
 			try
 			{
@@ -56,20 +127,32 @@ namespace LLMDesktopAssistant.LLM.MVVM.Attachments
 			}
 		}
 
+		private async Task ApplyAsync()
+		{
+			var attachment = await Manager.ApplicationService.ApplicateAttachmentAsync(Parameters);
+			Manager.UserInput.Attachments.Add(new AttachmentViewModel(Manager.UserInput, attachment));
+			Manager.Drafts.Remove(this);
+		}
+
+		private void Remove()
+		{
+			Manager.Drafts.Remove(this);
+		}
+
 		private void CopyFrom(AttachmentApplicationParameters src)
 		{
 			Parameters.Mode = src.Mode;
-			Parameters.StartLineIndex = src.StartLineIndex;
-			Parameters.LineCount = src.LineCount;
-			Parameters.StartByteIndex = src.StartByteIndex;
-			Parameters.ByteCount = src.ByteCount;
+			Parameters.StartLine = src.StartLine;
+			Parameters.EndLine = src.EndLine;
+			Parameters.StartByte = src.StartByte;
+			Parameters.EndByte = src.EndByte;
 		}
 	}
 
 	[ViewModelFor(typeof(AttachmentsManagerView))]
 	public class AttachmentsManagerViewModel : ViewModelBase
 	{
-		public UserInputViewModel Parent { get; }
+		public UserInputViewModel UserInput { get; }
 		public IAttachmentApplicationService ApplicationService { get; }
 
 		private readonly RangeObservableCollection<AttachmentDraftViewModel> _drafts = [];
@@ -79,20 +162,65 @@ namespace LLMDesktopAssistant.LLM.MVVM.Attachments
 			set => _drafts.Reset(value);
 		}
 
-		public ICommand ApplyCommand { get; }
-		public ICommand RemoveDraftCommand { get; }
+		private string _inputUrl = string.Empty;
+		public string InputUrl
+		{
+			get => _inputUrl;
+			set => SetProperty(ref _inputUrl, value);
+		}
+
+		public ICommand AddUrlCommand { get; }
+		public ICommand AttachFilesCommand { get; }
 
 		public AttachmentsManagerViewModel(UserInputViewModel parent)
 		{
-			Parent = parent;
+			UserInput = parent;
 			ApplicationService = parent.Chat.Services.GetRequiredService<IAttachmentApplicationService>();
 
-			ApplyCommand = new AsyncRelayCommand(ApplyAsync);
-			RemoveDraftCommand = new RelayCommand<AttachmentDraftViewModel>(d =>
+			AddUrlCommand = new RelayCommand(AddUrl);
+			AttachFilesCommand = new RelayCommand(AttachFiles);
+
+			_drafts.CollectionChanged += (s, e) =>
 			{
-				if (d != null)
-					_drafts.Remove(d);
-			});
+				// Close the dialog when there are no drafts left.
+				if (Drafts.Count == 0)
+				{
+					DialogHost.Close(null);
+				}
+			};
+		}
+
+		private void AddUrl()
+		{
+			var url = InputUrl?.Trim();
+			if (string.IsNullOrEmpty(url))
+				return;
+
+			var draft = new AttachmentDraftViewModel(this, url, ApplicationService);
+			_drafts.Add(draft);
+			_ = draft.InitializeAsync();
+
+			InputUrl = string.Empty;
+		}
+
+		private void AttachFiles()
+		{
+			var dialog = new System.Windows.Forms.OpenFileDialog
+			{
+				Title = "Select files to attach",
+				Multiselect = true,
+				Filter = "All files (*.*)|*.*"
+			};
+
+			if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				foreach (var file in dialog.FileNames)
+				{
+					var draft = new AttachmentDraftViewModel(this, file, ApplicationService);
+					_drafts.Add(draft);
+					_ = draft.InitializeAsync();
+				}
+			}
 		}
 
 		public async void AcceptDrop(DragEventArgs args)
@@ -101,7 +229,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Attachments
 			{
 				foreach (var file in files)
 				{
-					var draft = new AttachmentDraftViewModel(file, ApplicationService);
+					var draft = new AttachmentDraftViewModel(this, file, ApplicationService);
 					_drafts.Add(draft);
 
 					_ = draft.InitializeAsync(); // fire & forget
@@ -110,22 +238,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Attachments
 
 			if (args.Data.GetData(DataFormats.Text) is string text)
 			{
-				var draft = new AttachmentDraftViewModel(text, ApplicationService);
+				var draft = new AttachmentDraftViewModel(this, text, ApplicationService);
 				_drafts.Add(draft);
 				_ = draft.InitializeAsync();
 			}
-		}
-
-		private async Task ApplyAsync()
-		{
-			foreach (var draft in _drafts.ToList())
-			{
-				var attachment = await ApplicationService.ApplicateAttachmentAsync(draft.Parameters);
-				Parent.Attachments.Add(new AttachmentViewModel(Parent, attachment));
-			}
-
-			_drafts.Clear();
-			DialogHost.CloseDialogCommand.Execute(null, null);
 		}
 	}
 }

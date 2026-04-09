@@ -48,6 +48,7 @@
 
 			<!-- Converters -->
 
+			<converters:ToUnsetIfNullConverter x:Key="ToUnsetIfNullConverter"/>
 			<converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
 			<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
 													 True="Visible"

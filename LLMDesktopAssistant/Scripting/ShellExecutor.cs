@@ -20,9 +20,11 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="command">The command to execute.</param>
 		/// <param name="workDir">The working directory for the command. If null, the current directory is used.</param>
 		/// <returns>The result of the command execution.</returns>
-		public static async Task<ProcessExecutionResult> ExecuteWindowsAsync(string command, string? workDir = null)
+		public static async Task<ProcessExecutionResult> ExecuteWindowsAsync(string command,
+			string? workDir = null, CancellationToken cancellationToken = default)
 		{
-			return await ExecuteProcessAsync("cmd.exe", $"/c \"{command}\"", workDir);
+			return await ExecuteProcessAsync("cmd.exe", $"/c \"{command}\"",
+				workDir, cancellationToken);
 		}
 
 		/// <summary>
@@ -31,14 +33,15 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="script">The command to execute.</param>
 		/// <param name="workDir">The working directory for the command. If null, the current directory is used.</param>
 		/// <returns>The result of the command execution.</returns>
-		public static async Task<ProcessExecutionResult> ExecuteWindowsScriptAsync(string script, string? workDir = null)
+		public static async Task<ProcessExecutionResult> ExecuteWindowsScriptAsync(string script,
+			string? workDir = null, CancellationToken cancellationToken = default)
 		{
 			var tempFile = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.bat");
 			File.WriteAllText(tempFile, script);
 
 			try
 			{
-				return await ExecuteProcessAsync("cmd.exe", $"/c \"{tempFile}\"", workDir);
+				return await ExecuteProcessAsync("cmd.exe", $"/c \"{tempFile}\"", workDir, cancellationToken);
 			}
 			finally
 			{
@@ -53,9 +56,11 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="command">The command to execute.</param>
 		/// <param name="workDir">The working directory for the command. If null, the current directory is used.</param>
 		/// <returns>The result of the command execution.</returns>
-		public static async Task<ProcessExecutionResult> ExecuteWindowsPSAsync(string command, string? workDir = null)
+		public static async Task<ProcessExecutionResult> ExecuteWindowsPSAsync(string command,
+			string? workDir = null, CancellationToken cancellationToken = default)
 		{
-			return await ExecuteProcessAsync("powershell.exe", $"-ExecutionPolicy Bypass -Command \"{command}\"", workDir);
+			return await ExecuteProcessAsync("powershell.exe", $"-ExecutionPolicy Bypass -Command \"{command}\"",
+				workDir, cancellationToken);
 		}
 
 		/// <summary>
@@ -64,14 +69,16 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="script">The command to execute.</param>
 		/// <param name="workDir">The working directory for the command. If null, the current directory is used.</param>
 		/// <returns>The result of the command execution.</returns>
-		public static async Task<ProcessExecutionResult> ExecuteWindowsPSScriptAsync(string script, string? workDir = null)
+		public static async Task<ProcessExecutionResult> ExecuteWindowsPSScriptAsync(string script,
+			string? workDir = null, CancellationToken cancellationToken = default)
 		{
 			var tempFile = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.ps1");
 			File.WriteAllText(tempFile, script);
 
 			try
 			{
-				return await ExecuteProcessAsync("powershell.exe", $"-NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"{tempFile}\"", workDir);
+				return await ExecuteProcessAsync("powershell.exe", $"-NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"{tempFile}\"",
+					workDir, cancellationToken);
 			}
 			finally
 			{
@@ -103,9 +110,10 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="command">The Bash command to execute.</param>
 		/// <param name="workDir">The working directory (Windows path will be converted to WSL path).</param>
 		/// <returns>The result of the command execution.</returns>
-		public static async Task<ProcessExecutionResult> ExecuteBashAsync(string command, string? workDir = null)
+		public static async Task<ProcessExecutionResult> ExecuteBashAsync(string command,
+			string? workDir = null, CancellationToken cancellationToken = default)
 		{
-			return await ExecuteProcessAsync("wsl", $"-- sh -c \"{command}\"", workDir);
+			return await ExecuteProcessAsync("wsl", $"-- sh -c \"{command}\"", workDir, cancellationToken);
 		}
 
 		/// <summary>
@@ -114,7 +122,8 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="script">The Bash script content.</param>
 		/// <param name="workDir">The working directory (Windows path will be converted to WSL path).</param>
 		/// <returns>The result of the command execution.</returns>
-		public static async Task<ProcessExecutionResult> ExecuteBashScriptAsync(string script, string? workDir = null)
+		public static async Task<ProcessExecutionResult> ExecuteBashScriptAsync(string script,
+			string? workDir = null, CancellationToken cancellationToken = default)
 		{
 			string tempScript = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.sh");
 
@@ -128,8 +137,8 @@ namespace LLMDesktopAssistant.Scripting
 				string wslScriptPath = ConvertToWslPath(tempScript);
 
 				// Make script executable (WSL can execute it directly)
-				await ExecuteProcessAsync("wsl", $"chmod +x \"{wslScriptPath}\"", workDir);
-				return await ExecuteProcessAsync("wsl", $"\"{wslScriptPath}\"", workDir);
+				await ExecuteProcessAsync("wsl", $"chmod +x \"{wslScriptPath}\"", workDir, cancellationToken);
+				return await ExecuteProcessAsync("wsl", $"\"{wslScriptPath}\"", workDir, cancellationToken);
 			}
 			finally
 			{
@@ -141,7 +150,8 @@ namespace LLMDesktopAssistant.Scripting
 		/// <summary>
 		/// Core method for process execution.
 		/// </summary>
-		private static async Task<ProcessExecutionResult> ExecuteProcessAsync(string fileName, string arguments, string? workDir)
+		private static async Task<ProcessExecutionResult> ExecuteProcessAsync(string fileName, string arguments,
+			string? workDir, CancellationToken cancellationToken = default)
 		{
 			var psi = new ProcessStartInfo
 			{
@@ -166,7 +176,19 @@ namespace LLMDesktopAssistant.Scripting
 				var stderrTask = process.StandardError.ReadToEndAsync();
 
 				await Task.WhenAll(stdoutTask, stderrTask);
-				await process.WaitForExitAsync();
+
+				try
+				{
+					await process.WaitForExitAsync(cancellationToken);
+				}
+				catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
+				{
+					process.Kill();
+				}
+				catch (OperationCanceledException)
+				{
+					process.Kill();
+				}
 
 				return new ProcessExecutionResult
 				{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -121,7 +122,7 @@ namespace LLMDesktopAssistant.Controls
 				nameof(IsRefreshButtonVisible),
 				typeof(bool),
 				typeof(LLModelSelectorControl),
-				new PropertyMetadata(false, (s, e) => (s as LLModelSelectorControl)?.IsRefreshButtonVisiblePropertyChanged((bool)e.NewValue)));
+				new PropertyMetadata(true, (s, e) => (s as LLModelSelectorControl)?.IsRefreshButtonVisiblePropertyChanged((bool)e.NewValue)));
 
 		public static readonly DependencyProperty CapabilityFilterProperty =
 			DependencyProperty.Register(
@@ -162,10 +163,11 @@ namespace LLMDesktopAssistant.Controls
 			InitializeComponent();
 
 			var list = ModuleManager.Get<LLModelListModule>();
-			list.Registry.RefreshCompleted += (s, e) => Dispatcher.Invoke(() => Rebuild());
+			list.Registry.RefreshCompleted += Registry_RefreshCompleted;
 			Rebuild();
 			IsRefreshButtonVisiblePropertyChanged(IsRefreshButtonVisible);
 
+			Selector.Items.Add(new ComboBoxFirstItemModel());
 			Selector.SelectionChanged += Selector_SelectionChanged;
 			Selector.DropDownOpened += Selector_DropDownOpened;
 			SelectedModelChanged += Private_SelectedModelChanged;
@@ -232,26 +234,32 @@ namespace LLMDesktopAssistant.Controls
 			Task.Run(() => RefreshAsync());
 		}
 
+		private ImmutableHashSet<LLModelDescriptor> _prevModels = [];
+
 		private void Rebuild()
 		{
-			var prevSelected = SelectedModel;
-
-			refreshFlag = true;
-			Selector.Items.Clear();
-			Selector.Items.Add(new ComboBoxFirstItemModel());
-			refreshFlag = false;
-
 			var list = ModuleManager.Get<LLModelListModule>();
 			var registry = list.Registry;
 			var models = CapabilityFilter == LLMCapabilities.Unknown
 				? registry.Models
 				: registry.Models.FilterByCapabilities(CapabilityFilter);
 
+			if (models.ToHashSet().SetEquals(_prevModels))
+				return;
+
 			var grouped = models.GroupBy(m => m.Client)
+				.OrderBy(g => g.Key.DisplayName)
 				.ToMultiValueDictionary(
 					m => m.Key,
 					m => (IEnumerable<LLModelDescriptorTracked>)m.OrderBy(_m => _m.DisplayName)
 						.Select(m => registry.GetModel(m.FullName)).ToList());
+
+			var prevSelected = SelectedModel;
+
+			refreshFlag = true;
+			Selector.Items.Clear();
+			Selector.Items.Add(new ComboBoxFirstItemModel());
+			refreshFlag = false;
 
 			// Find the previous model
 			bool found = false;

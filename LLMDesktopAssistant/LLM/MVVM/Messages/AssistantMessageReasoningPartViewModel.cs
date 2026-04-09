@@ -1,6 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.MVVM;
 using System.ComponentModel;
+using System.Windows.Threading;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Messages
@@ -8,6 +9,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Messages
 	[ViewModelFor(typeof(AssistantMessageReasoningPartView))]
 	public class AssistantMessageReasoningPartViewModel : AssistantMessagePartViewModel
 	{
+		private DispatcherOperation? _currentUpdateOperation;
+
 		private string _reasoningText = string.Empty;
 		public string ReasoningText
 		{
@@ -37,8 +40,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Messages
 
 				void PropertyChangedHandler(object? s, PropertyChangedEventArgs e)
 				{
-					InvokeUI(() =>
+					_currentUpdateOperation = BeginInvokeUI(() =>
 					{
+						_currentUpdateOperation?.Abort();
 						ReasoningText = message.ReasoningContent ?? string.Empty;
 					});
 				}
@@ -46,8 +50,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Messages
 				message.PropertyChanged += PropertyChangedHandler;
 				message.CompletionToken.OnCompleted(() =>
 				{
-					InvokeUI(() =>
+					BeginInvokeUI(() =>
 					{
+						_currentUpdateOperation?.Abort();
+						_currentUpdateOperation = null;
 						Completed = true;
 						RaisePropertyChanged(nameof(NotCompleted));
 					});

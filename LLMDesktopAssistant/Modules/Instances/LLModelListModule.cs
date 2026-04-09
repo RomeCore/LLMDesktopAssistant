@@ -1,14 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients;
 using RCLargeLanguageModels.Clients.Deepseek;
 using RCLargeLanguageModels.Clients.Ollama;
 using RCLargeLanguageModels.Clients.OpenAI;
 using RCLargeLanguageModels.Security;
+using RCLargeLanguageModels.Tasks;
+using Serilog;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Modules.Instances
 {
@@ -32,19 +38,20 @@ namespace LLMDesktopAssistant.Modules.Instances
 
 		public LLMClientRegistry Registry { get; private set; } = null!;
 
-		public override void Initialize()
+		public LLModelListModule()
 		{
-			base.Initialize();
-
 			Registry = new LLMClientRegistry(new LLMClientRegistryProperties
 			{
-				IsAutoRefreshEnabled = true,
+				IsAutoRefreshEnabled = false,
 				RefreshingMaxWaitMs = 5000,
 				RefreshingUpdateIntervalS = 30
 			});
+
 			Registry.Register(deepseek);
 			Registry.Register(openrouter);
 			Registry.Register(ollama);
+
+			_ = Registry.RefreshModelsAsync();
 		}
 	}
 }

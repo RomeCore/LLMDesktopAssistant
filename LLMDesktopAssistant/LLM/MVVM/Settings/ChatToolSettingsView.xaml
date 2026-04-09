@@ -9,117 +9,133 @@
 			 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 mc:Ignorable="d" 
 			 d:DesignHeight="450" d:DesignWidth="800">
-	
-	<materialDesign:TreeListView ItemsSource="{Binding ToolCategories}"
-								 Margin="5">
 
-		<materialDesign:TreeListView.Resources>
+	<DockPanel Margin="10">
 
-			<HierarchicalDataTemplate DataType="{x:Type local:ToolCategoryViewModel}"
-									  ItemsSource="{Binding Tools}">
-				<TextBlock Text="{loc:Loc {Binding Name}}"
-						   FontWeight="Bold"
-						   FontSize="16"
-						   VerticalAlignment="Center"/>
-			</HierarchicalDataTemplate>
+		<CheckBox DockPanel.Dock="Top"
+				  IsChecked="{Binding Settings.EnableTools}"
+				  Content="{loc:Loc settings-use_tools}"/>
 
-			<DataTemplate DataType="{x:Type local:ToolItemViewModel}">
-				<TextBlock Text="{loc:Loc {Binding Name}}"
-						   TextTrimming="CharacterEllipsis"
-						   FontWeight="Bold"
-						   FontSize="16"
-						   VerticalAlignment="Center"/>
-			</DataTemplate>
+		<materialDesign:TreeListView ItemsSource="{Binding ToolCategories}"
+									 IsEnabled="{Binding Settings.EnableTools}">
 
-		</materialDesign:TreeListView.Resources>
+			<materialDesign:TreeListView.Resources>
 
-		<materialDesign:TreeViewAssist.AdditionalTemplateSelector>
-			<local:ToolAdditionalTemplateSelector>
+				<HierarchicalDataTemplate DataType="{x:Type local:ToolCategoryViewModel}"
+										  ItemsSource="{Binding Tools}">
+					<TextBlock Text="{loc:Loc {Binding Name}}"
+							   FontWeight="Bold"
+							   FontSize="16"
+							   VerticalAlignment="Center"/>
+				</HierarchicalDataTemplate>
 
-				<local:ToolAdditionalTemplateSelector.ToolTemplate>
-					<DataTemplate>
-						<TextBlock Text="{Binding Description}"
-								   Margin="70,5,5,15"
-								   HorizontalAlignment="Left"
-								   MaxWidth="500" MaxHeight="120"
-								   TextWrapping="Wrap"
-								   TextTrimming="WordEllipsis"
-								   FontSize="12"
-								   OpacityMask="{Binding DescriptionOpacityMask}"/>
-					</DataTemplate>
-				</local:ToolAdditionalTemplateSelector.ToolTemplate>
+				<DataTemplate DataType="{x:Type local:ToolItemViewModel}">
+					<TextBlock Text="{loc:Loc {Binding Name}}"
+							   TextTrimming="CharacterEllipsis"
+							   FontWeight="Bold"
+							   FontSize="16"
+							   VerticalAlignment="Center"/>
+				</DataTemplate>
 
-			</local:ToolAdditionalTemplateSelector>
-		</materialDesign:TreeViewAssist.AdditionalTemplateSelector>
+			</materialDesign:TreeListView.Resources>
 
-		<materialDesign:TreeListView.View>
-			<GridView>
+			<materialDesign:TreeViewAssist.AdditionalTemplateSelector>
+				<local:ToolAdditionalTemplateSelector>
 
-				<GridViewColumn Width="250" Header="{loc:Loc name}">
-					<GridViewColumn.CellTemplate>
+					<local:ToolAdditionalTemplateSelector.ToolTemplate>
 						<DataTemplate>
-							<StackPanel Orientation="Horizontal">
-
-								<TextBlock Text="{loc:Loc {Binding Name}}"
-										   ToolTip="{loc:Loc {Binding Name}}"
-										   FontWeight="Bold"
-										   TextTrimming="CharacterEllipsis"
-										   VerticalAlignment="Center"/>
-
-								<TextBlock Text="{Binding NameSuffix}"
-										   Margin="5,0,0,0"
-										   Opacity="0.6"
-										   TextTrimming="CharacterEllipsis"
-										   VerticalAlignment="Center"
-										   Visibility="{Binding NameSuffix, Converter={StaticResource StringNonEmptyToVisiblityConverter}}"/>
-
-							</StackPanel>
-
-
+							<TextBlock Text="{Binding Description}"
+									   Margin="70,5,5,15"
+									   HorizontalAlignment="Left"
+									   MaxWidth="500" MaxHeight="120"
+									   TextWrapping="Wrap"
+									   TextTrimming="WordEllipsis"
+									   FontSize="12"
+									   OpacityMask="{Binding DescriptionOpacityMask}"/>
 						</DataTemplate>
-					</GridViewColumn.CellTemplate>
-				</GridViewColumn>
+					</local:ToolAdditionalTemplateSelector.ToolTemplate>
 
-				<GridViewColumn Width="120" Header="{loc:Loc enable}">
-					<GridViewColumn.CellTemplate>
-						<DataTemplate>
-							<CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}"
-									  VerticalAlignment="Center"
-									  HorizontalAlignment="Center"/>
-						</DataTemplate>
-					</GridViewColumn.CellTemplate>
-				</GridViewColumn>
+				</local:ToolAdditionalTemplateSelector>
+			</materialDesign:TreeViewAssist.AdditionalTemplateSelector>
 
-				<GridViewColumn Width="120" Header="{loc:Loc ask_for_confirmation}">
-					<GridViewColumn.CellTemplate>
-						<DataTemplate>
-							<CheckBox IsChecked="{Binding AskForConfirmation, Mode=TwoWay}"
-									  VerticalAlignment="Center"
-									  HorizontalAlignment="Center"/>
-						</DataTemplate>
-					</GridViewColumn.CellTemplate>
-				</GridViewColumn>
+			<materialDesign:TreeListView.View>
+				<GridView>
 
-				<GridViewColumn Width="120" Header="{loc:Loc reset}">
-					<GridViewColumn.CellTemplate>
-						<DataTemplate>
-							<Button Grid.Column="2"
-									Command="{Binding ResetCommand}"
-									Style="{StaticResource MaterialDesignIconButton}"
-									Width="28" Height="28">
+					<GridViewColumn Width="250" Header="{loc:Loc name}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
 
-								<materialDesign:PackIcon Kind="LockReset"
-														 Width="20" Height="20"/>
+									<TextBlock Text="{Binding TitlePrefix}"
+											   Margin="0,0,5,0"
+											   Foreground="{Binding TitlePrefixForeground}"
+											   Opacity="0.7"
+											   TextTrimming="CharacterEllipsis"
+											   VerticalAlignment="Center"
+											   Visibility="{Binding TitlePrefix, Converter={StaticResource StringNonEmptyToVisiblityConverter}}"/>
 
-							</Button>
-						</DataTemplate>
-					</GridViewColumn.CellTemplate>
-				</GridViewColumn>
+									<TextBlock Text="{loc:Loc {Binding Title}}"
+											   ToolTip="{loc:Loc {Binding Title}}"
+											   FontWeight="Bold"
+											   TextTrimming="CharacterEllipsis"
+											   VerticalAlignment="Center"/>
 
-			</GridView>
+									<TextBlock Text="{Binding TitleSuffix}"
+											   Margin="5,0,0,0"
+											   Opacity="0.7"
+											   TextTrimming="CharacterEllipsis"
+											   VerticalAlignment="Center"
+											   Visibility="{Binding TitleSuffix, Converter={StaticResource StringNonEmptyToVisiblityConverter}}"/>
+
+								</StackPanel>
+
+
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+
+					<GridViewColumn Width="120" Header="{loc:Loc enable}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}"
+										  VerticalAlignment="Center"
+										  HorizontalAlignment="Center"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+
+					<GridViewColumn Width="120" Header="{loc:Loc ask_for_confirmation}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<CheckBox IsChecked="{Binding AskForConfirmation, Mode=TwoWay}"
+										  VerticalAlignment="Center"
+										  HorizontalAlignment="Center"/>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+
+					<GridViewColumn Width="120" Header="{loc:Loc reset}">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<Button Grid.Column="2"
+										Command="{Binding ResetCommand}"
+										Style="{StaticResource MaterialDesignIconButton}"
+										Width="28" Height="28">
+
+									<materialDesign:PackIcon Kind="LockReset"
+															 Width="20" Height="20"/>
+
+								</Button>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+
+				</GridView>
 			
-		</materialDesign:TreeListView.View>
+			</materialDesign:TreeListView.View>
 
-	</materialDesign:TreeListView>
-	
+		</materialDesign:TreeListView>
+
+	</DockPanel>
+
 </UserControl>

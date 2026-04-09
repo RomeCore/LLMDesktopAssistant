@@ -11,15 +11,19 @@
 			 d:DesignHeight="450" d:DesignWidth="800">
 	
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Orientation="Vertical" Margin="5">
+		<StackPanel Orientation="Vertical" Margin="10">
 
-			<TextBlock Text="{loc:Loc chat_model_hint}"
+			<TextBlock Text="{loc:Loc settings-chat_model_hint}"
 					   Margin="0,15,0,2"/>
 			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.ChatModel, Mode=TwoWay}"/>
 
-			<TextBlock Text="{loc:Loc summarizer_model_hint}"
+			<TextBlock Text="{loc:Loc settings-summarizer_model_hint}"
 					   Margin="0,15,0,2"/>
 			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.SummarizerModel, Mode=TwoWay}"/>
+
+			<TextBlock Text="{loc:Loc settings-agentic_model_hint}"
+					   Margin="0,15,0,2"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.AgenticModel, Mode=TwoWay}"/>
 
 			<TextBox Text="{Binding Settings.SystemInstructions, Mode=TwoWay}"
 					 Style="{StaticResource MaterialDesignOutlinedTextBox}"

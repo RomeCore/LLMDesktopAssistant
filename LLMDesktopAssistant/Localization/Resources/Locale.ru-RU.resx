@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -162,7 +162,7 @@
   <data name="chats" xml:space="preserve">
     <value>Чаты</value>
   </data>
-  <data name="chat_model_hint" xml:space="preserve">
+  <data name="settings-chat_model_hint" xml:space="preserve">
     <value>Модель чата</value>
   </data>
   <data name="empty_model" xml:space="preserve">
@@ -240,7 +240,7 @@
   <data name="settings_profile" xml:space="preserve">
     <value>Профиль:</value>
   </data>
-  <data name="summarizer_model_hint" xml:space="preserve">
+  <data name="settings-summarizer_model_hint" xml:space="preserve">
     <value>Модель суммаризации</value>
   </data>
   <data name="system_instructions_hint" xml:space="preserve">
@@ -398,5 +398,89 @@
   </data>
   <data name="fs-apply_diff" xml:space="preserve">
     <value>Применить изменения к файлу</value>
+  </data>
+  <data name="settings-use_mcp" xml:space="preserve">
+    <value>Включить MCP</value>
+  </data>
+  <data name="settings-use_tools" xml:space="preserve">
+    <value>Включить инструменты</value>
+  </data>
+  <data name="application-only_reference" xml:space="preserve">
+    <value>Только ссылка</value>
+  </data>
+  <data name="application-mode_hint" xml:space="preserve">
+    <value>Режим вложения</value>
+  </data>
+  <data name="application-full_contents" xml:space="preserve">
+    <value>Полный текст</value>
+  </data>
+  <data name="application-partial_contents" xml:space="preserve">
+    <value>Часть текста</value>
+  </data>
+  <data name="application-full_hexadecimal" xml:space="preserve">
+    <value>Полный hex-дамп</value>
+  </data>
+  <data name="application-hexadecimal_partial" xml:space="preserve">
+    <value>Часть hex-дампа</value>
+  </data>
+  <data name="application-description" xml:space="preserve">
+    <value>Семантическое описание</value>
+  </data>
+  <data name="application-start_line" xml:space="preserve">
+    <value>Начальная строка</value>
+  </data>
+  <data name="application-end_line" xml:space="preserve">
+    <value>Конечная строка</value>
+  </data>
+  <data name="application-start_byte" xml:space="preserve">
+    <value>Начальный байт</value>
+  </data>
+  <data name="application-end_byte" xml:space="preserve">
+    <value>Конечный байт</value>
+  </data>
+  <data name="application-applicate_hint" xml:space="preserve">
+    <value>Вложить</value>
+  </data>
+  <data name="settings-summarization_threshold" xml:space="preserve">
+    <value>Порог суммаризации (в токенах)</value>
+  </data>
+  <data name="attachment-drop_files_here" xml:space="preserve">
+    <value>Сбросьте файлы здесь</value>
+  </data>
+  <data name="attachment-url_hint" xml:space="preserve">
+    <value>URL вложения</value>
+  </data>
+  <data name="attachment-add_url_hint" xml:space="preserve">
+    <value>Добавить URL</value>
+  </data>
+  <data name="attachment-attach_files_hint" xml:space="preserve">
+    <value>Вложить файлы</value>
+  </data>
+  <data name="metatools" xml:space="preserve">
+    <value>Мета-инструменты</value>
+  </data>
+  <data name="tools-create_or_update" xml:space="preserve">
+    <value>Создать или обновить инструмент</value>
+  </data>
+  <data name="tools-rename" xml:space="preserve">
+    <value>Переименовать инструмент</value>
+  </data>
+  <data name="tools-remove" xml:space="preserve">
+    <value>Удалить инструмент</value>
+  </data>
+  <data name="tools-list" xml:space="preserve">
+    <value>Получить список мета-инструментов</value>
+  </data>
+  <data name="tool-source_mcp" xml:space="preserve">
+    <value>MCP</value>
+  </data>
+  <data name="tool-source_meta" xml:space="preserve">
+    <value>Мета</value>
+  </data>
+  <data name="settings-agentic_model_hint" xml:space="preserve">
+    <value>Агентная модель</value>
+  </data>
+  <data name="fs-replace" xml:space="preserve">
+    <value>Заменить текст в файле</value>
   </data>
 </root>

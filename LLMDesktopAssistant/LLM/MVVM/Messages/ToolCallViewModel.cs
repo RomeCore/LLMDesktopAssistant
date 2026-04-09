@@ -71,7 +71,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Messages
 			ApproveCommand = new RelayCommand(Approve);
 			CancelCommand = new RelayCommand(Cancel);
 
-			ToolName = toolCall.ToolName;
+			ToolName = toolCall.Title ?? toolCall.ToolName;
 			ToolCallId = toolCall.Id;
 			Arguments = ToolCallArgumentFormatter.FormatToMarkdown(toolCall.Arguments);
 			Status = toolCall.Status switch

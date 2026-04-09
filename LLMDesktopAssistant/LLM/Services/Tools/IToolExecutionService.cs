@@ -3,7 +3,7 @@ using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Immutable;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	/// <summary>
 	/// Interface for tool execution service.

@@ -7,6 +7,7 @@ using LLMDesktopAssistant.ToolModules;
 using LLMDesktopAssistant.Utils;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
+using ModelContextProtocol.Protocol;
 using System.Collections.Immutable;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,20 +35,40 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 		private readonly ToolInfo _toolInfo;
 		private ToolChange? _change;
 
+		public bool IsCategory => false;
+
+		public Brush? TitlePrefixForeground { get; }
+		public string? TitlePrefix { get; }
+		public string Title { get; }
+		public string? TitleSuffix { get; }
+
+		public ToolInfo Info => _toolInfo;
 		public string Name { get; }
-		public string? NameSuffix => null;
 		public string Description { get; }
 		public Brush? DescriptionOpacityMask { get; }
 		public string Category { get; }
 		public ICommand ResetCommand { get; }
 
-		public bool IsCategory => false;
-
 		public ToolItemViewModel(ToolInfo tool, ChatSettings settings)
 		{
 			_settings = settings;
 			_toolInfo = tool;
-			Name = tool.DisplayName ?? tool.Tool.Name;
+
+			switch (tool.Source)
+			{
+				case ToolSource.MCP:
+					TitlePrefix = Locale.tool_source_mcp;
+					TitlePrefixForeground = Brushes.LightGreen;
+					break;
+
+				case ToolSource.Meta:
+					TitlePrefix = Locale.tool_source_meta;
+					TitlePrefixForeground = Brushes.Magenta;
+					break;
+			}
+			Title = tool.DisplayName ?? tool.Tool.Name;
+
+			Name = tool.Tool.Name;
 			Description = tool.Tool.Description;
 			Category = tool.Category;
 			ResetCommand = new RelayCommand(Reset);
@@ -120,19 +141,41 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 
 	public class ToolCategoryViewModel : ViewModelBase
 	{
-		public string Name { get; }
-		public string NameSuffix => string.Format(Locale.tool_name_suffix_hint, ToolCount);
+		public bool IsCategory => true;
+
+		public Brush? TitlePrefixForeground { get; }
+		public string? TitlePrefix { get; }
+		public string Title { get; }
+		public string? TitleSuffix { get; }
+
+		public int ToolCount => Tools.Count;
+
 		public ImmutableList<ToolItemViewModel> Tools { get; }
 		public ICommand ResetCommand { get; }
 
-		public int ToolCount => Tools.Count;
-		public bool IsCategory => true;
-
-		public ToolCategoryViewModel(string name, IEnumerable<ToolItemViewModel> tools)
+		public ToolCategoryViewModel(string title, IEnumerable<ToolItemViewModel> tools)
 		{
-			Name = name;
 			Tools = tools.ToImmutableList();
 			ResetCommand = new RelayCommand(ResetAllTools);
+
+			Title = title;
+			TitleSuffix = string.Format(Locale.tool_name_suffix_hint, ToolCount);
+
+			if (Tools.Select(t => t.Info.Source).GetAllEqualOrDefault() is ToolSource equalSource)
+			{
+				switch (equalSource)
+				{
+					case ToolSource.MCP:
+						TitlePrefix = Locale.tool_source_mcp;
+						TitlePrefixForeground = Brushes.LightGreen;
+						break;
+
+					case ToolSource.Meta:
+						TitlePrefix = Locale.tool_source_meta;
+						TitlePrefixForeground = Brushes.Magenta;
+						break;
+				}
+			}
 
 			foreach (var tool in Tools)
 				tool.PropertyChanged += Tool_PropertyChanged;

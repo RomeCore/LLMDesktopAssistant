@@ -304,6 +304,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				MessageId = model.Id,
 				ToolCallId = toolCall.Id,
 				ToolName = toolCall.ToolName,
+				Title = toolCall.Title,
 				FunctionArguments = JsonSerializer.Serialize(toolCall.Arguments),
 				ResultContent = toolCall.ResultContent,
 				Status = toolCall.Status switch
@@ -540,6 +541,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					{
 						Id = toolCallModel.ToolCallId,
 						ToolName = toolCallModel.ToolName,
+						Title = toolCallModel.Title,
 						Arguments = JsonNode.Parse(toolCallModel.FunctionArguments)!,
 						ResultContent = toolCallModel.ResultContent,
 						Status = toolCallModel.Status switch
