@@ -20,6 +20,11 @@ namespace LLMDesktopAssistant.LLM.Data.Models
 		public int Id { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this conversation is temporary.
+		/// </summary>
+		public bool IsTemporary { get; set; } = false;
+
+		/// <summary>
 		/// Gets or sets the title that should be displayed to the user.
 		/// </summary>
 		public string Title { get; set; } = string.Empty;

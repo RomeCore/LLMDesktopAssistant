@@ -11,7 +11,7 @@ using LLMDesktopAssistant.LLM.Data.Models;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.Localization.Resources;
+using LLMDesktopAssistant.WPF.Localization.Resources;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;
 using MaterialDesignThemes.Wpf;
@@ -57,7 +57,7 @@ namespace LLMDesktopAssistant.Tabs.Chat
 
 		private void Initialize()
 		{
-			ChatServices.ManagementService.ClearEmptyChats();
+			ChatServices.ManagementService.ClearEmptyAndTemporaryChats();
 			LoadConversations();
 			CreateConversation();
 		}

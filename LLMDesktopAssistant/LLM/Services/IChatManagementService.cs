@@ -33,7 +33,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// </summary>
 		/// <remarks>Use this method to clean up unused or placeholder chat sessions. This operation does not affect
 		/// chats that contain at least one message.</remarks>
-		void ClearEmptyChats();
+		void ClearEmptyAndTemporaryChats();
 
 		/// <summary>
 		/// Creates a new chat with the specified title.

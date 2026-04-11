@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.Localization.Resources;
+using LLMDesktopAssistant.WPF.Localization.Resources;
 using LLMDesktopAssistant.MVVM;
 using System;
 using System.Collections.Generic;

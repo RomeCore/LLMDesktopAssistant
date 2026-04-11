@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LLMDesktopAssistant.Localization.Resources;
+using LLMDesktopAssistant.WPF.Localization.Resources;
 using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.Modules.Instances;
 using RCLargeLanguageModels;

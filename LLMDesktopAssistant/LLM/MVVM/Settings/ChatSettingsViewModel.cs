@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Localization.Resources;
+using LLMDesktopAssistant.WPF.Localization.Resources;
 using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.ToolModules;

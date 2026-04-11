@@ -3,6 +3,7 @@ using RCLargeLanguageModels.Clients;
 using RCLargeLanguageModels.Clients.Deepseek;
 using RCLargeLanguageModels.Clients.Ollama;
 using RCLargeLanguageModels.Clients.OpenAI;
+using RCLargeLanguageModels.Clients.OpenRouter;
 using RCLargeLanguageModels.Security;
 using RCLargeLanguageModels.Tasks;
 using Serilog;
@@ -21,19 +22,8 @@ namespace LLMDesktopAssistant.Modules.Instances
 	[Module]
 	public class LLModelListModule : Module
 	{
-		private class OpenrouterClient : OpenAICompatibleClient
-		{
-			public OpenrouterClient(ITokenAccessor tokenAccessor, HttpClient? http = null) :
-				base("https://openrouter.ai/api/v1", tokenAccessor, http)
-			{
-			}
-
-			public override string Name => "openrouter";
-			public override string DisplayName => "Openrouter";
-		}
-
 		static readonly DeepSeekClient deepseek = new(new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
-		static readonly OpenrouterClient openrouter = new(new EnvironmentTokenAccessor("OPENROUTER_API_KEY"));
+		static readonly OpenRouterClient openrouter = new(new EnvironmentTokenAccessor("OPENROUTER_API_KEY"));
 		static readonly OllamaClient ollama = new();
 
 		public LLMClientRegistry Registry { get; private set; } = null!;

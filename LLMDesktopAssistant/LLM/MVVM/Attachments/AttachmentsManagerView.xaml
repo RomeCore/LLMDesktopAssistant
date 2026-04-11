@@ -49,7 +49,7 @@
 					Command="{Binding AttachFilesCommand}"
 					Style="{StaticResource MaterialDesignIconButton}"
 					ToolTip="{loc:Loc attachment-attach_files_hint}">
-				<materialDesign:PackIcon Kind="Paperclip" />
+				<materialDesign:PackIcon Kind="FolderOpen" />
 			</Button>
 		</Grid>
 

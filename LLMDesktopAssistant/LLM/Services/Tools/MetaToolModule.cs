@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -23,7 +24,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(CreateOrUpdateMetaTool,
-					"tools-create_or_update",
+					"metatools-create_or_update",
 					"""
 					Creates or updates a meta tool with the specified details.
 					If the tool already exists, it will be updated.
@@ -36,16 +37,27 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(ListMetaTools,
-					"tools-list",
-					"Lists all existing meta tools names. Use it for understanding what tools you can tweak or modify."),
+					"metatools-list",
+					"Lists all existing meta tools. Use it for understanding what tools you can tweak or modify."),
 				Category = "metatools",
+				Enabled = false,
+				AskForConfirmation = false
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(GetToolInfo,
+					"metatools-get_info",
+					"Gets detailed information about a specific meta tool by its name. Use it for understanding the details of a particular tool."),
+				Category = "metatools",
+				Enabled = false,
 				AskForConfirmation = false
 			});
 
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(RenameMetaTool,
-					"tools-rename",
+					"metatools-rename",
 					"Renames an existing meta tool to a new name. The original tool must exist and the new name must not conflict with any other tools."),
 				Category = "metatools",
 				AskForConfirmation = true
@@ -54,7 +66,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(DeleteMetaTool,
-					"tools-delete",
+					"metatools-delete",
 					"Removes an existing meta tool. The tool must exist and cannot be a default tool."),
 				Category = "metatools",
 				AskForConfirmation = true
@@ -135,12 +147,65 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			}
 		}
 
+		public ToolResult GetToolInfo(string name)
+		{
+			try
+			{
+				var tools = _metaToolManager.ListTools();
+				var tool = tools.FirstOrDefault(t => t.Name == name);
+
+				if (tool == null)
+					return new ToolResult(ToolResultStatus.Error, $"No meta tool with name '{name}' found.");
+
+				var result = new StringBuilder();
+
+				result.AppendLine($"Tool: {tool.Name}");
+				result.AppendLine($"Title: {tool.Title}");
+				result.AppendLine($"Description: {tool.Description}");
+				result.AppendLine($"Category: {tool.Category}");
+				result.AppendLine($"Requires confirmation: {tool.AskForConfirmation}");
+
+				result.AppendLine().AppendLine("Argument schema:");
+				result.AppendLine(tool.ArgumentSchema?.ToJsonString(new JsonSerializerOptions
+				{
+					WriteIndented = true
+				}) ?? "{}");
+
+				result.AppendLine().AppendLine("Python execution code:");
+				result.AppendLine(tool.PythonExecutionCode);
+
+				return new ToolResult(result.ToString());
+			}
+			catch (Exception ex)
+			{
+				return new ToolResult(ToolResultStatus.Error, $"Failed to list tools: {ex.Message}");
+			}
+		}
+
 		public ToolResult ListMetaTools()
 		{
 			try
 			{
-				var names = _metaToolManager.ListToolNames();
-				return new ToolResult($"Tools: {string.Join(", ", names)}");
+				var tools = _metaToolManager.ListTools();
+
+				if (tools.Length == 0)
+					return new ToolResult("No meta tools found.");
+
+				var result = new StringBuilder();
+
+				result.AppendLine("Existing meta tools:");
+
+				foreach (var tool in tools)
+				{
+					result.AppendLine($"- {tool.Name}");
+					result.AppendLine($"  Title: {tool.Title}");
+					result.AppendLine($"  Description: {tool.Description}");
+					result.AppendLine($"  Category: {tool.Category}");
+					result.AppendLine($"  Requires confirmation: {tool.AskForConfirmation}");
+					result.AppendLine();
+				}
+
+				return new ToolResult(result.ToString().Trim());
 			}
 			catch (Exception ex)
 			{

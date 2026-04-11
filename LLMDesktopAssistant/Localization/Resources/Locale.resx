@@ -459,16 +459,16 @@
   <data name="metatools" xml:space="preserve">
     <value>Meta-tools</value>
   </data>
-  <data name="tools-create_or_update" xml:space="preserve">
-    <value>Create or update tool</value>
+  <data name="metatools-create_or_update" xml:space="preserve">
+    <value>Create or update meta-tool</value>
   </data>
-  <data name="tools-rename" xml:space="preserve">
-    <value>Rename tool</value>
+  <data name="metatools-rename" xml:space="preserve">
+    <value>Rename meta-tool</value>
   </data>
-  <data name="tools-remove" xml:space="preserve">
-    <value>Remove tool</value>
+  <data name="metatools-delete" xml:space="preserve">
+    <value>Delete meta-tool</value>
   </data>
-  <data name="tools-list" xml:space="preserve">
+  <data name="metatools-list" xml:space="preserve">
     <value>List meta-tools</value>
   </data>
   <data name="tool-source_mcp" xml:space="preserve">
@@ -482,5 +482,14 @@
   </data>
   <data name="fs-replace" xml:space="preserve">
     <value>Replace text in file</value>
+  </data>
+  <data name="metatools-get_info" xml:space="preserve">
+    <value>Get information about meta-tool</value>
+  </data>
+  <data name="fs-rename_file" xml:space="preserve">
+    <value>Rename file</value>
+  </data>
+  <data name="fs-copy_file" xml:space="preserve">
+    <value>Copy file</value>
   </data>
 </root>

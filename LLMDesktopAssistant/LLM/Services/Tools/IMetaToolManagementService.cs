@@ -28,10 +28,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			bool? askForConfirmation, JsonObject? argumentSchema, string? pythonExecutionCode);
 
 		/// <summary>
-		/// Lists all tool names that have been created by LLM.
+		/// Lists all tools that have been created by LLM.
 		/// </summary>
-		/// <returns>An array of tool names.</returns>
-		string[] ListToolNames();
+		/// <returns>An array of tools.</returns>
+		MetaTool[] ListTools();
 
 		/// <summary>
 		/// Renames an existing tool from oldName to newName.

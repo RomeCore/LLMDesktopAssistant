@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LLMDesktopAssistant.Localization.Resources {
+namespace LLMDesktopAssistant.WPF.Localization.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LLMDesktopAssistant.Localization.Resources.Locale", typeof(Locale).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LLMDesktopAssistant.WPF.Localization.Resources.Locale", typeof(Locale).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -538,6 +538,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy file.
+        /// </summary>
+        public static string fs_copy_file {
+            get {
+                return ResourceManager.GetString("fs-copy_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Delete file.
         /// </summary>
         public static string fs_delete_file {
@@ -606,6 +615,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string fs_read_file {
             get {
                 return ResourceManager.GetString("fs-read_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Rename file.
+        /// </summary>
+        public static string fs_rename_file {
+            get {
+                return ResourceManager.GetString("fs-rename_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Replace text in file.
+        /// </summary>
+        public static string fs_replace {
+            get {
+                return ResourceManager.GetString("fs-replace", resourceCulture);
             }
         }
         
@@ -741,6 +768,51 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string metatools {
             get {
                 return ResourceManager.GetString("metatools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Create or update meta-tool.
+        /// </summary>
+        public static string metatools_create_or_update {
+            get {
+                return ResourceManager.GetString("metatools-create_or_update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete meta-tool.
+        /// </summary>
+        public static string metatools_delete {
+            get {
+                return ResourceManager.GetString("metatools-delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Get information about meta-tool.
+        /// </summary>
+        public static string metatools_get_info {
+            get {
+                return ResourceManager.GetString("metatools-get_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на List meta-tools.
+        /// </summary>
+        public static string metatools_list {
+            get {
+                return ResourceManager.GetString("metatools-list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Rename meta-tool.
+        /// </summary>
+        public static string metatools_rename {
+            get {
+                return ResourceManager.GetString("metatools-rename", resourceCulture);
             }
         }
         
@@ -1006,47 +1078,11 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Create or update tool.
-        /// </summary>
-        public static string tools_create_or_update {
-            get {
-                return ResourceManager.GetString("tools-create_or_update", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Tools.
         /// </summary>
         public static string tools_hint {
             get {
                 return ResourceManager.GetString("tools_hint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на List meta-tools.
-        /// </summary>
-        public static string tools_list {
-            get {
-                return ResourceManager.GetString("tools-list", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Remove tool.
-        /// </summary>
-        public static string tools_remove {
-            get {
-                return ResourceManager.GetString("tools-remove", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Rename tool.
-        /// </summary>
-        public static string tools_rename {
-            get {
-                return ResourceManager.GetString("tools-rename", resourceCulture);
             }
         }
         

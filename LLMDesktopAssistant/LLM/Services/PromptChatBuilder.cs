@@ -95,7 +95,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					messages.Add(new ToolMessage(toolResult, toolCall.Id, toolCall.ToolName));
 				}
 
-				var result = new RCLargeLanguageModels.Messages.AssistantMessage(assistantMessage.Content,
+				var result = new RCLargeLanguageModels.Messages.AssistantMessage(assistantMessage.Content ?? "",
 					assistantMessage.ReasoningContent, toolCalls: toolCalls);
 				messages.Insert(0, result);
 

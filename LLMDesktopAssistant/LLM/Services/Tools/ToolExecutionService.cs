@@ -36,9 +36,18 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			}
 
 			if (!tools.TryGetValue(toolCall.ToolName, out var toolInfo))
-				throw new InvalidOperationException($"Tool '{toolCall.ToolName}' not found.");
+			{
+				toolCall.ResultContent = $"Error: Tool '{toolCall.ToolName}' not found.";
+				toolCall.Status = ToolStatus.Error;
+				return;
+			}
+
 			if (toolInfo.Tool is not FunctionTool functionTool)
-				throw new InvalidOperationException($"Tool '{toolCall.ToolName}' is not a function tool.");
+			{
+				toolCall.ResultContent = $"Internal error: tool '{toolCall.ToolName}' is not a function tool. This should never happen.";
+				toolCall.Status = ToolStatus.Error;
+				return;
+			}
 
 			try
 			{

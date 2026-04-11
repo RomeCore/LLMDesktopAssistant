@@ -43,6 +43,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 
 			chat.Settings = SettingsManager.Get<ChatSettings>(conversation.SettingsProfile);
+			chat.IsTemporary = conversation.IsTemporary;
+
 			var currentNodeId = conversation.RootNodeId;
 
 			while (currentNodeId != -1)
@@ -59,7 +61,9 @@ namespace LLMDesktopAssistant.LLM.Services
 			void ChatPropertyChanged(object? s, PropertyChangedEventArgs e)
 			{
 				conversation = database.Conversations.FindById(conversationId);
+
 				conversation.SettingsProfile = chat.Settings.Id;
+				conversation.IsTemporary = chat.IsTemporary;
 
 				database.Conversations.Update(conversation);
 			}

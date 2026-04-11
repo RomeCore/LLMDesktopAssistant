@@ -73,7 +73,20 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(ApplyDiff, "fs-apply_diff",
-					"Applies diff operations to a file. Supports deleting a range of lines and/or inserting text at a specific line."),
+					"""
+					Applies diff operations to a file.
+					Supports deleting a range of lines and/or inserting text at a specific line.
+					Inserting text at a specific line works next way:
+					1: first line
+					2: second line
+					3: third line
+					After inserting at 2 line:
+					1: first line
+					2: inserted line <- insterted here
+					3: second line
+					4: third line
+					Note: Works best if you know line numbers when looking file with fs-read_file(showLineNumbers = true)
+					"""),
 				Category = "filesystem",
 				AskForConfirmation = true
 			});
@@ -82,7 +95,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			{
 				Tool = FunctionTool.From(ReplaceInFile, "fs-replace",
 					"""
-					Replaces all occurrences of a string in a text file.
+					Replaces all occurrences of a string or regex pattern in a text file line-by-line.
 					Returns detailed information about applied changes including line numbers.
 					"""),
 				Category = "filesystem",
@@ -107,6 +120,22 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 			AddTool(new ToolInfo
 			{
+				Tool = FunctionTool.From(RenameFile, "fs-rename_file",
+					"Renames or moves a file within the working directory."),
+				Category = "filesystem",
+				AskForConfirmation = true
+			});
+
+			AddTool(new ToolInfo
+			{
+				Tool = FunctionTool.From(CopyFile, "fs-copy_file",
+					"Copies a file within the working directory."),
+				Category = "filesystem",
+				AskForConfirmation = true
+			});
+
+			AddTool(new ToolInfo
+			{
 				Tool = FunctionTool.From(OpenFile, "fs-open_file",
 					"Opens a file from the working directory with its default application."),
 				Category = "filesystem",
@@ -119,6 +148,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					"""
 					Searches for pattern in files using regex.
 					Use this tool with care, as it can be slow and resource-intensive.
+					Use
 					"""),
 				Category = "filesystem",
 				AskForConfirmation = false
@@ -369,8 +399,21 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				if (!File.Exists(fullPath))
 					return new ToolResult(ToolResultStatus.Error, "File not found.");
 
+				if (FileUtils.IsBinaryFile(fullPath))
+					return new ToolResult(ToolResultStatus.Error, "Cannot apply diff to binary files.");
+
 				var originalContent = File.ReadAllText(fullPath);
 				var lines = originalContent.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
+				var beforeDeletionLines = lines.ToList();
+				var beforeInsertionLines = beforeDeletionLines;
+
+				int deletedStartLine = -1;
+				int deletedEndLine = -1;
+				List<string> deletedContent = new();
+
+				int insertedStartLine = -1;
+				int insertedEndLine = -1;
+				List<string> insertedContent = new();
 
 				if (!string.IsNullOrEmpty(deleteLines))
 				{
@@ -387,6 +430,37 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					if (endLine > lines.Count)
 						return new ToolResult(ToolResultStatus.Error,
 							$"End line {endLine} is out of range. File has {lines.Count} lines.");
+				}
+
+				if (insertAtLine != null && insertText != null)
+				{
+					if (insertAtLine < 1)
+						return new ToolResult(ToolResultStatus.Error,
+							$"Line number {insertAtLine} must be at least 1");
+
+					if (insertAtLine > lines.Count + 1)
+						return new ToolResult(ToolResultStatus.Error,
+							$"Line number {insertAtLine} is out of range. File has {lines.Count} lines. " +
+							$"Max insert position is {lines.Count + 1}");
+				}
+				else if (insertAtLine != null && insertText == null)
+				{
+					return new ToolResult(ToolResultStatus.Error,
+						"insertText parameter is required when insertAtLine is specified");
+				}
+				else if (insertText != null && insertAtLine == null)
+				{
+					return new ToolResult(ToolResultStatus.Error,
+						"insertAtLine parameter is required when insertText is specified");
+				}
+
+				if (!string.IsNullOrEmpty(deleteLines))
+				{
+					var (startLine, endLine) = ParseLineRange(deleteLines);
+
+					deletedStartLine = startLine;
+					deletedEndLine = endLine;
+					deletedContent = lines.Skip(startLine - 1).Take(endLine - startLine + 1).ToList();
 
 					int startIndex = startLine - 1;
 					int countToRemove = endLine - startLine + 1;
@@ -407,28 +481,14 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 				if (insertAtLine != null && insertText != null)
 				{
-					if (insertAtLine < 1)
-						return new ToolResult(ToolResultStatus.Error,
-							$"Line number {insertAtLine} must be at least 1");
-
-					if (insertAtLine > lines.Count + 1)
-						return new ToolResult(ToolResultStatus.Error,
-							$"Line number {insertAtLine} is out of range. File has {lines.Count} lines. " +
-							$"Max insert position is {lines.Count + 1}");
+					beforeInsertionLines = lines.ToList();
+					insertedStartLine = insertAtLine.Value;
+					var insertLinesList = insertText.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
+					insertedContent = insertLinesList;
+					insertedEndLine = insertAtLine.Value + insertLinesList.Count - 1;
 
 					int insertPosition = insertAtLine.Value - 1;
-					var insertLines = insertText.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
-					lines.InsertRange(insertPosition, insertLines);
-				}
-				else if (insertAtLine != null && insertText == null)
-				{
-					return new ToolResult(ToolResultStatus.Error,
-						"insertText parameter is required when insertAtLine is specified");
-				}
-				else if (insertText != null && insertAtLine == null)
-				{
-					return new ToolResult(ToolResultStatus.Error,
-						"insertAtLine parameter is required when insertText is specified");
+					lines.InsertRange(insertPosition, insertLinesList);
 				}
 
 				var newContent = string.Join(Environment.NewLine, lines);
@@ -439,12 +499,136 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				}
 
 				File.WriteAllText(fullPath, newContent);
-				return new ToolResult(ToolResultStatus.Success, "Changes applied successfully.");
+
+				var changeReport = BuildChangeReport(
+					beforeDeletionLines,
+					beforeInsertionLines,
+					lines,
+					deletedStartLine, deletedEndLine, deletedContent,
+					insertedStartLine, insertedEndLine, insertedContent,
+					path);
+
+				return new ToolResult(ToolResultStatus.Success, changeReport);
 			}
 			catch (Exception ex)
 			{
 				return new ToolResult(ToolResultStatus.Error, $"Error applying diff: {ex.Message}");
 			}
+		}
+
+		private string BuildChangeReport(
+			List<string> beforeDeletionLines,
+			List<string> beforeInsertionLines,
+			List<string> newLines,
+			int deletedStartLine, int deletedEndLine, List<string> deletedContent,
+			int insertedStartLine, int insertedEndLine, List<string> insertedContent,
+			string filePath)
+		{
+			var report = new StringBuilder();
+
+			report.AppendLine($"File modified: {filePath}");
+			report.AppendLine();
+
+			if (deletedContent.Any())
+			{
+				report.AppendLine($"DELETED lines {deletedStartLine}-{deletedEndLine} ({deletedContent.Count} lines)");
+				report.AppendLine();
+
+				int beforeStart = Math.Max(0, deletedStartLine - 6);
+				int beforeEnd = Math.Max(0, deletedStartLine - 1);
+				if (beforeStart < beforeEnd)
+				{
+					for (int i = beforeStart; i < beforeEnd; i++)
+					{
+						report.AppendLine($"{i + 1,6}: {beforeDeletionLines[i]}");
+					}
+					report.AppendLine();
+				}
+
+				for (int i = 0; i < Math.Min(5, deletedContent.Count); i++)
+				{
+					report.AppendLine($"> {deletedStartLine + i,6}: {deletedContent[i]}");
+				}
+
+				if (deletedContent.Count > 10)
+				{
+					report.AppendLine("> ...");
+				}
+
+				if (deletedContent.Count > 5)
+				{
+					int startIdx = Math.Max(0, deletedContent.Count - 5);
+					for (int i = startIdx; i < deletedContent.Count; i++)
+					{
+						report.AppendLine($"> {deletedStartLine + i,6}: {deletedContent[i]}");
+					}
+				}
+				report.AppendLine();
+
+				int afterStart = Math.Min(beforeDeletionLines.Count - 1, deletedEndLine);
+				int afterEnd = Math.Min(beforeDeletionLines.Count, deletedEndLine + 5);
+				if (afterStart < afterEnd)
+				{
+					for (int i = afterStart; i < afterEnd; i++)
+					{
+						report.AppendLine($"{i + 1,6}: {beforeDeletionLines[i]}");
+					}
+					report.AppendLine();
+				}
+			}
+
+			if (insertedContent.Any())
+			{
+				report.AppendLine($"INSERTED {insertedContent.Count} lines at position {insertedStartLine} (lines {insertedStartLine}-{insertedEndLine})");
+				report.AppendLine();
+
+				int beforeStart = Math.Max(0, insertedStartLine - 6);
+				int beforeEnd = Math.Max(0, insertedStartLine - 1);
+				if (beforeStart < beforeEnd)
+				{
+					for (int i = beforeStart; i < beforeEnd; i++)
+					{
+						if (i < beforeInsertionLines.Count)
+						{
+							report.AppendLine($"{i + 1,6}: {beforeInsertionLines[i]}");
+						}
+					}
+					report.AppendLine();
+				}
+
+				for (int i = 0; i < Math.Min(5, insertedContent.Count); i++)
+				{
+					report.AppendLine($"> {insertedStartLine + i,6}: {insertedContent[i]}");
+				}
+
+				if (insertedContent.Count > 10)
+				{
+					report.AppendLine("> ...");
+				}
+
+				if (insertedContent.Count > 5)
+				{
+					int startIdx = Math.Max(0, insertedContent.Count - 5);
+					for (int i = startIdx; i < insertedContent.Count; i++)
+					{
+						report.AppendLine($"> {insertedStartLine + i,6}: {insertedContent[i]}");
+					}
+				}
+				report.AppendLine();
+
+				int afterStart = Math.Min(newLines.Count - 1, insertedEndLine);
+				int afterEnd = Math.Min(newLines.Count, insertedEndLine + 5);
+				if (afterStart < afterEnd)
+				{
+					for (int i = afterStart; i < afterEnd; i++)
+					{
+						report.AppendLine($"{i + 1,6}: {newLines[i]}");
+					}
+					report.AppendLine();
+				}
+			}
+
+			return report.ToString();
 		}
 
 		private (int startLine, int endLine) ParseLineRange(string lineRange)
@@ -476,9 +660,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 		public ToolResult ReplaceInFile(
 			string path,
-			[Description("The string to search for. If null or empty, no replacement will be performed.")]
+			[Description("The string to search for. If null or empty, the 'oldRegex' must be provided.")]
 			string? oldString = null,
-			[Description("The replacement string. If null, the oldString will be removed (replaced with empty string).")]
+			[Description("The regex to search for. If null or empty, the 'oldString' must be provided.")]
+			string? oldRegex = null,
+			[Description("The replacement string. If null, the oldString or oldRegex will be removed (replaced with empty string).")]
 			string? newString = null)
 		{
 			try
@@ -488,32 +674,34 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				if (!File.Exists(fullPath))
 					return new ToolResult(ToolResultStatus.Error, "File not found.");
 
-				// Check if file is binary
 				if (FileUtils.IsBinaryFile(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "Cannot replace text in binary files. Use fs-write_binary_file instead.");
+					return new ToolResult(ToolResultStatus.Error, "Cannot replace text in binary files.");
 
-				if (string.IsNullOrEmpty(oldString))
-					return new ToolResult(ToolResultStatus.Error, "oldString parameter cannot be null or empty.");
+				if (string.IsNullOrEmpty(oldString) && string.IsNullOrEmpty(oldRegex))
+					return new ToolResult(ToolResultStatus.Error, "Both 'oldString' and 'oldRegex' parameters cannot be null or empty.");
 
-				// Read the file content
 				var content = File.ReadAllText(fullPath);
 				var lines = content.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
 
-				// Track changes
 				var changes = new List<(int lineNumber, string oldLine, string newLine)>();
 				var newLines = new List<string>();
 				var totalReplacements = 0;
+
+				var regex = oldString != null ?
+					new Regex(Regex.Escape(oldString), RegexOptions.Compiled) :
+					new Regex(oldRegex!, RegexOptions.Compiled);
+				newString ??= string.Empty;
 
 				for (int i = 0; i < lines.Length; i++)
 				{
 					var line = lines[i];
 					var lineNumber = i + 1;
 
-					if (line.Contains(oldString))
+					var matches = regex.Matches(line);
+					if (matches.Count > 0)
 					{
-						var newLine = line.Replace(oldString, newString ?? "");
-						var count = CountOccurrences(line, oldString);
-						totalReplacements += count;
+						var newLine = regex.Replace(line, newString);
+						totalReplacements += matches.Count;
 
 						changes.Add((lineNumber, line, newLine));
 						newLines.Add(newLine);
@@ -530,13 +718,12 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						$"No occurrences of '{oldString}' found in file '{path}'.");
 				}
 
-				// Write the modified content back
 				var newContent = string.Join(Environment.NewLine, newLines);
 				File.WriteAllText(fullPath, newContent);
 
-				// Build detailed report
 				var report = new StringBuilder();
-				report.AppendLine($"Successfully replaced '{oldString}' with '{newString ?? "(empty)"}' in file '{path}'");
+				var oldPattern = oldString ?? oldRegex!;
+				report.AppendLine($"Successfully replaced '{oldPattern}' with '{newString ?? "(empty)"}' in file '{path}'");
 				report.AppendLine($"Summary:");
 				report.AppendLine($"  Total lines modified: {changes.Count}");
 				report.AppendLine($"  Total replacements: {totalReplacements}");
@@ -587,18 +774,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			{
 				return new ToolResult(ToolResultStatus.Error, $"Error replacing text in file: {ex.Message}");
 			}
-		}
-
-		private int CountOccurrences(string text, string search)
-		{
-			int count = 0;
-			int index = 0;
-			while ((index = text.IndexOf(search, index, StringComparison.Ordinal)) != -1)
-			{
-				index += search.Length;
-				count++;
-			}
-			return count;
 		}
 
 		private string Truncate(string text, int maxLength)
@@ -719,6 +894,62 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			}
 		}
 
+		public ToolResult RenameFile(
+			string oldPath,
+			string newPath,
+			bool overwrite = false)
+		{
+			try
+			{
+				var fullOldPath = ResolvePath(oldPath);
+				var fullNewPath = ResolvePath(newPath);
+
+				if (!File.Exists(fullOldPath))
+					return new ToolResult(ToolResultStatus.Error, "Source file not found.");
+
+				if (File.Exists(fullNewPath))
+					return new ToolResult(ToolResultStatus.Error, "Destination file already exists.");
+
+				if (Path.GetDirectoryName(fullNewPath) is string dir)
+					Directory.CreateDirectory(dir);
+				File.Move(fullOldPath, fullNewPath, overwrite);
+
+				return new ToolResult(ToolResultStatus.Success, $"File renamed from '{oldPath}' to '{newPath}'.");
+			}
+			catch (Exception ex)
+			{
+				return new ToolResult(ToolResultStatus.Error, $"Error renaming file: {ex.Message}");
+			}
+		}
+
+		public ToolResult CopyFile(
+			string oldPath,
+			string newPath,
+			bool overwrite = false)
+		{
+			try
+			{
+				var fullOldPath = ResolvePath(oldPath);
+				var fullNewPath = ResolvePath(newPath);
+
+				if (!File.Exists(fullOldPath))
+					return new ToolResult(ToolResultStatus.Error, "Source file not found.");
+
+				if (File.Exists(fullNewPath) && !overwrite)
+					return new ToolResult(ToolResultStatus.Error, "Destination file already exists.");
+
+				if (Path.GetDirectoryName(fullNewPath) is string dir)
+					Directory.CreateDirectory(dir);
+				File.Copy(fullOldPath, fullNewPath, overwrite);
+
+				return new ToolResult(ToolResultStatus.Success, $"File copied from '{oldPath}' to '{newPath}'.");
+			}
+			catch (Exception ex)
+			{
+				return new ToolResult(ToolResultStatus.Error, $"Error copying file: {ex.Message}");
+			}
+		}
+
 		public async Task<ToolResult> OpenFile(string filename)
 		{
 			try
@@ -754,23 +985,30 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		}
 
 		public ToolResult Grep(
+			[Description("The regex pattern to search for.")]
 			string pattern,
+			[Description("The path where to search, can be file or directory path.")]
 			string path,
+			[Description("The file extensions to allow in search. Examples: '.cs', '.txt' etc.")]
+			string[]? allowedExtensions,
 			[Description("The maximum count of matched files to return.")]
 			int limitFiles = 20,
 			[Description("The maximum count of matched lines per file to return.")]
-			int limitLinesPerFile = 20,
+			int limitLinesPerFile = 10,
+			[Description("Whether to ignore case when searching for the pattern.")]
 			bool ignoreCase = false,
-			bool lineNumbers = false,
+			[Description("Whether to return line numbers with the matched lines.")]
+			bool lineNumbers = true,
 			[Description("Whether to return non-matched lines instead of matched lines.")]
 			bool invert = false,
 			[Description("Whether to return only regex matches instead of entire lines.")]
 			bool onlyMatching = false,
+			[Description("The number of lines to show before each match.")]
 			int beforeContext = 0,
+			[Description("The number of lines to show after each match.")]
 			int afterContext = 0,
+			[Description("Whether to search recursively through subdirectories.")]
 			bool recursive = false,
-			[Description("The file extensions to allow in search. Examples: '.cs', '.txt' etc. HIGHLY RECOMMENDED to use this parameter!")]
-			string[]? allowedExtensions = null,
 			CancellationToken cancellationToken = default)
 		{
 			try

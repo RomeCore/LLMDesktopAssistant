@@ -459,16 +459,16 @@
   <data name="metatools" xml:space="preserve">
     <value>Мета-инструменты</value>
   </data>
-  <data name="tools-create_or_update" xml:space="preserve">
-    <value>Создать или обновить инструмент</value>
+  <data name="metatools-create_or_update" xml:space="preserve">
+    <value>Создать или обновить мета-инструмент</value>
   </data>
-  <data name="tools-rename" xml:space="preserve">
-    <value>Переименовать инструмент</value>
+  <data name="metatools-rename" xml:space="preserve">
+    <value>Переименовать мета-инструмент</value>
   </data>
-  <data name="tools-remove" xml:space="preserve">
-    <value>Удалить инструмент</value>
+  <data name="metatools-delete" xml:space="preserve">
+    <value>Удалить мета-инструмент</value>
   </data>
-  <data name="tools-list" xml:space="preserve">
+  <data name="metatools-list" xml:space="preserve">
     <value>Получить список мета-инструментов</value>
   </data>
   <data name="tool-source_mcp" xml:space="preserve">
@@ -482,5 +482,14 @@
   </data>
   <data name="fs-replace" xml:space="preserve">
     <value>Заменить текст в файле</value>
+  </data>
+  <data name="metatools-get_info" xml:space="preserve">
+    <value>Получить информацию о мета-инструменте</value>
+  </data>
+  <data name="fs-rename_file" xml:space="preserve">
+    <value>Переименовать файл</value>
+  </data>
+  <data name="fs-copy_file" xml:space="preserve">
+    <value>Скопировать файл</value>
   </data>
 </root>

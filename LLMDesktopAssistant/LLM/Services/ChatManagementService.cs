@@ -39,9 +39,9 @@ namespace LLMDesktopAssistant.LLM.Services
 			return scope;
 		}
 
-		public void ClearEmptyChats()
+		public void ClearEmptyAndTemporaryChats()
 		{
-			database.Conversations.DeleteMany(c => c.LeafNodeId == -1 && c.RootNodeId == -1);
+			database.Conversations.DeleteMany(c => (c.LeafNodeId == -1 && c.RootNodeId == -1) || c.IsTemporary);
 		}
 
 		public ChatInfo CreateChat(string title)

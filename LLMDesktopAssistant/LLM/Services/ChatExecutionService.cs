@@ -1,5 +1,4 @@
-using System.Collections.Concurrent;
-using System.Collections.Immutable;
+using DocumentFormat.OpenXml.VariantTypes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.ToolModules;
@@ -8,6 +7,8 @@ using RCLargeLanguageModels.Metadata;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 using Serilog;
+using System.Collections.Concurrent;
+using System.Collections.Immutable;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -15,6 +16,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	/// The default implementation of the <see cref="IChatExecutionService"/>.
 	/// </summary>
 	public class ChatExecutionService(
+		Chat chat,
 		IChatStorageService storage,
 		IPromptChatBuilder promptBuilder,
 		IToolExecutionService toolExecutor,
@@ -42,11 +44,12 @@ namespace LLMDesktopAssistant.LLM.Services
 				throw new InvalidOperationException("Chat LLM is not configured. Please configure it first.");
 			var llm = llmInfo.LLM;
 
+			var timeRequested = DateTime.Now;
+			DateTime? timeFirstToken = null;
+
 			var inputMessages = promptBuilder.Build();
 			var tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Tool.Name);
 			var toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
-			var timeRequested = DateTime.Now;
-			DateTime? timeFirstToken = null;
 			var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 			var responseMessage = response.Message;
 
@@ -56,7 +59,22 @@ namespace LLMDesktopAssistant.LLM.Services
 				Status = AssistantMessageStatus.Pending,
 				CompletionToken = completionSource.Token
 			};
-			storage.AppendMessage(domainResponseMessage);
+
+			string prefixReasoningContent = string.Empty;
+			string prefixContent = string.Empty;
+
+			if (chat.Messages[^1].Message is Domain.AssistantMessage lastAssistantMessage
+				&& lastAssistantMessage.ToolCalls.Count == 0 && false)
+			{
+				prefixReasoningContent = lastAssistantMessage.ReasoningContent ?? string.Empty;
+				prefixContent = lastAssistantMessage.Content ?? string.Empty;
+
+				storage.EditMessage(chat.Messages[^1].MessageIndex, domainResponseMessage);
+			}
+			else
+			{
+				storage.AppendMessage(domainResponseMessage);
+			}
 
 			List<Task> toolExecutionTasks = [];
 			var lockObj = new object();
@@ -114,16 +132,18 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					timeFirstToken ??= DateTime.Now;
 					domainResponseMessage.Status = AssistantMessageStatus.Streaming;
-					if (!string.IsNullOrEmpty(delta.DeltaContent))
-						domainResponseMessage.Content = responseMessage.Content;
+
 					if (!string.IsNullOrEmpty(delta.DeltaReasoningContent))
-						domainResponseMessage.ReasoningContent = responseMessage.ReasoningContent;
+						domainResponseMessage.ReasoningContent = prefixReasoningContent + responseMessage.ReasoningContent;
+					if (!string.IsNullOrEmpty(delta.DeltaContent))
+						domainResponseMessage.Content = prefixContent + responseMessage.Content;
+
 					foreach (var toolCall in delta.NewToolCalls ?? [])
 						ProcessToolCall(toolCall);
 				}
 				
-				domainResponseMessage.Content = responseMessage.Content;
-				domainResponseMessage.ReasoningContent = responseMessage.ReasoningContent;
+				domainResponseMessage.ReasoningContent = prefixReasoningContent + responseMessage.ReasoningContent;
+				domainResponseMessage.Content = prefixContent + responseMessage.Content;
 				foreach (var toolCall in responseMessage.ToolCalls)
 					ProcessToolCall(toolCall);
 
@@ -133,9 +153,14 @@ namespace LLMDesktopAssistant.LLM.Services
 					try
 					{
 						await response;
+
+						timeFirstToken ??= DateTime.Now;
 						var timeReponseFinished = DateTime.Now;
 						Log.Information("Response generated successfully! Time to first token: {TimeToFirstToken} s, generation time: {GenerationTime} s",
 							(timeFirstToken!.Value - timeRequested).TotalSeconds, (timeReponseFinished - timeFirstToken.Value).TotalSeconds);
+
+						prefixReasoningContent = string.Empty;
+						prefixContent = string.Empty;
 
 						var usageMetadata = response.UsageMetadata;
 						if (usageMetadata != null)
@@ -146,7 +171,7 @@ namespace LLMDesktopAssistant.LLM.Services
 									usageCacheMetadata.InputCacheHitTokens, usageCacheMetadata.InputCacheMissTokens, usageCacheMetadata.OutputTokens);
 
 								usageStatsCollector.RecordUsage(
-									model: llmInfo.LLM.Name,
+									model: llmInfo.LLM.Descriptor.FullName,
 									inputTokens: usageMetadata.InputTokens,
 									outputTokens: usageMetadata.OutputTokens,
 									cacheHitTokens: usageCacheMetadata.InputCacheHitTokens,
@@ -160,7 +185,7 @@ namespace LLMDesktopAssistant.LLM.Services
 									usageMetadata.InputTokens, usageMetadata.OutputTokens);
 
 								usageStatsCollector.RecordUsage(
-									model: llmInfo.LLM.Name,
+									model: llmInfo.LLM.Descriptor.FullName,
 									inputTokens: usageMetadata.InputTokens,
 									outputTokens: usageMetadata.OutputTokens,
 									durationMs: (long)(timeReponseFinished - timeRequested).TotalMilliseconds,
@@ -170,7 +195,8 @@ namespace LLMDesktopAssistant.LLM.Services
 							await summarizer.TrySummarizeChat(llmInfo, usageMetadata);
 						}
 
-						domainResponseMessage.Status = AssistantMessageStatus.Success;
+						domainResponseMessage.Status = cancellationToken.IsCancellationRequested ?
+							AssistantMessageStatus.Cancelled : AssistantMessageStatus.Success;
 					}
 					catch (OperationCanceledException)
 					{
@@ -213,11 +239,12 @@ namespace LLMDesktopAssistant.LLM.Services
 				if (toolExecutionTasks.Count == 0)
 					break;
 
+				timeRequested = DateTime.Now;
+				timeFirstToken = null;
+
 				inputMessages = promptBuilder.Build();
 				tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Tool.Name);
 				toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
-				timeRequested = DateTime.Now;
-				timeFirstToken = null;
 				response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				responseMessage = response.Message;
 

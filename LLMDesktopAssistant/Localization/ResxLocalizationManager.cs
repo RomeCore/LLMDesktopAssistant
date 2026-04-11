@@ -7,6 +7,7 @@ using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.Modules;
+using LLMDesktopAssistant.WPF.Localization.Resources;
 
 namespace LLMDesktopAssistant.Localization
 {
@@ -27,13 +28,13 @@ namespace LLMDesktopAssistant.Localization
 
 			_languageMap = builder.ToImmutable();
 
-			_resourceManager = Resources.Locale.ResourceManager;
+			_resourceManager = Locale.ResourceManager;
 
 			if (_languageMap.ContainsValue(CultureInfo.CurrentUICulture))
 				_currentCulture = CultureInfo.CurrentUICulture;
 			else
 				_currentCulture = null; // Default to neutral culture if current UI culture is not supported
-			Resources.Locale.Culture = _currentCulture;
+			Locale.Culture = _currentCulture;
 		}
 
 		public override IEnumerable<string> GetAvailableLanguages()
@@ -51,7 +52,7 @@ namespace LLMDesktopAssistant.Localization
 			if (_languageMap.TryGetValue(language, out var culture))
 			{
 				_currentCulture = culture;
-				Resources.Locale.Culture = _currentCulture;
+				Locale.Culture = _currentCulture;
 				return true;
 			}
 			return false;

@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <summary>
 		/// The number of last messages to not be inculded in the summary.
 		/// </summary>
-		private const int IgnoreLastMessagesCount = 2;
+		private const int IgnoreLastMessagesCount = 4;
 
 		public async Task TrySummarizeChat(LLMInfo usedLLM, IUsageMetadata lastUsageMetadata)
 		{

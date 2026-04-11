@@ -6,6 +6,7 @@ using LLMDesktopAssistant.Modules;
 using LLMDesktopAssistant.Utils;
 using Python.Runtime;
 using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace LLMDesktopAssistant
 {
@@ -14,15 +15,12 @@ namespace LLMDesktopAssistant
 	/// </summary>
 	public partial class App : Application
 	{
-		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-		private static extern void AllocConsole();
-
 		public App()
 		{
-			AllocConsole();
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Debug()
-				.WriteTo.Console()
+				.WriteTo.Sink(new ConsoleAllocatorSink())
+				.WriteTo.Console(applyThemeToRedirectedOutput: true, theme: SystemConsoleTheme.Literate)
 				.WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
 				.CreateLogger();
 		}
@@ -35,6 +33,8 @@ namespace LLMDesktopAssistant
 			PluginManager.LoadPluginsInto(AppDomain.CurrentDomain);
 			ReflectionUtility.Initialize(AppDomain.CurrentDomain);
 			ModuleManager.Initialize();
+
+			// AllocConsole();
 		}
 
 		protected override void OnExit(ExitEventArgs e)

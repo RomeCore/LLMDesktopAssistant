@@ -31,6 +31,17 @@ namespace LLMDesktopAssistant.LLM.Domain
 			}
 		}
 
+		private bool _isTemporary = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether the chat session is temporary.
+		/// Temporary chats will be removed when user opens application again.
+		/// </summary>
+		public bool IsTemporary
+		{
+			get => _isTemporary;
+			set => SetProperty(ref _isTemporary, value);
+		}
+
 		/// <summary>
 		/// The collection of messages in the chat session.
 		/// These are managed by <see cref="IChatStorageService"/>.

@@ -5,6 +5,7 @@ using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels.Tools;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
@@ -51,9 +52,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			toolToUpdate.PythonExecutionCode = pythonExecutionCode ?? toolToUpdate.PythonExecutionCode;
 		}
 
-		public string[] ListToolNames()
+		public MetaTool[] ListTools()
 		{
-			return _configuration.Tools.Select(t => t.Name).ToArray();
+			return _configuration.Tools.OrderBy(t => t.Category).ThenBy(t => t.Title).ToArray();
 		}
 
 		public void RenameTool(string oldName, string newName)
@@ -81,7 +82,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		{
 			var result = new List<ToolInfo>();
 
-			foreach (var tool in _configuration.Tools)
+			foreach (var tool in _configuration.Tools.OrderBy(t => t.Category).ThenBy(t => t.Title))
 			{
 				result.Add(new ToolInfo
 				{
@@ -106,7 +107,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					string pythonCode = $"""
 						# Python dictionaries, arrays and values are looking exact as JSON.
 						# So we can simply serialize the JSON and put into the tool_args variable.
-						tool_args = {arguments.ToJsonString().Replace("true", "True").Replace("false", "False")}
+						tool_args = {SerializeNodeToPython(arguments)}
 
 						{metaTool.PythonExecutionCode}
 						""";
@@ -123,7 +124,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					}
 
 					bool success = result.Success && !result.StdOut.StartsWith("error", StringComparison.OrdinalIgnoreCase);
-					var status = result.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
+					var status = success ? ToolResultStatus.Success : ToolResultStatus.Error;
 					return new ToolResult(status, resultBuilder.ToString());
 				}
 				catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
@@ -141,6 +142,61 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			}
 
 			return new FunctionTool(metaTool.Name, metaTool.Description, metaTool.ArgumentSchema, ExecuteAsync);
+		}
+
+		private static string SerializeNodeToPython(JsonNode? node)
+		{
+			if (node == null)
+				return "None";
+
+			return node switch
+			{
+				JsonValue value => SerializeValueToPython(value),
+				JsonObject obj => SerializeObjectToPython(obj),
+				JsonArray arr => SerializeArrayToPython(arr),
+				_ => throw new NotSupportedException($"Unsupported node type: {node.GetType()}")
+			};
+		}
+
+		private static string SerializeValueToPython(JsonValue value)
+		{
+			switch (value.GetValueKind())
+			{
+				case JsonValueKind.Null:
+					return "None";
+				case JsonValueKind.True:
+					return "True";
+				case JsonValueKind.False:
+					return "False";
+				default:
+					return value.ToJsonString();
+			}
+		}
+
+		private static string SerializeObjectToPython(JsonObject obj)
+		{
+			var parts = new List<string>();
+
+			foreach (var kvp in obj)
+			{
+				string key = SerializeValueToPython(JsonValue.Create(kvp.Key));
+				string value = SerializeNodeToPython(kvp.Value);
+				parts.Add($"{key}: {value}");
+			}
+
+			return "{" + string.Join(", ", parts) + "}";
+		}
+
+		private static string SerializeArrayToPython(JsonArray arr)
+		{
+			var items = new List<string>();
+
+			foreach (var item in arr)
+			{
+				items.Add(SerializeNodeToPython(item));
+			}
+
+			return "[" + string.Join(", ", items) + "]";
 		}
 	}
 }

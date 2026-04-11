@@ -40,6 +40,14 @@
 				<materialDesign:PackIcon Kind="ArrowUDownLeft"/>
 			</Button>
 
+			<Button Style="{StaticResource MaterialDesignIconButton}"
+					Command="{Binding ResendCommand}"
+					Visibility="{Binding ContainsToolCalls, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
+					Width="24" Height="24"
+					ToolTip="{loc:Loc resend}">
+				<materialDesign:PackIcon Kind="ChevronDoubleDown"/>
+			</Button>
+
 			<StackPanel Orientation="Horizontal"
 						Visibility="{Binding BranchSelectionVisibility}">
 
