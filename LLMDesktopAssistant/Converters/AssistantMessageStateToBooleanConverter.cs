@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using LLMDesktopAssistant.LLM;
-using LLMDesktopAssistant.LLM.MVVM.Messages;
+using LLMDesktopAssistant.Core.LLM;
+using LLMDesktopAssistant.Core.LLM.MVVM.Messages;
 
-namespace LLMDesktopAssistant.Converters
+namespace LLMDesktopAssistant.Core.Converters
 {
 	public class AssistantMessageStateToBooleanConverter : IValueConverter
 	{

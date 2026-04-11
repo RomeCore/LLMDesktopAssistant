@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.MVVM;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Messages
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Messages
 {
 	[ViewModelFor(typeof(ToolCallView))]
 	public class ToolCallViewModel : ViewModelBase

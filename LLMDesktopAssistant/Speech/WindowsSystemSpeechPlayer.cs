@@ -4,9 +4,9 @@ using System.Linq;
 using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Modules;
+using LLMDesktopAssistant.Core.Modules;
 
-namespace LLMDesktopAssistant.Speech
+namespace LLMDesktopAssistant.Core.Speech
 {
 	[DynamicModule("WindowsSystemSpeechPlayer", typeof(IAssistantSpeechPlayer), IsDefault = true)]
 	public class WindowsSystemSpeechPlayer : IAssistantSpeechPlayer

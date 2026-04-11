@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Attachments
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Attachments
 {
 	/// <summary>
 	/// Логика взаимодействия для AttachmentView.xaml

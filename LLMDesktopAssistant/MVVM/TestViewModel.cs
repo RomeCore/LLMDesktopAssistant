@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.MVVM
+namespace LLMDesktopAssistant.Core.MVVM
 {
 	[ViewModelFor(typeof(TestView))]
 	public class TestViewModel

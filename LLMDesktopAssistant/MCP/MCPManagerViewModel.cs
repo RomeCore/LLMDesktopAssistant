@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Core.LLM.Services;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.Settings;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.MCP
+namespace LLMDesktopAssistant.Core.MCP
 {
 	public class MCPServerItemViewModel : ViewModelBase
 	{

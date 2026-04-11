@@ -1,9 +1,9 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.MVVM;
+﻿using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.MVVM;
 using System.ComponentModel;
 using System.Windows.Threading;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Messages
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Messages
 {
 	[ViewModelFor(typeof(AssistantMessageTextPartView))]
 	public class AssistantMessageTextPartViewModel : AssistantMessagePartViewModel

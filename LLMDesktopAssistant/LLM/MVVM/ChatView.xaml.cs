@@ -12,9 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Core.MVVM;
 
-namespace LLMDesktopAssistant.LLM.MVVM
+namespace LLMDesktopAssistant.Core.LLM.MVVM
 {
 	public partial class ChatView : UserControl
 	{

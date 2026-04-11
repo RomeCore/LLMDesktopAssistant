@@ -5,13 +5,13 @@ using System.Net.Quic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using LLMDesktopAssistant.Modules;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Utils;
 using NAudio.Wave;
 using NHotkey;
 using NHotkey.Wpf;
 
-namespace LLMDesktopAssistant.Speech
+namespace LLMDesktopAssistant.Core.Speech
 {
 	/// <summary>
 	/// Class that listens for keyboard input, listens to microphone input and triggers speech events.

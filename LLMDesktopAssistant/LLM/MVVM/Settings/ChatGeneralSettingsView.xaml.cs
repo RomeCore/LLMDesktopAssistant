@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Settings
 {
 	/// <summary>
 	/// Логика взаимодействия для ChatGeneralSettingsView.xaml

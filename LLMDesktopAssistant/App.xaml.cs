@@ -1,14 +1,10 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Runtime.InteropServices;
-using System.Windows;
-using LLMDesktopAssistant.Modules;
-using LLMDesktopAssistant.Utils;
-using Python.Runtime;
+﻿using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Utils;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+using System.Windows;
 
-namespace LLMDesktopAssistant
+namespace LLMDesktopAssistant.Core
 {
 	/// <summary>
 	/// Interaction logic for App.xaml

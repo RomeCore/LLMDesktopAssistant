@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.LLM.Data;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Core.LLM.Data;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.Utils;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Messages
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Messages
 {
 	[ViewModelFor(typeof(MessageSequenceView))]
 	public class MessageSequenceViewModel : ViewModelBase

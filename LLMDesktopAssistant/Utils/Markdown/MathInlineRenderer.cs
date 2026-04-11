@@ -16,7 +16,7 @@ using Markdig.Renderers.Wpf;
 using Markdig.Wpf;
 using WpfMath.Controls;
 
-namespace LLMDesktopAssistant.Utils.Markdown
+namespace LLMDesktopAssistant.Core.Utils.Markdown
 {
 	public class MathInlineRenderer : WpfObjectRenderer<MathInline>
 	{

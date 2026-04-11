@@ -3,9 +3,9 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Threading;
-using LLMDesktopAssistant.Modules;
+using LLMDesktopAssistant.Core.Modules;
 
-namespace LLMDesktopAssistant.Localization
+namespace LLMDesktopAssistant.Core.Localization
 {
 	/// <summary>
 	/// XAML markup extension for localizing strings using the LocalizationManager.

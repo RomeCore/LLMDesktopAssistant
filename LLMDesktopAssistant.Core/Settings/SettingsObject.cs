@@ -1,0 +1,23 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+
+namespace LLMDesktopAssistant.Core.Settings
+{
+	public abstract class SettingsObject : NotifyPropertyChanged
+	{
+		/// <summary>
+		/// The default ID used for settings instances without an explicit identifier.
+		/// </summary>
+		public const string DefaultId = "-default";
+
+		/// <summary>
+		/// Gets the current ID of this
+		/// </summary>
+		[JsonIgnore]
+		public string Id { get; internal set; } = DefaultId;
+	}
+}

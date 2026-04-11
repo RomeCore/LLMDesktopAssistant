@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Tabs;
+using LLMDesktopAssistant.Core.Localization;
+using LLMDesktopAssistant.Core.Tabs;
 using MaterialDesignThemes.Wpf;
 
-namespace LLMDesktopAssistant.MVVM
+namespace LLMDesktopAssistant.Core.MVVM
 {
 	[ViewModelFor(typeof(MainView))]
 	public class MainViewModel : ViewModelBase

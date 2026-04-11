@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Core.MVVM;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Messages
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Messages
 {
 	public abstract class AssistantMessagePartViewModel : ViewModelBase
 	{

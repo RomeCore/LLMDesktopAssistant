@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.Tabs
+namespace LLMDesktopAssistant.Core.Tabs
 {
 	// [TabTool("sample")]
 	public partial class SampleTab : UserControl

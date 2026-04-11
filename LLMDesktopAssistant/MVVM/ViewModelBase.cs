@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace LLMDesktopAssistant.MVVM
+namespace LLMDesktopAssistant.Core.MVVM
 {
 	/// <summary>
 	/// Base class for view models. Implements INotifyPropertyChanged to facilitate data binding.

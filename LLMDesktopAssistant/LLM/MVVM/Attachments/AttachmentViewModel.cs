@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.MVVM;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Attachments
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Attachments
 {
 	[ViewModelFor(typeof(AttachmentView))]
 	public class AttachmentViewModel : ViewModelBase

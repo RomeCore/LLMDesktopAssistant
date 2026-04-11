@@ -8,14 +8,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LLMDesktopAssistant.Modules;
-using LLMDesktopAssistant.Modules.Instances;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Speech;
+using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Modules.Instances;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.Speech;
 using MahApps.Metro.Controls;
 using Microsoft.Web.WebView2.Core;
 
-namespace LLMDesktopAssistant
+namespace LLMDesktopAssistant.Core
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

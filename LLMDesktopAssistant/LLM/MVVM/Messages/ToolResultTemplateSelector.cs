@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Messages
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Messages
 {
 	public class ToolResultTemplateSelector : DataTemplateSelector
 	{

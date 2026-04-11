@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace LLMDesktopAssistant.Converters
+namespace LLMDesktopAssistant.Core.Converters
 {
 	public class FallbackMultiConverter : IMultiValueConverter
 	{

@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Markup;
 
-namespace LLMDesktopAssistant.Controls
+namespace LLMDesktopAssistant.Core.Controls
 {
 	[ContentProperty(nameof(Content))]
 	public class SwitchItem : ContentControl

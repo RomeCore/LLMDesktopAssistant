@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace LLMDesktopAssistant.Converters
+namespace LLMDesktopAssistant.Core.Converters
 {
 	public sealed class BooleanToVisibilityConverter : BooleanConverter<Visibility>
 	{

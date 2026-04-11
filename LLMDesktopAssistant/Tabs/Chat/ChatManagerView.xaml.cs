@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.Tabs.Chat
+namespace LLMDesktopAssistant.Core.Tabs.Chat
 {
 	public partial class ChatManagerView : UserControl
 	{

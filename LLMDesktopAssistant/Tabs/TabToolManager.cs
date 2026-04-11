@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.Utils;
 using MaterialDesignThemes.Wpf;
 
-namespace LLMDesktopAssistant.Tabs
+namespace LLMDesktopAssistant.Core.Tabs
 {
 	public class TabToolInfo
 	{

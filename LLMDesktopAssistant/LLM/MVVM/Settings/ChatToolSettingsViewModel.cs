@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.WPF.Localization.Resources;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.ToolModules;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.LLM.Services;
+using LLMDesktopAssistant.Core.Localization.Resources;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.ToolModules;
+using LLMDesktopAssistant.Core.Utils;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using ModelContextProtocol.Protocol;
@@ -14,7 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Settings
 {
 	public class ToolAdditionalTemplateSelector : DataTemplateSelector
 	{

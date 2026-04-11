@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services.Attachments;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.LLM.Services.Attachments;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.Utils;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Attachments
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Attachments
 {
 	public class AttachmentApplicationModeViewModel
 	{

@@ -12,9 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Core.Utils;
 
-namespace LLMDesktopAssistant.Controls
+namespace LLMDesktopAssistant.Core.Controls
 {
 	public partial class StreamingMarkdownControl : UserControl
 	{

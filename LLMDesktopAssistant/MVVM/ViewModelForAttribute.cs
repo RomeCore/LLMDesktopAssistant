@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.MVVM
+﻿namespace LLMDesktopAssistant.Core.MVVM
 {
 	/// <summary>
 	/// Specifies the view associated with a ViewModel.

@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.MVVM.Attachments;
+﻿using LLMDesktopAssistant.Core.LLM.MVVM.Attachments;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Attachments
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Attachments
 {
 	public partial class AttachmentsManagerView : UserControl
 	{

@@ -2,12 +2,6 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="Browsing\BrowserTabView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Browsing\BrowserView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Controls\MarkdownControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

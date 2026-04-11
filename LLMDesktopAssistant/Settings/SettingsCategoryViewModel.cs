@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.WPF.Localization.Resources;
-using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Core.Localization.Resources;
+using LLMDesktopAssistant.Core.MVVM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.Settings
+namespace LLMDesktopAssistant.Core.Settings
 {
 	[ViewModelFor(typeof(SettingsCategoryView))]
 	public class SettingsCategoryViewModel<TSettings> : ViewModelBase

@@ -1,12 +1,12 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.MCP;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Utils;
+﻿using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.LLM.Services;
+using LLMDesktopAssistant.Core.MCP;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Immutable;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Settings
 {
 	public class MCPServerSelectionViewModel : ViewModelBase
 	{

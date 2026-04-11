@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Core.Utils;
 using Serilog;
 
-namespace LLMDesktopAssistant.MVVM
+namespace LLMDesktopAssistant.Core.MVVM
 {
 	/// <summary>
 	/// Represents a view locator for mapping view models to views.

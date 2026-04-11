@@ -7,7 +7,7 @@ using Markdig.Renderers;
 using Markdig.Renderers.Wpf;
 using Markdig.Wpf;
 
-namespace LLMDesktopAssistant.Utils.Markdown
+namespace LLMDesktopAssistant.Core.Utils.Markdown
 {
 	public class MathBlockRenderer : WpfObjectRenderer<MathBlock>
 	{

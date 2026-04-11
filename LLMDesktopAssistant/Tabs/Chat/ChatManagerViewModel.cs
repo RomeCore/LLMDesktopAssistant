@@ -6,18 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Data;
-using LLMDesktopAssistant.LLM.Data.Models;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.MVVM;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.WPF.Localization.Resources;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Core.LLM.Data;
+using LLMDesktopAssistant.Core.LLM.Data.Models;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.LLM.MVVM;
+using LLMDesktopAssistant.Core.LLM.Services;
+using LLMDesktopAssistant.Core.Localization.Resources;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.ToolModules;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LLMDesktopAssistant.Tabs.Chat
+namespace LLMDesktopAssistant.Core.Tabs.Chat
 {
 	[ViewModelFor(typeof(ChatManagerView))]
 	[TabTool("chat", Icon = PackIconKind.Message)]

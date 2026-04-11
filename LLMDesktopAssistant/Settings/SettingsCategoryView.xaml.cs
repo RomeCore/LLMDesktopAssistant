@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.Settings
+namespace LLMDesktopAssistant.Core.Settings
 {
     /// <summary>
     /// Логика взаимодействия для SettingsCategoryView.xaml

@@ -1,5 +1,5 @@
 using System.Windows;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Core.Utils;
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None,            //where theme specific resource dictionaries are located

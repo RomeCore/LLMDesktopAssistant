@@ -1,0 +1,17 @@
+﻿using LLMDesktopAssistant.Core.LLM.Domain;
+
+namespace LLMDesktopAssistant.Core.LLM.Services
+{
+	/// <summary>
+	/// Interface for chat execution service that calls LLM services, executes tools, plans and puts result messages into a <see cref="Chat"/>.
+	/// </summary>
+	public interface IChatExecutionService
+	{
+		/// <summary>
+		/// Generates a response asynchronously and puts it into a <see cref="IChatStorageService"/>.
+		/// </summary>
+		/// <param name="cancellationToken">Token for cancellation of the operation.</param>
+		/// <returns>A task representing the asynchronous operation.</returns>
+		Task GenerateResponseAsync(CancellationToken cancellationToken = default);
+	}
+}

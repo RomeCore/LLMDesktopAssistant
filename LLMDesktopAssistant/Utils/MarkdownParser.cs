@@ -8,12 +8,12 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media.Animation;
 using Emoji.Wpf;
-using LLMDesktopAssistant.Utils.Markdown;
+using LLMDesktopAssistant.Core.Utils.Markdown;
 using Markdig;
 using Markdig.Renderers;
 using Markdig.Wpf;
 
-namespace LLMDesktopAssistant.Utils
+namespace LLMDesktopAssistant.Core.Utils
 {
 	public static class MarkdownParser
 	{

@@ -1,12 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.WPF.Localization.Resources;
-using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.Localization.Resources;
+using LLMDesktopAssistant.Core.MVVM;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Settings
 {
 	[ViewModelFor(typeof(ChatGeneralSettingsView))]
 	public class ChatGeneralSettingsViewModel : ViewModelBase

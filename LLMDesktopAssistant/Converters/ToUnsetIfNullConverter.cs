@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Data;
 
-namespace LLMDesktopAssistant.Converters
+namespace LLMDesktopAssistant.Core.Converters
 {
 	public sealed class ToUnsetIfNullConverter : IValueConverter
 	{

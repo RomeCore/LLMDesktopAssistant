@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.MVVM
+namespace LLMDesktopAssistant.Core.MVVM
 {
 	public partial class MainView : UserControl
 	{

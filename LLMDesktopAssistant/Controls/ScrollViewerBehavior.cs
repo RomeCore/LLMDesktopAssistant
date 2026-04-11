@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace LLMDesktopAssistant.Controls
+namespace LLMDesktopAssistant.Core.Controls
 {
 	public class ScrollViewerBehavior
 	{

@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.LLM.MVVM.Messages
+﻿namespace LLMDesktopAssistant.Core.LLM.MVVM.Messages
 {
 	public enum ToolCallStatus
 	{

@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.WPF.Localization.Resources;
-using LLMDesktopAssistant.MCP;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.Localization.Resources;
+using LLMDesktopAssistant.Core.MCP;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.ToolModules;
 using MaterialDesignThemes.Wpf;
 using ModelContextProtocol.Server;
 using RCLargeLanguageModels.Tools;
@@ -19,7 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Settings
 {
 	[ViewModelFor(typeof(ChatSettingsView))]
 	public class ChatSettingsViewModel : ViewModelBase

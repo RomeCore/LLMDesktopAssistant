@@ -9,7 +9,7 @@ using Markdig.Renderers.Wpf;
 using Markdig.Syntax.Inlines;
 using Markdig.Wpf;
 
-namespace LLMDesktopAssistant.Utils.Markdown
+namespace LLMDesktopAssistant.Core.Utils.Markdown
 {
 	/// <summary>
 	/// Renders a <see cref="LinkInline"/> as an <see cref="Hyperlink"/>.

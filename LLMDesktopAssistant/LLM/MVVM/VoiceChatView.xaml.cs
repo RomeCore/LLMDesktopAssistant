@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LLMDesktopAssistant.LLM.MVVM
+namespace LLMDesktopAssistant.Core.LLM.MVVM
 {
 	/// <summary>
 	/// Логика взаимодействия для VoiceChatView.xaml

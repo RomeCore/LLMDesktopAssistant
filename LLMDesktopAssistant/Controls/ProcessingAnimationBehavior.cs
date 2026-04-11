@@ -8,7 +8,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media;
 using System.Windows;
 
-namespace LLMDesktopAssistant.Controls
+namespace LLMDesktopAssistant.Core.Controls
 {
 	public static class ProcessingAnimationBehavior
 	{

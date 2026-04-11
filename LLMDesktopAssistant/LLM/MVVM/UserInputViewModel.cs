@@ -1,12 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.MVVM.Attachments;
-using LLMDesktopAssistant.LLM.MVVM.Settings;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.MCP;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.LLM.MVVM.Attachments;
+using LLMDesktopAssistant.Core.LLM.MVVM.Settings;
+using LLMDesktopAssistant.Core.LLM.Services;
+using LLMDesktopAssistant.Core.MCP;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.Settings;
+using LLMDesktopAssistant.Core.Utils;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.LLM.MVVM
+namespace LLMDesktopAssistant.Core.LLM.MVVM
 {
 	[ViewModelFor(typeof(UserInputView))]
 	public class UserInputViewModel : ViewModelBase

@@ -1,6 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 
-namespace LLMDesktopAssistant.Tabs
+namespace LLMDesktopAssistant.Core.Tabs
 {
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class TabToolAttribute(string id) : Attribute

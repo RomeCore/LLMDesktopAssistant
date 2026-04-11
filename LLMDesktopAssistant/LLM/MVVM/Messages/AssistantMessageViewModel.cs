@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Data;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Core.LLM.Data;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.LLM.Services;
+using LLMDesktopAssistant.Core.MVVM;
 using Microsoft.Extensions.DependencyInjection;
 using RCLargeLanguageModels.Tools;
 using System;
@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Messages
+namespace LLMDesktopAssistant.Core.LLM.MVVM.Messages
 {
 	[ViewModelFor(typeof(AssistantMessageView))]
 	public class AssistantMessageViewModel : MessageViewModelBase

@@ -8,18 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Data;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.MVVM.Messages;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.Modules;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Core.LLM.Data;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.LLM.MVVM.Messages;
+using LLMDesktopAssistant.Core.LLM.Services;
+using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.ToolModules;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace LLMDesktopAssistant.LLM.MVVM
+namespace LLMDesktopAssistant.Core.LLM.MVVM
 {
 	[ViewModelFor(typeof(ChatView))]
 	public class ChatViewModel : ViewModelBase

@@ -7,7 +7,7 @@ using System.Windows.Media;
 using ControlzEx.Theming;
 using MaterialDesignThemes.Wpf;
 
-namespace LLMDesktopAssistant.Modules.Instances
+namespace LLMDesktopAssistant.Core.Modules.Instances
 {
 	/// <summary>
 	/// Represents the type of theme to be used.

@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.Utils
+namespace LLMDesktopAssistant.Core.Utils
 {
 	public static class KeyboardUtils
 	{

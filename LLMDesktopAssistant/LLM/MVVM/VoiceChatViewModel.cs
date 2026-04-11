@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.LLM.Data;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.Modules;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Speech;
-using LLMDesktopAssistant.Tabs;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Core.LLM.Data;
+using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.LLM.Services;
+using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.MVVM;
+using LLMDesktopAssistant.Core.Speech;
+using LLMDesktopAssistant.Core.Tabs;
+using LLMDesktopAssistant.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LLMDesktopAssistant.LLM.MVVM
+namespace LLMDesktopAssistant.Core.LLM.MVVM
 {
 	// [TabTool("voice_chat", Order = -10)]
 	[ViewModelFor(typeof(VoiceChatView))]

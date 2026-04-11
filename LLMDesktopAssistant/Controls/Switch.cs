@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using MoonSharp.Interpreter.Debugging;
 
-namespace LLMDesktopAssistant.Controls
+namespace LLMDesktopAssistant.Core.Controls
 {
 	[ContentProperty(nameof(Items))]
 	public class Switch : Control, IAddChild
