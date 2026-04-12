@@ -19,6 +19,8 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="LiveMarkdown.Avalonia" />
+    <PackageReference Include="LiveMarkdown.Avalonia.Math" />
     <PackageReference Include="Microsoft.Bcl.Memory" />
   </ItemGroup>
 
