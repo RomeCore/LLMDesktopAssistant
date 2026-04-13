@@ -1,4 +1,14 @@
-﻿using AngleSharp;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using AngleSharp;
+using DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using Ganss.Xss;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.Modules;
@@ -9,15 +19,6 @@ using RCLargeLanguageModels.Security;
 using RCLargeLanguageModels.Tools;
 using RCLargeLanguageModels.Utilities;
 using RCParsing;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 {
@@ -35,8 +36,6 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 		public WebRequestToolModule(Chat chat)
 		{
 			_httpClient = new HttpClient();
-			_chat = chat;
-
 			_httpClient.DefaultRequestHeaders.Add("User-Agent",
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
 			_httpClient.DefaultRequestHeaders.Add("Accept",
@@ -44,6 +43,8 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 			_httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.5");
 			_httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
 			_httpClient.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
+
+			_chat = chat;
 
 			AddTool(new ToolInfo
 			{
@@ -65,7 +66,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(GetHtml, "web-get_html", "Fetch HTML content from a specified URL."),
+				Tool = FunctionTool.From(Fetch, "web-fetch", "Fetch webcite content from a specified URL."),
 				Category = "web"
 			});
 
@@ -77,7 +78,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(Search_SearXNG, "web-search", "Search through the web using query."),
+				Tool = FunctionTool.From(Search_LangSearch, "web-search", "Search through the web using query."),
 				Category = "web"
 			});
 		}
@@ -216,35 +217,80 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 			}
 		}
 
-		private async Task<ToolResult> GetHtml(
-			[Description("URL to fetch HTML from")] string url,
-			[Description("Whether to sanitize HTML to remove extra data")] bool sanitize = true)
-		{
-			try
+		private static readonly ReverseMarkdown.Converter _mdConverter = new(
+			new ReverseMarkdown.Config
+			{
+				UnknownTags = ReverseMarkdown.Config.UnknownTagsOption.Drop,
+				RemoveComments = true,
+				GithubFlavored = true,
+				Base64Images = ReverseMarkdown.Config.Base64ImageHandling.Skip
+			});
+		private readonly AsyncCache<(string, string), string> _fetchContentCache = new(
+			async ((string url, string contentType) args) =>
 			{
 				var config = Configuration.Default.WithDefaultLoader();
 				var context = BrowsingContext.New(config);
-				var document = await context.OpenAsync(url);
+				var document = await context.OpenAsync(args.url);
 
-				var html = document.Body?.OuterHtml ?? string.Empty;
+				var content = document.Body?.OuterHtml ?? string.Empty;
+				switch (args.contentType)
+				{
+					case "sanitized_html":
+						content = HtmlUtils.Sanitize(content);
+						break;
 
-				if (sanitize)
-					html = HtmlUtils.Sanitize(html);
+					case "markdown":
+						content = _mdConverter.Convert(content);
+						break;
+				}
 
-				const int maxCharacters = 35000;
-				if (html.Length > maxCharacters)
-					html = html[0..maxCharacters] + $" ... and {html.Length - maxCharacters} characters more...";
+				return content;
+			}, slidingExpirationTime: TimeSpan.FromMinutes(5));
+
+		private async Task<ToolResult> Fetch(
+			[Description("URL to fetch HTML from")]
+			string url,
+			[Description("The starting index of character to return")]
+			int start = 0,
+			[Description("The maximum count of characters to return")]
+			int count = 5000,
+			[Description("The content type to fetch")]
+			[Enum(["html", "sanitized_html", "markdown"])]
+			string contentType = "markdown",
+			CancellationToken cancellationToken = default)
+		{
+			try
+			{
+				if (start < 0)
+					return new ToolResult(ToolResultStatus.Error,
+						$"Error: 'start' parameter cannot be negative. Provided value: {start}");
+
+				if (count <= 0)
+					return new ToolResult(ToolResultStatus.Error,
+						$"Error: 'count' parameter must be greater than 0. Provided value: {count}");
+
+				var content = await _fetchContentCache.GetAsync((url, contentType), cancellationToken);
+
+				if (start >= content.Length)
+					return new ToolResult(ToolResultStatus.Error,
+						$"Error: Start index {start} exceeds content length {content.Length}");
+
+				var actualCount = Math.Min(count, content.Length - start);
+
+				var slice = content.Substring(start, actualCount);
 
 				var result = $"""
-					```html
-					{html}
-					```
+					Url: {url}
+					Total content length: {content.Length}
+					Showing slice: {start}-{start + actualCount}
+					Content slice:
+					{slice}
 					""";
 				return new ToolResult(result);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error getting HTML: {ex.Message}");
+				return new ToolResult(ToolResultStatus.Error, $"Error fetching web content: {ex.Message}");
 			}
 		}
 		

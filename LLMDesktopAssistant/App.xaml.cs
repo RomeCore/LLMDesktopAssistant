@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.Core
 		{
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Debug()
-				.WriteTo.Sink(new ConsoleAllocatorSink())
+				// .WriteTo.Sink(new ConsoleAllocatorSink())
 				.WriteTo.Console(applyThemeToRedirectedOutput: true, theme: SystemConsoleTheme.Literate)
 				.WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
 				.CreateLogger();

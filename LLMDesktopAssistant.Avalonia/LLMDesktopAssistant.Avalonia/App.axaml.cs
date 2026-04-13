@@ -3,8 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using LLMDesktopAssistant.Avalonia.ViewModels;
-using LLMDesktopAssistant.Avalonia.Views;
+using LLMDesktopAssistant.Avalonia.MVVM;
 using System.Linq;
 
 namespace LLMDesktopAssistant.Avalonia

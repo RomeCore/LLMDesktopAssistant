@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LLMDesktopAssistant.Core.MVVM
+namespace LLMDesktopAssistant.Avalonia.MVVM
 {
 	/// <summary>
 	/// Represents a view locator for mapping view models to views.

@@ -1,4 +1,5 @@
 ﻿using Avalonia.Threading;
+using LLMDesktopAssistant.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.MVVM
+namespace LLMDesktopAssistant.Avalonia.MVVM
 {
 	/// <summary>
 	/// Base class for view models. Implements INotifyPropertyChanged to facilitate data binding.

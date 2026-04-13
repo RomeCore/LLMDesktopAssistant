@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -21,6 +21,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="LiveMarkdown.Avalonia" />
     <PackageReference Include="LiveMarkdown.Avalonia.Math" />
+    <PackageReference Include="Material.Icons.Avalonia" />
     <PackageReference Include="Microsoft.Bcl.Memory" />
   </ItemGroup>
 

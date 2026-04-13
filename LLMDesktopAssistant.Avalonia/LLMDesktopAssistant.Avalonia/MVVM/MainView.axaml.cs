@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace LLMDesktopAssistant.Avalonia.Views
+namespace LLMDesktopAssistant.Avalonia.MVVM
 {
 	public partial class MainView : UserControl
 	{

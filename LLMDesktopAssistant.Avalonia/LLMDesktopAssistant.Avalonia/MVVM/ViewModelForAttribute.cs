@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LLMDesktopAssistant.Core.MVVM
+namespace LLMDesktopAssistant.Avalonia.MVVM
 {
 	/// <summary>
 	/// Specifies the view associated with a ViewModel.

@@ -492,4 +492,7 @@
   <data name="fs-copy_file" xml:space="preserve">
     <value>Скопировать файл</value>
   </data>
+  <data name="web-fetch" xml:space="preserve">
+    <value>Получить веб-контент</value>
+  </data>
 </root>
