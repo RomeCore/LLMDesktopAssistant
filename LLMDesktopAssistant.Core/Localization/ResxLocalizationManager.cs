@@ -7,11 +7,11 @@ using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.Core.Localization.Resources;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 
 namespace LLMDesktopAssistant.Core.Localization
 {
-	[Module(Order = 1)]
+	[Service(Order = 1)]
 	public class ResxLocalizationManager : LocalizationManager
 	{
 		private readonly ImmutableDictionary<string, CultureInfo?> _languageMap;

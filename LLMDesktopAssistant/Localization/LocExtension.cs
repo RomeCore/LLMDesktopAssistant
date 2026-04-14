@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Threading;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 
 namespace LLMDesktopAssistant.Core.Localization
 {
@@ -60,7 +60,7 @@ namespace LLMDesktopAssistant.Core.Localization
 				});
 			}
 
-			if (ModuleManager.TryGet<LocalizationManager>() is LocalizationManager localizationManager)
+			if (ServiceRegistry.TryGet<LocalizationManager>() is LocalizationManager localizationManager)
 			{
 				multiBinding.Bindings.Add(new Binding
 				{

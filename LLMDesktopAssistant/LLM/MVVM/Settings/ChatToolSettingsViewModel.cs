@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.LLM.Services;
+using LLMDesktopAssistant.Core.LLM.Services.Tools;
 using LLMDesktopAssistant.Core.Localization.Resources;
 using LLMDesktopAssistant.Core.MVVM;
 using LLMDesktopAssistant.Core.ToolModules;

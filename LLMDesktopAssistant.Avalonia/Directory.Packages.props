@@ -6,19 +6,19 @@
   <ItemGroup>
     <!-- Avalonia packages -->
     <!-- Important: keep version in sync! -->
-    <PackageVersion Include="Avalonia" Version="12.0.0" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.0.0" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.0.0" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.13" />
+    <PackageVersion Include="Avalonia" Version="12.0.1" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.0.1" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.0.1" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.14" />
     <PackageVersion Include="Avalonia.Desktop" Version="12.0.0" />
     <PackageVersion Include="Avalonia.iOS" Version="12.0.0" />
     <PackageVersion Include="Avalonia.Browser" Version="12.0.0" />
     <PackageVersion Include="Avalonia.Android" Version="12.0.0" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageVersion Include="FluentAvaloniaUI" Version="2.5.1" />
+    <PackageVersion Include="FluentAvaloniaUI" Version="3.0.0-preview1" />
     <PackageVersion Include="LiveMarkdown.Avalonia" Version="2.0.0" />
     <PackageVersion Include="LiveMarkdown.Avalonia.Math" Version="2.0.0" />
-    <PackageVersion Include="Material.Icons.Avalonia" Version="3.0.1" />
+    <PackageVersion Include="Material.Icons.Avalonia" Version="3.0.2" />
     <PackageVersion Include="Microsoft.Bcl.Memory" Version="10.0.5" />
     <PackageVersion Include="ShadUI" Version="0.1.6" />
     <PackageVersion Include="SukiUI" Version="6.0.3" />

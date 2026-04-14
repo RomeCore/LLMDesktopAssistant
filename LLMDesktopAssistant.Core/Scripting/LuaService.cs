@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Core.Scripting
 {
-	[Module]
-	public class LuaModule : Module
+	[Service]
+	public class LuaService
 	{
 		private readonly Script _lua;
 
@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.Core.Scripting
 		/// </summary>
 		public Script Lua => _lua;
 
-		public LuaModule()
+		public LuaService()
 		{
 			_lua = new Script(CoreModules.Preset_SoftSandbox);
 		}

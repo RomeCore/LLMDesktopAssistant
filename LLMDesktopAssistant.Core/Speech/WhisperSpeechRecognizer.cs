@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Text;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using Whisper.net;
 using Whisper.net.Ggml;
 
@@ -9,7 +9,7 @@ namespace LLMDesktopAssistant.Core.Speech
 	/// <summary>
 	/// Class that uses the Whisper speech recognition model to recognize speech.
 	/// </summary>
-	[DynamicModule("WhisperSpeechRecognizer", typeof(ISpeechRecognizer), IsDefault = true)]
+	[DynamicService("WhisperSpeechRecognizer", typeof(ISpeechRecognizer), IsDefault = true)]
 	public class WhisperSpeechRecognizer : ISpeechRecognizer
 	{
 		WhisperFactory? _factory = null;

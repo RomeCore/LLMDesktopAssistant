@@ -12,7 +12,7 @@ using LLMDesktopAssistant.Core.LLM.Data;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.MVVM.Messages;
 using LLMDesktopAssistant.Core.LLM.Services;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.MVVM;
 using LLMDesktopAssistant.Core.ToolModules;
 using MaterialDesignThemes.Wpf;

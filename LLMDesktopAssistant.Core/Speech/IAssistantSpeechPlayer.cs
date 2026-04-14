@@ -1,11 +1,11 @@
-﻿using LLMDesktopAssistant.Core.Modules;
+﻿using LLMDesktopAssistant.Core.Services;
 
 namespace LLMDesktopAssistant.Core.Speech
 {
 	/// <summary>
 	/// Interface for speech player from text.
 	/// </summary>
-	public interface IAssistantSpeechPlayer : IDynamicModule
+	public interface IAssistantSpeechPlayer : IDynamicService
 	{
 		/// <summary>
 		/// Plays the provided text as speech.

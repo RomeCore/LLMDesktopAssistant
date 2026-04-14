@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 
 namespace LLMDesktopAssistant.Core.Speech
 {
 	/// <summary>
 	/// Interface for speech generation from text.
 	/// </summary>
-	public interface ISpeechGenerator : IDynamicModule
+	public interface ISpeechGenerator : IDynamicService
 	{
 		/// <summary>
 		/// Generates speech from the given text.

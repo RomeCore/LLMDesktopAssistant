@@ -5,15 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.Utils;
 using MoonSharp.Interpreter;
 using Serilog;
 
 namespace LLMDesktopAssistant.Core.Scripting
 {
-	[Module(Order = int.MinValue)]
-	public class PythonModule : Module
+	[Service(Order = int.MinValue)]
+	public class PythonService
 	{
 		/// <summary>
 		/// Gets the path to the virtual environment directory.
@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.Core.Scripting
 		/// </summary>
 		public string ActivateVenvPath { get; }
 
-		public PythonModule()
+		public PythonService()
 		{
 			VenvPath = Path.GetFullPath("python/venv");
 			ActivateVenvPath = Path.Combine(VenvPath, "Scripts", "activate.bat");

@@ -11,7 +11,7 @@ using AngleSharp;
 using DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using Ganss.Xss;
 using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.ToolModules;
 using LLMDesktopAssistant.Core.Utils;
 using RCLargeLanguageModels.Json.Schema;
@@ -78,7 +78,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 
 			AddTool(new ToolInfo
 			{
-				Tool = FunctionTool.From(Search_LangSearch, "web-search", "Search through the web using query."),
+				Tool = FunctionTool.From(Search_SearXNG, "web-search", "Search through the web using query."),
 				Category = "web"
 			});
 		}

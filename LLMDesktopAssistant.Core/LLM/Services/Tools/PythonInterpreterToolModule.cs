@@ -1,5 +1,5 @@
 ﻿using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.Scripting;
 using LLMDesktopAssistant.Core.ToolModules;
 using LLMDesktopAssistant.Core.Utils;
@@ -11,12 +11,12 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 {
 	public class PythonInterpreterToolModule : ToolModule
 	{
-		private readonly PythonModule _python;
+		private readonly PythonService _python;
 		private readonly Chat _chat;
 
 		public PythonInterpreterToolModule(Chat chat)
 		{
-			_python = ModuleManager.Get<PythonModule>();
+			_python = ServiceRegistry.Get<PythonService>();
 			_chat = chat;
 
 			AddTool(new ToolInfo

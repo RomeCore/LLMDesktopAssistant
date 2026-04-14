@@ -1,11 +1,11 @@
-﻿using LLMDesktopAssistant.Core.Modules;
+﻿using LLMDesktopAssistant.Core.Services;
 
 namespace LLMDesktopAssistant.Core.Speech
 {
 	/// <summary>
 	/// Interface for speech recognizer.
 	/// </summary>
-	public interface ISpeechRecognizer : IDynamicModule
+	public interface ISpeechRecognizer : IDynamicService
 	{
 		/// <summary>
 		/// Recognizes speech from audio samples.

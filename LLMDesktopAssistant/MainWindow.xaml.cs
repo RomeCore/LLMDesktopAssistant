@@ -8,8 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LLMDesktopAssistant.Core.Modules;
-using LLMDesktopAssistant.Core.Modules.Instances;
+using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Core.Services.Instances;
 using LLMDesktopAssistant.Core.MVVM;
 using LLMDesktopAssistant.Core.Speech;
 using MahApps.Metro.Controls;
@@ -29,7 +29,7 @@ namespace LLMDesktopAssistant.Core
 			ContentTemplateSelector = ViewLocator.Instance;
 			Content = new MainViewModel();
 
-			var themeModule = ModuleManager.Get<ThemeModule>();
+			var themeModule = ServiceRegistry.Get<ThemeService>();
 			themeModule.ThemeType = ThemeType.Dark;
 			themeModule.PrimaryColor = Color.FromRgb(255, 52, 12);
 			themeModule.SecondaryColor = Color.FromRgb(76, 175, 80);

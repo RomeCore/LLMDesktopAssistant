@@ -1,9 +1,15 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using LLMDesktopAssistant.Avalonia.MVVM;
+using LLMDesktopAssistant.Core;
+using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Core.Utils;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 using System.Linq;
 
 namespace LLMDesktopAssistant.Avalonia
@@ -15,32 +21,54 @@ namespace LLMDesktopAssistant.Avalonia
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		public static MainView? MainView { get; private set; }
+		public static MainWindow? MainWindow { get; private set; }
+
+		private static TopLevel? _mainTopLevel;
+		public static TopLevel MainTopLevel => _mainTopLevel ??= TopLevel.GetTopLevel((Control?)MainWindow ?? MainView)!;
+
 		public override void OnFrameworkInitializationCompleted()
 		{
 			if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
 			{
-				// Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
-				// More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
 				DisableAvaloniaDataAnnotationValidation();
-				desktop.MainWindow = new MainWindow
+
+				MainWindow = new MainWindow
 				{
 					DataContext = new MainViewModel()
 				};
+				desktop.MainWindow = MainWindow;
 			}
 			else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
 			{
-				singleViewPlatform.MainView = new MainView
+				MainView = new MainView
 				{
 					DataContext = new MainViewModel()
 				};
+				singleViewPlatform.MainView = MainView;
 			}
+			else
+			{
+			}
+
+			Log.Logger = new LoggerConfiguration()
+				.MinimumLevel.Debug()
+				.WriteTo.Sink(new ConsoleAllocatorSink())
+				.WriteTo.Console(applyThemeToRedirectedOutput: true, theme: SystemConsoleTheme.Literate)
+				.WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+				.CreateLogger();
+
+			Directories.EnsureAll();
+			PluginManager.LoadPluginsInto(AppDomain.CurrentDomain);
+			ReflectionUtility.Initialize(AppDomain.CurrentDomain);
+			ServiceRegistry.Initialize([ Log.Logger, ]);
 
 			base.OnFrameworkInitializationCompleted();
 		}
 
 		private void DisableAvaloniaDataAnnotationValidation()
 		{
-			// TODO: Disable comments
+			// TODO: Remove comments
 
 			/*// Get an array of plugins to remove
 			var dataValidationPluginsToRemove =

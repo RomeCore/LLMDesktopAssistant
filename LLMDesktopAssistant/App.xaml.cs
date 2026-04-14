@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Core.Modules;
+﻿using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.Utils;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -11,31 +11,28 @@ namespace LLMDesktopAssistant.Core
 	/// </summary>
 	public partial class App : Application
 	{
-		public App()
-		{
-			Log.Logger = new LoggerConfiguration()
-				.MinimumLevel.Debug()
-				// .WriteTo.Sink(new ConsoleAllocatorSink())
-				.WriteTo.Console(applyThemeToRedirectedOutput: true, theme: SystemConsoleTheme.Literate)
-				.WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
-				.CreateLogger();
-		}
-
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 
+			Log.Logger = new LoggerConfiguration()
+				.MinimumLevel.Debug()
+				.WriteTo.Sink(new ConsoleAllocatorSink())
+				.WriteTo.Console(applyThemeToRedirectedOutput: true, theme: SystemConsoleTheme.Literate)
+				.WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+				.CreateLogger();
+
 			Directories.EnsureAll();
 			PluginManager.LoadPluginsInto(AppDomain.CurrentDomain);
 			ReflectionUtility.Initialize(AppDomain.CurrentDomain);
-			ModuleManager.Initialize();
+			ServiceRegistry.Initialize([ Log.Logger, ]);
 
 			// AllocConsole();
 		}
 
 		protected override void OnExit(ExitEventArgs e)
 		{
-			ModuleManager.Shutdown();
+			ServiceRegistry.Shutdown();
 
 			base.OnExit(e);
 		}

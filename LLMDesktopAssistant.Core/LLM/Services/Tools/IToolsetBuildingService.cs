@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 {
 	/// <summary>
 	/// Interface for building toolsets that can be used by the language model.

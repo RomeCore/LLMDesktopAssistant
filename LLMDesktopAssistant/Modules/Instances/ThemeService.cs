@@ -7,7 +7,7 @@ using System.Windows.Media;
 using ControlzEx.Theming;
 using MaterialDesignThemes.Wpf;
 
-namespace LLMDesktopAssistant.Core.Modules.Instances
+namespace LLMDesktopAssistant.Core.Services.Instances
 {
 	/// <summary>
 	/// Represents the type of theme to be used.
@@ -18,13 +18,13 @@ namespace LLMDesktopAssistant.Core.Modules.Instances
 		Dark
 	}
 
-	[Module]
-	public class ThemeModule : Module
+	[Service]
+	public class ThemeService
 	{
 		private readonly PaletteHelper _mdPaletteHelper; // MaterialDesignThemes palette helper
 		private readonly ThemeManager _maThemeManager;   // MahApps.Metro theme manager
 
-		public ThemeModule()
+		public ThemeService()
 		{
 			_mdPaletteHelper = new PaletteHelper();
 			_maThemeManager = ThemeManager.Current;

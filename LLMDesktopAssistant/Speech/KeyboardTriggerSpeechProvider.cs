@@ -5,7 +5,7 @@ using System.Net.Quic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.Utils;
 using NAudio.Wave;
 using NHotkey;
@@ -16,10 +16,10 @@ namespace LLMDesktopAssistant.Core.Speech
 	/// <summary>
 	/// Class that listens for keyboard input, listens to microphone input and triggers speech events.
 	/// </summary>
-	[DynamicModule("KeyboardTriggerSpeechProvider", typeof(IUserSpeechProvider), IsDefault = true)]
+	[DynamicService("KeyboardTriggerSpeechProvider", typeof(IUserSpeechProvider), IsDefault = true)]
 	public class KeyboardTriggerSpeechProvider : IUserSpeechProvider
 	{
-		private DynamicModuleTracker<ISpeechRecognizer> _recognizer = null!;
+		private DynamicServiceTracker<ISpeechRecognizer> _recognizer = null!;
 		private List<float> accumulatedAudioData = [];
 		private WaveInEvent _micStream = null!;
 		private bool _registeredHotkey = false;
@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.Core.Speech
 
 		public void Initialize()
 		{
-			_recognizer = ModuleManager.GetDynamicTracker<ISpeechRecognizer>();
+			_recognizer = ServiceRegistry.GetDynamicTracker<ISpeechRecognizer>();
 
 			_micStream = new WaveInEvent
 			{

@@ -1,10 +1,10 @@
-﻿using LLMDesktopAssistant.Core.Modules;
+﻿using LLMDesktopAssistant.Core.Services;
 using RCLargeLanguageModels.Tools;
 using System.ComponentModel;
 
 namespace LLMDesktopAssistant.Core.ToolModules
 {
-	[Module]
+	[Service]
 	public class GeneralToolModule : ToolModule
 	{
 		public GeneralToolModule()

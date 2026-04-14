@@ -1,9 +1,9 @@
-﻿namespace LLMDesktopAssistant.Core.Modules
+﻿namespace LLMDesktopAssistant.Core.Services
 {
 	/// <summary>
 	/// Provides info about dynamic module type.
 	/// </summary>
-	public sealed class DynamicModuleTypeInfo(string id, Type type, int? defaultPriority)
+	public sealed class DynamicServiceTypeInfo(string id, Type type, int? defaultPriority)
 	{
 		public string Id { get; } = id;
 

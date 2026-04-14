@@ -1,6 +1,6 @@
 ﻿using AngleSharp.Common;
 using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.ToolModules;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 
 		public IEnumerable<ToolInfo> GetAvailableTools()
 		{
-			var toolModules = ModuleManager.GetAll<ToolModule>();
+			var toolModules = ServiceRegistry.GetAll<ToolModule>();
 
 			return toolModules
 
@@ -77,6 +77,10 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 
 				// Tools
 				.Concat(metaToolManager.GetMetaTools())
+
+				// Select the last tool of each name (to avoid duplicates)
+				.GroupBy(t => t.Tool.Name)
+				.Select(t => t.Last())
 
 				.ToList();
 		}

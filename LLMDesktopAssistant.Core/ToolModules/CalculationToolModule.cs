@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using RCLargeLanguageModels.Tools;
 using RCParsing;
 using LLMDesktopAssistant.Core.Calculation;
 
 namespace LLMDesktopAssistant.Core.ToolModules
 {
-	[Module]
+	[Service]
 	public class CalculationToolModule : ToolModule
 	{
 		public CalculationToolModule()

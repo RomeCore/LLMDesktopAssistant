@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using Serilog;
 
 namespace LLMDesktopAssistant.Core.Speech
@@ -70,7 +70,7 @@ namespace LLMDesktopAssistant.Core.Speech
 				{
 					try
 					{
-						var module = ModuleManager.GetDynamic<IAssistantSpeechPlayer>();
+						var module = ServiceRegistry.GetDynamic<IAssistantSpeechPlayer>();
 
 						await module.SpeakAsync(
 							speech,

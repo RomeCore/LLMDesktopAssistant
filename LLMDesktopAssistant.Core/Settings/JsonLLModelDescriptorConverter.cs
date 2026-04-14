@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using LLMDesktopAssistant.Core.Modules;
-using LLMDesktopAssistant.Core.Modules.Instances;
+using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Core.Services.Instances;
 using RCLargeLanguageModels.Clients;
 
 namespace LLMDesktopAssistant.Core.Settings
@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.Core.Settings
 			if (string.IsNullOrEmpty(str))
 				return null;
 
-			var list = ModuleManager.Get<LLModelListModule>();
+			var list = ServiceRegistry.Get<LLModelListService>();
 			return list.Registry.GetModel(str);
 		}
 

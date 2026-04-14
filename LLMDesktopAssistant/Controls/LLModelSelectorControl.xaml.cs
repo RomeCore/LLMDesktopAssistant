@@ -1,6 +1,6 @@
 ﻿using LLMDesktopAssistant.Core.Localization.Resources;
-using LLMDesktopAssistant.Core.Modules;
-using LLMDesktopAssistant.Core.Modules.Instances;
+using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Core.Services.Instances;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients;
 using System.Collections.Immutable;
@@ -150,7 +150,7 @@ namespace LLMDesktopAssistant.Core.Controls
 		{
 			InitializeComponent();
 
-			var list = ModuleManager.Get<LLModelListModule>();
+			var list = ServiceRegistry.Get<LLModelListService>();
 			list.Registry.RefreshCompleted += Registry_RefreshCompleted;
 			Rebuild();
 			IsRefreshButtonVisiblePropertyChanged(IsRefreshButtonVisible);
@@ -213,7 +213,7 @@ namespace LLMDesktopAssistant.Core.Controls
 
 		public async Task RefreshAsync()
 		{
-			var list = ModuleManager.Get<LLModelListModule>();
+			var list = ServiceRegistry.Get<LLModelListService>();
 			await list.Registry.RefreshModelsAsync();
 		}
 
@@ -226,7 +226,7 @@ namespace LLMDesktopAssistant.Core.Controls
 
 		private void Rebuild()
 		{
-			var list = ModuleManager.Get<LLModelListModule>();
+			var list = ServiceRegistry.Get<LLModelListService>();
 			var registry = list.Registry;
 			var models = CapabilityFilter == LLMCapabilities.Unknown
 				? registry.Models

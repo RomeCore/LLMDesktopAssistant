@@ -1,5 +1,5 @@
 ﻿using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.Scripting;
 using LLMDesktopAssistant.Core.Settings;
 using LLMDesktopAssistant.Core.ToolModules;
@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 	public class MetaToolManagementService(Chat chat) : IMetaToolManagementService
 	{
 		private readonly MetaToolConfiguration _configuration = SettingsManager.Get<MetaToolConfiguration>();
-		private readonly PythonModule _python = ModuleManager.Get<PythonModule>();
+		private readonly PythonService _python = ServiceRegistry.Get<PythonService>();
 
 		public void CreateOrUpdateTool(string name,
 			string? description, string? title, string? category, bool? askForConfirmation,

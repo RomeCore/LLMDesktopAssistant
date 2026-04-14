@@ -1,5 +1,5 @@
 ﻿using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.Scripting;
 using LLMDesktopAssistant.Core.ToolModules;
 using LLMDesktopAssistant.Core.Utils;

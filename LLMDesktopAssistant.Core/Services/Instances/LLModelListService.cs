@@ -17,10 +17,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.Modules.Instances
+namespace LLMDesktopAssistant.Core.Services.Instances
 {
-	[Module]
-	public class LLModelListModule : Module
+	[Service]
+	public class LLModelListService
 	{
 		static readonly DeepSeekClient deepseek = new(new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
 		static readonly OpenRouterClient openrouter = new(new EnvironmentTokenAccessor("OPENROUTER_API_KEY"));
@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.Core.Modules.Instances
 
 		public LLMClientRegistry Registry { get; private set; } = null!;
 
-		public LLModelListModule()
+		public LLModelListService()
 		{
 			Registry = new LLMClientRegistry(new LLMClientRegistryProperties
 			{

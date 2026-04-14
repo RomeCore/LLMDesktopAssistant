@@ -4,14 +4,14 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 
 namespace LLMDesktopAssistant.Core.Localization
 {
 	/// <summary>
 	/// Manages localization for the application.
 	/// </summary>
-	public abstract class LocalizationManager : NotifyPropertyChanged, IModule
+	public abstract class LocalizationManager : NotifyPropertyChanged
 	{
 		/// <summary>
 		/// Localizes a given key using the current localization manager.
@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.Core.Localization
 		/// <returns>The localized string, or the original key if not found.</returns>
 		public static string LocalizeStatic(string key)
 		{
-			return ModuleManager.TryGet<LocalizationManager>()?.Localize(key) ?? key;
+			return ServiceRegistry.TryGet<LocalizationManager>()?.Localize(key) ?? key;
 		}
 
 		/// <summary>
@@ -67,15 +67,12 @@ namespace LLMDesktopAssistant.Core.Localization
 		/// <param name="language">The language to try and set.</param>
 		/// <returns>true if the language was changed; otherwise, false.</returns>
 		protected abstract bool TryChangeLanguage(string language);
-
-		public virtual void Initialize() { }
-		public virtual void Shutdown() { }
 	}
 
 	/// <summary>
 	/// A dummy localization manager that does nothing. This is used as a fallback if no other localization manager is available.
 	/// </summary>
-	[Module(Order = int.MaxValue)]
+	[Service(Order = int.MaxValue)]
 	public class DummyLocalizationManager : LocalizationManager
 	{
 		public override IEnumerable<string> GetAvailableLanguages()

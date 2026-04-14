@@ -4,31 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MoonSharp.Interpreter;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.ToolModules;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Concurrent;
 
 namespace LLMDesktopAssistant.Core.Scripting
 {
-	[Module]
+	[Service]
 	public class LuaInterpreterToolModule : ToolModule
 	{
-		private LuaModule _lua = null!;
+		private readonly LuaService _lua;
 
-		public LuaInterpreterToolModule()
+		public LuaInterpreterToolModule(LuaService lua)
 		{
+			_lua = lua;
+
 			AddTool(new ToolInfo
 			{
 				Tool = FunctionTool.From(ExecuteLua, "execute-lua", "Executes Lua and returns the script result along with messages printed by 'print' function."),
 				Category = "scripting",
 				AskForConfirmation = true
 			});
-		}
-
-		public override void Initialize()
-		{
-			_lua = ModuleManager.Get<LuaModule>();
 		}
 
 		public ToolResult ExecuteLua(string lua)

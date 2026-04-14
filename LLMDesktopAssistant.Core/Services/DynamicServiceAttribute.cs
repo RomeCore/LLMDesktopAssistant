@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.Modules
+﻿namespace LLMDesktopAssistant.Core.Services
 {
 	/// <summary>
 	/// Represents an attribute that can be used to mark a class as a dynamic module.
@@ -6,7 +6,7 @@
 	/// <param name="id">The unique identifier for this module within its category.</param>
 	/// <param name="categoryType">The type of the category that this module belongs to.</param>
 	[AttributeUsage(AttributeTargets.Class)]
-	public class DynamicModuleAttribute(string id, Type categoryType) : Attribute
+	public class DynamicServiceAttribute(string id, Type categoryType) : Attribute
 	{
 		/// <summary>
 		/// Gets the unique identifier for this module in the category scope.

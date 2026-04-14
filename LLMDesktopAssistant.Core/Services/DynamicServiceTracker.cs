@@ -6,17 +6,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Serilog;
 
-namespace LLMDesktopAssistant.Core.Modules
+namespace LLMDesktopAssistant.Core.Services
 {
 	/// <summary>
 	/// Represents a tracker for dynamic modules. This class is used to manage the lifecycle of dynamic modules.
 	/// </summary>
-	public abstract class DynamicModuleTracker
+	public abstract class DynamicServiceTracker
 	{
 		/// <summary>
 		/// Gets the current module associated with this tracker.
 		/// </summary>
-		public abstract IDynamicModule? NonGenericModule { get; }
+		public abstract IDynamicService? NonGenericModule { get; }
 
 		/// <summary>
 		/// Gets a set of available IDs for this tracker. These IDs can be used to identify the module.
@@ -29,7 +29,7 @@ namespace LLMDesktopAssistant.Core.Modules
 		public abstract string? ModuleId { get; set; }
 
 		/// <summary>
-		/// Initializes the current module. Can be called only once at <see cref="ModuleManager"/> initialization.
+		/// Initializes the current module. Can be called only once at <see cref="ServiceRegistry"/> initialization.
 		/// </summary>
 		public abstract void Initialize();
 	}
@@ -38,15 +38,15 @@ namespace LLMDesktopAssistant.Core.Modules
 	/// Represents a tracker for dynamic modules. This class is used to manage the lifecycle of dynamic modules.
 	/// </summary>
 	/// <typeparam name="T">The type of the dynamic module to track.</typeparam>
-	public sealed class DynamicModuleTracker<T> : DynamicModuleTracker
-		where T : IDynamicModule
+	public sealed class DynamicServiceTracker<T> : DynamicServiceTracker
+		where T : IDynamicService
 	{
-		private readonly ImmutableDictionary<string, DynamicModuleTypeInfo> _registry;
+		private readonly ImmutableDictionary<string, DynamicServiceTypeInfo> _registry;
 
 		private T? _module;
 		private string? _moduleId;
 
-		public override IDynamicModule? NonGenericModule => _module;
+		public override IDynamicService? NonGenericModule => _module;
 		public override ImmutableHashSet<string> AvailableIds { get; }
 		public override string? ModuleId
 		{
@@ -65,18 +65,18 @@ namespace LLMDesktopAssistant.Core.Modules
 		public event Action<T?, T?>? OnChanged;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DynamicModuleTracker{T}"/> class.
+		/// Initializes a new instance of the <see cref="DynamicServiceTracker{T}"/> class.
 		/// </summary>
 		/// <param name="registry">A dictionary that maps IDs to module types.</param>
 		/// <exception cref="ArgumentException">The registry is null or empty.</exception>
-		public DynamicModuleTracker(IEnumerable<DynamicModuleTypeInfo> registry)
+		public DynamicServiceTracker(IEnumerable<DynamicServiceTypeInfo> registry)
 		{
 			ArgumentNullException.ThrowIfNull(registry);
 
 			_registry = registry.ToImmutableDictionary(k => k.Id, v => v);
 			AvailableIds = [.. _registry.Keys];
 
-			DynamicModuleTypeInfo? defaultModule = null;
+			DynamicServiceTypeInfo? defaultModule = null;
 			int? maxPriority = null;
 			foreach (var typeInfo in _registry.Values)
 			{
@@ -192,11 +192,11 @@ namespace LLMDesktopAssistant.Core.Modules
 		/// Gets the current module and ensures that it will not be <see langword="null"/>.
 		/// </summary>
 		/// <returns>Current module that is not <see langword="null"/>.</returns>
-		/// <exception cref="ModuleRequiredException">Current module is <see langword="null"/>.</exception>
+		/// <exception cref="ServiceRequiredException">Current module is <see langword="null"/>.</exception>
 		public T Require()
 		{
 			if (_module is null)
-				throw new ModuleRequiredException($"{typeof(T).FullName} is required for this operation");
+				throw new ServiceRequiredException($"{typeof(T).FullName} is required for this operation");
 			return _module;
 		}
 	}

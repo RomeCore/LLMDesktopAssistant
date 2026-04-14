@@ -4,11 +4,11 @@ using System.Linq;
 using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 
 namespace LLMDesktopAssistant.Core.Speech
 {
-	[DynamicModule("WindowsSystemSpeechPlayer", typeof(IAssistantSpeechPlayer), IsDefault = true)]
+	[DynamicService("WindowsSystemSpeechPlayer", typeof(IAssistantSpeechPlayer), IsDefault = true)]
 	public class WindowsSystemSpeechPlayer : IAssistantSpeechPlayer
 	{
 		private readonly SpeechSynthesizer _synthesizer;

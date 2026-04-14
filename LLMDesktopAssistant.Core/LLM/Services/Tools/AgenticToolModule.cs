@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.Core.LLM;
 using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.ToolModules;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;

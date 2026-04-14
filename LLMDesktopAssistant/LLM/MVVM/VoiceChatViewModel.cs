@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using LLMDesktopAssistant.Core.LLM.Data;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.Services;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.MVVM;
 using LLMDesktopAssistant.Core.Speech;
 using LLMDesktopAssistant.Core.Tabs;
@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.Core.LLM.MVVM
 		{
 			ChatViewModel = new ChatViewModel(chat);
 
-			var tracker = ModuleManager.GetDynamicTracker<IUserSpeechProvider>();
+			var tracker = ServiceRegistry.GetDynamicTracker<IUserSpeechProvider>();
 			tracker.OnChanged += (o, n) =>
 			{
 				if (o != null)

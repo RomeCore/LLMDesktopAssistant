@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Modules;
+using LLMDesktopAssistant.Core.Services;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Core.ToolModules
@@ -12,7 +12,7 @@ namespace LLMDesktopAssistant.Core.ToolModules
 	/// <summary>
 	/// Base class for all tool modules. It provides a method to retrieve tools for the LLM assistant.
 	/// </summary>
-	public abstract class ToolModule : Module
+	public abstract class ToolModule
 	{
 		private readonly List<ToolInfo> _tools = [];
 
