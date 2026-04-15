@@ -7,11 +7,12 @@
 			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Avalonia.Controls"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 mc:Ignorable="d" d:DesignWidth="800"
-			 x:Class="LLMDesktopAssistant.Avalonia.UserInputView"
+			 x:Class="LLMDesktopAssistant.Avalonia.LLM.UserInputView"
 			 x:DataType="local:UserInputViewModel">
 	
-	<Grid RowDefinitions="Auto,*,Auto">
-
+	<Grid RowDefinitions="Auto,*,Auto"
+		  Background="Transparent">
+		
 		<ItemsControl Grid.Row="0"
 					  ItemsSource="{Binding Attachments}">
 			<ItemsControl.ItemsPanel>
@@ -103,6 +104,22 @@
 			</StackPanel>
 
 		</DockPanel>
+		
+		<Border x:Name="DropOverlay"
+				Grid.RowSpan="3"
+				Background="#2000BCD4"
+				BorderBrush="#6000BCD4"
+				BorderThickness="3"
+				CornerRadius="8"
+				IsVisible="False"
+				IsHitTestVisible="False">
+			
+			<TextBlock Text="{loc:Loc attachment-drop_files_here}"
+					   HorizontalAlignment="Center"
+					   VerticalAlignment="Center"
+					   FontSize="18"
+					   Foreground="#FF00BCD4"/>
+		</Border>
 
 	</Grid>
 

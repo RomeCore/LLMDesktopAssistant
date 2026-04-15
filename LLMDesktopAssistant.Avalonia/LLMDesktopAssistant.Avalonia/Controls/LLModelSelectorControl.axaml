@@ -18,9 +18,9 @@
 	</UserControl.Resources>
 
 	<StackPanel Orientation="Horizontal" Height="32" >
-		<local:ExtendedComboBox x:Name="Selector">
+		<local:LLModelSelectorComboBox x:Name="Selector">
 
-			<local:ExtendedComboBox.DataTemplates>
+			<local:LLModelSelectorComboBox.DataTemplates>
 				
 				<DataTemplate DataType="modelc:LLModelDescriptorTracked">
 					<StackPanel Orientation="Horizontal">
@@ -66,9 +66,9 @@
 					<TextBlock Foreground="DarkRed" Text="{Binding Title}"/>
 				</DataTemplate>
 		
-			</local:ExtendedComboBox.DataTemplates>
+			</local:LLModelSelectorComboBox.DataTemplates>
 			
-		</local:ExtendedComboBox>
+		</local:LLModelSelectorComboBox>
 
 		<Button x:Name="RefreshButton" 
 				Click="RefreshButton_Click" 

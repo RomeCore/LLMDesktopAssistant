@@ -12,7 +12,6 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 	public class ToolsetBuildingService(
 		Chat chat,
 		IMCPManagementService mcpManager,
-		IMetaToolManagementService metaToolManager,
 		IServiceProvider services
 		) : IToolsetBuildingService
 	{
@@ -52,13 +51,12 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 
 		public IEnumerable<ToolInfo> GetAvailableTools()
 		{
-			var toolModules = ServiceRegistry.GetAll<ToolModule>();
+			var metatoolManager = services.GetService<IMetaToolManagementService>();
 
-			return toolModules
+			return services.GetServices<ToolModule>()
 
 				// Tool modules
 				.Concat(chat.AdditionalToolModules ?? [])
-				.Concat(services.GetServices<ToolModule>())
 				.Concat(mcpManager.GetMCPToolModules())
 
 				.SelectMany(m => m.GetTools()
@@ -76,7 +74,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 					}))
 
 				// Tools
-				.Concat(metaToolManager.GetMetaTools())
+				.Concat(metatoolManager?.GetMetaTools() ?? [])
 
 				// Select the last tool of each name (to avoid duplicates)
 				.GroupBy(t => t.Tool.Name)

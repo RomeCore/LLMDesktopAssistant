@@ -1,13 +1,55 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using LLMDesktopAssistant.Avalonia.LLM;
+using LLMDesktopAssistant.Avalonia.LLM.Attachments;
+using ReverseMarkdown.Converters;
 
-namespace LLMDesktopAssistant.Avalonia;
+namespace LLMDesktopAssistant.Avalonia.LLM;
 
 public partial class UserInputView : UserControl
 {
-    public UserInputView()
-    {
-        InitializeComponent();
-    }
+	public UserInputView()
+	{
+		InitializeComponent();
+
+		DragDrop.SetAllowDrop(this, true);
+		AddHandler(DragDrop.DragEnterEvent, OnDragEnter);
+		AddHandler(DragDrop.DragLeaveEvent, OnDragLeave);
+		AddHandler(DragDrop.DropEvent, OnDrop);
+	}
+
+	private void OnDragEnter(object? sender, DragEventArgs e)
+	{
+		if (e.DataTransfer.Contains(DataFormat.File) ||
+			e.DataTransfer.Contains(DataFormat.Text))
+		{
+			e.DragEffects = DragDropEffects.Copy;
+			DropOverlay.IsVisible = true;
+		}
+		else
+		{
+			e.DragEffects = DragDropEffects.None;
+		}
+
+		e.Handled = true;
+	}
+
+	private void OnDragLeave(object? sender, DragEventArgs e)
+	{
+		DropOverlay.IsVisible = false;
+	}
+
+	private void OnDrop(object? sender, DragEventArgs e)
+	{
+		DropOverlay.IsVisible = false;
+
+		if (DataContext is UserInputViewModel vm)
+		{
+			_ = vm.AcceptDropAsync(e);
+		}
+
+		e.Handled = true;
+	}
 }

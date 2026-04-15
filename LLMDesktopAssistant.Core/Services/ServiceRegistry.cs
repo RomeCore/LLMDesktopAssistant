@@ -28,6 +28,7 @@ namespace LLMDesktopAssistant.Core.Services
 
 		private static State _state;
 		private static IServiceProvider _serviceProvider = null!;
+		private static ImmutableUniqueTypeDictionary<(Type, object)> _serviceTuples = null!;
 		private static ImmutableUniqueTypeDictionary<object> _services = null!;
 		private static ImmutableDictionary<Type, ImmutableList<DynamicServiceTypeInfo>> _dynamicRegistry = null!;
 		private static ConcurrentDictionary<Type, DynamicServiceTracker> _dynamicTrackers = null!;
@@ -36,6 +37,18 @@ namespace LLMDesktopAssistant.Core.Services
 		/// Gets the service provider for the application. This is used to resolve services by their type.
 		/// </summary>
 		public static IServiceProvider Provider => _serviceProvider;
+
+		/// <summary>
+		/// Gets the collection of all registered services.
+		/// </summary>
+		public static ITypeDictionary<(Type, object)> ServiceTuples
+		{
+			get
+			{
+				CheckInitialized();
+				return _serviceTuples;
+			}
+		}
 
 		/// <summary>
 		/// Gets the collection of all registered services.
@@ -58,8 +71,8 @@ namespace LLMDesktopAssistant.Core.Services
 		{
 			CheckInitialized();
 
-			foreach (var service in Services)
-				services.AddSingleton(service);
+			foreach (var service in ServiceTuples)
+				services.AddSingleton(service.Item1, service.Item2);
 
 			return services;
 		}
@@ -135,10 +148,11 @@ namespace LLMDesktopAssistant.Core.Services
 					return (DynamicServiceTracker)ActivatorUtilities.CreateInstance(_serviceProvider, trackerType);
 				}));
 
-			var allServices = new List<object>();
+			var allServices = new List<(Type, object)>();
 			foreach (var serviceType in serviceTypes)
-				allServices.AddRange(_serviceProvider.GetServices(serviceType)!);
-			_services = new(allServices.Distinct().Where(s => s != null));
+				allServices.AddRange(_serviceProvider.GetServices(serviceType).Select((s) => (serviceType, s))!);
+			_serviceTuples = new(allServices.DistinctBy(s => s.Item2).Where(s => s.Item2 != null));
+			_services = new(_serviceTuples.Select(s => s.Item2));
 
 			foreach (var tracker in _dynamicTrackers.Values)
 				tracker.Initialize();

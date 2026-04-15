@@ -8,12 +8,12 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
 	public interface IAttachmentApplicationService
 	{
 		/// <summary>
-		/// Gets the recommended attachment application parameters for a given URL.
+		/// Gets the recommended attachment application parameters for a given URI.
 		/// </summary>
-		/// <param name="url">The URL of the attachment.</param>
+		/// <param name="uri">The URI of the attachment.</param>
 		/// <param name="cancellationToken">Token to cancel operation.</param>
 		/// <returns>The recommended attachment application parameters.</returns>
-		Task<AttachmentApplicationParameters> GetRecommendedParamatersAsync(string url,
+		Task<AttachmentApplicationParameters> GetRecommendedParamatersAsync(Uri uri,
 			CancellationToken cancellationToken = default);
 
 		/// <summary>

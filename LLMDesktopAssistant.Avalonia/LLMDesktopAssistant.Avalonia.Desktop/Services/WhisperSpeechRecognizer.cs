@@ -2,12 +2,13 @@
 using System.Text;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Core.Speech;
 using LLMDesktopAssistant.Core.Utils;
 using Serilog;
 using Whisper.net;
 using Whisper.net.Ggml;
 
-namespace LLMDesktopAssistant.Core.Speech
+namespace LLMDesktopAssistant.Avalonia.Desktop.Services
 {
 	/// <summary>
 	/// Class that uses the Whisper speech recognition model to recognize speech.

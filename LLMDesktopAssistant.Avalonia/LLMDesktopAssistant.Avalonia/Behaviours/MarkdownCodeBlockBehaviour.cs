@@ -2,11 +2,14 @@
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.LogicalTree;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.Input;
 using LiveMarkdown.Avalonia;
 using LLMDesktopAssistant.Avalonia.Behaviours.CodeBlockExtensions;
+using LLMDesktopAssistant.Avalonia.LLM;
+using LLMDesktopAssistant.Avalonia.Utils;
 using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.Utils;
 using System;
@@ -69,11 +72,17 @@ namespace LLMDesktopAssistant.Avalonia.Behaviours
 		{
 			if (isExtended)
 			{
-				var extensions = new AvaloniaList<CodeBlockExtension>();
-				extensions.AddRange(_codeBlockExtensionsTypes
-					.Instantiate<CodeBlockExtension>(ServiceRegistry.Provider, block)
-					.OrderBy(ext => ext.Order));
-				SetCodeBlockExtensions(block, extensions);
+				if (block.IsAttachedToVisualTree())
+				{
+					AttachExtensions(block);
+				}
+				else
+				{
+					block.AttachedToVisualTree += (s, e) =>
+					{
+						AttachExtensions(block);
+					};
+				}
 			}
 			else
 			{
@@ -82,6 +91,25 @@ namespace LLMDesktopAssistant.Avalonia.Behaviours
 					extension.Dispose();
 				extensions?.Clear();
 			}
+		}
+
+		private static void AttachExtensions(CodeBlock block)
+		{
+			var chatView = block.FindParent<ChatView>();
+			var chatViewModel = chatView?.DataContext as ChatViewModel;
+			var services = chatViewModel?.Chat.Services ?? ServiceRegistry.Provider;
+
+			var extensions = new AvaloniaList<CodeBlockExtension>();
+			extensions.AddRange(_codeBlockExtensionsTypes
+				.Instantiate<CodeBlockExtension>(services, block)
+				.OrderBy(ext => ext.Order));
+
+			var oldExtensions = GetCodeBlockExtensions(block);
+			foreach (var extension in oldExtensions ?? [])
+				extension.Dispose();
+			oldExtensions?.Clear();
+
+			SetCodeBlockExtensions(block, extensions);
 		}
 	}
 }

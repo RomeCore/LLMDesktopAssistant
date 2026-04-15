@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Avalonia.Collections;
+using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.Utils;
 
@@ -14,11 +15,15 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 			set => SetProperty(ref _text, value);
 		}
 
-		private readonly RangeObservableCollection<Attachment> _attachments = [];
+		private readonly AvaloniaList<Attachment> _attachments = [];
 		public ICollection<Attachment> Attachments
 		{
 			get => _attachments;
-			set => _attachments.Reset(value);
+			set
+			{
+				_attachments.Clear();
+				_attachments.AddRange(value);
+			}
 		}
 
 		public ICommand EditCommand { get; }

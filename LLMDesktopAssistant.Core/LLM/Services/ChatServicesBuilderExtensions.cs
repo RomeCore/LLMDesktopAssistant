@@ -48,7 +48,6 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 			services.AddScoped<IToolsetBuildingService, ToolsetBuildingService>();
 			services.AddScoped<ILLMBuildingService, LLMBuildingService>();
 			services.AddScoped<IAttachmentApplicationService, AttachmentApplicationService>();
-			services.AddScoped<IMetaToolManagementService, MetaToolManagementService>();
 
 			foreach (var toolModule in ReflectionUtility.GetTypesWithAttribute<ToolModule, ToolModuleAttribute>())
 			{

@@ -6,7 +6,7 @@
 			 xmlns:loc="using:LLMDesktopAssistant.Avalonia.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 x:Class="LLMDesktopAssistant.Avalonia.ChatManagerView"
+			 x:Class="LLMDesktopAssistant.Avalonia.LLM.ChatManagerView"
 			 x:DataType="local:ChatManagerViewModel">
 
 	<Design.DataContext>

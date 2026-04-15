@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace LLMDesktopAssistant.Avalonia;
+namespace LLMDesktopAssistant.Avalonia.LLM;
 
 public partial class ChatView : UserControl
 {

@@ -15,19 +15,18 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
 			Timeout = TimeSpan.FromMinutes(5)
 		};
 
-		private static bool IsWebUrl(string url) =>
-			url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-			url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+		private static bool IsWebUrl(Uri uri) =>
+			uri.Host.StartsWith("http", StringComparison.OrdinalIgnoreCase);
 
 		private static async Task<string> EnsureLocalFileAsync(
-			string url,
+			Uri uri,
 			string destPath,
 			CancellationToken cancellationToken = default)
 		{
-			if (IsWebUrl(url))
+			if (IsWebUrl(uri))
 			{
 				using var response = await HttpClient.GetAsync(
-					url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+					uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 				response.EnsureSuccessStatusCode();
 
 				Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
@@ -40,26 +39,25 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
 				return destPath;
 			}
 
-			url = new Uri(url).LocalPath;
+			var fileName = uri.LocalPath;
 
-			if (!File.Exists(url))
-				throw new FileNotFoundException("File not found", url);
+			if (!File.Exists(fileName))
+				throw new FileNotFoundException("File not found", fileName);
 
 			Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
-			File.Copy(url, destPath, overwrite: true);
+			File.Copy(fileName, destPath, overwrite: true);
 
 			return destPath;
 		}
 
-		private static string GetDestinationPath(string url, string attachmentsDir)
+		private static string GetDestinationPath(Uri uri, string attachmentsDir)
 		{
 			var timestamp = DateTime.Now.ToString("yyyy-MM-dd-HHmmss");
 
 			string fileName;
 
-			if (IsWebUrl(url))
+			if (IsWebUrl(uri))
 			{
-				var uri = new Uri(url);
 				var nameFromUrl = Path.GetFileName(uri.LocalPath);
 
 				if (!string.IsNullOrWhiteSpace(nameFromUrl) && nameFromUrl.Contains('.'))
@@ -74,7 +72,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
 			}
 			else
 			{
-				fileName = $"{timestamp}-{Path.GetFileName(url)}";
+				fileName = $"{timestamp}-{Path.GetFileName(uri.LocalPath)}";
 			}
 
 			return Path.Combine(attachmentsDir, fileName);
@@ -89,10 +87,10 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
 		}
 
 		public async Task<AttachmentApplicationParameters> GetRecommendedParamatersAsync(
-			string url,
+			Uri uri,
 			CancellationToken cancellationToken = default)
 		{
-			var isWebUrl = IsWebUrl(url);
+			var isWebUrl = IsWebUrl(uri);
 			string? tempPath = null;
 
 			try
@@ -105,21 +103,23 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
 						Path.GetTempPath(),
 						$"llmattach-{Guid.NewGuid():N}");
 
-					pathToAnalyze = await EnsureLocalFileAsync(url, tempPath, cancellationToken);
+					pathToAnalyze = await EnsureLocalFileAsync(uri, tempPath, cancellationToken);
 				}
 				else
 				{
-					if (!File.Exists(url))
-						throw new FileNotFoundException("File not found", url);
+					var fileName = uri.LocalPath;
 
-					pathToAnalyze = url;
+					if (!File.Exists(fileName))
+						throw new FileNotFoundException("File not found", fileName);
+
+					pathToAnalyze = fileName;
 				}
 
 				var metrics = FileUtils.GetFileMetrics(pathToAnalyze);
 
 				var parameters = new AttachmentApplicationParameters
 				{
-					SourceUrl = url
+					SourceUri = uri
 				};
 
 				if (metrics.IsBinary)
@@ -168,16 +168,16 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
 			AttachmentApplicationParameters parameters,
 			CancellationToken cancellationToken = default)
 		{
-			var sourceUrl = parameters.SourceUrl;
+			var sourceUri = parameters.SourceUri;
 
 			var workingDir = chat.Settings.GetWorkingDirectory();
 			var attachmentsDir = Path.Combine(workingDir, ".llmassist", "attachments");
 			Directory.CreateDirectory(attachmentsDir);
 
-			var destPath = GetDestinationPath(sourceUrl, attachmentsDir);
+			var destPath = GetDestinationPath(sourceUri, attachmentsDir);
 			var localPath = Path.GetRelativePath(workingDir, destPath);
 
-			await EnsureLocalFileAsync(sourceUrl, destPath, cancellationToken);
+			await EnsureLocalFileAsync(sourceUri, destPath, cancellationToken);
 
 			var metrics = FileUtils.GetFileMetrics(destPath);
 
@@ -209,8 +209,8 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
 
 			return new Attachment
 			{
-				Title = Path.GetFileName(sourceUrl),
-				SourceUrl = sourceUrl,
+				Title = Path.GetFileName(sourceUri.LocalPath),
+				SourceUrl = sourceUri.AbsoluteUri,
 				LocalPath = localPath,
 				Size = (int)metrics.Size,
 				PreviewContent = preview

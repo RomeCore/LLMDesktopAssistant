@@ -23,7 +23,8 @@
 
 		<StackPanel Orientation="Horizontal"
 					HorizontalAlignment="Left"
-					IsVisible="{Binding IsCompleted}">
+					IsVisible="{Binding IsCompleted}"
+					Spacing="4">
 
 			<Button Command="{Binding RegenerateCommand}"
 					Classes="IconButton"
@@ -46,7 +47,8 @@
 			</Button>
 
 			<StackPanel Orientation="Horizontal"
-						IsVisible="{Binding BranchSelectionAvailable}">
+						IsVisible="{Binding BranchSelectionAvailable}"
+						Spacing="4">
 
 				<Button Command="{Binding SwitchBranchCommand}"
 						Classes="IconButton"

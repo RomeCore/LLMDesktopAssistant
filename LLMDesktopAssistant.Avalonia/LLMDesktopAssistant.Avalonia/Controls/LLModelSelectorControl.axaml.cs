@@ -7,6 +7,7 @@ using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.Services.Instances;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients;
+using Serilog;
 
 namespace LLMDesktopAssistant.Avalonia.Controls
 {
@@ -50,7 +51,7 @@ namespace LLMDesktopAssistant.Avalonia.Controls
 		}
 	}
 
-	public class ExtendedComboBox : ComboBox
+	public class LLModelSelectorComboBox : ComboBox
 	{
 		protected override Type StyleKeyOverride => typeof(ComboBox);
 
@@ -59,10 +60,20 @@ namespace LLMDesktopAssistant.Avalonia.Controls
 			base.PrepareContainerForItemOverride(element, item, index);
 
 			// Туда его блять ( -_•)▄︻テحكـ━一💥
-			if (!(item is LLModelDescriptorTracked) && element is ComboBoxItem comboBoxItem)
+			if (element is ComboBoxItem comboBoxItem)
 			{
-				comboBoxItem.IsHitTestVisible = false;
-				comboBoxItem.Focusable = false;
+				if (item is not LLModelDescriptorTracked)
+				{
+					comboBoxItem.IsHitTestVisible = false;
+					comboBoxItem.Focusable = false;
+				}
+				else
+				{
+					// Так как ComboBox использует ебучую виртуализацию (переиспользует старые ComboBoxItem для новых элементов),
+					// то возвращаем состояние элемента обратно
+					comboBoxItem.IsHitTestVisible = true;
+					comboBoxItem.Focusable = true;
+				}
 			}
 		}
 	}

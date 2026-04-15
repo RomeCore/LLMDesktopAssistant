@@ -27,7 +27,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 		private readonly IAttachmentApplicationService _service;
 
 		public AttachmentsManagerViewModel Manager { get; }
-		public string SourceUrl { get; }
+		public Uri SourceUri { get; }
 		public string? Title { get; }
 		public AttachmentApplicationParameters Parameters { get; }
 
@@ -91,15 +91,15 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 		public ICommand RemoveCommand { get; }
 
 		public AttachmentDraftViewModel(AttachmentsManagerViewModel parent,
-			string url, IAttachmentApplicationService service)
+			Uri uri, IAttachmentApplicationService service)
 		{
 			Manager = parent;
-			SourceUrl = url;
-			Title = Path.GetFileName(url);
+			SourceUri = uri;
+			Title = Path.GetFileName(uri.LocalPath);
 			_service = service;
 			Parameters = new AttachmentApplicationParameters
 			{
-				SourceUrl = url
+				SourceUri = uri
 			};
 
 			ApplyCommand = new AsyncRelayCommand(ApplyAsync);
@@ -115,7 +115,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 			IsLoading = true;
 			try
 			{
-				var recommended = await _service.GetRecommendedParamatersAsync(SourceUrl);
+				var recommended = await _service.GetRecommendedParamatersAsync(SourceUri);
 				CopyFrom(recommended);
 			}
 			finally
@@ -198,7 +198,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 			if (string.IsNullOrEmpty(url))
 				return;
 
-			var draft = new AttachmentDraftViewModel(this, url, ApplicationService);
+			var draft = new AttachmentDraftViewModel(this, new Uri(url), ApplicationService);
 			_drafts.Add(draft);
 			_ = draft.InitializeAsync();
 
@@ -220,7 +220,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 			{
 				foreach (var file in result)
 				{
-					var draft = new AttachmentDraftViewModel(this, file.Path.AbsoluteUri, ApplicationService);
+					var draft = new AttachmentDraftViewModel(this, file.Path, ApplicationService);
 					_drafts.Add(draft);
 					_ = draft.InitializeAsync();
 				}
@@ -233,7 +233,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 			{
 				foreach (var file in files)
 				{
-					var draft = new AttachmentDraftViewModel(this, file.Path.AbsoluteUri, ApplicationService);
+					var draft = new AttachmentDraftViewModel(this, file.Path, ApplicationService);
 					_drafts.Add(draft);
 
 					_ = draft.InitializeAsync(); // fire & forget
@@ -242,7 +242,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 
 			if (args.DataTransfer.TryGetText() is string text)
 			{
-				var draft = new AttachmentDraftViewModel(this, text, ApplicationService);
+				var draft = new AttachmentDraftViewModel(this, new Uri(text), ApplicationService);
 				_drafts.Add(draft);
 				_ = draft.InitializeAsync();
 			}

@@ -12,11 +12,11 @@
 			set => SetProperty(ref _mode, value);
 		}
 
-		private string _sourceUrl = string.Empty;
-		public string SourceUrl
+		private Uri _sourceUri = new Uri("https://example.com");
+		public Uri SourceUri
 		{
-			get => _sourceUrl;
-			set => SetProperty(ref _sourceUrl, value);
+			get => _sourceUri;
+			set => SetProperty(ref _sourceUri, value);
 		}
 
 		private int _startLine = 1;

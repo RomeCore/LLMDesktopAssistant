@@ -18,11 +18,6 @@ namespace LLMDesktopAssistant.Avalonia.Behaviours.CodeBlockExtensions
 		public virtual int Order => 0;
 
 		/// <summary>
-		/// The visibility of the extension. If false, the extension will not be displayed.
-		/// </summary>
-		public virtual bool IsVisible => true;
-
-		/// <summary>
 		/// The icon for button associated with this extension.
 		/// </summary>
 		public abstract MaterialIconKind Icon { get; }
@@ -32,9 +27,24 @@ namespace LLMDesktopAssistant.Avalonia.Behaviours.CodeBlockExtensions
 		/// </summary>
 		public abstract ICommand Command { get; }
 
+		private bool _isVisible = true;
+		/// <summary>
+		/// The visibility of the extension. If false, the extension will not be displayed.
+		/// </summary>
+		public bool IsVisible
+		{
+			get => _isVisible;
+			protected set => SetProperty(ref  _isVisible, value);
+		}
+
+		private object? _additionalViewModel;
 		/// <summary>
 		/// The view model that will be appended to the end of the code block.
 		/// </summary>
-		public virtual object? AdditionalViewModel => null;
+		public object? AdditionalViewModel
+		{
+			get => _additionalViewModel;
+			protected set => SetProperty(ref _additionalViewModel, value);
+		}
 	}
 }
