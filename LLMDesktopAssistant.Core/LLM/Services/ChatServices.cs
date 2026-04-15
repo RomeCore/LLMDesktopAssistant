@@ -1,5 +1,6 @@
 ﻿using LLMDesktopAssistant.Core.LLM.Data;
 using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,8 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 
 		static ChatServices()
 		{
-			var database = new ConversationDatabase("data/chat.db");
-			var usageDatabase = new UsageDatabase("data/usage.db");
+			var database = new ConversationDatabase(Path.Combine(Directories.Data, "chat.db"));
+			var usageDatabase = new UsageDatabase(Path.Combine(Directories.Data, "usage.db"));
 
 			var serviceBuilder = new ServiceCollection();
 			serviceBuilder.AddAppServices();

@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.Avalonia.MVVM
 	/// Apply this attribute to a ViewModel class to indicate which view it is associated with.
 	/// </summary>
 	/// <param name="targetView">The type of the view to bind this ViewModel to.</param>
-	[AttributeUsage(AttributeTargets.Class)]
+	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 	public sealed class ViewModelForAttribute(Type targetView) : Attribute
 	{
 		public Type TargetView { get; } = targetView;

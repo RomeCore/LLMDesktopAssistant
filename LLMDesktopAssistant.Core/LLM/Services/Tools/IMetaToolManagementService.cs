@@ -1,4 +1,5 @@
 ﻿using LLMDesktopAssistant.Core.ToolModules;
+using LLMDesktopAssistant.Core.ToolModules.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;

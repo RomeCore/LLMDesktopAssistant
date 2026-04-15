@@ -6,9 +6,11 @@
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 x:Class="LLMDesktopAssistant.Avalonia.MVVM.MainView"
 			 x:DataType="vm:MainViewModel">
+
 	<Design.DataContext>
 		<vm:MainViewModel />
 	</Design.DataContext>
 
-	<TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+	<ContentControl Content="{Binding ChatManager}"/>
+
 </UserControl>

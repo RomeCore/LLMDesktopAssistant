@@ -1,9 +1,6 @@
-﻿using LLMDesktopAssistant.Avalonia.LLM.Messages;
+﻿using Avalonia.Threading;
 using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.MVVM;
 using System.ComponentModel;
-using System.Windows.Threading;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 {
@@ -41,7 +38,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 
 				void PropertyChangedHandler(object? s, PropertyChangedEventArgs e)
 				{
-					_currentUpdateOperation = BeginInvokeUI(() =>
+					_currentUpdateOperation = InvokeUIAsync(() =>
 					{
 						_currentUpdateOperation?.Abort();
 						ReasoningText = message.ReasoningContent ?? string.Empty;
@@ -51,7 +48,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 				message.PropertyChanged += PropertyChangedHandler;
 				message.CompletionToken.OnCompleted(() =>
 				{
-					BeginInvokeUI(() =>
+					InvokeUIAsync(() =>
 					{
 						_currentUpdateOperation?.Abort();
 						_currentUpdateOperation = null;

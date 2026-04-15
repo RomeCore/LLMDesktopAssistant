@@ -19,9 +19,9 @@ namespace LLMDesktopAssistant.Avalonia.MVVM
 			Dispatcher.UIThread.Invoke(action, DispatcherPriority.Default, cancellationToken);
 		}
 
-		protected static async Task InvokeUIAsync(Action action, CancellationToken cancellationToken = default)
+		protected static DispatcherOperation InvokeUIAsync(Action action, CancellationToken cancellationToken = default)
 		{
-			await Dispatcher.UIThread.InvokeAsync(action, DispatcherPriority.Default, cancellationToken);
+			return Dispatcher.UIThread.InvokeAsync(action, DispatcherPriority.Default, cancellationToken);
 		}
 	}
 }

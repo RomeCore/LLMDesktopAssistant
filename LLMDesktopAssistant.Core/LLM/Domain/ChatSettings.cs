@@ -73,6 +73,16 @@ namespace LLMDesktopAssistant.Core.LLM.Domain
 		/// </summary>
 		public string GetWorkingDirectory() => WorkingDirectory ?? Path.GetFullPath(Directories.DefaultWorkingDirectory);
 
+		private string? _pythonVenvActivateScriptPath;
+		/// <summary>
+		/// The path to the script that activates a python virtual environment.
+		/// </summary>
+		public string? PythonVenvActivateScriptPath
+		{
+			get => _pythonVenvActivateScriptPath;
+			set => SetProperty(ref _pythonVenvActivateScriptPath, value);
+		}
+
 		private bool _enableTools = true;
 		/// <summary>
 		/// Whether to use tools in the chat.

@@ -40,6 +40,8 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
 				return destPath;
 			}
 
+			url = new Uri(url).LocalPath;
+
 			if (!File.Exists(url))
 				throw new FileNotFoundException("File not found", url);
 

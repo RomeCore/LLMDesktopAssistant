@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LLMDesktopAssistant.WPF.LLM.MVVM.Messages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

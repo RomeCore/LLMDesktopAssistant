@@ -1,13 +1,16 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia.Collections;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.Services.Attachments;
+using LLMDesktopAssistant.Core.Localization.Resources;
 using LLMDesktopAssistant.Core.Utils;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using UglyToad.PdfPig.Logging;
 
 namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 {
@@ -149,11 +152,15 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 		public UserInputViewModel UserInput { get; }
 		public IAttachmentApplicationService ApplicationService { get; }
 
-		private readonly RangeObservableCollection<AttachmentDraftViewModel> _drafts = [];
+		private readonly AvaloniaList<AttachmentDraftViewModel> _drafts = [];
 		public ICollection<AttachmentDraftViewModel> Drafts
 		{
 			get => _drafts;
-			set => _drafts.Reset(value);
+			set
+			{
+				_drafts.Clear();
+				_drafts.AddRange(value);
+			}
 		}
 
 		private string _inputUrl = string.Empty;
@@ -172,14 +179,15 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 			ApplicationService = parent.Chat.Services.GetRequiredService<IAttachmentApplicationService>();
 
 			AddUrlCommand = new RelayCommand(AddUrl);
-			AttachFilesCommand = new RelayCommand(AttachFiles);
+			AttachFilesCommand = new AsyncRelayCommand(AttachFiles);
 
 			_drafts.CollectionChanged += (s, e) =>
 			{
 				// Close the dialog when there are no drafts left.
 				if (Drafts.Count == 0)
 				{
-					DialogHost.Close(null);
+					// TODO: Uncomment
+					// DialogHost.Close(null);
 				}
 			};
 		}
@@ -197,22 +205,22 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Attachments
 			InputUrl = string.Empty;
 		}
 
-		private void AttachFiles()
+		private async Task AttachFiles()
 		{
-			App.Current.Se
-
-			var dialog = new System.Windows.Forms.OpenFileDialog
+			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = "Select files to attach",
-				Multiselect = true,
-				Filter = "All files (*.*)|*.*"
-			};
+				Title = Locale.select_working_directory,
+				FileTypeFilter = [
+					new FilePickerFileType("All files (*.*)")
+				],
+				AllowMultiple = false
+			});
 
-			if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			if (result.Count > 0)
 			{
-				foreach (var file in dialog.FileNames)
+				foreach (var file in result)
 				{
-					var draft = new AttachmentDraftViewModel(this, file, ApplicationService);
+					var draft = new AttachmentDraftViewModel(this, file.Path.AbsoluteUri, ApplicationService);
 					_drafts.Add(draft);
 					_ = draft.InitializeAsync();
 				}

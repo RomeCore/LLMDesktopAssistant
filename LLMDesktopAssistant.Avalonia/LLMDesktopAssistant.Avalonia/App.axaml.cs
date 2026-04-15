@@ -4,12 +4,14 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using LiveMarkdown.Avalonia;
 using LLMDesktopAssistant.Avalonia.MVVM;
 using LLMDesktopAssistant.Core;
 using LLMDesktopAssistant.Core.Services;
 using LLMDesktopAssistant.Core.Utils;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+using System.IO;
 using System.Linq;
 
 namespace LLMDesktopAssistant.Avalonia
@@ -18,6 +20,19 @@ namespace LLMDesktopAssistant.Avalonia
 	{
 		public override void Initialize()
 		{
+			Directories.EnsureAll();
+
+			Log.Logger = new LoggerConfiguration()
+				.MinimumLevel.Debug()
+				.WriteTo.Sink(new ConsoleAllocatorSink())
+				.WriteTo.Console(applyThemeToRedirectedOutput: true, theme: SystemConsoleTheme.Literate)
+				.WriteTo.File(Path.Combine(Directories.LogFiles, "log.txt"), rollingInterval: RollingInterval.Day)
+				.CreateLogger();
+
+			PluginManager.LoadPluginsInto(AppDomain.CurrentDomain);
+			ReflectionUtility.Initialize(AppDomain.CurrentDomain);
+			ServiceRegistry.Initialize([Log.Logger,]);
+
 			AvaloniaXamlLoader.Load(this);
 		}
 
@@ -50,18 +65,6 @@ namespace LLMDesktopAssistant.Avalonia
 			else
 			{
 			}
-
-			Log.Logger = new LoggerConfiguration()
-				.MinimumLevel.Debug()
-				.WriteTo.Sink(new ConsoleAllocatorSink())
-				.WriteTo.Console(applyThemeToRedirectedOutput: true, theme: SystemConsoleTheme.Literate)
-				.WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
-				.CreateLogger();
-
-			Directories.EnsureAll();
-			PluginManager.LoadPluginsInto(AppDomain.CurrentDomain);
-			ReflectionUtility.Initialize(AppDomain.CurrentDomain);
-			ServiceRegistry.Initialize([ Log.Logger, ]);
 
 			base.OnFrameworkInitializationCompleted();
 		}

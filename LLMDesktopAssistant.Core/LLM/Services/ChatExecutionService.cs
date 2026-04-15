@@ -219,8 +219,8 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 						finally
 						{
 							responseMessage.PartAdded -= PartHandler;
-							Log.Information("Generation finished with status: {Status}, error: {Error}, tool call count: {ToolCallCount}",
-								domainResponseMessage.Status, domainResponseMessage.Error, domainResponseMessage.ToolCalls.Count);
+							Log.Information("Generation finished with status: {Status}, error: {Error}, tool call count: {ToolCallCount}, model: {Model}",
+								domainResponseMessage.Status, domainResponseMessage.Error, domainResponseMessage.ToolCalls.Count, llm.Descriptor.FullName);
 						}
 					}
 					finally

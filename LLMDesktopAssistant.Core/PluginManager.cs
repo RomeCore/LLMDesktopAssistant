@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LLMDesktopAssistant.Core.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,12 +20,16 @@ namespace LLMDesktopAssistant.Core
 		/// <param name="domain">The application domain to load plugins into.</param>
 		public static void LoadPluginsInto(AppDomain domain)
 		{
-			string[] searchPaths = ["", "plugins", "plugins/dependencies"];
-			Directory.CreateDirectory("plugins");
-			Directory.CreateDirectory("plugins/dependencies");
+			string[] searchPaths = [
+				Environment.CurrentDirectory,
+				Directories.Plugins,
+				Path.Combine(Directories.Plugins, "dependencies")
+			];
+			Directory.CreateDirectory(Path.Combine(Directories.Plugins, "dependencies"));
+
 			Dictionary<string, Assembly> loadedAssemblies = [];
 
-			ResolveEventHandler onResolve = (s, e) =>
+			Assembly? OnResolve(object? s, ResolveEventArgs e)
 			{
 				if (loadedAssemblies.TryGetValue(e.Name, out var assembly))
 					return assembly;
@@ -44,20 +49,25 @@ namespace LLMDesktopAssistant.Core
 				}
 
 				return null;
-			};
-
-			domain.AssemblyResolve += onResolve;
-
-			foreach (var plugin in Directory.GetFiles(Path.GetFullPath("plugins"), "*.dll"))
-			{
-				var assemblyInfo = AssemblyName.GetAssemblyName(plugin);
-				if (loadedAssemblies.ContainsKey(assemblyInfo.FullName))
-					continue;
-
-				domain.Load(assemblyInfo);
 			}
 
-			domain.AssemblyResolve -= onResolve;
+			domain.AssemblyResolve += OnResolve;
+
+			try
+			{
+				foreach (var plugin in Directory.GetFiles(Directories.Plugins, "*.dll"))
+				{
+					var assemblyInfo = AssemblyName.GetAssemblyName(plugin);
+					if (loadedAssemblies.ContainsKey(assemblyInfo.FullName))
+						continue;
+
+					domain.Load(assemblyInfo);
+				}
+			}
+			finally
+			{
+				domain.AssemblyResolve -= OnResolve;
+			}
 		}
 	}
 }

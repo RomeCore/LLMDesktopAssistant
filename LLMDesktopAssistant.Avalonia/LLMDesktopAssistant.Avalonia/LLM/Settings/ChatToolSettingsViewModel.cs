@@ -1,15 +1,16 @@
-﻿using Avalonia.Media;
+﻿using Avalonia;
+using Avalonia.Collections;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.Services.Tools;
 using LLMDesktopAssistant.Core.Localization.Resources;
 using LLMDesktopAssistant.Core.ToolModules;
 using LLMDesktopAssistant.Core.Utils;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.Avalonia.LLM.Settings
 {
-	public class ToolAdditionalTemplateSelector : DataTemplateSelector
+	/*public class ToolAdditionalTemplateSelector : DataTemplateSelector
 	{
 		public DataTemplate? ToolTemplate { get; set; }
 
@@ -20,7 +21,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Settings
 
 			return TreeViewAssist.SuppressAdditionalTemplate;
 		}
-	}
+	}*/
 
 	public class ToolItemViewModel : ViewModelBase
 	{
@@ -69,8 +70,8 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Settings
 			if (Description.Count(c => c == '\n') >= 5 || Description.Length > 750)
 			{
 				var gradientBrush = new LinearGradientBrush();
-				gradientBrush.StartPoint = new Point(0, 0);
-				gradientBrush.EndPoint = new Point(0, 1);
+				gradientBrush.StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative);
+				gradientBrush.EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative);
 				gradientBrush.GradientStops.Add(new GradientStop(Colors.White, 0.5));
 				gradientBrush.GradientStops.Add(new GradientStop(Colors.Transparent, 1.0));
 				DescriptionOpacityMask = gradientBrush;
@@ -223,13 +224,14 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Settings
 		public ChatSettingsViewModel Parent { get; }
 		public ChatSettings Settings { get; }
 
-		private RangeObservableCollection<ToolCategoryViewModel> _toolCategories = [];
+		private AvaloniaList<ToolCategoryViewModel> _toolCategories = [];
 		public ICollection<ToolCategoryViewModel> ToolCategories
 		{
 			get => _toolCategories;
 			set
 			{
-				_toolCategories.Reset(value);
+				_toolCategories.Clear();
+				_toolCategories.AddRange(value);
 				RaisePropertyChanged(nameof(ToolCategories));
 			}
 		}

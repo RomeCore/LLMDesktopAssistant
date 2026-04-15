@@ -65,7 +65,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 					bool approved = await tcs.Task;
 					if (!approved)
 						result = new ToolResult(ToolResultStatus.Cancelled, "User has cancelled the tool execution. " +
-							"Maybe it can be dangerous to proceed. Please try again with different parameters.");
+							"Maybe it can be dangerous or unwanted to proceed. Please wait for user message for explanations.");
 				}
 
 				if (result == null)

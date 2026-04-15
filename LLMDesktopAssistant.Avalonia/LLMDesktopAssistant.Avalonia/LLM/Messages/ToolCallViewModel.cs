@@ -1,14 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.MVVM;
-using System;
-using System.Collections.Generic;
+using Material.Icons;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 {
@@ -21,8 +14,40 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 		public ToolCallStatus Status
 		{
 			get => _status;
-			set => SetProperty(ref _status, value);
+			set
+			{
+				if (SetProperty(ref _status, value))
+				{
+					RaisePropertyChanged(nameof(ToolIcon));
+					RaisePropertyChanged(nameof(InProgress));
+					RaisePropertyChanged(nameof(UserAsked));
+				}
+			}
 		}
+
+		public MaterialIconKind ToolIcon =>
+			Status switch
+			{
+				ToolCallStatus.UserAsked => MaterialIconKind.QuestionMarkCircle,
+				ToolCallStatus.Success => MaterialIconKind.CheckCircle,
+				ToolCallStatus.Cancelled => MaterialIconKind.CancelCircle,
+				ToolCallStatus.Error => MaterialIconKind.AlertCircle,
+				_ => MaterialIconKind.Hammer
+			};
+
+		public bool InProgress =>
+			Status switch
+			{
+				ToolCallStatus.InProgress => true,
+				_ => false
+			};
+
+		public bool UserAsked =>
+			Status switch
+			{
+				ToolCallStatus.UserAsked => true,
+				_ => false
+			};
 
 		private string _toolName = string.Empty;
 		public string ToolName

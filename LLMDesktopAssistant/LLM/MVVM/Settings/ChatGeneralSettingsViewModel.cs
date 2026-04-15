@@ -16,6 +16,8 @@ namespace LLMDesktopAssistant.Core.LLM.MVVM.Settings
 
 		public ICommand SelectWorkingDirectoryCommand { get; }
 		public ICommand OpenWorkingDirectoryCommand { get; }
+		public ICommand SelectPythonVenvActivateScriptPathCommand { get; }
+		public ICommand OpenPythonVenvActivateScriptPathCommand { get; }
 
 		public ChatGeneralSettingsViewModel(ChatSettingsViewModel parent)
 		{
@@ -24,6 +26,8 @@ namespace LLMDesktopAssistant.Core.LLM.MVVM.Settings
 
 			SelectWorkingDirectoryCommand = new RelayCommand(SelectWorkingDirectory);
 			OpenWorkingDirectoryCommand = new RelayCommand(OpenWorkingDirectory);
+			SelectPythonVenvActivateScriptPathCommand = new RelayCommand(SelectPythonVenvActivateScriptPath);
+			OpenPythonVenvActivateScriptPathCommand = new RelayCommand(OpenPythonVenvActivateScriptPath);
 		}
 
 		private void SelectWorkingDirectory()
@@ -49,6 +53,35 @@ namespace LLMDesktopAssistant.Core.LLM.MVVM.Settings
 				Process.Start(new ProcessStartInfo
 				{
 					FileName = Settings.WorkingDirectory,
+					UseShellExecute = true
+				});
+			}
+		}
+
+		private void SelectPythonVenvActivateScriptPath()
+		{
+			var dialog = new System.Windows.Forms.OpenFileDialog
+			{
+				Title = Locale.select_python_venv_activate_script,
+				Filter = "Batch files (*.bat)|*.bat|All files (*)|*",
+				Multiselect = false
+			};
+
+			if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				Settings.PythonVenvActivateScriptPath = dialog.FileName;
+			}
+		}
+
+		private void OpenPythonVenvActivateScriptPath()
+		{
+			if (!string.IsNullOrWhiteSpace(Settings.PythonVenvActivateScriptPath) &&
+				File.Exists(Settings.PythonVenvActivateScriptPath))
+			{
+				Process.Start(new ProcessStartInfo
+				{
+					FileName = "explorer.exe",
+					Arguments = $"/select,\"{Settings.PythonVenvActivateScriptPath}\"",
 					UseShellExecute = true
 				});
 			}

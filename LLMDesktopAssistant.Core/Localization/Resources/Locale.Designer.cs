@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.Core.Localization.Resources {
     // с помощью такого средства, как ResGen или Visual Studio.
     // Чтобы добавить или удалить член, измените файл .ResX и снова запустите ResGen
     // с параметром /str или перестройте свой проект VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Locale {
@@ -862,6 +862,15 @@ namespace LLMDesktopAssistant.Core.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Python Venv activation script.
+        /// </summary>
+        public static string python_venv_activate_script_path_hint {
+            get {
+                return ResourceManager.GetString("python_venv_activate_script_path_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Reasoning process.
         /// </summary>
         public static string reasoning {
@@ -921,6 +930,15 @@ namespace LLMDesktopAssistant.Core.Localization.Resources {
         public static string select_model {
             get {
                 return ResourceManager.GetString("select_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select Python Venv activation script.
+        /// </summary>
+        public static string select_python_venv_activate_script {
+            get {
+                return ResourceManager.GetString("select_python_venv_activate_script", resourceCulture);
             }
         }
         

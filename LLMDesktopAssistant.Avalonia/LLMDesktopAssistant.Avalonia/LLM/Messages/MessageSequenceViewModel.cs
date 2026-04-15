@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.LLM.Data;
+﻿using Avalonia.Collections;
 using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.MVVM;
 using LLMDesktopAssistant.Core.Utils;
+using System.Collections.Specialized;
 
 namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 {
 	[ViewModelFor(typeof(MessageSequenceView))]
 	public class MessageSequenceViewModel : ViewModelBase
 	{
+		// TODO: Maybe change to RangeObservableCollection?
 		/// <summary>
 		/// Collection of message view models that represent the sequence of messages.
 		/// </summary>
-		public RangeObservableCollection<MessageViewModelBase> MessageViewModels { get; }
+		public AvaloniaList<MessageViewModelBase> MessageViewModels { get; }
 
 		/// <summary>
 		/// The chat view model instance associated with this message sequence.
@@ -28,7 +21,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 
 		public MessageSequenceViewModel(ChatViewModel chatVM)
 		{
-			MessageViewModels = new RangeObservableCollection<MessageViewModelBase>();
+			MessageViewModels = new AvaloniaList<MessageViewModelBase>();
 			ChatViewModel = chatVM;
 
 			MessageViewModels.AddRange(chatVM.Chat.Messages.Select(CreateMessageViewModel));
@@ -75,7 +68,8 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 
 					case NotifyCollectionChangedAction.Reset:
 
-						MessageViewModels.Reset(ChatViewModel.Chat.Messages.Select(CreateMessageViewModel));
+						MessageViewModels.Clear();
+						MessageViewModels.AddRange(ChatViewModel.Chat.Messages.Select(CreateMessageViewModel));
 
 						break;
 				}

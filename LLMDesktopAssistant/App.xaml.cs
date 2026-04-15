@@ -2,6 +2,7 @@
 using LLMDesktopAssistant.Core.Utils;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+using System.IO;
 using System.Windows;
 
 namespace LLMDesktopAssistant.Core
@@ -19,7 +20,7 @@ namespace LLMDesktopAssistant.Core
 				.MinimumLevel.Debug()
 				.WriteTo.Sink(new ConsoleAllocatorSink())
 				.WriteTo.Console(applyThemeToRedirectedOutput: true, theme: SystemConsoleTheme.Literate)
-				.WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+				.WriteTo.File(Path.Combine(Directories.LogFiles, "log.txt"), rollingInterval: RollingInterval.Day)
 				.CreateLogger();
 
 			Directories.EnsureAll();

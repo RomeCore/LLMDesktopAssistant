@@ -22,7 +22,7 @@ namespace LLMDesktopAssistant.Core.Services.Instances
 	[Service]
 	public class LLModelListService
 	{
-		static readonly DeepSeekClient deepseek = new(new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
+		static readonly DeepSeekClient deepseek = new("https://api.deepseek.com/v1", new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
 		static readonly OpenRouterClient openrouter = new(new EnvironmentTokenAccessor("OPENROUTER_API_KEY"));
 		static readonly OllamaClient ollama = new();
 

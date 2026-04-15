@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Core.Settings
 {
-	public abstract class SettingsObject : NotifyPropertyChanged
+	public class SettingsObject : NotifyPropertyChanged
 	{
 		/// <summary>
 		/// The default ID used for settings instances without an explicit identifier.

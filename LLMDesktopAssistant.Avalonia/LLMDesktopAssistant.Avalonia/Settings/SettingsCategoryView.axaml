@@ -1,0 +1,118 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.Avalonia.Settings"
+			 xmlns:set="using:LLMDesktopAssistant.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Avalonia.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Avalonia.Controls"
+			 xmlns:flui="using:FluentAvalonia.UI"
+			 x:Class="LLMDesktopAssistant.Avalonia.Settings.SettingsCategoryView"
+			 x:CompileBindings="False">
+
+	<Grid RowDefinitions="auto,auto,*">
+		
+		<TextBlock Grid.Column="0"
+				   Margin="10"
+				   Text="{loc:Loc settings}"
+				   FontSize="{DynamicResource FontSizeL}"
+				   FontWeight="Bold"
+				   VerticalAlignment="Center"/>
+
+		<Grid Grid.Row="1"
+			  HorizontalAlignment="Right"
+			  ColumnDefinitions="*,*"
+			  Margin="10">
+
+			<TextBlock Grid.Column="0"
+						Margin="5,0"
+						Text="{loc:Loc settings_profile}"
+						FontWeight="Bold"
+						VerticalAlignment="Center"/>
+
+			<Grid Grid.Column="1"
+				  IsVisible="{Binding IsEditingId, Converter={StaticResource InverseBooleanConverter}}">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition Width="auto"/>
+					<ColumnDefinition Width="auto"/>
+					<ColumnDefinition Width="auto"/>
+				</Grid.ColumnDefinitions>
+
+				<ComboBox Grid.Column="0"
+						  MinWidth="150"
+						  Margin="0,0,5,0"
+						  VerticalAlignment="Center"
+						  SelectedItem="{Binding CurrentId}"
+						  ItemsSource="{Binding Ids}"
+						  IsVisible="{Binding IsEditingId, Converter={StaticResource InverseBooleanConverter}}"/>
+
+				<Button Grid.Column="1"
+						Command="{Binding CreateNewIdCommand}"
+						Classes="IconButton">
+
+					<ico:MaterialIcon Kind="Plus"/>
+
+				</Button>
+
+				<Button Grid.Column="2"
+						Command="{Binding RenameIdCommand}"
+						Classes="IconButton">
+
+					<ico:MaterialIcon Kind="Edit"/>
+
+				</Button>
+
+				<Button Grid.Column="3"
+						Command="{Binding RemoveIdCommand}"
+						Classes="IconButton">
+
+					<ico:MaterialIcon Kind="Remove"/>
+
+				</Button>
+
+			</Grid>
+
+			<Grid Grid.Column="1"
+				  IsVisible="{Binding IsEditingId}">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition Width="auto"/>
+					<ColumnDefinition Width="auto"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBox Grid.Column="0"
+							VerticalAlignment="Center"
+							MinWidth="150"
+							Text="{Binding NewId}"/>
+
+				<Button Grid.Column="1"
+						Command="{Binding ConfirmEditIdCommand}"
+						Classes="IconButton">
+
+					<ico:MaterialIcon Kind="Check"/>
+
+				</Button>
+
+				<Button Grid.Column="2"
+						Command="{Binding CancelEditIdCommand}"
+						Classes="IconButton">
+
+					<ico:MaterialIcon Kind="Cancel"/>
+
+				</Button>
+
+			</Grid>
+
+		</Grid>
+
+		<ContentControl Grid.Row="2"
+						Content="{Binding CurrentViewModel}"/>
+
+	</Grid>
+
+</UserControl>

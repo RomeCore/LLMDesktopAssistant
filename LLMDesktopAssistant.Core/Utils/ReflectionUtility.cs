@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace LLMDesktopAssistant.Core.Utils
@@ -441,19 +442,14 @@ namespace LLMDesktopAssistant.Core.Utils
 			return resultTypes;
 		}
 
-		public static object Instantiate(this Type type)
-		{
-			return Activator.CreateInstance(type)!;
-		}
-
 		public static object Instantiate(this Type type, params object[] args)
 		{
 			return Activator.CreateInstance(type, args)!;
 		}
 
-		public static T Instantiate<T>(this Type type)
+		public static object Instantiate(this Type type, IServiceProvider services, params object[] args)
 		{
-			return (T)Activator.CreateInstance(type)!;
+			return ActivatorUtilities.CreateInstance(services, type, args)!;
 		}
 
 		public static T Instantiate<T>(this Type type, params object[] args)
@@ -461,9 +457,9 @@ namespace LLMDesktopAssistant.Core.Utils
 			return (T)Activator.CreateInstance(type, args)!;
 		}
 
-		public static IEnumerable<object> Instantiate(this IEnumerable<Type> types)
+		public static T Instantiate<T>(this Type type, IServiceProvider services, params object[] args)
 		{
-			return types.Select(t => t.Instantiate());
+			return (T)ActivatorUtilities.CreateInstance(services, type, args)!;
 		}
 
 		public static IEnumerable<object> Instantiate(this IEnumerable<Type> types, params object[] args)
@@ -471,14 +467,9 @@ namespace LLMDesktopAssistant.Core.Utils
 			return types.Select(t => t.Instantiate(args));
 		}
 
-		public static IEnumerable<object> Instantiate(this IEnumerable<Type> types, Func<Type, object[]> argsProvider)
+		public static IEnumerable<object> Instantiate(this IEnumerable<Type> types, IServiceProvider services, params object[] args)
 		{
-			return types.Select(t => t.Instantiate(argsProvider(t)));
-		}
-
-		public static IEnumerable<T> Instantiate<T>(this IEnumerable<Type> types)
-		{
-			return types.Select(t => t.Instantiate<T>());
+			return types.Select(t => t.Instantiate(services, args));
 		}
 
 		public static IEnumerable<T> Instantiate<T>(this IEnumerable<Type> types, params object[] args)
@@ -486,129 +477,9 @@ namespace LLMDesktopAssistant.Core.Utils
 			return types.Select(t => t.Instantiate<T>(args));
 		}
 
-		public static IEnumerable<T> Instantiate<T>(this IEnumerable<Type> types, Func<Type, object[]> argsProvider)
+		public static IEnumerable<T> Instantiate<T>(this IEnumerable<Type> types, IServiceProvider services, params object[] args)
 		{
-			return types.Select(t => t.Instantiate<T>(argsProvider(t)));
-		}
-
-		public static IEnumerable<object> Instantiate(this IEnumerable<Type> types, Action<Type, Exception> exceptionHandler)
-		{
-			foreach (var type in types)
-			{
-				object? instance = null;
-				bool success = false;
-				try
-				{
-					instance = type.Instantiate();
-					success = true;
-				}
-				catch (Exception ex)
-				{
-					exceptionHandler(type, ex);
-				}
-				if (success)
-					yield return instance!;
-			}
-		}
-
-		public static IEnumerable<object> Instantiate(this IEnumerable<Type> types, Action<Type, Exception> exceptionHandler, params object[] args)
-		{
-			foreach (var type in types)
-			{
-				object? instance = null;
-				bool success = false;
-				try
-				{
-					instance = type.Instantiate(args);
-					success = true;
-				}
-				catch (Exception ex)
-				{
-					exceptionHandler(type, ex);
-				}
-				if (success)
-					yield return instance!;
-			}
-		}
-
-		public static IEnumerable<object> Instantiate(this IEnumerable<Type> types, Action<Type, Exception> exceptionHandler, Func<Type, object[]> argsProvider)
-		{
-			foreach (var type in types)
-			{
-				object? instance = null;
-				bool success = false;
-				try
-				{
-					instance = type.Instantiate(argsProvider(type));
-					success = true;
-				}
-				catch (Exception ex)
-				{
-					exceptionHandler(type, ex);
-				}
-				if (success)
-					yield return instance!;
-			}
-		}
-
-		public static IEnumerable<T> Instantiate<T>(this IEnumerable<Type> types, Action<Type, Exception> exceptionHandler)
-		{
-			foreach (var type in types)
-			{
-				T? instance = default;
-				bool success = false;
-				try
-				{
-					instance = type.Instantiate<T>();
-					success = true;
-				}
-				catch (Exception ex)
-				{
-					exceptionHandler(type, ex);
-				}
-				if (success)
-					yield return instance!;
-			}
-		}
-
-		public static IEnumerable<T> Instantiate<T>(this IEnumerable<Type> types, Action<Type, Exception> exceptionHandler, params object[] args)
-		{
-			foreach (var type in types)
-			{
-				T? instance = default;
-				bool success = false;
-				try
-				{
-					instance = type.Instantiate<T>(args);
-					success = true;
-				}
-				catch (Exception ex)
-				{
-					exceptionHandler(type, ex);
-				}
-				if (success)
-					yield return instance!;
-			}
-		}
-
-		public static IEnumerable<T> Instantiate<T>(this IEnumerable<Type> types, Action<Type, Exception> exceptionHandler, Func<Type, object[]> argsProvider)
-		{
-			foreach (var type in types)
-			{
-				T? instance = default;
-				bool success = false;
-				try
-				{
-					instance = type.Instantiate<T>(argsProvider(type));
-					success = true;
-				}
-				catch (Exception ex)
-				{
-					exceptionHandler(type, ex);
-				}
-				if (success)
-					yield return instance!;
-			}
+			return types.Select(t => t.Instantiate<T>(services, args));
 		}
 	}
 }

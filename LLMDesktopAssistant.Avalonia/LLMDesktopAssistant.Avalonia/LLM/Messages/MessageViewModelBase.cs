@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.Services;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 {

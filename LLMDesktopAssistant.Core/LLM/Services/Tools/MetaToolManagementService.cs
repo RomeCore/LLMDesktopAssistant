@@ -113,7 +113,8 @@ namespace LLMDesktopAssistant.Core.LLM.Services.Tools
 						""";
 
 					var workDir = chat.Settings.GetWorkingDirectory();
-					var result = await _python.RunScript(pythonCode, workDir, cancellationToken);
+					var activationScript = chat.Settings.PythonVenvActivateScriptPath;
+					var result = await _python.RunScript(pythonCode, workDir, activationScript, cancellationToken);
 
 					var resultBuilder = new StringBuilder();
 					resultBuilder.Append(result.StdOut);

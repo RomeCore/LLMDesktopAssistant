@@ -1,6 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using LLMDesktopAssistant.Avalonia.LLM.Messages;
-using LLMDesktopAssistant.Core.MVVM;
 
 namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 {

@@ -1,6 +1,11 @@
-﻿using Avalonia.Input;
+﻿using Avalonia.Collections;
+using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Avalonia.DIalogs;
 using LLMDesktopAssistant.Avalonia.LLM.Attachments;
+using LLMDesktopAssistant.Avalonia.LLM.Settings;
+using LLMDesktopAssistant.Avalonia.MCP;
+using LLMDesktopAssistant.Avalonia.Settings;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.Services;
 using LLMDesktopAssistant.Core.Utils;
@@ -174,7 +179,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM
 			set => SetProperty(ref _text, value);
 		}
 
-		private readonly RangeObservableCollection<AttachmentViewModel> _attachments = [];
+		private readonly AvaloniaList<AttachmentViewModel> _attachments = [];
 		private ImmutableList<Attachment> _prevAttachments = [];
 		/// <summary>
 		/// Gets or sets the attachments or additional buttons to be displayed with the current message.
@@ -182,7 +187,11 @@ namespace LLMDesktopAssistant.Avalonia.LLM
 		public ICollection<AttachmentViewModel> Attachments
 		{
 			get => _attachments;
-			set => _attachments.Reset(value);
+			set
+			{
+				_attachments.Clear();
+				_attachments.AddRange(value);
+			}
 		}
 
 		private BranchedMessage? _editingMessage = null;
@@ -216,22 +225,19 @@ namespace LLMDesktopAssistant.Avalonia.LLM
 			{
 				var viewModel = new SettingsCategoryViewModel<ChatSettings>(cs => new ChatSettingsViewModel(cs, Chat),
 					newSettings => Chat.Settings = newSettings, Chat.Settings.Id);
-				if (ViewLocator.Resolve(viewModel) is object view)
-					await DialogHost.Show(view);
+				await DialogManager.ShowDialogAsync(viewModel);
 			});
 
 			OpenMCPManagerCommand = new AsyncRelayCommand(async () =>
 			{
 				var viewModel = new MCPManagerViewModel();
-				if (ViewLocator.Resolve(viewModel) is object view)
-					await DialogHost.Show(view);
+				await DialogManager.ShowDialogAsync(viewModel);
 			});
 
 			OpenAttachmentsManagerCommand = new AsyncRelayCommand(async () =>
 			{
 				var viewModel = new AttachmentsManagerViewModel(this);
-				if (ViewLocator.Resolve(viewModel) is object view)
-					await DialogHost.Show(view);
+				await DialogManager.ShowDialogAsync(viewModel);
 			});
 
 			SendMessageCommand = new SendMessageCommandObject(this);
@@ -300,11 +306,8 @@ namespace LLMDesktopAssistant.Avalonia.LLM
 		public async Task AcceptDropAsync(DragEventArgs args)
 		{
 			var viewModel = new AttachmentsManagerViewModel(this);
-			if (ViewLocator.Resolve(viewModel) is object view)
-			{
-				viewModel.AcceptDrop(args);
-				await DialogHost.Show(view);
-			}
+			viewModel.AcceptDrop(args);
+			await DialogManager.ShowDialogAsync(viewModel);
 		}
 
 

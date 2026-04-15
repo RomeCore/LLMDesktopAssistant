@@ -1,4 +1,5 @@
-﻿using LLMDesktopAssistant.Core.LLM.Domain;
+﻿using Avalonia.Collections;
+using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.Services;
 using LLMDesktopAssistant.Core.MCP;
 using LLMDesktopAssistant.Core.Utils;
@@ -54,11 +55,15 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Settings
 		public ChatSettingsViewModel Parent { get; }
 		public ChatSettings Settings { get; }
 
-		private RangeObservableCollection<MCPServerSelectionViewModel> _mcpServers = [];
+		private AvaloniaList<MCPServerSelectionViewModel> _mcpServers = [];
 		public ICollection<MCPServerSelectionViewModel> McpServers
 		{
 			get => _mcpServers;
-			set => _mcpServers.Reset(value);
+			set
+			{
+				_mcpServers.Clear();
+				_mcpServers.AddRange(value);
+			}
 		}
 
 		public ChatMCPSettingsViewModel(ChatSettingsViewModel parent)

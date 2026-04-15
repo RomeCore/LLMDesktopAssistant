@@ -8,7 +8,7 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
@@ -21,12 +21,17 @@
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="FluentAvaloniaUI" />
     <PackageReference Include="LiveMarkdown.Avalonia" />
-    <PackageReference Include="LiveMarkdown.Avalonia.Math" />
     <PackageReference Include="Material.Icons.Avalonia" />
     <PackageReference Include="Microsoft.Bcl.Memory" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\LLMDesktopAssistant.Core\LLMDesktopAssistant.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="LLM\UserInputView.axaml.cs">
+      <DependentUpon>UserInputView.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

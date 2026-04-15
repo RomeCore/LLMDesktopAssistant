@@ -1,21 +1,7 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.Core.LLM.Data;
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.LLM.Services;
-using LLMDesktopAssistant.Core.MVVM;
-using Microsoft.Extensions.DependencyInjection;
-using RCLargeLanguageModels.Tools;
-using System;
-using System.Collections.Generic;
+﻿using LLMDesktopAssistant.Core.LLM.Domain;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.Avalonia.LLM.Messages
 {

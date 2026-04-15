@@ -495,4 +495,10 @@
   <data name="web-fetch" xml:space="preserve">
     <value>Получить веб-контент</value>
   </data>
+  <data name="python_venv_activate_script_path_hint" xml:space="preserve">
+    <value>Скрипт активации виртуального окружения Python</value>
+  </data>
+  <data name="select_python_venv_activate_script" xml:space="preserve">
+    <value>Выберите скрипт активации виртуального окружения Python</value>
+  </data>
 </root>

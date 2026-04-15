@@ -16,32 +16,13 @@ namespace LLMDesktopAssistant.Core.Scripting
 	public class PythonService
 	{
 		/// <summary>
-		/// Gets the path to the virtual environment directory.
-		/// </summary>
-		public string VenvPath { get; }
-
-		/// <summary>
-		/// Gets the path to the 'activate' script for the virtual environment.
-		/// </summary>
-		public string ActivateVenvPath { get; }
-
-		public PythonService()
-		{
-			VenvPath = Path.GetFullPath("python/venv");
-			ActivateVenvPath = Path.Combine(VenvPath, "Scripts", "activate.bat");
-
-			if (!File.Exists(ActivateVenvPath))
-				throw new FileNotFoundException($"{Path.GetFileName(ActivateVenvPath)} not found", ActivateVenvPath);
-
-			Directory.CreateDirectory(VenvPath);
-		}
-
-		/// <summary>
 		/// Executes a Python script.
 		/// </summary>
 		/// <param name="script">The Python script to execute.</param>
+		/// <param name="workDir">The working directory for the script.</param>
+		/// <param name="venvActivatePath">The path to the 'activate' script for the virtual environment.</param>
 		/// <returns>The result of the script execution.</returns>
-		public async Task<ProcessExecutionResult> RunScript(string script, string? workDir = null,
+		public async Task<ProcessExecutionResult> RunScript(string script, string workDir, string? venvActivatePath,
 			CancellationToken cancellationToken = default)
 		{
 			script = $"""
@@ -57,9 +38,12 @@ namespace LLMDesktopAssistant.Core.Scripting
 
 			try
 			{
-				// cmd /c "call activate.bat && <command>"
-				var cmd = $"call \"{ActivateVenvPath}\" && python \"{tempPyFile}\"";
-				return await ShellExecutor.ExecuteWindowsAsync(cmd, workDir: workDir ?? VenvPath, cancellationToken);
+				string cmd;
+				if (!string.IsNullOrWhiteSpace(venvActivatePath))
+					cmd = $"call \"{venvActivatePath}\" && python \"{tempPyFile}\"";
+				else
+					cmd = $"python \"{tempPyFile}\"";
+				return await ShellExecutor.ExecuteWindowsAsync(cmd, workDir: workDir, cancellationToken);
 			}
 			finally
 			{
@@ -72,11 +56,15 @@ namespace LLMDesktopAssistant.Core.Scripting
 		/// </summary>
 		/// <param name="shellScript">The shell script to run.</param>
 		/// <returns>The result of the script execution contained in a tuple with the standard output and standard error. The standard error is null if there is no error.</returns>
-		public async Task<ProcessExecutionResult> RunVenv(string shellScript, string? workDir = null, CancellationToken cancellationToken = default)
+		public async Task<ProcessExecutionResult> RunVenv(string shellScript, string workDir, string? venvActivatePath,
+			CancellationToken cancellationToken = default)
 		{
-			// cmd /c "call activate.bat && <command>"
-			var cmd = $"call \"{ActivateVenvPath}\" && {shellScript}";
-			return await ShellExecutor.ExecuteWindowsAsync(cmd, workDir: workDir ?? VenvPath, cancellationToken);
+			string cmd;
+			if (!string.IsNullOrWhiteSpace(venvActivatePath))
+				cmd = $"call \"{venvActivatePath}\" && {shellScript}";
+			else
+				cmd = shellScript;
+			return await ShellExecutor.ExecuteWindowsAsync(cmd, workDir: workDir, cancellationToken);
 		}
 	}
 }
