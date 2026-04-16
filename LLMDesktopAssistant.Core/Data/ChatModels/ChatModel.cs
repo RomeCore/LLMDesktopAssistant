@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using LiteDB;
 using LLMDesktopAssistant.Core.LLM.Domain;
 
-namespace LLMDesktopAssistant.Core.LLM.Data.Models
+namespace LLMDesktopAssistant.Core.Data.Models
 {
 	/// <summary>
 	/// Represents a conversation model in the database.
 	/// </summary>
-	public sealed class ConversationModel
+	public sealed class ChatModel
 	{
 		/// <summary>
 		/// The unique identifier for the сonversation.

@@ -1,7 +1,7 @@
 using System;
 using LiteDB;
 
-namespace LLMDesktopAssistant.Core.LLM.Data.Models
+namespace LLMDesktopAssistant.Core.Data.UsageModels
 {
 	/// <summary>
 	/// Represents a single usage record in the database.

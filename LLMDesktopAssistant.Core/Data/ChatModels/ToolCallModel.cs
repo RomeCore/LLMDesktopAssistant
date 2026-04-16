@@ -1,6 +1,6 @@
 ﻿using LiteDB;
 
-namespace LLMDesktopAssistant.Core.LLM.Data.Models
+namespace LLMDesktopAssistant.Core.Data.Models
 {
 	/// <summary>
 	/// Represents a model for a tool call inside the database.

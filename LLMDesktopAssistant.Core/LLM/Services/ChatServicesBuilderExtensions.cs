@@ -1,21 +1,13 @@
-using LLMDesktopAssistant.Core.LLM.Data;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.Services.Attachments;
 using LLMDesktopAssistant.Core.LLM.Services.Tools;
 using LLMDesktopAssistant.Core.ToolModules;
-using LLMDesktopAssistant.Core.ToolModules.Implementations;
 using LLMDesktopAssistant.Core.Utils;
 using LLTSharp;
 using LLTSharp.Locale;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using RCLargeLanguageModels.Statistics;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Core.LLM.Services
 {

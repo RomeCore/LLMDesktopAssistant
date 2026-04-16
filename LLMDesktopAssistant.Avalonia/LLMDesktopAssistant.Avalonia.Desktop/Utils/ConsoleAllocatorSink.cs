@@ -1,7 +1,8 @@
-﻿using Serilog.Core;
+﻿using LLMDesktopAssistant.Core.Utils;
+using Serilog.Core;
 using Serilog.Events;
 
-namespace LLMDesktopAssistant.Core.Utils
+namespace LLMDesktopAssistant.Avalonia.Desktop.Utils
 {
 	/// <summary>
 	/// A Serilog sink that ensures a console is allocated before logging.

@@ -33,7 +33,10 @@ namespace LLMDesktopAssistant.Avalonia.Desktop.Execution
 			codeBlock.PropertyChanged += (s, e) =>
 			{
 				if (e.Property == CodeBlock.LanguageProperty)
+				{
 					command.NotifyCanExecuteChanged();
+					IsVisible = CanExecute(codeBlock);
+				}
 			};
 		}
 

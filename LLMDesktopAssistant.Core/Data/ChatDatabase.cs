@@ -6,33 +6,33 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using LiteDB;
-using LLMDesktopAssistant.Core.LLM.Data.Models;
+using LLMDesktopAssistant.Core.Data.Models;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.Core.LLM.Data
+namespace LLMDesktopAssistant.Core.Data
 {
 	/// <summary>
 	/// Manages the database for storing and retrieving conversation data.
 	/// </summary>
-	public class ConversationDatabase : IDisposable
+	public class ChatDatabase : IDisposable
 	{
 		public ILiteDatabase Database { get; }
-		public ILiteCollection<ConversationModel> Conversations { get; }
+		public ILiteCollection<ChatModel> Chats { get; }
 		public ILiteCollection<MessageNodeModel> MessageNodes { get; }
 		public ILiteCollection<MessageModel> Messages { get; }
 		public ILiteCollection<AttachmentModel> Attachments { get; }
 		public ILiteCollection<ToolCallModel> ToolCalls { get; }
 
-		public ConversationDatabase(string path)
+		public ChatDatabase(string path)
 		{
 			if (Path.GetDirectoryName(path) is string dir)
 				Directory.CreateDirectory(dir);
 			Database = new LiteDatabase(path);
 
-			Conversations = Database.GetCollection<ConversationModel>();
+			Chats = Database.GetCollection<ChatModel>();
 			MessageNodes = Database.GetCollection<MessageNodeModel>();
 			Messages = Database.GetCollection<MessageModel>();
 			Attachments = Database.GetCollection<AttachmentModel>();

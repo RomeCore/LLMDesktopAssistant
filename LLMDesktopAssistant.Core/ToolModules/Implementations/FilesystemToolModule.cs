@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Bibliography;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.Services.Attachments;
 using LLMDesktopAssistant.Core.ToolModules;
@@ -7,6 +8,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Enumeration;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -785,97 +787,6 @@ namespace LLMDesktopAssistant.Core.ToolModules.Implementations
 			return text.Substring(0, maxLength - 3) + "...";
 		}
 
-		public ToolResult ListDirectory(
-			string path = "",
-			[Description("The maximum depth of directories to include in the listing. 1 = current directory only.")]
-			int maxDepth = 1,
-			[Description("The number of entries to skip before starting the list.")]
-			int offset = 0,
-			[Description("The maximum number of entries to return.")]
-			int maxEntries = 200)
-		{
-			try
-			{
-				var fullPath = ResolvePath(path);
-
-				if (!Directory.Exists(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "Directory not found.");
-
-				var sb = new StringBuilder();
-				int totalCount = 0;
-				bool truncated = false;
-
-				void Traverse(string currentPath, int depth, string indent)
-				{
-					if (depth > maxDepth || truncated)
-						return;
-
-					var entries = Directory.GetFileSystemEntries(currentPath)
-						.OrderBy(e => Directory.Exists(e) ? 0 : 1)
-						.ThenBy(e => e);
-
-					foreach (var entry in entries)
-					{
-						if (totalCount >= maxEntries)
-						{
-							truncated = true;
-							return;
-						}
-
-						var name = Path.GetFileName(entry);
-						var isDir = Directory.Exists(entry);
-
-						if (isDir)
-						{
-							int count = 0;
-							try
-							{
-								count = Directory.GetFileSystemEntries(entry).Length;
-							}
-							catch { /* ignore */ }
-
-							var edited = Directory.GetLastWriteTime(entry).ToString("yyyy-MM-dd HH:mm");
-
-							sb.AppendLine($"{indent}[DIR]  {name} ({count} items, {edited})");
-
-							totalCount++;
-
-							Traverse(entry, depth + 1, indent + "  ");
-						}
-						else
-						{
-							var fileInfo = new FileInfo(entry);
-							var sizeStr = FileUtils.BytesToDisplaySize(fileInfo.Length);
-							var edited = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm");
-
-							sb.AppendLine($"{indent}[FILE] {name} ({sizeStr}, {edited})");
-
-							totalCount++;
-						}
-					}
-				}
-
-				sb.AppendLine($"[DIRECTORY LISTING]");
-				sb.AppendLine($"Path: {path}");
-				sb.AppendLine($"MaxDepth: {maxDepth}, MaxEntries: {maxEntries}");
-				sb.AppendLine();
-
-				Traverse(fullPath, 1, "");
-
-				if (truncated)
-				{
-					sb.AppendLine();
-					sb.AppendLine($"... truncated (limit {maxEntries} entries reached)");
-				}
-
-				return new ToolResult(ToolResultStatus.Success, sb.ToString());
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error listing directory: {ex.Message}");
-			}
-		}
-
 		public ToolResult DeleteFile(string path)
 		{
 			try
@@ -985,6 +896,110 @@ namespace LLMDesktopAssistant.Core.ToolModules.Implementations
 			}
 		}
 
+		public ToolResult ListDirectory(
+			string path = "",
+			[Description("The maximum depth of directories to include in the listing. 1 = current directory only.")]
+			int maxDepth = 1,
+			[Description("The number of entries to skip before starting the list.")]
+			int offset = 0,
+			[Description("The maximum number of entries to return.")]
+			int maxEntries = 200,
+			[Description("The list of directories to ignore. Each directory can be a pattern (e.g. '.*' to ignore all directories that starts with dot)")]
+			[DefaultValue(new string[]{ ".git" })]
+			string[]? ignoreDirectories = null)
+		{
+			try
+			{
+				var fullPath = ResolvePath(path);
+				if (!Directory.Exists(fullPath))
+					return new ToolResult(ToolResultStatus.Error, "Directory not found.");
+
+				var sb = new StringBuilder();
+				int totalCount = 0;
+				ignoreDirectories ??= [".git"];
+
+				void Traverse(string currentPath, int depth, string indent)
+				{
+					if (depth > maxDepth)
+						return;
+
+					var entries = Directory.GetFileSystemEntries(currentPath)
+						.OrderBy(e => Directory.Exists(e) ? 0 : 1)
+						.ThenBy(e => e);
+
+					foreach (var entry in entries)
+					{
+						var name = Path.GetFileName(entry);
+						var isDir = Directory.Exists(entry);
+
+						if (isDir)
+						{
+							int count = 0;
+							try
+							{
+								count = Directory.GetFileSystemEntries(entry).Length;
+							}
+							catch { /* ignore */ }
+
+							if (offset <= totalCount && totalCount <= offset + maxEntries)
+							{
+								var edited = Directory.GetLastWriteTime(entry).ToString("yyyy-MM-dd HH:mm");
+								sb.AppendLine($"{indent}[DIR]  {name} ({count} items, {edited})");
+							}
+
+							totalCount++;
+
+							if (ignoreDirectories.Any(igdir => FileSystemName.MatchesSimpleExpression(igdir, name)))
+								sb.AppendLine($"{indent}  Directory contents not shown");
+							else
+								Traverse(entry, depth + 1, indent + "  ");
+						}
+						else
+						{
+							if (offset <= totalCount && totalCount <= offset + maxEntries)
+							{
+								var fileInfo = new FileInfo(entry);
+								var sizeStr = FileUtils.BytesToDisplaySize(fileInfo.Length);
+								var edited = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm");
+
+								sb.AppendLine($"{indent}[FILE] {name} ({sizeStr}, {edited})");
+							}
+
+							totalCount++;
+						}
+					}
+				}
+
+				sb.AppendLine($"[DIRECTORY LISTING]");
+				sb.AppendLine($"Path: {path}");
+				sb.AppendLine($"Max depth: {maxDepth}");
+				sb.AppendLine($"Offset: {offset}, Max entries: {maxEntries}");
+				if (ignoreDirectories.Length > 0)
+					sb.AppendLine($"Ignored directories: {string.Join(", ", ignoreDirectories)}");
+				else
+					sb.AppendLine("No ignored directories.");
+				sb.AppendLine();
+
+				Traverse(fullPath, 1, "");
+
+				if (offset > totalCount)
+				{
+					sb.AppendLine($"Offset is too large. (offset:{offset} > total count:{totalCount})");
+				}
+				else if (offset + maxEntries < totalCount)
+				{
+					sb.AppendLine();
+					sb.AppendLine($"... truncated ({totalCount - offset - maxEntries} entries more avalable)");
+				}
+
+				return new ToolResult(ToolResultStatus.Success, sb.ToString());
+			}
+			catch (Exception ex)
+			{
+				return new ToolResult(ToolResultStatus.Error, $"Error listing directory: {ex.Message}");
+			}
+		}
+
 		public ToolResult Grep(
 			[Description("The regex pattern to search for.")]
 			string pattern,
@@ -1020,7 +1035,6 @@ namespace LLMDesktopAssistant.Core.ToolModules.Implementations
 				var regex = new Regex(pattern, regexIgnoreCaseOptions | RegexOptions.Compiled);
 
 				var filesToSearch = new List<string>();
-
 				var results = new List<string>();
 				int totalFilesMatched = 0;
 
@@ -1040,6 +1054,13 @@ namespace LLMDesktopAssistant.Core.ToolModules.Implementations
 							var ext = Path.GetExtension(file);
 							if (!allowedExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
 								continue;
+						}
+
+						var name = Path.GetFileName(file);
+						if (regex.IsMatch(name))
+						{
+							var relativePath = Path.GetRelativePath(workingDirectory, file);
+							results.Add($"[FILE] {relativePath}");
 						}
 
 						try
@@ -1068,8 +1089,7 @@ namespace LLMDesktopAssistant.Core.ToolModules.Implementations
 													lineNumbers, beforeContext, afterContext, cancellationToken);
 					if (fileMatches.Count > 0)
 					{
-						if (filesToSearch.Count > 1)
-							results.Add($"\n--- {relativePath} ---");
+						results.Add($"\n--- {relativePath} ---");
 						results.AddRange(fileMatches);
 
 						totalFilesMatched++;

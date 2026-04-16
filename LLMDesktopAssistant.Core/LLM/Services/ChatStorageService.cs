@@ -1,5 +1,5 @@
-﻿using LLMDesktopAssistant.Core.LLM.Data;
-using LLMDesktopAssistant.Core.LLM.Data.Models;
+﻿using LLMDesktopAssistant.Core.Data;
+using LLMDesktopAssistant.Core.Data.Models;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.Settings;
 using RCLargeLanguageModels;
@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 {
 	public class ChatStorageService(
 			Chat chat,
-			ConversationDatabase database
+			ChatDatabase database
 		) : Disposable, IChatStorageService
 	{
 		readonly int conversationId = chat.ChatId;
@@ -27,10 +27,10 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 		{
 			var messages = new List<BranchedMessage>();
 
-			var conversation = database.Conversations.FindById(conversationId);
+			var conversation = database.Chats.FindById(conversationId);
 			if (conversation == null)
 			{
-				conversation = new ConversationModel
+				conversation = new ChatModel
 				{
 					Id = conversationId,
 					LeafNodeId = -1,
@@ -39,7 +39,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 					CreatedAt = DateTime.Now,
 					LastModifiedAt = DateTime.Now
 				};
-				database.Conversations.Insert(conversation);
+				database.Chats.Insert(conversation);
 			}
 
 			chat.Settings = SettingsManager.Get<ChatSettings>(conversation.SettingsProfile);
@@ -60,12 +60,12 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 			_mainUnsubscriber?.Invoke();
 			void ChatPropertyChanged(object? s, PropertyChangedEventArgs e)
 			{
-				conversation = database.Conversations.FindById(conversationId);
+				conversation = database.Chats.FindById(conversationId);
 
 				conversation.SettingsProfile = chat.Settings.Id;
 				conversation.IsTemporary = chat.IsTemporary;
 
-				database.Conversations.Update(conversation);
+				database.Chats.Update(conversation);
 			}
 			chat.PropertyChanged += ChatPropertyChanged;
 			_mainUnsubscriber = () =>
@@ -92,7 +92,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
 
-			var conversation = database.Conversations.FindById(conversationId);
+			var conversation = database.Chats.FindById(conversationId);
 			int messageId = CreateAndInsertMessageModel(chatMessage).Id;
 			MessageNodeModel nodeModel;
 
@@ -108,7 +108,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 				conversation.RootNodeId = nodeId;
 				conversation.LeafNodeId = nodeId;
 				conversation.LastModifiedAt = DateTime.Now;
-				database.Conversations.Update(conversation);
+				database.Chats.Update(conversation);
 			}
 			else
 			{
@@ -124,7 +124,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 				conversation.LeafNodeId = nodeId;
 				conversation.LastModifiedAt = DateTime.Now;
 				database.MessageNodes.Update(leafNode);
-				database.Conversations.Update(conversation);
+				database.Chats.Update(conversation);
 			}
 
 			if (!database.Database.Commit())
@@ -141,7 +141,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
 
-			var conversation = database.Conversations.FindById(conversationId);
+			var conversation = database.Chats.FindById(conversationId);
 			int currentNodeId = conversation.RootNodeId;
 			int currentIndex = 0;
 
@@ -192,7 +192,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 
 			conversation.LeafNodeId = leafId;
 			conversation.LastModifiedAt = DateTime.Now;
-			database.Conversations.Update(conversation);
+			database.Chats.Update(conversation);
 
 			if (!database.Database.Commit())
 				throw new InvalidOperationException("Failed to commit transaction.");
@@ -210,7 +210,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
 
-			var conversation = database.Conversations.FindById(conversationId);
+			var conversation = database.Chats.FindById(conversationId);
 			int currentNodeId = conversation.RootNodeId;
 			int currentIndex = 0;
 
@@ -246,7 +246,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 
 			conversation.LeafNodeId = newNodeId;
 			conversation.LastModifiedAt = DateTime.Now;
-			database.Conversations.Update(conversation);
+			database.Chats.Update(conversation);
 
 			if (!database.Database.Commit())
 				throw new InvalidOperationException("Failed to commit transaction.");
@@ -264,7 +264,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
 
-			var conversation = database.Conversations.FindById(conversationId);
+			var conversation = database.Chats.FindById(conversationId);
 			int newLeafNodeId = -1;
 			int currentNodeId = conversation.RootNodeId;
 			int currentIndex = 0;
@@ -289,7 +289,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 
 			conversation.LeafNodeId = newLeafNodeId;
 			conversation.LastModifiedAt = DateTime.Now;
-			database.Conversations.Update(conversation);
+			database.Chats.Update(conversation);
 
 			if (!database.Database.Commit())
 				throw new InvalidOperationException("Failed to commit transaction.");

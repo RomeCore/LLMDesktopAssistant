@@ -18,18 +18,23 @@ namespace LLMDesktopAssistant.Avalonia
 {
 	public partial class App : Application
 	{
+		protected virtual LoggerConfiguration ConfigureLogger(LoggerConfiguration config)
+		{
+			return config
+				.WriteTo.File(Path.Combine(Directories.LogFiles, "log.txt"), rollingInterval: RollingInterval.Day);
+		}
+
 		public override void Initialize()
 		{
 			Directories.EnsureAll();
 
-			Log.Logger = new LoggerConfiguration()
-				.MinimumLevel.Debug()
-				.WriteTo.Sink(new ConsoleAllocatorSink())
-				.WriteTo.Console(applyThemeToRedirectedOutput: true, theme: SystemConsoleTheme.Literate)
-				.WriteTo.File(Path.Combine(Directories.LogFiles, "log.txt"), rollingInterval: RollingInterval.Day)
+			var loggerConfig = new LoggerConfiguration()
+				.MinimumLevel.Debug();
+
+			Log.Logger = ConfigureLogger(loggerConfig)
 				.CreateLogger();
 
-			PluginManager.LoadPluginsInto(AppDomain.CurrentDomain);
+			// PluginManager.LoadPluginsInto(AppDomain.CurrentDomain); <- This method is called in desktop version
 			ReflectionUtility.Initialize(AppDomain.CurrentDomain);
 			ServiceRegistry.Initialize([Log.Logger,]);
 

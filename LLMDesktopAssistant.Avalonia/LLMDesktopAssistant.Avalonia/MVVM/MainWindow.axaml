@@ -6,7 +6,7 @@
 		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 		x:Class="LLMDesktopAssistant.Avalonia.MVVM.MainWindow"
 		Icon="/Assets/icon.ico"
-		Title="LLMDesktopAssistant.Avalonia"
+		Title="dASS"
 		x:DataType="vm:MainViewModel">
 
 	<vm:MainView DataContext="{Binding}"/>

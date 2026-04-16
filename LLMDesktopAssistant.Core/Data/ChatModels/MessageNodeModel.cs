@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
 
-namespace LLMDesktopAssistant.Core.LLM.Data.Models
+namespace LLMDesktopAssistant.Core.Data.Models
 {
 	/// <summary>
 	/// Represents a node in a conversation tree, containing messages and child nodes.
@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Core.LLM.Data.Models
 		public bool IsRootNode { get; set; }
 
 		/// <summary>
-		/// The parent node ID that points either to <see cref="MessageNodeModel"/> or <see cref="ConversationModel"/> based on <see cref="IsRootNode"/>.
+		/// The parent node ID that points either to <see cref="MessageNodeModel"/> or <see cref="ChatModel"/> based on <see cref="IsRootNode"/>.
 		/// </summary>
 		public int ParentId { get; set; } = -1;
 

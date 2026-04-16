@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LiteDB;
-using LLMDesktopAssistant.Core.LLM.Data;
-using LLMDesktopAssistant.Core.LLM.Data.Models;
+using LLMDesktopAssistant.Core.Data;
+using LLMDesktopAssistant.Core.Data.UsageModels;
 
 namespace LLMDesktopAssistant.Core.LLM.Services
 {

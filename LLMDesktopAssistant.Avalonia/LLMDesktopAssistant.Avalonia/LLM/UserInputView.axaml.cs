@@ -20,6 +20,17 @@ public partial class UserInputView : UserControl
 		AddHandler(DragDrop.DropEvent, OnDrop);
 	}
 
+	private void InputTextBox_KeyDown(object? sender, KeyEventArgs e)
+	{
+		if (e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None)
+		{
+			if (DataContext is UserInputViewModel viewModel)
+			{
+				viewModel.SendCurrentUserInputAsync();
+			}
+		}
+	}
+
 	private void OnDragEnter(object? sender, DragEventArgs e)
 	{
 		if (e.DataTransfer.Contains(DataFormat.File) ||

@@ -56,4 +56,8 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Settings\Objects\" />
+	</ItemGroup>
+
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.LLM.Data.Models
+﻿namespace LLMDesktopAssistant.Core.Data.Models
 {
 	public enum ToolStatusModel
 	{

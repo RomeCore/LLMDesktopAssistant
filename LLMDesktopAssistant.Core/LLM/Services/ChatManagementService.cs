@@ -1,5 +1,5 @@
-﻿using LLMDesktopAssistant.Core.LLM.Data;
-using LLMDesktopAssistant.Core.LLM.Data.Models;
+﻿using LLMDesktopAssistant.Core.Data;
+using LLMDesktopAssistant.Core.Data.Models;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.ToolModules;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,10 +8,10 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 {
 	public class ChatManagementService(
 		IServiceProvider services,
-		ConversationDatabase database
+		ChatDatabase database
 		) : IChatManagementService
 	{
-		private ChatInfo CreateChatInfo(ConversationModel model)
+		private ChatInfo CreateChatInfo(ChatModel model)
 		{
 			return new ChatInfo
 			{
@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 
 		public IEnumerable<ChatInfo> GetChats()
 		{
-			return database.Conversations.FindAll().Select(CreateChatInfo).ToList();
+			return database.Chats.FindAll().Select(CreateChatInfo).ToList();
 		}
 
 		public IServiceScope OpenChatScope(int chatId)
@@ -41,12 +41,12 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 
 		public void ClearEmptyAndTemporaryChats()
 		{
-			database.Conversations.DeleteMany(c => (c.LeafNodeId == -1 && c.RootNodeId == -1) || c.IsTemporary);
+			database.Chats.DeleteMany(c => (c.LeafNodeId == -1 && c.RootNodeId == -1) || c.IsTemporary);
 		}
 
 		public ChatInfo CreateChat(string title)
 		{
-			var model = new ConversationModel
+			var model = new ChatModel
 			{
 				Title = title,
 				CreatedAt = DateTime.Now,
@@ -55,7 +55,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 				LeafNodeId = -1
 			};
 
-			database.Conversations.Insert(model);
+			database.Chats.Insert(model);
 
 			return CreateChatInfo(model);
 		}
