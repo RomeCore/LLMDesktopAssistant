@@ -1,0 +1,17 @@
+﻿@template system_prompt
+{
+	@foreach component in components
+	{
+		@component
+	}
+	@if personality
+	{
+		Act as:
+		@personality
+	}
+	@if summary
+	{
+		There is summary of previous messages in the conversation:
+		@summary
+	}
+}

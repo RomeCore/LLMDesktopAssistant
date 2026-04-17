@@ -161,6 +161,9 @@ namespace LLMDesktopAssistant.Core.ToolModules.Implementations
 		private string ResolvePath(string path)
 		{
 			var baseDir = Path.GetFullPath(_chat.Settings.GetWorkingDirectory());
+			if (string.IsNullOrWhiteSpace(path) || path == ".")
+				return baseDir;
+
 			var fullPath = Path.GetFullPath(Path.Combine(baseDir, path));
 
 			if (!fullPath.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase))

@@ -11,7 +11,7 @@ using System.Collections.Concurrent;
 
 namespace LLMDesktopAssistant.Core.Scripting
 {
-	[Service]
+	[ToolModule]
 	public class LuaInterpreterToolModule : ToolModule
 	{
 		private readonly LuaService _lua;

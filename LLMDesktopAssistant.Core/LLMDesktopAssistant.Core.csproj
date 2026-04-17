@@ -7,9 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Assets\summarizer.llt" />
-    <EmbeddedResource Include="Assets\system_promts.llt" />
-    <EmbeddedResource Include="Assets\user_prompts.llt" />
+    <None Remove="Prompts\components.llt" />
+    <None Remove="Prompts\personas.llt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Prompts\components.llt" />
+    <EmbeddedResource Include="Prompts\personas.llt" />
+    <EmbeddedResource Include="Prompts\summarizer.llt" />
+    <EmbeddedResource Include="Prompts\system_promts.llt" />
+    <EmbeddedResource Include="Prompts\user_prompts.llt" />
   </ItemGroup>
 
 	<ItemGroup>

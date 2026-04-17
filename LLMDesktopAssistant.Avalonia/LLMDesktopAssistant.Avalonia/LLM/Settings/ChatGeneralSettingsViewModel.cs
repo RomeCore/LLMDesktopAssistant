@@ -40,7 +40,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Settings
 
 			if (result.Count > 0)
 			{
-				Settings.WorkingDirectory = result[0].Path.AbsolutePath;
+				Settings.WorkingDirectory = result[0].Path.LocalPath;
 			}
 		}
 
@@ -61,17 +61,17 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Settings
 		{
 			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = Locale.select_working_directory,
+				Title = Locale.select_python_venv_activate_script,
 				FileTypeFilter = [
-					new FilePickerFileType("Batch files (*.bat)"),
-					new FilePickerFileType("All files (*)")
+					new FilePickerFileType("Batch files") { Patterns = ["*.bat"] },
+					new FilePickerFileType("All files") { Patterns = ["*"] }
 				],
 				AllowMultiple = false
 			});
 
 			if (result.Count > 0)
 			{
-				Settings.PythonVenvActivateScriptPath = result[0].Path.AbsolutePath;
+				Settings.PythonVenvActivateScriptPath = result[0].Path.LocalPath;
 			}
 		}
 

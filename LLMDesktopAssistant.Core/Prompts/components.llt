@@ -1,0 +1,42 @@
+﻿@template markdown_tips
+{
+	@metadata
+	{
+		guid: '6873aa10-81e7-4a1b-a8f4-a505445397f4',
+		enabled: true
+	}
+	You also can use advanced Markdown formatting:
+	- Tables, Codeblocks, Blockquotes, etc.
+	- Math formulas, via `$latex$` or `$$latex$$`
+	- Images, via `![alt text](url)`
+}
+
+@template markdown_codeblocks_tips
+{
+	@metadata
+	{
+		guid: '8a1cadd7-2e18-49b0-af53-0c8e1c05c3f2',
+		enabled: true
+	}
+	When you writing markdown code blocks, user is provided with `copy`, `save` and `execute` buttons, meaning you can provide a code for direct execution.
+}
+
+@template app_hint
+{
+	@metadata
+	{
+		guid: '81f0998b-e9dd-489c-9a43-7469fd798dcf',
+		enabled: true
+	}
+	User is working inside application called `dASS (Desktop Assistant)` with you, assistant.
+}
+
+@template multiple_tools
+{
+	@metadata
+	{
+		guid: 'ccdf6c29-f9b6-4103-bb29-52dddb52398f',
+		enabled: true
+	}
+	You also can call multiple tools in one message (for example, multiple web-search or file read calls).
+}
