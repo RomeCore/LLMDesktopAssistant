@@ -61,6 +61,15 @@ namespace LLMDesktopAssistant.Core.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Add.
+        /// </summary>
+        public static string add {
+            get {
+                return ResourceManager.GetString("add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Ask agent.
         /// </summary>
         public static string agent_ask_question {
@@ -390,6 +399,15 @@ namespace LLMDesktopAssistant.Core.Localization.Resources {
         public static string chat_settings_mcp {
             get {
                 return ResourceManager.GetString("chat_settings_mcp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Prompts.
+        /// </summary>
+        public static string chat_settings_prompts {
+            get {
+                return ResourceManager.GetString("chat_settings_prompts", resourceCulture);
             }
         }
         
@@ -763,6 +781,24 @@ namespace LLMDesktopAssistant.Core.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на MCP manager.
+        /// </summary>
+        public static string mcp_manager_header {
+            get {
+                return ResourceManager.GetString("mcp_manager_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на MCP manager.
+        /// </summary>
+        public static string mcp_manager_hint {
+            get {
+                return ResourceManager.GetString("mcp_manager_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Meta-tools.
         /// </summary>
         public static string metatools {
@@ -844,11 +880,245 @@ namespace LLMDesktopAssistant.Core.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Niggalink AI.
+        /// </summary>
+        public static string persona_niggalink_ai {
+            get {
+                return ResourceManager.GetString("persona-niggalink_ai", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Personality.
         /// </summary>
         public static string personality_hint {
             get {
                 return ResourceManager.GetString("personality_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Category.
+        /// </summary>
+        public static string prompt_category {
+            get {
+                return ResourceManager.GetString("prompt_category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Uncategorized.
+        /// </summary>
+        public static string prompt_category_uncategorized {
+            get {
+                return ResourceManager.GetString("prompt_category_uncategorized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Additional components.
+        /// </summary>
+        public static string prompt_components {
+            get {
+                return ResourceManager.GetString("prompt_components", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter custom persona....
+        /// </summary>
+        public static string prompt_custom_persona_hint {
+            get {
+                return ResourceManager.GetString("prompt_custom_persona_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit Component.
+        /// </summary>
+        public static string prompt_edit_component {
+            get {
+                return ResourceManager.GetString("prompt_edit_component", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit Persona.
+        /// </summary>
+        public static string prompt_edit_persona {
+            get {
+                return ResourceManager.GetString("prompt_edit_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Import.
+        /// </summary>
+        public static string prompt_import {
+            get {
+                return ResourceManager.GetString("prompt_import", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Import component.
+        /// </summary>
+        public static string prompt_import_component {
+            get {
+                return ResourceManager.GetString("prompt_import_component", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Import persona.
+        /// </summary>
+        public static string prompt_import_persona {
+            get {
+                return ResourceManager.GetString("prompt_import_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Prompt manager.
+        /// </summary>
+        public static string prompt_manager_header {
+            get {
+                return ResourceManager.GetString("prompt_manager_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Prompt manager.
+        /// </summary>
+        public static string prompt_manager_hint {
+            get {
+                return ResourceManager.GetString("prompt_manager_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Name.
+        /// </summary>
+        public static string prompt_name {
+            get {
+                return ResourceManager.GetString("prompt_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на New component.
+        /// </summary>
+        public static string prompt_new_component {
+            get {
+                return ResourceManager.GetString("prompt_new_component", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на New persona.
+        /// </summary>
+        public static string prompt_new_persona {
+            get {
+                return ResourceManager.GetString("prompt_new_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Persona.
+        /// </summary>
+        public static string prompt_persona {
+            get {
+                return ResourceManager.GetString("prompt_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Personas.
+        /// </summary>
+        public static string prompt_personas {
+            get {
+                return ResourceManager.GetString("prompt_personas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select persona....
+        /// </summary>
+        public static string prompt_select_persona {
+            get {
+                return ResourceManager.GetString("prompt_select_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select a persona to apply to the chat.
+        /// </summary>
+        public static string prompt_selected_persona_hint {
+            get {
+                return ResourceManager.GetString("prompt_selected_persona_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на System prompt.
+        /// </summary>
+        public static string prompt_system_prompt {
+            get {
+                return ResourceManager.GetString("prompt_system_prompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter system prompt....
+        /// </summary>
+        public static string prompt_system_prompt_hint {
+            get {
+                return ResourceManager.GetString("prompt_system_prompt_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Text.
+        /// </summary>
+        public static string prompt_text {
+            get {
+                return ResourceManager.GetString("prompt_text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Use custom persona.
+        /// </summary>
+        public static string prompt_use_custom_persona {
+            get {
+                return ResourceManager.GetString("prompt_use_custom_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Application Hint.
+        /// </summary>
+        public static string promptcomponent_app_hint {
+            get {
+                return ResourceManager.GetString("promptcomponent-app_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Markdown Tips.
+        /// </summary>
+        public static string promptcomponent_markdown_tips {
+            get {
+                return ResourceManager.GetString("promptcomponent-markdown_tips", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Multiple Tools.
+        /// </summary>
+        public static string promptcomponent_multiple_tools {
+            get {
+                return ResourceManager.GetString("promptcomponent-multiple_tools", resourceCulture);
             }
         }
         

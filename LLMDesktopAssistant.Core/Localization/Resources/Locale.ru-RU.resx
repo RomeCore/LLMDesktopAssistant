@@ -501,4 +501,94 @@
   <data name="select_python_venv_activate_script" xml:space="preserve">
     <value>Выберите скрипт активации виртуального окружения Python</value>
   </data>
+  <data name="prompt_components" xml:space="preserve">
+    <value>Дополнительные компоненты</value>
+  </data>
+  <data name="prompt_personas" xml:space="preserve">
+    <value>Персоны</value>
+  </data>
+  <data name="prompt_category_uncategorized" xml:space="preserve">
+    <value>Без категории</value>
+  </data>
+  <data name="prompt_new_component" xml:space="preserve">
+    <value>Новый компонент</value>
+  </data>
+  <data name="prompt_new_persona" xml:space="preserve">
+    <value>Новая персона</value>
+  </data>
+  <data name="prompt_import_component" xml:space="preserve">
+    <value>Импорт компонента</value>
+  </data>
+  <data name="prompt_import_persona" xml:space="preserve">
+    <value>Импорт персоны</value>
+  </data>
+  <data name="prompt_import" xml:space="preserve">
+    <value>Импорт</value>
+  </data>
+  <data name="prompt_edit_component" xml:space="preserve">
+    <value>Редактировать компонент</value>
+  </data>
+  <data name="prompt_edit_persona" xml:space="preserve">
+    <value>Редактировать персону</value>
+  </data>
+  <data name="prompt_name" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="prompt_category" xml:space="preserve">
+    <value>Категория</value>
+  </data>
+  <data name="prompt_text" xml:space="preserve">
+    <value>Текст</value>
+  </data>
+  <data name="prompt_system_prompt" xml:space="preserve">
+    <value>Системный промпт</value>
+  </data>
+  <data name="prompt_system_prompt_hint" xml:space="preserve">
+    <value>Введите системный промпт...</value>
+  </data>
+  <data name="prompt_persona" xml:space="preserve">
+    <value>Персона</value>
+  </data>
+  <data name="prompt_use_custom_persona" xml:space="preserve">
+    <value>Использовать кастомную персону</value>
+  </data>
+  <data name="prompt_custom_persona_hint" xml:space="preserve">
+    <value>Введите кастомную персону...</value>
+  </data>
+  <data name="prompt_select_persona" xml:space="preserve">
+    <value>Выберите персону...</value>
+  </data>
+  <data name="prompt_selected_persona_hint" xml:space="preserve">
+    <value>Выберите персону для применения к чату</value>
+  </data>
+  <data name="chat_settings_prompts" xml:space="preserve">
+    <value>Промпты</value>
+  </data>
+  <data name="prompt_manager_hint" xml:space="preserve">
+    <value>Менеджер промптов</value>
+  </data>
+  <data name="promptcomponent-markdown_tips" xml:space="preserve">
+    <value>Советы по Markdown</value>
+  </data>
+  <data name="promptcomponent-app_hint" xml:space="preserve">
+    <value>Подсказка о приложении</value>
+  </data>
+  <data name="promptcomponent-multiple_tools" xml:space="preserve">
+    <value>Несколько инструментов</value>
+  </data>
+  <data name="persona-niggalink_ai" xml:space="preserve">
+    <value>Niggalink AI</value>
+  </data>
+  <data name="add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="mcp_manager_hint" xml:space="preserve">
+    <value>Менеджер MCP</value>
+  </data>
+  <data name="mcp_manager_header" xml:space="preserve">
+    <value>Менеджер MCP</value>
+  </data>
+  <data name="prompt_manager_header" xml:space="preserve">
+    <value>Менеджер промптов</value>
+  </data>
 </root>

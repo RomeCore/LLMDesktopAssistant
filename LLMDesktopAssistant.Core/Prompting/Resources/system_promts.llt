@@ -8,10 +8,10 @@
 	{
 		@component
 	}
-	@if personality
+	@if persona
 	{
 		Act as:
-		@personality
+		@persona
 	}
 	@if summary
 	{

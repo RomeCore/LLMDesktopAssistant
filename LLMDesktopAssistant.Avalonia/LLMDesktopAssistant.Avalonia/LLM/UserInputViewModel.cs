@@ -1,18 +1,15 @@
-﻿using Avalonia.Collections;
+using Avalonia.Collections;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Avalonia.DIalogs;
 using LLMDesktopAssistant.Avalonia.LLM.Attachments;
 using LLMDesktopAssistant.Avalonia.LLM.Settings;
 using LLMDesktopAssistant.Avalonia.MCP;
+using LLMDesktopAssistant.Avalonia.Prompting;
 using LLMDesktopAssistant.Avalonia.Settings;
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.Services;
-using LLMDesktopAssistant.Core.Utils;
 using Serilog;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.Avalonia.LLM
 {
@@ -145,6 +142,10 @@ namespace LLMDesktopAssistant.Avalonia.LLM
 		/// Command to open MCP manager.
 		/// </summary>
 		public ICommand OpenMCPManagerCommand { get; }
+		/// <summary>
+		/// Command to open prompt manager.
+		/// </summary>
+		public ICommand OpenPromptManagerCommand { get; }
 
 		/// <summary>
 		/// Command to open attachments manager.
@@ -234,6 +235,11 @@ namespace LLMDesktopAssistant.Avalonia.LLM
 				await DialogManager.ShowDialogAsync(viewModel);
 			});
 
+			OpenPromptManagerCommand = new AsyncRelayCommand(async () =>
+			{
+				var viewModel = new PromptManagerViewModel();
+				await DialogManager.ShowDialogAsync(viewModel);
+			});
 			OpenAttachmentsManagerCommand = new AsyncRelayCommand(async () =>
 			{
 				var viewModel = new AttachmentsManagerViewModel(this);

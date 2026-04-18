@@ -23,11 +23,11 @@
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="2"/>
-				<ColumnDefinition Width="60" SharedSizeGroup="Enabled"/>
+				<ColumnDefinition Width="50" SharedSizeGroup="Enabled"/>
 				<ColumnDefinition Width="2"/>
-				<ColumnDefinition Width="60" SharedSizeGroup="Ask"/>
+				<ColumnDefinition Width="50" SharedSizeGroup="Ask"/>
 				<ColumnDefinition Width="2"/>
-				<ColumnDefinition Width="60" SharedSizeGroup="Reset"/>
+				<ColumnDefinition Width="50" SharedSizeGroup="Reset"/>
 			</Grid.ColumnDefinitions>
 
 			<TextBlock Grid.Column="0"
@@ -71,7 +71,9 @@
 		</Grid>
 
 		<TreeView ItemsSource="{Binding ToolCategories}"
-				  IsEnabled="{Binding Settings.EnableTools}">
+				  IsEnabled="{Binding Settings.EnableTools}"
+				  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+				  ScrollViewer.VerticalScrollBarVisibility="Auto">
 
 			<TreeView.DataTemplates>
 
@@ -105,7 +107,7 @@
 									   FontWeight="Bold"/>
 
 							<TextBlock Text="{Binding TitleSuffix}"
-									   IsVisible="{Binding TitlePrefix, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+									   IsVisible="{Binding TitleSuffix, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
 									   Opacity="0.7"/>
 
 						</StackPanel>
@@ -164,7 +166,7 @@
 										   FontWeight="Bold"/>
 
 								<TextBlock Text="{Binding TitleSuffix}"
-										   IsVisible="{Binding TitlePrefix, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+										   IsVisible="{Binding TitleSuffix, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
 										   Opacity="0.7"/>
 
 							</StackPanel>

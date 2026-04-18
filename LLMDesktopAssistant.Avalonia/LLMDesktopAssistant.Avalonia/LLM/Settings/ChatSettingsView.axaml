@@ -36,6 +36,28 @@
 			<ContentControl Content="{Binding GeneralSettings}"/>
 
 		</TabItem>
+		
+		<TabItem>
+
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical"
+							MaxWidth="80"
+							Margin="5">
+
+					<ico:MaterialIcon Kind="Text"
+									  Width="24" Height="24"
+									  HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_prompts}"
+							   FontSize="18"
+							   HorizontalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"/>
+
+				</StackPanel>
+			</TabItem.Header>
+
+			<ContentControl Content="{Binding PromptSettings}"/>
+
+		</TabItem>
 
 		<TabItem>
 

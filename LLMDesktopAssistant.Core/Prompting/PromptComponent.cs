@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace LLMDesktopAssistant.Core.Prompting
 {
@@ -22,6 +22,13 @@ namespace LLMDesktopAssistant.Core.Prompting
 		{
 			get => _name;
 			set => SetProperty(ref _name, value);
+		}
+
+		private string _category = string.Empty;
+		public string Category
+		{
+			get => _category;
+			set => SetProperty(ref _category, value);
 		}
 
 		private string _text = string.Empty;

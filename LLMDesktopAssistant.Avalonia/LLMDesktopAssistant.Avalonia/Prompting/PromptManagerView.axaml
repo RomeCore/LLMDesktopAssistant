@@ -1,0 +1,157 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.Avalonia.Prompting"
+			 xmlns:loc="using:LLMDesktopAssistant.Avalonia.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Avalonia.Controls"
+			 xmlns:flui="using:FluentAvalonia.UI"
+			 x:Class="LLMDesktopAssistant.Avalonia.Prompting.PromptManagerView"
+			 x:DataType="local:PromptManagerViewModel">
+
+	<StackPanel Orientation="Vertical">
+		
+		<TextBlock Grid.Column="0"
+				   Margin="10"
+				   Text="{loc:Loc prompt_manager_header}"
+				   FontSize="{DynamicResource FontSizeL}"
+				   FontWeight="Bold"
+				   VerticalAlignment="Center"/>
+
+		<Grid Margin="10">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="300"/>
+				<ColumnDefinition Width="10"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+
+			<TabControl Grid.Column="0">
+				<TabItem Header="{loc:Loc prompt_components}">
+					<StackPanel>
+						<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+							<Button Command="{Binding AddComponentCommand}"
+									Classes="IconButton"
+									ToolTip.Tip="{loc:Loc add}">
+								<ico:MaterialIcon Kind="Plus"/>
+							</Button>
+							<Button Command="{Binding RemoveComponentCommand}"
+									Classes="IconButton"
+									Margin="5,0,0,0"
+									ToolTip.Tip="{loc:Loc remove}">
+								<ico:MaterialIcon Kind="Delete"/>
+							</Button>
+							<Button Command="{Binding ImportComponentCommand}"
+									Classes="IconButton"
+									Margin="5,0,0,0"
+									ToolTip.Tip="{loc:Loc prompt_import}">
+								<ico:MaterialIcon Kind="Import"/>
+							</Button>
+						</StackPanel>
+
+						<ListBox ItemsSource="{Binding Components}"
+								 SelectedItem="{Binding SelectedComponent}"
+								 ScrollViewer.VerticalScrollBarVisibility="Auto">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<StackPanel>
+										<TextBlock Text="{Binding Component.Name}"
+												   FontWeight="Bold"/>
+										<TextBlock Text="{Binding DisplayCategory}"
+												   FontSize="12"
+												   Foreground="Gray"/>
+									</StackPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</StackPanel>
+				</TabItem>
+
+				<TabItem Header="{loc:Loc prompt_personas}">
+					<StackPanel>
+						<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+							<Button Command="{Binding AddPersonaCommand}"
+									Classes="IconButton"
+									ToolTip.Tip="{loc:Loc add}">
+								<ico:MaterialIcon Kind="Plus"/>
+							</Button>
+							<Button Command="{Binding RemovePersonaCommand}"
+									Classes="IconButton"
+									Margin="5,0,0,0"
+									ToolTip.Tip="{loc:Loc remove}">
+								<ico:MaterialIcon Kind="Delete"/>
+							</Button>
+							<Button Command="{Binding ImportPersonaCommand}"
+									Classes="IconButton"
+									Margin="5,0,0,0"
+									ToolTip.Tip="{loc:Loc prompt_import}">
+								<ico:MaterialIcon Kind="Import"/>
+							</Button>
+						</StackPanel>
+
+						<ListBox ItemsSource="{Binding Personas}"
+								 SelectedItem="{Binding SelectedPersona}"
+								 ScrollViewer.VerticalScrollBarVisibility="Auto">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding Persona.Name}"
+											   FontWeight="Bold"/>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</StackPanel>
+				</TabItem>
+			</TabControl>
+
+			<StackPanel Grid.Column="2"
+						DataContext="{Binding SelectedComponent}"
+						IsVisible="{Binding Converter={StaticResource NotnullToBooleanConverter}}">
+				<TextBlock Text="{loc:Loc prompt_edit_component}"
+						   FontSize="18"
+						   Margin="0,0,0,15"/>
+			
+				<TextBox Text="{Binding Component.Name, Mode=TwoWay}"
+						 PlaceholderText="{loc:Loc prompt_name}"
+						 Margin="0,0,0,10"/>
+			
+				<TextBox Text="{Binding Component.Category, Mode=TwoWay}"
+						 PlaceholderText="{loc:Loc prompt_category}"
+						 Margin="0,0,0,10"/>
+			
+				<TextBox Text="{Binding Component.Text, Mode=TwoWay}"
+						 AcceptsReturn="True"
+						 TextWrapping="Wrap"
+						 Height="300"
+						 ScrollViewer.VerticalScrollBarVisibility="Auto"
+						 PlaceholderText="{loc:Loc prompt_text}"
+						 Margin="0,0,0,10"/>
+			</StackPanel>
+
+			<StackPanel Grid.Column="2"
+						DataContext="{Binding SelectedPersona}"
+						IsVisible="{Binding Converter={StaticResource NotnullToBooleanConverter}}">
+				<TextBlock Text="{loc:Loc prompt_edit_persona}"
+						   FontSize="18"
+						   Margin="0,0,0,15"/>
+			
+				<TextBox Text="{Binding Persona.Name, Mode=TwoWay}"
+						 PlaceholderText="{loc:Loc prompt_name}"
+						 Margin="0,0,0,10"/>
+			
+				<TextBox Text="{Binding Persona.Text, Mode=TwoWay}"
+						 AcceptsReturn="True"
+						 TextWrapping="Wrap"
+						 Height="300"
+						 ScrollViewer.VerticalScrollBarVisibility="Auto"
+						 PlaceholderText="{loc:Loc prompt_text}"
+						 Margin="0,0,0,10"/>
+			</StackPanel>
+
+		</Grid>
+		
+	</StackPanel>
+
+	
+
+</UserControl>

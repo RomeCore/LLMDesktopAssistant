@@ -54,7 +54,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 			{
 				prompt = chat.Settings.SystemPrompt,
 				components = chat.Settings.PromptComponents.Select(id => PromptRegistry.GetComponent(id).Text).ToArray(),
-				persona = chat.Settings.CustomPersona ?? (chat.Settings.PersonaId != null ? PromptRegistry.GetPersona(chat.Settings.PersonaId.Value).Text : null),
+				persona = chat.Settings.UseCustomPersona ? chat.Settings.CustomPersona : (chat.Settings.PersonaId != null ? PromptRegistry.GetPersona(chat.Settings.PersonaId.Value).Text : null),
 				summary = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages
 			};
 			return template!.Render(context);

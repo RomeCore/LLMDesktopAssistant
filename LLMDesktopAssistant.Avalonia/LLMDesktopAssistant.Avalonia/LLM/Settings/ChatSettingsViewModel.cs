@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Core.LLM.Domain;
 
 namespace LLMDesktopAssistant.Avalonia.LLM.Settings
@@ -10,6 +10,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Settings
 		public Chat Chat { get; }
 
 		public ChatGeneralSettingsViewModel GeneralSettings { get; }
+		public ChatPromptSettingsViewModel PromptSettings { get; }
 		public ChatToolSettingsViewModel ToolSettings { get; }
 		public ChatMCPSettingsViewModel McpSettings { get; }
 
@@ -19,6 +20,7 @@ namespace LLMDesktopAssistant.Avalonia.LLM.Settings
 			Chat = chat;
 
 			GeneralSettings = new ChatGeneralSettingsViewModel(this);
+			PromptSettings = new ChatPromptSettingsViewModel(this);
 			ToolSettings = new ChatToolSettingsViewModel(this);
 			McpSettings = new ChatMCPSettingsViewModel(this);
 		}

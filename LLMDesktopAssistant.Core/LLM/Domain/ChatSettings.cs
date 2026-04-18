@@ -62,6 +62,16 @@ namespace LLMDesktopAssistant.Core.LLM.Domain
 			set => _promptComponents.Reset(value);
 		}
 
+		private bool _useCustomPersona = false;
+		/// <summary>
+		/// Whether to use a custom persona for the chat. False for <see cref="PersonaId"/>, true for <see cref="CustomPersona"/>.
+		/// </summary>
+		public bool UseCustomPersona
+		{
+			get => _useCustomPersona;
+			set => SetProperty(ref _useCustomPersona, value);
+		}
+
 		private string? _customPersona;
 		/// <summary>
 		/// The custom personality prompt to use for chat, if not null or empty, this will be used instead of <see cref="PersonaId"/>.

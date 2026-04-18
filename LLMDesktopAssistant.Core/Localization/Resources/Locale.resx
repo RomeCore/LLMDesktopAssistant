@@ -501,4 +501,94 @@
   <data name="select_python_venv_activate_script" xml:space="preserve">
     <value>Select Python Venv activation script</value>
   </data>
+  <data name="prompt_components" xml:space="preserve">
+    <value>Additional components</value>
+  </data>
+  <data name="prompt_personas" xml:space="preserve">
+    <value>Personas</value>
+  </data>
+  <data name="prompt_category_uncategorized" xml:space="preserve">
+    <value>Uncategorized</value>
+  </data>
+  <data name="prompt_new_component" xml:space="preserve">
+    <value>New component</value>
+  </data>
+  <data name="prompt_new_persona" xml:space="preserve">
+    <value>New persona</value>
+  </data>
+  <data name="prompt_import_component" xml:space="preserve">
+    <value>Import component</value>
+  </data>
+  <data name="prompt_import_persona" xml:space="preserve">
+    <value>Import persona</value>
+  </data>
+  <data name="prompt_import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="prompt_edit_component" xml:space="preserve">
+    <value>Edit Component</value>
+  </data>
+  <data name="prompt_edit_persona" xml:space="preserve">
+    <value>Edit Persona</value>
+  </data>
+  <data name="prompt_name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="prompt_category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="prompt_text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="prompt_system_prompt" xml:space="preserve">
+    <value>System prompt</value>
+  </data>
+  <data name="prompt_system_prompt_hint" xml:space="preserve">
+    <value>Enter system prompt...</value>
+  </data>
+  <data name="prompt_persona" xml:space="preserve">
+    <value>Persona</value>
+  </data>
+  <data name="prompt_use_custom_persona" xml:space="preserve">
+    <value>Use custom persona</value>
+  </data>
+  <data name="prompt_custom_persona_hint" xml:space="preserve">
+    <value>Enter custom persona...</value>
+  </data>
+  <data name="prompt_select_persona" xml:space="preserve">
+    <value>Select persona...</value>
+  </data>
+  <data name="prompt_selected_persona_hint" xml:space="preserve">
+    <value>Select a persona to apply to the chat</value>
+  </data>
+  <data name="chat_settings_prompts" xml:space="preserve">
+    <value>Prompts</value>
+  </data>
+  <data name="prompt_manager_hint" xml:space="preserve">
+    <value>Prompt manager</value>
+  </data>
+  <data name="promptcomponent-markdown_tips" xml:space="preserve">
+    <value>Markdown Tips</value>
+  </data>
+  <data name="promptcomponent-app_hint" xml:space="preserve">
+    <value>Application Hint</value>
+  </data>
+  <data name="promptcomponent-multiple_tools" xml:space="preserve">
+    <value>Multiple Tools</value>
+  </data>
+  <data name="persona-niggalink_ai" xml:space="preserve">
+    <value>Niggalink AI</value>
+  </data>
+  <data name="add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="mcp_manager_hint" xml:space="preserve">
+    <value>MCP manager</value>
+  </data>
+  <data name="mcp_manager_header" xml:space="preserve">
+    <value>MCP manager</value>
+  </data>
+  <data name="prompt_manager_header" xml:space="preserve">
+    <value>Prompt manager</value>
+  </data>
 </root>

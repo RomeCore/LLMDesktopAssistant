@@ -1,4 +1,4 @@
-﻿@template markdown_tips
+@template markdown_tips
 {
 	@metadata
 	{
@@ -8,14 +8,6 @@
 	- Tables, Codeblocks, Blockquotes, etc.
 	- Math formulas, via `$latex$` or `$$latex$$`
 	- Images, via `![alt text](url)`
-}
-
-@template markdown_codeblocks_tips
-{
-	@metadata
-	{
-		guid: '8a1cadd7-2e18-49b0-af53-0c8e1c05c3f2'
-	}
 	When you writing markdown code blocks, user is provided with `copy`, `save` and `execute` buttons, meaning you can provide a code for direct execution.
 }
 

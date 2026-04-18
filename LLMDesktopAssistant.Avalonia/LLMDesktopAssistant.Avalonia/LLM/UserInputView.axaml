@@ -60,6 +60,14 @@
 					<ico:MaterialIcon Kind="Connection"/>
 				</Button>
 
+				<!-- Prompt Manager -->
+				<Button Classes="IconButton"
+						Command="{Binding OpenPromptManagerCommand}"
+						ToolTip.Tip="{loc:Loc prompt_manager_hint}">
+
+					<ico:MaterialIcon Kind="Text"/>
+				</Button>
+
 				<!-- Attach -->
 				<Button Classes="IconButton"
 						Command="{Binding OpenAttachmentsManagerCommand}"
