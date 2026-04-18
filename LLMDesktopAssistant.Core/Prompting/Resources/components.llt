@@ -2,8 +2,7 @@
 {
 	@metadata
 	{
-		guid: '6873aa10-81e7-4a1b-a8f4-a505445397f4',
-		enabled: true
+		guid: '6873aa10-81e7-4a1b-a8f4-a505445397f4'
 	}
 	You also can use advanced Markdown formatting:
 	- Tables, Codeblocks, Blockquotes, etc.
@@ -15,8 +14,7 @@
 {
 	@metadata
 	{
-		guid: '8a1cadd7-2e18-49b0-af53-0c8e1c05c3f2',
-		enabled: true
+		guid: '8a1cadd7-2e18-49b0-af53-0c8e1c05c3f2'
 	}
 	When you writing markdown code blocks, user is provided with `copy`, `save` and `execute` buttons, meaning you can provide a code for direct execution.
 }
@@ -25,8 +23,7 @@
 {
 	@metadata
 	{
-		guid: '81f0998b-e9dd-489c-9a43-7469fd798dcf',
-		enabled: true
+		guid: '81f0998b-e9dd-489c-9a43-7469fd798dcf'
 	}
 	User is working inside application called `dASS (Desktop Assistant)` with you, assistant.
 }
@@ -35,8 +32,7 @@
 {
 	@metadata
 	{
-		guid: 'ccdf6c29-f9b6-4103-bb29-52dddb52398f',
-		enabled: true
+		guid: 'ccdf6c29-f9b6-4103-bb29-52dddb52398f'
 	}
 	You also can call multiple tools in one message (for example, multiple web-search or file read calls).
 }

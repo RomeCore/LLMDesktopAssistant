@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.Core.LLM.Domain;
 using LLMDesktopAssistant.Core.LLM.Services.Attachments;
 using LLMDesktopAssistant.Core.LLM.Services.Tools;
+using LLMDesktopAssistant.Core.Prompting;
 using LLMDesktopAssistant.Core.ToolModules;
 using LLMDesktopAssistant.Core.Utils;
 using LLTSharp;
@@ -17,13 +18,7 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 		{
 			services.AddSingleton(Log.Logger);
 
-			services.AddSingleton(services =>
-			{
-				var templateLibrary = new TemplateLibrary();
-				templateLibrary.SetLanguageFallbackScheme(new MajorLanguageFallbackScheme());
-				templateLibrary.ImportFromAssembly(typeof(ChatServicesBuilderExtensions).Assembly);
-				return templateLibrary;
-			});
+			services.AddSingleton(PromptRegistry.SharedLibrary);
 			services.AddSingleton<IChatManagementService, ChatManagementService>();
 			services.AddSingleton<IDocumentReadingService, DocumentReadingService>();
 			services.AddSingleton<IMessageTokenSerializationSchema>(MessageTokenSerializationSchema.Default);

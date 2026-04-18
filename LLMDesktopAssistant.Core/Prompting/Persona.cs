@@ -1,4 +1,6 @@
-﻿namespace LLMDesktopAssistant.Core.Prompting
+﻿using System.Text.Json.Serialization;
+
+namespace LLMDesktopAssistant.Core.Prompting
 {
 	public class Persona : NotifyPropertyChanged
 	{
@@ -11,6 +13,9 @@
 			get => _id;
 			set => SetProperty(ref _id, value);
 		}
+
+		[JsonIgnore]
+		public bool IsBuiltin => PromptRegistry.BuiltinPersonas.ContainsKey(Id);
 
 		private string _name = string.Empty;
 		public string Name

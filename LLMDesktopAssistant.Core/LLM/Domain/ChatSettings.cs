@@ -2,6 +2,7 @@
 using LLMDesktopAssistant.Core.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients;
+using System.Collections;
 using System.IO;
 
 namespace LLMDesktopAssistant.Core.LLM.Domain
@@ -38,25 +39,51 @@ namespace LLMDesktopAssistant.Core.LLM.Domain
 			set => SetProperty(ref _agenticModel, value);
 		}
 
-		private string? _systemInstructions;
+
+
+		private string? _systemPropmt;
 		/// <summary>
-		/// Instructions to the model on how it should behave.
+		/// The system prompt to use for the chat.
 		/// </summary>
-		public string? SystemInstructions
+		public string? SystemPrompt
 		{
-			get => _systemInstructions;
-			set => SetProperty(ref _systemInstructions, value);
+			get => _systemPropmt;
+			set => SetProperty(ref _systemPropmt, value);
 		}
 
-		private string? _personality;
+		private readonly RangeObservableCollection<Guid> _promptComponents = [];
 		/// <summary>
-		/// The personality of the chatbot. This can be used to influence the behavior and tone of the chatbot.
+		/// The collection of prompt components IDs that should be appended to the system message in addition to the <see cref="SystemPrompt"/>.
+		/// The identifiers leads to <see cref="Prompting.PromptRegistry.GetComponent(Guid)"/>
 		/// </summary>
-		public string? Personality
+		public ICollection<Guid> PromptComponents
 		{
-			get => _personality;
-			set => SetProperty(ref _personality, value);
+			get => _promptComponents;
+			set => _promptComponents.Reset(value);
 		}
+
+		private string? _customPersona;
+		/// <summary>
+		/// The custom personality prompt to use for chat, if not null or empty, this will be used instead of <see cref="PersonaId"/>.
+		/// </summary>
+		public string? CustomPersona
+		{
+			get => _customPersona;
+			set => SetProperty(ref _customPersona, value);
+		}
+
+		private Guid? _personaId;
+		/// <summary>
+		/// The personality ID of the chatbot. This can be used to influence the behavior and tone of the chatbot.
+		/// The identifier leads to <see cref="Prompting.PromptRegistry.GetPersona(Guid)"/>
+		/// </summary>
+		public Guid? PersonaId
+		{
+			get => _personaId;
+			set => SetProperty(ref _personaId, value);
+		}
+
+
 
 		private string? _workingDirectory;
 		/// <summary>
@@ -83,6 +110,8 @@ namespace LLMDesktopAssistant.Core.LLM.Domain
 			set => SetProperty(ref _pythonVenvActivateScriptPath, value);
 		}
 
+
+
 		private bool _enableTools = true;
 		/// <summary>
 		/// Whether to use tools in the chat.
@@ -102,6 +131,8 @@ namespace LLMDesktopAssistant.Core.LLM.Domain
 			get => _toolChanges;
 			set => _toolChanges.Reset(value);
 		}
+
+
 
 		private bool _enableMcp = true;
 		/// <summary>

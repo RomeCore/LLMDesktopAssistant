@@ -1,4 +1,5 @@
 ﻿using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.Core.Prompting;
 using LLTSharp;
 using LLTSharp.Locale;
 using LLTSharp.Metadata;
@@ -51,8 +52,9 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 			var template = templates.TryRetrieveBestWithFallback("system_prompt", language) as ITextTemplate;
 			var context = new
 			{
-				instructions = chat.Settings.SystemInstructions ?? "You are a helpful assistant.",
-				personality = chat.Settings.Personality,
+				prompt = chat.Settings.SystemPrompt,
+				components = chat.Settings.PromptComponents.Select(id => PromptRegistry.GetComponent(id).Text).ToArray(),
+				persona = chat.Settings.CustomPersona ?? (chat.Settings.PersonaId != null ? PromptRegistry.GetPersona(chat.Settings.PersonaId.Value).Text : null),
 				summary = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages
 			};
 			return template!.Render(context);

@@ -1,5 +1,9 @@
 ﻿@template system_prompt
 {
+	@if prompt
+	{
+		@prompt
+	}
 	@foreach component in components
 	{
 		@component
