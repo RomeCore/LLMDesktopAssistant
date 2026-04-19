@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.5.11626.173 insiders
+VisualStudioVersion = 18.5.11626.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.WPF", "LLMDesktopAssistant\LLMDesktopAssistant.WPF.csproj", "{778141B9-C966-4D3B-9A5F-431B2BAA45AE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Core", "LLMDesktopAssistant.Core\LLMDesktopAssistant.Core.csproj", "{431CEFDF-7621-42A9-B6E2-551A7AEF84EF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Avalonia", "LLMDesktopAssistant.Avalonia\LLMDesktopAssistant.Avalonia\LLMDesktopAssistant.Avalonia.csproj", "{E893F492-EB8D-4CE2-AED6-3F02E551BA79}"
@@ -25,14 +23,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{778141B9-C966-4D3B-9A5F-431B2BAA45AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{778141B9-C966-4D3B-9A5F-431B2BAA45AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{778141B9-C966-4D3B-9A5F-431B2BAA45AE}.Debug|x64.ActiveCfg = Debug|x64
-		{778141B9-C966-4D3B-9A5F-431B2BAA45AE}.Debug|x64.Build.0 = Debug|x64
-		{778141B9-C966-4D3B-9A5F-431B2BAA45AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{778141B9-C966-4D3B-9A5F-431B2BAA45AE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{778141B9-C966-4D3B-9A5F-431B2BAA45AE}.Release|x64.ActiveCfg = Release|x64
-		{778141B9-C966-4D3B-9A5F-431B2BAA45AE}.Release|x64.Build.0 = Release|x64
 		{431CEFDF-7621-42A9-B6E2-551A7AEF84EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{431CEFDF-7621-42A9-B6E2-551A7AEF84EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{431CEFDF-7621-42A9-B6E2-551A7AEF84EF}.Debug|x64.ActiveCfg = Debug|Any CPU

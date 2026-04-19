@@ -53,8 +53,13 @@ namespace LLMDesktopAssistant.Core.LLM.Services
 			var context = new
 			{
 				prompt = chat.Settings.SystemPrompt,
-				components = chat.Settings.PromptComponents.Select(id => PromptRegistry.GetComponent(id).Text).ToArray(),
-				persona = chat.Settings.UseCustomPersona ? chat.Settings.CustomPersona : (chat.Settings.PersonaId != null ? PromptRegistry.GetPersona(chat.Settings.PersonaId.Value).Text : null),
+				components = chat.Settings.PromptComponents
+					.Select(id => PromptRegistry.GetComponent(id)?.Text)
+					.Where(c => !string.IsNullOrWhiteSpace(c))
+					.ToArray(),
+				persona = chat.Settings.UseCustomPersona ?
+					chat.Settings.CustomPersona :
+					(chat.Settings.PersonaId != null ? PromptRegistry.GetPersona(chat.Settings.PersonaId.Value)?.Text : null),
 				summary = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages
 			};
 			return template!.Render(context);

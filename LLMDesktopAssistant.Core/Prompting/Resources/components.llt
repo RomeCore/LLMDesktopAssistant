@@ -26,5 +26,5 @@
 	{
 		guid: 'ccdf6c29-f9b6-4103-bb29-52dddb52398f'
 	}
-	You also can call multiple tools in one message (for example, multiple web-search or file read calls).
+	You also can call multiple tools in one message (for example, multiple web-search or file reads).
 }

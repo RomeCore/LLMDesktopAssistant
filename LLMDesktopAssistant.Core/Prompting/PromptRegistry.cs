@@ -78,7 +78,7 @@ namespace LLMDesktopAssistant.Core.Prompting
 			BuiltinPersonas = personasBuilder.ToImmutable();
 		}
 
-		public static PromptComponent GetComponent(Guid id)
+		public static PromptComponent? GetComponent(Guid id)
 		{
 			var componentsConfig = SettingsManager.Get<PromptComponentsConfiguration>();
 			foreach (var component1 in componentsConfig.Components)
@@ -88,10 +88,10 @@ namespace LLMDesktopAssistant.Core.Prompting
 			if (BuiltinComponents.TryGetValue(id, out var component2))
 				return component2;
 
-			throw new ArgumentException($"Component with ID {id} not found.");
+			return null;
 		}
 
-		public static Persona GetPersona(Guid id)
+		public static Persona? GetPersona(Guid id)
 		{
 			var personasConfig = SettingsManager.Get<PersonasConfiguration>();
 			foreach (var persona1 in personasConfig.Personas)
@@ -101,7 +101,7 @@ namespace LLMDesktopAssistant.Core.Prompting
 			if (BuiltinPersonas.TryGetValue(id, out var persona2))
 				return persona2;
 
-			throw new ArgumentException($"Persona with ID {id} not found.");
+			return null;
 		}
 	}
 }
