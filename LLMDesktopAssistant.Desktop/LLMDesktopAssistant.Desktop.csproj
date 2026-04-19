@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LLMDesktopAssistant.Core\LLMDesktopAssistant.Core.csproj" />
+    <ProjectReference Include="..\LLMDesktopAssistant\LLMDesktopAssistant.csproj" />
   </ItemGroup>
 
 </Project>

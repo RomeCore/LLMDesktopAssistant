@@ -1123,6 +1123,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Uncensored.
+        /// </summary>
+        public static string promptcomponent_uncensored {
+            get {
+                return ResourceManager.GetString("promptcomponent-uncensored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Get Python installed packages.
         /// </summary>
         public static string python_get_installed_packages_list {

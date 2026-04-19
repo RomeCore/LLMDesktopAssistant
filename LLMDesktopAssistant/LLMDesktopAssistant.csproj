@@ -9,11 +9,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Settings\Objects\**" />
+	  <EmbeddedResource Remove="Settings\Objects\**" />
+	  <None Remove="Settings\Objects\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Assets\icon.ico" />
 		<None Remove="Prompting\Resources\components.llt" />
 		<None Remove="Prompting\Resources\personas.llt" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<AvaloniaResource Include="Assets\icon.ico" />
 		<EmbeddedResource Include="Prompting\Resources\components.llt" />
 		<EmbeddedResource Include="Prompting\Resources\personas.llt" />
 		<EmbeddedResource Include="Prompting\Resources\summarizer.llt" />
@@ -177,10 +185,6 @@
 			<Generator>PublicResXFileCodeGenerator</Generator>
 			<LastGenOutput>Locale.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Settings\Objects\" />
 	</ItemGroup>
 
 	<ItemGroup>

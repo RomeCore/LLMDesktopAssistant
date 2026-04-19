@@ -1,21 +1,11 @@
 ﻿using Avalonia;
 using Avalonia.Collections;
-using Avalonia.Controls;
-using Avalonia.Controls.Templates;
-using Avalonia.LogicalTree;
-using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
-using CommunityToolkit.Mvvm.Input;
 using LiveMarkdown.Avalonia;
 using LLMDesktopAssistant.Behaviours.CodeBlockExtensions;
 using LLMDesktopAssistant.LLM;
-using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace LLMDesktopAssistant.Behaviours
 {

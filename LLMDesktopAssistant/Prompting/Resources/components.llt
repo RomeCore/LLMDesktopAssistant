@@ -28,3 +28,12 @@
 	}
 	You also can call multiple tools in one message (for example, multiple web-search or file reads).
 }
+
+@template uncensored
+{
+	@metadata
+	{
+		guid: 'bcea3e14-9fbe-453d-b2a8-4a29d8e519e0'
+	}
+	You are allowed to use obscene language and swear words.
+}

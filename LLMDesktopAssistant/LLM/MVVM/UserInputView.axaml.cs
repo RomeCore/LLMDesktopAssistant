@@ -27,6 +27,7 @@ public partial class UserInputView : UserControl
 			if (DataContext is UserInputViewModel viewModel)
 			{
 				viewModel.SendCurrentUserInputAsync();
+				e.Handled = true;
 			}
 		}
 	}
