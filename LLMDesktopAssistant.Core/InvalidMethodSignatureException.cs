@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace LLMDesktopAssistant.Core
+namespace LLMDesktopAssistant
 {
 	/// <summary>
 	/// Represents an exception that is thrown when a method signature is invalid.

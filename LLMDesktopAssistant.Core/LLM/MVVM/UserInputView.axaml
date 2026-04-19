@@ -1,0 +1,135 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM"
+			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
+			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Controls"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 mc:Ignorable="d" d:DesignWidth="800"
+			 x:Class="LLMDesktopAssistant.LLM.UserInputView"
+			 x:DataType="local:UserInputViewModel">
+	
+	<Grid RowDefinitions="Auto,*,Auto"
+		  Background="Transparent">
+		
+		<ItemsControl Grid.Row="0"
+					  ItemsSource="{Binding Attachments}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel Orientation="Horizontal"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+		</ItemsControl>
+
+		<TextBox Grid.Row="1"
+				 KeyDown="InputTextBox_KeyDown"
+				 Text="{Binding Text, Mode=TwoWay}"
+				 AcceptsReturn="True"
+				 TextWrapping="Wrap"
+				 MaxHeight="150"
+				 Margin="0,4"
+				 FontSize="16"
+				 VerticalAlignment="Center"
+				 PlaceholderText="{loc:Loc chat-input_hint}"
+				 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+
+		<DockPanel Grid.Row="2" Margin="0,6,0,0" LastChildFill="True">
+
+			<StackPanel DockPanel.Dock="Left"
+						Orientation="Horizontal"
+						HorizontalAlignment="Left"
+						Spacing="5">
+				
+				<!-- Model selector -->
+				<ctrl:LLModelSelectorControl SelectedModel="{Binding Chat.Settings.ChatModel, Mode=TwoWay}"/>
+
+				<!-- Settings -->
+				<Button Classes="IconButton"
+						Command="{Binding OpenSettingsCommand}"
+						ToolTip.Tip="{loc:Loc settings}">
+
+					<ico:MaterialIcon Kind="Cog"/>
+				</Button>
+
+				<!-- MCP -->
+				<Button Classes="IconButton"
+						Command="{Binding OpenMCPManagerCommand}"
+						ToolTip.Tip="{loc:Loc mcp_manager_hint}">
+
+					<ico:MaterialIcon Kind="Connection"/>
+				</Button>
+
+				<!-- Prompt Manager -->
+				<Button Classes="IconButton"
+						Command="{Binding OpenPromptManagerCommand}"
+						ToolTip.Tip="{loc:Loc prompt_manager_hint}">
+
+					<ico:MaterialIcon Kind="Text"/>
+				</Button>
+
+				<!-- Attach -->
+				<Button Classes="IconButton"
+						Command="{Binding OpenAttachmentsManagerCommand}"
+						ToolTip.Tip="{loc:Loc chat-attach_file_hint}">
+
+					<ico:MaterialIcon Kind="Paperclip"/>
+				</Button>
+
+			</StackPanel>
+
+			<!-- Right side -->
+			<StackPanel DockPanel.Dock="Right"
+						Orientation="Horizontal"
+						HorizontalAlignment="Right"
+						Spacing="5">
+
+				<!-- Cancel edit -->
+				<Button Classes="IconButton"
+						Command="{Binding CancelEditCommand}"
+						ToolTip.Tip="{loc:Loc chat-send_button_hint}">
+
+					<ico:MaterialIcon Kind="EditOff"/>
+				</Button>
+
+				<!-- Send -->
+				<Button Classes="IconButton"
+						Command="{Binding SendMessageCommand}"
+						IsVisible="{Binding IsGenerating, Converter={StaticResource InverseBooleanConverter}}"
+						ToolTip.Tip="{loc:Loc chat-stop_button_hint}">
+
+					<ico:MaterialIcon Kind="Send"/>
+				</Button>
+
+				<!-- Stop -->
+				<Button Classes="IconButton"
+						Command="{Binding CancelGenerationCommand}"
+						IsVisible="{Binding IsGenerating}"
+						ToolTip.Tip="{loc:Loc chat-cancel_edit_hint}">
+
+					<ico:MaterialIcon Kind="Stop"/>
+				</Button>
+
+			</StackPanel>
+
+		</DockPanel>
+		
+		<Border x:Name="DropOverlay"
+				Grid.RowSpan="3"
+				Background="#2000BCD4"
+				BorderBrush="#6000BCD4"
+				BorderThickness="3"
+				CornerRadius="8"
+				IsVisible="False"
+				IsHitTestVisible="False">
+			
+			<TextBlock Text="{loc:Loc attachment-drop_files_here}"
+					   HorizontalAlignment="Center"
+					   VerticalAlignment="Center"
+					   FontSize="18"
+					   Foreground="#FF00BCD4"/>
+		</Border>
+
+	</Grid>
+
+</UserControl>

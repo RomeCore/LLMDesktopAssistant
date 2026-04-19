@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using RCParsing.Utils;
 
-namespace LLMDesktopAssistant.Core
+namespace LLMDesktopAssistant
 {
 	/// <summary>
 	/// Represents data associated with an event.

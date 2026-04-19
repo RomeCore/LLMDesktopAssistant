@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Ganss.Xss;
 using RCParsing;
 
-namespace LLMDesktopAssistant.Core.Utils
+namespace LLMDesktopAssistant.Utils
 {
 	public static class HtmlUtils
 	{

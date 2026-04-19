@@ -1,10 +1,10 @@
-﻿using LLMDesktopAssistant.Core.Data;
-using LLMDesktopAssistant.Core.Data.Models;
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.ToolModules;
+﻿using LLMDesktopAssistant.Data;
+using LLMDesktopAssistant.Data.Models;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.ToolModules;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	public class ChatManagementService(
 		IServiceProvider services,

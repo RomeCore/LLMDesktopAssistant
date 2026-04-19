@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Services;
 
-namespace LLMDesktopAssistant.Core.Localization
+namespace LLMDesktopAssistant.Localization
 {
 	/// <summary>
 	/// Manages localization for the application.

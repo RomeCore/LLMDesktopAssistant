@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.LLM.Domain
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents a base class for chat messages.

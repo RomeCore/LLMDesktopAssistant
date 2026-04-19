@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MoonSharp.Interpreter;
-using LLMDesktopAssistant.Core.Services;
-using LLMDesktopAssistant.Core.ToolModules;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Concurrent;
 
-namespace LLMDesktopAssistant.Core.Scripting
+namespace LLMDesktopAssistant.Scripting
 {
 	[ToolModule]
 	public class LuaInterpreterToolModule : ToolModule

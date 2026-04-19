@@ -1,4 +1,4 @@
-using LLMDesktopAssistant.Core.Utils;
+using LLMDesktopAssistant.Utils;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.Settings
+namespace LLMDesktopAssistant.Settings
 {
 	/// <summary>
 	/// Provides centralized management for settings objects with automatic persistence and change tracking.

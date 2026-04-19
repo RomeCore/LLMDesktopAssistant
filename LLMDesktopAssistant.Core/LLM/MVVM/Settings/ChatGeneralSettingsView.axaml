@@ -1,0 +1,91 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Controls"
+			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatGeneralSettingsView"
+			 x:DataType="local:ChatGeneralSettingsViewModel">
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel Orientation="Vertical" Margin="10">
+
+			<TextBlock Text="{loc:Loc settings-chat_model_hint}"
+					   Margin="0,15,0,2"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.ChatModel, Mode=TwoWay}"/>
+
+			<TextBlock Text="{loc:Loc settings-summarizer_model_hint}"
+					   Margin="0,15,0,2"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.SummarizerModel, Mode=TwoWay}"/>
+
+			<TextBlock Text="{loc:Loc settings-agentic_model_hint}"
+					   Margin="0,15,0,2"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.AgenticModel, Mode=TwoWay}"/>
+
+			<Grid Margin="0,10">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBox Text="{Binding Settings.WorkingDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						 PlaceholderText="{loc:Loc working_directory_hint}"
+						 UseFloatingPlaceholder="True"
+						 VerticalContentAlignment="Center"/>
+
+				<Button Grid.Column="1"
+						Margin="8,0,0,0"
+						Classes="IconButton"
+						Command="{Binding SelectWorkingDirectoryCommand}">
+
+					<ico:MaterialIcon Kind="FolderOpen" />
+				</Button>
+
+				<Button Grid.Column="2"
+						Margin="8,0,0,0"
+						Classes="IconButton"
+						Command="{Binding OpenWorkingDirectoryCommand}">
+					
+					<ico:MaterialIcon Kind="OpenInNew" />
+				</Button>
+
+			</Grid>
+			
+			<Grid Margin="0,10">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBox Text="{Binding Settings.PythonVenvActivateScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						 PlaceholderText="{loc:Loc python_venv_activate_script_path_hint}"
+						 UseFloatingPlaceholder="True"
+						 VerticalContentAlignment="Center"/>
+
+				<Button Grid.Column="1"
+						Margin="8,0,0,0"
+						Classes="IconButton"
+						Command="{Binding SelectPythonVenvActivateScriptPathCommand}">
+
+					<ico:MaterialIcon Kind="FolderOpen" />
+				</Button>
+
+				<Button Grid.Column="2"
+						Margin="8,0,0,0"
+						Classes="IconButton"
+						Command="{Binding OpenPythonVenvActivateScriptPathCommand}">
+					
+					<ico:MaterialIcon Kind="OpenInNew" />
+				</Button>
+
+			</Grid>
+
+		</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

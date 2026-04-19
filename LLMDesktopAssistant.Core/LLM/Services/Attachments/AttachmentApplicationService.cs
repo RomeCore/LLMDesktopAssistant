@@ -1,10 +1,10 @@
-﻿using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Utils.Files;
+﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Utils.Files;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 
-namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
+namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
 	public class AttachmentApplicationService(
 		Chat chat

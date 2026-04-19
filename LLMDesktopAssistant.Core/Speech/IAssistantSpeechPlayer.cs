@@ -1,6 +1,6 @@
-﻿using LLMDesktopAssistant.Core.Services;
+﻿using LLMDesktopAssistant.Services;
 
-namespace LLMDesktopAssistant.Core.Speech
+namespace LLMDesktopAssistant.Speech
 {
 	/// <summary>
 	/// Interface for speech player from text.

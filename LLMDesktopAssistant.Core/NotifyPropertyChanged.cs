@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace LLMDesktopAssistant.Core
+namespace LLMDesktopAssistant
 {
 	/// <summary>
 	/// The attribute used to mark methods that should be called when a specific property changes, applicable to <see cref="NotifyPropertyChanged"/> and its subscribers.

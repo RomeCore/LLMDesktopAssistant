@@ -1,8 +1,8 @@
-﻿using LLMDesktopAssistant.Core.Settings;
-using LLMDesktopAssistant.Core.ToolModules;
-using LLMDesktopAssistant.Core.Utils;
+﻿using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Core.LLM.Services.Tools
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	public class MetaToolConfiguration : SettingsObject
 	{

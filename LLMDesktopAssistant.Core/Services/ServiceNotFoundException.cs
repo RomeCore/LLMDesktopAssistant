@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.Services
+﻿namespace LLMDesktopAssistant.Services
 {
 	/// <summary>
 	/// The exception that is thrown when a module cannot be found.

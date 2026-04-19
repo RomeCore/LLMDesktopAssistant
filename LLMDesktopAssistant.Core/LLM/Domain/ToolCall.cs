@@ -1,7 +1,7 @@
 ﻿using RCLargeLanguageModels.Tasks;
 using System.Text.Json.Nodes;
 
-namespace LLMDesktopAssistant.Core.LLM.Domain
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents a tool call within an assistant message.

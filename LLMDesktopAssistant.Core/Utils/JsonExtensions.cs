@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace LLMDesktopAssistant.Core.Utils
+namespace LLMDesktopAssistant.Utils
 {
 	public static class JsonExtensions
 	{

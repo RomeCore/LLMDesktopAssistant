@@ -17,7 +17,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.Services.Instances
+namespace LLMDesktopAssistant.Services.Instances
 {
 	[Service]
 	public class LLModelListService

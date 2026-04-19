@@ -1,11 +1,11 @@
-﻿using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.MCP;
-using LLMDesktopAssistant.Core.Settings;
-using LLMDesktopAssistant.Core.ToolModules;
+﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.MCP;
+using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels;
 using Serilog;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	public class MCPManagementService(
 		Chat chat

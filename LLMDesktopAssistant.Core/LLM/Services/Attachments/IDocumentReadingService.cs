@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.WordExtractor;
 
-namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
+namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
 	public interface IDocumentReadingService
 	{

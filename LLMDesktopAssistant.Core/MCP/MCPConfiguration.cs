@@ -1,7 +1,7 @@
-﻿using LLMDesktopAssistant.Core.Settings;
-using LLMDesktopAssistant.Core.Utils;
+﻿using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Core.MCP
+namespace LLMDesktopAssistant.MCP
 {
 	/// <summary>
 	/// Represents the configuration settings for MCP (Model Context Protocol) servers within the application.

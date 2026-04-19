@@ -1,5 +1,5 @@
-﻿using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Prompting;
+﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Prompting;
 using LLTSharp;
 using LLTSharp.Locale;
 using LLTSharp.Metadata;
@@ -8,7 +8,7 @@ using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 using System.Globalization;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	public class PromptChatBuilder(
 		Chat chat,

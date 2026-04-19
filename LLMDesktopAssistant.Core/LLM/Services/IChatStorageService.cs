@@ -1,6 +1,6 @@
-﻿using LLMDesktopAssistant.Core.LLM.Domain;
+﻿using LLMDesktopAssistant.LLM.Domain;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
 	/// Interface for chat storage service. This service is responsible for storing and retrieving chat data.

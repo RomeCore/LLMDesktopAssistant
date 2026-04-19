@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Settings;
-using LLMDesktopAssistant.Core.Utils;
+using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
 using LLTSharp;
 
-namespace LLMDesktopAssistant.Core.Prompting
+namespace LLMDesktopAssistant.Prompting
 {
 	public class PromptComponentsConfiguration : SettingsObject
 	{

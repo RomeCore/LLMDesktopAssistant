@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.Utils.Files
+namespace LLMDesktopAssistant.Utils.Files
 {
 	public static class FileUtils
 	{

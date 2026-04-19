@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace LLMDesktopAssistant.Core.LLM.Domain
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents the user's input used for generating a response from the LLM assistant.

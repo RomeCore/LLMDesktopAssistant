@@ -1,7 +1,7 @@
 using DocumentFormat.OpenXml.VariantTypes;
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.LLM.Services.Tools;
-using LLMDesktopAssistant.Core.ToolModules;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Metadata;
 using RCLargeLanguageModels.Tasks;
@@ -10,7 +10,7 @@ using Serilog;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
 	/// The default implementation of the <see cref="IChatExecutionService"/>.

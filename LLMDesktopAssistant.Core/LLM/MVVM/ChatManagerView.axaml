@@ -1,0 +1,105 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="using:LLMDesktopAssistant.LLM"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 x:Class="LLMDesktopAssistant.LLM.ChatManagerView"
+			 x:DataType="local:ChatManagerViewModel">
+
+	<Design.DataContext>
+		<local:ChatManagerViewModel />
+	</Design.DataContext>
+
+	<SplitView x:Name="ChatSplitView"
+			   PanePlacement="Right"
+			   CompactPaneLength="0"
+			   OpenPaneLength="300">
+	
+		<SplitView.Pane>
+			
+			<DockPanel Width="320">
+
+				<StackPanel Orientation="Horizontal"
+							Margin="8"
+							DockPanel.Dock="Top">
+					<TextBlock Text="{loc:Loc chats}"
+							   Foreground="{DynamicResource DefaultForeground}"
+							   FontSize="18"
+							   VerticalAlignment="Center"
+							   Margin="8"/>
+
+				</StackPanel>
+
+				<ListBox ItemsSource="{Binding Chats}"
+						 SelectedItem="{Binding SelectedChat}"
+						 Margin="8">
+
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							
+							<DockPanel>
+
+								<Label Content="{Binding LastModifiedAt}"
+									   Opacity="0.5"
+									   DockPanel.Dock="Right"/>
+
+								<Label Content="{Binding Title}"/>
+
+							</DockPanel>
+							
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+					
+				</ListBox>
+				
+			</DockPanel>
+
+		</SplitView.Pane>
+
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition/>
+			</Grid.RowDefinitions>
+
+			<!-- TOP BAR -->
+			<DockPanel Background="{DynamicResource TopBarBackground}">
+
+				<StackPanel DockPanel.Dock="Right"
+							HorizontalAlignment="Right"
+							Orientation="Horizontal"
+							Margin="10" Spacing="5">
+
+					<Button Command="{Binding CreateConversationCommand}"
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc new_chat}">
+						<ico:MaterialIcon Kind="Plus"/>
+					</Button>
+					
+					<ToggleButton IsChecked="{Binding #ChatSplitView.IsPaneOpen}"
+								  Classes="IconButton">
+						<ico:MaterialIcon Kind="Menu"/>
+					</ToggleButton>
+
+				</StackPanel>
+
+				<TextBlock Text="{Binding SelectedChat.Title}"
+						   Foreground="{DynamicResource DefaultForeground}"
+						   VerticalAlignment="Center"
+						   DockPanel.Dock="Left"
+						   Margin="16,5,5,5"
+						   FontSize="16"/>
+
+			</DockPanel>
+
+			<!-- CHAT -->
+			<ContentControl Grid.Row="1"
+							Content="{Binding CurrentChat}"/>
+		</Grid>
+
+	</SplitView>
+
+</UserControl>

@@ -1,8 +1,8 @@
-﻿using LLMDesktopAssistant.Core.Settings;
-using LLMDesktopAssistant.Core.Utils;
+﻿using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
 using Serilog;
 
-namespace LLMDesktopAssistant.Core.MCP
+namespace LLMDesktopAssistant.MCP
 {
 	/// <summary>
 	/// The class for managing MCP connections.

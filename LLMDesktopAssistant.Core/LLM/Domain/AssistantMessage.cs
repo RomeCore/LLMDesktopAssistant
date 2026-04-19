@@ -1,7 +1,7 @@
 ﻿using RCLargeLanguageModels.Tasks;
 using System.Collections.ObjectModel;
 
-namespace LLMDesktopAssistant.Core.LLM.Domain
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents a message from the LLM assistant.

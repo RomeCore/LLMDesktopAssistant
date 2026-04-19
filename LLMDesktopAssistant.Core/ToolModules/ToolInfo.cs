@@ -1,6 +1,6 @@
 ﻿using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.Core.ToolModules
+namespace LLMDesktopAssistant.ToolModules
 {
 	/// <summary>
 	/// The class that provides information about a tool.

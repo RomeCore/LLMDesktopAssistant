@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using LLMDesktopAssistant.Core.Settings;
-using LLMDesktopAssistant.Core.ToolModules;
-using LLMDesktopAssistant.Core.Utils;
-using LLMDesktopAssistant.Core.LLM.Services;
+using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.LLM.Services;
 
-namespace LLMDesktopAssistant.Core.LLM.Domain
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents a chat session.

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace LLMDesktopAssistant.Core.Utils
+namespace LLMDesktopAssistant.Utils
 {
 	/// <summary>
 	/// Represents a constrained type.

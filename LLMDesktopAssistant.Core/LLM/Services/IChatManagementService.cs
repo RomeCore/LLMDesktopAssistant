@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Core.LLM.Domain;
+﻿using LLMDesktopAssistant.LLM.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
 	/// Defines the contract for managing chat sessions, including creating, retrieving, and cleaning up chats, as well as

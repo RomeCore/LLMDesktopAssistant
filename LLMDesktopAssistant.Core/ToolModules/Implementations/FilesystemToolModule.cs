@@ -1,8 +1,8 @@
 using DocumentFormat.OpenXml.Bibliography;
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.LLM.Services.Attachments;
-using LLMDesktopAssistant.Core.ToolModules;
-using LLMDesktopAssistant.Core.Utils.Files;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Attachments;
+using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Utils.Files;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -12,7 +12,7 @@ using System.IO.Enumeration;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace LLMDesktopAssistant.Core.ToolModules.Implementations
+namespace LLMDesktopAssistant.ToolModules.Implementations
 {
 	[ToolModule]
 	public class FilesystemToolModule : ToolModule

@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.LLM.Domain
+﻿namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents a change to a tool, including enabled state and confirmation requirements.

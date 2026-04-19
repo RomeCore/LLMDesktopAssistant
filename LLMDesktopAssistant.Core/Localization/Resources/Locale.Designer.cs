@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LLMDesktopAssistant.Core.Localization.Resources {
+namespace LLMDesktopAssistant.Localization.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace LLMDesktopAssistant.Core.Localization.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LLMDesktopAssistant.Core.Localization.Resources.Locale", typeof(Locale).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LLMDesktopAssistant.Localization.Resources.Locale", typeof(Locale).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

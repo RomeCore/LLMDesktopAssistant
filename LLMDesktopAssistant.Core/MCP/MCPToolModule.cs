@@ -1,5 +1,5 @@
-﻿using LLMDesktopAssistant.Core.ToolModules;
-using LLMDesktopAssistant.Core.Utils;
+﻿using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Utils;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 using RCLargeLanguageModels.Tools;
@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
-namespace LLMDesktopAssistant.Core.MCP
+namespace LLMDesktopAssistant.MCP
 {
 	/// <summary>
 	/// A tool module that integrates with an MCP server to retrieve and execute tools defined on the server.

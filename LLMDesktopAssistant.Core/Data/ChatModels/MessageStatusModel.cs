@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.Data.Models
+﻿namespace LLMDesktopAssistant.Data.Models
 {
 	/// <summary>
 	/// Represents the status of a message.

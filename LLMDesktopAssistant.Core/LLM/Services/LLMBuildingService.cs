@@ -1,7 +1,7 @@
 ﻿using AngleSharp.Common;
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Services;
-using LLMDesktopAssistant.Core.ToolModules;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients.Deepseek;
 using RCLargeLanguageModels.Clients.OpenAI;
@@ -9,7 +9,7 @@ using RCLargeLanguageModels.Security;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Immutable;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	public class LLMBuildingService(
 		Chat chat

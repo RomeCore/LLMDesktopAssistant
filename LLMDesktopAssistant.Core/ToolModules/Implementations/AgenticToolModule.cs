@@ -4,16 +4,16 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.LLM.Services.Tools;
-using LLMDesktopAssistant.Core.Services;
-using LLMDesktopAssistant.Core.ToolModules;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.Core.ToolModules.Implementations
+namespace LLMDesktopAssistant.ToolModules.Implementations
 {
 	[ToolModule]
 	public class AgenticToolModule : ToolModule

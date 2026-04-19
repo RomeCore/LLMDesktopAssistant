@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Services;
 using MoonSharp.Interpreter;
 
-namespace LLMDesktopAssistant.Core.Scripting
+namespace LLMDesktopAssistant.Scripting
 {
 	[Service]
 	public class LuaService

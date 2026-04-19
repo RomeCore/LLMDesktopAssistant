@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using ModelContextProtocol.Client;
 
-namespace LLMDesktopAssistant.Core.MCP
+namespace LLMDesktopAssistant.MCP
 {
 	public class MCPConnection : IAsyncDisposable
 	{

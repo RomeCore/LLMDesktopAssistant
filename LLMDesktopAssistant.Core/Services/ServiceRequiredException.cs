@@ -1,5 +1,5 @@
 ﻿
-namespace LLMDesktopAssistant.Core.Services
+namespace LLMDesktopAssistant.Services
 {
 	[Serializable]
 	internal class ServiceRequiredException : Exception

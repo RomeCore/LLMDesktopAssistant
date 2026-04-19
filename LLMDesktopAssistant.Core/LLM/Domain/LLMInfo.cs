@@ -4,11 +4,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.ToolModules;
+using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.Core.LLM.Domain
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents information about the Large Language Model (LLM) being used.

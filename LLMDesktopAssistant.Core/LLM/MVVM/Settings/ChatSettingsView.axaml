@@ -1,0 +1,109 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="750"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 xmlns:flui="using:FluentAvalonia.UI"
+			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatSettingsView"
+			 x:DataType="local:ChatSettingsViewModel">
+
+	<TabControl Width="650"
+				Height="500"
+				TabStripPlacement="Left">
+
+		<TabItem>
+
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical"
+							MaxWidth="80"
+							Margin="5">
+
+					<ico:MaterialIcon Kind="Cog"
+									  Width="24" Height="24"
+									  HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_general}"
+							   FontSize="18"
+							   HorizontalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"/>
+
+				</StackPanel>
+			</TabItem.Header>
+
+			<ContentControl Content="{Binding GeneralSettings}"/>
+
+		</TabItem>
+		
+		<TabItem>
+
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical"
+							MaxWidth="80"
+							Margin="5">
+
+					<ico:MaterialIcon Kind="Text"
+									  Width="24" Height="24"
+									  HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_prompts}"
+							   FontSize="18"
+							   HorizontalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"/>
+
+				</StackPanel>
+			</TabItem.Header>
+
+			<ContentControl Content="{Binding PromptSettings}"/>
+
+		</TabItem>
+
+		<TabItem>
+
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical"
+							MaxWidth="80"
+							Margin="5">
+
+					<ico:MaterialIcon Kind="Wrench"
+									  Width="24" Height="24"
+									  HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_tools}"
+							   FontSize="18"
+							   HorizontalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"
+							   TextWrapping="NoWrap"/>
+
+				</StackPanel>
+			</TabItem.Header>
+
+			<ContentControl Content="{Binding ToolSettings}"/>
+
+		</TabItem>
+
+		<TabItem>
+
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical"
+							MaxWidth="80"
+							Margin="5">
+
+					<ico:MaterialIcon Kind="Connection"
+									  Width="24" Height="24"
+									  HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_mcp}"
+							   FontSize="18"
+							   HorizontalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"/>
+
+				</StackPanel>
+			</TabItem.Header>
+
+			<ContentControl Content="{Binding McpSettings}"/>
+
+		</TabItem>
+
+	</TabControl>
+
+</UserControl>

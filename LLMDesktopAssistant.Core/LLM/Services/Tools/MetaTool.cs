@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Nodes;
 
-namespace LLMDesktopAssistant.Core.LLM.Services.Tools
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	public class MetaTool : NotifyPropertyChanged
 	{

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.ToolModules
+namespace LLMDesktopAssistant.ToolModules
 {
 	/// <summary>
 	/// The attribute to mark a class as a tool module.

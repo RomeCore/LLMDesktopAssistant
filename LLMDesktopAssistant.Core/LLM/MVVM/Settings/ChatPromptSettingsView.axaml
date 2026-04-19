@@ -1,0 +1,83 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatPromptSettingsView"
+			 x:DataType="local:ChatPromptSettingsViewModel">
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel Margin="10" Spacing="10">
+			
+			<!-- System Prompt -->
+			<TextBlock Text="{loc:Loc prompt_system_prompt}" FontSize="16" FontWeight="Bold"/>
+			<TextBox Text="{Binding Settings.SystemPrompt, Mode=TwoWay}"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 Height="100"
+					 ScrollViewer.VerticalScrollBarVisibility="Auto"
+					 PlaceholderText="{loc:Loc prompt_system_prompt_hint}"/>
+
+			<!-- Components -->
+			<TextBlock Text="{loc:Loc prompt_components}" FontSize="16" FontWeight="Bold"/>
+			
+			<Border BorderBrush="Gray" BorderThickness="1" CornerRadius="4" Padding="5">
+				<ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
+					<TreeView ItemsSource="{Binding ComponentCategories}">
+						<TreeView.DataTemplates>
+							<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
+											  ItemsSource="{Binding Components}">
+								<TextBlock Text="{Binding CategoryName}" FontWeight="Bold"/>
+							</TreeDataTemplate>
+							<DataTemplate DataType="local:ComponentItemViewModel">
+								<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+										  Content="{Binding Component.Name}"/>
+							</DataTemplate>
+						</TreeView.DataTemplates>
+					</TreeView>
+				</ScrollViewer>
+			</Border>
+
+			<!-- Persona -->
+			<TextBlock Text="{loc:Loc prompt_persona}" FontSize="16" FontWeight="Bold"/>
+			
+			<CheckBox IsChecked="{Binding Settings.UseCustomPersona, Mode=TwoWay}"
+					  Content="{loc:Loc prompt_use_custom_persona}"/>
+
+			<StackPanel IsVisible="{Binding Settings.UseCustomPersona}">
+				<TextBox Text="{Binding Settings.CustomPersona, Mode=TwoWay}"
+						 AcceptsReturn="True"
+						 TextWrapping="Wrap"
+						 Height="150"
+						 ScrollViewer.VerticalScrollBarVisibility="Auto"
+						 PlaceholderText="{loc:Loc prompt_custom_persona_hint}"/>
+			</StackPanel>
+
+			<StackPanel IsVisible="{Binding Settings.UseCustomPersona, Converter={StaticResource InverseBooleanConverter}}">
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<ComboBox SelectedItem="{Binding SelectedPersona, Mode=TwoWay}"
+							  ItemsSource="{Binding AvailablePersonas}"
+							  PlaceholderText="{loc:Loc prompt_select_persona}">
+						<ComboBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Persona.Name}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+					<Button Classes="IconButton"
+							Command="{Binding ClearPersonaCommand}"
+							ToolTip.Tip="{loc:Loc persona_clear}">
+						<ico:MaterialIcon Kind="Remove"/>
+					</Button>
+				</StackPanel>
+				
+				<TextBlock Text="{loc:Loc prompt_selected_persona_hint}" FontSize="12" Foreground="Gray"/>
+			</StackPanel>
+
+		</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

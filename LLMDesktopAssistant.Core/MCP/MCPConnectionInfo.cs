@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.MCP
+﻿namespace LLMDesktopAssistant.MCP
 {
 	/// <summary>
 	/// The complete connection information for the connected MCP server.

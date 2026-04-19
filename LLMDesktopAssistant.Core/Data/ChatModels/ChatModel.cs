@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
-using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 
-namespace LLMDesktopAssistant.Core.Data.Models
+namespace LLMDesktopAssistant.Data.Models
 {
 	/// <summary>
 	/// Represents a conversation model in the database.

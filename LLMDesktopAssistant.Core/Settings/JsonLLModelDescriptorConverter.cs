@@ -1,10 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using LLMDesktopAssistant.Core.Services;
-using LLMDesktopAssistant.Core.Services.Instances;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services.Instances;
 using RCLargeLanguageModels.Clients;
 
-namespace LLMDesktopAssistant.Core.Settings
+namespace LLMDesktopAssistant.Settings
 {
 	public class JsonLLModelDescriptorConverter : JsonConverter<LLModelDescriptorTracked>
 	{

@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.Localization
+﻿namespace LLMDesktopAssistant.Localization
 {
 	/// <summary>
 	/// Extension methods for localization.

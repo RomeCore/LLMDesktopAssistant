@@ -8,7 +8,7 @@ using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 
-namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
+namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
 	public class DocumentReadingService : IDocumentReadingService
 	{

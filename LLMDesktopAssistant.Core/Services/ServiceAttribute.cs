@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.Services
+﻿namespace LLMDesktopAssistant.Services
 {
 	/// <summary>
 	/// Represents an attribute that can be used to mark a class as a service to be registered in <see cref="ServiceRegistry"/>.

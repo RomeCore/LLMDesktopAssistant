@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace LLMDesktopAssistant.Core.Utils
+namespace LLMDesktopAssistant.Utils
 {
 	/// <summary>
 	/// Tracks changes to an object and its nested properties/collections by subscribing to

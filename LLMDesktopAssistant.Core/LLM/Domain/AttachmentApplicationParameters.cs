@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.LLM.Domain
+﻿namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents parameters for how attachments are applied in the user message.

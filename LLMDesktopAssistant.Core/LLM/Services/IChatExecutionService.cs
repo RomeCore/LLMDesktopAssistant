@@ -1,6 +1,6 @@
-﻿using LLMDesktopAssistant.Core.LLM.Domain;
+﻿using LLMDesktopAssistant.LLM.Domain;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
 	/// Interface for chat execution service that calls LLM services, executes tools, plans and puts result messages into a <see cref="Chat"/>.

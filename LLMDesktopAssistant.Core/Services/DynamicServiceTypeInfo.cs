@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.Services
+﻿namespace LLMDesktopAssistant.Services
 {
 	/// <summary>
 	/// Provides info about dynamic module type.

@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.LLM.Domain
+﻿namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents a branched message in the chat.

@@ -1,4 +1,4 @@
-using LLMDesktopAssistant.Core.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 using LLTSharp;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Metadata;
@@ -6,7 +6,7 @@ using RCLargeLanguageModels.Statistics;
 using Serilog;
 using System.Text;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	public class ChatSummarizationService(
 		Chat chat,

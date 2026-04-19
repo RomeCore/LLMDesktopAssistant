@@ -10,17 +10,17 @@ using System.Text.Json.Nodes;
 using AngleSharp;
 using DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using Ganss.Xss;
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Services;
-using LLMDesktopAssistant.Core.ToolModules;
-using LLMDesktopAssistant.Core.Utils;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels.Json.Schema;
 using RCLargeLanguageModels.Security;
 using RCLargeLanguageModels.Tools;
 using RCLargeLanguageModels.Utilities;
 using RCParsing;
 
-namespace LLMDesktopAssistant.Core.ToolModules.Implementations
+namespace LLMDesktopAssistant.ToolModules.Implementations
 {
 	[ToolModule]
 	public class WebRequestToolModule : ToolModule

@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Services;
 using RCLargeLanguageModels.Tools;
 using RCParsing;
-using LLMDesktopAssistant.Core.Calculation;
+using LLMDesktopAssistant.Calculation;
 
-namespace LLMDesktopAssistant.Core.ToolModules.Implementations
+namespace LLMDesktopAssistant.ToolModules.Implementations
 {
 	[ToolModule]
 	public class CalculationToolModule : ToolModule

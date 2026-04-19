@@ -1,0 +1,126 @@
+<Styles xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:md="using:LiveMarkdown.Avalonia"
+		xmlns:beh="using:LLMDesktopAssistant.Behaviours"
+		xmlns:ico="using:Material.Icons.Avalonia">
+	
+	<Design.PreviewWith>
+		<Border Padding="20">
+		
+		</Border>
+	</Design.PreviewWith>
+
+	<Style Selector="md|MarkdownRenderer">
+		
+		<Style Selector="^ StackPanel">
+			<Setter Property="Spacing" Value="16"/>
+		</Style>
+
+	</Style>
+	
+	<Style Selector="md|CodeBlock">
+
+		<Setter Property="beh:MarkdownCodeBlockBehaviour.IsExtendedCodeBlock" Value="True"/>
+		
+		<Setter Property="Template">
+			<ControlTemplate TargetType="md:CodeBlock">
+				<StackPanel
+						Orientation="Vertical" Spacing="0">
+
+					<Border
+							Background="{DynamicResource BorderColor}"
+							BorderBrush="{DynamicResource BorderBrush}"
+							BorderThickness="1" CornerRadius="4,4,0,0">
+
+						<DockPanel
+								Margin="4,2" LastChildFill="True">
+
+							<TextBlock
+									x:Name="PART_LanguageTextBlock" DockPanel.Dock="Left"
+									VerticalAlignment="Center"
+									Text="{TemplateBinding Language}"/>
+
+							<StackPanel
+									DockPanel.Dock="Right" HorizontalAlignment="Right"
+									Orientation="Horizontal" Spacing="2">
+
+								<ToggleButton
+										x:Name="PART_ToggleTextWrapButton"
+										Focusable="False"
+										Classes="IconButton"
+										IsChecked="{TemplateBinding IsCodeWrapped, Mode=TwoWay}">
+
+									<ico:MaterialIcon Kind="Wrap"/>
+								</ToggleButton>
+
+								<ItemsControl ItemsSource="{TemplateBinding (beh:MarkdownCodeBlockBehaviour.CodeBlockExtensions)}"
+											  x:CompileBindings="False">
+									
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<StackPanel Orientation="Horizontal" Spacing="2"/>
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Button
+													Classes="IconButton"
+													Focusable="False"
+													Command="{Binding Command}"
+													IsVisible="{Binding IsVisible}">
+
+												<ico:MaterialIcon Kind="{Binding Icon}"/>
+											</Button>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+
+								</ItemsControl>
+								
+							</StackPanel>
+						</DockPanel>
+					</Border>
+
+					<Border
+							Background="{DynamicResource SecondaryCardBackgroundColor}"
+							BorderBrush="{DynamicResource BorderBrush}"
+							BorderThickness="1,0,1,1" CornerRadius="0,0,4,4">
+
+						<ScrollViewer
+								x:Name="PART_ScrollViewer"
+								HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
+								VerticalScrollBarVisibility="Auto">
+
+							<md:MarkdownTextBlock
+									x:Name="PART_CodeTextBlock" Margin="4"
+									FontFamily="{TemplateBinding FontFamily}"
+									TextWrapping="{TemplateBinding TextWrapping}"/>
+						</ScrollViewer>
+
+					</Border>
+					
+					<ItemsControl ItemsSource="{TemplateBinding (beh:MarkdownCodeBlockBehaviour.CodeBlockExtensions)}"
+								  x:CompileBindings="False">
+									
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Vertical" Spacing="0"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<ContentControl Content="{Binding AdditionalViewModel}"
+												IsVisible="{Binding IsVisible}"/>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+
+					</ItemsControl>
+
+				</StackPanel>
+			</ControlTemplate>
+		</Setter>
+
+	</Style>
+
+</Styles>

@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.Utils
+﻿namespace LLMDesktopAssistant.Utils
 {
 	public static class StringExtensions
 	{

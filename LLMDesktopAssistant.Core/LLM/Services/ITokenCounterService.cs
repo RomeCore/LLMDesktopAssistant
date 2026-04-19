@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.LLM.Services
+﻿namespace LLMDesktopAssistant.LLM.Services
 {
 	public interface ITokenCounterService
 	{

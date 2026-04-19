@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Core.Utils;
+﻿using LLMDesktopAssistant.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core
+namespace LLMDesktopAssistant
 {
 	/// <summary>
 	/// Manages the loading of plugins into the application.

@@ -1,6 +1,6 @@
-﻿using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.MCP;
-using LLMDesktopAssistant.Core.ToolModules;
+﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.MCP;
+using LLMDesktopAssistant.ToolModules;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	public interface IMCPManagementService
 	{

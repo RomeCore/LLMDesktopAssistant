@@ -1,9 +1,9 @@
-﻿using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.ToolModules;
+﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.ToolModules;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Immutable;
 
-namespace LLMDesktopAssistant.Core.LLM.Services.Tools
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	/// <summary>
 	/// Interface for tool execution service.

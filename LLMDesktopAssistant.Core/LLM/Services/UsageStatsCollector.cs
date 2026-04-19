@@ -1,8 +1,8 @@
 using LiteDB;
-using LLMDesktopAssistant.Core.Data;
-using LLMDesktopAssistant.Core.Data.UsageModels;
+using LLMDesktopAssistant.Data;
+using LLMDesktopAssistant.Data.UsageModels;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
 	/// Implementation of the usage statistics collector that stores data in a separate LiteDB database.

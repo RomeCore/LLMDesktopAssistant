@@ -1,11 +1,11 @@
-﻿using LLMDesktopAssistant.Core.Settings;
-using LLMDesktopAssistant.Core.Utils;
+﻿using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients;
 using System.Collections;
 using System.IO;
 
-namespace LLMDesktopAssistant.Core.LLM.Domain
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	public class ChatSettings : SettingsObject
 	{

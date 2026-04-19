@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
 
-namespace LLMDesktopAssistant.Core.Data.Models
+namespace LLMDesktopAssistant.Data.Models
 {
 	/// <summary>
 	/// Represents a message in a conversation inside a database.

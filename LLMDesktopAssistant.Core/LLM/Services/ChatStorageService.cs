@@ -1,7 +1,7 @@
-﻿using LLMDesktopAssistant.Core.Data;
-using LLMDesktopAssistant.Core.Data.Models;
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Settings;
+﻿using LLMDesktopAssistant.Data;
+using LLMDesktopAssistant.Data.Models;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Settings;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
 using System.Collections.Concurrent;
@@ -12,7 +12,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Windows;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	public class ChatStorageService(
 			Chat chat,

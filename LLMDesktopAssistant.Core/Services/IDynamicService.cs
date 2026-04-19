@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.Services
+namespace LLMDesktopAssistant.Services
 {
 	/// <summary>
 	/// Represents a service that can be dynamically created and replaced with another service within its .

@@ -1,6 +1,6 @@
-﻿using LLMDesktopAssistant.Core.LLM.Domain;
+﻿using LLMDesktopAssistant.LLM.Domain;
 
-namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
+namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
 	/// <summary>
 	/// Defines the contract for an attachment application service.

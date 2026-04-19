@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Services;
 using Serilog;
 
-namespace LLMDesktopAssistant.Core.Speech
+namespace LLMDesktopAssistant.Speech
 {
 	/// <summary>
 	/// Class that manages a queue of strings for speech processing.

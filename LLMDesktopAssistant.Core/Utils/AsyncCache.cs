@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.Core.Utils
+namespace LLMDesktopAssistant.Utils
 {
 	/// <summary>
 	/// A thread-safe asynchronous cache that stores items with optional sliding expiration.

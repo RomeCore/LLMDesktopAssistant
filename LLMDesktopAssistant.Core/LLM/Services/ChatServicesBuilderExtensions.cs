@@ -1,16 +1,16 @@
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.LLM.Services.Attachments;
-using LLMDesktopAssistant.Core.LLM.Services.Tools;
-using LLMDesktopAssistant.Core.Prompting;
-using LLMDesktopAssistant.Core.ToolModules;
-using LLMDesktopAssistant.Core.Utils;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Attachments;
+using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Locale;
 using Microsoft.Extensions.DependencyInjection;
 using RCLargeLanguageModels.Statistics;
 using Serilog;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	public static class ChatServicesBuilderExtensions
 	{

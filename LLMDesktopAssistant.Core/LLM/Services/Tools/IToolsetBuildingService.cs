@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Core.ToolModules;
+﻿using LLMDesktopAssistant.ToolModules;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.LLM.Services.Tools
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	/// <summary>
 	/// Interface for building toolsets that can be used by the language model.

@@ -1,0 +1,45 @@
+﻿using Avalonia.Collections;
+using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Utils;
+
+namespace LLMDesktopAssistant.LLM.Messages
+{
+	[ViewModelFor(typeof(UserMessageView))]
+	public class UserMessageViewModel : MessageViewModelBase
+	{
+		private string _text = string.Empty;
+		public string Text
+		{
+			get => _text;
+			set => SetProperty(ref _text, value);
+		}
+
+		private readonly AvaloniaList<Attachment> _attachments = [];
+		public ICollection<Attachment> Attachments
+		{
+			get => _attachments;
+			set
+			{
+				_attachments.Clear();
+				_attachments.AddRange(value);
+			}
+		}
+
+		public ICommand EditCommand { get; }
+
+		public UserMessageViewModel(BranchedMessage branchedMessage, ChatViewModel chatVM) : base(branchedMessage, chatVM)
+		{
+			if (branchedMessage.Message is not UserMessage userMessage)
+				throw new InvalidOperationException("Invalid message type. Expected IUserMessage.");
+
+			Text = userMessage.Content ?? string.Empty;
+			Attachments = userMessage.Attachments;
+
+			EditCommand = new RelayCommand(() =>
+			{
+				chatVM.UserInput.EditMessage(branchedMessage);
+			});
+		}
+	}
+}

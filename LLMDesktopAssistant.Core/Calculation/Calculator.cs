@@ -5,7 +5,7 @@ using RCParsing.Building;
 using RCParsing.Building.ParserRules;
 using RCParsing.TokenPatterns;
 
-namespace LLMDesktopAssistant.Core.Calculation
+namespace LLMDesktopAssistant.Calculation
 {
 	/// <summary>
 	/// The calculator that performs mathematical expression parsing and evaluation.

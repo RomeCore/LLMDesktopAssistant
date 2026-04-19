@@ -4,14 +4,14 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.LLM.Services;
-using LLMDesktopAssistant.Core.Localization;
-using LLMDesktopAssistant.Core.Settings;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Settings;
 using LLTSharp;
 using LLTSharp.Metadata;
 
-namespace LLMDesktopAssistant.Core.Prompting
+namespace LLMDesktopAssistant.Prompting
 {
 	public class PromptRegistry
 	{
@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.Core.Prompting
 
 			SharedLibrary.ImportFromAssembly(assembly);
 
-			var componentsFileStream = assembly.GetManifestResourceStream("LLMDesktopAssistant.Core.Prompting.Resources.components.llt")
+			var componentsFileStream = assembly.GetManifestResourceStream("LLMDesktopAssistant.Prompting.Resources.components.llt")
 				?? throw new FileNotFoundException("components.llt not found in embedded resources.");
 			var componentsLibrary = new TemplateLibrary();
 			componentsLibrary.ImportFromStream(componentsFileStream);
@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.Core.Prompting
 
 			BuiltinComponents = componentsBuilder.ToImmutable();
 
-			var personasFileStream = assembly.GetManifestResourceStream("LLMDesktopAssistant.Core.Prompting.Resources.personas.llt")
+			var personasFileStream = assembly.GetManifestResourceStream("LLMDesktopAssistant.Prompting.Resources.personas.llt")
 				?? throw new FileNotFoundException("personas.llt not found in embedded resources.");
 			var personasLibrary = new TemplateLibrary();
 			personasLibrary.ImportFromStream(personasFileStream);

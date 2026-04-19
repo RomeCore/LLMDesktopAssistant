@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Services;
 
-namespace LLMDesktopAssistant.Core.Speech
+namespace LLMDesktopAssistant.Speech
 {
 	/// <summary>
 	/// Interface for user speech provider.

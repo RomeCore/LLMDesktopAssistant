@@ -5,12 +5,12 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Utils;
+using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace LLMDesktopAssistant.Core.Services
+namespace LLMDesktopAssistant.Services
 {
 #pragma warning disable CS8631
 

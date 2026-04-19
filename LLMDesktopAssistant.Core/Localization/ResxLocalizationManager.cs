@@ -6,10 +6,10 @@ using System.Linq;
 using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.Core.Localization.Resources;
-using LLMDesktopAssistant.Core.Services;
+using LLMDesktopAssistant.Localization.Resources;
+using LLMDesktopAssistant.Services;
 
-namespace LLMDesktopAssistant.Core.Localization
+namespace LLMDesktopAssistant.Localization
 {
 	[Service(Order = 1)]
 	public class ResxLocalizationManager : LocalizationManager

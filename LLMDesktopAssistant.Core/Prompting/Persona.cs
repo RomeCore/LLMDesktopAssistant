@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace LLMDesktopAssistant.Core.Prompting
+namespace LLMDesktopAssistant.Prompting
 {
 	public class Persona : NotifyPropertyChanged
 	{

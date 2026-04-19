@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Collections.Immutable;
 
-namespace LLMDesktopAssistant.Core.Calculation
+namespace LLMDesktopAssistant.Calculation
 {
 	/// <summary>
 	/// Represents a map of mathematical parameters to put into a mathematical function.

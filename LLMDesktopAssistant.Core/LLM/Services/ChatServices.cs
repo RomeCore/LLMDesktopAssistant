@@ -1,6 +1,6 @@
-﻿using LLMDesktopAssistant.Core.Data;
-using LLMDesktopAssistant.Core.Services;
-using LLMDesktopAssistant.Core.Utils;
+﻿using LLMDesktopAssistant.Data;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	public static class ChatServices
 	{

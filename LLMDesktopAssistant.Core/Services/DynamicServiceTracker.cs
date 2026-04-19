@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Serilog;
 
-namespace LLMDesktopAssistant.Core.Services
+namespace LLMDesktopAssistant.Services
 {
 	/// <summary>
 	/// Represents a tracker for dynamic modules. This class is used to manage the lifecycle of dynamic modules.

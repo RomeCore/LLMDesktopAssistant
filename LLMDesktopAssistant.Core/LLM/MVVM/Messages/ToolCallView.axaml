@@ -1,0 +1,104 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.Messages"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:flui="using:FluentAvalonia.UI.Controls"
+			 x:Class="LLMDesktopAssistant.LLM.Messages.ToolCallView"
+			 x:DataType="local:ToolCallViewModel">
+
+	<Grid Margin="0,2,5,2">
+		
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="Auto"/>
+		</Grid.ColumnDefinitions>
+
+		<!-- Container for icon/progress -->
+		<Grid Grid.Column="0" Width="28" Height="28" Margin="0,0,2,0">
+			<flui:FAProgressRing IsIndeterminate="True"
+								 IsVisible="{Binding InProgress}"/>
+
+			<ico:MaterialIcon Kind="{Binding ToolIcon}" Margin="0"
+							  Classes="MidIcon"
+							  IsVisible="{Binding InProgress, Converter={StaticResource InverseBooleanConverter}}"/>
+		</Grid>
+
+		<Panel Grid.Column="1">
+			
+			<Button Name="ToolPopupButton"
+					Click="ToolPopupButton_Click"
+					Padding="2">
+
+				<TextBlock Text="{loc:Loc {Binding ToolName}}"
+						   FontSize="{DynamicResource FontSizeM}"
+						   FontWeight="Medium"
+						   VerticalAlignment="Center"/>
+			</Button>
+
+			<flui:FATeachingTip x:Name="ToolPopup"
+								Target="{Binding #ToolPopupButton}">
+				
+				<ScrollViewer VerticalScrollBarVisibility="Auto"
+								HorizontalScrollBarVisibility="Auto">
+
+					<StackPanel Orientation="Vertical">
+
+						<StackPanel Orientation="Vertical"
+									IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+
+							<Label Content="{loc:Loc tool-arguments}"
+									FontSize="16"/>
+
+							<ctrl:MarkdownControl MarkdownText="{Binding Arguments}"
+													Margin="5,0"/>
+
+						</StackPanel>
+
+						<StackPanel Orientation="Vertical"
+									IsVisible="{Binding Result, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+
+							<Label Content="{loc:Loc tool-result}"
+									FontSize="16"/>
+
+							<ContentControl Content="{Binding Result}"
+											Margin="5,0"/>
+
+						</StackPanel>
+
+					</StackPanel>
+
+				</ScrollViewer>
+				
+			</flui:FATeachingTip>
+			
+		</Panel>
+
+		<StackPanel Grid.Column="2"
+					Orientation="Horizontal"
+					Margin="4,0,0,0"
+					IsVisible="{Binding UserAsked}">
+
+			<Button Margin="0,0,4,0"
+					Classes="MidIconButton"
+					Command="{Binding ApproveCommand}">
+
+				<ico:MaterialIcon Kind="Check"/>
+			</Button>
+
+			<Button Classes="MidIconButton"
+					Command="{Binding CancelCommand}">
+
+				<ico:MaterialIcon Kind="Close"/>
+			</Button>
+
+		</StackPanel>
+
+	</Grid>
+
+</UserControl>

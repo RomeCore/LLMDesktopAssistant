@@ -1,10 +1,10 @@
 ﻿using AngleSharp.Common;
-using LLMDesktopAssistant.Core.LLM.Domain;
-using LLMDesktopAssistant.Core.Services;
-using LLMDesktopAssistant.Core.ToolModules;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.ToolModules;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LLMDesktopAssistant.Core.LLM.Services.Tools
+namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	/// <summary>
 	/// The default implementation of the <see cref="IToolsetBuildingService"/> interface.

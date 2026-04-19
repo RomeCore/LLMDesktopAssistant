@@ -1,0 +1,83 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="using:LLMDesktopAssistant.Controls"
+			 xmlns:conv="using:LLMDesktopAssistant.Converters"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:modelc="using:RCLargeLanguageModels.Clients"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 x:Class="LLMDesktopAssistant.Controls.LLModelSelectorControl">
+	
+	<UserControl.Resources>
+
+		<conv:BooleanToBrushConverter x:Key="btbConv" True="White" False="DarkRed"/>
+		<conv:FallbackMultiConverter x:Key="fallbackConv"/>
+
+	</UserControl.Resources>
+
+	<StackPanel Orientation="Horizontal" Height="32" >
+		<local:LLModelSelectorComboBox x:Name="Selector">
+
+			<local:LLModelSelectorComboBox.DataTemplates>
+				
+				<DataTemplate DataType="modelc:LLModelDescriptorTracked">
+					<StackPanel Orientation="Horizontal">
+
+						<TextBlock Foreground="{Binding Available, Converter={StaticResource btbConv}}" Margin="0,0,3,0">
+
+							<TextBlock.Text>
+								<MultiBinding Converter="{StaticResource fallbackConv}">
+									<Binding Path="Current.DisplayName" FallbackValue="{x:Null}" />
+									<Binding Path="FullName" />
+								</MultiBinding>
+							</TextBlock.Text>
+
+						</TextBlock>
+
+						<!--
+						<i:PathIcon Visibility="{Binding Path=IsReasoning, Converter={StaticResource btvConv}}" 
+										Data="{DynamicResource LightbulbOn}" VerticalAlignment="Stretch" Margin="1,0" Width="12" Height="12"/>
+						<i:PathIcon Visibility="{Binding Path=SupportsTools, Converter={StaticResource btvConv}}" 
+										Data="{DynamicResource Wrench}" VerticalAlignment="Stretch" Margin="1,0" Width="12" Height="12"/>
+						<i:PathIcon Visibility="{Binding Path=SupportsEmbeddings, Converter={StaticResource btvConv}}" 
+										Data="{DynamicResource DatabaseExport}" VerticalAlignment="Stretch" Margin="1,0" Width="12" Height="12"/>
+						-->
+					</StackPanel>
+				</DataTemplate>
+
+				<DataTemplate DataType="local:ComboBoxFirstItemModel">
+					<TextBlock Text="{Binding Title}"/>
+				</DataTemplate>
+
+				<DataTemplate DataType="local:ComboBoxHeaderItemModel">
+					<StackPanel Opacity="0.6">
+						<Rectangle Height="1" MinWidth="100" Fill="Gray" HorizontalAlignment="Stretch" Margin="2,3,2,3"/>
+						<TextBlock Text="{Binding Title}"/>
+					</StackPanel>
+				</DataTemplate>
+
+				<DataTemplate DataType="local:ComboBoxEmptyItemModel">
+					<TextBlock Foreground="Gray" Text="{Binding Title}"/>
+				</DataTemplate>
+
+				<DataTemplate DataType="local:ComboBoxErrorItemModel">
+					<TextBlock Foreground="DarkRed" Text="{Binding Title}"/>
+				</DataTemplate>
+		
+			</local:LLModelSelectorComboBox.DataTemplates>
+			
+		</local:LLModelSelectorComboBox>
+
+		<Button x:Name="RefreshButton" 
+				Click="RefreshButton_Click" 
+				Classes="IconButton"
+				Margin="3,0,0,0"
+				Padding="0"
+				DockPanel.Dock="Right">
+
+			<ico:MaterialIcon Kind="Refresh"/>
+		</Button>
+	</StackPanel>
+</UserControl>

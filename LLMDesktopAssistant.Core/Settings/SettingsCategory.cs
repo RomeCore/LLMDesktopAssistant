@@ -2,12 +2,12 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using LLMDesktopAssistant.Core.Utils;
+using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
 using RCParsing.Building.ErrorRecoveryStrategies;
 
-namespace LLMDesktopAssistant.Core.Settings
+namespace LLMDesktopAssistant.Settings
 {
 	/// <summary>
 	/// Manages a collection of settings objects of a specific type, handling persistence and change tracking.

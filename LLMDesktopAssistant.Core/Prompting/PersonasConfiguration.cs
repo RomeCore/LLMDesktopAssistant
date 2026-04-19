@@ -1,7 +1,7 @@
-﻿using LLMDesktopAssistant.Core.Settings;
-using LLMDesktopAssistant.Core.Utils;
+﻿using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Core.Prompting
+namespace LLMDesktopAssistant.Prompting
 {
 	public class PersonasConfiguration : SettingsObject
 	{

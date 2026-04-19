@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.MCP
+﻿namespace LLMDesktopAssistant.MCP
 {
 	/// <summary>
 	/// Defines the types of connections that can be used to communicate with an MCP server.

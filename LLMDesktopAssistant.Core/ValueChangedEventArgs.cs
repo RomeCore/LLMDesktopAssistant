@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core
+﻿namespace LLMDesktopAssistant
 {
 	public class ValueChangedEventArgs<T> : EventArgs
 	{

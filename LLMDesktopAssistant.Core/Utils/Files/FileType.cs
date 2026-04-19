@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.Utils.Files
+﻿namespace LLMDesktopAssistant.Utils.Files
 {
 	public enum FileType
 	{

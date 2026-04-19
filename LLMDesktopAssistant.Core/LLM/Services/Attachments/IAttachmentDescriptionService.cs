@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Core.LLM.Services.Attachments
+﻿namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
 	/// <summary>
 	/// Defines the contract for an attachment description service.

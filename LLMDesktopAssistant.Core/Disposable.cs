@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.Core
+namespace LLMDesktopAssistant
 {
 	/// <summary>
 	/// Represents a disposable object that can be disposed of to release resources.

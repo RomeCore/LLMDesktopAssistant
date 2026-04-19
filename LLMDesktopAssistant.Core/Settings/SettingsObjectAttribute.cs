@@ -1,4 +1,4 @@
-namespace LLMDesktopAssistant.Core.Settings
+namespace LLMDesktopAssistant.Settings
 {
 	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 	public class SettingsObjectAttribute : Attribute

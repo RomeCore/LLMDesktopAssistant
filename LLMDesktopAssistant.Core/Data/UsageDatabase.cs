@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
-using LLMDesktopAssistant.Core.Data.UsageModels;
+using LLMDesktopAssistant.Data.UsageModels;
 
-namespace LLMDesktopAssistant.Core.Data
+namespace LLMDesktopAssistant.Data
 {
 	/// <summary>
 	/// Manages the database for storing and retrieving usage statistics data.
