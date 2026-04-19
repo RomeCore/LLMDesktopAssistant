@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using LLMDesktopAssistant.LLM;
 using LLMDesktopAssistant.LLM.Attachments;
@@ -14,6 +15,8 @@ public partial class UserInputView : UserControl
 	{
 		InitializeComponent();
 
+		InputTextBox.AddHandler(TextBox.KeyDownEvent, InputTextBox_KeyDown, RoutingStrategies.Tunnel);
+
 		DragDrop.SetAllowDrop(this, true);
 		AddHandler(DragDrop.DragEnterEvent, OnDragEnter);
 		AddHandler(DragDrop.DragLeaveEvent, OnDragLeave);
@@ -22,12 +25,18 @@ public partial class UserInputView : UserControl
 
 	private void InputTextBox_KeyDown(object? sender, KeyEventArgs e)
 	{
-		if (e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None)
+		if (e.Key == Key.Enter)
 		{
 			if (DataContext is UserInputViewModel viewModel)
 			{
-				viewModel.SendCurrentUserInputAsync();
-				e.Handled = true;
+				if (e.KeyModifiers == KeyModifiers.None)
+				{
+					if (viewModel.IsGenerating)
+						viewModel.CancelGenerationCommand.Execute(null);
+					else if (!string.IsNullOrWhiteSpace(viewModel.Text))
+						viewModel.SendCurrentUserInputAsync();
+					e.Handled = true;
+				}
 			}
 		}
 	}

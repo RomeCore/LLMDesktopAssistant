@@ -23,7 +23,7 @@
 		</ItemsControl>
 
 		<TextBox Grid.Row="1"
-				 KeyDown="InputTextBox_KeyDown"
+				 x:Name="InputTextBox"
 				 Text="{Binding Text, Mode=TwoWay}"
 				 AcceptsReturn="True"
 				 TextWrapping="Wrap"
