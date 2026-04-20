@@ -1,7 +1,7 @@
 using DocumentFormat.OpenXml.Bibliography;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Attachments;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils.Files;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Specialized;
@@ -12,7 +12,7 @@ using System.IO.Enumeration;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace LLMDesktopAssistant.ToolModules.Implementations
+namespace LLMDesktopAssistant.Tools.Implementations
 {
 	[ToolModule]
 	public class FilesystemToolModule : ToolModule
@@ -25,137 +25,151 @@ namespace LLMDesktopAssistant.ToolModules.Implementations
 			_chat = chat;
 			_documentReader = documentReader;
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(GetFileInfo, "fs-get_file_info",
-					"Returns file information including type classification."),
-				Category = "filesystem",
-				AskForConfirmation = false
-			});
+			AddTool(GetFileInfo,
+				new ToolInitializationInfo
+				{
+					Name = "fs-get_file_info",
+					Description = "Returns file information including type classification.",
+					Category = "filesystem",
+					AskForConfirmation = false
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ReadFile, "fs-read_file",
-					"Reads text file content from the working directory."),
-				Category = "filesystem",
-				AskForConfirmation = false
-			});
+			AddTool(ReadFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-read_file",
+					Description = "Reads text file content from the working directory.",
+					Category = "filesystem",
+					AskForConfirmation = false
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ReadBinaryFile, "fs-read_binary_file",
-					"Reads binary file content as hex dump from the working directory."),
-				Category = "filesystem",
-				AskForConfirmation = false
-			});
+			AddTool(ReadBinaryFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-read_binary_file",
+					Description = "Reads binary file content as hex dump from the working directory.",
+					Category = "filesystem",
+					AskForConfirmation = false
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ReadDocumentFile, "fs-read_document_file",
-					"Reads document file content by pages from the working directory. Supported extensions: .pdf, .docx, .pptx."),
-				Category = "filesystem",
-				AskForConfirmation = false
-			});
+			AddTool(ReadDocumentFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-read_document_file",
+					Description = "Reads document file content by pages from the working directory. Supported extensions: .pdf, .docx, .pptx.",
+					Category = "filesystem",
+					AskForConfirmation = false
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(WriteFile, "fs-write_file",
-					"Writes text content to a file inside working directory."),
-				Category = "filesystem",
-				AskForConfirmation = true
-			});
+			AddTool(WriteFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-write_file",
+					Description = "Writes text content to a file inside working directory.",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(WriteBinaryFile, "fs-write_binary_file",
-					"Writes binary content to a file inside working directory."),
-				Category = "filesystem",
-				AskForConfirmation = true
-			});
+			AddTool(WriteBinaryFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-write_binary_file",
+					Description = "Writes binary content to a file inside working directory.",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ApplyDiff, "fs-apply_diff",
-					"""
-					Applies diff operations to a file.
-					Supports deleting a range of lines and/or inserting text at a specific line.
-					Inserting text at a specific line works next way:
-					1: first line
-					2: second line
-					3: third line
-					After inserting at 2 line:
-					1: first line
-					2: inserted line <- insterted here
-					3: second line
-					4: third line
-					Note: Works best if you know line numbers when looking file with fs-read_file(showLineNumbers = true)
-					"""),
-				Category = "filesystem",
-				AskForConfirmation = true
-			});
+			AddTool(ApplyDiff,
+				new ToolInitializationInfo
+				{
+					Name = "fs-apply_diff",
+					Description = """
+						Applies diff operations to a file.
+						Supports deleting a range of lines and/or inserting text at a specific line.
+						Inserting text at a specific line works next way:
+						1: first line
+						2: second line
+						3: third line
+						After inserting at 2 line:
+						1: first line
+						2: inserted line <- insterted here
+						3: second line
+						4: third line
+						Note: Works best if you know line numbers when looking file with fs-read_file(showLineNumbers = true)
+						""",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ReplaceInFile, "fs-replace",
-					"""
-					Replaces all occurrences of a string or regex pattern in a text file line-by-line.
-					Returns detailed information about applied changes including line numbers.
-					"""),
-				Category = "filesystem",
-				AskForConfirmation = true
-			});
+			AddTool(ReplaceInFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-replace",
+					Description = """
+						Replaces all occurrences of a string or regex pattern in a text file line-by-line.
+						Returns detailed information about applied changes including line numbers.
+						""",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ListDirectory, "fs-list_directory",
-					"Lists files and directories inside working directory path."),
-				Category = "filesystem",
-				AskForConfirmation = false
-			});
+			AddTool(ListDirectory,
+				new ToolInitializationInfo
+				{
+					Name = "fs-list_directory",
+					Description = "Lists files and directories inside working directory path.",
+					Category = "filesystem",
+					AskForConfirmation = false
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(DeleteFile, "fs-delete_file",
-					"Deletes a file inside working directory."),
-				Category = "filesystem",
-				AskForConfirmation = true
-			});
+			AddTool(DeleteFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-delete_file",
+					Description = "Deletes a file inside working directory.",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(RenameFile, "fs-rename_file",
-					"Renames or moves a file within the working directory."),
-				Category = "filesystem",
-				AskForConfirmation = true
-			});
+			AddTool(RenameFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-rename_file",
+					Description = "Renames or moves a file within the working directory.",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(CopyFile, "fs-copy_file",
-					"Copies a file within the working directory."),
-				Category = "filesystem",
-				AskForConfirmation = true
-			});
+			AddTool(CopyFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-copy_file",
+					Description = "Copies a file within the working directory.",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(OpenFile, "fs-open_file",
-					"Opens a file from the working directory with its default application."),
-				Category = "filesystem",
-				AskForConfirmation = true
-			});
+			AddTool(OpenFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-open_file",
+					Description = "Opens a file from the working directory with its default application.",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(Grep, "fs-grep",
-					"""
-					Searches for pattern in files using regex.
-					Use this tool with care, as it can be slow and resource-intensive.
-					Use
-					"""),
-				Category = "filesystem",
-				AskForConfirmation = false
-			});
+			AddTool(Grep,
+				new ToolInitializationInfo
+				{
+					Name = "fs-grep",
+					Description = """
+						Searches for pattern in files using regex.
+						Use this tool with care, as it can be slow and resource-intensive.
+						Use
+						""",
+					Category = "filesystem",
+					AskForConfirmation = false
+				});
 		}
 
 		private string ResolvePath(string path)

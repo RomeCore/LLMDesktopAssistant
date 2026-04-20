@@ -1,14 +1,8 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Scripting;
-using LLMDesktopAssistant.ToolModules;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Tools;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,32 +17,32 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			_chat = chat;
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ExecuteWindows,
-					"execute-shell",
-					"Executes Windows shell (.bat) script."),
-				Category = "scripting",
-				AskForConfirmation = true
-			});
+			AddTool(ExecuteWindows,
+				new ToolInitializationInfo
+				{
+					Name = "execute-shell",
+					Description = "Executes Windows shell (.bat) script.",
+					Category = "scripting",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ExecuteWindowsPS,
-					"execute-powershell",
-					"Executes Windows Powershell (.ps1) script."),
-				Category = "scripting",
-				AskForConfirmation = true
-			});
+			AddTool(ExecuteWindowsPS,
+				new ToolInitializationInfo
+				{
+					Name = "execute-powershell",
+					Description = "Executes Windows Powershell (.ps1) script.",
+					Category = "scripting",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ExecuteLinux,
-					"execute-bash",
-					"Executes Linux bash (.sh) script."),
-				Category = "scripting",
-				AskForConfirmation = true
-			});
+			AddTool(ExecuteLinux,
+				new ToolInitializationInfo
+				{
+					Name = "execute-bash",
+					Description = "Executes Linux bash (.sh) script.",
+					Category = "scripting",
+					AskForConfirmation = true
+				});
 		}
 
 		public async Task<ToolResult> ExecuteWindows(string shell)

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MoonSharp.Interpreter;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Concurrent;
 
@@ -20,12 +20,14 @@ namespace LLMDesktopAssistant.Scripting
 		{
 			_lua = lua;
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ExecuteLua, "execute-lua", "Executes Lua and returns the script result along with messages printed by 'print' function."),
-				Category = "scripting",
-				AskForConfirmation = true
-			});
+			AddTool(ExecuteLua,
+				new ToolInitializationInfo
+				{
+					Name = "execute-lua",
+					Description = "Executes Lua and returns the script result along with messages printed by 'print' function.",
+					Category = "scripting",
+					AskForConfirmation = true
+				});
 		}
 
 		public ToolResult ExecuteLua(string lua)

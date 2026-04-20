@@ -313,7 +313,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				ResultContent = toolCall.ResultContent,
 				Status = toolCall.Status switch
 				{
-					ToolStatus.NotExecuted => ToolStatusModel.NotExecuted,
+					ToolStatus.None => ToolStatusModel.NotExecuted,
 					ToolStatus.Success => ToolStatusModel.Success,
 					ToolStatus.Error => ToolStatusModel.Error,
 					ToolStatus.Cancelled => ToolStatusModel.Cancelled,
@@ -333,7 +333,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				model.ResultContent = toolCall.ResultContent;
 				model.Status = toolCall.Status switch
 				{
-					ToolStatus.NotExecuted => ToolStatusModel.NotExecuted,
+					ToolStatus.None => ToolStatusModel.NotExecuted,
 					ToolStatus.Success => ToolStatusModel.Success,
 					ToolStatus.Error => ToolStatusModel.Error,
 					ToolStatus.Cancelled => ToolStatusModel.Cancelled,
@@ -550,12 +550,12 @@ namespace LLMDesktopAssistant.LLM.Services
 						ResultContent = toolCallModel.ResultContent,
 						Status = toolCallModel.Status switch
 						{
-							ToolStatusModel.NotExecuted => ToolStatus.NotExecuted,
+							ToolStatusModel.NotExecuted => ToolStatus.None,
 							ToolStatusModel.Success => ToolStatus.Success,
 							ToolStatusModel.Cancelled => ToolStatus.Cancelled,
 							ToolStatusModel.Error => ToolStatus.Error,
 							ToolStatusModel.NoResult => ToolStatus.NoResult,
-							_ => ToolStatus.NotExecuted
+							_ => ToolStatus.None
 						},
 						CompletionToken = CompletionToken.Success
 					};

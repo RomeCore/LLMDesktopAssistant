@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.ToolModules;
+﻿using LLMDesktopAssistant.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;

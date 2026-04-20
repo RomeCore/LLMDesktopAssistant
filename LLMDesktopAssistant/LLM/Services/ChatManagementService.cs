@@ -1,7 +1,7 @@
 ﻿using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.Models;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.LLM.Services

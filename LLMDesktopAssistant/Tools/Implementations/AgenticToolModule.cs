@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.ToolModules.Implementations
+namespace LLMDesktopAssistant.Tools.Implementations
 {
 	[ToolModule]
 	public class AgenticToolModule : ToolModule
@@ -26,19 +26,23 @@ namespace LLMDesktopAssistant.ToolModules.Implementations
 			_chat = chat;
 			_toolsetBuildingService = toolsetBuildingService;
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(AskQuestionAsync, "agent-ask_question", "Asks a question using another LLM agent. This tool is useful in general chats between LLM and user, to prevent storing excessive tool calls and token consumption in main user chat."),
-				Category = "agents",
-				AskForConfirmation = true
-			});
-			
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(CallAgentAsync, "agent-call", "Calls another LLM agent with provided system message and user message with set of allowed tools."),
-				Category = "agents",
-				AskForConfirmation = true
-			});
+			AddTool(AskQuestionAsync,
+				new ToolInitializationInfo
+				{
+					Name = "agent-ask_question",
+					Description = "Asks a question using another LLM agent. This tool is useful in general chats between LLM and user, to prevent storing excessive tool calls and token consumption in main user chat.",
+					Category = "agents",
+					AskForConfirmation = true
+				});
+
+			AddTool(CallAgentAsync,
+				new ToolInitializationInfo
+				{
+					Name = "agent-call",
+					Description = "Calls another LLM agent with provided system message and user message with set of allowed tools.",
+					Category = "agents",
+					AskForConfirmation = true
+				});
 		}
 
 		public Task<ToolResult> AskQuestionAsync(

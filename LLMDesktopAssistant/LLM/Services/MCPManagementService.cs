@@ -1,7 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels;
 using Serilog;
 
@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			_usedConnections = await Task.WhenAll(usedConnectionTasks);
 		}
 
-		public MCPToolModule[] GetMCPToolModules()
+		public MCPToolModule[] GetMCPTools()
 		{
 			if (!chat.Settings.EnableMcp)
 				return [];

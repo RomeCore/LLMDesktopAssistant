@@ -1,6 +1,6 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.MCP;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -23,6 +23,6 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Retrieves an array of available MCP tool modules with their associated tool information.
 		/// </summary>
 		/// <returns>An array of <see cref="ToolInfo"/> objects representing the available MCP tool modules.</returns>
-		MCPToolModule[] GetMCPToolModules();
+		MCPToolModule[] GetMCPTools();
 	}
 }

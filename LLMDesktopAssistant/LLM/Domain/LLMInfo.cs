@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tools;
 

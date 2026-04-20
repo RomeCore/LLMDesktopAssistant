@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
 using LLMDesktopAssistant.LLM.Services.Tools;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Tools;
 using System;
 using System.Collections.Generic;
@@ -23,56 +23,56 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			_metaToolManager = metaToolManager;
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(CreateOrUpdateMetaTool,
-					"metatools-create_or_update",
-					"""
-					Creates or updates a meta tool with the specified details.
-					If the tool already exists, it will be updated.
-					If tool does not exists, all parameters must not be null.
-					"""),
-				Category = "metatools",
-				AskForConfirmation = true
-			});
+			AddTool(CreateOrUpdateMetaTool,
+				new ToolInitializationInfo
+				{
+					Name = "metatools-create_or_update",
+					Description = """
+			Creates or updates a meta tool with the specified details.
+			If the tool already exists, it will be updated.
+			If tool does not exists, all parameters must not be null.
+			""",
+					Category = "metatools",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ListMetaTools,
-					"metatools-list",
-					"Lists all existing meta tools. Use it for understanding what tools you can tweak or modify."),
-				Category = "metatools",
-				Enabled = false,
-				AskForConfirmation = false
-			});
+			AddTool(ListMetaTools,
+				new ToolInitializationInfo
+				{
+					Name = "metatools-list",
+					Description = "Lists all existing meta tools. Use it for understanding what tools you can tweak or modify.",
+					Category = "metatools",
+					Enabled = false,
+					AskForConfirmation = false
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(GetToolInfo,
-					"metatools-get_info",
-					"Gets detailed information about a specific meta tool by its name. Use it for understanding the details of a particular tool."),
-				Category = "metatools",
-				Enabled = false,
-				AskForConfirmation = false
-			});
+			AddTool(GetToolInfo,
+				new ToolInitializationInfo
+				{
+					Name = "metatools-get_info",
+					Description = "Gets detailed information about a specific meta tool by its name. Use it for understanding the details of a particular tool.",
+					Category = "metatools",
+					Enabled = false,
+					AskForConfirmation = false
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(RenameMetaTool,
-					"metatools-rename",
-					"Renames an existing meta tool to a new name. The original tool must exist and the new name must not conflict with any other tools."),
-				Category = "metatools",
-				AskForConfirmation = true
-			});
+			AddTool(RenameMetaTool,
+				new ToolInitializationInfo
+				{
+					Name = "metatools-rename",
+					Description = "Renames an existing meta tool to a new name. The original tool must exist and the new name must not conflict with any other tools.",
+					Category = "metatools",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(DeleteMetaTool,
-					"metatools-delete",
-					"Removes an existing meta tool. The tool must exist and cannot be a default tool."),
-				Category = "metatools",
-				AskForConfirmation = true
-			});
+			AddTool(DeleteMetaTool,
+				new ToolInitializationInfo
+				{
+					Name = "metatools-delete",
+					Description = "Removes an existing meta tool. The tool must exist and cannot be a default tool.",
+					Category = "metatools",
+					AskForConfirmation = true
+				});
 		}
 
 		public ToolResult CreateOrUpdateMetaTool(

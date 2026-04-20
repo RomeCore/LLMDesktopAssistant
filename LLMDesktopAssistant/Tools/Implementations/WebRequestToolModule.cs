@@ -12,7 +12,7 @@ using DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using Ganss.Xss;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels.Json.Schema;
 using RCLargeLanguageModels.Security;
@@ -20,7 +20,7 @@ using RCLargeLanguageModels.Tools;
 using RCLargeLanguageModels.Utilities;
 using RCParsing;
 
-namespace LLMDesktopAssistant.ToolModules.Implementations
+namespace LLMDesktopAssistant.Tools.Implementations
 {
 	[ToolModule]
 	public class WebRequestToolModule : ToolModule
@@ -47,41 +47,53 @@ namespace LLMDesktopAssistant.ToolModules.Implementations
 
 			_chat = chat;
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(WebRequest, "web-request", "Perform a request to a specified URL and method."),
-				Category = "web"
-			});
+			AddTool(WebRequest,
+				new ToolInitializationInfo
+				{
+					Name = "web-request",
+					Description = "Perform a request to a specified URL and method.",
+					Category = "web"
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(DownloadFile, "web-download", "Download a file from a specified URL into the working directory."),
-				Category = "web"
-			});
+			AddTool(DownloadFile,
+				new ToolInitializationInfo
+				{
+					Name = "web-download",
+					Description = "Download a file from a specified URL into the working directory.",
+					Category = "web"
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(CheckWebsiteStatus, "web-status", "Check if a website is accessible and return status code."),
-				Category = "web"
-			});
+			AddTool(CheckWebsiteStatus,
+				new ToolInitializationInfo
+				{
+					Name = "web-status",
+					Description = "Check if a website is accessible and return status code.",
+					Category = "web"
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(Fetch, "web-fetch", "Fetch webcite content from a specified URL."),
-				Category = "web"
-			});
+			AddTool(Fetch,
+				new ToolInitializationInfo
+				{
+					Name = "web-fetch",
+					Description = "Fetch webcite content from a specified URL.",
+					Category = "web"
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ParseHtml, "web-parse", "Fetch HTML content and parse specific elements by tag or class."),
-				Category = "web"
-			});
+			AddTool(ParseHtml,
+				new ToolInitializationInfo
+				{
+					Name = "web-parse",
+					Description = "Fetch HTML content and parse specific elements by tag or class.",
+					Category = "web"
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(Search_SearXNG, "web-search", "Search through the web using query."),
-				Category = "web"
-			});
+			AddTool(Search_SearXNG,
+				new ToolInitializationInfo
+				{
+					Name = "web-search",
+					Description = "Search through the web using query.",
+					Category = "web"
+				});
 		}
 
 		private async Task<ToolResult> WebRequest(

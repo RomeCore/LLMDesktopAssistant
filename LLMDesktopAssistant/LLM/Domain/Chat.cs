@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.LLM.Services;
 
@@ -72,7 +72,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// <summary>
 		/// Gets or sets the list of tool modules that are available for use in the chat session.
 		/// </summary>
-		public List<ToolModule> AdditionalToolModules { get; set; } = [];
+		public List<ToolModule> AdditionalTools { get; set; } = [];
 
 
 

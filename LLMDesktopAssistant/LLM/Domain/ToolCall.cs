@@ -1,4 +1,5 @@
-﻿using RCLargeLanguageModels.Tasks;
+﻿using LLMDesktopAssistant.Tools;
+using RCLargeLanguageModels.Tasks;
 using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.LLM.Domain
@@ -56,6 +57,17 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _userAskCompletionSource;
 			set => SetProperty(ref _userAskCompletionSource, value);
+		}
+
+		private ReactiveToolResult? _reactiveToolResult;
+		/// <summary>
+		/// Gets or sets the reactive tool result. This is used for real-time updates and interactions.
+		/// Only avalable during execution.
+		/// </summary>
+		public ReactiveToolResult? ReactiveToolResult
+		{
+			get => _reactiveToolResult;
+			set => SetProperty(ref _reactiveToolResult, value);
 		}
 
 		/// <summary>

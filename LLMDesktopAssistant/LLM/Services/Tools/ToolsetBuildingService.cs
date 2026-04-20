@@ -1,7 +1,7 @@
 ﻿using AngleSharp.Common;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
@@ -31,7 +31,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					if (change.Enabled ?? toolInfo.Enabled)
 						result.Add(new ToolInfo
 						{
-							Tool = toolInfo.Tool,
+							Name = toolInfo.Name,
+							DescriptionGetter = toolInfo.DescriptionGetter,
+							ArgumentSchema = toolInfo.ArgumentSchema,
+							Executor = toolInfo.Executor,
 							Category = toolInfo.Category,
 							DisplayName = toolInfo.DisplayName,
 							Source = toolInfo.Source,
@@ -56,20 +59,23 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			return services.GetServices<ToolModule>()
 
 				// Tool modules
-				.Concat(chat.AdditionalToolModules ?? [])
-				.Concat(mcpManager.GetMCPToolModules())
+				.Concat(chat.AdditionalTools ?? [])
+				.Concat(mcpManager.GetMCPTools())
 
 				.SelectMany(m => m.GetTools()
-					.Select(t =>
+					.Select(toolInfo =>
 					{
 						return new ToolInfo
 						{
-							Tool = t.Tool,
-							Category = t.Category,
-							DisplayName = t.DisplayName,
-							Source = t.Source,
-							Enabled = m.Enabled && t.Enabled,
-							AskForConfirmation = t.AskForConfirmation
+							Name = toolInfo.Name,
+							DescriptionGetter = toolInfo.DescriptionGetter,
+							ArgumentSchema = toolInfo.ArgumentSchema,
+							Executor = toolInfo.Executor,
+							Category = toolInfo.Category,
+							DisplayName = toolInfo.DisplayName,
+							Source = toolInfo.Source,
+							Enabled = m.Enabled && toolInfo.Enabled,
+							AskForConfirmation = toolInfo.AskForConfirmation
 						};
 					}))
 

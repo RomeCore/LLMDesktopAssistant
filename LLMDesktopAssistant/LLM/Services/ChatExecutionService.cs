@@ -1,7 +1,7 @@
 using DocumentFormat.OpenXml.VariantTypes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Metadata;
 using RCLargeLanguageModels.Tasks;
@@ -50,7 +50,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				DateTime? timeFirstToken = null;
 
 				var inputMessages = promptBuilder.Build();
-				var tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Tool.Name);
+				var tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Name);
 				var toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
 				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				var responseMessage = response.Message;
@@ -96,7 +96,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						var toolCallCompletionSource = new CompletionSource();
 						var domainToolCall = new Domain.ToolCall
 						{
-							Status = ToolStatus.NotExecuted,
+							Status = ToolStatus.None,
 							Id = toolCall.Id,
 							ToolName = toolCall.ToolName,
 							Title = toolInfo?.DisplayName,
@@ -245,7 +245,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					timeFirstToken = null;
 
 					inputMessages = promptBuilder.Build();
-					tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Tool.Name);
+					tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Name);
 					toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
 					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 					responseMessage = response.Message;

@@ -1,5 +1,5 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Immutable;
 

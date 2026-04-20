@@ -2,36 +2,44 @@
 using RCLargeLanguageModels.Tools;
 using System.ComponentModel;
 
-namespace LLMDesktopAssistant.ToolModules.Implementations
+namespace LLMDesktopAssistant.Tools.Implementations
 {
 	[ToolModule]
 	public class GeneralToolModule : ToolModule
 	{
 		public GeneralToolModule()
 		{
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(Copy, "copy", "Copies a piece of text to the clipboard, use when neccessary."),
-				Category = "general"
-			});
-			
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(GenerateGUID, "generate_GUID", "Generates a globally unique identifier (GUID)."),
-				Category = "general"
-			});
-			
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(GenerateRandomInteger, "generate_random_integer", "Generates a random integer number."),
-				Category = "general"
-			});
-			
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(GenerateRandomFloat, "generate_random_float", "Generates a random floating-point number."),
-				Category = "general"
-			});
+			AddTool(Copy,
+				new ToolInitializationInfo
+				{
+					Name = "copy",
+					Description = "Copies a piece of text to the clipboard, use when neccessary.",
+					Category = "general"
+				});
+
+			AddTool(GenerateGUID,
+				new ToolInitializationInfo
+				{
+					Name = "generate_GUID",
+					Description = "Generates a globally unique identifier (GUID).",
+					Category = "general"
+				});
+
+			AddTool(GenerateRandomInteger,
+				new ToolInitializationInfo
+				{
+					Name = "generate_random_integer",
+					Description = "Generates a random integer number.",
+					Category = "general"
+				});
+
+			AddTool(GenerateRandomFloat,
+				new ToolInitializationInfo
+				{
+					Name = "generate_random_float",
+					Description = "Generates a random floating-point number.",
+					Category = "general"
+				});
 		}
 
 		private ToolResult Copy([Description("Text to copy")] string text)

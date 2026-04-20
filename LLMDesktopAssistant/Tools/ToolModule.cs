@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using LLMDesktopAssistant.Services;
 using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.ToolModules
+namespace LLMDesktopAssistant.Tools
 {
 	/// <summary>
 	/// Base class for all tool modules. It provides a method to retrieve tools for the LLM assistant.
@@ -34,6 +34,16 @@ namespace LLMDesktopAssistant.ToolModules
 		protected void AddTool(ToolInfo tool)
 		{
 			_tools.Add(tool);
+		}
+
+		/// <summary>
+		/// Adds a tool to this module.
+		/// </summary>
+		/// <param name="executor">The delegate that will execute the tool.</param>
+		/// <param name="info">The initialization information for the tool.</param>
+		protected void AddTool(Delegate executor, ToolInitializationInfo info)
+		{
+			_tools.Add(ToolInfo.Create(executor, info));
 		}
 
 		/// <summary>

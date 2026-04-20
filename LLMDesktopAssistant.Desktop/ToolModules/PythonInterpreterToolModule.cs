@@ -1,14 +1,12 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Scripting;
-using LLMDesktopAssistant.ToolModules;
-using LLMDesktopAssistant.Utils;
-using RCLargeLanguageModels;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Tools;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {
@@ -23,29 +21,32 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			_python = ServiceRegistry.Get<PythonService>();
 			_chat = chat;
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(Execute, "execute-python",
-					"Executes Python and returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!')."),
-				Category = "scripting",
-				AskForConfirmation = true
-			});
+			AddTool(Execute,
+				new ToolInitializationInfo
+				{
+					Name = "execute-python",
+					Description = "Executes Python and returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!').",
+					Category = "scripting",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(ExecuteVenvShell, "execute-python_venv_shell",
-					"Executes Windows shell script in a Python's virtual environment. Useful for installing packages via 'pip'."),
-				Category = "scripting",
-				AskForConfirmation = true
-			});
+			AddTool(ExecuteVenvShell,
+				new ToolInitializationInfo
+				{
+					Name = "execute-python_venv_shell",
+					Description = "Executes Windows shell script in a Python's virtual environment. Useful for installing packages via 'pip'.",
+					Category = "scripting",
+					AskForConfirmation = true
+				});
 
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(GetInstalledPackagesList, "python-get_installed_packages_list",
-					"Returns the list of installed packages in the current Python's virtual environment."),
-				Category = "scripting",
-				AskForConfirmation = false
-			});
+			AddTool(GetInstalledPackagesList,
+				new ToolInitializationInfo
+				{
+					Name = "python-get_installed_packages_list",
+					Description = "Returns the list of installed packages in the current Python's virtual environment.",
+					Category = "scripting",
+					AskForConfirmation = false
+				});
 		}
 
 		public async Task<ToolResult> Execute(string python, CancellationToken cancellationToken = default)

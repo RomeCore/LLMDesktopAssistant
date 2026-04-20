@@ -2,7 +2,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Prompting;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Locale;

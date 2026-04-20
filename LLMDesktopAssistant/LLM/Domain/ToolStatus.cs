@@ -6,9 +6,14 @@
 	public enum ToolStatus
 	{
 		/// <summary>
-		/// The tool is currently pending and has not yet started.
+		/// The tool is just created and not yet initialized.
 		/// </summary>
-		NotExecuted,
+		None,
+
+		/// <summary>
+		/// The tool is currently pending for LLM to complete its arguments.
+		/// </summary>
+		Pending,
 
 		/// <summary>
 		/// The tool is currently waiting for user's approval before proceeding.

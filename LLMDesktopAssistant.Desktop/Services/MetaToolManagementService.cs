@@ -1,19 +1,19 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Tools;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Linq;
-using System.Collections.Generic;
-using System;
-using System.Threading.Tasks;
 using System.Threading;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.LLM.Services.Tools;
+using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Desktop.Services
 {
@@ -92,9 +92,13 @@ namespace LLMDesktopAssistant.Desktop.Services
 
 			foreach (var tool in _configuration.Tools.OrderBy(t => t.Category).ThenBy(t => t.Title))
 			{
+				var desc = tool.Description;
 				result.Add(new ToolInfo
 				{
-					Tool = CreateFunctionTool(tool),
+					Name = tool.Name,
+					DescriptionGetter = () => desc,
+					ArgumentSchema = tool.ArgumentSchema,
+					Executor = CreateExecutor(tool),
 					DisplayName = tool.Title,
 					Category = tool.Category,
 					Source = ToolSource.Meta,
@@ -106,16 +110,16 @@ namespace LLMDesktopAssistant.Desktop.Services
 			return result.ToArray();
 		}
 
-		private FunctionTool CreateFunctionTool(MetaTool metaTool)
+		private Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool metaTool)
 		{
-			async Task<ToolResult> ExecuteAsync(JsonNode arguments, CancellationToken cancellationToken)
+			async Task<ReactiveToolResult> ExecuteAsync(JsonNode args, ToolExecutionContext context, CancellationToken cancellationToken)
 			{
 				try
 				{
 					string pythonCode = $"""
 						# Python dictionaries, arrays and values are looking exact as JSON.
 						# So we can simply serialize the JSON and put into the tool_args variable.
-						tool_args = {SerializeNodeToPython(arguments)}
+						tool_args = {SerializeNodeToPython(args)}
 
 						{metaTool.PythonExecutionCode}
 						""";
@@ -133,24 +137,15 @@ namespace LLMDesktopAssistant.Desktop.Services
 					}
 
 					bool success = result.Success && !result.StdOut.StartsWith("error", StringComparison.OrdinalIgnoreCase);
-					var status = success ? ToolResultStatus.Success : ToolResultStatus.Error;
-					return new ToolResult(status, resultBuilder.ToString());
-				}
-				catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
-				{
-					return new ToolResult(ToolResultStatus.Cancelled, "Tool execution was cancelled.");
-				}
-				catch (OperationCanceledException)
-				{
-					return new ToolResult(ToolResultStatus.Cancelled, "Tool execution was cancelled.");
+					return ReactiveToolResult.Create(success, resultBuilder.ToString());
 				}
 				catch (Exception ex)
 				{
-					return new ToolResult(ToolResultStatus.Error, $"An error occurred while executing the tool: {ex.Message}");
+					return ReactiveToolResult.CreateError($"An error occurred while executing the tool: {ex.Message}");
 				}
 			}
 
-			return new FunctionTool(metaTool.Name, metaTool.Description, metaTool.ArgumentSchema, ExecuteAsync);
+			return ExecuteAsync;
 		}
 
 		private static string SerializeNodeToPython(JsonNode? node)

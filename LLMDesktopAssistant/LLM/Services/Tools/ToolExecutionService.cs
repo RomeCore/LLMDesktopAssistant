@@ -1,17 +1,22 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tools;
 using System.Collections.Immutable;
+using System.ComponentModel;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {
-	public class ToolExecutionService(IServiceProvider services) : IToolExecutionService
+	public class ToolExecutionService(
+		Chat chat,
+		IServiceProvider services
+	) : IToolExecutionService
 	{
 		readonly IToolExecutionHook? hook = services.GetService<IToolExecutionHook>();
 
-		public async Task ExecuteAsync(ToolCall toolCall, LLMInfo llmInfo, ImmutableDictionary<string, ToolInfo> tools, CancellationToken cancellationToken = default)
+		public async Task ExecuteAsync(ToolCall toolCall, LLMInfo llmInfo,
+			ImmutableDictionary<string, ToolInfo> tools, CancellationToken cancellationToken = default)
 		{
 			ToolResult? result = null;
 
@@ -42,13 +47,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				return;
 			}
 
-			if (toolInfo.Tool is not FunctionTool functionTool)
-			{
-				toolCall.ResultContent = $"Internal error: tool '{toolCall.ToolName}' is not a function tool. This should never happen.";
-				toolCall.Status = ToolStatus.Error;
-				return;
-			}
-
 			try
 			{
 				if (toolInfo.AskForConfirmation)
@@ -71,7 +69,46 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				if (result == null)
 				{
 					toolCall.Status = ToolStatus.Executing;
-					result = await functionTool.ExecuteAsync(toolCall.Arguments, cancellationToken);
+					var toolExecutionContext = new ToolExecutionContext { Chat = chat };
+					var reactiveResult = await toolInfo.Executor.Invoke(toolCall.Arguments, toolExecutionContext, cancellationToken);
+
+					toolCall.ReactiveToolResult = reactiveResult;
+
+					void OnReactiveResultChanged(object? sender, object? e)
+					{
+						toolCall.ResultContent = reactiveResult.ResultContent;
+					}
+					reactiveResult.ResultContentLines.CollectionChanged += OnReactiveResultChanged;
+
+					bool success;
+					try
+					{
+						success = await reactiveResult.Completion;
+					}
+					finally
+					{
+						reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultChanged;
+					}
+
+					var content = reactiveResult.ResultContent;
+					ToolResultStatus status = cancellationToken.IsCancellationRequested ? ToolResultStatus.Cancelled :
+						(string.IsNullOrWhiteSpace(content) ? ToolResultStatus.NoResult :
+							(success ? ToolResultStatus.Success : ToolResultStatus.Error));
+
+					switch (status)
+					{
+						case ToolResultStatus.NoResult:
+							if (success)
+								content = "Tool successfully returned no result.";
+							else
+								content = "Tool failed with no result.";
+							break;
+						case ToolResultStatus.Cancelled:
+							content = "Tool execution was cancelled.";
+							break;
+					}
+
+					result = new ToolResult(status, content);
 				}
 			}
 			catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))

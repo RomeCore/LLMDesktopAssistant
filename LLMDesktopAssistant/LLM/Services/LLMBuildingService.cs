@@ -1,7 +1,7 @@
 ﻿using AngleSharp.Common;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients.Deepseek;
 using RCLargeLanguageModels.Clients.OpenAI;

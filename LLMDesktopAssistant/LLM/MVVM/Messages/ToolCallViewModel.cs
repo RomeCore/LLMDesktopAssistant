@@ -101,7 +101,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 			Arguments = ToolCallArgumentFormatter.FormatToMarkdown(toolCall.Arguments);
 			Status = toolCall.Status switch
 			{
-				ToolStatus.NotExecuted => ToolCallStatus.None,
+				ToolStatus.None => ToolCallStatus.None,
 				ToolStatus.Executing => ToolCallStatus.InProgress,
 				ToolStatus.WaitingForApproval => ToolCallStatus.UserAsked,
 				ToolStatus.Success => ToolCallStatus.Success,
@@ -119,7 +119,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 					{
 						Status = toolCall.Status switch
 						{
-							ToolStatus.NotExecuted => ToolCallStatus.None,
+							ToolStatus.None => ToolCallStatus.None,
 							ToolStatus.Executing => ToolCallStatus.InProgress,
 							ToolStatus.WaitingForApproval => ToolCallStatus.UserAsked,
 							ToolStatus.Success => ToolCallStatus.Success,

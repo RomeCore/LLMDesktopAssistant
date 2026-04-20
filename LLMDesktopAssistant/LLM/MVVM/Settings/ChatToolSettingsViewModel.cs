@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization.Resources;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Settings

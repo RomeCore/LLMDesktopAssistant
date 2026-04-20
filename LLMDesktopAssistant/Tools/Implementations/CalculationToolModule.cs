@@ -10,48 +10,50 @@ using RCLargeLanguageModels.Tools;
 using RCParsing;
 using LLMDesktopAssistant.Calculation;
 
-namespace LLMDesktopAssistant.ToolModules.Implementations
+namespace LLMDesktopAssistant.Tools.Implementations
 {
 	[ToolModule]
 	public class CalculationToolModule : ToolModule
 	{
 		public CalculationToolModule()
 		{
-			AddTool(new ToolInfo
-			{
-				Tool = FunctionTool.From(Calculate, "calculate", """
-				Evaluate a mathematical expression. Examples:
+			AddTool(Calculate,
+				new ToolInitializationInfo
+				{
+					Name = "calculate",
+					Description = """
+						Evaluate a mathematical expression. Examples:
 
-				1 + 2 * -(3^2 / e)
-				sin(pi/2) + cos(pi/3)
-				integral(x^2 + 1, x, 0, 10)
-				derivative(x^2 + 1, x, 5)
-				sin(9+2i)
+						1 + 2 * -(3^2 / e)
+						sin(pi/2) + cos(pi/3)
+						integral(x^2 + 1, x, 0, 10)
+						derivative(x^2 + 1, x, 5)
+						sin(9+2i)
 
-				All supported constants:
+						All supported constants:
 
-				NaN, pi, inf, eps, phi, tau, g, e, c, gamma
+						NaN, pi, inf, eps, phi, tau, g, e, c, gamma
 
-				All supported functions:
-				
-				Normal:
-				
-				asinh, acosh, tan, atanh, atan2, cbrt, sign, floor, ceil, round, trunc, mod,
-				gamma, factorial, integral, derivative
-				
-				Complex:
+						All supported functions:
+			
+						Normal:
+			
+						asinh, acosh, tan, atanh, atan2, cbrt, sign, floor, ceil, round, trunc, mod,
+						gamma, factorial, integral, derivative
+			
+						Complex:
 
-				mag, conjugate, minmag, maxmag, compgamma
+						mag, conjugate, minmag, maxmag, compgamma
 
-				Normal and complex:
+						Normal and complex:
 
-				sin, sinh, asin, cos, cosh, acos, tanh, atan,
-				sind, cosd, tand, asind, acosd, atand,
-				ln, log, log2, logb, exp, pow, sqrt,
-				abs, min, max
-				"""),
-				Category = "calculation"
-			});
+						sin, sinh, asin, cos, cosh, acos, tanh, atan,
+						sind, cosd, tand, asind, acosd, atand,
+						ln, log, log2, logb, exp, pow, sqrt,
+						abs, min, max
+						""",
+					Category = "calculation"
+				});
 		}
 
 		private ToolResult Calculate([Description("Expression to evaluate")] string expression)

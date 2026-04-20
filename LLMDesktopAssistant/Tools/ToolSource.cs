@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.ToolModules
+﻿namespace LLMDesktopAssistant.Tools
 {
 	/// <summary>
 	/// Enumerates the possible sources of tools within the application.

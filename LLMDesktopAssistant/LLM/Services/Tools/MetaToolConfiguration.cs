@@ -1,5 +1,5 @@
 ﻿using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.ToolModules;
+using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools

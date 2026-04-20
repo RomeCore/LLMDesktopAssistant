@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			return status switch
 			{
-				ToolStatus.NotExecuted => ToolResultStatus.NoResult,
+				ToolStatus.None => ToolResultStatus.NoResult,
 				ToolStatus.WaitingForApproval => ToolResultStatus.NoResult,
 				ToolStatus.Executing => ToolResultStatus.NoResult,
 				ToolStatus.Success => ToolResultStatus.Success,

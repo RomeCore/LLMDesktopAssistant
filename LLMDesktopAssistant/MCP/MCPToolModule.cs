@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.ToolModules;
+﻿using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
@@ -75,10 +75,14 @@ namespace LLMDesktopAssistant.MCP
 
 			// Use connection name as prefix
 			var name = ConvertToolPrefix(connection.Info.Name) + '-' + mcpTool.Name;
+			var description = mcpTool.Description;
 
 			var toolInfo = new ToolInfo
 			{
-				Tool = new FunctionTool(name, mcpTool.Description, argSchema, CreateFunctionExecutor(connection, mcpTool)),
+				Name = name,
+				DescriptionGetter = () => description,
+				ArgumentSchema = argSchema,
+				Executor = CreateExecutor(connection, mcpTool),
 				Source = ToolSource.MCP,
 				DisplayName = mcpTool.Title ?? mcpTool.Name,
 				Category = connection.Info.Name
@@ -86,10 +90,10 @@ namespace LLMDesktopAssistant.MCP
 			return toolInfo;
 		}
 
-		private static Func<JsonNode, CancellationToken, Task<ToolResult>> CreateFunctionExecutor(
+		private static Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(
 			MCPConnection connection, McpClientTool mcpTool)
 		{
-			return async (args, cancellationToken) =>
+			async Task<ReactiveToolResult> ExecuteFunction(JsonNode args, ToolExecutionContext context, CancellationToken cancellationToken)
 			{
 				try
 				{
@@ -109,28 +113,22 @@ namespace LLMDesktopAssistant.MCP
 					{
 						if (string.IsNullOrWhiteSpace(contents))
 							contents = "Tool executed with an error.";
-						return new ToolResult(ToolResultStatus.Error, contents);
+						return ReactiveToolResult.CreateError(contents);
 					}
 					else
 					{
 						if (string.IsNullOrWhiteSpace(contents))
 							contents = "Tool executed successfully with no output.";
-						return new ToolResult(contents);
+						return ReactiveToolResult.CreateSuccess(contents);
 					}
-				}
-				catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
-				{
-					return new ToolResult(ToolResultStatus.Cancelled, "Tool execution was cancelled.");
-				}
-				catch (OperationCanceledException)
-				{
-					return new ToolResult(ToolResultStatus.Cancelled, "Tool execution was cancelled.");
 				}
 				catch (Exception ex)
 				{
-					return new ToolResult(ToolResultStatus.Error, $"Error calling MCP '{connection.Info.Name}' tool: {ex.Message}");
+					return ReactiveToolResult.CreateError($"Error calling MCP '{connection.Info.Name}' tool: {ex.Message}");
 				}
-			};
+			}
+
+			return ExecuteFunction;
 		}
 	}
 }
