@@ -1,6 +1,7 @@
 ﻿using LiteDB;
+using Material.Icons;
 
-namespace LLMDesktopAssistant.Data.Models
+namespace LLMDesktopAssistant.Data.ChatModels
 {
 	/// <summary>
 	/// Represents a model for a tool call inside the database.
@@ -23,6 +24,7 @@ namespace LLMDesktopAssistant.Data.Models
 		/// </summary>
 		public string ToolName { get; set; } = string.Empty;
 
+		// TODO: Remove this property and receive it from the tool itself.
 		/// <summary>
 		/// Gets or sets the title of the tool. Used for display purposes. Can be null if not applicable.
 		/// </summary>
@@ -39,9 +41,19 @@ namespace LLMDesktopAssistant.Data.Models
 		public string FunctionArguments { get; set; } = string.Empty;
 
 		/// <summary>
-		/// Gets or sets the result status of the tool call, valid when tool call is executed.
+		/// Gets or sets the result status of the tool call.
 		/// </summary>
 		public ToolStatusModel Status { get; set; }
+
+		/// <summary>
+		/// Gets or sets the status icon to be displayed. This will be shown next to the main title (that contains tool name).
+		/// </summary>
+		public MaterialIconKind? StatusIcon { get; set; }
+
+		/// <summary>
+		/// Gets or sets the title of the status that will be shown next to the main title (that contains tool name).
+		/// </summary>
+		public string? StatusTitle { get; set; } = null;
 
 		/// <summary>
 		/// Gets or sets the result content of the tool call, valid when tool call is executed.

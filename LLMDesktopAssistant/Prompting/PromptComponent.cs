@@ -31,11 +31,11 @@ namespace LLMDesktopAssistant.Prompting
 			set => SetProperty(ref _category, value);
 		}
 
-		private string _text = string.Empty;
-		public string Text
+		private SerializableTextTemplate _template = SerializableTextTemplate.Empty;
+		public SerializableTextTemplate Template
 		{
-			get => _text;
-			set => SetProperty(ref _text, value);
+			get => _template;
+			set => SetProperty(ref _template, value);
 		}
 	}
 }

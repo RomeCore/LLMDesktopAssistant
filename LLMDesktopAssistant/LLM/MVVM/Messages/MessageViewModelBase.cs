@@ -9,6 +9,11 @@ namespace LLMDesktopAssistant.LLM.Messages
 		private readonly BranchedMessage branchedMessage;
 		private readonly IChatOperationService chatOperator;
 
+		/// <summary>
+		/// Gets the current message being displayed.
+		/// </summary>
+		public ChatMessage Message => branchedMessage.Message;
+
 		public ICommand RegenerateCommand { get; }
 		public ICommand ResendCommand { get; }
 		public ICommand SwitchBranchCommand { get; }

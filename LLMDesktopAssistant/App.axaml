@@ -12,13 +12,10 @@
 		<materialIcons:MaterialIconStyles />
 		<StyleInclude Source="avares://LiveMarkdown.Avalonia/Styles.axaml"/>
 		
+		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/CommonStyles.axaml"/>
 		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/ButtonsIcons.axaml"/>
 		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/MarkdownStyles.axaml"/>
 	</Application.Styles>
-
-	<Application.DataTemplates>
-		<mvvm:ViewLocator />
-	</Application.DataTemplates>
 
 	<Application.Resources>
 		<ResourceDictionary>
@@ -33,5 +30,9 @@
 
 		</ResourceDictionary>
 	</Application.Resources>
+	
+	<Application.DataTemplates>
+		<mvvm:ViewLocator />
+	</Application.DataTemplates>
 
 </Application>

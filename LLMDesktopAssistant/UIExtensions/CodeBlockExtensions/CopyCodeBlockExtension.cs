@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LiveMarkdown.Avalonia;
 using Material.Icons;
 
-namespace LLMDesktopAssistant.Behaviours.CodeBlockExtensions
+namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 {
 	[CodeBlockExtension]
 	public class CopyCodeBlockExtension : CodeBlockExtension

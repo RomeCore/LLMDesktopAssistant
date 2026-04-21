@@ -11,7 +11,7 @@
 		None,
 
 		/// <summary>
-		/// The tool is currently pending for LLM to complete its arguments.
+		/// The tool call is currently pending and waiting to complete arguments generation from LLM.
 		/// </summary>
 		Pending,
 
@@ -19,6 +19,11 @@
 		/// The tool is currently waiting for user's approval before proceeding.
 		/// </summary>
 		WaitingForApproval,
+
+		/// <summary>
+		/// The tool execution has been interrupted. This happens when user exits from application and loads the chat history again.
+		/// </summary>
+		ExecutionInterrupted,
 
 		/// <summary>
 		/// The tool is currently executing.

@@ -4,6 +4,7 @@ using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Settings;
 using Serilog;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Input;
 
@@ -12,6 +13,12 @@ namespace LLMDesktopAssistant.Prompting
 	public class PromptComponentItemViewModel : ViewModelBase
 	{
 		public PromptComponent Component { get; }
+
+		public string Text
+		{
+			get => Component.Template.SourceCode;
+			set => Component.Template = new SerializableTextTemplate(value, TextTemplateType.PlainText);
+		}
 
 		public PromptComponentItemViewModel(PromptComponent component)
 		{
@@ -30,6 +37,12 @@ namespace LLMDesktopAssistant.Prompting
 	public class PersonaItemViewModel : ViewModelBase
 	{
 		public Persona Persona { get; }
+
+		public string Text
+		{
+			get => Persona.Template.SourceCode;
+			set => Persona.Template = new SerializableTextTemplate(value, TextTemplateType.PlainText);
+		}
 
 		public PersonaItemViewModel(Persona persona)
 		{
@@ -111,7 +124,7 @@ namespace LLMDesktopAssistant.Prompting
 			{
 				Name = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_new_component"),
 				Category = string.Empty,
-				Text = string.Empty
+				Template = SerializableTextTemplate.Empty
 			};
 
 			ComponentsConfig.Components.Add(component);
@@ -162,7 +175,7 @@ namespace LLMDesktopAssistant.Prompting
 					{
 						Name = Path.GetFileNameWithoutExtension(file.Name),
 						Category = string.Empty,
-						Text = text
+						Template = SerializableTextTemplate.Empty
 					};
 
 					ComponentsConfig.Components.Add(component);
@@ -180,7 +193,7 @@ namespace LLMDesktopAssistant.Prompting
 			var persona = new Persona
 			{
 				Name = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_new_persona"),
-				Text = string.Empty
+				Template = SerializableTextTemplate.Empty
 			};
 
 			PersonasConfig.Personas.Add(persona);
@@ -220,7 +233,7 @@ namespace LLMDesktopAssistant.Prompting
 					var persona = new Persona
 					{
 						Name = Path.GetFileNameWithoutExtension(file.Name),
-						Text = text
+						Template = new SerializableTextTemplate(text, TextTemplateType.PlainText)
 					};
 
 					PersonasConfig.Personas.Add(persona);

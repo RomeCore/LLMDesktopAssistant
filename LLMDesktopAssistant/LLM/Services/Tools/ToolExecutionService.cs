@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	{
 		readonly IToolExecutionHook? hook = services.GetService<IToolExecutionHook>();
 
-		public async Task ExecuteAsync(ToolCall toolCall, LLMInfo llmInfo,
+		public async Task ExecuteAsync(AssistantMessage message, ToolCall toolCall, LLMInfo llmInfo,
 			ImmutableDictionary<string, ToolInfo> tools, CancellationToken cancellationToken = default)
 		{
 			ToolResult? result = null;
@@ -69,16 +69,30 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				if (result == null)
 				{
 					toolCall.Status = ToolStatus.Executing;
-					var toolExecutionContext = new ToolExecutionContext { Chat = chat };
+					var toolExecutionContext = new ToolExecutionContext
+					{
+						Chat = chat,
+						Message = message,
+						Call = toolCall
+					};
 					var reactiveResult = await toolInfo.Executor.Invoke(toolCall.Arguments, toolExecutionContext, cancellationToken);
 
 					toolCall.ReactiveToolResult = reactiveResult;
+					toolCall.StatusIcon = reactiveResult.StatusIcon;
+					toolCall.StatusTitle = reactiveResult.StatusTitle;
+					toolCall.ResultContent = reactiveResult.ResultContent;
 
 					void OnReactiveResultChanged(object? sender, object? e)
 					{
+						toolCall.StatusIcon = reactiveResult.StatusIcon;
+						toolCall.StatusTitle = reactiveResult.StatusTitle;
+					}
+					void OnReactiveResultContentChanged(object? sender, object? e)
+					{
 						toolCall.ResultContent = reactiveResult.ResultContent;
 					}
-					reactiveResult.ResultContentLines.CollectionChanged += OnReactiveResultChanged;
+					reactiveResult.PropertyChanged += OnReactiveResultChanged;
+					reactiveResult.ResultContentLines.CollectionChanged += OnReactiveResultContentChanged;
 
 					bool success;
 					try
@@ -87,7 +101,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					}
 					finally
 					{
-						reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultChanged;
+						toolCall.ReactiveToolResult = null;
+						reactiveResult.PropertyChanged -= OnReactiveResultChanged;
+						reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultContentChanged;
 					}
 
 					var content = reactiveResult.ResultContent;

@@ -38,7 +38,21 @@ namespace LLMDesktopAssistant.Tools
 			}
 		}
 
-		private double _maxProgress = 1;
+		private double _minProgress = 0.0;
+		/// <summary>
+		/// The minimum progress of the tool execution. Defaults to 0.0.
+		/// </summary>
+		public double MinProgress
+		{
+			get => _minProgress;
+			set
+			{
+				lock (_lock)
+					SetProperty(ref _minProgress, value);
+			}
+		}
+
+		private double _maxProgress = 1.0;
 		/// <summary>
 		/// The maximum progress of the tool execution. Defaults to 1.0.
 		/// </summary>
@@ -81,12 +95,6 @@ namespace LLMDesktopAssistant.Tools
 		}
 
 		/// <summary>
-		/// The additional view models that will be shown downside to the title and status bar.
-		/// Can be used to provide forms, prompts and fast answers to user or show additional information.
-		/// </summary>
-		public RangeObservableCollection<object> AdditionalViewModels { get; } = [];
-
-		/// <summary>
 		/// The observable collection of lines that contains the streaming output of the tool.
 		/// Each line can contain multiple lines of text, not only a single line.
 		/// Perfect for long-running tools like Python package installation.
@@ -111,11 +119,12 @@ namespace LLMDesktopAssistant.Tools
 		/// </summary>
 		/// <param name="success">Whether the tool executed successfully.</param>
 		/// <exception cref="InvalidOperationException">Thrown if the task has already been completed.</exception>
-		public void Complete(bool success)
+		public ReactiveToolResult Complete(bool success)
 		{
 			lock (_lock)
 				if (!_completionSource.TrySetResult(success))
 					throw new InvalidOperationException("Tool execution already completed.");
+			return this;
 		}
 
 		/// <summary>

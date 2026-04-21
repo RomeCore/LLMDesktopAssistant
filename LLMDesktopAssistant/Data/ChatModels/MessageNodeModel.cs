@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
 
-namespace LLMDesktopAssistant.Data.Models
+namespace LLMDesktopAssistant.Data.ChatModels
 {
 	/// <summary>
 	/// Represents a node in a conversation tree, containing messages and child nodes.

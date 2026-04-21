@@ -1,5 +1,6 @@
 using DocumentFormat.OpenXml.VariantTypes;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Messages;
@@ -22,7 +23,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IToolExecutionService toolExecutor,
 		IChatSummarizationService summarizer,
 		ILLMBuildingService llmBuilder,
-		IToolsetBuildingService toolsetBuilder,
+		IToolsetCacheService toolsetCache,
 		IMCPManagementService mcpManager,
 		IUsageStatsCollector usageStatsCollector
 	) : IChatExecutionService
@@ -50,7 +51,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				DateTime? timeFirstToken = null;
 
 				var inputMessages = promptBuilder.Build();
-				var tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Name);
+				toolsetCache.Invalidate();
+				var tools = toolsetCache.ValidTools;
 				var toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
 				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				var responseMessage = response.Message;
@@ -99,7 +101,7 @@ namespace LLMDesktopAssistant.LLM.Services
 							Status = ToolStatus.None,
 							Id = toolCall.Id,
 							ToolName = toolCall.ToolName,
-							Title = toolInfo?.DisplayName,
+							Title = toolInfo?.DisplayName ?? toolCall.ToolName,
 							Arguments = funtionCall.Args,
 							CompletionToken = toolCallCompletionSource.Token
 						};
@@ -107,6 +109,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 						static async Task WrapToolExecutionTask(
 							IToolExecutionService toolExecutor,
+							Domain.AssistantMessage assistantMessage,
 							ToolCall domainToolCall,
 							ILLMBuildingService llmBuilder,
 							ImmutableDictionary<string, ToolInfo> tools,
@@ -116,7 +119,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						{
 							try
 							{
-								await toolExecutor.ExecuteAsync(domainToolCall, llmInfo, tools, cancellationToken);
+								await toolExecutor.ExecuteAsync(assistantMessage, domainToolCall, llmInfo, tools, cancellationToken);
 							}
 							finally
 							{
@@ -124,7 +127,7 @@ namespace LLMDesktopAssistant.LLM.Services
 							}
 						}
 
-						var toolExecTask = WrapToolExecutionTask(toolExecutor, domainToolCall, llmBuilder,
+						var toolExecTask = WrapToolExecutionTask(toolExecutor, domainResponseMessage, domainToolCall, llmBuilder,
 							tools, llmInfo, toolCallCompletionSource, cancellationToken);
 						lock (lockObj)
 							toolExecutionTasks.Add(toolExecTask);
@@ -139,9 +142,14 @@ namespace LLMDesktopAssistant.LLM.Services
 							domainResponseMessage.ReasoningContent = prefixReasoningContent + responseMessage.ReasoningContent;
 						if (!string.IsNullOrEmpty(delta.DeltaContent))
 							domainResponseMessage.Content = prefixContent + responseMessage.Content;
+						if (delta.NewPartialMetadata?.OfType<ToolCallPendingMetadata>().FirstOrDefault() is ToolCallPendingMetadata toolCallPendingMetadata)
+							domainResponseMessage.PendingToolName = toolCallPendingMetadata.ToolName;
 
 						foreach (var toolCall in delta.NewToolCalls ?? [])
+						{
+							domainResponseMessage.PendingToolName = null;
 							ProcessToolCall(toolCall);
+						}
 					}
 
 					domainResponseMessage.ReasoningContent = prefixReasoningContent + responseMessage.ReasoningContent;
@@ -234,6 +242,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						}
 						finally
 						{
+							domainResponseMessage.PendingToolName = null;
 							completionSource.Complete();
 						}
 					}
@@ -245,7 +254,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					timeFirstToken = null;
 
 					inputMessages = promptBuilder.Build();
-					tools = toolsetBuilder.BuildTools().ToImmutableDictionary(t => t.Name);
+					toolsetCache.Invalidate();
+					tools = toolsetCache.ValidTools;
 					toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
 					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 					responseMessage = response.Message;

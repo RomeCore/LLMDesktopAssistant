@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace LLMDesktopAssistant.Behaviours.CodeBlockExtensions
+namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 {
 	[CodeBlockExtension]
 	public class SaveCodeBlockExtension : CodeBlockExtension

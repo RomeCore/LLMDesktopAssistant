@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiteDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -29,6 +30,7 @@ namespace LLMDesktopAssistant
 		/// </summary>
 		[IgnoreDataMember]
 		[JsonIgnore]
+		[BsonIgnore]
 		public bool Disposed => _isDisposed;
 
 		/// <summary>

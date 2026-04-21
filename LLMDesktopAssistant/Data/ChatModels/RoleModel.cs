@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Data.Models
+﻿namespace LLMDesktopAssistant.Data.ChatModels
 {
 	/// <summary>
 	/// Represents the role of a message in a conversation.

@@ -216,7 +216,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ToolResult ReadFile(
+		public ReactiveToolResult ReadFile(
 			string path,
 			[Description("The 1-based index of the first line to read.")]
 			int startLine = 1,
@@ -231,9 +231,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				var fullPath = ResolvePath(path);
 				if (!File.Exists(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "File not found.");
+					return ReactiveToolResult.CreateError("File not found.");
 				if (endLine < startLine)
-					return new ToolResult(ToolResultStatus.Error, "Invalid line range.");
+					return ReactiveToolResult.CreateError("Invalid line range.");
 
 				var (lines, totalLines) = FileUtils.ReadLinesChunk(
 					fullPath,
@@ -242,8 +242,16 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					maxLineLength,
 					showLineNumbers);
 
+				var result = new ReactiveToolResult();
+
+				result.StatusIcon = Material.Icons.MaterialIconKind.File;
+				result.StatusTitle = Path.GetFileName(path);
+
 				if (lines.Count == 0)
-					return new ToolResult(ToolResultStatus.Success, "No content.");
+				{
+					result.ResultContent = "No content.";
+					return result.Complete(true);
+				}
 
 				var output = $"""
 					File: {path}
@@ -253,11 +261,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					{string.Join(Environment.NewLine, lines)}
 					""";
 
-				return new ToolResult(ToolResultStatus.Success, output);
+				result.ResultContent = output;
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error reading file: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error reading file: {ex.Message}");
 			}
 		}
 
@@ -1017,7 +1026,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ToolResult Grep(
+		public ReactiveToolResult Grep(
 			[Description("The regex pattern to search for.")]
 			string pattern,
 			[Description("The path where to search, can be file or directory path.")]
@@ -1094,35 +1103,50 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}
 				else
 				{
-					return new ToolResult(ToolResultStatus.Error, "File or directory not found.");
+					return ReactiveToolResult.CreateError("File or directory not found.");
 				}
 
-				foreach (var file in filesToSearch)
+				var result = new ReactiveToolResult();
+				result.Progress = 0;
+				result.MaxProgress = filesToSearch.Count;
+
+				Task.Run(() =>
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-
-					var relativePath = Path.GetRelativePath(workingDirectory, file);
-					var fileMatches = SearchInFile(workingDirectory, file, regex, limitLinesPerFile, invert, onlyMatching,
-													lineNumbers, beforeContext, afterContext, cancellationToken);
-					if (fileMatches.Count > 0)
+					try
 					{
-						results.Add($"\n--- {relativePath} ---");
-						results.AddRange(fileMatches);
+						foreach (var file in filesToSearch)
+						{
+							result.Progress++;
+							cancellationToken.ThrowIfCancellationRequested();
 
-						totalFilesMatched++;
-						if (totalFilesMatched >= limitFiles)
-							break;
+							var relativePath = Path.GetRelativePath(workingDirectory, file);
+							var fileMatches = SearchInFile(workingDirectory, file, regex, limitLinesPerFile, invert, onlyMatching,
+															lineNumbers, beforeContext, afterContext, cancellationToken);
+							if (fileMatches.Count > 0)
+							{
+								result.ResultContentLines.Add($"\n--- {relativePath} ---");
+								result.ResultContentLines.AddRange(fileMatches);
+
+								totalFilesMatched++;
+								if (totalFilesMatched >= limitFiles)
+									break;
+							}
+						}
+						if (result.ResultContentLines.Count == 0)
+							result.ResultContentLines.Add("No matches found.");
+						result.Complete(true);
 					}
-				}
+					catch
+					{
+						result.Complete(false);
+					}
+				}, cancellationToken);
 
-				if (results.Count == 0)
-					return new ToolResult(ToolResultStatus.Success, "No matches found.");
-
-				return new ToolResult(ToolResultStatus.Success, string.Join("\n", results));
+				return result;
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Grep error: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Grep error: {ex.Message}");
 			}
 		}
 

@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using LiveMarkdown.Avalonia;
-using LLMDesktopAssistant.Behaviours.CodeBlockExtensions;
+using LLMDesktopAssistant.UIExtensions.CodeBlockExtensions;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.LLM.Domain;
 using Material.Icons;
@@ -33,7 +33,7 @@ namespace LLMDesktopAssistant.Desktop.Execution
 				if (e.Property == CodeBlock.LanguageProperty)
 				{
 					command.NotifyCanExecuteChanged();
-					IsVisible = CanExecute(codeBlock);
+					IsButtonVisible = CanExecute(codeBlock);
 				}
 			};
 		}

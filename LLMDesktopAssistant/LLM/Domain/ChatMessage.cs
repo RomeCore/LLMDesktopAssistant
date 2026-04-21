@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Avalonia.Collections;
+using LLMDesktopAssistant.Utils;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -40,14 +43,10 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _summaryOfPrevMessages, value);
 		}
 
-		private int? _tokenCount;
 		/// <summary>
-		/// Gets or sets the token count of the message. Used for memory context. If not set, it will be calculated based on the content.
+		/// The collection of additional view models associated with this chat message.
+		/// These can be used for displaying extra information in the UI or store additional data.
 		/// </summary>
-		public int? TokenCount
-		{
-			get => _tokenCount;
-			set => SetProperty(ref _tokenCount, value);
-		}
+		public RangeObservableCollection<AdditionalMessageViewModel> AdditionalViewModels { get; } = new() { RaiseInUIThread = true };
 	}
 }

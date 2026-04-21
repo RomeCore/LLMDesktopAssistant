@@ -1105,6 +1105,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Git Hints.
+        /// </summary>
+        public static string promptcomponent_git_hints {
+            get {
+                return ResourceManager.GetString("promptcomponent-git_hints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Markdown Tips.
         /// </summary>
         public static string promptcomponent_markdown_tips {
@@ -1119,6 +1128,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string promptcomponent_multiple_tools {
             get {
                 return ResourceManager.GetString("promptcomponent-multiple_tools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на No restrictions.
+        /// </summary>
+        public static string promptcomponent_no_restrictions {
+            get {
+                return ResourceManager.GetString("promptcomponent-no_restrictions", resourceCulture);
             }
         }
         

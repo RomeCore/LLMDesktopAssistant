@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LiteDB;
 using LLMDesktopAssistant.LLM.Domain;
 
-namespace LLMDesktopAssistant.Data.Models
+namespace LLMDesktopAssistant.Data.ChatModels
 {
 	/// <summary>
 	/// Represents a conversation model in the database.

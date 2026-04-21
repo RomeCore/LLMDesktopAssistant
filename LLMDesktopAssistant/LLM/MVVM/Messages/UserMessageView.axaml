@@ -9,7 +9,7 @@
 			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Controls"
 			 x:Class="LLMDesktopAssistant.LLM.Messages.UserMessageView"
 			 x:DataType="local:UserMessageViewModel">
-	
+
 	<StackPanel Orientation="Vertical"
 				VerticalAlignment="Top"
 				Margin="40,8"
@@ -44,20 +44,31 @@
 			</StackPanel>
 
 		</Border>
-
+		
+		<ItemsControl ItemsSource="{Binding UserMessage.AdditionalViewModels}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Vertical" />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<ContentControl	Content="{Binding}" IsVisible="{Binding IsVisible}" />
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+		
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
-					Spacing="4">
+				Spacing="4">
 
 			<Button Command="{Binding ResendCommand}"
-					Classes="IconButton"
-					ToolTip.Tip="{loc:Loc resend}">
+					Classes="IconButton">
 
 				<ico:MaterialIcon Kind="ArrowUDownLeft"/>
 			</Button>
 
 			<Button Command="{Binding EditCommand}"
-					Classes="IconButton"
-					ToolTip.Tip="{loc:Loc edit}">
+					Classes="IconButton">
 
 				<ico:MaterialIcon Kind="Edit"/>
 			</Button>
@@ -74,8 +85,8 @@
 				</Button>
 
 				<ComboBox ItemsSource="{Binding BranchIndices}"
-						  SelectedItem="{Binding SelectedBranchIndex}"
-						  Foreground="{DynamicResource MaterialDesignBody}"/>
+							SelectedItem="{Binding SelectedBranchIndex}"
+							Foreground="{DynamicResource MaterialDesignBody}"/>
 
 				<Button Command="{Binding SwitchBranchCommand}"
 						Classes="IconButton"
@@ -85,6 +96,25 @@
 				</Button>
 
 			</StackPanel>
+			
+			<ItemsControl ItemsSource="{Binding Extensions}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Horizontal" Spacing="4"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						
+						<Button Command="{Binding Command}"
+								Classes="IconButton"
+								IsVisible="{Binding IsButtonVisible}">
+							<ico:MaterialIcon Kind="{Binding Icon}"/>
+						</Button>
+
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
 
 		</StackPanel>
 

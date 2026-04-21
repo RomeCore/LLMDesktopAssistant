@@ -2,6 +2,7 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:spreadsheet="using:DocumentFormat.OpenXml.Spreadsheet"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.Messages"
 			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
@@ -16,10 +17,23 @@
 
 		<ContentControl Content="{Binding ReasoningPart}"/>
 		<ContentControl Content="{Binding TextPart}"/>
-		<ContentControl Content="{Binding ToolPart}" Foreground="{DynamicResource MaterialDesignBody}"/>
+		<ContentControl Content="{Binding ToolPart}"/>
 		<Label Content="{Binding Error}"
 			   Foreground="Red"
 			   IsVisible="{Binding Error, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
+		<ItemsControl ItemsSource="{Binding AssistantMessage.AdditionalViewModels}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Vertical" />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<ContentControl	Content="{Binding}" IsVisible="{Binding IsVisible}" />
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
 
 		<StackPanel Orientation="Horizontal"
 					HorizontalAlignment="Left"
@@ -67,6 +81,25 @@
 				</Button>
 
 			</StackPanel>
+			
+			<ItemsControl ItemsSource="{Binding Extensions}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Horizontal" Spacing="4"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						
+						<Button Command="{Binding Command}"
+								Classes="IconButton"
+								IsVisible="{Binding IsButtonVisible}">
+							<ico:MaterialIcon Kind="{Binding Icon}"/>
+						</Button>
+
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
 
 		</StackPanel>
 

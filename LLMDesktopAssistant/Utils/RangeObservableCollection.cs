@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Avalonia.Threading;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -9,7 +10,7 @@ namespace LLMDesktopAssistant.Utils
 	/// A thread-safe ObservableCollection that notifies when a range of items is added or removed.
 	/// </summary>
 	/// <typeparam name="T">The type of elements in the collection.</typeparam>
-	public class RangeObservableCollection<T> : ICollection<T>, IList<T>, INotifyPropertyChanged, INotifyCollectionChanged
+	public class RangeObservableCollection<T> : IList<T>, IList, INotifyPropertyChanged, INotifyCollectionChanged
 	{
 		private readonly List<T> _items;
 		private readonly object _lock;
@@ -31,12 +32,28 @@ namespace LLMDesktopAssistant.Utils
 		public bool IsReadOnly => false;
 
 		/// <summary>
+		/// Gets a value indicating whether the <see cref="RangeObservableCollection{T}"/> has a fixed size.
+		/// </summary>
+		public bool IsFixedSize => false;
+
+		/// <summary>
+		/// Gets a value indicating whether access to the <see cref="RangeObservableCollection{T}"/> is synchronized (thread-safe).
+		/// </summary>
+		public bool IsSynchronized => true;
+
+		/// <summary>
+		/// Gets an object that can be used to synchronize access to the <see cref="RangeObservableCollection{T}"/>.
+		/// </summary>
+		public object SyncRoot => _lock;
+
+		/// <summary>
 		/// Gets or sets the element at the specified index.
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
 		/// <exception cref="NotImplementedException"></exception>
 		public T this[int index] { get => Get(index); set => Set(index, value); }
+		object? IList.this[int index] { get => Get(index); set => Set(index, (T)value!); }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to use snapshot enumeration for <see cref="GetEnumerator"/> method.
@@ -45,8 +62,14 @@ namespace LLMDesktopAssistant.Utils
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to prefer a <see cref="NotifyCollectionChangedAction.Reset"/> for range operations.
+		/// If set to false, this collection will never raise <see cref="NotifyCollectionChangedAction.Reset"/> for any operations.
 		/// </summary>
 		public bool PreferResetForRangeOperations { get; set; } = false;
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to raise events in the UI thread.
+		/// </summary>
+		public bool RaiseInUIThread { get; set; } = false;
 
 		/// <summary>
 		/// The event that is raised when a property value changes.
@@ -105,9 +128,21 @@ namespace LLMDesktopAssistant.Utils
 		/// <param name="e">The event arguments.</param>
 		protected virtual void RaiseChangedEvents(NotifyCollectionChangedEventArgs e)
 		{
-			OnPropertyChanged(EventArgsCache.CountPropertyChanged);
-			OnPropertyChanged(EventArgsCache.IndexerPropertyChanged);
-			OnCollectionChanged(e);
+			if (RaiseInUIThread)
+			{
+				Dispatcher.UIThread.Invoke(() =>
+				{
+					OnCollectionChanged(e);
+					OnPropertyChanged(EventArgsCache.CountPropertyChanged);
+					OnPropertyChanged(EventArgsCache.IndexerPropertyChanged);
+				});
+			}
+			else
+			{
+				OnCollectionChanged(e);
+				OnPropertyChanged(EventArgsCache.CountPropertyChanged);
+				OnPropertyChanged(EventArgsCache.IndexerPropertyChanged);
+			}
 		}
 
 		/// <summary>
@@ -126,6 +161,12 @@ namespace LLMDesktopAssistant.Utils
 			}
 
 			RaiseChangedEvents(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, startIndex));
+		}
+		int IList.Add(object? value)
+		{
+			int count = _count;
+			Add((T)value!);
+			return count;
 		}
 
 		/// <summary>
@@ -171,6 +212,10 @@ namespace LLMDesktopAssistant.Utils
 			}
 
 			RaiseChangedEvents(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+		}
+		void IList.Insert(int index, object? value)
+		{
+			Insert(index, (T)value!);
 		}
 
 		/// <summary>
@@ -219,6 +264,10 @@ namespace LLMDesktopAssistant.Utils
 
 			RemoveAt(index);
 			return true;
+		}
+		void IList.Remove(object? value)
+		{
+			Remove((T)value!);
 		}
 
 		/// <summary>
@@ -515,6 +564,10 @@ namespace LLMDesktopAssistant.Utils
 			lock (_lock)
 				return _items.IndexOf(item, index, count);
 		}
+		int IList.IndexOf(object? value)
+		{
+			return IndexOf((T)value!);
+		}
 
 		/// <summary>
 		/// Copies the elements of the <see cref="RangeObservableCollection{T}"/> to an existing one-dimensional array, starting at a specified index.
@@ -526,6 +579,10 @@ namespace LLMDesktopAssistant.Utils
 			lock (_lock)
 				_items.CopyTo(array, arrayIndex);
 		}
+		void ICollection.CopyTo(Array array, int index)
+		{
+			Array.Copy(Items.ToArray(), 0, array, index, Count);
+		}
 
 		/// <summary>
 		/// Determines whether the <see cref="RangeObservableCollection{T}"/> contains a specific value.
@@ -536,6 +593,10 @@ namespace LLMDesktopAssistant.Utils
 		{
 			lock (_lock)
 				return _items.Contains(item);
+		}
+		bool IList.Contains(object? value)
+		{
+			return Contains((T)value!);
 		}
 
 		/// <summary>

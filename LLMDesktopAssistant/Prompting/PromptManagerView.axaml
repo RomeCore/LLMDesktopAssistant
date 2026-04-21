@@ -119,7 +119,7 @@
 						 PlaceholderText="{loc:Loc prompt_category}"
 						 Margin="0,0,0,10"/>
 			
-				<TextBox Text="{Binding Component.Text, Mode=TwoWay}"
+				<TextBox Text="{Binding Text, Mode=TwoWay}"
 						 AcceptsReturn="True"
 						 TextWrapping="Wrap"
 						 Height="300"
@@ -139,7 +139,7 @@
 						 PlaceholderText="{loc:Loc prompt_name}"
 						 Margin="0,0,0,10"/>
 			
-				<TextBox Text="{Binding Persona.Text, Mode=TwoWay}"
+				<TextBox Text="{Binding Text, Mode=TwoWay}"
 						 AcceptsReturn="True"
 						 TextWrapping="Wrap"
 						 Height="300"

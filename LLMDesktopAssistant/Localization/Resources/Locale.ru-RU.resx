@@ -594,4 +594,10 @@
   <data name="promptcomponent-uncensored" xml:space="preserve">
     <value>Без цензуры</value>
   </data>
+  <data name="promptcomponent-no_restrictions" xml:space="preserve">
+    <value>Без ограничений</value>
+  </data>
+  <data name="promptcomponent-git_hints" xml:space="preserve">
+    <value>Советы по использованию Git</value>
+  </data>
 </root>

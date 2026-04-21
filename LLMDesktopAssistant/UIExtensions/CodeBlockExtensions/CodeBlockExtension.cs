@@ -1,11 +1,10 @@
 ﻿using LiveMarkdown.Avalonia;
-using LLMDesktopAssistant;
 using Material.Icons;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LLMDesktopAssistant.Behaviours.CodeBlockExtensions
+namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 {
 	/// <summary>
 	/// Base class for markdown code block extensions.
@@ -27,14 +26,14 @@ namespace LLMDesktopAssistant.Behaviours.CodeBlockExtensions
 		/// </summary>
 		public abstract ICommand Command { get; }
 
-		private bool _isVisible = true;
+		private bool _isButtonVisible = true;
 		/// <summary>
 		/// The visibility of the extension. If false, the extension will not be displayed.
 		/// </summary>
-		public bool IsVisible
+		public bool IsButtonVisible
 		{
-			get => _isVisible;
-			protected set => SetProperty(ref  _isVisible, value);
+			get => _isButtonVisible;
+			protected set => SetProperty(ref _isButtonVisible, value);
 		}
 
 		private object? _additionalViewModel;

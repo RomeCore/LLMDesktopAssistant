@@ -1,4 +1,5 @@
 ﻿using LLMDesktopAssistant.Tools;
+using Material.Icons;
 using RCLargeLanguageModels.Tasks;
 using System.Text.Json.Nodes;
 
@@ -37,6 +38,26 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _status;
 			set => SetProperty(ref _status, value);
+		}
+
+		private MaterialIconKind? _statusIcon;
+		/// <summary>
+		/// The status icon to be displayed. This will be shown next to the main title (that contains tool name).
+		/// </summary>
+		public MaterialIconKind? StatusIcon
+		{
+			get => _statusIcon;
+			set => SetProperty(ref _statusIcon, value);
+		}
+
+		private string? _statusTitle;
+		/// <summary>
+		/// The title of the status that will be shown next to the main title (that contains tool name).
+		/// </summary>
+		public string? StatusTitle
+		{
+			get => _statusTitle;
+			set => SetProperty(ref _statusTitle, value);
 		}
 
 		private string? _resultContent = string.Empty;

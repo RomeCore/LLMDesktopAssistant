@@ -1,6 +1,7 @@
 ﻿using Avalonia.Collections;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.UIExtensions.MessageExtensions;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Messages
@@ -8,6 +9,9 @@ namespace LLMDesktopAssistant.LLM.Messages
 	[ViewModelFor(typeof(UserMessageView))]
 	public class UserMessageViewModel : MessageViewModelBase
 	{
+		private readonly UserMessage _userMessage;
+		public UserMessage UserMessage => _userMessage;
+
 		private string _text = string.Empty;
 		public string Text
 		{
@@ -26,6 +30,8 @@ namespace LLMDesktopAssistant.LLM.Messages
 			}
 		}
 
+		public ImmutableList<MessageExtension> Extensions { get; }
+
 		public ICommand EditCommand { get; }
 
 		public UserMessageViewModel(BranchedMessage branchedMessage, ChatViewModel chatVM) : base(branchedMessage, chatVM)
@@ -33,8 +39,10 @@ namespace LLMDesktopAssistant.LLM.Messages
 			if (branchedMessage.Message is not UserMessage userMessage)
 				throw new InvalidOperationException("Invalid message type. Expected IUserMessage.");
 
+			_userMessage = userMessage;
 			Text = userMessage.Content ?? string.Empty;
 			Attachments = userMessage.Attachments;
+			Extensions = MessageExtensionManager.CreateExtensions(this, chatVM.Chat);
 
 			EditCommand = new RelayCommand(() =>
 			{

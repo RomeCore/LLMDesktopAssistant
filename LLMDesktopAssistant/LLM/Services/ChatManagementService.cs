@@ -1,5 +1,5 @@
 ﻿using LLMDesktopAssistant.Data;
-using LLMDesktopAssistant.Data.Models;
+using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
 using Microsoft.Extensions.DependencyInjection;

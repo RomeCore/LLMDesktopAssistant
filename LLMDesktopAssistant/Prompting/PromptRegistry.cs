@@ -8,6 +8,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Metadata;
 
@@ -24,57 +25,52 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			var assembly = typeof(PromptRegistry).Assembly;
 
-			SharedLibrary.ImportFromAssembly(assembly);
+			foreach (var observedAssembly in ReflectionUtility.ObservedAssemblies)
+				SharedLibrary.ImportFromAssembly(observedAssembly);
 
-			var componentsFileStream = assembly.GetManifestResourceStream("LLMDesktopAssistant.Prompting.Resources.components.llt")
-				?? throw new FileNotFoundException("components.llt not found in embedded resources.");
-			var componentsLibrary = new TemplateLibrary();
-			componentsLibrary.ImportFromStream(componentsFileStream);
 			var componentsBuilder = ImmutableDictionary.CreateBuilder<Guid, PromptComponent>();
+			var personasBuilder = ImmutableDictionary.CreateBuilder<Guid, Persona>();
 
-			foreach (var componentTemplate in componentsLibrary)
+			foreach (var template in SharedLibrary)
 			{
-				var id = componentTemplate.Metadata.TryGet<TemplateIdentifierMetadata>()!.Identifier;
-				var title = componentTemplate.Metadata.TryGetAdditional<string>("title");
+				var id = template.Metadata.TryGet<TemplateIdentifierMetadata>()!.Identifier;
+				var type = template.Metadata.TryGetAdditional<string>("type");
 
-				var guidStr = componentTemplate.Metadata.TryGetAdditional<string>("guid")
-					?? throw new InvalidDataException($"Invalid component template: {id} missing 'guid' metadata.");
-				var guid = Guid.Parse(guidStr);
-
-				componentsBuilder.Add(guid, new PromptComponent
+				if (type == "component" || type == "persona")
 				{
-					Id = guid,
-					Name = title ?? LocalizationManager.LocalizeStatic("promptcomponent-" + id),
-					Category = string.Empty,
-					Text = componentTemplate.Render().ToString() ?? throw new InvalidOperationException($"Failed to render component template: {id}")
-				});
+					if (template is not ITextTemplate textTemplate)
+						throw new InvalidDataException($"Invalid component/persona template: {id} is not a text template.");
+
+					var title = template.Metadata.TryGetAdditional<string>("title");
+					var guidStr = template.Metadata.TryGetAdditional<string>("guid")
+						?? throw new InvalidDataException($"Invalid component/persona template: {id} missing 'guid' metadata.");
+					var guid = Guid.Parse(guidStr);
+
+					if (type == "component")
+					{
+						componentsBuilder.Add(guid, new PromptComponent
+						{
+							Id = guid,
+							Name = title ?? LocalizationManager.LocalizeStatic("promptcomponent-" + id),
+							Category = string.Empty,
+							Template = new SerializableTextTemplate(textTemplate)
+						});
+					}
+					else if (type == "persona")
+					{
+						personasBuilder.Add(guid, new Persona
+						{
+							Id = guid,
+							Name = title ?? LocalizationManager.LocalizeStatic("persona-" + id),
+							Template = new SerializableTextTemplate(textTemplate)
+						});
+					}
+
+				}
+
 			}
 
 			BuiltinComponents = componentsBuilder.ToImmutable();
-
-			var personasFileStream = assembly.GetManifestResourceStream("LLMDesktopAssistant.Prompting.Resources.personas.llt")
-				?? throw new FileNotFoundException("personas.llt not found in embedded resources.");
-			var personasLibrary = new TemplateLibrary();
-			personasLibrary.ImportFromStream(personasFileStream);
-			var personasBuilder = ImmutableDictionary.CreateBuilder<Guid, Persona>();
-
-			foreach (var personaTemplate in personasLibrary)
-			{
-				var id = personaTemplate.Metadata.TryGet<TemplateIdentifierMetadata>()!.Identifier;
-				var title = personaTemplate.Metadata.TryGetAdditional<string>("title");
-
-				var guidStr = personaTemplate.Metadata.TryGetAdditional<string>("guid")
-					?? throw new InvalidDataException($"Invalid persona template: {id} missing 'guid' metadata.");
-				var guid = Guid.Parse(guidStr);
-
-				personasBuilder.Add(guid, new Persona
-				{
-					Id = guid,
-					Name = title ?? LocalizationManager.LocalizeStatic("persona-" + id),
-					Text = personaTemplate.Render().ToString() ?? throw new InvalidOperationException($"Failed to render persona template: {id}")
-				});
-			}
-
 			BuiltinPersonas = personasBuilder.ToImmutable();
 		}
 

@@ -68,7 +68,7 @@
 													Classes="IconButton"
 													Focusable="False"
 													Command="{Binding Command}"
-													IsVisible="{Binding IsVisible}">
+													IsVisible="{Binding IsButtonVisible}">
 
 												<ico:MaterialIcon Kind="{Binding Icon}"/>
 											</Button>
@@ -110,8 +110,7 @@
 
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
-								<ContentControl Content="{Binding AdditionalViewModel}"
-												IsVisible="{Binding IsVisible}"/>
+								<ContentControl Content="{Binding AdditionalViewModel}"/>
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
 

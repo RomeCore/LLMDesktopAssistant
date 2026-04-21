@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
 
-namespace LLMDesktopAssistant.Data.Models
+namespace LLMDesktopAssistant.Data.ChatModels
 {
 	/// <summary>
 	/// The attachment that can be applied to message. Used mostly for display purposes.

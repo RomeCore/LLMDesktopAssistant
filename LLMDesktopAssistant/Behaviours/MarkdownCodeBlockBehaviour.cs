@@ -2,9 +2,9 @@
 using Avalonia.Collections;
 using Avalonia.VisualTree;
 using LiveMarkdown.Avalonia;
-using LLMDesktopAssistant.Behaviours.CodeBlockExtensions;
 using LLMDesktopAssistant.LLM;
 using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.UIExtensions.CodeBlockExtensions;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Behaviours

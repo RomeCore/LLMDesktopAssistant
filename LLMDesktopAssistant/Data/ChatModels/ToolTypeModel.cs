@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Data.Models
+﻿namespace LLMDesktopAssistant.Data.ChatModels
 {
 	public enum ToolTypeModel
 	{

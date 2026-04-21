@@ -50,18 +50,24 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			var language = GetCurrentLanguageMetadata();
 			var template = templates.TryRetrieveBestWithFallback("system_prompt", language) as ITextTemplate;
+
+			var componentsContext = new
+			{
+			};
+
 			var context = new
 			{
 				prompt = chat.Settings.SystemPrompt,
 				components = chat.Settings.PromptComponents
-					.Select(id => PromptRegistry.GetComponent(id)?.Text)
+					.Select(id => PromptRegistry.GetComponent(id)?.Template.Template.Render(componentsContext))
 					.Where(c => !string.IsNullOrWhiteSpace(c))
 					.ToArray(),
 				persona = chat.Settings.UseCustomPersona ?
 					chat.Settings.CustomPersona :
-					(chat.Settings.PersonaId != null ? PromptRegistry.GetPersona(chat.Settings.PersonaId.Value)?.Text : null),
+					(chat.Settings.PersonaId != null ? PromptRegistry.GetPersona(chat.Settings.PersonaId.Value)?.Template.Template.Render(componentsContext) : null),
 				summary = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages
 			};
+
 			return template!.Render(context);
 		}
 

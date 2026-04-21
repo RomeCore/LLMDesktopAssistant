@@ -6,7 +6,8 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using LiteDB;
-using LLMDesktopAssistant.Data.Models;
+using LLMDesktopAssistant.Data.ChatModels;
+using LLMDesktopAssistant.LLM.Domain;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
@@ -25,6 +26,7 @@ namespace LLMDesktopAssistant.Data
 		public ILiteCollection<MessageModel> Messages { get; }
 		public ILiteCollection<AttachmentModel> Attachments { get; }
 		public ILiteCollection<ToolCallModel> ToolCalls { get; }
+		public ILiteCollection<AdditionalMessageViewDataModel> AdditionalMessageViewModels { get; }
 
 		public ChatDatabase(string path)
 		{
@@ -37,12 +39,14 @@ namespace LLMDesktopAssistant.Data
 			Messages = Database.GetCollection<MessageModel>();
 			Attachments = Database.GetCollection<AttachmentModel>();
 			ToolCalls = Database.GetCollection<ToolCallModel>();
+			AdditionalMessageViewModels = Database.GetCollection<AdditionalMessageViewDataModel>();
 
 			MessageNodes.EnsureIndex(x => x.ParentId);
 			MessageNodes.EnsureIndex(x => x.SelectedNodeId);
 			Attachments.EnsureIndex(x => x.MessageId);
 			ToolCalls.EnsureIndex(x => x.MessageId);
 			ToolCalls.EnsureIndex(x => x.ToolCallId);
+			AdditionalMessageViewModels.EnsureIndex(x => x.MessageId);
 		}
 
 		/// <summary>

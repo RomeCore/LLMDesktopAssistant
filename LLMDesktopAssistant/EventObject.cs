@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Reflection;
+using System.Text.Json.Serialization;
+using LiteDB;
 using RCParsing.Utils;
 
 namespace LLMDesktopAssistant
@@ -273,6 +275,8 @@ namespace LLMDesktopAssistant
 		/// <summary>
 		/// Gets the value indicating whether to call <c>PopulateEventsWith(this)</c> inside constructor.
 		/// </summary>
+		[JsonIgnore]
+		[BsonIgnore]
 		protected virtual bool AutoSubscribeSelf => true;
 
 		/// <summary>

@@ -1,7 +1,8 @@
 ﻿using LLMDesktopAssistant.Data;
-using LLMDesktopAssistant.Data.Models;
+using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
 using System.Collections.Concurrent;
@@ -310,15 +311,18 @@ namespace LLMDesktopAssistant.LLM.Services
 				ToolName = toolCall.ToolName,
 				Title = toolCall.Title,
 				FunctionArguments = JsonSerializer.Serialize(toolCall.Arguments),
-				ResultContent = toolCall.ResultContent,
 				Status = toolCall.Status switch
 				{
 					ToolStatus.None => ToolStatusModel.NotExecuted,
+					ToolStatus.Executing => ToolStatusModel.ExecutionBegin,
 					ToolStatus.Success => ToolStatusModel.Success,
 					ToolStatus.Error => ToolStatusModel.Error,
 					ToolStatus.Cancelled => ToolStatusModel.Cancelled,
 					_ => ToolStatusModel.NotExecuted,
-				}
+				},
+				StatusIcon = toolCall.StatusIcon,
+				StatusTitle = toolCall.StatusTitle,
+				ResultContent = toolCall.ResultContent
 			};
 
 			database.ToolCalls.Insert(toolCallModel);
@@ -328,17 +332,20 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		private void SubscribeToolCall(ToolCall toolCall, AssistantMessage assistantMessage, ToolCallModel model)
 		{
-			void OnToolCallPropertyChanged(object? sender, PropertyChangedEventArgs e)
+			async void OnToolCallPropertyChanged(object? sender, PropertyChangedEventArgs e)
 			{
-				model.ResultContent = toolCall.ResultContent;
 				model.Status = toolCall.Status switch
 				{
 					ToolStatus.None => ToolStatusModel.NotExecuted,
+					ToolStatus.Executing => ToolStatusModel.ExecutionBegin,
 					ToolStatus.Success => ToolStatusModel.Success,
 					ToolStatus.Error => ToolStatusModel.Error,
 					ToolStatus.Cancelled => ToolStatusModel.Cancelled,
 					_ => ToolStatusModel.NotExecuted,
 				};
+				model.StatusIcon = toolCall.StatusIcon;
+				model.StatusTitle = toolCall.StatusTitle;
+				model.ResultContent = toolCall.ResultContent;
 
 				database.ToolCalls.Update(model);
 			}
@@ -357,11 +364,45 @@ namespace LLMDesktopAssistant.LLM.Services
 			SubscribeToolCall(toolCall, assistantMessage, toolCallModel);
 		}
 
+		private AdditionalMessageViewDataModel CreateAndInsertAdditionalViewModel(AdditionalMessageViewModel viewModel, MessageModel model)
+		{
+			var additionalViewDataModel = new AdditionalMessageViewDataModel
+			{
+				MessageId = model.Id,
+				ViewModel = viewModel
+			};
+
+			database.AdditionalMessageViewModels.Insert(additionalViewDataModel);
+
+			return additionalViewDataModel;
+		}
+
+		private void SubscribeAdditionalViewModel(AdditionalMessageViewModel viewModel, ChatMessage message, AdditionalMessageViewDataModel model)
+		{
+			async void OnAdditionalViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+			{
+				database.AdditionalMessageViewModels.Update(model);
+			}
+			viewModel.PropertyChanged += OnAdditionalViewModelPropertyChanged;
+
+			_unsubscribers.Add(message, () =>
+			{
+				viewModel.PropertyChanged -= OnAdditionalViewModelPropertyChanged;
+			});
+		}
+
+		private void CreateAndInsertAdditionalViewModelAndSubscribe(AdditionalMessageViewModel viewModel, ChatMessage message, MessageModel model)
+		{
+			var additionalViewDataModel = CreateAndInsertAdditionalViewModel(viewModel, model);
+
+			SubscribeAdditionalViewModel(viewModel, message, additionalViewDataModel);
+		}
+
 		private void SubscribeMessage(ChatMessage message, MessageModel model)
 		{
 			if (message is UserMessage userMessage)
 			{
-				void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
+				async void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 				{
 					model.CreatedAt = userMessage.CreatedAt;
 					model.SummaryOfPrevMessages = userMessage.SummaryOfPrevMessages;
@@ -379,7 +420,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 			else if (message is AssistantMessage assistantMessage)
 			{
-				void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
+				async void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 				{
 					model.CreatedAt = assistantMessage.CreatedAt;
 					model.SummaryOfPrevMessages = assistantMessage.SummaryOfPrevMessages;
@@ -397,25 +438,41 @@ namespace LLMDesktopAssistant.LLM.Services
 
 					database.Messages.Update(model);
 				}
-				void ToolCallCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+				void ToolCallsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 				{
 					if (e.NewItems != null)
 						foreach (ToolCall newToolCall in e.NewItems)
 							CreateAndInsertToolCallModelAndSubscribe(newToolCall, assistantMessage, model);
 				}
 				assistantMessage.PropertyChanged += MessagePropertyChanged;
-				assistantMessage.ToolCalls.CollectionChanged += ToolCallCollectionChanged;
+				assistantMessage.ToolCalls.CollectionChanged += ToolCallsCollectionChanged;
 
 				_unsubscribers.Add(assistantMessage, () =>
 				{
 					assistantMessage.PropertyChanged -= MessagePropertyChanged;
-					assistantMessage.ToolCalls.CollectionChanged -= ToolCallCollectionChanged;
+					assistantMessage.ToolCalls.CollectionChanged -= ToolCallsCollectionChanged;
 				});
 			}
 			else
 			{
 				throw new ArgumentOutOfRangeException(nameof(message), "Invalid message type");
 			}
+
+			void AdditionalViewModelsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+			{
+				if (e.OldItems != null)
+					foreach (AdditionalMessageViewModel oldVm in e.OldItems)
+						database.AdditionalMessageViewModels.DeleteMany(avm => avm.ViewModel.Guid == oldVm.Guid);
+				if (e.NewItems != null)
+					foreach (AdditionalMessageViewModel newVm in e.NewItems)
+						CreateAndInsertAdditionalViewModelAndSubscribe(newVm, message, model);
+			}
+			message.AdditionalViewModels.CollectionChanged += AdditionalViewModelsCollectionChanged;
+
+			_unsubscribers.Add(message, () =>
+			{
+				message.AdditionalViewModels.CollectionChanged -= AdditionalViewModelsCollectionChanged;
+			});
 		}
 
 		private void Unsubscribe(ChatMessage message)
@@ -458,6 +515,11 @@ namespace LLMDesktopAssistant.LLM.Services
 					database.Attachments.Insert(attachmentModel);
 				}
 
+				foreach (var additionalViewModel in message.AdditionalViewModels)
+				{
+					CreateAndInsertAdditionalViewModelAndSubscribe(additionalViewModel, message, model);
+				}
+
 				SubscribeMessage(message, model);
 
 				return model;
@@ -489,6 +551,11 @@ namespace LLMDesktopAssistant.LLM.Services
 					CreateAndInsertToolCallModelAndSubscribe(toolCall, assistantMessage, model);
 				}
 
+				foreach (var additionalViewModel in message.AdditionalViewModels)
+				{
+					CreateAndInsertAdditionalViewModelAndSubscribe(additionalViewModel, message, model);
+				}
+
 				SubscribeMessage(message, model);
 
 				return model;
@@ -514,6 +581,11 @@ namespace LLMDesktopAssistant.LLM.Services
 						PreviewContent = am.PreviewContent
 					});
 
+				var additionalViewModels = database.AdditionalMessageViewModels
+					.Find(avm => avm.MessageId == messageModel.Id)
+					.OrderBy(avm => avm.Id)
+					.Select(avm => avm.ViewModel);
+
 				var result = new UserMessage
 				{
 					Content = messageModel.Content,
@@ -522,12 +594,21 @@ namespace LLMDesktopAssistant.LLM.Services
 					Attachments = attachments.ToImmutableList()
 				};
 
+				result.AdditionalViewModels.AddRange(additionalViewModels);
+
 				SubscribeMessage(result, messageModel);
 
 				return result;
 			}
 			else if (messageModel.Role == RoleModel.Assistant)
 			{
+				var toolCallModels = database.ToolCalls.Find(t => t.MessageId == messageModel.Id).ToList();
+
+				var additionalViewModels = database.AdditionalMessageViewModels
+					.Find(avm => avm.MessageId == messageModel.Id)
+					.OrderBy(avm => avm.Id)
+					.Select(avm => avm.ViewModel);
+
 				var result = new AssistantMessage
 				{
 					ReasoningContent = messageModel.ReasoningContent,
@@ -537,7 +618,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					Error = messageModel.Error
 				};
 
-				var toolCallModels = database.ToolCalls.Find(t => t.MessageId == messageModel.Id).ToList();
+				result.AdditionalViewModels.AddRange(additionalViewModels);
 
 				foreach (var toolCallModel in toolCallModels)
 				{
@@ -551,12 +632,15 @@ namespace LLMDesktopAssistant.LLM.Services
 						Status = toolCallModel.Status switch
 						{
 							ToolStatusModel.NotExecuted => ToolStatus.None,
+							ToolStatusModel.ExecutionBegin => ToolStatus.ExecutionInterrupted,
 							ToolStatusModel.Success => ToolStatus.Success,
 							ToolStatusModel.Cancelled => ToolStatus.Cancelled,
 							ToolStatusModel.Error => ToolStatus.Error,
 							ToolStatusModel.NoResult => ToolStatus.NoResult,
 							_ => ToolStatus.None
 						},
+						StatusIcon = toolCallModel.StatusIcon,
+						StatusTitle = toolCallModel.StatusTitle,
 						CompletionToken = CompletionToken.Success
 					};
 
