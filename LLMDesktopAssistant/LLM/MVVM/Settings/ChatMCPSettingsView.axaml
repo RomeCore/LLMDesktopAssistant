@@ -16,11 +16,11 @@
 
 		<StackPanel Margin="10">
 
-			<CheckBox IsChecked="{Binding Settings.Mcp.EnableMcp}"
+			<CheckBox IsChecked="{Binding McpSettings.EnableMcp}"
 					  Content="{loc:Loc settings-use_mcp}"/>
 
 			<ListBox ItemsSource="{Binding McpServers}"
-						  IsEnabled="{Binding Settings.Mcp.EnableMcp}">
+						  IsEnabled="{Binding McpSettings.EnableMcp}">
 
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>

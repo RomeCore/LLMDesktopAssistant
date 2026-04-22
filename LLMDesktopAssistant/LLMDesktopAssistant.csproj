@@ -129,10 +129,6 @@
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
-		<Compile Update="LLM\MVVM\Settings\ChatGeneralSettingsView.axaml.cs">
-		  <SubType>Code</SubType>
-		  <DependentUpon>%(Filename)</DependentUpon>
-		</Compile>
 		<Compile Update="LLM\MVVM\Settings\ChatMCPSettingsView.axaml.cs">
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>

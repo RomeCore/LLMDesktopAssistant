@@ -385,6 +385,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Environment.
+        /// </summary>
+        public static string chat_settings_environment {
+            get {
+                return ResourceManager.GetString("chat_settings_environment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на General.
         /// </summary>
         public static string chat_settings_general {
@@ -412,11 +421,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Models.
+        /// </summary>
+        public static string chat_settings_models {
+            get {
+                return ResourceManager.GetString("chat_settings_models", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Prompts.
         /// </summary>
         public static string chat_settings_prompts {
             get {
                 return ResourceManager.GetString("chat_settings_prompts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Summarization.
+        /// </summary>
+        public static string chat_settings_summarization {
+            get {
+                return ResourceManager.GetString("chat_settings_summarization", resourceCulture);
             }
         }
         
@@ -1483,11 +1510,20 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Summarization threshold (tokens).
+        ///   Ищет локализованную строку, похожую на Enable chat auto-summarization.
         /// </summary>
-        public static string settings_summarization_threshold {
+        public static string settings_summarization_enabled {
             get {
-                return ResourceManager.GetString("settings-summarization_threshold", resourceCulture);
+                return ResourceManager.GetString("settings-summarization_enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Trigger tokens.
+        /// </summary>
+        public static string settings_summarization_trigger_tokens_hint {
+            get {
+                return ResourceManager.GetString("settings-summarization_trigger_tokens_hint", resourceCulture);
             }
         }
         

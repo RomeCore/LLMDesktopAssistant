@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 	public class ToolItemViewModel : ViewModelBase
 	{
-		private readonly ChatSettings _settings;
+		private readonly ChatToolSettings _settings;
 		private readonly ToolInfo _toolInfo;
 		private ToolChange? _change;
 
@@ -43,7 +43,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public string Category { get; }
 		public ICommand ResetCommand { get; }
 
-		public ToolItemViewModel(ToolInfo tool, ChatSettings settings)
+		public ToolItemViewModel(ToolInfo tool, ChatToolSettings settings)
 		{
 			_settings = settings;
 			_toolInfo = tool;
@@ -77,14 +77,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 				DescriptionOpacityMask = gradientBrush;
 			}
 
-			_change = _settings.Tools.ToolChanges.FirstOrDefault(x => x.ToolName == Name);
+			_change = _settings.ToolChanges.FirstOrDefault(x => x.ToolName == Name);
 		}
 
 		private void Reset()
 		{
 			if (_change != null)
 			{
-				_settings.Tools.ToolChanges.Remove(_change);
+				_settings.ToolChanges.Remove(_change);
 				_change = null;
 				RaisePropertyChanged(nameof(Enabled));
 				RaisePropertyChanged(nameof(AskForConfirmation));
@@ -101,7 +101,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 					Enabled = null,
 					AskForConfirmation = null
 				};
-				_settings.Tools.ToolChanges.Add(_change);
+				_settings.ToolChanges.Add(_change);
 			}
 			return _change;
 		}
@@ -221,8 +221,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 	[ViewModelFor(typeof(ChatToolSettingsView))]
 	public class ChatToolSettingsViewModel : ViewModelBase
 	{
-		public ChatSettingsViewModel Parent { get; }
-		public ChatSettings Settings { get; }
+		private readonly IToolsetBuildingService _toolsetBuildingService;
+		public ChatToolSettings ToolSettings { get; }
 
 		private AvaloniaList<ToolCategoryViewModel> _toolCategories = [];
 		public ICollection<ToolCategoryViewModel> ToolCategories
@@ -236,18 +236,17 @@ namespace LLMDesktopAssistant.LLM.Settings
 			}
 		}
 
-		public ChatToolSettingsViewModel(ChatSettingsViewModel parent)
+		public ChatToolSettingsViewModel(ChatToolSettings settings, IToolsetBuildingService toolsetBuildingService)
 		{
-			Parent = parent;
-			Settings = parent.Settings;
+			_toolsetBuildingService = toolsetBuildingService;
+			ToolSettings = settings;
 			UpdateTools();
 		}
 
 		public void UpdateTools()
 		{
-			var toolBuilder = Parent.Chat.Services.GetRequiredService<IToolsetBuildingService>();
-			var tools = toolBuilder.GetAvailableTools();
-			var toolVMs = tools.Select(t => new ToolItemViewModel(t, Settings));
+			var tools = _toolsetBuildingService.GetAvailableTools();
+			var toolVMs = tools.Select(t => new ToolItemViewModel(t, ToolSettings));
 
 			foreach (var category in ToolCategories)
 				category.Dispose();

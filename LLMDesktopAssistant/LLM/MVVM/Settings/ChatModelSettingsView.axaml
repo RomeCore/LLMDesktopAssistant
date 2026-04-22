@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Controls"
+			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatModelSettingsView"
+			 x:DataType="local:ChatModelSettingsViewModel">
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel Orientation="Vertical" Margin="10">
+
+			<TextBlock Text="{loc:Loc settings-chat_model_hint}"
+					   Margin="0,15,0,2"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding ModelSettings.ChatModel, Mode=TwoWay}"/>
+
+			<TextBlock Text="{loc:Loc settings-agentic_model_hint}"
+					   Margin="0,15,0,2"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding ModelSettings.AgenticModel, Mode=TwoWay}"/>
+
+		</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

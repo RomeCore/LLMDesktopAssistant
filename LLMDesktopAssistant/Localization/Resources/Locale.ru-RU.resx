@@ -441,9 +441,6 @@
   <data name="application-applicate_hint" xml:space="preserve">
     <value>Вложить</value>
   </data>
-  <data name="settings-summarization_threshold" xml:space="preserve">
-    <value>Порог суммаризации (в токенах)</value>
-  </data>
   <data name="attachment-drop_files_here" xml:space="preserve">
     <value>Сбросьте файлы здесь</value>
   </data>
@@ -662,5 +659,20 @@
   </data>
   <data name="fs-create_directory" xml:space="preserve">
     <value>Создать директорию</value>
+  </data>
+  <data name="settings-summarization_enabled" xml:space="preserve">
+    <value>Включить авто-суммаризацию чата</value>
+  </data>
+  <data name="settings-summarization_trigger_tokens_hint" xml:space="preserve">
+    <value>Порог токенов</value>
+  </data>
+  <data name="chat_settings_models" xml:space="preserve">
+    <value>Модели</value>
+  </data>
+  <data name="chat_settings_summarization" xml:space="preserve">
+    <value>Суммаризация</value>
+  </data>
+  <data name="chat_settings_environment" xml:space="preserve">
+    <value>Окружение</value>
   </data>
 </root>

@@ -24,20 +24,20 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 		public bool IsEnabled
 		{
-			get => _settingsVm.Parent.Settings.Mcp.UsedMcpServers.Contains(_server.Id);
+			get => _settingsVm.McpSettings.UsedMcpServers.Contains(_server.Id);
 			set
 			{
 				if (value)
 				{
-					if (!_settingsVm.Parent.Settings.Mcp.UsedMcpServers.Contains(_server.Id))
+					if (!_settingsVm.McpSettings.UsedMcpServers.Contains(_server.Id))
 					{
-						_settingsVm.Parent.Settings.Mcp.UsedMcpServers.Add(_server.Id);
+						_settingsVm.McpSettings.UsedMcpServers.Add(_server.Id);
 						_settingsVm.EnsureMCPServers();
 					}
 				}
 				else
 				{
-					if (_settingsVm.Parent.Settings.Mcp.UsedMcpServers.Remove(_server.Id))
+					if (_settingsVm.McpSettings.UsedMcpServers.Remove(_server.Id))
 					{
 						_settingsVm.EnsureMCPServers();
 					}
@@ -51,8 +51,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 	[ViewModelFor(typeof(ChatMCPSettingsView))]
 	public class ChatMCPSettingsViewModel : ViewModelBase
 	{
-		public ChatSettingsViewModel Parent { get; }
-		public ChatSettings Settings { get; }
+		private readonly IMCPManagementService _mcpManagementService;
+		public ChatMcpSettings McpSettings { get; }
 
 		private AvaloniaList<MCPServerSelectionViewModel> _mcpServers = [];
 		public ICollection<MCPServerSelectionViewModel> McpServers
@@ -65,10 +65,10 @@ namespace LLMDesktopAssistant.LLM.Settings
 			}
 		}
 
-		public ChatMCPSettingsViewModel(ChatSettingsViewModel parent)
+		public ChatMCPSettingsViewModel(ChatMcpSettings settings, IMCPManagementService mcpManagementService)
 		{
-			Parent = parent;
-			Settings = parent.Settings;
+			_mcpManagementService = mcpManagementService;
+			McpSettings = settings;
 
 			var mcpConfig = MCPManager.GetConfiguration();
 			McpServers = mcpConfig.Servers
@@ -81,16 +81,13 @@ namespace LLMDesktopAssistant.LLM.Settings
 		private bool _ensuringMcp = false;
 		public async void EnsureMCPServers()
 		{
-			var managerService = Parent.Chat.Services.GetRequiredService<IMCPManagementService>();
-
 			if (_ensuringMcp)
 				return;
 			_ensuringMcp = true;
 
 			try
 			{
-				await managerService.EnsureCurrentMCPConnectionsAsync();
-				Parent.ToolSettings.UpdateTools();
+				await _mcpManagementService.EnsureCurrentMCPConnectionsAsync();
 			}
 			catch
 			{

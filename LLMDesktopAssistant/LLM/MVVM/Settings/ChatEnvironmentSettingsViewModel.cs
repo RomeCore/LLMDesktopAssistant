@@ -1,4 +1,4 @@
-﻿using Avalonia.Platform.Storage;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Localization.Resources;
 using System.Diagnostics;
@@ -7,21 +7,19 @@ using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
-	[ViewModelFor(typeof(ChatGeneralSettingsView))]
-	public class ChatGeneralSettingsViewModel : ViewModelBase
+	[ViewModelFor(typeof(ChatEnvironmentSettingsView))]
+	public class ChatEnvironmentSettingsViewModel : ViewModelBase
 	{
-		public ChatSettingsViewModel Parent { get; }
-		public ChatSettings Settings { get; }
+		public ChatEnvironmentSettings EnvironmentSettings { get; }
 
 		public ICommand SelectWorkingDirectoryCommand { get; }
 		public ICommand OpenWorkingDirectoryCommand { get; }
 		public ICommand SelectPythonVenvActivateScriptPathCommand { get; }
 		public ICommand OpenPythonVenvActivateScriptPathCommand { get; }
 
-		public ChatGeneralSettingsViewModel(ChatSettingsViewModel parent)
+		public ChatEnvironmentSettingsViewModel(ChatEnvironmentSettings settings)
 		{
-			Parent = parent;
-			Settings = Parent.Settings;
+			EnvironmentSettings = settings;
 
 			SelectWorkingDirectoryCommand = new AsyncRelayCommand(SelectWorkingDirectory);
 			OpenWorkingDirectoryCommand = new RelayCommand(OpenWorkingDirectory);
@@ -39,18 +37,18 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			if (result.Count > 0)
 			{
-				Settings.Environment.WorkingDirectory = result[0].Path.LocalPath;
+				EnvironmentSettings.WorkingDirectory = result[0].Path.LocalPath;
 			}
 		}
 
 		private void OpenWorkingDirectory()
 		{
-			if (!string.IsNullOrWhiteSpace(Settings.Environment.WorkingDirectory) &&
-				Directory.Exists(Settings.Environment.WorkingDirectory))
+			if (!string.IsNullOrWhiteSpace(EnvironmentSettings.WorkingDirectory) &&
+				Directory.Exists(EnvironmentSettings.WorkingDirectory))
 			{
 				Process.Start(new ProcessStartInfo
 				{
-					FileName = Settings.Environment.WorkingDirectory,
+					FileName = EnvironmentSettings.WorkingDirectory,
 					UseShellExecute = true
 				});
 			}
@@ -70,19 +68,19 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			if (result.Count > 0)
 			{
-				Settings.Environment.PythonVenvActivateScriptPath = result[0].Path.LocalPath;
+				EnvironmentSettings.PythonVenvActivateScriptPath = result[0].Path.LocalPath;
 			}
 		}
 
 		private void OpenPythonVenvActivateScriptPath()
 		{
-			if (!string.IsNullOrWhiteSpace(Settings.Environment.PythonVenvActivateScriptPath) &&
-				File.Exists(Settings.Environment.PythonVenvActivateScriptPath))
+			if (!string.IsNullOrWhiteSpace(EnvironmentSettings.PythonVenvActivateScriptPath) &&
+				File.Exists(EnvironmentSettings.PythonVenvActivateScriptPath))
 			{
 				Process.Start(new ProcessStartInfo
 				{
 					FileName = "explorer.exe",
-					Arguments = $"/select,\"{Settings.Environment.PythonVenvActivateScriptPath}\"",
+					Arguments = $"/select,\"{EnvironmentSettings.PythonVenvActivateScriptPath}\"",
 					UseShellExecute = true
 				});
 			}

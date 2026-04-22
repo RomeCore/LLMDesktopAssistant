@@ -22,21 +22,68 @@
 							MaxWidth="80"
 							Margin="5">
 
-					<ico:MaterialIcon Kind="Cog"
+					<ico:MaterialIcon Kind="Brain"
 									  Width="24" Height="24"
 									  HorizontalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc chat_settings_general}"
-							   FontSize="18"
+					<TextBlock Text="{loc:Loc chat_settings_models}"
+							   FontSize="15"
 							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"/>
+							   TextTrimming="CharacterEllipsis"
+							   TextWrapping="NoWrap"/>
 
 				</StackPanel>
 			</TabItem.Header>
 
-			<ContentControl Content="{Binding GeneralSettings}"/>
+			<ContentControl Content="{Binding ModelSettings}"/>
 
 		</TabItem>
 		
+		<TabItem>
+
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical"
+							MaxWidth="80"
+							Margin="5">
+
+					<ico:MaterialIcon Kind="ArrowCollapseVertical"
+									  Width="24" Height="24"
+									  HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_summarization}"
+							   FontSize="15"
+							   HorizontalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"
+							   TextWrapping="NoWrap"/>
+
+				</StackPanel>
+			</TabItem.Header>
+
+			<ContentControl Content="{Binding SummarizationSettings}"/>
+
+		</TabItem>
+		
+		<TabItem>
+
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical"
+							MaxWidth="80"
+							Margin="5">
+
+					<ico:MaterialIcon Kind="FolderSettings"
+									  Width="24" Height="24"
+									  HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_environment}"
+							   FontSize="15"
+							   HorizontalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"
+							   TextWrapping="NoWrap"/>
+
+				</StackPanel>
+			</TabItem.Header>
+
+			<ContentControl Content="{Binding EnvironmentSettings}"/>
+
+		</TabItem>
+
 		<TabItem>
 
 			<TabItem.Header>
@@ -48,9 +95,10 @@
 									  Width="24" Height="24"
 									  HorizontalAlignment="Center"/>
 					<TextBlock Text="{loc:Loc chat_settings_prompts}"
-							   FontSize="18"
+							   FontSize="15"
 							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"/>
+							   TextTrimming="CharacterEllipsis"
+							   TextWrapping="NoWrap"/>
 
 				</StackPanel>
 			</TabItem.Header>
@@ -70,7 +118,7 @@
 									  Width="24" Height="24"
 									  HorizontalAlignment="Center"/>
 					<TextBlock Text="{loc:Loc chat_settings_tools}"
-							   FontSize="18"
+							   FontSize="15"
 							   HorizontalAlignment="Center"
 							   TextTrimming="CharacterEllipsis"
 							   TextWrapping="NoWrap"/>
@@ -93,9 +141,10 @@
 									  Width="24" Height="24"
 									  HorizontalAlignment="Center"/>
 					<TextBlock Text="{loc:Loc chat_settings_mcp}"
-							   FontSize="18"
+							   FontSize="15"
 							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"/>
+							   TextTrimming="CharacterEllipsis"
+							   TextWrapping="NoWrap"/>
 
 				</StackPanel>
 			</TabItem.Header>

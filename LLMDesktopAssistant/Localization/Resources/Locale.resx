@@ -441,9 +441,6 @@
   <data name="application-applicate_hint" xml:space="preserve">
     <value>Applicate</value>
   </data>
-  <data name="settings-summarization_threshold" xml:space="preserve">
-    <value>Summarization threshold (tokens)</value>
-  </data>
   <data name="attachment-drop_files_here" xml:space="preserve">
     <value>Drop files here</value>
   </data>
@@ -662,5 +659,20 @@
   </data>
   <data name="fs-create_directory" xml:space="preserve">
     <value>Create directory</value>
+  </data>
+  <data name="settings-summarization_enabled" xml:space="preserve">
+    <value>Enable chat auto-summarization</value>
+  </data>
+  <data name="settings-summarization_trigger_tokens_hint" xml:space="preserve">
+    <value>Trigger tokens</value>
+  </data>
+  <data name="chat_settings_models" xml:space="preserve">
+    <value>Models</value>
+  </data>
+  <data name="chat_settings_summarization" xml:space="preserve">
+    <value>Summarization</value>
+  </data>
+  <data name="chat_settings_environment" xml:space="preserve">
+    <value>Environment</value>
   </data>
 </root>

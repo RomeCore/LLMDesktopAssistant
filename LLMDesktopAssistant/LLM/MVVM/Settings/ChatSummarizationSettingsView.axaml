@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Controls"
+			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatSummarizationSettingsView"
+			 x:DataType="local:ChatSummarizationSettingsViewModel">
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel Orientation="Vertical" Margin="10">
+
+			<CheckBox Content="{loc:Loc settings-summarization_enabled}"
+					  IsChecked="{Binding SummarizationSettings.SummarizationEnabled, Mode=TwoWay}"/>
+
+			<TextBlock Text="{loc:Loc settings-summarization_trigger_tokens_hint}"
+					   Margin="0,15,0,2"/>
+			<NumericUpDown Value="{Binding SummarizationSettings.SummarizationTriggerTokens, Mode=TwoWay}"
+						   Minimum="1024"
+						   Maximum="1024000"
+							 Increment="1024"
+						   FormatString="N0"
+						   HorizontalAlignment="Stretch"/>
+
+			<TextBlock Text="{loc:Loc settings-summarizer_model_hint}"
+					   Margin="0,15,0,2"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding SummarizationSettings.SummarizerModel, Mode=TwoWay}"/>
+
+		</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

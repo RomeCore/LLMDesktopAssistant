@@ -17,7 +17,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		{
 			_parent = parent;
 			Component = component;
-			_isSelected = parent.Settings.Prompts.PromptComponents.Contains(component.Id);
+			_isSelected = parent.PromptSettings.PromptComponents.Contains(component.Id);
 		}
 
 		private bool _isSelected;
@@ -60,8 +60,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	[ViewModelFor(typeof(ChatPromptSettingsView))]
 	public class ChatPromptSettingsViewModel : ViewModelBase
 	{
-		public ChatSettingsViewModel Parent { get; }
-		public ChatSettings Settings { get; }
+		public ChatPromptSettings PromptSettings { get; }
 
 		public ObservableCollection<ComponentCategoryViewModel> ComponentCategories { get; } = new();
 		public ObservableCollection<PersonaItemViewModel> AvailablePersonas { get; } = new();
@@ -74,19 +73,18 @@ namespace LLMDesktopAssistant.LLM.Settings
 				if (SetProperty(ref _selectedPersona, value))
 				{
 					if (value != null)
-						Settings.Prompts.PersonaId = value.Persona.Id;
+						PromptSettings.PersonaId = value.Persona.Id;
 					else
-						Settings.Prompts.PersonaId = null;
+						PromptSettings.PersonaId = null;
 				}
 			}
 		}
 
 		public ICommand ClearPersonaCommand { get; }
 
-		public ChatPromptSettingsViewModel(ChatSettingsViewModel parent)
+		public ChatPromptSettingsViewModel(ChatPromptSettings settings)
 		{
-			Parent = parent;
-			Settings = Parent.Settings;
+			PromptSettings = settings;
 
 			ClearPersonaCommand = new RelayCommand(() => SelectedPersona = null);
 			Refresh();
@@ -122,9 +120,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 			foreach (var persona in personasConfig.Personas)
 				AvailablePersonas.Add(new PersonaItemViewModel(this, persona));
 
-			if (Settings.Prompts.PersonaId.HasValue)
+			if (PromptSettings.PersonaId.HasValue)
 			{
-				SelectedPersona = AvailablePersonas.FirstOrDefault(p => p.Persona.Id == Settings.Prompts.PersonaId.Value);
+				SelectedPersona = AvailablePersonas.FirstOrDefault(p => p.Persona.Id == PromptSettings.PersonaId.Value);
 			}
 			else
 			{
@@ -143,7 +141,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 						selectedIds.Add(component.Component.Id);
 				}
 			}
-			Settings.Prompts.PromptComponents = selectedIds;
+			PromptSettings.PromptComponents = selectedIds;
 		}
 	}
 }

@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Tools;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -9,20 +11,24 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ChatSettings Settings { get; }
 		public Chat Chat { get; }
 
-		public ChatGeneralSettingsViewModel GeneralSettings { get; }
+		public ChatModelSettingsViewModel ModelSettings { get; }
+		public ChatEnvironmentSettingsViewModel EnvironmentSettings { get; }
 		public ChatPromptSettingsViewModel PromptSettings { get; }
 		public ChatToolSettingsViewModel ToolSettings { get; }
 		public ChatMCPSettingsViewModel McpSettings { get; }
+		public ChatSummarizationSettingsViewModel SummarizationSettings { get; }
 
 		public ChatSettingsViewModel(ChatSettings settings, Chat chat)
 		{
 			Settings = settings;
 			Chat = chat;
 
-			GeneralSettings = new ChatGeneralSettingsViewModel(this);
-			PromptSettings = new ChatPromptSettingsViewModel(this);
-			ToolSettings = new ChatToolSettingsViewModel(this);
-			McpSettings = new ChatMCPSettingsViewModel(this);
+			ModelSettings = new ChatModelSettingsViewModel(settings.Models);
+			SummarizationSettings = new ChatSummarizationSettingsViewModel(settings.Summarization);
+			EnvironmentSettings = new ChatEnvironmentSettingsViewModel(settings.Environment);
+			PromptSettings = new ChatPromptSettingsViewModel(settings.Prompts);
+			ToolSettings = new ChatToolSettingsViewModel(settings.Tools, chat.Services.GetRequiredService<IToolsetBuildingService>());
+			McpSettings = new ChatMCPSettingsViewModel(settings.Mcp, chat.Services.GetRequiredService<IMCPManagementService>());
 		}
 	}
 }

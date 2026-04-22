@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace LLMDesktopAssistant.LLM.Settings;
 
-public partial class ChatGeneralSettingsView : UserControl
+public partial class ChatEnvironmentSettingsView : UserControl
 {
-    public ChatGeneralSettingsView()
+    public ChatEnvironmentSettingsView()
     {
         InitializeComponent();
     }
