@@ -1,6 +1,7 @@
 using DocumentFormat.OpenXml.Bibliography;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Attachments;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils.Files;
 using RCLargeLanguageModels.Tools;
@@ -149,15 +150,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					AskForConfirmation = true
 				});
 
-			AddTool(OpenFile,
-				new ToolInitializationInfo
-				{
-					Name = "fs-open_file",
-					Description = "Opens a file from the working directory with its default application.",
-					Category = "filesystem",
-					AskForConfirmation = true
-				});
-
 			AddTool(Grep,
 				new ToolInitializationInfo
 				{
@@ -186,33 +178,52 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			return fullPath;
 		}
 
-		public ToolResult GetFileInfo(string path)
+		public ReactiveToolResult GetFileInfo(string path)
 		{
 			try
 			{
 				var fullPath = ResolvePath(path);
-
 				var metrics = FileUtils.GetFileMetrics(fullPath);
+				var fileName = Path.GetFileName(fullPath);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = metrics.Type switch
+					{
+						FileType.Binary => Material.Icons.MaterialIconKind.File,
+						FileType.Text => Material.Icons.MaterialIconKind.FileText,
+						FileType.Code => Material.Icons.MaterialIconKind.FileCode,
+						FileType.Image => Material.Icons.MaterialIconKind.FileImage,
+						FileType.Audio => Material.Icons.MaterialIconKind.FileMusic,
+						FileType.Video => Material.Icons.MaterialIconKind.FileVideo,
+						FileType.Executable => Material.Icons.MaterialIconKind.Application,
+						FileType.Archive => Material.Icons.MaterialIconKind.Archive,
+						FileType.Document => Material.Icons.MaterialIconKind.FileDocument,
+						_ => Material.Icons.MaterialIconKind.FileQuestion
+					},
+					StatusTitle = $"**{fileName}** *({FileUtils.BytesToDisplaySize(metrics.Size)})*"
+				};
 
 				var additional = metrics.LineCount != null
 					? $"Lines: {metrics.LineCount}"
-					: "Binary file";
+					: "Binary";
 
-				var result = $"""
+				var output = $"""
 					Name: {metrics.Name}
 					Type: {metrics.Type}
-					Size: {metrics.Size} bytes
+					Size: {metrics.Size} bytes ~ ({FileUtils.BytesToDisplaySize(metrics.Size)})
 					{additional}
-					Created: {metrics.Created:yyyy-MM-dd HH:mm:ss}
-					Modified: {metrics.Modified:yyyy-MM-dd HH:mm:ss}
+					Created: {metrics.Created:yyyy-MM-dd HH:mm}
+					Modified: {metrics.Modified:yyyy-MM-dd HH:mm}
 					Attributes: {metrics.Attributes}
 					""";
 
-				return new ToolResult(ToolResultStatus.Success, result);
+				result.ResultContent = output;
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error getting file info: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error getting file info: {ex.Message}");
 			}
 		}
 
@@ -230,8 +241,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			try
 			{
 				var fullPath = ResolvePath(path);
+				var fileName = Path.GetFileName(fullPath);
+
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
+
 				if (endLine < startLine)
 					return ReactiveToolResult.CreateError("Invalid line range.");
 
@@ -241,11 +255,15 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					endLine - startLine + 1,
 					maxLineLength,
 					showLineNumbers);
+				var endShown = startLine + lines.Count - 1;
 
-				var result = new ReactiveToolResult();
-
-				result.StatusIcon = Material.Icons.MaterialIconKind.File;
-				result.StatusTitle = Path.GetFileName(path);
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileCode,
+					StatusTitle = endShown == totalLines ?
+						(startLine == 1 ? $"**{fileName}**" : $"**{fileName}** *({startLine}~{endShown})*") :
+						$"**{fileName}** *({startLine}~{endShown} / {totalLines})*"
+				};
 
 				if (lines.Count == 0)
 				{
@@ -253,10 +271,14 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					return result.Complete(true);
 				}
 
+				string nextReadTip = string.Empty;
+				if (endShown < totalLines)
+					nextReadTip = $" (Continue reading from line {endShown + 1}";
+
 				var output = $"""
 					File: {path}
+					Showing: {startLine}-{endShown}{nextReadTip}
 					Total lines: {totalLines}
-					Showing: {startLine}-{startLine + lines.Count - 1}
 					Contents:
 					{string.Join(Environment.NewLine, lines)}
 					""";
@@ -270,7 +292,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ToolResult ReadBinaryFile(
+		public ReactiveToolResult ReadBinaryFile(
 			string path,
 			[Description("The 1-based index of the first byte to read.")]
 			int startByte = 1,
@@ -279,38 +301,55 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			try
 			{
 				var fullPath = ResolvePath(path);
+				var fileName = Path.GetFileName(fullPath);
+
 				if (!File.Exists(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "File not found.");
+					return ReactiveToolResult.CreateError("File not found.");
+
 				if (endByte < startByte)
-					return new ToolResult(ToolResultStatus.Error, "Invalid byte range.");
+					return ReactiveToolResult.CreateError("Invalid byte range.");
 
 				var fileInfo = new FileInfo(fullPath);
+				var totalBytes = fileInfo.Length;
 
 				var (lines, read) = FileUtils.ReadHexChunk(
 					fullPath,
 					startByte,
 					endByte - startByte + 1);
+				var endShown = startByte + read - 1;
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileCode,
+					StatusTitle = endShown == totalBytes ?
+						(startByte == 1 ? $"**{fileName}**" : $"**{fileName}** *({startByte}~{endShown})*") :
+						$"**{fileName}** *({startByte}~{endShown} / {totalBytes})*"
+				};
 
 				if (read == 0)
-					return new ToolResult(ToolResultStatus.Success, "No content.");
+				{
+					result.ResultContent = "No content.";
+					return result.Complete(true);
+				}
 
 				var output = $"""
 					File: {path}
-					Size: {fileInfo.Length} bytes
+					Size: {totalBytes} bytes ~ ({FileUtils.BytesToDisplaySize(totalBytes)})
 					Showing bytes: {startByte}-{startByte + read - 1}
 					Hex dump:
 					{string.Join(Environment.NewLine, lines)}
 					""";
 
-				return new ToolResult(ToolResultStatus.Success, output);
+				result.ResultContent = output;
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error reading binary file: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error reading binary file: {ex.Message}");
 			}
 		}
 
-		public ToolResult ReadDocumentFile(
+		public ReactiveToolResult ReadDocumentFile(
 			string path,
 			[Description("The 1-based index of the first page to read.")]
 			int startPage = 1,
@@ -320,25 +359,48 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			try
 			{
 				var fullPath = ResolvePath(path);
+				var fileName = Path.GetFileName(fullPath);
+
 				if (!File.Exists(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "File not found.");
+					return ReactiveToolResult.CreateError("File not found.");
+
 				if (endPage < startPage)
-					return new ToolResult(ToolResultStatus.Error, "Invalid page range.");
+					return ReactiveToolResult.CreateError("Invalid page range.");
 
 				var text = _documentReader.ExtractText(
 					fullPath,
 					startPage,
 					endPage - startPage + 1);
 
-				return new ToolResult(ToolResultStatus.Success, text);
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileDocument,
+					StatusTitle = $"**{fileName}** *({startPage}~{endPage})*"
+				};
+
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					result.ResultContent = "No text content extracted.";
+					return result.Complete(true);
+				}
+
+				var output = $"""
+					File: {path}
+					Pages: {startPage}-{endPage}
+					Content:
+					{text}
+					""";
+
+				result.ResultContent = output;
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error reading document file: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error reading document file: {ex.Message}");
 			}
 		}
 
-		public ToolResult WriteFile(
+		public ReactiveToolResult WriteFile(
 			string path,
 			string content,
 			bool append = false)
@@ -346,25 +408,46 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			try
 			{
 				var fullPath = ResolvePath(path);
-
+				var fileName = Path.GetFileName(fullPath);
 				var dir = Path.GetDirectoryName(fullPath);
+
 				if (!Directory.Exists(dir))
 					Directory.CreateDirectory(dir!);
+
+				var fileExisted = File.Exists(fullPath);
 
 				if (append)
 					File.AppendAllText(fullPath, content);
 				else
 					File.WriteAllText(fullPath, content);
 
-				return new ToolResult(ToolResultStatus.Success, "File written successfully.");
+				var fileInfo = new FileInfo(fullPath);
+				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = fileExisted ?
+						(append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck) :
+						Material.Icons.MaterialIconKind.FilePlus,
+					StatusTitle = $"**{fileName}**"
+				};
+
+				var output = $"""
+					File: {path}
+					Operation: {(append ? "Append" : "Write")}
+					New size: {fileInfo.Length} bytes ~ ({size})
+					""";
+
+				result.ResultContent = output;
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error writing file: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error writing file: {ex.Message}");
 			}
 		}
 
-		public ToolResult WriteBinaryFile(
+		public ReactiveToolResult WriteBinaryFile(
 			string path,
 			[Description("Hexadecimal string representing binary data in format '01 F8 2A'")]
 			string hex,
@@ -373,26 +456,29 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			try
 			{
 				var fullPath = ResolvePath(path);
-
+				var fileName = Path.GetFileName(fullPath);
 				var dir = Path.GetDirectoryName(fullPath);
+
 				if (!Directory.Exists(dir))
 					Directory.CreateDirectory(dir!);
 
 				var hexClean = Regex.Replace(hex, @"[^0-9A-Fa-f]+", "");
 
 				if (hexClean.Length % 2 != 0)
-					return new ToolResult(ToolResultStatus.Error,
+					return ReactiveToolResult.CreateError(
 						"Invalid hex string length. Hex string must have an even number of characters.");
 
 				var bytes = new byte[hexClean.Length / 2];
 				for (int i = 0; i < bytes.Length; i++)
 				{
 					var hexByte = hexClean.Substring(i * 2, 2);
-					if (!byte.TryParse(hexByte, System.Globalization.NumberStyles.HexNumber, null, out byte result))
-						return new ToolResult(ToolResultStatus.Error,
+					if (!byte.TryParse(hexByte, System.Globalization.NumberStyles.HexNumber, null, out byte parsedByte))
+						return ReactiveToolResult.CreateError(
 							$"Invalid hex byte at position {i * 2}: '{hexByte}'");
-					bytes[i] = result;
+					bytes[i] = parsedByte;
 				}
+
+				var fileExisted = File.Exists(fullPath);
 
 				if (append)
 				{
@@ -404,15 +490,34 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					File.WriteAllBytes(fullPath, bytes);
 				}
 
-				return new ToolResult(ToolResultStatus.Success, "File written successfully.");
+				var fileInfo = new FileInfo(fullPath);
+				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = fileExisted ?
+						(append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck) :
+						Material.Icons.MaterialIconKind.FilePlus,
+					StatusTitle = $"**{fileName}**"
+				};
+
+				var output = $"""
+					File: {path}
+					Operation: {(append ? "Append" : "Write")}
+					Bytes written: {bytes.Length}
+					Total size: {fileInfo.Length} bytes ~ ({size})
+					""";
+
+				result.ResultContent = output;
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error writing binary file: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error writing binary file: {ex.Message}");
 			}
 		}
 
-		public ToolResult ApplyDiff(
+		public ReactiveToolResult ApplyDiff(
 			string path,
 			[Description("Range of lines to delete, e.g. '10-20' or '10'. If not specified, no lines will be deleted.")]
 			string? deleteLines = null,
@@ -424,12 +529,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			try
 			{
 				var fullPath = ResolvePath(path);
+				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "File not found.");
+					return ReactiveToolResult.CreateError("File not found.");
 
 				if (FileUtils.IsBinaryFile(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "Cannot apply diff to binary files.");
+					return ReactiveToolResult.CreateError("Cannot apply diff to binary files.");
 
 				var originalContent = File.ReadAllText(fullPath);
 				var lines = originalContent.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
@@ -449,38 +555,32 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					var (startLine, endLine) = ParseLineRange(deleteLines);
 
 					if (startLine < 1 || startLine > lines.Count)
-						return new ToolResult(ToolResultStatus.Error,
-							$"Start line {startLine} is out of range. File has {lines.Count} lines.");
+						return ReactiveToolResult.CreateError($"Start line {startLine} is out of range. File has {lines.Count} lines.");
 
 					if (endLine < startLine)
-						return new ToolResult(ToolResultStatus.Error,
-							$"End line {endLine} must be greater than or equal to start line {startLine}");
+						return ReactiveToolResult.CreateError($"End line {endLine} must be greater than or equal to start line {startLine}");
 
 					if (endLine > lines.Count)
-						return new ToolResult(ToolResultStatus.Error,
-							$"End line {endLine} is out of range. File has {lines.Count} lines.");
+						return ReactiveToolResult.CreateError($"End line {endLine} is out of range. File has {lines.Count} lines.");
 				}
 
 				if (insertAtLine != null && insertText != null)
 				{
 					if (insertAtLine < 1)
-						return new ToolResult(ToolResultStatus.Error,
-							$"Line number {insertAtLine} must be at least 1");
+						return ReactiveToolResult.CreateError($"Line number {insertAtLine} must be at least 1");
 
 					if (insertAtLine > lines.Count + 1)
-						return new ToolResult(ToolResultStatus.Error,
+						return ReactiveToolResult.CreateError(
 							$"Line number {insertAtLine} is out of range. File has {lines.Count} lines. " +
 							$"Max insert position is {lines.Count + 1}");
 				}
 				else if (insertAtLine != null && insertText == null)
 				{
-					return new ToolResult(ToolResultStatus.Error,
-						"insertText parameter is required when insertAtLine is specified");
+					return ReactiveToolResult.CreateError("insertText parameter is required when insertAtLine is specified");
 				}
 				else if (insertText != null && insertAtLine == null)
 				{
-					return new ToolResult(ToolResultStatus.Error,
-						"insertAtLine parameter is required when insertText is specified");
+					return ReactiveToolResult.CreateError("insertAtLine parameter is required when insertText is specified");
 				}
 
 				if (!string.IsNullOrEmpty(deleteLines))
@@ -523,8 +623,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				var newContent = string.Join(Environment.NewLine, lines);
 				if (newContent == originalContent)
 				{
-					return new ToolResult(ToolResultStatus.Success,
-						"No changes applied to the file.");
+					var noChangeResult = new ReactiveToolResult
+					{
+						StatusIcon = Material.Icons.MaterialIconKind.Information,
+						StatusTitle = $"**{fileName}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
+						ResultContent = "No changes applied to the file."
+					};
+					return noChangeResult.Complete(true);
 				}
 
 				File.WriteAllText(fullPath, newContent);
@@ -537,11 +642,30 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					insertedStartLine, insertedEndLine, insertedContent,
 					path);
 
-				return new ToolResult(ToolResultStatus.Success, changeReport);
+				var totalChanges = (deletedContent.Count > 0 ? 1 : 0) + (insertedContent.Count > 0 ? 1 : 0);
+				var changeDescription = totalChanges switch
+				{
+					2 => LocalizationManager.LocalizeStatic("fs-changes_modified"),
+					1 when deletedContent.Count > 0 => LocalizationManager.LocalizeStatic("fs-changes_deleted"),
+					1 when insertedContent.Count > 0 => LocalizationManager.LocalizeStatic("fs-changes_inserted"),
+					_ => LocalizationManager.LocalizeStatic("fs-changes_updated")
+				};
+
+				string deletedLinesInfo = deletedContent.Count > 0 ? $" -{deletedContent.Count}" : string.Empty;
+				string insertedLinesInfo = insertedContent.Count > 0 ? $" +{insertedContent.Count}" : string.Empty;
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
+					StatusTitle = $"**{fileName}** *({changeDescription}{deletedLinesInfo}{insertedLinesInfo})*",
+					ResultContent = changeReport
+				};
+
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error applying diff: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error applying diff: {ex.Message}");
 			}
 		}
 
@@ -687,7 +811,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			return (startLine, endLine);
 		}
 
-		public ToolResult ReplaceInFile(
+		public ReactiveToolResult ReplaceInFile(
 			string path,
 			[Description("The string to search for. If null or empty, the 'oldRegex' must be provided.")]
 			string? oldString = null,
@@ -699,15 +823,16 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			try
 			{
 				var fullPath = ResolvePath(path);
+				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "File not found.");
+					return ReactiveToolResult.CreateError("File not found.");
 
 				if (FileUtils.IsBinaryFile(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "Cannot replace text in binary files.");
+					return ReactiveToolResult.CreateError("Cannot replace text in binary files.");
 
 				if (string.IsNullOrEmpty(oldString) && string.IsNullOrEmpty(oldRegex))
-					return new ToolResult(ToolResultStatus.Error, "Both 'oldString' and 'oldRegex' parameters cannot be null or empty.");
+					return ReactiveToolResult.CreateError("Both 'oldString' and 'oldRegex' parameters cannot be null or empty.");
 
 				var content = File.ReadAllText(fullPath);
 				var lines = content.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
@@ -743,8 +868,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 				if (totalReplacements == 0)
 				{
-					return new ToolResult(ToolResultStatus.Success,
-						$"No occurrences of '{oldString}' found in file '{path}'.");
+					var noChangeResult = new ReactiveToolResult
+					{
+						StatusIcon = Material.Icons.MaterialIconKind.Information,
+						StatusTitle = $"**{fileName}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
+						ResultContent = $"No occurrences of '{oldString ?? oldRegex}' found in file '{path}'."
+					};
+					return noChangeResult.Complete(true);
 				}
 
 				var newContent = string.Join(Environment.NewLine, newLines);
@@ -797,11 +927,22 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					}
 				}
 
-				return new ToolResult(ToolResultStatus.Success, report.ToString());
+				var changeDescription = string.Format(
+					LocalizationManager.LocalizeStatic("fs-changes_lines_replaced"),
+					totalReplacements);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
+					StatusTitle = $"**{fileName}** *({changeDescription})*",
+					ResultContent = report.ToString()
+				};
+
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error replacing text in file: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error replacing text in file: {ex.Message}");
 			}
 		}
 
@@ -813,26 +954,37 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			return text.Substring(0, maxLength - 3) + "...";
 		}
 
-		public ToolResult DeleteFile(string path)
+		public ReactiveToolResult DeleteFile(string path)
 		{
 			try
 			{
 				var fullPath = ResolvePath(path);
+				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "File not found.");
+					return ReactiveToolResult.CreateError("File not found.");
+
+				var fileInfo = new FileInfo(fullPath);
+				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
 
 				File.Delete(fullPath);
 
-				return new ToolResult(ToolResultStatus.Success, "File deleted.");
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Delete,
+					StatusTitle = $"**{fileName}**",
+					ResultContent = $"File '{path}' deleted successfully."
+				};
+
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error deleting file: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error deleting file: {ex.Message}");
 			}
 		}
 
-		public ToolResult RenameFile(
+		public ReactiveToolResult RenameFile(
 			string oldPath,
 			string newPath,
 			bool overwrite = false)
@@ -842,90 +994,78 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				var fullOldPath = ResolvePath(oldPath);
 				var fullNewPath = ResolvePath(newPath);
 
-				if (!File.Exists(fullOldPath))
-					return new ToolResult(ToolResultStatus.Error, "Source file not found.");
-
-				if (File.Exists(fullNewPath))
-					return new ToolResult(ToolResultStatus.Error, "Destination file already exists.");
-
-				if (Path.GetDirectoryName(fullNewPath) is string dir)
-					Directory.CreateDirectory(dir);
-				File.Move(fullOldPath, fullNewPath, overwrite);
-
-				return new ToolResult(ToolResultStatus.Success, $"File renamed from '{oldPath}' to '{newPath}'.");
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error renaming file: {ex.Message}");
-			}
-		}
-
-		public ToolResult CopyFile(
-			string oldPath,
-			string newPath,
-			bool overwrite = false)
-		{
-			try
-			{
-				var fullOldPath = ResolvePath(oldPath);
-				var fullNewPath = ResolvePath(newPath);
+				var oldFileName = Path.GetFileName(fullOldPath);
+				var newFileName = Path.GetFileName(fullNewPath);
 
 				if (!File.Exists(fullOldPath))
-					return new ToolResult(ToolResultStatus.Error, "Source file not found.");
+					return ReactiveToolResult.CreateError("Source file not found.");
 
 				if (File.Exists(fullNewPath) && !overwrite)
-					return new ToolResult(ToolResultStatus.Error, "Destination file already exists.");
+					return ReactiveToolResult.CreateError("Destination file already exists.");
 
 				if (Path.GetDirectoryName(fullNewPath) is string dir)
 					Directory.CreateDirectory(dir);
-				File.Copy(fullOldPath, fullNewPath, overwrite);
 
-				return new ToolResult(ToolResultStatus.Success, $"File copied from '{oldPath}' to '{newPath}'.");
+				File.Move(fullOldPath, fullNewPath, overwrite);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Pencil,
+					StatusTitle = $"**{oldFileName}** → **{newFileName}**",
+					ResultContent = $"File renamed from '{oldPath}' to '{newPath}'."
+				};
+
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error copying file: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error renaming file: {ex.Message}");
 			}
 		}
 
-		public async Task<ToolResult> OpenFile(string filename)
+		public ReactiveToolResult CopyFile(
+			string oldPath,
+			string newPath,
+			bool overwrite = false)
 		{
 			try
 			{
-				var workDir = _chat.Settings.GetWorkingDirectory();
-				var fullPath = Path.Combine(workDir, filename);
+				var fullOldPath = ResolvePath(oldPath);
+				var fullNewPath = ResolvePath(newPath);
 
-				if (!File.Exists(fullPath))
+				var oldFileName = Path.GetFileName(fullOldPath);
+				var newFileName = Path.GetFileName(fullNewPath);
+
+				if (!File.Exists(fullOldPath))
+					return ReactiveToolResult.CreateError("Source file not found.");
+
+				if (File.Exists(fullNewPath) && !overwrite)
+					return ReactiveToolResult.CreateError("Destination file already exists.");
+
+				if (Path.GetDirectoryName(fullNewPath) is string dir)
+					Directory.CreateDirectory(dir);
+
+				File.Copy(fullOldPath, fullNewPath, overwrite);
+
+				var result = new ReactiveToolResult
 				{
-					return new ToolResult(ToolResultStatus.Error,
-						$"File not found: {filename}");
-				}
+					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+					StatusTitle = $"**{oldFileName}** → **{newFileName}**",
+					ResultContent = $"File copied from '{oldPath}' to '{newPath}'."
+				};
 
-				using (Process process = new Process())
-				{
-					process.StartInfo = new ProcessStartInfo
-					{
-						FileName = fullPath,
-						WorkingDirectory = workDir,
-						UseShellExecute = true
-					};
-					process.Start();
-				}
-
-				return new ToolResult(ToolResultStatus.Success,
-					$"Successfully opened: {filename}");
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error,
-					$"Error opening file {filename}: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error copying file: {ex.Message}");
 			}
 		}
 
-		public ToolResult ListDirectory(
+		public ReactiveToolResult ListDirectory(
 			string path = "",
 			[Description("The maximum depth of directories to include in the listing. 1 = current directory only.")]
-			int maxDepth = 1,
+			int maxDepth = 2,
 			[Description("The number of entries to skip before starting the list.")]
 			int offset = 0,
 			[Description("The maximum number of entries to return.")]
@@ -937,8 +1077,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			try
 			{
 				var fullPath = ResolvePath(path);
+				var dirName = path + "/";
+
 				if (!Directory.Exists(fullPath))
-					return new ToolResult(ToolResultStatus.Error, "Directory not found.");
+					return ReactiveToolResult.CreateError("Directory not found.");
 
 				var sb = new StringBuilder();
 				int totalCount = 0;
@@ -1018,11 +1160,18 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					sb.AppendLine($"... truncated ({totalCount - offset - maxEntries} entries more avalable)");
 				}
 
-				return new ToolResult(ToolResultStatus.Success, sb.ToString());
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Folder,
+					StatusTitle = $"**{dirName}** *({string.Format(LocalizationManager.LocalizeStatic("fs-entries"), totalCount)})*",
+					ResultContent = sb.ToString()
+				};
+
+				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Error listing directory: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error listing directory: {ex.Message}");
 			}
 		}
 
@@ -1064,56 +1213,69 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				var results = new List<string>();
 				int totalFilesMatched = 0;
 
-				if (File.Exists(fullPath))
-				{
-					filesToSearch.Add(fullPath);
-				}
-				else if (Directory.Exists(fullPath))
-				{
-					var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-					var allFiles = Directory.GetFiles(fullPath, "*", searchOption);
-
-					foreach (var file in allFiles)
-					{
-						if (allowedExtensions != null && allowedExtensions.Length > 0)
-						{
-							var ext = Path.GetExtension(file);
-							if (!allowedExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
-								continue;
-						}
-
-						var name = Path.GetFileName(file);
-						if (regex.IsMatch(name))
-						{
-							var relativePath = Path.GetRelativePath(workingDirectory, file);
-							results.Add($"[FILE] {relativePath}");
-						}
-
-						try
-						{
-							// Skip binary files automatically
-							if (!FileUtils.IsBinaryFile(file))
-								filesToSearch.Add(file);
-						}
-						catch (Exception ex)
-						{
-							results.Add($"Error checking file {file}: {ex.Message}");
-						}
-					}
-				}
-				else
-				{
-					return ReactiveToolResult.CreateError("File or directory not found.");
-				}
-
 				var result = new ReactiveToolResult();
-				result.Progress = 0;
-				result.MaxProgress = filesToSearch.Count;
+
+				bool fileExists = File.Exists(fullPath);
+				bool dirExists = Directory.Exists(fullPath);
+
+				if (!fileExists && !dirExists)
+					return ReactiveToolResult.CreateError("File or directory not found.");
 
 				Task.Run(() =>
 				{
 					try
 					{
+						result.StatusIcon = Material.Icons.MaterialIconKind.FileMultiple;
+						result.StatusTitle = LocalizationManager.LocalizeStatic("fs-grep_collecting_files");
+
+						if (fileExists)
+						{
+							filesToSearch.Add(fullPath);
+						}
+						else if (dirExists)
+						{
+							var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+							var allFiles = Directory.GetFiles(fullPath, "*", searchOption);
+
+							foreach (var file in allFiles)
+							{
+								if (allowedExtensions != null && allowedExtensions.Length > 0)
+								{
+									var ext = Path.GetExtension(file);
+									if (!allowedExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
+										continue;
+								}
+
+								var name = Path.GetFileName(file);
+								if (regex.IsMatch(name))
+								{
+									var relativePath = Path.GetRelativePath(workingDirectory, file);
+									results.Add($"[FILE] {relativePath}");
+								}
+
+								try
+								{
+									// Skip binary files automatically
+									if (!FileUtils.IsBinaryFile(file))
+									{
+										filesToSearch.Add(file);
+										result.StatusTitle = string.Format(
+											LocalizationManager.LocalizeStatic("fs-grep_collecting_files_count"),
+											filesToSearch.Count);
+									}
+								}
+								catch (Exception ex)
+								{
+									results.Add($"Error checking file {file}: {ex.Message}");
+								}
+							}
+						}
+
+						result.StatusIcon = Material.Icons.MaterialIconKind.FileSearch;
+						result.StatusTitle = LocalizationManager.LocalizeStatic("fs-grep_scanning_files");
+						result.Progress = 0;
+						result.MaxProgress = filesToSearch.Count;
+
 						foreach (var file in filesToSearch)
 						{
 							result.Progress++;
@@ -1134,10 +1296,15 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						}
 						if (result.ResultContentLines.Count == 0)
 							result.ResultContentLines.Add("No matches found.");
+
+						result.StatusIcon = Material.Icons.MaterialIconKind.FileCheck;
+						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-grep_completed"), totalFilesMatched);
 						result.Complete(true);
 					}
 					catch
 					{
+						result.StatusIcon = null;
+						result.StatusTitle = null;
 						result.Complete(false);
 					}
 				}, cancellationToken);

@@ -10,139 +10,141 @@
 			 xmlns:flui="using:FluentAvalonia.UI.Controls"
 			 x:Class="LLMDesktopAssistant.LLM.Messages.ToolCallView"
 			 x:DataType="local:ToolCallViewModel">
-
-	<StackPanel Orientation="Horizontal">
+	
+	<Panel>
 		
-		<!-- Container for icon/progress -->
-		<Grid Width="28" Height="28"
-			  Margin="0,0,2,0">
+		<Button Name="ToolPopupButton"
+						Click="ToolPopupButton_Click"
+						Padding="2">
 
-			<flui:FAProgressRing IsVisible="{Binding InProgress}"
-								 Minimum="{Binding MinProgress}" Maximum="{Binding MaxProgress}"
-								 Value="{Binding Progress}"
-								 IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
-
-			<ico:MaterialIcon Kind="{Binding ToolIcon}"
-							  Margin="0"
-							  Classes="MidIcon"
-							  IsVisible="{Binding ToolIconVisible}"/>
-
-			<ico:MaterialIcon Kind="Edit"
-							  Margin="0"
-							  Classes="MidIcon"
-							  IsVisible="{Binding IsPending}">
+			<StackPanel Orientation="Horizontal"
+									Spacing="4">
+		
+				<Grid Width="28" Height="28"
+							Margin="0,0,2,0">
+					
+					<ico:MaterialIcon Kind="Edit"
+														Margin="0"
+														Classes="MidIcon"
+														IsVisible="{Binding IsPending}">
 				
-				<ico:MaterialIcon.Styles>
-					<Style Selector="ico|MaterialIcon">
-						<Style.Animations>
-							<Animation Duration="0:0:1"
-											   IterationCount="INFINITE"
-											   PlaybackDirection="Alternate"
-											   Easing="SineEaseInOut">
-								<KeyFrame Cue="0%">
-									<Setter Property="Opacity" Value="1.0"/>
-								</KeyFrame>
-								<KeyFrame Cue="100%">
-									<Setter Property="Opacity" Value="0.3"/>
-								</KeyFrame>
-							</Animation>
-						</Style.Animations>
-					</Style>
-				</ico:MaterialIcon.Styles>
+						<ico:MaterialIcon.Styles>
+							<Style Selector="ico|MaterialIcon">
+								<Style.Animations>
+									<Animation Duration="0:0:1"
+														 IterationCount="INFINITE"
+														 PlaybackDirection="Alternate"
+														 Easing="SineEaseInOut">
+										<KeyFrame Cue="0%">
+											<Setter Property="Opacity" Value="1.0"/>
+										</KeyFrame>
+										<KeyFrame Cue="100%">
+											<Setter Property="Opacity" Value="0.3"/>
+										</KeyFrame>
+									</Animation>
+								</Style.Animations>
+							</Style>
+						</ico:MaterialIcon.Styles>
 				
-			</ico:MaterialIcon>
-		</Grid>
+					</ico:MaterialIcon>
 
-		<Panel>
-			
-			<Button Name="ToolPopupButton"
-					Click="ToolPopupButton_Click"
-					Padding="2">
+					<flui:FAProgressRing IsVisible="{Binding InProgress}"
+															 Minimum="{Binding MinProgress}" Maximum="{Binding MaxProgress}"
+															 Value="{Binding Progress}"
+															 IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
 
+					<ico:MaterialIcon Kind="{Binding ToolIcon}"
+														Margin="0"
+														Classes="MidIcon"
+														IsVisible="{Binding ToolIconVisible}"/>
+
+				</Grid>
+				
 				<TextBlock Text="{loc:Loc {Binding ToolName}}"
-						   FontSize="{DynamicResource FontSizeM}"
-						   FontWeight="Medium"
-						   VerticalAlignment="Center"/>
-			</Button>
+									 FontSize="{DynamicResource FontSizeM}"
+									 FontWeight="Medium"
+									 VerticalAlignment="Bottom"
+									 Margin="0,2"/>
 
-			<flui:FATeachingTip x:Name="ToolPopup"
-								Target="{Binding #ToolPopupButton}">
+				<Panel>
+					
+					<StackPanel Orientation="Horizontal"
+											Spacing="4"
+											IsVisible="{Binding UserAsked}">
+
+						<Button Classes="MidIconButton"
+										Command="{Binding ApproveCommand}">
+
+							<ico:MaterialIcon Kind="Check"/>
+						</Button>
+
+						<Button Classes="MidIconButton"
+										Command="{Binding CancelCommand}">
+
+							<ico:MaterialIcon Kind="Close"/>
+						</Button>
+
+					</StackPanel>
 				
-				<ScrollViewer VerticalScrollBarVisibility="Auto"
-								HorizontalScrollBarVisibility="Auto">
+					<StackPanel Orientation="Horizontal"
+											Spacing="4"
+											IsVisible="{Binding StatusAvailable}">
 
-					<StackPanel Orientation="Vertical">
+						<GridSplitter Width="2" MinWidth="2" ResizeDirection="Columns" IsEnabled="False"/>
+				
+						<ico:MaterialIcon Kind="{Binding StatusIcon}"
+															IsVisible="{Binding StatusIcon, Converter={StaticResource NotnullToBooleanConverter}}"
+															Width="24" Height="24"
+															Margin="2"/>
 
-						<StackPanel Orientation="Vertical"
-									IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
-
-							<Label Content="{loc:Loc tool-arguments}"
-									FontSize="16"/>
-
-							<ctrl:MarkdownControl MarkdownText="{Binding Arguments}"
-													Margin="5,0"/>
-
-						</StackPanel>
-
-						<StackPanel Orientation="Vertical"
-									IsVisible="{Binding Result, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
-
-							<Label Content="{loc:Loc tool-result}"
-									FontSize="16"/>
-
-							<ContentControl Content="{Binding Result}"
-											Margin="5,0"/>
-
-						</StackPanel>
+						<ctrl:MarkdownControl MarkdownText="{Binding StatusTitle}"
+																	Margin="2,3"
+																	VerticalAlignment="Bottom"/>
 
 					</StackPanel>
 
-				</ScrollViewer>
-				
-			</flui:FATeachingTip>
+				</Panel>
 			
-		</Panel>
-
-		<StackPanel Orientation="Horizontal"
-					Margin="4,0,0,0"
-					IsVisible="{Binding UserAsked}">
-
-			<Button Margin="0,0,4,0"
-					Classes="MidIconButton"
-					Command="{Binding ApproveCommand}">
-
-				<ico:MaterialIcon Kind="Check"/>
-			</Button>
-
-			<Button Classes="MidIconButton"
-					Command="{Binding CancelCommand}">
-
-				<ico:MaterialIcon Kind="Close"/>
-			</Button>
-
-		</StackPanel>
-
-		<Border BorderThickness="{DynamicResource ButtonBorderThemeThickness}"
-						Background="{DynamicResource ButtonBackground}"
-						CornerRadius="{DynamicResource ControlCornerRadius}"
-						IsVisible="{Binding StatusAvailable}"
-						Margin="4,0,0,0"
-						Padding="2">
-			
-			<StackPanel Orientation="Horizontal">
-				
-				<ico:MaterialIcon Kind="{Binding StatusIcon}"
-													IsVisible="{Binding StatusIcon, Converter={StaticResource NotnullToBooleanConverter}}"
-													Width="24" Height="24"
-													Margin="2"/>
-
-				<TextBlock Text="{Binding StatusTitle}"
-									 Margin="2"/>
-
 			</StackPanel>
 
-		</Border>
+		</Button>
+		
+		<flui:FATeachingTip x:Name="ToolPopup"
+												Target="{Binding #ToolPopupButton}">
+				
+			<ScrollViewer VerticalScrollBarVisibility="Auto"
+										HorizontalScrollBarVisibility="Auto">
 
-	</StackPanel>
+				<StackPanel Orientation="Vertical">
 
+					<StackPanel Orientation="Vertical"
+											IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+
+						<Label Content="{loc:Loc tool-arguments}"
+									 FontSize="16"/>
+
+						<ctrl:MarkdownControl MarkdownText="{Binding Arguments}"
+												Margin="5,0"/>
+
+					</StackPanel>
+
+					<StackPanel Orientation="Vertical"
+											IsVisible="{Binding Result, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+
+						<Label Content="{loc:Loc tool-result}"
+									 FontSize="16"/>
+
+						<ContentControl Content="{Binding Result}"
+														Margin="5,0"/>
+
+					</StackPanel>
+
+				</StackPanel>
+
+			</ScrollViewer>
+				
+		</flui:FATeachingTip>
+			
+	</Panel>
+	
 </UserControl>

@@ -385,7 +385,7 @@
     <value>Read binary file</value>
   </data>
   <data name="fs-grep" xml:space="preserve">
-    <value>Filesystem grep search</value>
+    <value>Filesystem search</value>
   </data>
   <data name="fs-open_file" xml:space="preserve">
     <value>Open file</value>
@@ -599,5 +599,50 @@
   </data>
   <data name="promptcomponent-git_hints" xml:space="preserve">
     <value>Git Hints</value>
+  </data>
+  <data name="fs-changes_modified" xml:space="preserve">
+    <value>modified</value>
+  </data>
+  <data name="fs-changes_deleted" xml:space="preserve">
+    <value>deleted some lines</value>
+  </data>
+  <data name="fs-changes_inserted" xml:space="preserve">
+    <value>inserted some lines</value>
+  </data>
+  <data name="fs-changes_updated" xml:space="preserve">
+    <value>updated</value>
+  </data>
+  <data name="fs-changes_none" xml:space="preserve">
+    <value>no changes</value>
+  </data>
+  <data name="fs-deleted" xml:space="preserve">
+    <value>deleted</value>
+  </data>
+  <data name="fs-renamed" xml:space="preserve">
+    <value>renamed</value>
+  </data>
+  <data name="fs-copied" xml:space="preserve">
+    <value>copied</value>
+  </data>
+  <data name="fs-opened" xml:space="preserve">
+    <value>opened</value>
+  </data>
+  <data name="fs-entries" xml:space="preserve">
+    <value>{0} entries</value>
+  </data>
+  <data name="fs-grep_collecting_files" xml:space="preserve">
+    <value>Collecting files...</value>
+  </data>
+  <data name="fs-grep_scanning_files" xml:space="preserve">
+    <value>Scanning files...</value>
+  </data>
+  <data name="fs-grep_collecting_files_count" xml:space="preserve">
+    <value>Collecting files... ({0} found)</value>
+  </data>
+  <data name="fs-grep_completed" xml:space="preserve">
+    <value>Found {0} matching files</value>
+  </data>
+  <data name="fs-changes_lines_replaced" xml:space="preserve">
+    <value>Replaced {0} lines</value>
   </data>
 </root>

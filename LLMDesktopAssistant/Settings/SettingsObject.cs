@@ -15,9 +15,13 @@ namespace LLMDesktopAssistant.Settings
 		public const string DefaultId = "-default";
 
 		/// <summary>
-		/// Gets the current ID of this
+		/// Gets the current ID of this settings instance.
 		/// </summary>
 		[JsonIgnore]
-		public string Id { get; internal set; } = DefaultId;
+		public string Id
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = DefaultId;
 	}
 }

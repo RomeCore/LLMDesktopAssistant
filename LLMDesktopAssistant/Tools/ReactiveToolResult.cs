@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Tools
 		/// </summary>
 		public Task<bool> Completion => _completionSource.Task;
 
-		private double? _progress = 0;
+		private double? _progress = null;
 		/// <summary>
 		/// The progress of the tool execution. If null, progress is indeterminate.
 		/// </summary>

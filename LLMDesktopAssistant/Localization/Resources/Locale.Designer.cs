@@ -556,6 +556,69 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на deleted some lines.
+        /// </summary>
+        public static string fs_changes_deleted {
+            get {
+                return ResourceManager.GetString("fs-changes_deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на inserted some lines.
+        /// </summary>
+        public static string fs_changes_inserted {
+            get {
+                return ResourceManager.GetString("fs-changes_inserted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Replaced {0} lines.
+        /// </summary>
+        public static string fs_changes_lines_replaced {
+            get {
+                return ResourceManager.GetString("fs-changes_lines_replaced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на modified.
+        /// </summary>
+        public static string fs_changes_modified {
+            get {
+                return ResourceManager.GetString("fs-changes_modified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на no changes.
+        /// </summary>
+        public static string fs_changes_none {
+            get {
+                return ResourceManager.GetString("fs-changes_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на updated.
+        /// </summary>
+        public static string fs_changes_updated {
+            get {
+                return ResourceManager.GetString("fs-changes_updated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на copied.
+        /// </summary>
+        public static string fs_copied {
+            get {
+                return ResourceManager.GetString("fs-copied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy file.
         /// </summary>
         public static string fs_copy_file {
@@ -574,6 +637,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на deleted.
+        /// </summary>
+        public static string fs_deleted {
+            get {
+                return ResourceManager.GetString("fs-deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} entries.
+        /// </summary>
+        public static string fs_entries {
+            get {
+                return ResourceManager.GetString("fs-entries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Get file info.
         /// </summary>
         public static string fs_get_file_info {
@@ -583,11 +664,47 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Filesystem grep search.
+        ///   Ищет локализованную строку, похожую на Filesystem search.
         /// </summary>
         public static string fs_grep {
             get {
                 return ResourceManager.GetString("fs-grep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Collecting files....
+        /// </summary>
+        public static string fs_grep_collecting_files {
+            get {
+                return ResourceManager.GetString("fs-grep_collecting_files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Collecting files... ({0} found).
+        /// </summary>
+        public static string fs_grep_collecting_files_count {
+            get {
+                return ResourceManager.GetString("fs-grep_collecting_files_count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Found {0} matching files.
+        /// </summary>
+        public static string fs_grep_completed {
+            get {
+                return ResourceManager.GetString("fs-grep_completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Scanning files....
+        /// </summary>
+        public static string fs_grep_scanning_files {
+            get {
+                return ResourceManager.GetString("fs-grep_scanning_files", resourceCulture);
             }
         }
         
@@ -606,6 +723,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string fs_open_file {
             get {
                 return ResourceManager.GetString("fs-open_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на opened.
+        /// </summary>
+        public static string fs_opened {
+            get {
+                return ResourceManager.GetString("fs-opened", resourceCulture);
             }
         }
         
@@ -642,6 +768,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string fs_rename_file {
             get {
                 return ResourceManager.GetString("fs-rename_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на renamed.
+        /// </summary>
+        public static string fs_renamed {
+            get {
+                return ResourceManager.GetString("fs-renamed", resourceCulture);
             }
         }
         

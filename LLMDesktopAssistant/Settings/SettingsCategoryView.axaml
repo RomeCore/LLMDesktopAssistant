@@ -21,9 +21,10 @@
 				   FontWeight="Bold"
 				   VerticalAlignment="Center"/>
 
-		<Grid Grid.Row="1"
+		<StackPanel Grid.Row="1"
 			  HorizontalAlignment="Right"
-			  ColumnDefinitions="*,*"
+				Orientation="Horizontal"
+				Spacing="4"
 			  Margin="10">
 
 			<TextBlock Grid.Column="0"
@@ -32,15 +33,9 @@
 						FontWeight="Bold"
 						VerticalAlignment="Center"/>
 
-			<Grid Grid.Column="1"
-				  IsVisible="{Binding IsEditingId, Converter={StaticResource InverseBooleanConverter}}">
-
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition/>
-					<ColumnDefinition Width="auto"/>
-					<ColumnDefinition Width="auto"/>
-					<ColumnDefinition Width="auto"/>
-				</Grid.ColumnDefinitions>
+			<StackPanel Orientation="Horizontal"
+						Spacing="4"
+						IsVisible="{Binding IsEditingId, Converter={StaticResource InverseBooleanConverter}}">
 
 				<ComboBox Grid.Column="0"
 						  MinWidth="150"
@@ -48,7 +43,15 @@
 						  VerticalAlignment="Center"
 						  SelectedItem="{Binding CurrentId}"
 						  ItemsSource="{Binding Ids}"
-						  IsVisible="{Binding IsEditingId, Converter={StaticResource InverseBooleanConverter}}"/>
+						  IsVisible="{Binding IsEditingId, Converter={StaticResource InverseBooleanConverter}}">
+				
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="local:SettingsIdItemViewModel">
+							<TextBlock Text="{Binding DisplayId}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				
+				</ComboBox>
 
 				<Button Grid.Column="1"
 						Command="{Binding CreateNewIdCommand}"
@@ -74,16 +77,11 @@
 
 				</Button>
 
-			</Grid>
+			</StackPanel>
 
-			<Grid Grid.Column="1"
-				  IsVisible="{Binding IsEditingId}">
-
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition/>
-					<ColumnDefinition Width="auto"/>
-					<ColumnDefinition Width="auto"/>
-				</Grid.ColumnDefinitions>
+			<StackPanel Orientation="Horizontal"
+						Spacing="4"
+						IsVisible="{Binding IsEditingId}">
 
 				<TextBox Grid.Column="0"
 							VerticalAlignment="Center"
@@ -106,9 +104,9 @@
 
 				</Button>
 
-			</Grid>
+			</StackPanel>
 
-		</Grid>
+		</StackPanel>
 
 		<ContentControl Grid.Row="2"
 						Content="{Binding CurrentViewModel}"/>

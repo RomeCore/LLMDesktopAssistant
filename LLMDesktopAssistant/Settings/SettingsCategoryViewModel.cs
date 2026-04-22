@@ -1,9 +1,29 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Settings
 {
+	public class SettingsIdItemViewModel
+	{
+		public required string Id { get; init; }
+		public string DisplayId => Id == SettingsObject.DefaultId ? LocalizationManager.LocalizeStatic("settings_default_id") : Id;
+	
+		public static SettingsIdItemViewModel Default { get; } = new SettingsIdItemViewModel { Id = SettingsObject.DefaultId };
+
+		public override bool Equals(object? obj)
+		{
+			return obj is SettingsIdItemViewModel other && Id == other.Id;
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(Id);
+		}
+	}
+
 	[ViewModelFor(typeof(SettingsCategoryView))]
 	public class SettingsCategoryViewModel<TSettings> : ViewModelBase
 		where TSettings : SettingsObject, new()
@@ -16,12 +36,13 @@ namespace LLMDesktopAssistant.Settings
 
 		private readonly Func<TSettings, ViewModelBase> _vmFactory;
 		private readonly Action<TSettings>? _changed;
-		private readonly string _defaultIdLocalized = Locale.settings_default_id;
 
 		public static SettingsCategory<TSettings> Category { get; } = SettingsManager.GetCategory<TSettings>();
 
-		public IEnumerable<string> Ids => Category.GetAvailableIds().Select(c => c == SettingsObject.DefaultId ? 
-			Locale.settings_default_id : c);
+		public RangeObservableCollection<SettingsIdItemViewModel> Ids { get; } = [ .. Category.GetAvailableIds()
+			.Where(c => c != SettingsObject.DefaultId)
+			.Select(c => new SettingsIdItemViewModel { Id = c })
+			.Prepend(SettingsIdItemViewModel.Default) ];
 
 		private IdEditMode _mode = IdEditMode.Create;
 		private bool _isCreatingNewId = false;
@@ -48,21 +69,23 @@ namespace LLMDesktopAssistant.Settings
 			private set => SetProperty(ref _current, value);
 		}
 
-		public string CurrentId
+		private SettingsIdItemViewModel _currentId = null!;
+		public SettingsIdItemViewModel CurrentId
 		{
-			get => Current == null || Current.Id == SettingsObject.DefaultId ?
-				_defaultIdLocalized : Current.Id;
+			get => _currentId;
 			set
 			{
-				if (value == _defaultIdLocalized || string.IsNullOrWhiteSpace(value))
-					value = SettingsObject.DefaultId;
-				if (Current != null && value == Current.Id)
-					return;
+				if (string.IsNullOrEmpty(value?.Id))
+					value = SettingsIdItemViewModel.Default;
 
-				Current = Category.Get(value);
-				CurrentViewModel = _vmFactory(Current);
-				RaisePropertyChanged(null);
-				_changed?.Invoke(Current);
+				if (!Equals(_currentId, value))
+				{
+					_currentId = value;
+					_current = Category.Get(value.Id);
+					_currentViewModel = _vmFactory(Current);
+					RaisePropertyChanged(null);
+					_changed?.Invoke(Current);
+				}
 			}
 		}
 
@@ -84,7 +107,7 @@ namespace LLMDesktopAssistant.Settings
 		{
 			_vmFactory = vmFactory;
 			_changed = changed;
-			CurrentId = initialId;
+			CurrentId = new SettingsIdItemViewModel { Id = initialId };
 
 			CreateNewIdCommand = new RelayCommand(() =>
 			{
@@ -96,25 +119,31 @@ namespace LLMDesktopAssistant.Settings
 			{
 				_mode = IdEditMode.Rename;
 				IsEditingId = true;
-				NewId = null;
+				NewId = Current.Id;
 			});
 			RemoveIdCommand = new RelayCommand(() =>
 			{
 				if (Category.Remove(Current.Id))
 				{
+					if (Current.Id != SettingsObject.DefaultId)
+						Ids.Remove(new SettingsIdItemViewModel { Id = Current.Id });
 					_current = null!;
-					CurrentId = _defaultIdLocalized;
+					CurrentId = SettingsIdItemViewModel.Default;
 				}
 			});
 			ConfirmEditIdCommand = new RelayCommand(() =>
 			{
+				var oldId = Current.Id;
 				switch (_mode)
 				{
 					case IdEditMode.Create:
 
 						if (!string.IsNullOrWhiteSpace(NewId) && Category.Copy(Current.Id, NewId))
 						{
-							CurrentId = NewId;
+							if (NewId != SettingsObject.DefaultId && !Ids.Any(c => c.Id == NewId))
+								Ids.Add(new SettingsIdItemViewModel { Id = NewId });
+
+							CurrentId = new SettingsIdItemViewModel { Id = NewId };
 							IsEditingId = false;
 							NewId = null;
 						}
@@ -123,14 +152,19 @@ namespace LLMDesktopAssistant.Settings
 
 					case IdEditMode.Rename:
 
-						if (NewId == _defaultIdLocalized)
+						if (NewId == SettingsIdItemViewModel.Default.DisplayId)
 							NewId = SettingsObject.DefaultId;
 						if (!string.IsNullOrWhiteSpace(NewId) &&
-							NewId != CurrentId &&
+							NewId != CurrentId.Id &&
 							Category.Rename(Current.Id, NewId))
 						{
+							if (NewId != SettingsObject.DefaultId && !Ids.Any(c => c.Id == NewId))
+								Ids.Add(new SettingsIdItemViewModel { Id = NewId });
+							if (oldId != SettingsObject.DefaultId)
+								Ids.Remove(new SettingsIdItemViewModel { Id = oldId });
+							CurrentId = new SettingsIdItemViewModel { Id = NewId };
+
 							Category.Get(SettingsObject.DefaultId); // Ensure default settings are loaded if they were renamed.
-							RaisePropertyChanged(nameof(Ids));
 							RaisePropertyChanged(nameof(CurrentId));
 							IsEditingId = false;
 							NewId = null;

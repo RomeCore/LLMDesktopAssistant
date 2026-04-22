@@ -385,7 +385,7 @@
     <value>Прочитать бинарный файл</value>
   </data>
   <data name="fs-grep" xml:space="preserve">
-    <value>Поиск grep в файловой системе</value>
+    <value>Поиск в файловой системе</value>
   </data>
   <data name="fs-open_file" xml:space="preserve">
     <value>Открыть файл</value>
@@ -599,5 +599,50 @@
   </data>
   <data name="promptcomponent-git_hints" xml:space="preserve">
     <value>Советы по использованию Git</value>
+  </data>
+  <data name="fs-changes_modified" xml:space="preserve">
+    <value>изменён</value>
+  </data>
+  <data name="fs-changes_deleted" xml:space="preserve">
+    <value>удалено несколько строк</value>
+  </data>
+  <data name="fs-changes_inserted" xml:space="preserve">
+    <value>вставлено несколько строк</value>
+  </data>
+  <data name="fs-changes_updated" xml:space="preserve">
+    <value>обновлён</value>
+  </data>
+  <data name="fs-changes_none" xml:space="preserve">
+    <value>без изменений</value>
+  </data>
+  <data name="fs-deleted" xml:space="preserve">
+    <value>удалено</value>
+  </data>
+  <data name="fs-renamed" xml:space="preserve">
+    <value>Переименовано</value>
+  </data>
+  <data name="fs-copied" xml:space="preserve">
+    <value>скопировано</value>
+  </data>
+  <data name="fs-opened" xml:space="preserve">
+    <value>открыто</value>
+  </data>
+  <data name="fs-entries" xml:space="preserve">
+    <value>{0} элементов</value>
+  </data>
+  <data name="fs-grep_collecting_files" xml:space="preserve">
+    <value>Собираем файлы...</value>
+  </data>
+  <data name="fs-grep_scanning_files" xml:space="preserve">
+    <value>Сканируем файлы...</value>
+  </data>
+  <data name="fs-grep_collecting_files_count" xml:space="preserve">
+    <value>Собираем файлы... ({0} найдено)</value>
+  </data>
+  <data name="fs-grep_completed" xml:space="preserve">
+    <value>Найдено {0} совпадающих файлов</value>
+  </data>
+  <data name="fs-changes_lines_replaced" xml:space="preserve">
+    <value>Изменено {0} строк</value>
   </data>
 </root>
