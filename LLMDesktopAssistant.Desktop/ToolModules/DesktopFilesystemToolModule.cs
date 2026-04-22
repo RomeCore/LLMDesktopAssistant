@@ -31,7 +31,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			try
 			{
-				var workDir = _chat.Settings.GetWorkingDirectory();
+				var workDir = _chat.Settings.Environment.GetWorkingDirectory();
 				var fullPath = Path.Combine(workDir, filename);
 				var fileName = Path.GetFileName(fullPath);
 

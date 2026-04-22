@@ -42,7 +42,7 @@
 						Spacing="5">
 				
 				<!-- Model selector -->
-				<ctrl:LLModelSelectorControl SelectedModel="{Binding Chat.Settings.ChatModel, Mode=TwoWay}"/>
+				<ctrl:LLModelSelectorControl SelectedModel="{Binding Chat.Settings.Models.ChatModel, Mode=TwoWay}"/>
 
 				<!-- Settings -->
 				<Button Classes="IconButton"
@@ -87,7 +87,7 @@
 				<!-- Cancel edit -->
 				<Button Classes="IconButton"
 						Command="{Binding CancelEditCommand}"
-						ToolTip.Tip="{loc:Loc chat-send_button_hint}">
+						ToolTip.Tip="{loc:Loc chat-cancel_edit_hint}">
 
 					<ico:MaterialIcon Kind="EditOff"/>
 				</Button>
@@ -96,7 +96,7 @@
 				<Button Classes="IconButton"
 						Command="{Binding SendMessageCommand}"
 						IsVisible="{Binding IsGenerating, Converter={StaticResource InverseBooleanConverter}}"
-						ToolTip.Tip="{loc:Loc chat-stop_button_hint}">
+						ToolTip.Tip="{loc:Loc chat-send_button_hint}">
 
 					<ico:MaterialIcon Kind="Send"/>
 				</Button>
@@ -105,7 +105,7 @@
 				<Button Classes="IconButton"
 						Command="{Binding CancelGenerationCommand}"
 						IsVisible="{Binding IsGenerating}"
-						ToolTip.Tip="{loc:Loc chat-cancel_edit_hint}">
+						ToolTip.Tip="{loc:Loc chat-stop_button_hint}">
 
 					<ico:MaterialIcon Kind="Stop"/>
 				</Button>

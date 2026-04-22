@@ -19,10 +19,5 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// Gets or sets the language model used by the assistant.
 		/// </summary>
 		public required LLModel LLM { get; init; }
-
-		/// <summary>
-		/// Gets or sets the maximum number of tokens that can be processed in a single request.
-		/// </summary>
-		public int ContextSize { get; init; } = 128000;
 	}
 }

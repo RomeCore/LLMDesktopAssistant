@@ -49,7 +49,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			try
 			{
-				var workDir = _chat.Settings.GetWorkingDirectory();
+				var workDir = _chat.Settings.Environment.GetWorkingDirectory();
 				var result = shell.Contains('\n') ?
 					await ShellExecutor.ExecuteWindowsScriptAsync(shell, workDir) :
 					await ShellExecutor.ExecuteWindowsAsync(shell, workDir);
@@ -75,7 +75,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			try
 			{
-				var workDir = _chat.Settings.GetWorkingDirectory();
+				var workDir = _chat.Settings.Environment.GetWorkingDirectory();
 				var result = powershell.Contains('\n') ?
 					await ShellExecutor.ExecuteWindowsPSScriptAsync(powershell, workDir) :
 					await ShellExecutor.ExecuteWindowsPSAsync(powershell, workDir);
@@ -101,7 +101,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			try
 			{
-				var workDir = _chat.Settings.GetWorkingDirectory();
+				var workDir = _chat.Settings.Environment.GetWorkingDirectory();
 				var result = bash.Contains('\n') ?
 					await ShellExecutor.ExecuteBashScriptAsync(bash, workDir) :
 					await ShellExecutor.ExecuteBashAsync(bash, workDir);

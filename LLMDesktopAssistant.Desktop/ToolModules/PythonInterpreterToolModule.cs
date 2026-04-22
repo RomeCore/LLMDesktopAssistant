@@ -53,8 +53,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			try
 			{
-				var result = await _python.RunScript(python, _chat.Settings.GetWorkingDirectory(),
-					_chat.Settings.PythonVenvActivateScriptPath, cancellationToken);
+				var result = await _python.RunScript(python, _chat.Settings.Environment.GetWorkingDirectory(),
+					_chat.Settings.Environment.PythonVenvActivateScriptPath, cancellationToken);
 
 				var resultBuilder = new StringBuilder();
 				resultBuilder.Append(result.StdOut);
@@ -77,8 +77,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			try
 			{
-				var result = await _python.RunVenv(shell, _chat.Settings.GetWorkingDirectory(),
-					_chat.Settings.PythonVenvActivateScriptPath, cancellationToken);
+				var result = await _python.RunVenv(shell, _chat.Settings.Environment.GetWorkingDirectory(),
+					_chat.Settings.Environment.PythonVenvActivateScriptPath, cancellationToken);
 
 				var resultBuilder = new StringBuilder();
 				resultBuilder.Append(result.StdOut);
@@ -101,8 +101,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			try
 			{
-				var result = await _python.RunVenv("pip list", _chat.Settings.GetWorkingDirectory(),
-					_chat.Settings.PythonVenvActivateScriptPath, cancellationToken);
+				var result = await _python.RunVenv("pip list", _chat.Settings.Environment.GetWorkingDirectory(),
+					_chat.Settings.Environment.PythonVenvActivateScriptPath, cancellationToken);
 
 				var resultBuilder = new StringBuilder();
 				resultBuilder.Append(result.StdOut);

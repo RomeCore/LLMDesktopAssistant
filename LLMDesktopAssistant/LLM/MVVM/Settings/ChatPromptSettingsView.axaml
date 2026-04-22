@@ -14,7 +14,7 @@
 			
 			<!-- System Prompt -->
 			<TextBlock Text="{loc:Loc prompt_system_prompt}" FontSize="16" FontWeight="Bold"/>
-			<TextBox Text="{Binding Settings.SystemPrompt, Mode=TwoWay}"
+			<TextBox Text="{Binding Settings.Prompts.SystemPrompt, Mode=TwoWay}"
 					 AcceptsReturn="True"
 					 TextWrapping="Wrap"
 					 Height="100"
@@ -44,11 +44,11 @@
 			<!-- Persona -->
 			<TextBlock Text="{loc:Loc prompt_persona}" FontSize="16" FontWeight="Bold"/>
 			
-			<CheckBox IsChecked="{Binding Settings.UseCustomPersona, Mode=TwoWay}"
+			<CheckBox IsChecked="{Binding Settings.Prompts.UseCustomPersona, Mode=TwoWay}"
 					  Content="{loc:Loc prompt_use_custom_persona}"/>
 
-			<StackPanel IsVisible="{Binding Settings.UseCustomPersona}">
-				<TextBox Text="{Binding Settings.CustomPersona, Mode=TwoWay}"
+			<StackPanel IsVisible="{Binding Settings.Prompts.UseCustomPersona}">
+				<TextBox Text="{Binding Settings.Prompts.CustomPersona, Mode=TwoWay}"
 						 AcceptsReturn="True"
 						 TextWrapping="Wrap"
 						 Height="150"
@@ -56,7 +56,7 @@
 						 PlaceholderText="{loc:Loc prompt_custom_persona_hint}"/>
 			</StackPanel>
 
-			<StackPanel IsVisible="{Binding Settings.UseCustomPersona, Converter={StaticResource InverseBooleanConverter}}">
+			<StackPanel IsVisible="{Binding Settings.Prompts.UseCustomPersona, Converter={StaticResource InverseBooleanConverter}}">
 				<StackPanel Orientation="Horizontal" Spacing="5">
 					<ComboBox SelectedItem="{Binding SelectedPersona, Mode=TwoWay}"
 							  ItemsSource="{Binding AvailablePersonas}"

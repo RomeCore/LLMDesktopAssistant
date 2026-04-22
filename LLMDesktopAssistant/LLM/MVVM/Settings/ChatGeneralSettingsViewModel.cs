@@ -1,6 +1,5 @@
 ﻿using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Localization.Resources;
 using System.Diagnostics;
 using System.IO;
@@ -40,18 +39,18 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			if (result.Count > 0)
 			{
-				Settings.WorkingDirectory = result[0].Path.LocalPath;
+				Settings.Environment.WorkingDirectory = result[0].Path.LocalPath;
 			}
 		}
 
 		private void OpenWorkingDirectory()
 		{
-			if (!string.IsNullOrWhiteSpace(Settings.WorkingDirectory) &&
-				Directory.Exists(Settings.WorkingDirectory))
+			if (!string.IsNullOrWhiteSpace(Settings.Environment.WorkingDirectory) &&
+				Directory.Exists(Settings.Environment.WorkingDirectory))
 			{
 				Process.Start(new ProcessStartInfo
 				{
-					FileName = Settings.WorkingDirectory,
+					FileName = Settings.Environment.WorkingDirectory,
 					UseShellExecute = true
 				});
 			}
@@ -71,19 +70,19 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			if (result.Count > 0)
 			{
-				Settings.PythonVenvActivateScriptPath = result[0].Path.LocalPath;
+				Settings.Environment.PythonVenvActivateScriptPath = result[0].Path.LocalPath;
 			}
 		}
 
 		private void OpenPythonVenvActivateScriptPath()
 		{
-			if (!string.IsNullOrWhiteSpace(Settings.PythonVenvActivateScriptPath) &&
-				File.Exists(Settings.PythonVenvActivateScriptPath))
+			if (!string.IsNullOrWhiteSpace(Settings.Environment.PythonVenvActivateScriptPath) &&
+				File.Exists(Settings.Environment.PythonVenvActivateScriptPath))
 			{
 				Process.Start(new ProcessStartInfo
 				{
 					FileName = "explorer.exe",
-					Arguments = $"/select,\"{Settings.PythonVenvActivateScriptPath}\"",
+					Arguments = $"/select,\"{Settings.Environment.PythonVenvActivateScriptPath}\"",
 					UseShellExecute = true
 				});
 			}

@@ -18,11 +18,6 @@ namespace LLMDesktopAssistant.LLM.Services
 		) : IChatSummarizationService
 	{
 		/// <summary>
-		/// The threshold to use when determining if a chat should be summarized or not.
-		/// </summary>
-		private const float Threshold = 0.75f;
-
-		/// <summary>
 		/// The number of last messages to not be inculded in the summary.
 		/// </summary>
 		private const int IgnoreLastMessagesCount = 4;
@@ -31,10 +26,11 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			try
 			{
-				var modelContextLength = usedLLM.ContextSize;
+				if (!chat.Settings.Summarization.SummarizationEnabled)
+					return;
+
 				var totalTokensUsed = lastUsageMetadata.TotalTokens;
-				// If the total tokens used is less than Threshold% of the model's context size, do not summarize
-				if (totalTokensUsed < modelContextLength * Threshold)
+				if (totalTokensUsed < chat.Settings.Summarization.SummarizationTriggerTokens)
 					return;
 
 				var summarizationLLM = llmBuilder.BuildSummarizationLLM();

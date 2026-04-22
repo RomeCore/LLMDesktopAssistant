@@ -1,6 +1,7 @@
 ﻿using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
@@ -463,9 +464,11 @@ namespace LLMDesktopAssistant.LLM.Services
 				if (e.OldItems != null)
 					foreach (AdditionalMessageViewModel oldVm in e.OldItems)
 						database.AdditionalMessageViewModels.DeleteMany(avm => avm.ViewModel.Guid == oldVm.Guid);
+
 				if (e.NewItems != null)
 					foreach (AdditionalMessageViewModel newVm in e.NewItems)
-						CreateAndInsertAdditionalViewModelAndSubscribe(newVm, message, model);
+						if (!newVm.IsTemporary)
+							CreateAndInsertAdditionalViewModelAndSubscribe(newVm, message, model);
 			}
 			message.AdditionalViewModels.CollectionChanged += AdditionalViewModelsCollectionChanged;
 
@@ -517,7 +520,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				foreach (var additionalViewModel in message.AdditionalViewModels)
 				{
-					CreateAndInsertAdditionalViewModelAndSubscribe(additionalViewModel, message, model);
+					if (!additionalViewModel.IsTemporary)
+						CreateAndInsertAdditionalViewModelAndSubscribe(additionalViewModel, message, model);
 				}
 
 				SubscribeMessage(message, model);
@@ -553,7 +557,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				foreach (var additionalViewModel in message.AdditionalViewModels)
 				{
-					CreateAndInsertAdditionalViewModelAndSubscribe(additionalViewModel, message, model);
+					if (!additionalViewModel.IsTemporary)
+						CreateAndInsertAdditionalViewModelAndSubscribe(additionalViewModel, message, model);
 				}
 
 				SubscribeMessage(message, model);
@@ -583,8 +588,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				var additionalViewModels = database.AdditionalMessageViewModels
 					.Find(avm => avm.MessageId == messageModel.Id)
-					.OrderBy(avm => avm.Id)
-					.Select(avm => avm.ViewModel);
+					.OrderBy(avm => avm.Id);
 
 				var result = new UserMessage
 				{
@@ -594,7 +598,11 @@ namespace LLMDesktopAssistant.LLM.Services
 					Attachments = attachments.ToImmutableList()
 				};
 
-				result.AdditionalViewModels.AddRange(additionalViewModels);
+				foreach (var additionalViewDataModel in additionalViewModels)
+				{
+					SubscribeAdditionalViewModel(additionalViewDataModel.ViewModel, result, additionalViewDataModel);
+					result.AdditionalViewModels.Add(additionalViewDataModel.ViewModel);
+				}
 
 				SubscribeMessage(result, messageModel);
 
@@ -606,8 +614,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				var additionalViewModels = database.AdditionalMessageViewModels
 					.Find(avm => avm.MessageId == messageModel.Id)
-					.OrderBy(avm => avm.Id)
-					.Select(avm => avm.ViewModel);
+					.OrderBy(avm => avm.Id);
 
 				var result = new AssistantMessage
 				{
@@ -618,7 +625,11 @@ namespace LLMDesktopAssistant.LLM.Services
 					Error = messageModel.Error
 				};
 
-				result.AdditionalViewModels.AddRange(additionalViewModels);
+				foreach (var additionalViewDataModel in additionalViewModels)
+				{
+					SubscribeAdditionalViewModel(additionalViewDataModel.ViewModel, result, additionalViewDataModel);
+					result.AdditionalViewModels.Add(additionalViewDataModel.ViewModel);
+				}
 
 				foreach (var toolCallModel in toolCallModels)
 				{

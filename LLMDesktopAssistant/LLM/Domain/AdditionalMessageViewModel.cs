@@ -27,5 +27,16 @@
 			get => _isVisible;
 			set => SetProperty(ref _isVisible, value);
 		}
+
+		private bool _isTemporary = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether the additional view model is temporary.
+		/// Temporary view models are not stored in the database, and are only used for short-lived operations.
+		/// </summary>
+		public bool IsTemporary
+		{
+			get => _isTemporary;
+			set => SetProperty(ref _isTemporary, value);
+		}
 	}
 }

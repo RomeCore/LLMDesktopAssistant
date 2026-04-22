@@ -123,11 +123,47 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					AskForConfirmation = false
 				});
 
+			AddTool(CreateDirectory,
+				new ToolInitializationInfo
+				{
+					Name = "fs-create_directory",
+					Description = "Creates a new directory inside working directory path.",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
+
 			AddTool(DeleteFile,
 				new ToolInitializationInfo
 				{
 					Name = "fs-delete_file",
 					Description = "Deletes a file inside working directory.",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
+
+			AddTool(DeleteDirectory,
+				new ToolInitializationInfo
+				{
+					Name = "fs-delete_directory",
+					Description = "Deletes a directory (empty or with contents) from the working directory.",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
+
+			AddTool(CopyFile,
+				new ToolInitializationInfo
+				{
+					Name = "fs-copy_file",
+					Description = "Copies a file within the working directory.",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
+
+			AddTool(CopyDirectory,
+				new ToolInitializationInfo
+				{
+					Name = "fs-copy_directory",
+					Description = "Copies a directory and all its contents to a new location within the working directory.",
 					Category = "filesystem",
 					AskForConfirmation = true
 				});
@@ -141,11 +177,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					AskForConfirmation = true
 				});
 
-			AddTool(CopyFile,
+			AddTool(MoveDirectory,
 				new ToolInitializationInfo
 				{
-					Name = "fs-copy_file",
-					Description = "Copies a file within the working directory.",
+					Name = "fs-move_directory",
+					Description = "Moves a directory and all its contents to a new location within the working directory.",
 					Category = "filesystem",
 					AskForConfirmation = true
 				});
@@ -166,7 +202,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private string ResolvePath(string path)
 		{
-			var baseDir = Path.GetFullPath(_chat.Settings.GetWorkingDirectory());
+			var baseDir = Path.GetFullPath(_chat.Settings.Environment.GetWorkingDirectory());
 			if (string.IsNullOrWhiteSpace(path) || path == ".")
 				return baseDir;
 
@@ -718,13 +754,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}
 				report.AppendLine();
 
-				int afterStart = Math.Min(beforeDeletionLines.Count - 1, deletedEndLine);
-				int afterEnd = Math.Min(beforeDeletionLines.Count, deletedEndLine + 5);
+				int afterStart = Math.Min(beforeInsertionLines.Count - 1, deletedStartLine - 1);
+				int afterEnd = Math.Min(beforeInsertionLines.Count, deletedStartLine + 4);
 				if (afterStart < afterEnd)
 				{
 					for (int i = afterStart; i < afterEnd; i++)
 					{
-						report.AppendLine($"{i + 1,6}: {beforeDeletionLines[i]}");
+						report.AppendLine($"{i + 1,6}: {beforeInsertionLines[i]}");
 					}
 					report.AppendLine();
 				}
@@ -954,114 +990,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			return text.Substring(0, maxLength - 3) + "...";
 		}
 
-		public ReactiveToolResult DeleteFile(string path)
-		{
-			try
-			{
-				var fullPath = ResolvePath(path);
-				var fileName = Path.GetFileName(fullPath);
-
-				if (!File.Exists(fullPath))
-					return ReactiveToolResult.CreateError("File not found.");
-
-				var fileInfo = new FileInfo(fullPath);
-				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
-
-				File.Delete(fullPath);
-
-				var result = new ReactiveToolResult
-				{
-					StatusIcon = Material.Icons.MaterialIconKind.Delete,
-					StatusTitle = $"**{fileName}**",
-					ResultContent = $"File '{path}' deleted successfully."
-				};
-
-				return result.Complete(true);
-			}
-			catch (Exception ex)
-			{
-				return ReactiveToolResult.CreateError($"Error deleting file: {ex.Message}");
-			}
-		}
-
-		public ReactiveToolResult RenameFile(
-			string oldPath,
-			string newPath,
-			bool overwrite = false)
-		{
-			try
-			{
-				var fullOldPath = ResolvePath(oldPath);
-				var fullNewPath = ResolvePath(newPath);
-
-				var oldFileName = Path.GetFileName(fullOldPath);
-				var newFileName = Path.GetFileName(fullNewPath);
-
-				if (!File.Exists(fullOldPath))
-					return ReactiveToolResult.CreateError("Source file not found.");
-
-				if (File.Exists(fullNewPath) && !overwrite)
-					return ReactiveToolResult.CreateError("Destination file already exists.");
-
-				if (Path.GetDirectoryName(fullNewPath) is string dir)
-					Directory.CreateDirectory(dir);
-
-				File.Move(fullOldPath, fullNewPath, overwrite);
-
-				var result = new ReactiveToolResult
-				{
-					StatusIcon = Material.Icons.MaterialIconKind.Pencil,
-					StatusTitle = $"**{oldFileName}** → **{newFileName}**",
-					ResultContent = $"File renamed from '{oldPath}' to '{newPath}'."
-				};
-
-				return result.Complete(true);
-			}
-			catch (Exception ex)
-			{
-				return ReactiveToolResult.CreateError($"Error renaming file: {ex.Message}");
-			}
-		}
-
-		public ReactiveToolResult CopyFile(
-			string oldPath,
-			string newPath,
-			bool overwrite = false)
-		{
-			try
-			{
-				var fullOldPath = ResolvePath(oldPath);
-				var fullNewPath = ResolvePath(newPath);
-
-				var oldFileName = Path.GetFileName(fullOldPath);
-				var newFileName = Path.GetFileName(fullNewPath);
-
-				if (!File.Exists(fullOldPath))
-					return ReactiveToolResult.CreateError("Source file not found.");
-
-				if (File.Exists(fullNewPath) && !overwrite)
-					return ReactiveToolResult.CreateError("Destination file already exists.");
-
-				if (Path.GetDirectoryName(fullNewPath) is string dir)
-					Directory.CreateDirectory(dir);
-
-				File.Copy(fullOldPath, fullNewPath, overwrite);
-
-				var result = new ReactiveToolResult
-				{
-					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
-					StatusTitle = $"**{oldFileName}** → **{newFileName}**",
-					ResultContent = $"File copied from '{oldPath}' to '{newPath}'."
-				};
-
-				return result.Complete(true);
-			}
-			catch (Exception ex)
-			{
-				return ReactiveToolResult.CreateError($"Error copying file: {ex.Message}");
-			}
-		}
-
 		public ReactiveToolResult ListDirectory(
 			string path = "",
 			[Description("The maximum depth of directories to include in the listing. 1 = current directory only.")]
@@ -1175,6 +1103,247 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
+		public ReactiveToolResult CreateDirectory(string path)
+		{
+			try
+			{
+				var fullPath = ResolvePath(path);
+				var dirName = path + "/";
+
+				if (Directory.Exists(fullPath))
+					return ReactiveToolResult.CreateError("Directory already exists.");
+
+				Directory.CreateDirectory(fullPath);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FolderPlus,
+					StatusTitle = $"**{dirName}**",
+					ResultContent = $"Directory '{path}' created successfully."
+				};
+
+				return result.Complete(true);
+			}
+			catch (Exception ex)
+			{
+				return ReactiveToolResult.CreateError($"Error creating directory: {ex.Message}");
+			}
+		}
+
+		public ReactiveToolResult DeleteFile(string path)
+		{
+			try
+			{
+				var fullPath = ResolvePath(path);
+				var fileName = Path.GetFileName(fullPath);
+
+				if (!File.Exists(fullPath))
+					return ReactiveToolResult.CreateError("File not found.");
+
+				var fileInfo = new FileInfo(fullPath);
+				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
+
+				File.Delete(fullPath);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Delete,
+					StatusTitle = $"**{fileName}**",
+					ResultContent = $"File '{path}' deleted successfully."
+				};
+
+				return result.Complete(true);
+			}
+			catch (Exception ex)
+			{
+				return ReactiveToolResult.CreateError($"Error deleting file: {ex.Message}");
+			}
+		}
+
+		public ReactiveToolResult DeleteDirectory(string path)
+		{
+			try
+			{
+				var fullPath = ResolvePath(path);
+				var dirName = path + "/";
+
+				if (!Directory.Exists(fullPath))
+					return ReactiveToolResult.CreateError("Directory not found.");
+
+				var dirInfo = new DirectoryInfo(fullPath);
+
+				Directory.Delete(fullPath, recursive: true);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FolderRemove,
+					StatusTitle = $"**{dirName}**",
+					ResultContent = $"Directory '{path}' deleted successfully."
+				};
+
+				return result.Complete(true);
+			}
+			catch (Exception ex)
+			{
+				return ReactiveToolResult.CreateError($"Error deleting directory: {ex.Message}");
+			}
+		}
+
+		public ReactiveToolResult RenameFile(
+			string oldPath,
+			string newPath,
+			bool overwrite = false)
+		{
+			try
+			{
+				var fullOldPath = ResolvePath(oldPath);
+				var fullNewPath = ResolvePath(newPath);
+
+				var oldFileName = Path.GetFileName(fullOldPath);
+				var newFileName = Path.GetFileName(fullNewPath);
+
+				if (!File.Exists(fullOldPath))
+					return ReactiveToolResult.CreateError("Source file not found.");
+
+				if (File.Exists(fullNewPath) && !overwrite)
+					return ReactiveToolResult.CreateError("Destination file already exists.");
+
+				if (Path.GetDirectoryName(fullNewPath) is string dir)
+					Directory.CreateDirectory(dir);
+
+				File.Move(fullOldPath, fullNewPath, overwrite);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Pencil,
+					StatusTitle = $"**{oldFileName}** → **{newFileName}**",
+					ResultContent = $"File renamed from '{oldPath}' to '{newPath}'."
+				};
+
+				return result.Complete(true);
+			}
+			catch (Exception ex)
+			{
+				return ReactiveToolResult.CreateError($"Error renaming file: {ex.Message}");
+			}
+		}
+
+		public ReactiveToolResult MoveDirectory(
+			string sourcePath,
+			string destinationPath,
+			bool overwrite = false)
+		{
+			try
+			{
+				var fullSourcePath = ResolvePath(sourcePath);
+				var fullDestPath = ResolvePath(destinationPath);
+				var dirName = Path.GetFileName(fullSourcePath);
+
+				if (!Directory.Exists(fullSourcePath))
+					return ReactiveToolResult.CreateError("Source directory not found.");
+
+				if (Directory.Exists(fullDestPath) && !overwrite)
+					return ReactiveToolResult.CreateError("Destination directory already exists.");
+
+				Directory.CreateDirectory(Path.GetDirectoryName(fullDestPath)!);
+				Directory.Move(fullSourcePath, fullDestPath);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Folder,
+					StatusTitle = $"**{dirName}**",
+					ResultContent = $"Directory moved from '{sourcePath}' to '{destinationPath}'."
+				};
+
+				return result.Complete(true);
+			}
+			catch (Exception ex)
+			{
+				return ReactiveToolResult.CreateError($"Error moving directory: {ex.Message}");
+			}
+		}
+
+		public ReactiveToolResult CopyFile(
+			string oldPath,
+			string newPath,
+			bool overwrite = false)
+		{
+			try
+			{
+				var fullOldPath = ResolvePath(oldPath);
+				var fullNewPath = ResolvePath(newPath);
+
+				var oldFileName = Path.GetFileName(fullOldPath);
+				var newFileName = Path.GetFileName(fullNewPath);
+
+				if (!File.Exists(fullOldPath))
+					return ReactiveToolResult.CreateError("Source file not found.");
+
+				if (File.Exists(fullNewPath) && !overwrite)
+					return ReactiveToolResult.CreateError("Destination file already exists.");
+
+				if (Path.GetDirectoryName(fullNewPath) is string dir)
+					Directory.CreateDirectory(dir);
+
+				File.Copy(fullOldPath, fullNewPath, overwrite);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+					StatusTitle = $"**{oldFileName}** → **{newFileName}**",
+					ResultContent = $"File copied from '{oldPath}' to '{newPath}'."
+				};
+
+				return result.Complete(true);
+			}
+			catch (Exception ex)
+			{
+				return ReactiveToolResult.CreateError($"Error copying file: {ex.Message}");
+			}
+		}
+
+		public ReactiveToolResult CopyDirectory(
+			string sourcePath,
+			string destinationPath,
+			bool overwrite = false)
+		{
+			try
+			{
+				var fullSourcePath = ResolvePath(sourcePath);
+				var fullDestPath = ResolvePath(destinationPath);
+				var dirName = Path.GetFileName(fullSourcePath);
+
+				if (!Directory.Exists(fullSourcePath))
+					return ReactiveToolResult.CreateError("Source directory not found.");
+
+				if (Directory.Exists(fullDestPath) && !overwrite)
+					return ReactiveToolResult.CreateError("Destination directory already exists.");
+
+				Directory.CreateDirectory(fullDestPath);
+
+				foreach (var file in Directory.GetFiles(fullSourcePath, "*", SearchOption.AllDirectories))
+				{
+					var relativePath = Path.GetRelativePath(fullSourcePath, file);
+					var destFile = Path.Combine(fullDestPath, relativePath);
+					Directory.CreateDirectory(Path.GetDirectoryName(destFile)!);
+					File.Copy(file, destFile, overwrite);
+				}
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+					StatusTitle = $"**{dirName}**",
+					ResultContent = $"Directory copied from '{sourcePath}' to '{destinationPath}'."
+				};
+
+				return result.Complete(true);
+			}
+			catch (Exception ex)
+			{
+				return ReactiveToolResult.CreateError($"Error copying directory: {ex.Message}");
+			}
+		}
+
 		public ReactiveToolResult Grep(
 			[Description("The regex pattern to search for.")]
 			string pattern,
@@ -1204,7 +1373,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var workingDirectory = _chat.Settings.GetWorkingDirectory();
+				var workingDirectory = _chat.Settings.Environment.GetWorkingDirectory();
 				var fullPath = ResolvePath(path);
 				var regexIgnoreCaseOptions = ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
 				var regex = new Regex(pattern, regexIgnoreCaseOptions | RegexOptions.Compiled);

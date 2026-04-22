@@ -340,6 +340,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancel editing.
+        /// </summary>
+        public static string chat_cancel_edit_hint {
+            get {
+                return ResourceManager.GetString("chat-cancel_edit_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Enable MCP.
         /// </summary>
         public static string chat_enable_mcp {
@@ -417,6 +426,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string chat_settings_tools {
             get {
                 return ResourceManager.GetString("chat_settings_tools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Stop generation.
+        /// </summary>
+        public static string chat_stop_button_hint {
+            get {
+                return ResourceManager.GetString("chat-stop_button_hint", resourceCulture);
             }
         }
         
@@ -619,11 +637,38 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy directory.
+        /// </summary>
+        public static string fs_copy_directory {
+            get {
+                return ResourceManager.GetString("fs-copy_directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy file.
         /// </summary>
         public static string fs_copy_file {
             get {
                 return ResourceManager.GetString("fs-copy_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Create directory.
+        /// </summary>
+        public static string fs_create_directory {
+            get {
+                return ResourceManager.GetString("fs-create_directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete directory.
+        /// </summary>
+        public static string fs_delete_directory {
+            get {
+                return ResourceManager.GetString("fs-delete_directory", resourceCulture);
             }
         }
         
@@ -714,6 +759,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string fs_list_directory {
             get {
                 return ResourceManager.GetString("fs-list_directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move directory.
+        /// </summary>
+        public static string fs_move_directory {
+            get {
+                return ResourceManager.GetString("fs-move_directory", resourceCulture);
             }
         }
         

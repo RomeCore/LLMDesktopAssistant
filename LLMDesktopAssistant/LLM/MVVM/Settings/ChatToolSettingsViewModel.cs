@@ -77,14 +77,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 				DescriptionOpacityMask = gradientBrush;
 			}
 
-			_change = _settings.ToolChanges.FirstOrDefault(x => x.ToolName == Name);
+			_change = _settings.Tools.ToolChanges.FirstOrDefault(x => x.ToolName == Name);
 		}
 
 		private void Reset()
 		{
 			if (_change != null)
 			{
-				_settings.ToolChanges.Remove(_change);
+				_settings.Tools.ToolChanges.Remove(_change);
 				_change = null;
 				RaisePropertyChanged(nameof(Enabled));
 				RaisePropertyChanged(nameof(AskForConfirmation));
@@ -101,7 +101,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 					Enabled = null,
 					AskForConfirmation = null
 				};
-				_settings.ToolChanges.Add(_change);
+				_settings.Tools.ToolChanges.Add(_change);
 			}
 			return _change;
 		}

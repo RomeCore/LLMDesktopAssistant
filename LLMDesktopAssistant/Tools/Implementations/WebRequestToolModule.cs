@@ -176,7 +176,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				response.EnsureSuccessStatusCode();
 
 				var fileBytes = await response.Content.ReadAsByteArrayAsync();
-				savePath = Path.Combine(_chat.Settings.GetWorkingDirectory(), savePath);
+				savePath = Path.Combine(_chat.Settings.Environment.GetWorkingDirectory(), savePath);
 				await File.WriteAllBytesAsync(savePath, fileBytes);
 
 				var result = $"""

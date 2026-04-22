@@ -15,15 +15,11 @@
 
 			<TextBlock Text="{loc:Loc settings-chat_model_hint}"
 					   Margin="0,15,0,2"/>
-			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.ChatModel, Mode=TwoWay}"/>
-
-			<TextBlock Text="{loc:Loc settings-summarizer_model_hint}"
-					   Margin="0,15,0,2"/>
-			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.SummarizerModel, Mode=TwoWay}"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.Models.ChatModel, Mode=TwoWay}"/>
 
 			<TextBlock Text="{loc:Loc settings-agentic_model_hint}"
 					   Margin="0,15,0,2"/>
-			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.AgenticModel, Mode=TwoWay}"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding Settings.Models.AgenticModel, Mode=TwoWay}"/>
 
 			<Grid Margin="0,10">
 				<Grid.ColumnDefinitions>
@@ -32,7 +28,7 @@
 					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
 
-				<TextBox Text="{Binding Settings.WorkingDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+				<TextBox Text="{Binding Settings.Environment.WorkingDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						 PlaceholderText="{loc:Loc working_directory_hint}"
 						 UseFloatingPlaceholder="True"
 						 VerticalContentAlignment="Center"/>
@@ -62,7 +58,7 @@
 					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
 
-				<TextBox Text="{Binding Settings.PythonVenvActivateScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+				<TextBox Text="{Binding Settings.Environment.PythonVenvActivateScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						 PlaceholderText="{loc:Loc python_venv_activate_script_path_hint}"
 						 UseFloatingPlaceholder="True"
 						 VerticalContentAlignment="Center"/>

@@ -57,14 +57,14 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			var context = new
 			{
-				prompt = chat.Settings.SystemPrompt,
-				components = chat.Settings.PromptComponents
+				prompt = chat.Settings.Prompts.SystemPrompt,
+				components = chat.Settings.Prompts.PromptComponents
 					.Select(id => PromptRegistry.GetComponent(id)?.Template.Template.Render(componentsContext))
 					.Where(c => !string.IsNullOrWhiteSpace(c))
 					.ToArray(),
-				persona = chat.Settings.UseCustomPersona ?
-					chat.Settings.CustomPersona :
-					(chat.Settings.PersonaId != null ? PromptRegistry.GetPersona(chat.Settings.PersonaId.Value)?.Template.Template.Render(componentsContext) : null),
+				persona = chat.Settings.Prompts.UseCustomPersona ?
+					chat.Settings.Prompts.CustomPersona :
+					(chat.Settings.Prompts.PersonaId != null ? PromptRegistry.GetPersona(chat.Settings.Prompts.PersonaId.Value)?.Template.Template.Render(componentsContext) : null),
 				summary = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages
 			};
 

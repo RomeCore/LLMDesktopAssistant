@@ -3,6 +3,7 @@ using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Settings;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {

@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.LLM.Domain;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -18,7 +17,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		{
 			_parent = parent;
 			Component = component;
-			_isSelected = parent.Settings.PromptComponents.Contains(component.Id);
+			_isSelected = parent.Settings.Prompts.PromptComponents.Contains(component.Id);
 		}
 
 		private bool _isSelected;
@@ -75,9 +74,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 				if (SetProperty(ref _selectedPersona, value))
 				{
 					if (value != null)
-						Settings.PersonaId = value.Persona.Id;
+						Settings.Prompts.PersonaId = value.Persona.Id;
 					else
-						Settings.PersonaId = null;
+						Settings.Prompts.PersonaId = null;
 				}
 			}
 		}
@@ -123,9 +122,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 			foreach (var persona in personasConfig.Personas)
 				AvailablePersonas.Add(new PersonaItemViewModel(this, persona));
 
-			if (Settings.PersonaId.HasValue)
+			if (Settings.Prompts.PersonaId.HasValue)
 			{
-				SelectedPersona = AvailablePersonas.FirstOrDefault(p => p.Persona.Id == Settings.PersonaId.Value);
+				SelectedPersona = AvailablePersonas.FirstOrDefault(p => p.Persona.Id == Settings.Prompts.PersonaId.Value);
 			}
 			else
 			{
@@ -144,7 +143,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 						selectedIds.Add(component.Component.Id);
 				}
 			}
-			Settings.PromptComponents = selectedIds;
+			Settings.Prompts.PromptComponents = selectedIds;
 		}
 	}
 }

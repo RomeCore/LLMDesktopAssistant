@@ -56,8 +56,8 @@ namespace LLMDesktopAssistant.Desktop.Execution
 			var code = codeBlock.Code;
 			if (string.IsNullOrEmpty(code))
 				return;
-			var workDir = chat.Settings.GetWorkingDirectory();
-			var pythonVenvScript = chat.Settings.PythonVenvActivateScriptPath;
+			var workDir = chat.Settings.Environment.GetWorkingDirectory();
+			var pythonVenvScript = chat.Settings.Environment.PythonVenvActivateScriptPath;
 
 			switch (codeBlock.Language)
 			{

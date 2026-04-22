@@ -645,4 +645,22 @@
   <data name="fs-changes_lines_replaced" xml:space="preserve">
     <value>Изменено {0} строк</value>
   </data>
+  <data name="fs-delete_directory" xml:space="preserve">
+    <value>Удалить директорию</value>
+  </data>
+  <data name="fs-copy_directory" xml:space="preserve">
+    <value>Скопировать директорию</value>
+  </data>
+  <data name="fs-move_directory" xml:space="preserve">
+    <value>Переместить директорию</value>
+  </data>
+  <data name="chat-stop_button_hint" xml:space="preserve">
+    <value>Остановить генерацию</value>
+  </data>
+  <data name="chat-cancel_edit_hint" xml:space="preserve">
+    <value>Отменить редактирование</value>
+  </data>
+  <data name="fs-create_directory" xml:space="preserve">
+    <value>Создать директорию</value>
+  </data>
 </root>

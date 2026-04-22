@@ -15,7 +15,7 @@
 			   Grid.IsSharedSizeScope="True">
 
 		<CheckBox DockPanel.Dock="Top"
-				  IsChecked="{Binding Settings.EnableTools}"
+				  IsChecked="{Binding Settings.Tools.EnableTools}"
 				  Content="{loc:Loc settings-use_tools}"/>
 
 		<Grid DockPanel.Dock="Top">
@@ -71,7 +71,7 @@
 		</Grid>
 
 		<TreeView ItemsSource="{Binding ToolCategories}"
-				  IsEnabled="{Binding Settings.EnableTools}"
+				  IsEnabled="{Binding Settings.Tools.EnableTools}"
 				  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 				  ScrollViewer.VerticalScrollBarVisibility="Auto">
 

@@ -15,13 +15,13 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public async Task EnsureCurrentMCPConnectionsAsync(CancellationToken cancellationToken = default)
 		{
-			if (!chat.Settings.EnableMcp)
+			if (!chat.Settings.Mcp.EnableMcp)
 			{
 				_usedConnections = [];
 				return;
 			}
 
-			var usedServerIds = chat.Settings.UsedMcpServers
+			var usedServerIds = chat.Settings.Mcp.UsedMcpServers
 				.Intersect(SettingsManager.Get<MCPConfiguration>().Servers.Select(s => s.Id));
 
 			var usedConnectionTasks = usedServerIds.Select(id => MCPManager.EnsureConnectionAsync(id, cancellationToken));
@@ -30,7 +30,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public MCPToolModule[] GetMCPTools()
 		{
-			if (!chat.Settings.EnableMcp)
+			if (!chat.Settings.Mcp.EnableMcp)
 				return [];
 
 			return _usedConnections.Select(c => c.ToolModule).ToArray();

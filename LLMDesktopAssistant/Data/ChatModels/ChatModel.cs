@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
-using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Settings;
 
 namespace LLMDesktopAssistant.Data.ChatModels
 {

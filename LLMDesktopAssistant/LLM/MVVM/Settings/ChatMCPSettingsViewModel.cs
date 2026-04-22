@@ -1,5 +1,4 @@
 ﻿using Avalonia.Collections;
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.Utils;
@@ -25,20 +24,20 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 		public bool IsEnabled
 		{
-			get => _settingsVm.Parent.Settings.UsedMcpServers.Contains(_server.Id);
+			get => _settingsVm.Parent.Settings.Mcp.UsedMcpServers.Contains(_server.Id);
 			set
 			{
 				if (value)
 				{
-					if (!_settingsVm.Parent.Settings.UsedMcpServers.Contains(_server.Id))
+					if (!_settingsVm.Parent.Settings.Mcp.UsedMcpServers.Contains(_server.Id))
 					{
-						_settingsVm.Parent.Settings.UsedMcpServers.Add(_server.Id);
+						_settingsVm.Parent.Settings.Mcp.UsedMcpServers.Add(_server.Id);
 						_settingsVm.EnsureMCPServers();
 					}
 				}
 				else
 				{
-					if (_settingsVm.Parent.Settings.UsedMcpServers.Remove(_server.Id))
+					if (_settingsVm.Parent.Settings.Mcp.UsedMcpServers.Remove(_server.Id))
 					{
 						_settingsVm.EnsureMCPServers();
 					}

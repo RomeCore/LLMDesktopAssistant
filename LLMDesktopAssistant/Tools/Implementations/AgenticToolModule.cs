@@ -62,7 +62,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			string[] allowedTools,
 			CancellationToken cancellationToken = default)
 		{
-			if (_chat.Settings.AgenticModel.Current is not LLModelDescriptor modelDescriptor)
+			if (_chat.Settings.Models.AgenticModel.Current is not LLModelDescriptor modelDescriptor)
 				return new ToolResult(ToolResultStatus.Error, "No agentic model selected. Say user to select an agentic model first.");
 
 			var llm = new LLModel(modelDescriptor);

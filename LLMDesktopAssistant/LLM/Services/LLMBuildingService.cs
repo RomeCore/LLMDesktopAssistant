@@ -17,27 +17,25 @@ namespace LLMDesktopAssistant.LLM.Services
 	{
 		public LLMInfo? BuildChatLLM()
 		{
-			var model = chat.Settings.ChatModel.Current;
+			var model = chat.Settings.Models.ChatModel.Current;
 			if (model is null)
 				return null;
 
 			return new LLMInfo
 			{
-				LLM = new LLModel(model),
-				ContextSize = model.ContextLength != -1 ? model.ContextLength : 128000
+				LLM = new LLModel(model)
 			};
 		}
 
 		public LLMInfo? BuildSummarizationLLM()
 		{
-			var model = chat.Settings.SummarizerModel.Current;
+			var model = chat.Settings.Summarization.SummarizerModel.Current;
 			if (model is null)
 				return null;
 
 			return new LLMInfo
 			{
-				LLM = new LLModel(model),
-				ContextSize = model.ContextLength != -1 ? model.ContextLength : 128000
+				LLM = new LLModel(model)
 			};
 		}
 	}

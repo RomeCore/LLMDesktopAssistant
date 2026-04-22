@@ -17,13 +17,13 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	{
 		public IEnumerable<ToolInfo> BuildTools()
 		{
-			if (!chat.Settings.EnableTools)
+			if (!chat.Settings.Tools.EnableTools)
 				return [];
 
 			var tools = GetAvailableTools();
 			var result = new List<ToolInfo>();
 
-			var changes = chat.Settings.ToolChanges.ToDictionary(c => c.ToolName, c => c);
+			var changes = chat.Settings.Tools.ToolChanges.ToDictionary(c => c.ToolName, c => c);
 			foreach (var toolInfo in tools)
 			{
 				if (changes.TryGetValue(toolInfo.Tool.Name, out var change))

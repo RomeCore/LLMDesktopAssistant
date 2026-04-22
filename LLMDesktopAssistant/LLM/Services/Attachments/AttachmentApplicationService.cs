@@ -170,7 +170,7 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 		{
 			var sourceUri = parameters.SourceUri;
 
-			var workingDir = chat.Settings.GetWorkingDirectory();
+			var workingDir = chat.Settings.Environment.GetWorkingDirectory();
 			var attachmentsDir = Path.Combine(workingDir, ".llmassist", "attachments");
 			Directory.CreateDirectory(attachmentsDir);
 
