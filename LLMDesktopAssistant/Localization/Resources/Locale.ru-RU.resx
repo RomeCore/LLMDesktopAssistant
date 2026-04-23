@@ -675,4 +675,16 @@
   <data name="chat_settings_environment" xml:space="preserve">
     <value>Окружение</value>
   </data>
+  <data name="prompt_user_nickname_hint" xml:space="preserve">
+    <value>Как ассистент должен звать вас?</value>
+  </data>
+  <data name="prompt_assistant_nickname_hint" xml:space="preserve">
+    <value>Имя ассистента</value>
+  </data>
+  <data name="agent-describe_image" xml:space="preserve">
+    <value>Описать изображение</value>
+  </data>
+  <data name="settings-vision_model_hint" xml:space="preserve">
+    <value>Зрительная модель</value>
+  </data>
 </root>

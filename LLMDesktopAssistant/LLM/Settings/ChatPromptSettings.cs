@@ -18,6 +18,28 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _systemPrompt, value);
 		}
 
+		private string? _userNickname;
+		/// <summary>
+		/// The user's nickname to use in the chat.
+		/// This affects how LLM calls the user in the responses.
+		/// </summary>
+		public string? UserNickname
+		{
+			get => _userNickname;
+			set => SetProperty(ref _userNickname, value);
+		}
+
+		private string? _assistantNickname;
+		/// <summary>
+		/// The assistant's nickname to use in the chat.
+		/// This affects how LLM calls itself in the responses.
+		/// </summary>
+		public string? AssistantNickname
+		{
+			get => _assistantNickname;
+			set => SetProperty(ref _assistantNickname, value);
+		}
+
 		private readonly RangeObservableCollection<Guid> _promptComponents = [];
 		/// <summary>
 		/// The collection of prompt components IDs that should be appended to the system message in addition to the <see cref="SystemPrompt"/>.

@@ -675,4 +675,16 @@
   <data name="chat_settings_environment" xml:space="preserve">
     <value>Environment</value>
   </data>
+  <data name="prompt_user_nickname_hint" xml:space="preserve">
+    <value>How assistant should call you?</value>
+  </data>
+  <data name="prompt_assistant_nickname_hint" xml:space="preserve">
+    <value>The assistant nickname</value>
+  </data>
+  <data name="agent-describe_image" xml:space="preserve">
+    <value>Describe image</value>
+  </data>
+  <data name="settings-vision_model_hint" xml:space="preserve">
+    <value>Vision model</value>
+  </data>
 </root>

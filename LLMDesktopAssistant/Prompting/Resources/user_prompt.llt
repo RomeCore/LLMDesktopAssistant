@@ -2,7 +2,7 @@
 {
 	@metadata
 	{
-		lang: 'en'
+		lang: 'en-US'
 	}
 	@if time_sent
 	{

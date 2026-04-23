@@ -20,6 +20,10 @@
 			<TextBlock Text="{loc:Loc settings-agentic_model_hint}"
 					   Margin="0,15,0,2"/>
 			<ctrl:LLModelSelectorControl SelectedModel="{Binding ModelSettings.AgenticModel, Mode=TwoWay}"/>
+			
+			<TextBlock Text="{loc:Loc settings-vision_model_hint}"
+					   Margin="0,15,0,2"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding ModelSettings.VisionModel, Mode=TwoWay}"/>
 
 		</StackPanel>
 	</ScrollViewer>

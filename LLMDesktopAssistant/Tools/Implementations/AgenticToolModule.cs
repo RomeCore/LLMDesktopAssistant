@@ -4,13 +4,16 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LLMDesktopAssistant.Attachments;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
+using LLTSharp;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
+using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Tools.Implementations
@@ -19,11 +22,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	public class AgenticToolModule : ToolModule
 	{
 		private readonly Chat _chat;
+		private readonly TemplateLibrary _templateLibrary;
 		private readonly IToolsetBuildingService _toolsetBuildingService;
 
-		public AgenticToolModule(Chat chat, IToolsetBuildingService toolsetBuildingService)
+		public AgenticToolModule(Chat chat, TemplateLibrary templateLibrary, IToolsetBuildingService toolsetBuildingService)
 		{
 			_chat = chat;
+			_templateLibrary = templateLibrary;
 			_toolsetBuildingService = toolsetBuildingService;
 
 			AddTool(AskQuestionAsync,
@@ -43,6 +48,29 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Category = "agents",
 					AskForConfirmation = true
 				});
+
+			AddTool(DescribeImageAsync,
+				new ToolInitializationInfo
+				{
+					Name = "agent-describe_image",
+					Description = "Describes an image using another LLM agent.",
+					Category = "agents",
+					AskForConfirmation = false
+				});
+		}
+
+		private string ResolvePath(string path)
+		{
+			var baseDir = Path.GetFullPath(_chat.Settings.Environment.GetWorkingDirectory());
+			if (string.IsNullOrWhiteSpace(path) || path == ".")
+				return baseDir;
+
+			var fullPath = Path.GetFullPath(Path.Combine(baseDir, path));
+
+			if (!fullPath.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase))
+				throw new AccessViolationException("Access outside working directory is not allowed.");
+
+			return fullPath;
 		}
 
 		public Task<ToolResult> AskQuestionAsync(
@@ -109,6 +137,51 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			catch (Exception ex)
 			{
 				return new ToolResult(ToolResultStatus.Error, $"Got error: {ex.Message}");
+			}
+		}
+
+		public async Task<ReactiveToolResult> DescribeImageAsync(
+			[Description("The path to the image file to describe")] string path,
+			CancellationToken cancellationToken = default)
+		{
+			if (_chat.Settings.Models.VisionModel.Current is not LLModelDescriptor modelDescriptor)
+				return ReactiveToolResult.CreateError("No vision model selected. Say user to select a vision model first.");
+
+			try
+			{
+				var llm = new LLModel(modelDescriptor);
+				path = ResolvePath(path);
+				var attachment = new ImageAttachment(path);
+				var result = new ReactiveToolResult();
+
+				var messages = new List<IMessage>
+				{
+					new SystemMessage(_templateLibrary.Retrieve("image_describer_prompt").Render().ToString()!),
+					new RCLargeLanguageModels.Messages.UserMessage(Senders.User, "Please describe the image.",
+						[ attachment ])
+				};
+
+				_ = Task.Run(async () =>
+				{
+					try
+					{
+						var response = await llm.ChatAsync(messages, cancellationToken: cancellationToken);
+						result.ResultContent = response.Content!;
+						result.CompleteWithSuccess();
+					}
+					catch (Exception ex)
+					{
+						result.ResultContent = $"Got error: {ex.Message}. " +
+							$"May be the model is not a vision model or API is down. Please try again later.";
+						result.CompleteWithError();
+					}
+				}, CancellationToken.None);
+
+				return result;
+			}
+			catch (Exception ex)
+			{
+				return ReactiveToolResult.CreateError($"Error during agentic image description: {ex.Message}");
 			}
 		}
 	}

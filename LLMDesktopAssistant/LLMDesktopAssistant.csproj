@@ -22,11 +22,12 @@
 
 	<ItemGroup>
 		<AvaloniaResource Include="Assets\icon.ico" />
+		<EmbeddedResource Include="Prompting\Resources\image_describer.llt" />
 		<EmbeddedResource Include="Prompting\Resources\components.llt" />
 		<EmbeddedResource Include="Prompting\Resources\personas.llt" />
 		<EmbeddedResource Include="Prompting\Resources\summarizer.llt" />
-		<EmbeddedResource Include="Prompting\Resources\system_promts.llt" />
-		<EmbeddedResource Include="Prompting\Resources\user_prompts.llt" />
+		<EmbeddedResource Include="Prompting\Resources\system_prompt.llt" />
+		<EmbeddedResource Include="Prompting\Resources\user_prompt.llt" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -60,11 +61,12 @@
 		<PackageReference Include="MoonSharp" Version="2.0.0" />
 		<PackageReference Include="NAudio" Version="2.2.1" />
 		<PackageReference Include="PdfPig" Version="0.1.14" />
-		<PackageReference Include="RCLLM" Version="0.4.9" />
+		<PackageReference Include="RCLLM" Version="0.4.10" />
 		<PackageReference Include="ReverseMarkdown" Version="5.3.0" />
 		<PackageReference Include="Serilog" Version="4.3.1" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
 		<PackageReference Include="System.Speech" Version="10.0.3" />
 		<PackageReference Include="Whisper.net" Version="1.9.0" />
 		<PackageReference Include="Whisper.net.Runtime" Version="1.9.0" />

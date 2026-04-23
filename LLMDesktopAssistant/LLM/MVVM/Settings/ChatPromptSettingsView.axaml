@@ -13,13 +13,23 @@
 		<StackPanel Margin="10" Spacing="10">
 			
 			<!-- System Prompt -->
-			<TextBlock Text="{loc:Loc prompt_system_prompt}" FontSize="16" FontWeight="Bold"/>
 			<TextBox Text="{Binding PromptSettings.SystemPrompt, Mode=TwoWay}"
 					 AcceptsReturn="True"
 					 TextWrapping="Wrap"
 					 Height="100"
 					 ScrollViewer.VerticalScrollBarVisibility="Auto"
-					 PlaceholderText="{loc:Loc prompt_system_prompt_hint}"/>
+					 PlaceholderText="{loc:Loc prompt_system_prompt_hint}"
+					 UseFloatingPlaceholder="True"/>
+			
+			<TextBox Text="{Binding PromptSettings.UserNickname, Mode=TwoWay}"
+					 TextWrapping="Wrap"
+					 PlaceholderText="{loc:Loc prompt_user_nickname_hint}"
+					 UseFloatingPlaceholder="True"/>
+			
+			<TextBox Text="{Binding PromptSettings.AssistantNickname, Mode=TwoWay}"
+					 TextWrapping="Wrap"
+					 PlaceholderText="{loc:Loc prompt_assistant_nickname_hint}"
+					 UseFloatingPlaceholder="True"/>
 
 			<!-- Components -->
 			<TextBlock Text="{loc:Loc prompt_components}" FontSize="16" FontWeight="Bold"/>

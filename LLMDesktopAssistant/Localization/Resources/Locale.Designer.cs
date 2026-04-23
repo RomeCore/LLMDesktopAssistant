@@ -88,6 +88,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Describe image.
+        /// </summary>
+        public static string agent_describe_image {
+            get {
+                return ResourceManager.GetString("agent-describe_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Agents.
         /// </summary>
         public static string agents {
@@ -1114,6 +1123,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The assistant nickname.
+        /// </summary>
+        public static string prompt_assistant_nickname_hint {
+            get {
+                return ResourceManager.GetString("prompt_assistant_nickname_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Category.
         /// </summary>
         public static string prompt_category {
@@ -1308,6 +1326,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string prompt_use_custom_persona {
             get {
                 return ResourceManager.GetString("prompt_use_custom_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на How assistant should call you?.
+        /// </summary>
+        public static string prompt_user_nickname_hint {
+            get {
+                return ResourceManager.GetString("prompt_user_nickname_hint", resourceCulture);
             }
         }
         
@@ -1551,6 +1578,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_use_tools {
             get {
                 return ResourceManager.GetString("settings-use_tools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Vision model.
+        /// </summary>
+        public static string settings_vision_model_hint {
+            get {
+                return ResourceManager.GetString("settings-vision_model_hint", resourceCulture);
             }
         }
         

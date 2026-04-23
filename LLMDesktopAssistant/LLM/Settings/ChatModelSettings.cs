@@ -27,5 +27,15 @@ namespace LLMDesktopAssistant.LLM.Settings
 			get => _agenticModel;
 			set => SetProperty(ref _agenticModel, value);
 		}
+
+		private LLModelDescriptorTracked _visionModel = LLModelDescriptorTracked.Empty;
+		/// <summary>
+		/// The model to use for vision and image-understanding tasks.
+		/// </summary>
+		public LLModelDescriptorTracked VisionModel
+		{
+			get => _visionModel;
+			set => SetProperty(ref _visionModel, value);
+		}
 	}
 }

@@ -11,6 +11,7 @@ using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Metadata;
+using Serilog;
 
 namespace LLMDesktopAssistant.Prompting
 {
@@ -35,6 +36,8 @@ namespace LLMDesktopAssistant.Prompting
 			{
 				var id = template.Metadata.TryGet<TemplateIdentifierMetadata>()!.Identifier;
 				var type = template.Metadata.TryGetAdditional<string>("type");
+
+				Log.Debug("Loading template: {Id}", id);
 
 				if (type == "component" || type == "persona")
 				{
@@ -65,9 +68,11 @@ namespace LLMDesktopAssistant.Prompting
 							Template = new SerializableTextTemplate(textTemplate)
 						});
 					}
+				}
+				else
+				{
 
 				}
-
 			}
 
 			BuiltinComponents = componentsBuilder.ToImmutable();

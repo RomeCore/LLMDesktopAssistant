@@ -128,6 +128,51 @@ namespace LLMDesktopAssistant.Tools
 		}
 
 		/// <summary>
+		/// Completes the task with a 'success' result.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">Thrown if the task has already been completed.</exception>
+		public ReactiveToolResult CompleteWithSuccess()
+		{
+			return Complete(true);
+		}
+
+		/// <summary>
+		/// Completes the task with an 'error' result.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">Thrown if the task has already been completed.</exception>
+		public ReactiveToolResult CompleteWithError()
+		{
+			return Complete(false);
+		}
+
+		/// <summary>
+		/// Completes the task with a result indicating whether the tool executed successfully.
+		/// </summary>
+		/// <param name="success">Whether the tool executed successfully.</param>
+		public ReactiveToolResult TryComplete(bool success)
+		{
+			lock (_lock)
+				_completionSource.TrySetResult(success);
+			return this;
+		}
+
+		/// <summary>
+		/// Completes the task with a 'success' result.
+		/// </summary>
+		public ReactiveToolResult TryCompleteWithSuccess()
+		{
+			return TryComplete(true);
+		}
+
+		/// <summary>
+		/// Completes the task with an 'error' result.
+		/// </summary>
+		public ReactiveToolResult TryCompleteWithError()
+		{
+			return TryComplete(false);
+		}
+
+		/// <summary>
 		/// Creates a new instance of the <see cref="ReactiveToolResult"/> class with a success status and the specified output.
 		/// </summary>
 		/// <param name="result">The output of the tool.</param>

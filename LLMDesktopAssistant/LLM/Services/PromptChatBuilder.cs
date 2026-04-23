@@ -62,6 +62,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					.Select(id => PromptRegistry.GetComponent(id)?.Template.Template.Render(componentsContext))
 					.Where(c => !string.IsNullOrWhiteSpace(c))
 					.ToArray(),
+				userNickname = chat.Settings.Prompts.UserNickname,
+				assistantNickname = chat.Settings.Prompts.AssistantNickname,
 				persona = chat.Settings.Prompts.UseCustomPersona ?
 					chat.Settings.Prompts.CustomPersona :
 					(chat.Settings.Prompts.PersonaId != null ? PromptRegistry.GetPersona(chat.Settings.Prompts.PersonaId.Value)?.Template.Template.Render(componentsContext) : null),
