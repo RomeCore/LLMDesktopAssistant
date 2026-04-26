@@ -8,6 +8,7 @@ using System.Text;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
+	[ChatService(typeof(IChatSummarizationService))]
 	public class ChatSummarizationService(
 		Chat chat,
 		ILLMBuildingService llmBuilder,
@@ -80,7 +81,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				}
 
 				lastIncludedMessage.SummaryOfPrevMessages = summary.Content;
-				Log.Information("Chat summarized successfully. Summary length: {Length}", summary.Content?.Length);
+				Log.Information("Chat summarized successfully. Summary length: {Length}, Summary: {Summary}",
+					summary.Content?.Length, summary.Content);
 			}
 			catch (Exception ex)
 			{

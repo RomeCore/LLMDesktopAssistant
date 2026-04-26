@@ -13,9 +13,9 @@ using LLMDesktopAssistant.Calculation;
 namespace LLMDesktopAssistant.Tools.Implementations
 {
 	[ToolModule]
-	public class CalculationToolModule : ToolModule
+	public class MathematicsToolModule : ToolModule
 	{
-		public CalculationToolModule()
+		public MathematicsToolModule()
 		{
 			AddTool(Calculate,
 				new ToolInitializationInfo
@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						ln, log, log2, logb, exp, pow, sqrt,
 						abs, min, max
 						""",
-					Category = "calculation"
+					Category = "mathematics"
 				});
 		}
 

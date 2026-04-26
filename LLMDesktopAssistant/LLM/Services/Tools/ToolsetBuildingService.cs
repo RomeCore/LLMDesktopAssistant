@@ -9,6 +9,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	/// <summary>
 	/// The default implementation of the <see cref="IToolsetBuildingService"/> interface.
 	/// </summary>
+	[ChatService(typeof(IToolsetBuildingService))]
 	public class ToolsetBuildingService(
 		Chat chat,
 		IMCPManagementService mcpManager,

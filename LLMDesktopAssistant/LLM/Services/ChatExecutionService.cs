@@ -16,11 +16,13 @@ namespace LLMDesktopAssistant.LLM.Services
 	/// <summary>
 	/// The default implementation of the <see cref="IChatExecutionService"/>.
 	/// </summary>
+	[ChatService(typeof(IChatExecutionService))]
 	public class ChatExecutionService(
 		Chat chat,
 		IChatStorageService storage,
 		IPromptChatBuilder promptBuilder,
 		IToolExecutionService toolExecutor,
+		ILLMPropertiesBuilder propertiesBuilder,
 		IChatSummarizationService summarizer,
 		ILLMBuildingService llmBuilder,
 		IToolsetCacheService toolsetCache,
@@ -46,6 +48,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				if (llmInfo == null)
 					throw new InvalidOperationException("Chat LLM is not configured. Please configure it first.");
 				var llm = llmInfo.LLM;
+				llm = llm.WithProperties(propertiesBuilder.BuildProperties());
 
 				var timeRequested = DateTime.Now;
 				DateTime? timeFirstToken = null;

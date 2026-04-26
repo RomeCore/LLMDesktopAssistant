@@ -3,6 +3,7 @@ using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
+	[ChatService(typeof(IChatOperationService))]
 	public class ChatOperationService(
 		Chat chat,
 		IChatStorageService storage,

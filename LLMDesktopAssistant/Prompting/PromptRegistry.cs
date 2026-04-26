@@ -10,6 +10,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
+using LLTSharp.Locale;
 using LLTSharp.Metadata;
 using Serilog;
 
@@ -28,6 +29,8 @@ namespace LLMDesktopAssistant.Prompting
 
 			foreach (var observedAssembly in ReflectionUtility.ObservedAssemblies)
 				SharedLibrary.ImportFromAssembly(observedAssembly);
+
+			SharedLibrary.SetLanguageFallbackScheme(new HierarchicalLanguageFallbackScheme());
 
 			var componentsBuilder = ImmutableDictionary.CreateBuilder<Guid, PromptComponent>();
 			var personasBuilder = ImmutableDictionary.CreateBuilder<Guid, Persona>();

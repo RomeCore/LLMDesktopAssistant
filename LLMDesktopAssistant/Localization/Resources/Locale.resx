@@ -189,13 +189,13 @@
   <data name="copy" xml:space="preserve">
     <value>Copy to clipboard</value>
   </data>
-  <data name="generate_GUID" xml:space="preserve">
+  <data name="random-GUID" xml:space="preserve">
     <value>Generate GUID</value>
   </data>
-  <data name="generate_random_float" xml:space="preserve">
+  <data name="random-float" xml:space="preserve">
     <value>Generate random decimal number</value>
   </data>
-  <data name="generate_random_integer" xml:space="preserve">
+  <data name="random-integer" xml:space="preserve">
     <value>Generate random integer</value>
   </data>
   <data name="general-print" xml:space="preserve">
@@ -291,8 +291,8 @@
   <data name="input" xml:space="preserve">
     <value>Input</value>
   </data>
-  <data name="calculation" xml:space="preserve">
-    <value>Calculation</value>
+  <data name="mathematics" xml:space="preserve">
+    <value>Mathematics</value>
   </data>
   <data name="agents" xml:space="preserve">
     <value>Agents</value>
@@ -686,5 +686,101 @@
   </data>
   <data name="settings-vision_model_hint" xml:space="preserve">
     <value>Vision model</value>
+  </data>
+  <data name="chat_settings_llm_properties" xml:space="preserve">
+    <value>LLM Properties</value>
+  </data>
+  <data name="settings-llm_reasoning" xml:space="preserve">
+    <value>Reasoning</value>
+  </data>
+  <data name="settings-llm_enable_reasoning" xml:space="preserve">
+    <value>Enable reasoning settings override</value>
+  </data>
+  <data name="settings-llm_reasoning_level" xml:space="preserve">
+    <value>Reasoning level</value>
+  </data>
+  <data name="settings-llm_temperature" xml:space="preserve">
+    <value>Temperature</value>
+  </data>
+  <data name="settings-llm_enable_temperature" xml:space="preserve">
+    <value>Enable temperature override</value>
+  </data>
+  <data name="settings-llm_temperature_value" xml:space="preserve">
+    <value>Temperature value</value>
+  </data>
+  <data name="settings-llm_additional_parameters" xml:space="preserve">
+    <value>Additional parameters</value>
+  </data>
+  <data name="settings-llm_additional_parameters_hint" xml:space="preserve">
+    <value>Custom parameters sent directly to the LLM API in JSON format. Parameter names must match the API specification.</value>
+  </data>
+  <data name="reasoning_disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="reasoning_default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="reasoning_none" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="reasoning_minimal" xml:space="preserve">
+    <value>Minimal</value>
+  </data>
+  <data name="reasoning_low" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="reasoning_medium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="reasoning_high" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="reasoning_xhigh" xml:space="preserve">
+    <value>X-High</value>
+  </data>
+  <data name="reasoning_maximum" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="settings-llm_param_name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="settings-llm_param_value" xml:space="preserve">
+    <value>Value (JSON)</value>
+  </data>
+  <data name="prompt_names" xml:space="preserve">
+    <value>Names</value>
+  </data>
+  <data name="prompt_components_hint" xml:space="preserve">
+    <value>Select additional prompt components to append to the system message</value>
+  </data>
+  <data name="prompt_system_prompt_placeholder" xml:space="preserve">
+    <value>for example, You are a helpful assistant</value>
+  </data>
+  <data name="prompt_user_nickname_placeholder" xml:space="preserve">
+    <value>e.g. John</value>
+  </data>
+  <data name="prompt_assistant_nickname_placeholder" xml:space="preserve">
+    <value>e.g. Assistant</value>
+  </data>
+  <data name="prompt_custom_persona_placeholder" xml:space="preserve">
+    <value>Describe the persona in detail...</value>
+  </data>
+  <data name="dice_rolled" xml:space="preserve">
+    <value>Rolled</value>
+  </data>
+  <data name="random-dice_roll" xml:space="preserve">
+    <value>Roll dices</value>
+  </data>
+  <data name="random-items_from_list" xml:space="preserve">
+    <value>Select random items from list</value>
+  </data>
+  <data name="random-shuffle_list" xml:space="preserve">
+    <value>Shuffle list</value>
+  </data>
+  <data name="random" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="list_shuffled" xml:space="preserve">
+    <value>Shuffled list of {0} items</value>
   </data>
 </root>

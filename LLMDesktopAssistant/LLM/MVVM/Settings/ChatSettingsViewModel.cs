@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ChatToolSettingsViewModel ToolSettings { get; }
 		public ChatMCPSettingsViewModel McpSettings { get; }
 		public ChatSummarizationSettingsViewModel SummarizationSettings { get; }
+		public ChatLLMPropertiesSettingsViewModel LLMPropertiesSettings { get; }
 
 		public ChatSettingsViewModel(ChatSettings settings, Chat chat)
 		{
@@ -29,6 +30,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			PromptSettings = new ChatPromptSettingsViewModel(settings.Prompts);
 			ToolSettings = new ChatToolSettingsViewModel(settings.Tools, chat.Services.GetRequiredService<IToolsetBuildingService>());
 			McpSettings = new ChatMCPSettingsViewModel(settings.Mcp, chat.Services.GetRequiredService<IMCPManagementService>());
+			LLMPropertiesSettings = new ChatLLMPropertiesSettingsViewModel(settings.LLMProperties);
 		}
 	}
 }

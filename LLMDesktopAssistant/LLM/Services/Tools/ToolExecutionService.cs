@@ -8,6 +8,7 @@ using System.ComponentModel;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {
+	[ChatService(typeof(IToolExecutionService))]
 	public class ToolExecutionService(
 		Chat chat,
 		IServiceProvider services

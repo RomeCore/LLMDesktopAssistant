@@ -27,6 +27,11 @@ namespace LLMDesktopAssistant.Utils
 		public int Count => _count;
 
 		/// <summary>
+		/// Gets a value indicating whether the collection contains any items.
+		/// </summary>
+		public bool Any => _count > 0;
+
+		/// <summary>
 		/// Gets a value indicating whether the <see cref="RangeObservableCollection{T}"/> is read-only.
 		/// </summary>
 		public bool IsReadOnly => false;
@@ -134,6 +139,7 @@ namespace LLMDesktopAssistant.Utils
 				{
 					OnCollectionChanged(e);
 					OnPropertyChanged(EventArgsCache.CountPropertyChanged);
+					OnPropertyChanged(EventArgsCache.AnyPropertyChanged);
 					OnPropertyChanged(EventArgsCache.IndexerPropertyChanged);
 				});
 			}
@@ -141,6 +147,7 @@ namespace LLMDesktopAssistant.Utils
 			{
 				OnCollectionChanged(e);
 				OnPropertyChanged(EventArgsCache.CountPropertyChanged);
+				OnPropertyChanged(EventArgsCache.AnyPropertyChanged);
 				OnPropertyChanged(EventArgsCache.IndexerPropertyChanged);
 			}
 		}
@@ -633,6 +640,7 @@ namespace LLMDesktopAssistant.Utils
 	internal static class EventArgsCache
 	{
 		public static readonly PropertyChangedEventArgs CountPropertyChanged = new PropertyChangedEventArgs("Count");
+		public static readonly PropertyChangedEventArgs AnyPropertyChanged = new PropertyChangedEventArgs("Any");
 		public static readonly PropertyChangedEventArgs IndexerPropertyChanged = new PropertyChangedEventArgs("Item[]");
 		public static readonly NotifyCollectionChangedEventArgs ResetCollectionChanged = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
 	}

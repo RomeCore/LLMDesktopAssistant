@@ -45,6 +45,52 @@
 							MaxWidth="80"
 							Margin="5">
 
+					<ico:MaterialIcon Kind="Tune"
+									  Width="24" Height="24"
+									  HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_llm_properties}"
+							   FontSize="15"
+							   HorizontalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"
+							   TextWrapping="NoWrap"/>
+
+				</StackPanel>
+			</TabItem.Header>
+
+			<ContentControl Content="{Binding LLMPropertiesSettings}"/>
+
+		</TabItem>
+		
+		<TabItem>
+
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical"
+							MaxWidth="80"
+							Margin="5">
+
+					<ico:MaterialIcon Kind="Text"
+									  Width="24" Height="24"
+									  HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_prompts}"
+							   FontSize="15"
+							   HorizontalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"
+							   TextWrapping="NoWrap"/>
+
+				</StackPanel>
+			</TabItem.Header>
+
+			<ContentControl Content="{Binding PromptSettings}"/>
+
+		</TabItem>
+
+		<TabItem>
+
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical"
+							MaxWidth="80"
+							Margin="5">
+
 					<ico:MaterialIcon Kind="ArrowCollapseVertical"
 									  Width="24" Height="24"
 									  HorizontalAlignment="Center"/>
@@ -81,29 +127,6 @@
 			</TabItem.Header>
 
 			<ContentControl Content="{Binding EnvironmentSettings}"/>
-
-		</TabItem>
-
-		<TabItem>
-
-			<TabItem.Header>
-				<StackPanel Orientation="Vertical"
-							MaxWidth="80"
-							Margin="5">
-
-					<ico:MaterialIcon Kind="Text"
-									  Width="24" Height="24"
-									  HorizontalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc chat_settings_prompts}"
-							   FontSize="15"
-							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"
-							   TextWrapping="NoWrap"/>
-
-				</StackPanel>
-			</TabItem.Header>
-
-			<ContentControl Content="{Binding PromptSettings}"/>
 
 		</TabItem>
 

@@ -313,15 +313,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Calculation.
-        /// </summary>
-        public static string calculation {
-            get {
-                return ResourceManager.GetString("calculation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Cancel.
         /// </summary>
         public static string cancel {
@@ -421,6 +412,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на LLM Properties.
+        /// </summary>
+        public static string chat_settings_llm_properties {
+            get {
+                return ResourceManager.GetString("chat_settings_llm_properties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на MCP.
         /// </summary>
         public static string chat_settings_mcp {
@@ -498,6 +498,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string copy {
             get {
                 return ResourceManager.GetString("copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Rolled.
+        /// </summary>
+        public static string dice_rolled {
+            get {
+                return ResourceManager.GetString("dice_rolled", resourceCulture);
             }
         }
         
@@ -916,33 +925,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Generate GUID.
-        /// </summary>
-        public static string generate_GUID {
-            get {
-                return ResourceManager.GetString("generate_GUID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Generate random decimal number.
-        /// </summary>
-        public static string generate_random_float {
-            get {
-                return ResourceManager.GetString("generate_random_float", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Generate random integer.
-        /// </summary>
-        public static string generate_random_integer {
-            get {
-                return ResourceManager.GetString("generate_random_integer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Input.
         /// </summary>
         public static string input {
@@ -984,6 +966,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string input_press_key {
             get {
                 return ResourceManager.GetString("input-press_key", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Shuffled list of {0} items.
+        /// </summary>
+        public static string list_shuffled {
+            get {
+                return ResourceManager.GetString("list_shuffled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Mathematics.
+        /// </summary>
+        public static string mathematics {
+            get {
+                return ResourceManager.GetString("mathematics", resourceCulture);
             }
         }
         
@@ -1132,6 +1132,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на e.g. Assistant.
+        /// </summary>
+        public static string prompt_assistant_nickname_placeholder {
+            get {
+                return ResourceManager.GetString("prompt_assistant_nickname_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Category.
         /// </summary>
         public static string prompt_category {
@@ -1159,11 +1168,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Select additional prompt components to append to the system message.
+        /// </summary>
+        public static string prompt_components_hint {
+            get {
+                return ResourceManager.GetString("prompt_components_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Enter custom persona....
         /// </summary>
         public static string prompt_custom_persona_hint {
             get {
                 return ResourceManager.GetString("prompt_custom_persona_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Describe the persona in detail....
+        /// </summary>
+        public static string prompt_custom_persona_placeholder {
+            get {
+                return ResourceManager.GetString("prompt_custom_persona_placeholder", resourceCulture);
             }
         }
         
@@ -1240,6 +1267,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Names.
+        /// </summary>
+        public static string prompt_names {
+            get {
+                return ResourceManager.GetString("prompt_names", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на New component.
         /// </summary>
         public static string prompt_new_component {
@@ -1312,6 +1348,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на for example, You are a helpful assistant.
+        /// </summary>
+        public static string prompt_system_prompt_placeholder {
+            get {
+                return ResourceManager.GetString("prompt_system_prompt_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Text.
         /// </summary>
         public static string prompt_text {
@@ -1335,6 +1380,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string prompt_user_nickname_hint {
             get {
                 return ResourceManager.GetString("prompt_user_nickname_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на e.g. John.
+        /// </summary>
+        public static string prompt_user_nickname_placeholder {
+            get {
+                return ResourceManager.GetString("prompt_user_nickname_placeholder", resourceCulture);
             }
         }
         
@@ -1411,11 +1465,155 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Random.
+        /// </summary>
+        public static string random {
+            get {
+                return ResourceManager.GetString("random", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Roll dices.
+        /// </summary>
+        public static string random_dice_roll {
+            get {
+                return ResourceManager.GetString("random-dice_roll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generate random decimal number.
+        /// </summary>
+        public static string random_float {
+            get {
+                return ResourceManager.GetString("random-float", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generate GUID.
+        /// </summary>
+        public static string random_GUID {
+            get {
+                return ResourceManager.GetString("random-GUID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generate random integer.
+        /// </summary>
+        public static string random_integer {
+            get {
+                return ResourceManager.GetString("random-integer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select random items from list.
+        /// </summary>
+        public static string random_items_from_list {
+            get {
+                return ResourceManager.GetString("random-items_from_list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Shuffle list.
+        /// </summary>
+        public static string random_shuffle_list {
+            get {
+                return ResourceManager.GetString("random-shuffle_list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Reasoning process.
         /// </summary>
         public static string reasoning {
             get {
                 return ResourceManager.GetString("reasoning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Default.
+        /// </summary>
+        public static string reasoning_default {
+            get {
+                return ResourceManager.GetString("reasoning_default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Disabled.
+        /// </summary>
+        public static string reasoning_disabled {
+            get {
+                return ResourceManager.GetString("reasoning_disabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на High.
+        /// </summary>
+        public static string reasoning_high {
+            get {
+                return ResourceManager.GetString("reasoning_high", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Low.
+        /// </summary>
+        public static string reasoning_low {
+            get {
+                return ResourceManager.GetString("reasoning_low", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Maximum.
+        /// </summary>
+        public static string reasoning_maximum {
+            get {
+                return ResourceManager.GetString("reasoning_maximum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Medium.
+        /// </summary>
+        public static string reasoning_medium {
+            get {
+                return ResourceManager.GetString("reasoning_medium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Minimal.
+        /// </summary>
+        public static string reasoning_minimal {
+            get {
+                return ResourceManager.GetString("reasoning_minimal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на None.
+        /// </summary>
+        public static string reasoning_none {
+            get {
+                return ResourceManager.GetString("reasoning_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на X-High.
+        /// </summary>
+        public static string reasoning_xhigh {
+            get {
+                return ResourceManager.GetString("reasoning_xhigh", resourceCulture);
             }
         }
         
@@ -1524,6 +1722,96 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_default_id {
             get {
                 return ResourceManager.GetString("settings_default_id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Additional parameters.
+        /// </summary>
+        public static string settings_llm_additional_parameters {
+            get {
+                return ResourceManager.GetString("settings-llm_additional_parameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Custom parameters sent directly to the LLM API in JSON format. Parameter names must match the API specification..
+        /// </summary>
+        public static string settings_llm_additional_parameters_hint {
+            get {
+                return ResourceManager.GetString("settings-llm_additional_parameters_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable reasoning settings override.
+        /// </summary>
+        public static string settings_llm_enable_reasoning {
+            get {
+                return ResourceManager.GetString("settings-llm_enable_reasoning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable temperature override.
+        /// </summary>
+        public static string settings_llm_enable_temperature {
+            get {
+                return ResourceManager.GetString("settings-llm_enable_temperature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Name.
+        /// </summary>
+        public static string settings_llm_param_name {
+            get {
+                return ResourceManager.GetString("settings-llm_param_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Value (JSON).
+        /// </summary>
+        public static string settings_llm_param_value {
+            get {
+                return ResourceManager.GetString("settings-llm_param_value", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Reasoning.
+        /// </summary>
+        public static string settings_llm_reasoning {
+            get {
+                return ResourceManager.GetString("settings-llm_reasoning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Reasoning level.
+        /// </summary>
+        public static string settings_llm_reasoning_level {
+            get {
+                return ResourceManager.GetString("settings-llm_reasoning_level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Temperature.
+        /// </summary>
+        public static string settings_llm_temperature {
+            get {
+                return ResourceManager.GetString("settings-llm_temperature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Temperature value.
+        /// </summary>
+        public static string settings_llm_temperature_value {
+            get {
+                return ResourceManager.GetString("settings-llm_temperature_value", resourceCulture);
             }
         }
         

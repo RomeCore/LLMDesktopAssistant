@@ -21,6 +21,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _modelSettings, value);
 		}
 
+		private ChatLLMPropertiesSettings _llmPropertiesSettings = new();
+		/// <summary>
+		/// Settings related to properties that can be applied to chat LLM.
+		/// </summary>
+		public ChatLLMPropertiesSettings LLMProperties
+		{
+			get => _llmPropertiesSettings;
+			set => SetProperty(ref _llmPropertiesSettings, value);
+		}
+
 		private ChatSummarizationSettings _summarizationSettings = new();
 		/// <summary>
 		/// Settings for conversation auto-summarization.

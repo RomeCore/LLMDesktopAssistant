@@ -25,15 +25,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			services.AddSingleton<IUsageStatsCollector, UsageStatsCollector>();
 
 			services.AddScoped<Chat>();
-			services.AddScoped<IMCPManagementService, MCPManagementService>();
-			services.AddScoped<IChatOperationService, ChatOperationService>();
-			services.AddScoped<IChatExecutionService, ChatExecutionService>();
-			services.AddScoped<IChatStorageService, ChatStorageService>();
-			services.AddScoped<IChatSummarizationService, ChatSummarizationService>();
-			services.AddScoped<IPromptChatBuilder, PromptChatBuilder>();
-			services.AddScoped<IToolExecutionService, ToolExecutionService>();
-			services.AddScoped<IToolsetBuildingService, ToolsetBuildingService>();
-			services.AddScoped<ILLMBuildingService, LLMBuildingService>();
 			services.AddScoped<IAttachmentApplicationService, AttachmentApplicationService>();
 
 			foreach (var toolModule in ReflectionUtility.GetTypesWithAttribute<ToolModule, ToolModuleAttribute>())

@@ -3,6 +3,7 @@ using LLMDesktopAssistant.Prompting;
 using LLTSharp;
 using LLTSharp.Locale;
 using LLTSharp.Metadata;
+using LLTSharp.Metadata.Types;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
@@ -10,6 +11,7 @@ using System.Globalization;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
+	[ChatService(typeof(IPromptChatBuilder))]
 	public class PromptChatBuilder(
 		Chat chat,
 		TemplateLibrary templates

@@ -189,13 +189,13 @@
   <data name="copy" xml:space="preserve">
     <value>Скопировать в буфер обмена</value>
   </data>
-  <data name="generate_GUID" xml:space="preserve">
+  <data name="random-GUID" xml:space="preserve">
     <value>Сгенерировать GUID</value>
   </data>
-  <data name="generate_random_float" xml:space="preserve">
+  <data name="random-float" xml:space="preserve">
     <value>Сгенерировать дробное число</value>
   </data>
-  <data name="generate_random_integer" xml:space="preserve">
+  <data name="random-integer" xml:space="preserve">
     <value>Сгенерировать целое число</value>
   </data>
   <data name="general-print" xml:space="preserve">
@@ -291,8 +291,8 @@
   <data name="input" xml:space="preserve">
     <value>Ввод</value>
   </data>
-  <data name="calculation" xml:space="preserve">
-    <value>Вычисление</value>
+  <data name="mathematics" xml:space="preserve">
+    <value>Математика</value>
   </data>
   <data name="agents" xml:space="preserve">
     <value>Агенты</value>
@@ -686,5 +686,101 @@
   </data>
   <data name="settings-vision_model_hint" xml:space="preserve">
     <value>Зрительная модель</value>
+  </data>
+  <data name="chat_settings_llm_properties" xml:space="preserve">
+    <value>Параметры LLM</value>
+  </data>
+  <data name="settings-llm_reasoning" xml:space="preserve">
+    <value>Рассуждения</value>
+  </data>
+  <data name="settings-llm_enable_reasoning" xml:space="preserve">
+    <value>Включить переопределение параметров рассуждений</value>
+  </data>
+  <data name="settings-llm_reasoning_level" xml:space="preserve">
+    <value>Уровень рассуждений</value>
+  </data>
+  <data name="settings-llm_temperature" xml:space="preserve">
+    <value>Температура</value>
+  </data>
+  <data name="settings-llm_enable_temperature" xml:space="preserve">
+    <value>Включить переопределение температуры</value>
+  </data>
+  <data name="settings-llm_temperature_value" xml:space="preserve">
+    <value>Значение температуры</value>
+  </data>
+  <data name="settings-llm_additional_parameters" xml:space="preserve">
+    <value>Дополнительные параметры</value>
+  </data>
+  <data name="settings-llm_additional_parameters_hint" xml:space="preserve">
+    <value>Пользовательские параметры, отправляемые напрямую в API LLM в формате JSON. Имена параметров должны соответствовать спецификации API.</value>
+  </data>
+  <data name="reasoning_disabled" xml:space="preserve">
+    <value>Отключено</value>
+  </data>
+  <data name="reasoning_default" xml:space="preserve">
+    <value>По умолчанию</value>
+  </data>
+  <data name="reasoning_none" xml:space="preserve">
+    <value>Отсутствует</value>
+  </data>
+  <data name="reasoning_minimal" xml:space="preserve">
+    <value>Минимальный</value>
+  </data>
+  <data name="reasoning_low" xml:space="preserve">
+    <value>Низкий</value>
+  </data>
+  <data name="reasoning_medium" xml:space="preserve">
+    <value>Средний</value>
+  </data>
+  <data name="reasoning_high" xml:space="preserve">
+    <value>Высокий</value>
+  </data>
+  <data name="reasoning_xhigh" xml:space="preserve">
+    <value>Очень высокий</value>
+  </data>
+  <data name="reasoning_maximum" xml:space="preserve">
+    <value>Максимальный</value>
+  </data>
+  <data name="settings-llm_param_name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="settings-llm_param_value" xml:space="preserve">
+    <value>Значение (JSON)</value>
+  </data>
+  <data name="prompt_names" xml:space="preserve">
+    <value>Имена</value>
+  </data>
+  <data name="prompt_components_hint" xml:space="preserve">
+    <value>Выберите дополнительные компоненты промпта, которые будут добавлены к системному сообщению</value>
+  </data>
+  <data name="prompt_system_prompt_placeholder" xml:space="preserve">
+    <value>например, You are a helpful assistant</value>
+  </data>
+  <data name="prompt_user_nickname_placeholder" xml:space="preserve">
+    <value>например, Иван</value>
+  </data>
+  <data name="prompt_assistant_nickname_placeholder" xml:space="preserve">
+    <value>например, Ассистент</value>
+  </data>
+  <data name="prompt_custom_persona_placeholder" xml:space="preserve">
+    <value>Опишите персону в деталях...</value>
+  </data>
+  <data name="dice_rolled" xml:space="preserve">
+    <value>Прокрутили</value>
+  </data>
+  <data name="random-dice_roll" xml:space="preserve">
+    <value>Бросить кубик</value>
+  </data>
+  <data name="random-items_from_list" xml:space="preserve">
+    <value>Выбрать случайные элементы из списка</value>
+  </data>
+  <data name="random-shuffle_list" xml:space="preserve">
+    <value>Перемешать список</value>
+  </data>
+  <data name="random" xml:space="preserve">
+    <value>Рандом</value>
+  </data>
+  <data name="list_shuffled" xml:space="preserve">
+    <value>Перемешан список из {0} элементов</value>
   </data>
 </root>

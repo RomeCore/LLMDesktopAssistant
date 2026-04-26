@@ -6,6 +6,7 @@ using System.Text;
 
 namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
+	[ChatService(typeof(IAttachmentApplicationService))]
 	public class AttachmentApplicationService(
 		Chat chat
 		) : IAttachmentApplicationService

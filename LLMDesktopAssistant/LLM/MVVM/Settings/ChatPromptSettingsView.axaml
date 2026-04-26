@@ -5,87 +5,198 @@
 			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
-			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
 			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatPromptSettingsView"
 			 x:DataType="local:ChatPromptSettingsViewModel">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Margin="10" Spacing="10">
-			
-			<!-- System Prompt -->
+		<StackPanel Margin="10" Spacing="8">
+
+			<!-- ===================== System Prompt ===================== -->
+			<TextBlock Text="{loc:Loc prompt_system_prompt}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
+			<TextBlock Text="{loc:Loc prompt_system_prompt_hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
 			<TextBox Text="{Binding PromptSettings.SystemPrompt, Mode=TwoWay}"
 					 AcceptsReturn="True"
 					 TextWrapping="Wrap"
-					 Height="100"
+					 MinHeight="80"
+					 MaxHeight="200"
 					 ScrollViewer.VerticalScrollBarVisibility="Auto"
-					 PlaceholderText="{loc:Loc prompt_system_prompt_hint}"
-					 UseFloatingPlaceholder="True"/>
-			
-			<TextBox Text="{Binding PromptSettings.UserNickname, Mode=TwoWay}"
-					 TextWrapping="Wrap"
-					 PlaceholderText="{loc:Loc prompt_user_nickname_hint}"
-					 UseFloatingPlaceholder="True"/>
-			
-			<TextBox Text="{Binding PromptSettings.AssistantNickname, Mode=TwoWay}"
-					 TextWrapping="Wrap"
-					 PlaceholderText="{loc:Loc prompt_assistant_nickname_hint}"
-					 UseFloatingPlaceholder="True"/>
+					 PlaceholderText="{loc:Loc prompt_system_prompt_placeholder}"/>
 
-			<!-- Components -->
-			<TextBlock Text="{loc:Loc prompt_components}" FontSize="16" FontWeight="Bold"/>
-			
-			<Border BorderBrush="Gray" BorderThickness="1" CornerRadius="4" Padding="5">
-				<ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
-					<TreeView ItemsSource="{Binding ComponentCategories}">
-						<TreeView.DataTemplates>
-							<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
-											  ItemsSource="{Binding Components}">
-								<TextBlock Text="{Binding CategoryName}" FontWeight="Bold"/>
-							</TreeDataTemplate>
-							<DataTemplate DataType="local:ComponentItemViewModel">
-								<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-										  Content="{Binding Component.Name}"/>
-							</DataTemplate>
-						</TreeView.DataTemplates>
-					</TreeView>
-				</ScrollViewer>
-			</Border>
+			<!-- Separator -->
+			<Rectangle Height="1"
+					   Fill="{DynamicResource DefaultForeground}"
+					   Opacity="0.2"
+					   Margin="0,5"/>
 
-			<!-- Persona -->
-			<TextBlock Text="{loc:Loc prompt_persona}" FontSize="16" FontWeight="Bold"/>
-			
+			<!-- ===================== Names ===================== -->
+			<TextBlock Text="{loc:Loc prompt_names}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
+			<Grid ColumnDefinitions="*,*"
+				  ColumnSpacing="10">
+
+				<StackPanel Orientation="Vertical"
+							Spacing="4">
+
+					<TextBlock Text="{loc:Loc prompt_user_nickname_hint}"
+							   Opacity="0.6"/>
+
+					<TextBox Text="{Binding PromptSettings.UserNickname, Mode=TwoWay}"
+							 TextWrapping="NoWrap"
+							 PlaceholderText="{loc:Loc prompt_user_nickname_placeholder}"/>
+
+				</StackPanel>
+
+				<StackPanel Grid.Column="1"
+							Orientation="Vertical"
+							Spacing="4">
+
+					<TextBlock Text="{loc:Loc prompt_assistant_nickname_hint}"
+							   Opacity="0.6"/>
+
+					<TextBox Text="{Binding PromptSettings.AssistantNickname, Mode=TwoWay}"
+							 TextWrapping="NoWrap"
+							 PlaceholderText="{loc:Loc prompt_assistant_nickname_placeholder}"/>
+
+				</StackPanel>
+
+			</Grid>
+
+			<!-- Separator -->
+			<Rectangle Height="1"
+					   Fill="{DynamicResource DefaultForeground}"
+					   Opacity="0.2"
+					   Margin="0,5"/>
+
+			<!-- ===================== Persona ===================== -->
+			<TextBlock Text="{loc:Loc prompt_persona}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
 			<CheckBox IsChecked="{Binding PromptSettings.UseCustomPersona, Mode=TwoWay}"
 					  Content="{loc:Loc prompt_use_custom_persona}"/>
 
-			<StackPanel IsVisible="{Binding PromptSettings.UseCustomPersona}">
+			<!-- Custom Persona -->
+			<StackPanel IsVisible="{Binding PromptSettings.UseCustomPersona}"
+						Spacing="4"
+						Margin="20,0,0,0">
+
+				<TextBlock Text="{loc:Loc prompt_custom_persona_hint}"
+						   Opacity="0.6"
+						   TextWrapping="Wrap"/>
+
 				<TextBox Text="{Binding PromptSettings.CustomPersona, Mode=TwoWay}"
 						 AcceptsReturn="True"
 						 TextWrapping="Wrap"
-						 Height="150"
+						 MinHeight="100"
+						 MaxHeight="200"
 						 ScrollViewer.VerticalScrollBarVisibility="Auto"
-						 PlaceholderText="{loc:Loc prompt_custom_persona_hint}"/>
+						 PlaceholderText="{loc:Loc prompt_custom_persona_placeholder}"/>
+
 			</StackPanel>
 
-			<StackPanel IsVisible="{Binding PromptSettings.UseCustomPersona, Converter={StaticResource InverseBooleanConverter}}">
-				<StackPanel Orientation="Horizontal" Spacing="5">
+			<!-- Preset Persona -->
+			<StackPanel IsVisible="{Binding PromptSettings.UseCustomPersona, Converter={StaticResource InverseBooleanConverter}}"
+						Spacing="4"
+						Margin="20,0,0,0">
+
+				<StackPanel Orientation="Horizontal"
+							Spacing="5">
+
 					<ComboBox SelectedItem="{Binding SelectedPersona, Mode=TwoWay}"
 							  ItemsSource="{Binding AvailablePersonas}"
-							  PlaceholderText="{loc:Loc prompt_select_persona}">
+							  PlaceholderText="{loc:Loc prompt_select_persona}"
+							  MinWidth="200">
+
 						<ComboBox.ItemTemplate>
-							<DataTemplate>
+							<DataTemplate x:DataType="local:PersonaItemViewModel">
 								<TextBlock Text="{Binding Persona.Name}"/>
 							</DataTemplate>
 						</ComboBox.ItemTemplate>
+
 					</ComboBox>
+
 					<Button Classes="IconButton"
 							Command="{Binding ClearPersonaCommand}"
 							ToolTip.Tip="{loc:Loc persona_clear}">
+
 						<ico:MaterialIcon Kind="Remove"/>
+
 					</Button>
+
 				</StackPanel>
-				
-				<TextBlock Text="{loc:Loc prompt_selected_persona_hint}" FontSize="12" Foreground="Gray"/>
+
+				<TextBlock Text="{loc:Loc prompt_selected_persona_hint}"
+						   Opacity="0.6"
+						   FontSize="12"/>
+
 			</StackPanel>
+
+			<!-- Separator -->
+			<Rectangle Height="1"
+					   Fill="{DynamicResource DefaultForeground}"
+					   Opacity="0.2"
+					   Margin="0,5"/>
+
+			<!-- ===================== Components ===================== -->
+			<TextBlock Text="{loc:Loc prompt_components}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
+			<TextBlock Text="{loc:Loc prompt_components_hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
+			<Border BorderBrush="{DynamicResource DefaultForeground}"
+					BorderThickness="1"
+					CornerRadius="4"
+					Padding="4"
+					Opacity="0.7">
+
+				<ScrollViewer MaxHeight="250"
+							  VerticalScrollBarVisibility="Auto">
+
+					<TreeView ItemsSource="{Binding ComponentCategories}"
+							  BorderThickness="0">
+
+						<TreeView.DataTemplates>
+
+							<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
+											  ItemsSource="{Binding Components}">
+
+								<TextBlock Text="{Binding CategoryName}"
+										   FontWeight="Bold"
+										   Margin="0,2"/>
+
+							</TreeDataTemplate>
+
+							<DataTemplate DataType="local:ComponentItemViewModel">
+
+								<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+										  Content="{Binding Component.Name}"
+										  Margin="16,1,0,1"/>
+
+							</DataTemplate>
+
+						</TreeView.DataTemplates>
+
+					</TreeView>
+
+				</ScrollViewer>
+
+			</Border>
 
 		</StackPanel>
 	</ScrollViewer>

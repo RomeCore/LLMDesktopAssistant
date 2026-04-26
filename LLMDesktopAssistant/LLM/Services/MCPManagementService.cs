@@ -7,6 +7,7 @@ using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
+	[ChatService(typeof(IMCPManagementService))]
 	public class MCPManagementService(
 		Chat chat
 		) : IMCPManagementService

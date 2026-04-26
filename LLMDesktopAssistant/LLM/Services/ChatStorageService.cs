@@ -16,6 +16,7 @@ using System.Windows;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
+	[ChatService(typeof(IChatStorageService))]
 	public class ChatStorageService(
 			Chat chat,
 			ChatDatabase database

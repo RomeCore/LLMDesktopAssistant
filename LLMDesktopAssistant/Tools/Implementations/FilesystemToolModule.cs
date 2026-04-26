@@ -280,10 +280,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
-					return ReactiveToolResult.CreateError("File not found.");
+					return ReactiveToolResult.CreateError($"File '{path}' not found.");
 
 				if (endLine < startLine)
-					return ReactiveToolResult.CreateError("Invalid line range.");
+					return ReactiveToolResult.CreateError($"Invalid line range (startLine: {startLine}, endLine: {endLine}).");
 
 				var (lines, totalLines) = FileUtils.ReadLinesChunk(
 					fullPath,
@@ -1164,6 +1164,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
+				// Prevent deleting the root working directory
+				if (path == "." || path == "" || path == "/")
+					return ReactiveToolResult.CreateError("Cannot delete the root working directory.");
+
 				var fullPath = ResolvePath(path);
 				var dirName = path + "/";
 
