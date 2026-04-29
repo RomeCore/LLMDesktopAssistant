@@ -11,10 +11,10 @@ namespace LLMDesktopAssistant.LLM.Settings
 {
 	public class ComponentItemViewModel : ObservableObject
 	{
-		private readonly ChatPromptSettingsViewModel _parent;
+		private readonly AgentPromptSettingsViewModel _parent;
 		public PromptComponent Component { get; }
 
-		public ComponentItemViewModel(ChatPromptSettingsViewModel parent, PromptComponent component)
+		public ComponentItemViewModel(AgentPromptSettingsViewModel parent, PromptComponent component)
 		{
 			_parent = parent;
 			Component = component;
@@ -48,18 +48,18 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 	public class PersonaItemViewModel : ObservableObject
 	{
-		private readonly ChatPromptSettingsViewModel _parent;
+		private readonly AgentPromptSettingsViewModel _parent;
 		public Persona Persona { get; }
 
-		public PersonaItemViewModel(ChatPromptSettingsViewModel parent, Persona persona)
+		public PersonaItemViewModel(AgentPromptSettingsViewModel parent, Persona persona)
 		{
 			_parent = parent;
 			Persona = persona;
 		}
 	}
 
-	[ViewModelFor(typeof(ChatPromptSettingsView))]
-	public class ChatPromptSettingsViewModel : ViewModelBase
+	[ViewModelFor(typeof(AgentPromptSettingsView))]
+	public class AgentPromptSettingsViewModel : ViewModelBase
 	{
 		public AgentPromptSettings PromptSettings { get; }
 
@@ -83,7 +83,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 		public ICommand ClearPersonaCommand { get; }
 
-		public ChatPromptSettingsViewModel(AgentPromptSettings settings)
+		public AgentPromptSettingsViewModel(AgentPromptSettings settings)
 		{
 			PromptSettings = settings;
 

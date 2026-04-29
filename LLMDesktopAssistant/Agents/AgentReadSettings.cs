@@ -39,5 +39,12 @@ namespace LLMDesktopAssistant.Agents
 			get => _isFilterWhiteList;
 			set => SetProperty(ref _isFilterWhiteList, value);
 		}
+
+		private int _maxVisibleRounds = 0;
+		public int MaxVisibleRounds
+		{
+			get => _maxVisibleRounds;
+			set => SetProperty(ref _maxVisibleRounds, value);
+		}
 	}
 }

@@ -206,8 +206,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 		}
 	}
 
-	[ViewModelFor(typeof(ChatToolSettingsView))]
-	public class ChatToolSettingsViewModel : ViewModelBase
+	[ViewModelFor(typeof(AgentToolSettingsView))]
+	public class AgentToolSettingsViewModel : ViewModelBase
 	{
 		private readonly IToolsetBuildingService _toolsetBuildingService;
 		public AgentToolSettings ToolSettings { get; }
@@ -224,7 +224,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			}
 		}
 
-		public ChatToolSettingsViewModel(AgentToolSettings settings, IToolsetBuildingService toolsetBuildingService)
+		public AgentToolSettingsViewModel(AgentToolSettings settings, IToolsetBuildingService toolsetBuildingService)
 		{
 			_toolsetBuildingService = toolsetBuildingService;
 			ToolSettings = settings;

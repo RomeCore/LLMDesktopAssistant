@@ -783,4 +783,39 @@
   <data name="list_shuffled" xml:space="preserve">
     <value>Shuffled list of {0} items</value>
   </data>
+  <data name="settings_selected_agent" xml:space="preserve">
+    <value>Selected agent:</value>
+  </data>
+  <data name="settings_agent_global" xml:space="preserve">
+    <value>(global)</value>
+  </data>
+  <data name="settings_add_agent" xml:space="preserve">
+    <value>Add new agent</value>
+  </data>
+  <data name="settings_remove_agent" xml:space="preserve">
+    <value>Remove agent</value>
+  </data>
+  <data name="settings_toggle_agent_active" xml:space="preserve">
+    <value>Toggle agent active/inactive</value>
+  </data>
+  <data name="settings_move_agent_up" xml:space="preserve">
+    <value>Move agent up in queue</value>
+  </data>
+  <data name="settings_move_agent_down" xml:space="preserve">
+    <value>Move agent down in queue</value>
+  </data>
+  <data name="settings_select_agent_first" xml:space="preserve">
+    <value>Select an agent first</value>
+  </data>
+  <data name="settings_max_visible_rounds" xml:space="preserve">
+    <value>Max visible rounds:</value>
+  </data>
+  <data name="settings_max_visible_rounds_hint" xml:space="preserve">
+    <value>Limits how many recent conversation rounds (user message + assistant response) are visible to each agent. 0 means unlimited. Helps manage context window usage.</value>
+  </data>
+
+  <data name="chat_settings_visibility" xml:space="preserve">
+    <value>Visibility</value>
+  </data>
+
 </root>

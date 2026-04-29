@@ -13,8 +13,9 @@
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<StackPanel Orientation="Vertical"
 								Margin="10"
-								Spacing="5">
+								Spacing="10">
 
+			<!-- Working directory -->
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
@@ -42,9 +43,9 @@
 					
 					<ico:MaterialIcon Kind="OpenInNew" />
 				</Button>
-
 			</Grid>
 			
+			<!-- Python venv path -->
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
@@ -72,7 +73,6 @@
 					
 					<ico:MaterialIcon Kind="OpenInNew" />
 				</Button>
-
 			</Grid>
 
 		</StackPanel>

@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace LLMDesktopAssistant.LLM.Settings;
 
-public partial class ChatToolSettingsView : UserControl
+public partial class AgentToolSettingsView : UserControl
 {
-    public ChatToolSettingsView()
+    public AgentToolSettingsView()
     {
         InitializeComponent();
     }

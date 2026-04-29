@@ -20,6 +20,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			var agents = SettingsManager.Get<AgentsConfiguration>().Agents;
 			var chatAgents = chat.Settings.Agents.ChatAgents;
+
 			return agents.Concat(chatAgents).FirstOrDefault(a => a.Id == agentId) ?? 
 				throw new KeyNotFoundException($"Agent with id '{agentId}' not found.");
 		}

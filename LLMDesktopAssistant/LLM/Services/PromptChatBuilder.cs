@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	/// Builds the prompt context for a given agent, respecting:
 	/// - <see cref="AgentReadSettings.ReadPermissions"/> — what the agent can see
 	/// - <see cref="AgentReadSettings.AgentIdsReadFilter"/> — white/black list for other agents
-	/// - <see cref="ChatEnvironmentSettings.MaxVisibleRounds"/> — how many recent rounds to include
+	/// - <see cref="AgentReadSettings.MaxVisibleRounds"/> — how many recent rounds to include
 	/// - Foreign agent messages are merged and presented as a single user message.
 	/// </summary>
 	[ChatService(typeof(IPromptChatBuilder))]
@@ -156,19 +156,19 @@ namespace LLMDesktopAssistant.LLM.Services
 			// Include reasoning if allowed
 			if (permissions.HasFlag(AgentReadPermissions.OtherAgentReasoning) && !string.IsNullOrWhiteSpace(assistantMessage.ReasoningContent))
 			{
-				sb.AppendLine($"[{agentName} reasoning]:");
+				sb.AppendLine($"[OTHER AGENT: '{agentName}' REASONING]:");
 				sb.AppendLine(assistantMessage.ReasoningContent);
 				sb.AppendLine();
 			}
 
-			sb.AppendLine($"[{agentName}]:");
+			sb.AppendLine($"[OTHER AGENT: '{agentName}']:");
 			sb.AppendLine(assistantMessage.Content ?? "(no content)");
 
 			// Include tool calls if allowed
 			if (permissions.HasFlag(AgentReadPermissions.OtherAgentToolCalls) && assistantMessage.ToolCalls.Count > 0)
 			{
 				sb.AppendLine();
-				sb.AppendLine($"[{agentName} tool calls]:");
+				sb.AppendLine($"[OTHER AGENT: '{agentName}' TOOL CALLS]:");
 				foreach (var toolCall in assistantMessage.ToolCalls)
 				{
 					sb.AppendLine($"  - {toolCall.ToolName}: {toolCall.ResultContent ?? "(no result)"}");
@@ -315,7 +315,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		public IEnumerable<IMessage> Build(Guid agentId)
 		{
 			var readSettings = agentSettings.GetAgentDescriptor(agentId).Read;
-			int maxRounds = chat.Settings.Environment.MaxVisibleRounds;
+			int maxRounds = readSettings.MaxVisibleRounds;
 
 			// Build a flat list of visible messages first (filtered by permissions)
 			var visibleMessages = new List<(int OriginalIndex, BranchedMessage Branched)>();

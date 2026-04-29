@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Data;
+using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
@@ -33,6 +33,10 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			var chat = scope.ServiceProvider.GetRequiredService<Chat>();
 			chat.ChatId = chatId;
+
+			// Ensure at least one default agent exists for this chat
+			chat.Settings.Agents.EnsureDefaultAgent();
+
 			var storage = scope.ServiceProvider.GetRequiredService<IChatStorageService>();
 			storage.Reload();
 

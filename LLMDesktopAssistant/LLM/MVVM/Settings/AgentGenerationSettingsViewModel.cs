@@ -14,8 +14,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public override int GetHashCode() => Value.GetHashCode();
 	}
 
-	[ViewModelFor(typeof(ChatLLMPropertiesSettingsView))]
-	public class ChatLLMPropertiesSettingsViewModel : ViewModelBase
+	[ViewModelFor(typeof(AgentGenerationSettingsView))]
+	public class AgentGenerationSettingsViewModel : ViewModelBase
 	{
 		public AgentGenerationSettings GenerationSettings { get; }
 
@@ -48,7 +48,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ICommand AddParameterCommand { get; }
 		public ICommand RemoveParameterCommand { get; }
 
-		public ChatLLMPropertiesSettingsViewModel(AgentGenerationSettings settings)
+		public AgentGenerationSettingsViewModel(AgentGenerationSettings settings)
 		{
 			GenerationSettings = settings;
 

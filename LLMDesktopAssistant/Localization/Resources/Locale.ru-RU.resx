@@ -783,4 +783,39 @@
   <data name="list_shuffled" xml:space="preserve">
     <value>Перемешан список из {0} элементов</value>
   </data>
+  <data name="settings_selected_agent" xml:space="preserve">
+    <value>Выбранный агент:</value>
+  </data>
+  <data name="settings_agent_global" xml:space="preserve">
+    <value>(глобальный)</value>
+  </data>
+  <data name="settings_add_agent" xml:space="preserve">
+    <value>Добавить агента</value>
+  </data>
+  <data name="settings_remove_agent" xml:space="preserve">
+    <value>Удалить агента</value>
+  </data>
+  <data name="settings_toggle_agent_active" xml:space="preserve">
+    <value>Включить/выключить агента</value>
+  </data>
+  <data name="settings_move_agent_up" xml:space="preserve">
+    <value>Переместить агента вверх</value>
+  </data>
+  <data name="settings_move_agent_down" xml:space="preserve">
+    <value>Переместить агента вниз</value>
+  </data>
+  <data name="settings_select_agent_first" xml:space="preserve">
+    <value>Сначала выберите агента</value>
+  </data>
+  <data name="settings_max_visible_rounds" xml:space="preserve">
+    <value>Макс. видимых раундов:</value>
+  </data>
+  <data name="settings_max_visible_rounds_hint" xml:space="preserve">
+    <value>Ограничивает количество последних раундов (сообщение пользователя + ответ ассистента), видимых каждому агенту. 0 — без лимита. Помогает экономить контекстное окно.</value>
+  </data>
+
+  <data name="chat_settings_visibility" xml:space="preserve">
+    <value>Видимость</value>
+  </data>
+
 </root>

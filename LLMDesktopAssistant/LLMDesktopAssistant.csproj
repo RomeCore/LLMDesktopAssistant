@@ -131,21 +131,27 @@
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
+		<Compile Update="LLM\MVVM\Settings\AgentGenerationSettingsView.axaml.cs">
+		  <DependentUpon>AgentGenerationSettingsView.axaml</DependentUpon>
+		</Compile>
 		<Compile Update="LLM\MVVM\Settings\ChatMCPSettingsView.axaml.cs">
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
-		<Compile Update="LLM\MVVM\Settings\ChatPromptSettingsView.axaml.cs">
+		<Compile Update="LLM\MVVM\Settings\AgentPromptSettingsView.axaml.cs">
 		  <SubType>Code</SubType>
-		  <DependentUpon>%(Filename)</DependentUpon>
+		  <DependentUpon>AgentPromptSettingsView.axaml</DependentUpon>
 		</Compile>
 		<Compile Update="LLM\MVVM\Settings\ChatSettingsView.axaml.cs">
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
-		<Compile Update="LLM\MVVM\Settings\ChatToolSettingsView.axaml.cs">
+		<Compile Update="LLM\MVVM\Settings\AgentToolSettingsView.axaml.cs">
 		  <SubType>Code</SubType>
-		  <DependentUpon>%(Filename)</DependentUpon>
+		  <DependentUpon>AgentToolSettingsView.axaml</DependentUpon>
+		</Compile>
+		<Compile Update="LLM\MVVM\Settings\AgentReadSettingsView.axaml.cs">
+		  <DependentUpon>AgentReadSettingsView.axaml</DependentUpon>
 		</Compile>
 		<Compile Update="LLM\MVVM\UserInputView.axaml.cs">
 		  <SubType>Code</SubType>

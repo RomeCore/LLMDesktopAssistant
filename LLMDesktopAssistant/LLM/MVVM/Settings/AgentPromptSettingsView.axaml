@@ -6,8 +6,8 @@
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
-			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatPromptSettingsView"
-			 x:DataType="local:ChatPromptSettingsViewModel">
+			 x:Class="LLMDesktopAssistant.LLM.Settings.AgentPromptSettingsView"
+			 x:DataType="local:AgentPromptSettingsViewModel">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<StackPanel Margin="10" Spacing="8">
@@ -37,40 +37,12 @@
 					   Margin="0,5"/>
 
 			<!-- ===================== Names ===================== -->
-			<TextBlock Text="{loc:Loc prompt_names}"
-					   FontWeight="Bold"
-					   FontSize="{DynamicResource FontSizeL}"
-					   Margin="0,5,0,0"/>
+			<TextBlock Text="{loc:Loc prompt_assistant_nickname_hint}"
+								 Opacity="0.6"/>
 
-			<Grid ColumnDefinitions="*,*"
-				  ColumnSpacing="10">
-
-				<StackPanel Orientation="Vertical"
-							Spacing="4">
-
-					<TextBlock Text="{loc:Loc prompt_user_nickname_hint}"
-							   Opacity="0.6"/>
-
-					<TextBox Text="{Binding PromptSettings.UserNickname, Mode=TwoWay}"
+			<TextBox Text="{Binding PromptSettings.Nickname, Mode=TwoWay}"
 							 TextWrapping="NoWrap"
 							 PlaceholderText="{loc:Loc prompt_user_nickname_placeholder}"/>
-
-				</StackPanel>
-
-				<StackPanel Grid.Column="1"
-							Orientation="Vertical"
-							Spacing="4">
-
-					<TextBlock Text="{loc:Loc prompt_assistant_nickname_hint}"
-							   Opacity="0.6"/>
-
-					<TextBox Text="{Binding PromptSettings.AssistantNickname, Mode=TwoWay}"
-							 TextWrapping="NoWrap"
-							 PlaceholderText="{loc:Loc prompt_assistant_nickname_placeholder}"/>
-
-				</StackPanel>
-
-			</Grid>
 
 			<!-- Separator -->
 			<Rectangle Height="1"

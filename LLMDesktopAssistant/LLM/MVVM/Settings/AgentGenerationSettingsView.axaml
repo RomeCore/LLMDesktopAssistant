@@ -7,8 +7,8 @@
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Name="ThisControl"
-			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatLLMPropertiesSettingsView"
-			 x:DataType="local:ChatLLMPropertiesSettingsViewModel">
+			 x:Class="LLMDesktopAssistant.LLM.Settings.AgentGenerationSettingsView"
+			 x:DataType="local:AgentGenerationSettingsViewModel">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<StackPanel Orientation="Vertical" Margin="10" Spacing="8">

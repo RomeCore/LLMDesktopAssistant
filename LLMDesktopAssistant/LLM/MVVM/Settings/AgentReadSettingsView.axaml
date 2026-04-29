@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.AgentReadSettingsView"
+			 x:DataType="local:AgentReadSettingsViewModel">
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel Orientation="Vertical"
+					Margin="10"
+					Spacing="10">
+
+			<!-- Max Visible Rounds -->
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBlock Grid.Column="0"
+						   Text="{loc:Loc settings_max_visible_rounds}"
+						   VerticalAlignment="Center"
+						   Margin="0,0,8,0"/>
+
+				<NumericUpDown Grid.Column="1"
+							  Value="{Binding ReadSettings.MaxVisibleRounds, Mode=TwoWay}"
+							  Minimum="0"
+							  Maximum="999"
+							  Width="120"
+							  HorizontalAlignment="Left"/>
+			</Grid>
+
+			<TextBlock Text="{loc:Loc settings_max_visible_rounds_hint}"
+					   Opacity="0.6"
+					   FontSize="12"
+					   TextWrapping="Wrap"/>
+
+		</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

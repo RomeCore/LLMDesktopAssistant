@@ -16,7 +16,7 @@
 
 		<!-- Messages Area -->
 		<ScrollViewer Grid.Row="0"
-					  VerticalScrollBarVisibility="Auto"
+					  VerticalScrollBarVisibility="Visible"
 					  beh:ScrollViewerBehavior.AutoScrollEnabled="True">
 
 			<ContentControl Content="{Binding MessageSequence}"/>

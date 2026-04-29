@@ -8,8 +8,8 @@
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
 			 xmlns:flui="using:FluentAvalonia.UI"
-			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatToolSettingsView"
-			 x:DataType="local:ChatToolSettingsViewModel">
+			 x:Class="LLMDesktopAssistant.LLM.Settings.AgentToolSettingsView"
+			 x:DataType="local:AgentToolSettingsViewModel">
 
 	<DockPanel Margin="10"
 			   Grid.IsSharedSizeScope="True">

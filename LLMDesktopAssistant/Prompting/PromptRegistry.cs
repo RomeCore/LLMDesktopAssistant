@@ -40,7 +40,7 @@ namespace LLMDesktopAssistant.Prompting
 				var id = template.Metadata.TryGet<TemplateIdentifierMetadata>()!.Identifier;
 				var type = template.Metadata.TryGetAdditional<string>("type");
 
-				Log.Debug("Loading template: {Id}", id);
+				// Log.Debug("Loading template: {Id}", id);
 
 				if (type == "component" || type == "persona")
 				{

@@ -29,26 +29,6 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _nickname, value);
 		}
 
-		/// <summary>
-		/// Alias for <see cref="Nickname"/> — the agent's own nickname (how it calls itself).
-		/// Used for backward compatibility with <see cref="ChatPromptSettings"/> bindings.
-		/// </summary>
-		public string? AssistantNickname
-		{
-			get => Nickname;
-			set => Nickname = value;
-		}
-
-		private string? _userNickname;
-		/// <summary>
-		/// The nickname the agent should use to refer to the user.
-		/// </summary>
-		public string? UserNickname
-		{
-			get => _userNickname;
-			set => SetProperty(ref _userNickname, value);
-		}
-
 		private readonly RangeObservableCollection<Guid> _promptComponents = [];
 		/// <summary>
 		/// The collection of prompt components IDs that should be appended to the system message in addition to the <see cref="SystemPrompt"/>.

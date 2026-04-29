@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Settings;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Settings;
@@ -14,12 +15,17 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ChatSettings Settings { get; }
 		public Chat Chat { get; }
 
+		// Global settings viewmodels
 		public ChatModelSettingsViewModel ModelSettings { get; }
 		public ChatEnvironmentSettingsViewModel EnvironmentSettings { get; }
 		public ChatMCPSettingsViewModel McpSettings { get; }
 		public ChatSummarizationSettingsViewModel SummarizationSettings { get; }
 
-		public ObservableCollection<AgentOptionViewModel> AgentOptions { get; } = [];
+		// Agents tab is in its own ViewModel
+		public ChatAgentsSettingsViewModel AgentsSettings { get; }
+
+		// --- Agent selector for Prompts/Tools/LLM properties tabs ---
+		public ObservableCollection<AgentOptionViewModel> AgentSelectorOptions { get; } = [];
 		public AgentOptionViewModel? SelectedAgent
 		{
 			get => _selectedAgent;
@@ -38,29 +44,33 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _selectedAgentDescriptor, value);
 		}
 
-		private ChatPromptSettingsViewModel? _agentPromptSettings;
-		public ChatPromptSettingsViewModel? AgentPromptSettings
+		private AgentReadSettingsViewModel? _agentReadSettings;
+		public AgentReadSettingsViewModel? AgentReadSettings
+		{
+			get => _agentReadSettings;
+			set => SetProperty(ref _agentReadSettings, value);
+		}
+
+		private AgentGenerationSettingsViewModel? _agentGenerationSettings;
+		public AgentGenerationSettingsViewModel? AgentGenerationSettings
+		{
+			get => _agentGenerationSettings;
+			set => SetProperty(ref _agentGenerationSettings, value);
+		}
+
+		private AgentPromptSettingsViewModel? _agentPromptSettings;
+		public AgentPromptSettingsViewModel? AgentPromptSettings
 		{
 			get => _agentPromptSettings;
 			set => SetProperty(ref _agentPromptSettings, value);
 		}
 
-		private ChatToolSettingsViewModel? _agentToolSettings;
-		public ChatToolSettingsViewModel? AgentToolSettings
+		private AgentToolSettingsViewModel? _agentToolSettings;
+		public AgentToolSettingsViewModel? AgentToolSettings
 		{
 			get => _agentToolSettings;
 			set => SetProperty(ref _agentToolSettings, value);
 		}
-
-		private ChatLLMPropertiesSettingsViewModel? _agentLLMPropertiesSettings;
-		public ChatLLMPropertiesSettingsViewModel? AgentLLMPropertiesSettings
-		{
-			get => _agentLLMPropertiesSettings;
-			set => SetProperty(ref _agentLLMPropertiesSettings, value);
-		}
-
-		public IRelayCommand AddAgentCommand { get; }
-		public IRelayCommand RemoveAgentCommand { get; }
 
 		public ChatSettingsViewModel(ChatSettings settings, Chat chat)
 		{
@@ -72,32 +82,35 @@ namespace LLMDesktopAssistant.LLM.Settings
 			EnvironmentSettings = new ChatEnvironmentSettingsViewModel(settings.Environment);
 			McpSettings = new ChatMCPSettingsViewModel(settings.Mcp, chat.Services.GetRequiredService<IMCPManagementService>());
 
-			AddAgentCommand = new RelayCommand(AddAgent);
-			RemoveAgentCommand = new RelayCommand(RemoveSelectedAgent, () => SelectedAgent != null);
+			AgentsSettings = new ChatAgentsSettingsViewModel(settings.Agents, chat);
 
-			RefreshAgentList();
+			RefreshAgentSelector();
 
-			if (AgentOptions.Count > 0)
-				SelectedAgent = AgentOptions[0];
+			if (AgentSelectorOptions.Count > 0)
+				SelectedAgent = AgentSelectorOptions[0];
 		}
 
-		private void RefreshAgentList()
+		private List<(AgentDescriptor Descriptor, bool IsGlobal)> GetAllAgents()
 		{
-			AgentOptions.Clear();
+			var globalConfig = SettingsManager.Get<AgentsConfiguration>();
+			var result = new List<(AgentDescriptor, bool)>();
 
-			// Collect both global agents and chat-local agents
-			var globalAgents = SettingsManager.Get<AgentsConfiguration>();
-
-			var allAgents = new List<(AgentDescriptor Descriptor, bool IsGlobal)>();
-			foreach (var agent in globalAgents.Agents)
-				allAgents.Add((agent, true));
+			foreach (var agent in globalConfig.Agents)
+				result.Add((agent, true));
 			foreach (var agent in Settings.Agents.ChatAgents)
-				if (!allAgents.Any(a => a.Descriptor.Id == agent.Id))
-					allAgents.Add((agent, false));
+				if (!result.Any(a => a.Item1.Id == agent.Id))
+					result.Add((agent, false));
 
+			return result;
+		}
+
+		public void RefreshAgentSelector()
+		{
+			AgentSelectorOptions.Clear();
+			var allAgents = GetAllAgents();
 			foreach (var (descriptor, isGlobal) in allAgents)
 			{
-				AgentOptions.Add(new AgentOptionViewModel
+				AgentSelectorOptions.Add(new AgentOptionViewModel
 				{
 					Agent = descriptor,
 					DisplayName = descriptor.Prompts.Nickname ?? descriptor.Id.ToString()[..8],
@@ -113,59 +126,20 @@ namespace LLMDesktopAssistant.LLM.Settings
 				SelectedAgentDescriptor = null;
 				AgentPromptSettings = null;
 				AgentToolSettings = null;
-				AgentLLMPropertiesSettings = null;
+				AgentReadSettings = null;
+				AgentGenerationSettings = null;
 				return;
 			}
 
 			SelectedAgentDescriptor = SelectedAgent.Agent;
 
-			AgentPromptSettings = new ChatPromptSettingsViewModel(
-				SelectedAgentDescriptor.Prompts
-			);
-			AgentToolSettings = new ChatToolSettingsViewModel(
+			AgentPromptSettings = new AgentPromptSettingsViewModel(SelectedAgentDescriptor.Prompts);
+			AgentToolSettings = new AgentToolSettingsViewModel(
 				SelectedAgentDescriptor.Tools,
 				Chat.Services.GetRequiredService<IToolsetBuildingService>()
 			);
-			AgentLLMPropertiesSettings = new ChatLLMPropertiesSettingsViewModel(
-				SelectedAgentDescriptor.Generation
-			);
+			AgentReadSettings = new AgentReadSettingsViewModel(SelectedAgentDescriptor.Read);
+			AgentGenerationSettings = new AgentGenerationSettingsViewModel(SelectedAgentDescriptor.Generation);
 		}
-
-		private void AddAgent()
-		{
-			var newAgent = new AgentDescriptor();
-			Settings.Agents.ChatAgents.Add(newAgent);
-
-			RefreshAgentList();
-			SelectedAgent = AgentOptions.LastOrDefault();
-		}
-
-		private void RemoveSelectedAgent()
-		{
-			if (SelectedAgent == null)
-				return;
-
-			var agent = SelectedAgent.Agent;
-			Settings.Agents.ChatAgents.Remove(agent);
-
-			for (int i = Settings.Agents.ActiveAgents.Count - 1; i >= 0; i--)
-			{
-				if (Settings.Agents.ActiveAgents[i].AgentId == agent.Id)
-				{
-					Settings.Agents.ActiveAgents.RemoveAt(i);
-					break;
-				}
-			}
-
-			RefreshAgentList();
-			SelectedAgent = AgentOptions.FirstOrDefault();
-		}
-	}
-
-	public class AgentOptionViewModel
-	{
-		public required AgentDescriptor Agent { get; init; }
-		public required string DisplayName { get; init; }
-		public required bool IsGlobal { get; init; }
 	}
 }

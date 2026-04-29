@@ -14,7 +14,6 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			var activeAgents = chat.Settings.Agents.ActiveAgents
 				.Where(a => a.Enabled)
-				.DefaultIfEmpty(new Settings.AgentInstanceSettings { AgentId = chat.Settings.Agents.ChatAgents.FirstOrDefault().Id })
 				.Append(null);
 
 			Guid? lastSenderId = (messages.LastOrDefault()?.Message as AssistantMessage)?.SenderAgent;

@@ -53,10 +53,12 @@ namespace LLMDesktopAssistant.LLM.Services
 						? lastAssistantMessage.SenderAgent
 						: null;
 
+					cancellationToken.ThrowIfCancellationRequested();
 					nextAgentId = await agentOrderer.GetNextAgentAsync(cancellationToken);
 					if (nextAgentId == null)
 						return;
 
+					cancellationToken.ThrowIfCancellationRequested();
 					await GenerateResponseAsync(nextAgentId.Value, cancellationToken);
 				}
 			}
@@ -240,17 +242,20 @@ namespace LLMDesktopAssistant.LLM.Services
 					{
 						domainResponseMessage.Status = AssistantMessageStatus.Cancelled;
 						RecordFailedUsage(llmInfo, timeRequested, "Operation cancelled");
+						throw;
 					}
 					catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
 					{
 						domainResponseMessage.Status = AssistantMessageStatus.Cancelled;
 						RecordFailedUsage(llmInfo, timeRequested, "Operation cancelled");
+						throw;
 					}
 					catch (Exception ex)
 					{
 						domainResponseMessage.Error = ex.ToString();
 						domainResponseMessage.Status = AssistantMessageStatus.Error;
 						RecordFailedUsage(llmInfo, timeRequested, ex.Message);
+						throw;
 					}
 					finally
 					{
