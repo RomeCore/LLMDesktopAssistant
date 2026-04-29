@@ -409,7 +409,6 @@ namespace LLMDesktopAssistant.LLM.Services
 					model.CreatedAt = userMessage.CreatedAt;
 					model.SummaryOfPrevMessages = userMessage.SummaryOfPrevMessages;
 					model.Content = userMessage.Content;
-					model.LLMProvidedContent = userMessage.LLMProvidedContent;
 
 					database.Messages.Update(model);
 				}
@@ -429,6 +428,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					model.ReasoningContent = assistantMessage.ReasoningContent;
 					model.Content = assistantMessage.Content;
 					model.Error = assistantMessage.Error;
+					model.Sender = assistantMessage.SenderAgent.ToString();
 					model.Status = assistantMessage.Status switch
 					{
 						AssistantMessageStatus.Pending => MessageStatusModel.Pending,
@@ -497,7 +497,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					CreatedAt = userMessage.CreatedAt,
 					SummaryOfPrevMessages = message.SummaryOfPrevMessages,
 					Content = userMessage.Content,
-					LLMProvidedContent = userMessage.LLMProvidedContent,
+					Visibility = userMessage.Visibility,
+					VisibleTo = userMessage.VisibleTo,
 					Role = RoleModel.User
 				};
 
@@ -534,6 +535,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				var model = new MessageModel
 				{
 					CreatedAt = assistantMessage.CreatedAt,
+					Sender = assistantMessage.SenderAgent.ToString(),
 					SummaryOfPrevMessages = assistantMessage.SummaryOfPrevMessages,
 					ReasoningContent = assistantMessage.ReasoningContent,
 					Content = assistantMessage.Content,
@@ -594,7 +596,9 @@ namespace LLMDesktopAssistant.LLM.Services
 				var result = new UserMessage
 				{
 					Content = messageModel.Content,
-					LLMProvidedContent = messageModel.LLMProvidedContent,
+					SenderLogin = messageModel.Sender,
+					Visibility = messageModel.Visibility,
+					VisibleTo = messageModel.VisibleTo,
 					SummaryOfPrevMessages = messageModel.SummaryOfPrevMessages,
 					Attachments = attachments.ToImmutableList()
 				};
@@ -619,6 +623,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				var result = new AssistantMessage
 				{
+					SenderAgent = Guid.TryParse(messageModel.Sender, out var senderAgent) ? senderAgent : Guid.Empty,
 					ReasoningContent = messageModel.ReasoningContent,
 					Content = messageModel.Content,
 					SummaryOfPrevMessages = messageModel.SummaryOfPrevMessages,

@@ -19,12 +19,12 @@
 					   Margin="0,5,0,5"/>
 
 			<CheckBox Content="{loc:Loc settings-llm_enable_reasoning}"
-					  IsChecked="{Binding LLMPropertiesSettings.EnableReasoningSettings, Mode=TwoWay}"/>
+					  IsChecked="{Binding GenerationSettings.EnableReasoningSettings, Mode=TwoWay}"/>
 
 			<StackPanel Orientation="Horizontal"
 						Spacing="8"
 						Margin="20,0,0,0"
-						IsEnabled="{Binding LLMPropertiesSettings.EnableReasoningSettings}">
+						IsEnabled="{Binding GenerationSettings.EnableReasoningSettings}">
 
 				<TextBlock Text="{loc:Loc settings-llm_reasoning_level}"
 						   VerticalAlignment="Center"/>
@@ -56,12 +56,12 @@
 					   Margin="0,5,0,5"/>
 
 			<CheckBox Content="{loc:Loc settings-llm_enable_temperature}"
-					  IsChecked="{Binding LLMPropertiesSettings.EnableTemperature, Mode=TwoWay}"/>
+					  IsChecked="{Binding GenerationSettings.EnableTemperature, Mode=TwoWay}"/>
 
 			<StackPanel Orientation="Vertical"
 						Spacing="4"
 						Margin="20,0,0,0"
-						IsEnabled="{Binding LLMPropertiesSettings.EnableTemperature}">
+						IsEnabled="{Binding GenerationSettings.EnableTemperature}">
 
 				<Grid ColumnDefinitions="Auto,*,50"
 					  ColumnSpacing="8">
@@ -70,7 +70,7 @@
 							   VerticalAlignment="Center"/>
 
 					<Slider Grid.Column="1"
-							Value="{Binding LLMPropertiesSettings.Temperature, Mode=TwoWay}"
+							Value="{Binding GenerationSettings.Temperature, Mode=TwoWay}"
 							Minimum="0.0"
 							Maximum="2.0"
 							TickFrequency="0.1"
@@ -79,7 +79,7 @@
 							VerticalAlignment="Center"/>
 
 					<TextBlock Grid.Column="2"
-							Text="{Binding LLMPropertiesSettings.Temperature, StringFormat=F2}"
+							Text="{Binding GenerationSettings.Temperature, StringFormat=F2}"
 							Margin="4"
 							VerticalAlignment="Center"
 							HorizontalAlignment="Right"/>
@@ -122,9 +122,9 @@
 					BorderThickness="1"
 					CornerRadius="4"
 					Padding="6"
-					IsVisible="{Binding LLMPropertiesSettings.AdditionalParameters.Any}">
+					IsVisible="{Binding GenerationSettings.AdditionalParameters.Any}">
 				
-				<ItemsControl ItemsSource="{Binding LLMPropertiesSettings.AdditionalParameters}">
+				<ItemsControl ItemsSource="{Binding GenerationSettings.AdditionalParameters}">
 
 					<ItemsControl.ItemTemplate>
 						<DataTemplate x:DataType="local:AdditionalParameter">

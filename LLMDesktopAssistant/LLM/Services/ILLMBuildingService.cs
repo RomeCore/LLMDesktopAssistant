@@ -10,8 +10,9 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <summary>
 		/// Gets the chat large language model.
 		/// </summary>
+		/// <param name="agentId">The agent identifier to build LLM for.</param>
 		/// <returns>The chat large language model.</returns>
-		LLMInfo? BuildChatLLM();
+		LLMInfo? BuildChatLLM(Guid agentId);
 
 		/// <summary>
 		/// Gets the large language model for summarization.

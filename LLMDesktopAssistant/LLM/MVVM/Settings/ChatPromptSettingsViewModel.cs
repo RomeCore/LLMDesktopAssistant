@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Settings;
 using System.Collections.ObjectModel;
@@ -60,7 +61,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	[ViewModelFor(typeof(ChatPromptSettingsView))]
 	public class ChatPromptSettingsViewModel : ViewModelBase
 	{
-		public ChatPromptSettings PromptSettings { get; }
+		public AgentPromptSettings PromptSettings { get; }
 
 		public ObservableCollection<ComponentCategoryViewModel> ComponentCategories { get; } = new();
 		public ObservableCollection<PersonaItemViewModel> AvailablePersonas { get; } = new();
@@ -82,7 +83,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 		public ICommand ClearPersonaCommand { get; }
 
-		public ChatPromptSettingsViewModel(ChatPromptSettings settings)
+		public ChatPromptSettingsViewModel(AgentPromptSettings settings)
 		{
 			PromptSettings = settings;
 

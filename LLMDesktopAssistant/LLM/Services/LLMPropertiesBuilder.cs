@@ -1,4 +1,3 @@
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Settings;
 using RCLargeLanguageModels.Completions;
 using RCLargeLanguageModels.Completions.Properties;
@@ -9,13 +8,13 @@ namespace LLMDesktopAssistant.LLM.Services
 {
 	[ChatService(typeof(ILLMPropertiesBuilder))]
 	public class LLMPropertiesBuilder(
-		Chat chat
+		IAgentManagementService agentSettings
 	) : ILLMPropertiesBuilder
 	{
-		public IEnumerable<CompletionProperty> BuildProperties()
+		public IEnumerable<CompletionProperty> BuildProperties(Guid agentId)
 		{
 			var result = new List<CompletionProperty>();
-			var properties = chat.Settings.LLMProperties;
+			var properties = agentSettings.GetAgentDescriptor(agentId).Generation;
 
 			if (properties.EnableTemperature)
 			{
@@ -46,7 +45,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				if (!parameter.Enabled)
 					continue;
 
-				var node = JsonSerializer.SerializeToNode(parameter.ParameterValue) ?? JsonValue.Create((string?)null)!;
+				var node = JsonNode.Parse(parameter.ParameterValue) ?? JsonValue.Create((string?)null)!;
 				result.Add(new CustomProperty(parameter.ParameterName, node));
 			}
 

@@ -13,18 +13,20 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	public class ToolsetBuildingService(
 		Chat chat,
 		IMCPManagementService mcpManager,
+		IAgentManagementService agentSettings,
 		IServiceProvider services
 		) : IToolsetBuildingService
 	{
-		public IEnumerable<ToolInfo> BuildTools()
+		public IEnumerable<ToolInfo> BuildTools(Guid agentId)
 		{
-			if (!chat.Settings.Tools.EnableTools)
+			var settings = agentSettings.GetAgentDescriptor(agentId).Tools;
+			if (!settings.EnableTools)
 				return [];
 
 			var tools = GetAvailableTools();
 			var result = new List<ToolInfo>();
 
-			var changes = chat.Settings.Tools.ToolChanges.ToDictionary(c => c.ToolName, c => c);
+			var changes = settings.ToolChanges.ToDictionary(c => c.ToolName, c => c);
 			foreach (var toolInfo in tools)
 			{
 				if (changes.TryGetValue(toolInfo.Tool.Name, out var change))

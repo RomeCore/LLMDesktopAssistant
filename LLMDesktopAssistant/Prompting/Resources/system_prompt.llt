@@ -18,11 +18,6 @@
 		Your alternate name is:
 		@assistantNickname
 	}
-	@if userNickname
-	{
-		Call user as:
-		@userNickname
-	}
 	@if summary
 	{
 		There is summary of previous messages in the conversation:

@@ -20,6 +20,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		/// <summary>
 		/// Invalidates the cache and refreshes it.
 		/// </summary>
-		public void Invalidate();
+		/// <param name="agentId">The ID of the agent for which to invalidate the cache.</param>
+		public void Invalidate(Guid agentId);
 	}
 }

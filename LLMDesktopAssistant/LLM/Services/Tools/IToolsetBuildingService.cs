@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		/// These tools will be used directly for the LLM execution.
 		/// </remarks>
 		/// <returns>A collection of <see cref="ToolInfo"/> objects representing the tools to be used by the language model.</returns>
-		IEnumerable<ToolInfo> BuildTools();
+		IEnumerable<ToolInfo> BuildTools(Guid agentId);
 
 		/// <summary>
 		/// Returns a collection of tools that are available for selection but not necessarily active in the current configuration.

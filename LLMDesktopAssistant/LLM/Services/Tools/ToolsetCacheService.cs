@@ -14,10 +14,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 		public ImmutableDictionary<string, ToolInfo> ValidTools => _validTools;
 
-		public void Invalidate()
+		public void Invalidate(Guid agentId)
 		{
 			_availableTools = builder.GetAvailableTools().ToImmutableDictionary(t => t.Name);
-			_validTools = builder.BuildTools().ToImmutableDictionary(t => t.Name);
+			_validTools = builder.BuildTools(agentId).ToImmutableDictionary(t => t.Name);
 		}
 	}
 }

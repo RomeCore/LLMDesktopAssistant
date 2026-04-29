@@ -11,171 +11,228 @@
 			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatSettingsView"
 			 x:DataType="local:ChatSettingsViewModel">
 
-	<TabControl Width="650"
-				Height="500"
-				TabStripPlacement="Left">
+	<DockPanel Width="650"
+					Height="500">
 
-		<TabItem>
+		<!-- Agent selection bar at the top -->
+		<Border DockPanel.Dock="Top"
+				BorderBrush="{DynamicResource SystemAccentColor}"
+				BorderThickness="0,0,0,1"
+				Padding="10,8">
 
-			<TabItem.Header>
-				<StackPanel Orientation="Vertical"
-							MaxWidth="80"
-							Margin="5">
+			<Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto"
+				  VerticalAlignment="Center">
 
-					<ico:MaterialIcon Kind="Brain"
-									  Width="24" Height="24"
-									  HorizontalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc chat_settings_models}"
-							   FontSize="15"
+				<TextBlock Grid.Column="0"
+						   Text="{loc:Loc settings_selected_agent}"
+						   VerticalAlignment="Center"
+						   Margin="0,0,8,0"/>
+
+				<ComboBox Grid.Column="1"
+						  ItemsSource="{Binding AgentOptions}"
+						  SelectedItem="{Binding SelectedAgent, Mode=TwoWay}"
+						  Width="200">
+					<ComboBox.ItemTemplate>
+						<DataTemplate DataType="local:AgentOptionViewModel">
+							<StackPanel Orientation="Horizontal" Spacing="4">
+								<TextBlock Text="{Binding DisplayName}"/>
+								<TextBlock Text="{loc:Loc settings_agent_global}"
+										   IsVisible="{Binding IsGlobal}"
+										   Opacity="0.5"
+										   FontSize="11"/>
+							</StackPanel>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+
+				<Button Grid.Column="2"
+						Command="{Binding AddAgentCommand}"
+						Margin="4,0,0,0"
+						Classes="IconButton"
+						ToolTip.Tip="{loc:Loc settings_add_agent}">
+					<ico:MaterialIcon Kind="Plus"/>
+				</Button>
+
+				<Button Grid.Column="3"
+						Command="{Binding RemoveAgentCommand}"
+						Margin="4,0,0,0"
+						Classes="IconButton"
+						ToolTip.Tip="{loc:Loc settings_remove_agent}">
+					<ico:MaterialIcon Kind="Close"/>
+				</Button>
+
+			</Grid>
+
+		</Border>
+
+		<!-- Main settings tabs -->
+		<TabControl 
+					TabStripPlacement="Left">
+
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Vertical"
+								MaxWidth="80"
+								Margin="5">
+						<ico:MaterialIcon Kind="Brain"
+										  Width="24" Height="24"
+										  HorizontalAlignment="Center"/>
+						<TextBlock Text="{loc:Loc chat_settings_models}"
+								   FontSize="15"
+								   HorizontalAlignment="Center"
+								   TextTrimming="CharacterEllipsis"
+								   TextWrapping="NoWrap"/>
+					</StackPanel>
+				</TabItem.Header>
+				<ContentControl Content="{Binding ModelSettings}"/>
+			</TabItem>
+
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Vertical"
+								MaxWidth="80"
+								Margin="5">
+						<ico:MaterialIcon Kind="Text"
+										  Width="24" Height="24"
+										  HorizontalAlignment="Center"/>
+						<TextBlock Text="{loc:Loc chat_settings_prompts}"
+								   FontSize="15"
+								   HorizontalAlignment="Center"
+								   TextTrimming="CharacterEllipsis"
+								   TextWrapping="NoWrap"/>
+					</StackPanel>
+				</TabItem.Header>
+
+				<!-- Agent-specific prompt settings -->
+				<Panel>
+					<ScrollViewer IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverter}}">
+						<ContentControl Content="{Binding AgentPromptSettings}"/>
+					</ScrollViewer>
+					<TextBlock Text="{loc:Loc settings_select_agent_first}"
+							   IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverterInverted}}"
 							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"
-							   TextWrapping="NoWrap"/>
+							   VerticalAlignment="Center"
+							   Opacity="0.5"/>
+				</Panel>
 
-				</StackPanel>
-			</TabItem.Header>
+			</TabItem>
 
-			<ContentControl Content="{Binding ModelSettings}"/>
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Vertical"
+								MaxWidth="80"
+								Margin="5">
+						<ico:MaterialIcon Kind="Tune"
+										  Width="24" Height="24"
+										  HorizontalAlignment="Center"/>
+						<TextBlock Text="{loc:Loc chat_settings_llm_properties}"
+								   FontSize="15"
+								   HorizontalAlignment="Center"
+								   TextTrimming="CharacterEllipsis"
+								   TextWrapping="NoWrap"/>
+					</StackPanel>
+				</TabItem.Header>
 
-		</TabItem>
-		
-		<TabItem>
-
-			<TabItem.Header>
-				<StackPanel Orientation="Vertical"
-							MaxWidth="80"
-							Margin="5">
-
-					<ico:MaterialIcon Kind="Tune"
-									  Width="24" Height="24"
-									  HorizontalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc chat_settings_llm_properties}"
-							   FontSize="15"
+				<!-- Agent-specific LLM properties -->
+				<Panel>
+					<ScrollViewer IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverter}}">
+						<ContentControl Content="{Binding AgentLLMPropertiesSettings}"/>
+					</ScrollViewer>
+					<TextBlock Text="{loc:Loc settings_select_agent_first}"
+							   IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverterInverted}}"
 							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"
-							   TextWrapping="NoWrap"/>
+							   VerticalAlignment="Center"
+							   Opacity="0.5"/>
+				</Panel>
 
-				</StackPanel>
-			</TabItem.Header>
+			</TabItem>
 
-			<ContentControl Content="{Binding LLMPropertiesSettings}"/>
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Vertical"
+								MaxWidth="80"
+								Margin="5">
+						<ico:MaterialIcon Kind="ArrowCollapseVertical"
+										  Width="24" Height="24"
+										  HorizontalAlignment="Center"/>
+						<TextBlock Text="{loc:Loc chat_settings_summarization}"
+								   FontSize="15"
+								   HorizontalAlignment="Center"
+								   TextTrimming="CharacterEllipsis"
+								   TextWrapping="NoWrap"/>
+					</StackPanel>
+				</TabItem.Header>
+				<ContentControl Content="{Binding SummarizationSettings}"/>
+			</TabItem>
 
-		</TabItem>
-		
-		<TabItem>
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Vertical"
+								MaxWidth="80"
+								Margin="5">
+						<ico:MaterialIcon Kind="FolderSettings"
+										  Width="24" Height="24"
+										  HorizontalAlignment="Center"/>
+						<TextBlock Text="{loc:Loc chat_settings_environment}"
+								   FontSize="15"
+								   HorizontalAlignment="Center"
+								   TextTrimming="CharacterEllipsis"
+								   TextWrapping="NoWrap"/>
+					</StackPanel>
+				</TabItem.Header>
+				<ContentControl Content="{Binding EnvironmentSettings}"/>
+			</TabItem>
 
-			<TabItem.Header>
-				<StackPanel Orientation="Vertical"
-							MaxWidth="80"
-							Margin="5">
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Vertical"
+								MaxWidth="80"
+								Margin="5">
+						<ico:MaterialIcon Kind="Wrench"
+										  Width="24" Height="24"
+										  HorizontalAlignment="Center"/>
+						<TextBlock Text="{loc:Loc chat_settings_tools}"
+								   FontSize="15"
+								   HorizontalAlignment="Center"
+								   TextTrimming="CharacterEllipsis"
+								   TextWrapping="NoWrap"/>
+					</StackPanel>
+				</TabItem.Header>
 
-					<ico:MaterialIcon Kind="Text"
-									  Width="24" Height="24"
-									  HorizontalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc chat_settings_prompts}"
-							   FontSize="15"
+				<!-- Agent-specific tool settings -->
+				<Panel>
+					<ScrollViewer IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverter}}">
+						<ContentControl Content="{Binding AgentToolSettings}"/>
+					</ScrollViewer>
+					<TextBlock Text="{loc:Loc settings_select_agent_first}"
+							   IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverterInverted}}"
 							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"
-							   TextWrapping="NoWrap"/>
+							   VerticalAlignment="Center"
+							   Opacity="0.5"/>
+				</Panel>
 
-				</StackPanel>
-			</TabItem.Header>
+			</TabItem>
 
-			<ContentControl Content="{Binding PromptSettings}"/>
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Vertical"
+								MaxWidth="80"
+								Margin="5">
+						<ico:MaterialIcon Kind="Connection"
+										  Width="24" Height="24"
+										  HorizontalAlignment="Center"/>
+						<TextBlock Text="{loc:Loc chat_settings_mcp}"
+								   FontSize="15"
+								   HorizontalAlignment="Center"
+								   TextTrimming="CharacterEllipsis"
+								   TextWrapping="NoWrap"/>
+					</StackPanel>
+				</TabItem.Header>
+				<ContentControl Content="{Binding McpSettings}"/>
+			</TabItem>
 
-		</TabItem>
+		</TabControl>
 
-		<TabItem>
-
-			<TabItem.Header>
-				<StackPanel Orientation="Vertical"
-							MaxWidth="80"
-							Margin="5">
-
-					<ico:MaterialIcon Kind="ArrowCollapseVertical"
-									  Width="24" Height="24"
-									  HorizontalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc chat_settings_summarization}"
-							   FontSize="15"
-							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"
-							   TextWrapping="NoWrap"/>
-
-				</StackPanel>
-			</TabItem.Header>
-
-			<ContentControl Content="{Binding SummarizationSettings}"/>
-
-		</TabItem>
-		
-		<TabItem>
-
-			<TabItem.Header>
-				<StackPanel Orientation="Vertical"
-							MaxWidth="80"
-							Margin="5">
-
-					<ico:MaterialIcon Kind="FolderSettings"
-									  Width="24" Height="24"
-									  HorizontalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc chat_settings_environment}"
-							   FontSize="15"
-							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"
-							   TextWrapping="NoWrap"/>
-
-				</StackPanel>
-			</TabItem.Header>
-
-			<ContentControl Content="{Binding EnvironmentSettings}"/>
-
-		</TabItem>
-
-		<TabItem>
-
-			<TabItem.Header>
-				<StackPanel Orientation="Vertical"
-							MaxWidth="80"
-							Margin="5">
-
-					<ico:MaterialIcon Kind="Wrench"
-									  Width="24" Height="24"
-									  HorizontalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc chat_settings_tools}"
-							   FontSize="15"
-							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"
-							   TextWrapping="NoWrap"/>
-
-				</StackPanel>
-			</TabItem.Header>
-
-			<ContentControl Content="{Binding ToolSettings}"/>
-
-		</TabItem>
-
-		<TabItem>
-
-			<TabItem.Header>
-				<StackPanel Orientation="Vertical"
-							MaxWidth="80"
-							Margin="5">
-
-					<ico:MaterialIcon Kind="Connection"
-									  Width="24" Height="24"
-									  HorizontalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc chat_settings_mcp}"
-							   FontSize="15"
-							   HorizontalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"
-							   TextWrapping="NoWrap"/>
-
-				</StackPanel>
-			</TabItem.Header>
-
-			<ContentControl Content="{Binding McpSettings}"/>
-
-		</TabItem>
-
-	</TabControl>
+	</DockPanel>
 
 </UserControl>

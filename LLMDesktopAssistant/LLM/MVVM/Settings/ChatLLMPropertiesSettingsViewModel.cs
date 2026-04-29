@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 
@@ -16,7 +17,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	[ViewModelFor(typeof(ChatLLMPropertiesSettingsView))]
 	public class ChatLLMPropertiesSettingsViewModel : ViewModelBase
 	{
-		public ChatLLMPropertiesSettings LLMPropertiesSettings { get; }
+		public AgentGenerationSettings GenerationSettings { get; }
 
 		public List<ReasoningLevelItem> ReasoningLevels { get; } =
 		[
@@ -39,7 +40,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			{
 				if (SetProperty(ref _selectedReasoningLevel, value) && value != null)
 				{
-					LLMPropertiesSettings.ReasoningSettings = value.Value;
+					GenerationSettings.ReasoningSettings = value.Value;
 				}
 			}
 		}
@@ -47,9 +48,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ICommand AddParameterCommand { get; }
 		public ICommand RemoveParameterCommand { get; }
 
-		public ChatLLMPropertiesSettingsViewModel(ChatLLMPropertiesSettings settings)
+		public ChatLLMPropertiesSettingsViewModel(AgentGenerationSettings settings)
 		{
-			LLMPropertiesSettings = settings;
+			GenerationSettings = settings;
 
 			// Init selected reasoning item from current settings value
 			_selectedReasoningLevel = ReasoningLevels.FirstOrDefault(r => r.Value == settings.ReasoningSettings)
@@ -57,7 +58,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			AddParameterCommand = new RelayCommand(() =>
 			{
-				LLMPropertiesSettings.AdditionalParameters.Add(new AdditionalParameter
+				GenerationSettings.AdditionalParameters.Add(new AdditionalParameter
 				{
 					Enabled = true,
 					ParameterName = "new_parameter",
@@ -68,7 +69,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			RemoveParameterCommand = new RelayCommand<AdditionalParameter?>(param =>
 			{
 				if (param != null)
-					LLMPropertiesSettings.AdditionalParameters.Remove(param);
+					GenerationSettings.AdditionalParameters.Remove(param);
 			});
 		}
 	}

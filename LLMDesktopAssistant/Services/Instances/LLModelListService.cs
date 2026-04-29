@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.Services.Instances
 			}
 		}
 
-		static readonly ExtendedDeepSeekClient deepseek = new("https://api.deepseek.com/v1", new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
+		static readonly ExtendedDeepSeekClient deepseek = new("https://api.deepseek.com/beta", new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
 		static readonly OpenRouterClient openrouter = new(new EnvironmentTokenAccessor("OPENROUTER_API_KEY"));
 		static readonly OllamaClient ollama = new();
 

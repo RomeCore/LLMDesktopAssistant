@@ -129,7 +129,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					encounteredUserMessage = true;
 					if (latestSummary != null)
 					{
-						parts.Insert(0, string.Join(Environment.NewLine, promptBuilder.ConvertMessage(message)
+						parts.Insert(0, string.Join(Environment.NewLine, promptBuilder.ConvertMessageUnsafe(message)
 							.Select(m => messageSerializer.SerializeMessage(m, []))));
 						break;
 					}
@@ -144,7 +144,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				if (latestSummary == null)
 				{
-					parts.Insert(0, string.Join(Environment.NewLine, promptBuilder.ConvertMessage(message)
+					parts.Insert(0, string.Join(Environment.NewLine, promptBuilder.ConvertMessageUnsafe(message)
 						.Select(m => messageSerializer.SerializeMessage(m, []))));
 				}
 			}

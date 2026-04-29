@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Immutable;
 using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.LLM.Services
@@ -55,7 +56,10 @@ namespace LLMDesktopAssistant.LLM.Services
 				storage.AppendMessage(new UserMessage
 				{
 					Content = userInput.Content,
-					Attachments = userInput.Attachments
+					Attachments = userInput.Attachments,
+					SenderLogin = "user",
+					Visibility = MessageVisibility.Always,
+					VisibleTo = []
 				});
 				await executor.GenerateResponseAsync(cancellationToken);
 			}
@@ -76,7 +80,10 @@ namespace LLMDesktopAssistant.LLM.Services
 				storage.EditMessage(messageIndex, new UserMessage
 				{
 					Content = userInput.Content,
-					Attachments = userInput.Attachments
+					Attachments = userInput.Attachments,
+					SenderLogin = "user",
+					Visibility = MessageVisibility.Always,
+					VisibleTo = []
 				});
 				await executor.GenerateResponseAsync(cancellationToken);
 			}

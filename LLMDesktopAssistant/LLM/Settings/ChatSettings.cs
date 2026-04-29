@@ -21,14 +21,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _modelSettings, value);
 		}
 
-		private ChatLLMPropertiesSettings _llmPropertiesSettings = new();
+		private ChatAgentSettings _agentSettings = new();
 		/// <summary>
-		/// Settings related to properties that can be applied to chat LLM.
+		/// Settings related to chat agents.
 		/// </summary>
-		public ChatLLMPropertiesSettings LLMProperties
+		public ChatAgentSettings Agents
 		{
-			get => _llmPropertiesSettings;
-			set => SetProperty(ref _llmPropertiesSettings, value);
+			get => _agentSettings;
+			set => SetProperty(ref _agentSettings, value);
 		}
 
 		private ChatSummarizationSettings _summarizationSettings = new();
@@ -41,16 +41,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _summarizationSettings, value);
 		}
 
-		private ChatPromptSettings _promptSettings = new();
-		/// <summary>
-		/// Settings for system prompts and persona configuration.
-		/// </summary>
-		public ChatPromptSettings Prompts
-		{
-			get => _promptSettings;
-			set => SetProperty(ref _promptSettings, value);
-		}
-
 		private ChatEnvironmentSettings _environmentSettings = new();
 		/// <summary>
 		/// Environment and working directory settings.
@@ -59,16 +49,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 		{
 			get => _environmentSettings;
 			set => SetProperty(ref _environmentSettings, value);
-		}
-
-		private ChatToolSettings _toolSettings = new();
-		/// <summary>
-		/// Settings for tools and function calling.
-		/// </summary>
-		public ChatToolSettings Tools
-		{
-			get => _toolSettings;
-			set => SetProperty(ref _toolSettings, value);
 		}
 
 		private ChatMcpSettings _mcpSettings = new();

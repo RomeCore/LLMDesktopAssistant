@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using LLMDesktopAssistant.Utils;
+using System.Collections.Immutable;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -10,17 +11,22 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// <summary>
 		/// The collection of attachments associated with the user message. These can include images or files.
 		/// </summary>
-		public ImmutableList<Attachment> Attachments { get; init; } = [];
+		public required ImmutableList<Attachment> Attachments { get; init; }
 
-		private string? _llmProvidedContent;
 		/// <summary>
-		/// Gets or sets the content that will be provided to LLM and should not be displayed.
-		/// Can include attachments, various notes, etc.
+		/// The login name of the sender of the message. This is used to identify the user within the system.
 		/// </summary>
-		public string? LLMProvidedContent
-		{
-			get => _llmProvidedContent;
-			set => SetProperty(ref _llmProvidedContent, value);
-		}
+		public required string SenderLogin { get; init; }
+
+		/// <summary>
+		/// The visibility settings for the user message. Determines who can see the message.
+		/// </summary>
+		public required MessageVisibility Visibility { get; init; }
+
+		/// <summary>
+		/// The collection of users (logins) or agents (guids) to whom the message is visible.
+		/// If empty, it means that the message is visible to all users and agents.
+		/// </summary>
+		public required ImmutableList<string> VisibleTo { get; init; }
 	}
 }

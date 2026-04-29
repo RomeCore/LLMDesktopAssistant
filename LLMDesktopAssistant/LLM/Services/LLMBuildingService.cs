@@ -4,6 +4,7 @@ using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels;
+using RCLargeLanguageModels.Clients;
 using RCLargeLanguageModels.Clients.Deepseek;
 using RCLargeLanguageModels.Clients.OpenAI;
 using RCLargeLanguageModels.Security;
@@ -14,12 +15,19 @@ namespace LLMDesktopAssistant.LLM.Services
 {
 	[ChatService(typeof(ILLMBuildingService))]
 	public class LLMBuildingService(
-		Chat chat
+		Chat chat,
+		IAgentManagementService agentSettings
 	) : ILLMBuildingService
 	{
-		public LLMInfo? BuildChatLLM()
+		public LLMInfo? BuildChatLLM(Guid agentId)
 		{
-			var model = chat.Settings.Models.ChatModel.Current;
+			var settings = agentSettings.GetAgentDescriptor(agentId).Generation;
+
+			var descriptor = settings.EnableCustomModel
+				? settings.Model
+				: chat.Settings.Models.ChatModel;
+
+			var model = descriptor.Current;
 			if (model is null)
 				return null;
 

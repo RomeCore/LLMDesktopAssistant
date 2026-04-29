@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -94,7 +94,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				return new ToolResult(ToolResultStatus.Error, "No agentic model selected. Say user to select an agentic model first.");
 
 			var llm = new LLModel(modelDescriptor);
-			var toolMap = _toolsetBuildingService.BuildTools().ToDictionary(t => t.Tool.Name);
+			// Pass empty agent ID for the toolset builder to use all available tools (not filtered by agent)
+			var toolMap = _toolsetBuildingService.BuildTools(Guid.Empty).ToDictionary(t => t.Tool.Name);
 			var tools = new ToolSet();
 			var errorSb = new StringBuilder();
 

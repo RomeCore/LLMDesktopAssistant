@@ -1,7 +1,8 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization.Resources;
@@ -10,22 +11,9 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
-	/*public class ToolAdditionalTemplateSelector : DataTemplateSelector
-	{
-		public DataTemplate? ToolTemplate { get; set; }
-
-		public override DataTemplate? SelectTemplate(object item, DependencyObject container)
-		{
-			if (item is ToolItemViewModel)
-				return ToolTemplate;
-
-			return TreeViewAssist.SuppressAdditionalTemplate;
-		}
-	}*/
-
 	public class ToolItemViewModel : ViewModelBase
 	{
-		private readonly ChatToolSettings _settings;
+		private readonly AgentToolSettings _settings;
 		private readonly ToolInfo _toolInfo;
 		private ToolChange? _change;
 
@@ -43,7 +31,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public string Category { get; }
 		public ICommand ResetCommand { get; }
 
-		public ToolItemViewModel(ToolInfo tool, ChatToolSettings settings)
+		public ToolItemViewModel(ToolInfo tool, AgentToolSettings settings)
 		{
 			_settings = settings;
 			_toolInfo = tool;
@@ -222,7 +210,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	public class ChatToolSettingsViewModel : ViewModelBase
 	{
 		private readonly IToolsetBuildingService _toolsetBuildingService;
-		public ChatToolSettings ToolSettings { get; }
+		public AgentToolSettings ToolSettings { get; }
 
 		private AvaloniaList<ToolCategoryViewModel> _toolCategories = [];
 		public ICollection<ToolCategoryViewModel> ToolCategories
@@ -236,7 +224,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			}
 		}
 
-		public ChatToolSettingsViewModel(ChatToolSettings settings, IToolsetBuildingService toolsetBuildingService)
+		public ChatToolSettingsViewModel(AgentToolSettings settings, IToolsetBuildingService toolsetBuildingService)
 		{
 			_toolsetBuildingService = toolsetBuildingService;
 			ToolSettings = settings;
