@@ -12,7 +12,40 @@
 			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatSettingsView"
 			 x:DataType="local:ChatSettingsViewModel">
 
-	<TabControl Width="650" Height="500"
+	<UserControl.Styles>
+		<Style Selector="ContentControl.AgentSelector">
+			<Setter Property="ContentTemplate">
+				<DataTemplate x:DataType="local:ChatSettingsViewModel">
+					<Border BorderBrush="{DynamicResource SystemAccentColor}"
+									BorderThickness="0,0,0,1"
+									Padding="8,6">
+						<Grid ColumnDefinitions="Auto,*">
+							<TextBlock Grid.Column="0" Text="{loc:Loc settings_selected_agent}"
+										 VerticalAlignment="Center" Margin="0,0,8,0"/>
+							<ComboBox Grid.Column="1"
+										ItemsSource="{Binding AgentSelectorOptions}"
+										SelectedItem="{Binding SelectedAgent, Mode=TwoWay}"
+										Width="200"
+										HorizontalAlignment="Left">
+								<ComboBox.ItemTemplate>
+									<DataTemplate>
+										<StackPanel Orientation="Horizontal" Spacing="4">
+											<TextBlock Text="{Binding Agent.Prompts.Nickname}"/>
+											<TextBlock Text="{loc:Loc settings_agent_global}"
+														 IsVisible="{Binding IsGlobal}"
+														 Opacity="0.5" FontSize="11"/>
+										</StackPanel>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</Setter>
+		</Style>
+	</UserControl.Styles>
+
+	<TabControl Width="800" Height="700"
 				TabStripPlacement="Left">
 
 		<!-- Models -->
@@ -38,54 +71,6 @@
 			</TabItem.Header>
 			<ContentControl Content="{Binding AgentsSettings}"/>
 		</TabItem>
-
-		<!-- Prompts (with agent selector) -->
-		<TabItem>
-			<TabItem.Header>
-				<StackPanel Orientation="Vertical" MaxWidth="80" Margin="5">
-					<ico:MaterialIcon Kind="Text" Width="24" Height="24" HorizontalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc chat_settings_prompts}" FontSize="15"
-							   HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-				</StackPanel>
-			</TabItem.Header>
-
-			<DockPanel>
-				<Border DockPanel.Dock="Top"
-						BorderBrush="{DynamicResource SystemAccentColor}"
-						BorderThickness="0,0,0,1"
-						Padding="8,6">
-					<Grid ColumnDefinitions="Auto,*">
-						<TextBlock Grid.Column="0" Text="{loc:Loc settings_selected_agent}"
-								   VerticalAlignment="Center" Margin="0,0,8,0"/>
-						<ComboBox Grid.Column="1"
-								  ItemsSource="{Binding AgentSelectorOptions}"
-								  SelectedItem="{Binding SelectedAgent, Mode=TwoWay}"
-								  Width="200"
-								  HorizontalAlignment="Left">
-							<ComboBox.ItemTemplate>
-								<DataTemplate>
-									<StackPanel Orientation="Horizontal" Spacing="4">
-										<TextBlock Text="{Binding DisplayName}"/>
-										<TextBlock Text="{loc:Loc settings_agent_global}"
-												   IsVisible="{Binding IsGlobal}"
-												   Opacity="0.5" FontSize="11"/>
-									</StackPanel>
-								</DataTemplate>
-							</ComboBox.ItemTemplate>
-						</ComboBox>
-					</Grid>
-				</Border>
-
-				<Panel>
-					<ScrollViewer IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverter}}">
-						<ContentControl Content="{Binding AgentPromptSettings}"/>
-					</ScrollViewer>
-					<TextBlock Text="{loc:Loc settings_select_agent_first}"
-							   IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverterInverted}}"
-							   HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
-				</Panel>
-			</DockPanel>
-		</TabItem>
 		
 		<!-- Read (with agent selector) -->
 		<TabItem>
@@ -98,31 +83,7 @@
 			</TabItem.Header>
 
 			<DockPanel>
-				<Border DockPanel.Dock="Top"
-						BorderBrush="{DynamicResource SystemAccentColor}"
-						BorderThickness="0,0,0,1"
-						Padding="8,6">
-					<Grid ColumnDefinitions="Auto,*">
-						<TextBlock Grid.Column="0" Text="{loc:Loc settings_selected_agent}"
-								   VerticalAlignment="Center" Margin="0,0,8,0"/>
-						<ComboBox Grid.Column="1"
-								  ItemsSource="{Binding AgentSelectorOptions}"
-								  SelectedItem="{Binding SelectedAgent, Mode=TwoWay}"
-								  Width="200"
-								  HorizontalAlignment="Left">
-							<ComboBox.ItemTemplate>
-								<DataTemplate>
-									<StackPanel Orientation="Horizontal" Spacing="4">
-										<TextBlock Text="{Binding DisplayName}"/>
-										<TextBlock Text="{loc:Loc settings_agent_global}"
-												   IsVisible="{Binding IsGlobal}"
-												   Opacity="0.5" FontSize="11"/>
-									</StackPanel>
-								</DataTemplate>
-							</ComboBox.ItemTemplate>
-						</ComboBox>
-					</Grid>
-				</Border>
+				<ContentControl DockPanel.Dock="Top" Content="{Binding}" Classes="AgentSelector"/>
 
 				<Panel>
 					<ScrollViewer IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverter}}">
@@ -135,42 +96,43 @@
 			</DockPanel>
 		</TabItem>
 
+		<!-- Execution Conditions (with agent selector) -->
+		<TabItem>
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical" MaxWidth="80" Margin="5">
+					<ico:MaterialIcon Kind="Play" Width="24" Height="24" HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_execution}" FontSize="15"
+							   HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+				</StackPanel>
+			</TabItem.Header>
+
+			<DockPanel>
+				<ContentControl DockPanel.Dock="Top" Content="{Binding}" Classes="AgentSelector"/>
+
+				<Panel>
+					<ScrollViewer IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverter}}">
+						<ContentControl Content="{Binding AgentExecutionConditionsSettings}"/>
+					</ScrollViewer>
+					<TextBlock Text="{loc:Loc settings_select_agent_first}"
+							   IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverterInverted}}"
+							   HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
+				</Panel>
+			</DockPanel>
+		</TabItem>
+		
 		<!-- Generation (with agent selector) -->
 		<TabItem>
 			<TabItem.Header>
 				<StackPanel Orientation="Vertical" MaxWidth="80" Margin="5">
 					<ico:MaterialIcon Kind="Tune" Width="24" Height="24" HorizontalAlignment="Center"/>
+
 					<TextBlock Text="{loc:Loc chat_settings_llm_properties}" FontSize="15"
 							   HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
 				</StackPanel>
 			</TabItem.Header>
 
 			<DockPanel>
-				<Border DockPanel.Dock="Top"
-						BorderBrush="{DynamicResource SystemAccentColor}"
-						BorderThickness="0,0,0,1"
-						Padding="8,6">
-					<Grid ColumnDefinitions="Auto,*">
-						<TextBlock Grid.Column="0" Text="{loc:Loc settings_selected_agent}"
-								   VerticalAlignment="Center" Margin="0,0,8,0"/>
-						<ComboBox Grid.Column="1"
-								  ItemsSource="{Binding AgentSelectorOptions}"
-								  SelectedItem="{Binding SelectedAgent, Mode=TwoWay}"
-								  Width="200"
-								  HorizontalAlignment="Left">
-							<ComboBox.ItemTemplate>
-								<DataTemplate>
-									<StackPanel Orientation="Horizontal" Spacing="4">
-										<TextBlock Text="{Binding DisplayName}"/>
-										<TextBlock Text="{loc:Loc settings_agent_global}"
-												   IsVisible="{Binding IsGlobal}"
-												   Opacity="0.5" FontSize="11"/>
-									</StackPanel>
-								</DataTemplate>
-							</ComboBox.ItemTemplate>
-						</ComboBox>
-					</Grid>
-				</Border>
+				<ContentControl DockPanel.Dock="Top" Content="{Binding}" Classes="AgentSelector"/>
 
 				<Panel>
 					<ScrollViewer IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverter}}">
@@ -182,7 +144,31 @@
 				</Panel>
 			</DockPanel>
 		</TabItem>
+		
+		<!-- Prompts (with agent selector) -->
+		<TabItem>
+			<TabItem.Header>
+				<StackPanel Orientation="Vertical" MaxWidth="80" Margin="5">
+					<ico:MaterialIcon Kind="Text" Width="24" Height="24" HorizontalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc chat_settings_prompts}" FontSize="15"
+							   HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+				</StackPanel>
+			</TabItem.Header>
 
+			<DockPanel>
+				<ContentControl DockPanel.Dock="Top" Content="{Binding}" Classes="AgentSelector"/>
+
+				<Panel>
+					<ScrollViewer IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverter}}">
+						<ContentControl Content="{Binding AgentPromptSettings}"/>
+					</ScrollViewer>
+					<TextBlock Text="{loc:Loc settings_select_agent_first}"
+							   IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverterInverted}}"
+							   HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
+				</Panel>
+			</DockPanel>
+		</TabItem>
+		
 		<!-- Tools (with agent selector) -->
 		<TabItem>
 			<TabItem.Header>
@@ -194,31 +180,7 @@
 			</TabItem.Header>
 
 			<DockPanel>
-				<Border DockPanel.Dock="Top"
-						BorderBrush="{DynamicResource SystemAccentColor}"
-						BorderThickness="0,0,0,1"
-						Padding="8,6">
-					<Grid ColumnDefinitions="Auto,*">
-						<TextBlock Grid.Column="0" Text="{loc:Loc settings_selected_agent}"
-								   VerticalAlignment="Center" Margin="0,0,8,0"/>
-						<ComboBox Grid.Column="1"
-								  ItemsSource="{Binding AgentSelectorOptions}"
-								  SelectedItem="{Binding SelectedAgent, Mode=TwoWay}"
-								  Width="200"
-								  HorizontalAlignment="Left">
-							<ComboBox.ItemTemplate>
-								<DataTemplate>
-									<StackPanel Orientation="Horizontal" Spacing="4">
-										<TextBlock Text="{Binding DisplayName}"/>
-										<TextBlock Text="{loc:Loc settings_agent_global}"
-												   IsVisible="{Binding IsGlobal}"
-												   Opacity="0.5" FontSize="11"/>
-									</StackPanel>
-								</DataTemplate>
-							</ComboBox.ItemTemplate>
-						</ComboBox>
-					</Grid>
-				</Border>
+				<ContentControl DockPanel.Dock="Top" Content="{Binding}" Classes="AgentSelector"/>
 
 				<Panel>
 					<ScrollViewer IsVisible="{Binding SelectedAgentDescriptor, Converter={StaticResource NotnullToBooleanConverter}}">

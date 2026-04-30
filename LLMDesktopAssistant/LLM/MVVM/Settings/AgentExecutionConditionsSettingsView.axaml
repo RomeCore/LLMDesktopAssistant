@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.AgentExecutionConditionsSettingsView"
+			 x:DataType="local:AgentExecutionConditionsSettingsViewModel">
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel Orientation="Vertical"
+					Margin="10"
+					Spacing="10">
+
+			<!-- Can Execute Again -->
+			<TextBlock Text="{loc:Loc settings_can_execute_again}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
+			<TextBlock Text="{loc:Loc settings_can_execute_again_hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
+			<CheckBox IsChecked="{Binding ExecutionConditionsSettings.CanExecuteAgain, Mode=TwoWay}"
+					  Content="{loc:Loc settings_can_execute_again}"/>
+
+			<!-- Separator -->
+			<Rectangle Height="1"
+					   Fill="{DynamicResource DefaultForeground}"
+					   Opacity="0.2"
+					   Margin="0,10"/>
+
+			<!-- Execution Checker Type -->
+			<TextBlock Text="{loc:Loc settings_execution_checker}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
+			<TextBlock Text="{loc:Loc settings_execution_checker_hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
+			<ComboBox SelectedItem="{Binding SelectedCheckerType, Mode=TwoWay}"
+					  ItemsSource="{Binding CheckerTypes}"
+					  Width="200"
+					  HorizontalAlignment="Left">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+
+		</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

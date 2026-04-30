@@ -813,9 +813,120 @@
   <data name="settings_max_visible_rounds_hint" xml:space="preserve">
     <value>Limits how many recent conversation rounds (user message + assistant response) are visible to each agent. 0 means unlimited. Helps manage context window usage.</value>
   </data>
-
   <data name="chat_settings_visibility" xml:space="preserve">
     <value>Visibility</value>
   </data>
+  <data name="fs-replace_lines" xml:space="preserve">
+    <value>Replace lines in file</value>
+  </data>
+  <data name="user_message_visibility_hint" xml:space="preserve">
+    <value>Visibility:</value>
+  </data>
+  <data name="message_visibility_always" xml:space="preserve">
+    <value>Always</value>
+  </data>
+  <data name="message_visibility_reveal_after_send" xml:space="preserve">
+    <value>After send</value>
+  </data>
+  <data name="message_visibility_only_users" xml:space="preserve">
+    <value>Only to users</value>
+  </data>
+  <data name="chat_settings_execution" xml:space="preserve">
+    <value>Execution</value>
+  </data>
+  <data name="settings_execution_order" xml:space="preserve">
+    <value>Execution order:</value>
+  </data>
+  <data name="settings_execution_order_hint" xml:space="preserve">
+    <value>Determines the order in which agents are executed. Lower numbers execute first.</value>
+  </data>
+  <data name="settings_can_execute_again" xml:space="preserve">
+    <value>Can execute again</value>
+  </data>
+  <data name="settings_can_execute_again_hint" xml:space="preserve">
+    <value>Whether the agent can execute again after it has already executed in this cycle.</value>
+  </data>
+  <data name="settings_execution_checker" xml:space="preserve">
+    <value>Execution checker:</value>
+  </data>
+  <data name="settings_execution_checker_hint" xml:space="preserve">
+    <value>The condition that determines when the agent should execute.</value>
+  </data>
+  <data name="execution_checker_always" xml:space="preserve">
+    <value>Always</value>
+  </data>
+  <data name="settings_read_permissions" xml:space="preserve">
+    <value>Read permissions</value>
+  </data>
+  <data name="settings_read_permissions_hint" xml:space="preserve">
+    <value>Controls what types of messages and content this agent can read in the chat.</value>
+  </data>
+  <data name="perm_user_messages" xml:space="preserve">
+    <value>User messages</value>
+  </data>
+  <data name="perm_user_messages_hint" xml:space="preserve">
+    <value>Agent can read messages sent by the user.</value>
+  </data>
+  <data name="perm_user_attachments" xml:space="preserve">
+    <value>User attachments</value>
+  </data>
+  <data name="perm_user_attachments_hint" xml:space="preserve">
+    <value>Agent can read files attached by the user.</value>
+  </data>
+  <data name="perm_own_messages" xml:space="preserve">
+    <value>Own messages</value>
+  </data>
+  <data name="perm_own_messages_hint" xml:space="preserve">
+    <value>Agent can read its own previous messages.</value>
+  </data>
+  <data name="perm_other_agent_messages" xml:space="preserve">
+    <value>Other agent messages</value>
+  </data>
+  <data name="perm_other_agent_messages_hint" xml:space="preserve">
+    <value>Agent can read messages from other agents.</value>
+  </data>
+  <data name="perm_other_agent_reasoning" xml:space="preserve">
+    <value>Other agent reasoning</value>
+  </data>
+  <data name="perm_other_agent_reasoning_hint" xml:space="preserve">
+    <value>Agent can read the reasoning/thoughts of other agents.</value>
+  </data>
+  <data name="perm_other_agent_tool_calls" xml:space="preserve">
+    <value>Other agent tool calls</value>
+  </data>
+  <data name="perm_other_agent_tool_calls_hint" xml:space="preserve">
+    <value>Agent can read tool calls and results from other agents.</value>
+  </data>
+  <data name="settings_agent_read_filter" xml:space="preserve">
+    <value>Agent filter</value>
+  </data>
+  <data name="settings_agent_read_filter_hint" xml:space="preserve">
+    <value>Restricts which agents this agent can see based on whitelist or blacklist.</value>
+  </data>
+  <data name="settings_filter_mode" xml:space="preserve">
+    <value>Filter mode:</value>
+  </data>
+  <data name="settings_filter_whitelist" xml:space="preserve">
+    <value>Whitelist</value>
+  </data>
+  <data name="settings_filter_blacklist" xml:space="preserve">
+    <value>Blacklist</value>
+  </data>
+  <data name="settings-llm_custom_model" xml:space="preserve">
+    <value>Custom model</value>
+  </data>
+  <data name="settings-llm_enable_custom_model" xml:space="preserve">
+    <value>Enable custom model</value>
+  </data>
 
+  <data name="settings_select_all" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="settings_deselect_all" xml:space="preserve">
+    <value>Deselect all</value>
+  </data>
+
+  <data name="message_visibility_only_agents" xml:space="preserve">
+    <value>Only to agents</value>
+  </data>
 </root>

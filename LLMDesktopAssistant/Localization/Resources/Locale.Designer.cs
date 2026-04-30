@@ -466,6 +466,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Visibility.
+        /// </summary>
+        public static string chat_settings_visibility {
+            get {
+                return ResourceManager.GetString("chat_settings_visibility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Stop generation.
         /// </summary>
         public static string chat_stop_button_hint {
@@ -889,6 +898,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Replace lines in file.
+        /// </summary>
+        public static string fs_replace_lines {
+            get {
+                return ResourceManager.GetString("fs-replace_lines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Write binary file.
         /// </summary>
         public static string fs_write_binary_file {
@@ -1020,6 +1038,42 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string mcp_manager_hint {
             get {
                 return ResourceManager.GetString("mcp_manager_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Always.
+        /// </summary>
+        public static string message_visibility_always {
+            get {
+                return ResourceManager.GetString("message_visibility_always", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Only to agents.
+        /// </summary>
+        public static string message_visibility_only_agents {
+            get {
+                return ResourceManager.GetString("message_visibility_only_agents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Only to users.
+        /// </summary>
+        public static string message_visibility_only_users {
+            get {
+                return ResourceManager.GetString("message_visibility_only_users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на After send.
+        /// </summary>
+        public static string message_visibility_reveal_after_send {
+            get {
+                return ResourceManager.GetString("message_visibility_reveal_after_send", resourceCulture);
             }
         }
         
@@ -1699,6 +1753,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Add new agent.
+        /// </summary>
+        public static string settings_add_agent {
+            get {
+                return ResourceManager.GetString("settings_add_agent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на (global).
+        /// </summary>
+        public static string settings_agent_global {
+            get {
+                return ResourceManager.GetString("settings_agent_global", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Agentic model.
         /// </summary>
         public static string settings_agentic_model_hint {
@@ -1816,11 +1888,74 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Max visible rounds:.
+        /// </summary>
+        public static string settings_max_visible_rounds {
+            get {
+                return ResourceManager.GetString("settings_max_visible_rounds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Limits how many recent conversation rounds (user message + assistant response) are visible to each agent. 0 means unlimited. Helps manage context window usage..
+        /// </summary>
+        public static string settings_max_visible_rounds_hint {
+            get {
+                return ResourceManager.GetString("settings_max_visible_rounds_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move agent down in queue.
+        /// </summary>
+        public static string settings_move_agent_down {
+            get {
+                return ResourceManager.GetString("settings_move_agent_down", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move agent up in queue.
+        /// </summary>
+        public static string settings_move_agent_up {
+            get {
+                return ResourceManager.GetString("settings_move_agent_up", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Profile:.
         /// </summary>
         public static string settings_profile {
             get {
                 return ResourceManager.GetString("settings_profile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Remove agent.
+        /// </summary>
+        public static string settings_remove_agent {
+            get {
+                return ResourceManager.GetString("settings_remove_agent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select an agent first.
+        /// </summary>
+        public static string settings_select_agent_first {
+            get {
+                return ResourceManager.GetString("settings_select_agent_first", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Selected agent:.
+        /// </summary>
+        public static string settings_selected_agent {
+            get {
+                return ResourceManager.GetString("settings_selected_agent", resourceCulture);
             }
         }
         
@@ -1848,6 +1983,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_summarizer_model_hint {
             get {
                 return ResourceManager.GetString("settings-summarizer_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Toggle agent active/inactive.
+        /// </summary>
+        public static string settings_toggle_agent_active {
+            get {
+                return ResourceManager.GetString("settings_toggle_agent_active", resourceCulture);
             }
         }
         
@@ -1947,6 +2091,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string tools_hint {
             get {
                 return ResourceManager.GetString("tools_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Visibility:.
+        /// </summary>
+        public static string user_message_visibility_hint {
+            get {
+                return ResourceManager.GetString("user_message_visibility_hint", resourceCulture);
             }
         }
         

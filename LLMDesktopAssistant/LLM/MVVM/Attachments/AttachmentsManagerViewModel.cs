@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Utils;

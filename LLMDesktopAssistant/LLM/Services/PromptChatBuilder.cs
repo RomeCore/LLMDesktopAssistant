@@ -88,6 +88,22 @@ namespace LLMDesktopAssistant.LLM.Services
 			return result;
 		}
 
+		private string BuildUserMessageForAgent(Domain.UserMessage message, Guid agentId, AgentReadSettings readSettings)
+		{
+			var language = GetCurrentLanguageMetadata();
+			var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
+			var context = new
+			{
+				time_sent = message.CreatedAt.ToString(),
+				attachments = readSettings.ReadPermissions.HasFlag(AgentReadPermissions.UserAttachments)
+					? message.Attachments
+					: [],
+				content = message.Content
+			};
+			var result = template!.Render(context);
+			return result;
+		}
+
 		/// <summary>
 		/// Checks whether the agent with given <paramref name="agentId"/> can see a user message,
 		/// based on visibility target and agent read permissions.
@@ -145,37 +161,32 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// so the current agent sees what the other agent said as a quoted user message.
 		/// Reasoning and tool calls are optionally stripped based on permissions.
 		/// </summary>
-		private string BuildForeignAgentMessageText(Domain.AssistantMessage assistantMessage, Guid currentAgentId, AgentReadSettings readSettings)
+		private string BuildForeignAgentMessageText(Domain.AssistantMessage message, Guid currentAgentId, AgentReadSettings readSettings)
 		{
-			var agentDescriptor = agentSettings.GetAgentDescriptor(assistantMessage.SenderAgent);
+			var agentDescriptor = agentSettings.GetAgentDescriptor(message.SenderAgent);
 			var agentName = agentDescriptor.Prompts.Nickname ?? agentDescriptor.Id.ToString()[..8];
 			var permissions = readSettings.ReadPermissions;
 
-			var sb = new StringBuilder();
-
-			// Include reasoning if allowed
-			if (permissions.HasFlag(AgentReadPermissions.OtherAgentReasoning) && !string.IsNullOrWhiteSpace(assistantMessage.ReasoningContent))
+			var language = GetCurrentLanguageMetadata();
+			var template = templates.TryRetrieveBestWithFallback("foreign_assistant_prompt", language) as ITextTemplate;
+			var context = new
 			{
-				sb.AppendLine($"[OTHER AGENT: '{agentName}' REASONING]:");
-				sb.AppendLine(assistantMessage.ReasoningContent);
-				sb.AppendLine();
-			}
-
-			sb.AppendLine($"[OTHER AGENT: '{agentName}']:");
-			sb.AppendLine(assistantMessage.Content ?? "(no content)");
-
-			// Include tool calls if allowed
-			if (permissions.HasFlag(AgentReadPermissions.OtherAgentToolCalls) && assistantMessage.ToolCalls.Count > 0)
-			{
-				sb.AppendLine();
-				sb.AppendLine($"[OTHER AGENT: '{agentName}' TOOL CALLS]:");
-				foreach (var toolCall in assistantMessage.ToolCalls)
+				time_sent = message.CreatedAt.ToString(),
+				agent_name = agentName,
+				reasoning_content = message.ReasoningContent,
+				content = message.Content ?? "(no content)",
+				tool_calls = message.ToolCalls.Select(tc => new
 				{
-					sb.AppendLine($"  - {toolCall.ToolName}: {toolCall.ResultContent ?? "(no result)"}");
-				}
-			}
+					name = tc.ToolName,
+					arguments = tc.Arguments.ToJsonString(),
+					result_content = tc.ResultContent ?? "(no content)",
+				}).ToArray(),
 
-			return sb.ToString();
+				can_read_reasoning = permissions.HasFlag(AgentReadPermissions.OtherAgentReasoning),
+				can_read_tool_calls = permissions.HasFlag(AgentReadPermissions.OtherAgentToolCalls)
+			};
+			var result = template!.Render(context);
+			return result;
 		}
 
 		public IEnumerable<IMessage> ConvertMessage(ChatMessage message, Guid agentId)
@@ -229,7 +240,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 
 			var result = new RCLargeLanguageModels.Messages.AssistantMessage(assistantMessage.Content ?? "",
-				assistantMessage.ReasoningContent, toolCalls: toolCalls);
+				assistantMessage.ReasoningContent ?? "", toolCalls: toolCalls);
 			messages.Insert(0, result);
 
 			return messages;
@@ -241,8 +252,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			return [new RCLargeLanguageModels.Messages.UserMessage(text)];
 		}
 
-		/// <summary>
-		/// Groups messages into rounds.
 		/// <summary>
 		/// Converts a message to LLM messages without applying agent-specific visibility filters.
 		/// Used for summarization and other background processes.
@@ -263,7 +272,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-
+		/// <summary>
+		/// Groups messages into rounds.
 		/// A round = [one or more consecutive user messages] + [one or more consecutive assistant messages].
 		/// </summary>
 		private static List<List<BranchedMessage>> GroupMessagesIntoRounds(IReadOnlyList<BranchedMessage> messages)

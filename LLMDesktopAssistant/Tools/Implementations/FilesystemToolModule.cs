@@ -107,6 +107,18 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "fs-replace",
 					Description = """
+						Replaces all occurrences of a string or regex pattern in a text file.
+						Returns detailed information about applied changes.
+						""",
+					Category = "filesystem",
+					AskForConfirmation = true
+				});
+
+			AddTool(ReplaceInFileLines,
+				new ToolInitializationInfo
+				{
+					Name = "fs-replace_lines",
+					Description = """
 						Replaces all occurrences of a string or regex pattern in a text file line-by-line.
 						Returns detailed information about applied changes including line numbers.
 						""",
@@ -848,6 +860,131 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		}
 
 		public ReactiveToolResult ReplaceInFile(
+			string path,
+			[Description("The string to search for. If null or empty, the 'oldRegex' must be provided.")]
+			string? oldString = null,
+			[Description("The regex to search for. If null or empty, the 'oldString' must be provided.")]
+			string? oldRegex = null,
+			[Description("The replacement string. If null, the oldString or oldRegex will be removed (replaced with empty string).")]
+			string? newString = null)
+		{
+			try
+			{
+				var fullPath = ResolvePath(path);
+				var fileName = Path.GetFileName(fullPath);
+
+				if (!File.Exists(fullPath))
+					return ReactiveToolResult.CreateError("File not found.");
+
+				if (FileUtils.IsBinaryFile(fullPath))
+					return ReactiveToolResult.CreateError("Cannot replace text in binary files.");
+
+				if (string.IsNullOrEmpty(oldString) && string.IsNullOrEmpty(oldRegex))
+					return ReactiveToolResult.CreateError("Both 'oldString' and 'oldRegex' parameters cannot be null or empty.");
+
+				var content = File.ReadAllText(fullPath);
+
+				var regex = oldString != null ?
+					new Regex(Regex.Escape(oldString), RegexOptions.Compiled) :
+					new Regex(oldRegex!, RegexOptions.Compiled);
+				newString ??= string.Empty;
+
+				var matches = regex.Matches(content);
+				var totalReplacements = matches.Count;
+
+				if (totalReplacements == 0)
+				{
+					var noChangeResult = new ReactiveToolResult
+					{
+						StatusIcon = Material.Icons.MaterialIconKind.Information,
+						StatusTitle = $"**{fileName}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
+						ResultContent = $"No occurrences of '{oldString ?? oldRegex}' found in file '{path}'."
+					};
+					return noChangeResult.Complete(true);
+				}
+
+				var newContent = regex.Replace(content, newString);
+				File.WriteAllText(fullPath, newContent);
+
+				var report = new StringBuilder();
+				var oldPattern = oldString ?? oldRegex!;
+				report.AppendLine($"Successfully replaced '{oldPattern}' with '{newString ?? "(empty)"}' in file '{path}'");
+				report.AppendLine($"Summary:");
+				report.AppendLine($"  Total replacements: {totalReplacements}");
+				report.AppendLine($"  File size before: {content.Length} bytes");
+				report.AppendLine($"  File size after: {newContent.Length} bytes");
+
+				if (totalReplacements <= 10) // Show all replacements if 10 or less
+				{
+					report.AppendLine();
+					report.AppendLine($"Replacement details:");
+					for (int i = 0; i < matches.Count; i++)
+					{
+						var match = matches[i];
+						var contextStart = Math.Max(0, match.Index - 20);
+						var contextEnd = Math.Min(content.Length, match.Index + match.Length + 20);
+						var context = content.Substring(contextStart, contextEnd - contextStart);
+
+						report.AppendLine($"  Match {i + 1}:");
+						report.AppendLine($"    Position: {match.Index}");
+						report.AppendLine($"    Context: ...{Truncate(context, 80)}...");
+						report.AppendLine();
+					}
+				}
+				else // Show only first 5 and last 5 replacements
+				{
+					report.AppendLine();
+					report.AppendLine($"First 5 replacements:");
+					for (int i = 0; i < Math.Min(5, totalReplacements); i++)
+					{
+						var match = matches[i];
+						var contextStart = Math.Max(0, match.Index - 20);
+						var contextEnd = Math.Min(content.Length, match.Index + match.Length + 20);
+						var context = content.Substring(contextStart, contextEnd - contextStart);
+
+						report.AppendLine($"  Match {i + 1} (position {match.Index}): ...{Truncate(context, 60)}...");
+					}
+
+					if (totalReplacements > 10)
+					{
+						report.AppendLine($"   ... and {totalReplacements - 10} more replacements");
+					}
+
+					if (totalReplacements > 5)
+					{
+						report.AppendLine($"Last 5 replacements:");
+						for (int i = Math.Max(5, totalReplacements - 5); i < totalReplacements; i++)
+						{
+							var match = matches[i];
+							var contextStart = Math.Max(0, match.Index - 20);
+							var contextEnd = Math.Min(content.Length, match.Index + match.Length + 20);
+							var context = content.Substring(contextStart, contextEnd - contextStart);
+
+							report.AppendLine($"  Match {i + 1} (position {match.Index}): ...{Truncate(context, 60)}...");
+						}
+					}
+				}
+
+				var changeDescription = string.Format(
+					LocalizationManager.LocalizeStatic("fs-changes_text_replaced"),
+					totalReplacements);
+
+				var result = new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
+					StatusTitle = $"**{fileName}** *({changeDescription})*",
+					ResultContent = report.ToString()
+				};
+
+				return result.Complete(true);
+			}
+			catch (Exception ex)
+			{
+				return ReactiveToolResult.CreateError($"Error replacing text in file: {ex.Message}");
+			}
+		}
+
+		public ReactiveToolResult ReplaceInFileLines(
 			string path,
 			[Description("The string to search for. If null or empty, the 'oldRegex' must be provided.")]
 			string? oldString = null,

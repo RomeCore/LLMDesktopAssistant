@@ -72,6 +72,13 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _agentToolSettings, value);
 		}
 
+		private AgentExecutionConditionsSettingsViewModel? _agentExecutionConditionsSettings;
+		public AgentExecutionConditionsSettingsViewModel? AgentExecutionConditionsSettings
+		{
+			get => _agentExecutionConditionsSettings;
+			set => SetProperty(ref _agentExecutionConditionsSettings, value);
+		}
+
 		public ChatSettingsViewModel(ChatSettings settings, Chat chat)
 		{
 			Settings = settings;
@@ -113,7 +120,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 				AgentSelectorOptions.Add(new AgentOptionViewModel
 				{
 					Agent = descriptor,
-					DisplayName = descriptor.Prompts.Nickname ?? descriptor.Id.ToString()[..8],
 					IsGlobal = isGlobal
 				});
 			}
@@ -128,6 +134,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				AgentToolSettings = null;
 				AgentReadSettings = null;
 				AgentGenerationSettings = null;
+				AgentExecutionConditionsSettings = null;
 				return;
 			}
 
@@ -138,8 +145,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 				SelectedAgentDescriptor.Tools,
 				Chat.Services.GetRequiredService<IToolsetBuildingService>()
 			);
-			AgentReadSettings = new AgentReadSettingsViewModel(SelectedAgentDescriptor.Read);
+			AgentReadSettings = new AgentReadSettingsViewModel(SelectedAgentDescriptor.Read, Settings.Agents.ChatAgents);
 			AgentGenerationSettings = new AgentGenerationSettingsViewModel(SelectedAgentDescriptor.Generation);
+			AgentExecutionConditionsSettings = new AgentExecutionConditionsSettingsViewModel(SelectedAgentDescriptor.ExecutionConditions);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM;
 
 namespace LLMDesktopAssistant.LLM
 {

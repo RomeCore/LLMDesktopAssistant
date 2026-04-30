@@ -58,8 +58,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					Content = userInput.Content,
 					Attachments = userInput.Attachments,
 					SenderLogin = "user",
-					Visibility = MessageVisibility.Always,
-					VisibleTo = []
+					Visibility = userInput.Visibility,
+					VisibleTo = userInput.VisibleTo
 				});
 				await executor.GenerateResponseAsync(cancellationToken);
 			}
@@ -82,8 +82,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					Content = userInput.Content,
 					Attachments = userInput.Attachments,
 					SenderLogin = "user",
-					Visibility = MessageVisibility.Always,
-					VisibleTo = []
+					Visibility = userInput.Visibility,
+					VisibleTo = userInput.VisibleTo
 				});
 				await executor.GenerateResponseAsync(cancellationToken);
 			}

@@ -5,6 +5,7 @@
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.AgentReadSettingsView"
 			 x:DataType="local:AgentReadSettingsViewModel">
 
@@ -13,7 +14,131 @@
 					Margin="10"
 					Spacing="10">
 
-			<!-- Max Visible Rounds -->
+			<!-- ===================== Read Permissions ===================== -->
+			<TextBlock Text="{loc:Loc settings_read_permissions}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
+			<TextBlock Text="{loc:Loc settings_read_permissions_hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
+			<ItemsControl ItemsSource="{Binding ReadPermissionItems}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="local:ReadPermissionItem">
+						<StackPanel Orientation="Vertical" Margin="0,2">
+							<CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+									  Content="{Binding DisplayName}"/>
+							<TextBlock Text="{Binding Description}"
+									   Opacity="0.5"
+									   FontSize="11"
+									   Margin="24,0,0,4"
+									   TextWrapping="Wrap"/>
+						</StackPanel>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+			<!-- Separator -->
+			<Rectangle Height="1"
+					   Fill="{DynamicResource DefaultForeground}"
+					   Opacity="0.2"
+					   Margin="0,10"/>
+
+			<!-- ===================== Agent Filter ===================== -->
+			<TextBlock Text="{loc:Loc settings_agent_read_filter}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
+			<TextBlock Text="{loc:Loc settings_agent_read_filter_hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
+			<!-- Filter mode selector -->
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBlock Grid.Column="0"
+						   Text="{loc:Loc settings_filter_mode}"
+						   VerticalAlignment="Center"
+						   Margin="0,0,8,0"/>
+
+				<ComboBox Grid.Column="1"
+						  SelectedIndex="{Binding FilterModeIndex, Mode=TwoWay}"
+						  Width="160"
+						  HorizontalAlignment="Left">
+					<ComboBox.Items>
+						<ComboBoxItem Content="{loc:Loc settings_filter_whitelist}"/>
+						<ComboBoxItem Content="{loc:Loc settings_filter_blacklist}"/>
+					</ComboBox.Items>
+				</ComboBox>
+			</Grid>
+
+			<!-- Select / Deselect all buttons -->
+			<StackPanel Orientation="Horizontal" Spacing="6">
+				<Button Command="{Binding SelectAllAgentsCommand}"
+						Classes="IconButton"
+						ToolTip.Tip="{loc:Loc settings_select_all}">
+					<ico:MaterialIcon Kind="CheckAll"/>
+				</Button>
+				<Button Command="{Binding DeselectAllAgentsCommand}"
+						Classes="IconButton"
+						ToolTip.Tip="{loc:Loc settings_deselect_all}">
+					<ico:MaterialIcon Kind="CloseBoxMultiple"/>
+				</Button>
+			</StackPanel>
+
+			<!-- Agent filter list -->
+			<Border BorderBrush="{DynamicResource DefaultForeground}"
+					BorderThickness="1"
+					CornerRadius="4"
+					Padding="6"
+					MaxHeight="250">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<ItemsControl ItemsSource="{Binding AgentFilterItems}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="local:AgentFilterItem">
+								<StackPanel Orientation="Horizontal" Spacing="6" Margin="0,2">
+									<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+											  VerticalAlignment="Center"/>
+									<TextBlock Text="{Binding DisplayName}"
+											   VerticalAlignment="Center"/>
+									<Border IsVisible="{Binding IsGlobal}"
+											Background="{DynamicResource SystemAccentColor}"
+											Opacity="0.4"
+											CornerRadius="4"
+											Padding="4,1"
+											VerticalAlignment="Center">
+										<TextBlock Text="{loc:Loc settings_agent_global}" FontSize="10"/>
+									</Border>
+								</StackPanel>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</ScrollViewer>
+			</Border>
+
+			<!-- Separator -->
+			<Rectangle Height="1"
+					   Fill="{DynamicResource DefaultForeground}"
+					   Opacity="0.2"
+					   Margin="0,10"/>
+
+			<!-- ===================== Max Visible Rounds ===================== -->
+			<TextBlock Text="{loc:Loc settings_max_visible_rounds}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
+			<TextBlock Text="{loc:Loc settings_max_visible_rounds_hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto"/>
@@ -32,11 +157,6 @@
 							  Width="120"
 							  HorizontalAlignment="Left"/>
 			</Grid>
-
-			<TextBlock Text="{loc:Loc settings_max_visible_rounds_hint}"
-					   Opacity="0.6"
-					   FontSize="12"
-					   TextWrapping="Wrap"/>
 
 		</StackPanel>
 	</ScrollViewer>

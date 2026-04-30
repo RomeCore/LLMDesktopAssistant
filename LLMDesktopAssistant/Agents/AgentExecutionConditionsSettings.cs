@@ -5,16 +5,6 @@
 	/// </summary>
 	public class AgentExecutionConditionsSettings : NotifyPropertyChanged
 	{
-		private int _order = 0;
-		/// <summary>
-		/// The default order of agent in the chat. Lower numbers are executed first.
-		/// </summary>
-		public int Order
-		{
-			get => _order;
-			set => SetProperty(ref _order, value);
-		}
-
 		private bool _canExecuteAgain = false;
 		/// <summary>
 		/// Whether the agent can execute again after it has already executed.

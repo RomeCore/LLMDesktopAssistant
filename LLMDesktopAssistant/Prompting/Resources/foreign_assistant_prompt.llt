@@ -1,0 +1,40 @@
+﻿@template foreign_assistant_prompt
+{
+	@metadata
+	{
+		lang: 'en-US'
+	}
+
+	@if can_read_reasoning && reasoning_content
+	{
+		[OTHER AGENT: '@agent_name' REASONING]:
+		@reasoning_content
+	}
+	[OTHER AGENT: '@agent_name']:
+	@content
+	@if tool_calls
+	{
+		@if can_read_tool_calls || true
+		{
+			
+			[OTHER AGENT: '@agent_name' TOOL CALLS]:
+			@foreach tool_call in tool_calls
+			{
+				- @tool_call.name:
+				[ARGUMENTS: @tool_call.arguments]
+				@tool_call.result_content
+			}
+		}
+		else
+		{
+			
+			[OTHER AGENT: '@agent_name' TOOL CALLS]:
+			@foreach tool_call in tool_calls
+			{
+				- @tool_call.name:
+				[ARGUMENTS: @tool_call.arguments]
+				[RESULT HIDDEN]
+			}
+		}
+	}
+}

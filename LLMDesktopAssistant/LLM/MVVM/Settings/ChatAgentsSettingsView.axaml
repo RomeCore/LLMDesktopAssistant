@@ -61,7 +61,7 @@
 
 							<!-- Name -->
 							<TextBlock Grid.Column="2"
-									   Text="{Binding DisplayName}"
+									   Text="{Binding Agent.Prompts.Nickname}"
 									   VerticalAlignment="Center"
 									   Margin="4,0"/>
 

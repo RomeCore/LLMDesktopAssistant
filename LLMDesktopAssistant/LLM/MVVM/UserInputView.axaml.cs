@@ -3,11 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using LLMDesktopAssistant.LLM;
 using LLMDesktopAssistant.LLM.Attachments;
+using LLMDesktopAssistant.LLM.MVVM;
 using ReverseMarkdown.Converters;
 
-namespace LLMDesktopAssistant.LLM;
+namespace LLMDesktopAssistant.LLM.MVVM;
 
 public partial class UserInputView : UserControl
 {

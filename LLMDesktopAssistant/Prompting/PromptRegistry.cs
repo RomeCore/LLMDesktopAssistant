@@ -12,6 +12,7 @@ using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Locale;
 using LLTSharp.Metadata;
+using RCParsing;
 using Serilog;
 
 namespace LLMDesktopAssistant.Prompting
@@ -27,8 +28,13 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			var assembly = typeof(PromptRegistry).Assembly;
 
+			var errors = new List<ParsingException>();
+
 			foreach (var observedAssembly in ReflectionUtility.ObservedAssemblies)
-				SharedLibrary.ImportFromAssembly(observedAssembly);
+				errors.AddRange(SharedLibrary.ImportFromAssembly(observedAssembly));
+
+			if (errors.Count > 0)
+				throw new AggregateException("Failed to import templates from assemblies.", errors);
 
 			SharedLibrary.SetLanguageFallbackScheme(new HierarchicalLanguageFallbackScheme());
 

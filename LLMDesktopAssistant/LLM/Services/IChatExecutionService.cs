@@ -13,5 +13,13 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <param name="cancellationToken">Token for cancellation of the operation.</param>
 		/// <returns>A task representing the asynchronous operation.</returns>
 		Task GenerateResponseAsync(CancellationToken cancellationToken = default);
+
+		/// <summary>
+		/// Generates a response asynchronously using specific agent and puts it into a <see cref="IChatStorageService"/>.
+		/// </summary>
+		/// <param name="agentId">The identifier of the agent to use.</param>
+		/// <param name="cancellationToken">Token for cancellation of the operation.</param>
+		/// <returns>A task representing the asynchronous operation.</returns>
+		Task GenerateResponseWithAgentAsync(Guid agentId, CancellationToken cancellationToken = default);
 	}
 }

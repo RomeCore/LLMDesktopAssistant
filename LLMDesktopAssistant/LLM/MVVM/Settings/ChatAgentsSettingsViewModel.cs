@@ -102,15 +102,29 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 		{
 			AgentOptions.Clear();
 			var allAgents = GetAllAgentsWithFlags();
-			foreach (var (descriptor, isGlobal) in allAgents)
+
+			// Сортируем согласно порядку в ActiveAgents:
+			// активные — по индексу очереди, неактивные — в конец списка
+			var sorted = allAgents
+				.Select(a => new
+				{
+					Descriptor = a.Descriptor,
+					IsGlobal = a.IsGlobal,
+					OrderIndex = GetAgentOrderIndex(a.Descriptor)
+				})
+				.OrderByDescending(a => a.OrderIndex >= 0)   // активные выше
+				.ThenBy(a => a.OrderIndex >= 0 ? a.OrderIndex : int.MaxValue) // по очереди
+				.ThenBy(a => a.IsGlobal ? 0 : 1)             // среди неактивных: глобальные выше
+				.ToList();
+
+			foreach (var item in sorted)
 			{
 				AgentOptions.Add(new AgentOptionViewModel
 				{
-					Agent = descriptor,
-					DisplayName = descriptor.Prompts.Nickname ?? descriptor.Id.ToString()[..8],
-					IsGlobal = isGlobal,
-					IsActive = IsAgentActive(descriptor),
-					OrderIndex = GetAgentOrderIndex(descriptor)
+					Agent = item.Descriptor,
+					IsGlobal = item.IsGlobal,
+					IsActive = item.OrderIndex >= 0,
+					OrderIndex = item.OrderIndex
 				});
 			}
 		}
@@ -126,11 +140,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 
 		private void RemoveSelectedAgent()
 		{
-			var selectedOption = AgentOptions.FirstOrDefault(o => o.IsSelected);
-			if (selectedOption == null || selectedOption.IsGlobal)
+			if (SelectedAgent == null || SelectedAgent.IsGlobal)
 				return;
 
-			var agent = selectedOption.Agent;
+			var agent = SelectedAgent.Agent;
 			AgentSettings.ChatAgents.Remove(agent);
 
 			for (int i = AgentSettings.ActiveAgents.Count - 1; i >= 0; i--)
@@ -186,7 +199,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			var idx = GetAgentOrderIndex(option.Agent);
 			if (idx < 0 || idx >= AgentSettings.ActiveAgents.Count - 1) return;
 
-			AgentSettings.ActiveAgents.Move(idx, idx + 1);
+			AgentSettings.ActiveAgents.Move(idx, idx + 2);
 			RefreshAgentList();
 		}
 	}
@@ -194,7 +207,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 	public class AgentOptionViewModel : NotifyPropertyChanged
 	{
 		public required AgentDescriptor Agent { get; init; }
-		public required string DisplayName { get; init; }
 		public required bool IsGlobal { get; init; }
 
 		private bool _isActive;
@@ -209,13 +221,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 		{
 			get => _orderIndex;
 			set => SetProperty(ref _orderIndex, value);
-		}
-
-		private bool _isSelected;
-		public bool IsSelected
-		{
-			get => _isSelected;
-			set => SetProperty(ref _isSelected, value);
 		}
 	}
 }

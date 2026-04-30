@@ -17,11 +17,13 @@
 	<ItemGroup>
 		<None Remove="Assets\icon.ico" />
 		<None Remove="Prompting\Resources\components.llt" />
+		<None Remove="Prompting\Resources\foreign_assistant_prompt.llt" />
 		<None Remove="Prompting\Resources\personas.llt" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<AvaloniaResource Include="Assets\icon.ico" />
+		<EmbeddedResource Include="Prompting\Resources\foreign_assistant_prompt.llt" />
 		<EmbeddedResource Include="Prompting\Resources\image_describer.llt" />
 		<EmbeddedResource Include="Prompting\Resources\components.llt" />
 		<EmbeddedResource Include="Prompting\Resources\personas.llt" />

@@ -7,7 +7,12 @@ namespace LLMDesktopAssistant.Agents
 	/// </summary>
 	public class AgentReadSettings : NotifyPropertyChanged
 	{
-		private AgentReadPermissions _readPermissions = AgentReadPermissions.UserMessages | AgentReadPermissions.OwnMessages | AgentReadPermissions.OtherAgentMessages;
+		private AgentReadPermissions _readPermissions =
+			AgentReadPermissions.UserMessages |
+			AgentReadPermissions.UserAttachments |
+			AgentReadPermissions.OwnMessages |
+			AgentReadPermissions.OtherAgentMessages |
+			AgentReadPermissions.OtherAgentToolCalls;
 		/// <summary>
 		/// The permissions that determines what the agent can read.
 		/// </summary>

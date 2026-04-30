@@ -2,12 +2,12 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM"
+			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM.MVVM"
 			 xmlns:loc="clr-namespace:LLMDesktopAssistant.Localization"
 			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Controls"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 mc:Ignorable="d" d:DesignWidth="800"
-			 x:Class="LLMDesktopAssistant.LLM.UserInputView"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.UserInputView"
 			 x:DataType="local:UserInputViewModel">
 	
 	<Grid RowDefinitions="Auto,*,Auto"
@@ -83,6 +83,24 @@
 						Orientation="Horizontal"
 						HorizontalAlignment="Right"
 						Spacing="5">
+				
+				<!-- Visibility selector -->
+				<TextBlock Text="{loc:Loc user_message_visibility_hint}"
+									 VerticalAlignment="Center"/>
+
+				<ComboBox SelectedValue="{Binding SelectedVisibility}"
+						  MinWidth="100"
+						  Margin="4,0"
+						  ToolTip.Tip="{loc:Loc chat-visibility_hint}"
+							ItemsSource="{Binding Visibilities}"
+							SelectedItem="{Binding SelectedVisibility}">
+
+					<ComboBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{loc:Loc {Binding Title}}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
 
 				<!-- Cancel edit -->
 				<Button Classes="IconButton"

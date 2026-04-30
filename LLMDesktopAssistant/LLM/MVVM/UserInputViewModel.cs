@@ -11,8 +11,14 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using Serilog;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
+	public class UserMessageVisibilityItemModel
+	{
+		public required MessageVisibility Visibility { get; init; }
+		public required string Title { get; init; }
+	}
+
 	[ViewModelFor(typeof(UserInputView))]
 	public class UserInputViewModel : ViewModelBase
 	{
@@ -215,6 +221,24 @@ namespace LLMDesktopAssistant.LLM
 			private set => SetProperty(ref _isGenerating, value);
 		}
 
+		public ImmutableList<UserMessageVisibilityItemModel> Visibilities { get; } = [
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.Always, Title = "message_visibility_always" },
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.RevealAfterSend, Title = "message_visibility_reveal_after_send" },
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.OnlyUsers, Title = "message_visibility_only_users" },
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.OnlyAgents, Title = "message_visibility_only_agents" }
+		];
+
+		private UserMessageVisibilityItemModel _selectedVisibility;
+		/// <summary>
+		/// Gets or sets the visibility of the next user message.
+		/// </summary>
+		public UserMessageVisibilityItemModel SelectedVisibility
+		{
+			get => _selectedVisibility;
+			set => SetProperty(ref _selectedVisibility, value);
+		}
+
+
 
 
 		public UserInputViewModel(ChatViewModel chatVM)
@@ -258,6 +282,8 @@ namespace LLMDesktopAssistant.LLM
 					IsGenerating = Chat.GenerationCts != null;
 				});
 			});
+
+			_selectedVisibility = Visibilities[0];
 		}
 
 
@@ -270,6 +296,7 @@ namespace LLMDesktopAssistant.LLM
 			{
 				Content = _text,
 				Attachments = _attachments.Select(a => a.Attachment).ToImmutableList(),
+				Visibility = _selectedVisibility.Visibility,
 			};
 		}
 

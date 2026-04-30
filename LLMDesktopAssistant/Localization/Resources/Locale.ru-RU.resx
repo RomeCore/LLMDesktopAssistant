@@ -813,9 +813,120 @@
   <data name="settings_max_visible_rounds_hint" xml:space="preserve">
     <value>Ограничивает количество последних раундов (сообщение пользователя + ответ ассистента), видимых каждому агенту. 0 — без лимита. Помогает экономить контекстное окно.</value>
   </data>
-
   <data name="chat_settings_visibility" xml:space="preserve">
     <value>Видимость</value>
   </data>
+  <data name="fs-replace_lines" xml:space="preserve">
+    <value>Заменить строки в файле</value>
+  </data>
+  <data name="user_message_visibility_hint" xml:space="preserve">
+    <value>Видимость:</value>
+  </data>
+  <data name="message_visibility_always" xml:space="preserve">
+    <value>Всегда</value>
+  </data>
+  <data name="message_visibility_reveal_after_send" xml:space="preserve">
+    <value>После отправки</value>
+  </data>
+  <data name="message_visibility_only_users" xml:space="preserve">
+    <value>Только другим пользователям</value>
+  </data>
+  <data name="chat_settings_execution" xml:space="preserve">
+    <value>Выполнение</value>
+  </data>
+  <data name="settings_execution_order" xml:space="preserve">
+    <value>Порядок выполнения:</value>
+  </data>
+  <data name="settings_execution_order_hint" xml:space="preserve">
+    <value>Определяет порядок выполнения агентов. Меньшие значения выполняются первыми.</value>
+  </data>
+  <data name="settings_can_execute_again" xml:space="preserve">
+    <value>Может выполняться повторно</value>
+  </data>
+  <data name="settings_can_execute_again_hint" xml:space="preserve">
+    <value>Разрешает агенту выполниться снова после того, как он уже отработал в текущем цикле.</value>
+  </data>
+  <data name="settings_execution_checker" xml:space="preserve">
+    <value>Проверка выполнения:</value>
+  </data>
+  <data name="settings_execution_checker_hint" xml:space="preserve">
+    <value>Условие, определяющее, когда агент должен выполниться.</value>
+  </data>
+  <data name="execution_checker_always" xml:space="preserve">
+    <value>Всегда</value>
+  </data>
+  <data name="settings_read_permissions" xml:space="preserve">
+    <value>Права на чтение</value>
+  </data>
+  <data name="settings_read_permissions_hint" xml:space="preserve">
+    <value>Определяет, какие типы сообщений и контента этот агент может читать.</value>
+  </data>
+  <data name="perm_user_messages" xml:space="preserve">
+    <value>Сообщения пользователя</value>
+  </data>
+  <data name="perm_user_messages_hint" xml:space="preserve">
+    <value>Агент может читать сообщения, отправленные пользователем.</value>
+  </data>
+  <data name="perm_user_attachments" xml:space="preserve">
+    <value>Вложения пользователя</value>
+  </data>
+  <data name="perm_user_attachments_hint" xml:space="preserve">
+    <value>Агент может читать файлы, прикреплённые пользователем.</value>
+  </data>
+  <data name="perm_own_messages" xml:space="preserve">
+    <value>Свои сообщения</value>
+  </data>
+  <data name="perm_own_messages_hint" xml:space="preserve">
+    <value>Агент может читать свои собственные предыдущие сообщения.</value>
+  </data>
+  <data name="perm_other_agent_messages" xml:space="preserve">
+    <value>Сообщения других агентов</value>
+  </data>
+  <data name="perm_other_agent_messages_hint" xml:space="preserve">
+    <value>Агент может читать сообщения от других агентов.</value>
+  </data>
+  <data name="perm_other_agent_reasoning" xml:space="preserve">
+    <value>Рассуждения других агентов</value>
+  </data>
+  <data name="perm_other_agent_reasoning_hint" xml:space="preserve">
+    <value>Агент может читать рассуждения и мысли других агентов.</value>
+  </data>
+  <data name="perm_other_agent_tool_calls" xml:space="preserve">
+    <value>Вызовы инструментов других агентов</value>
+  </data>
+  <data name="perm_other_agent_tool_calls_hint" xml:space="preserve">
+    <value>Агент может читать вызовы инструментов и результаты других агентов.</value>
+  </data>
+  <data name="settings_agent_read_filter" xml:space="preserve">
+    <value>Фильтр агентов</value>
+  </data>
+  <data name="settings_agent_read_filter_hint" xml:space="preserve">
+    <value>Ограничивает, каких агентов этот агент может видеть, на основе белого или чёрного списка.</value>
+  </data>
+  <data name="settings_filter_mode" xml:space="preserve">
+    <value>Режим фильтра:</value>
+  </data>
+  <data name="settings_filter_whitelist" xml:space="preserve">
+    <value>Белый список</value>
+  </data>
+  <data name="settings_filter_blacklist" xml:space="preserve">
+    <value>Чёрный список</value>
+  </data>
+  <data name="settings-llm_custom_model" xml:space="preserve">
+    <value>Кастомная модель</value>
+  </data>
+  <data name="settings-llm_enable_custom_model" xml:space="preserve">
+    <value>Включить кастомную модель</value>
+  </data>
 
+  <data name="settings_select_all" xml:space="preserve">
+    <value>Выбрать всех</value>
+  </data>
+  <data name="settings_deselect_all" xml:space="preserve">
+    <value>Снять выбор со всех</value>
+  </data>
+
+  <data name="message_visibility_only_agents" xml:space="preserve">
+    <value>Только агентам</value>
+  </data>
 </root>
