@@ -1,14 +1,80 @@
 using CommunityToolkit.Mvvm.Input;
+using DocumentFormat.OpenXml.EMMA;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Settings;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
+using Material.Icons;
+using Serilog;
 using System.Collections.ObjectModel;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
+	public abstract class SettingsTreeNode : ViewModelBase
+	{
+		public abstract string DisplayName { get; }
+		public abstract MaterialIconKind Icon { get; }
+		public abstract IEnumerable<SettingsTreeNode>? Children { get; }
+		public abstract object? ViewModel { get; }
+	}
+
+	public class SettingsParentNode : SettingsTreeNode
+	{
+		public override string DisplayName { get; }
+		public override MaterialIconKind Icon { get; }
+		public override IEnumerable<SettingsTreeNode> Children { get; }
+		public override object? ViewModel { get; }
+
+		public SettingsParentNode(string name, MaterialIconKind icon,
+			List<SettingsTreeNode> children, object? viewModel)
+		{
+			DisplayName = name;
+			Icon = icon;
+			Children = children;
+			ViewModel = viewModel;
+		}
+	}
+
+	public class SettingsAgentParentNode : SettingsTreeNode
+	{
+		public AgentInformation Info { get; }
+		public bool IsGlobal { get; }
+		public override string DisplayName { get; }
+		public override MaterialIconKind Icon { get; }
+		public override IEnumerable<SettingsTreeNode> Children { get; }
+		public override object? ViewModel { get; }
+
+		public SettingsAgentParentNode(AgentInformation info, bool isGlobal, List<SettingsTreeNode> children)
+		{
+			Info = info;
+			IsGlobal = isGlobal;
+			DisplayName = info.Name;
+			Log.Information("Creating agent parent node for {name}", info.Name);
+			Icon = MaterialIconKind.Robot;
+			Children = children;
+			ViewModel = new AgentInfoSettingsViewModel(info);
+		}
+	}
+
+	public class SettingsLeafNode : SettingsTreeNode
+	{
+		public override string DisplayName { get; }
+		public override MaterialIconKind Icon { get; }
+		public override IEnumerable<SettingsTreeNode>? Children => null;
+		public override object? ViewModel { get; }
+
+		public SettingsLeafNode(string name, MaterialIconKind icon, object? viewModel)
+		{
+			DisplayName = name;
+			Icon = icon;
+			ViewModel = viewModel;
+		}
+	}
+
 	[ViewModelFor(typeof(ChatSettingsView))]
 	public class ChatSettingsViewModel : ViewModelBase
 	{
@@ -20,63 +86,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ChatEnvironmentSettingsViewModel EnvironmentSettings { get; }
 		public ChatMCPSettingsViewModel McpSettings { get; }
 		public ChatSummarizationSettingsViewModel SummarizationSettings { get; }
-
-		// Agents tab is in its own ViewModel
 		public ChatAgentsSettingsViewModel AgentsSettings { get; }
 
-		// --- Agent selector for Prompts/Tools/LLM properties tabs ---
-		public ObservableCollection<AgentOptionViewModel> AgentSelectorOptions { get; } = [];
-		public AgentOptionViewModel? SelectedAgent
-		{
-			get => _selectedAgent;
-			set
-			{
-				if (SetProperty(ref _selectedAgent, value))
-					OnSelectedAgentChanged();
-			}
-		}
-		private AgentOptionViewModel? _selectedAgent;
+		private int _generalSettingsCount;
+		public RangeObservableCollection<SettingsTreeNode> SettingsTree { get; } = [];
 
-		private AgentDescriptor? _selectedAgentDescriptor;
-		public AgentDescriptor? SelectedAgentDescriptor
+		private SettingsTreeNode? _selectedNode;
+		public SettingsTreeNode? SelectedNode
 		{
-			get => _selectedAgentDescriptor;
-			set => SetProperty(ref _selectedAgentDescriptor, value);
-		}
-
-		private AgentReadSettingsViewModel? _agentReadSettings;
-		public AgentReadSettingsViewModel? AgentReadSettings
-		{
-			get => _agentReadSettings;
-			set => SetProperty(ref _agentReadSettings, value);
-		}
-
-		private AgentGenerationSettingsViewModel? _agentGenerationSettings;
-		public AgentGenerationSettingsViewModel? AgentGenerationSettings
-		{
-			get => _agentGenerationSettings;
-			set => SetProperty(ref _agentGenerationSettings, value);
-		}
-
-		private AgentPromptSettingsViewModel? _agentPromptSettings;
-		public AgentPromptSettingsViewModel? AgentPromptSettings
-		{
-			get => _agentPromptSettings;
-			set => SetProperty(ref _agentPromptSettings, value);
-		}
-
-		private AgentToolSettingsViewModel? _agentToolSettings;
-		public AgentToolSettingsViewModel? AgentToolSettings
-		{
-			get => _agentToolSettings;
-			set => SetProperty(ref _agentToolSettings, value);
-		}
-
-		private AgentExecutionConditionsSettingsViewModel? _agentExecutionConditionsSettings;
-		public AgentExecutionConditionsSettingsViewModel? AgentExecutionConditionsSettings
-		{
-			get => _agentExecutionConditionsSettings;
-			set => SetProperty(ref _agentExecutionConditionsSettings, value);
+			get => _selectedNode;
+			set => SetProperty(ref _selectedNode, value);
 		}
 
 		public ChatSettingsViewModel(ChatSettings settings, Chat chat)
@@ -84,70 +103,93 @@ namespace LLMDesktopAssistant.LLM.Settings
 			Settings = settings;
 			Chat = chat;
 
+			AgentsSettings = new ChatAgentsSettingsViewModel(settings.Agents, chat.Services.GetRequiredService<IAgentManagementService>());
 			ModelSettings = new ChatModelSettingsViewModel(settings.Models);
 			SummarizationSettings = new ChatSummarizationSettingsViewModel(settings.Summarization);
 			EnvironmentSettings = new ChatEnvironmentSettingsViewModel(settings.Environment);
 			McpSettings = new ChatMCPSettingsViewModel(settings.Mcp, chat.Services.GetRequiredService<IMCPManagementService>());
+			
+			AgentsSettings.AgentsChanged += OnAgentsChanged;
 
-			AgentsSettings = new ChatAgentsSettingsViewModel(settings.Agents, chat);
-
-			RefreshAgentSelector();
-
-			if (AgentSelectorOptions.Count > 0)
-				SelectedAgent = AgentSelectorOptions[0];
+			InitializeTree();
 		}
 
-		private List<(AgentDescriptor Descriptor, bool IsGlobal)> GetAllAgents()
+		private void InitializeTree()
 		{
-			var globalConfig = SettingsManager.Get<AgentsConfiguration>();
-			var result = new List<(AgentDescriptor, bool)>();
+			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("agents"),
+				MaterialIconKind.Robot,
+				AgentsSettings));
 
-			foreach (var agent in globalConfig.Agents)
-				result.Add((agent, true));
-			foreach (var agent in Settings.Agents.ChatAgents)
-				if (!result.Any(a => a.Item1.Id == agent.Id))
-					result.Add((agent, false));
+			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_models"),
+				MaterialIconKind.Brain,
+				ModelSettings));
 
-			return result;
+			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_summarization"),
+				MaterialIconKind.ArrowCollapseVertical,
+				SummarizationSettings));
+
+			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_environment"),
+				MaterialIconKind.FolderSettings,
+				EnvironmentSettings));
+
+			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_mcp"),
+				MaterialIconKind.Connection,
+				McpSettings));
+
+			_generalSettingsCount = 5;
+
+			RebuildAgents();
 		}
 
-		public void RefreshAgentSelector()
+		public void RebuildAgents()
 		{
-			AgentSelectorOptions.Clear();
-			var allAgents = GetAllAgents();
+			if (SettingsTree.Count > _generalSettingsCount)
+				SettingsTree.RemoveRange(_generalSettingsCount, SettingsTree.Count - _generalSettingsCount);
+
+			var managementService = Chat.Services.GetRequiredService<IAgentManagementService>();
+
+			// ========== Agent-specific settings ==========
+			var allAgents = managementService.ListAgents();
 			foreach (var (descriptor, isGlobal) in allAgents)
 			{
-				AgentSelectorOptions.Add(new AgentOptionViewModel
+				var agentChildren = new List<SettingsTreeNode>
 				{
-					Agent = descriptor,
-					IsGlobal = isGlobal
-				});
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_execution"),
+						MaterialIconKind.Play,
+						new AgentExecutionConditionsSettingsViewModel(descriptor.ExecutionConditions)),
+
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_llm_properties"),
+						MaterialIconKind.Tune,
+						new AgentGenerationSettingsViewModel(descriptor.Generation)),
+
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_read"),
+						MaterialIconKind.Eye,
+						new AgentReadSettingsViewModel(
+							descriptor.Read, Settings.Agents.ChatAgents, descriptor.Id)),
+
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_prompts"),
+						MaterialIconKind.Text,
+						new AgentPromptSettingsViewModel(descriptor.Prompts)),
+
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_tools"),
+						MaterialIconKind.Wrench,
+						new AgentToolSettingsViewModel(
+							descriptor.Tools,
+							Chat.Services.GetRequiredService<IToolsetBuildingService>())),
+				};
+
+				SettingsTree.Add(new SettingsAgentParentNode(descriptor.Info, isGlobal, agentChildren));
 			}
 		}
 
-		private void OnSelectedAgentChanged()
+		private void OnAgentsChanged()
 		{
-			if (SelectedAgent == null)
-			{
-				SelectedAgentDescriptor = null;
-				AgentPromptSettings = null;
-				AgentToolSettings = null;
-				AgentReadSettings = null;
-				AgentGenerationSettings = null;
-				AgentExecutionConditionsSettings = null;
-				return;
-			}
-
-			SelectedAgentDescriptor = SelectedAgent.Agent;
-
-			AgentPromptSettings = new AgentPromptSettingsViewModel(SelectedAgentDescriptor.Prompts);
-			AgentToolSettings = new AgentToolSettingsViewModel(
-				SelectedAgentDescriptor.Tools,
-				Chat.Services.GetRequiredService<IToolsetBuildingService>()
-			);
-			AgentReadSettings = new AgentReadSettingsViewModel(SelectedAgentDescriptor.Read, Settings.Agents.ChatAgents);
-			AgentGenerationSettings = new AgentGenerationSettingsViewModel(SelectedAgentDescriptor.Generation);
-			AgentExecutionConditionsSettings = new AgentExecutionConditionsSettingsViewModel(SelectedAgentDescriptor.ExecutionConditions);
+			RebuildAgents();
 		}
 	}
 }

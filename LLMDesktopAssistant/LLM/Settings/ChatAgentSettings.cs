@@ -36,7 +36,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			if (ChatAgents.Count == 0)
 			{
 				var defaultAgent = new AgentDescriptor();
-				defaultAgent.Prompts.Nickname = "Default Assistant";
+				defaultAgent.Info.Name = "Default Assistant";
 				ChatAgents.Add(defaultAgent);
 			}
 

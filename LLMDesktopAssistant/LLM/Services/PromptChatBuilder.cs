@@ -164,7 +164,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		private string BuildForeignAgentMessageText(Domain.AssistantMessage message, Guid currentAgentId, AgentReadSettings readSettings)
 		{
 			var agentDescriptor = agentSettings.GetAgentDescriptor(message.SenderAgent);
-			var agentName = agentDescriptor.Prompts.Nickname ?? agentDescriptor.Id.ToString()[..8];
+			var agentName = agentDescriptor.Info.Name ?? agentDescriptor.Id.ToString()[..8];
 			var permissions = readSettings.ReadPermissions;
 
 			var language = GetCurrentLanguageMetadata();

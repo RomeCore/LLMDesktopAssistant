@@ -813,8 +813,8 @@
   <data name="settings_max_visible_rounds_hint" xml:space="preserve">
     <value>Limits how many recent conversation rounds (user message + assistant response) are visible to each agent. 0 means unlimited. Helps manage context window usage.</value>
   </data>
-  <data name="chat_settings_visibility" xml:space="preserve">
-    <value>Visibility</value>
+  <data name="chat_settings_read" xml:space="preserve">
+    <value>Read permissions</value>
   </data>
   <data name="fs-replace_lines" xml:space="preserve">
     <value>Replace lines in file</value>
@@ -918,15 +918,44 @@
   <data name="settings-llm_enable_custom_model" xml:space="preserve">
     <value>Enable custom model</value>
   </data>
-
   <data name="settings_select_all" xml:space="preserve">
     <value>Select all</value>
   </data>
   <data name="settings_deselect_all" xml:space="preserve">
     <value>Deselect all</value>
   </data>
-
+  <data name="chat_settings_global" xml:space="preserve">
+    <value>Global</value>
+  </data>
   <data name="message_visibility_only_agents" xml:space="preserve">
     <value>Only to agents</value>
   </data>
+  <data name="settings_promote_to_global" xml:space="preserve">
+    <value>Promote to global</value>
+  </data>
+  <data name="settings_copy_to_local" xml:space="preserve">
+    <value>Copy to chat agents</value>
+  </data>
+  <data name="agent_info" xml:space="preserve">
+    <value>Agent info</value>
+  </data>
+  <data name="agent_info_name_hint" xml:space="preserve">
+    <value>Set a custom name for this agent. This name is used in the agent list and in the chat.</value>
+  </data>
+  <data name="agent_info_name_placeholder" xml:space="preserve">
+    <value>Enter agent name...</value>
+  </data>
+  <data name="agent_info_profile_image" xml:space="preserve">
+    <value>Profile image</value>
+  </data>
+  <data name="agent_info_profile_image_hint" xml:space="preserve">
+    <value>Paste a base64-encoded image to use as the agent's avatar.</value>
+  </data>
+  <data name="agent_info_profile_image_placeholder" xml:space="preserve">
+    <value>base64 encoded image data...</value>
+  </data>
+  <data name="agent_info_clear_image" xml:space="preserve">
+    <value>Clear image</value>
+  </data>
+
 </root>

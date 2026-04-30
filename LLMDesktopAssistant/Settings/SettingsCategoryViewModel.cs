@@ -82,9 +82,9 @@ namespace LLMDesktopAssistant.Settings
 				{
 					_currentId = value;
 					_current = Category.Get(value.Id);
+					_changed?.Invoke(Current);
 					_currentViewModel = _vmFactory(Current);
 					RaisePropertyChanged(null);
-					_changed?.Invoke(Current);
 				}
 			}
 		}

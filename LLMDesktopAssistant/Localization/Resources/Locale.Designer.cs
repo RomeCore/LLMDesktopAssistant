@@ -97,6 +97,69 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent info.
+        /// </summary>
+        public static string agent_info {
+            get {
+                return ResourceManager.GetString("agent_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Clear image.
+        /// </summary>
+        public static string agent_info_clear_image {
+            get {
+                return ResourceManager.GetString("agent_info_clear_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Set a custom name for this agent. This name is used in the agent list and in the chat..
+        /// </summary>
+        public static string agent_info_name_hint {
+            get {
+                return ResourceManager.GetString("agent_info_name_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter agent name....
+        /// </summary>
+        public static string agent_info_name_placeholder {
+            get {
+                return ResourceManager.GetString("agent_info_name_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Profile image.
+        /// </summary>
+        public static string agent_info_profile_image {
+            get {
+                return ResourceManager.GetString("agent_info_profile_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Paste a base64-encoded image to use as the agent&apos;s avatar..
+        /// </summary>
+        public static string agent_info_profile_image_hint {
+            get {
+                return ResourceManager.GetString("agent_info_profile_image_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на base64 encoded image data....
+        /// </summary>
+        public static string agent_info_profile_image_placeholder {
+            get {
+                return ResourceManager.GetString("agent_info_profile_image_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Agents.
         /// </summary>
         public static string agents {
@@ -394,11 +457,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Execution.
+        /// </summary>
+        public static string chat_settings_execution {
+            get {
+                return ResourceManager.GetString("chat_settings_execution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на General.
         /// </summary>
         public static string chat_settings_general {
             get {
                 return ResourceManager.GetString("chat_settings_general", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Global.
+        /// </summary>
+        public static string chat_settings_global {
+            get {
+                return ResourceManager.GetString("chat_settings_global", resourceCulture);
             }
         }
         
@@ -448,6 +529,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Read permissions.
+        /// </summary>
+        public static string chat_settings_read {
+            get {
+                return ResourceManager.GetString("chat_settings_read", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Summarization.
         /// </summary>
         public static string chat_settings_summarization {
@@ -462,15 +552,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string chat_settings_tools {
             get {
                 return ResourceManager.GetString("chat_settings_tools", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Visibility.
-        /// </summary>
-        public static string chat_settings_visibility {
-            get {
-                return ResourceManager.GetString("chat_settings_visibility", resourceCulture);
             }
         }
         
@@ -606,6 +687,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string execute_shell {
             get {
                 return ResourceManager.GetString("execute-shell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Always.
+        /// </summary>
+        public static string execution_checker_always {
+            get {
+                return ResourceManager.GetString("execution_checker_always", resourceCulture);
             }
         }
         
@@ -1155,6 +1245,114 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string ok {
             get {
                 return ResourceManager.GetString("ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Other agent messages.
+        /// </summary>
+        public static string perm_other_agent_messages {
+            get {
+                return ResourceManager.GetString("perm_other_agent_messages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent can read messages from other agents..
+        /// </summary>
+        public static string perm_other_agent_messages_hint {
+            get {
+                return ResourceManager.GetString("perm_other_agent_messages_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Other agent reasoning.
+        /// </summary>
+        public static string perm_other_agent_reasoning {
+            get {
+                return ResourceManager.GetString("perm_other_agent_reasoning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent can read the reasoning/thoughts of other agents..
+        /// </summary>
+        public static string perm_other_agent_reasoning_hint {
+            get {
+                return ResourceManager.GetString("perm_other_agent_reasoning_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Other agent tool calls.
+        /// </summary>
+        public static string perm_other_agent_tool_calls {
+            get {
+                return ResourceManager.GetString("perm_other_agent_tool_calls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent can read tool calls and results from other agents..
+        /// </summary>
+        public static string perm_other_agent_tool_calls_hint {
+            get {
+                return ResourceManager.GetString("perm_other_agent_tool_calls_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Own messages.
+        /// </summary>
+        public static string perm_own_messages {
+            get {
+                return ResourceManager.GetString("perm_own_messages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent can read its own previous messages..
+        /// </summary>
+        public static string perm_own_messages_hint {
+            get {
+                return ResourceManager.GetString("perm_own_messages_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User attachments.
+        /// </summary>
+        public static string perm_user_attachments {
+            get {
+                return ResourceManager.GetString("perm_user_attachments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent can read files attached by the user..
+        /// </summary>
+        public static string perm_user_attachments_hint {
+            get {
+                return ResourceManager.GetString("perm_user_attachments_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User messages.
+        /// </summary>
+        public static string perm_user_messages {
+            get {
+                return ResourceManager.GetString("perm_user_messages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent can read messages sent by the user..
+        /// </summary>
+        public static string perm_user_messages_hint {
+            get {
+                return ResourceManager.GetString("perm_user_messages_hint", resourceCulture);
             }
         }
         
@@ -1771,11 +1969,47 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent filter.
+        /// </summary>
+        public static string settings_agent_read_filter {
+            get {
+                return ResourceManager.GetString("settings_agent_read_filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Restricts which agents this agent can see based on whitelist or blacklist..
+        /// </summary>
+        public static string settings_agent_read_filter_hint {
+            get {
+                return ResourceManager.GetString("settings_agent_read_filter_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Agentic model.
         /// </summary>
         public static string settings_agentic_model_hint {
             get {
                 return ResourceManager.GetString("settings-agentic_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Can execute again.
+        /// </summary>
+        public static string settings_can_execute_again {
+            get {
+                return ResourceManager.GetString("settings_can_execute_again", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Whether the agent can execute again after it has already executed in this cycle..
+        /// </summary>
+        public static string settings_can_execute_again_hint {
+            get {
+                return ResourceManager.GetString("settings_can_execute_again_hint", resourceCulture);
             }
         }
         
@@ -1789,11 +2023,92 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy to chat agents.
+        /// </summary>
+        public static string settings_copy_to_local {
+            get {
+                return ResourceManager.GetString("settings_copy_to_local", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Default.
         /// </summary>
         public static string settings_default_id {
             get {
                 return ResourceManager.GetString("settings_default_id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Deselect all.
+        /// </summary>
+        public static string settings_deselect_all {
+            get {
+                return ResourceManager.GetString("settings_deselect_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execution checker:.
+        /// </summary>
+        public static string settings_execution_checker {
+            get {
+                return ResourceManager.GetString("settings_execution_checker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The condition that determines when the agent should execute..
+        /// </summary>
+        public static string settings_execution_checker_hint {
+            get {
+                return ResourceManager.GetString("settings_execution_checker_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execution order:.
+        /// </summary>
+        public static string settings_execution_order {
+            get {
+                return ResourceManager.GetString("settings_execution_order", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Determines the order in which agents are executed. Lower numbers execute first..
+        /// </summary>
+        public static string settings_execution_order_hint {
+            get {
+                return ResourceManager.GetString("settings_execution_order_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Blacklist.
+        /// </summary>
+        public static string settings_filter_blacklist {
+            get {
+                return ResourceManager.GetString("settings_filter_blacklist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Filter mode:.
+        /// </summary>
+        public static string settings_filter_mode {
+            get {
+                return ResourceManager.GetString("settings_filter_mode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Whitelist.
+        /// </summary>
+        public static string settings_filter_whitelist {
+            get {
+                return ResourceManager.GetString("settings_filter_whitelist", resourceCulture);
             }
         }
         
@@ -1812,6 +2127,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_llm_additional_parameters_hint {
             get {
                 return ResourceManager.GetString("settings-llm_additional_parameters_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Custom model.
+        /// </summary>
+        public static string settings_llm_custom_model {
+            get {
+                return ResourceManager.GetString("settings-llm_custom_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable custom model.
+        /// </summary>
+        public static string settings_llm_enable_custom_model {
+            get {
+                return ResourceManager.GetString("settings-llm_enable_custom_model", resourceCulture);
             }
         }
         
@@ -1933,6 +2266,33 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Promote to global.
+        /// </summary>
+        public static string settings_promote_to_global {
+            get {
+                return ResourceManager.GetString("settings_promote_to_global", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read permissions.
+        /// </summary>
+        public static string settings_read_permissions {
+            get {
+                return ResourceManager.GetString("settings_read_permissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Controls what types of messages and content this agent can read in the chat..
+        /// </summary>
+        public static string settings_read_permissions_hint {
+            get {
+                return ResourceManager.GetString("settings_read_permissions_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Remove agent.
         /// </summary>
         public static string settings_remove_agent {
@@ -1947,6 +2307,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_select_agent_first {
             get {
                 return ResourceManager.GetString("settings_select_agent_first", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select all.
+        /// </summary>
+        public static string settings_select_all {
+            get {
+                return ResourceManager.GetString("settings_select_all", resourceCulture);
             }
         }
         

@@ -725,6 +725,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			int insertedStartLine, int insertedEndLine, List<string> insertedContent,
 			string filePath)
 		{
+			// TODO: FIX REPORTING
+
 			var report = new StringBuilder();
 
 			report.AppendLine($"File modified: {filePath}");

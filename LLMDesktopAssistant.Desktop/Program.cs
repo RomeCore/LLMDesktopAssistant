@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.Desktop
 			catch (Exception ex)
 			{
 				Log.Error(ex, "A fatal error occurred: {Message}", ex.Message);
+				throw;
 			}
 		}
 

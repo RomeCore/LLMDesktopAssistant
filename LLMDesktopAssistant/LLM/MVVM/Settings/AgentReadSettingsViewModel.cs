@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			{
 				if (SetProperty(ref _isEnabled, value))
 				{
-					_parent.ReadSettings.ReadPermissions = (_parent.ReadSettings.ReadPermissions & Permission) | (value ? Permission : 0);
+					_parent.ReadSettings.ReadPermissions = (_parent.ReadSettings.ReadPermissions & ~Permission) | (value ? Permission : 0);
 				}
 			}
 		}
@@ -46,7 +46,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 	{
 		private readonly AgentReadSettingsViewModel _parent;
 		public AgentDescriptor Agent { get; }
-		public string DisplayName => Agent.Prompts.Nickname ?? "Unnamed Agent";
+		public string DisplayName => Agent.Info.Name ?? "Unnamed Agent";
 		public bool IsGlobal { get; }
 
 		private bool _isSelected;
@@ -78,6 +78,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 	public class AgentReadSettingsViewModel : ViewModelBase
 	{
 		private readonly ICollection<AgentDescriptor> _chatAgents;
+		private readonly Guid _agentId;
 
 		public AgentReadSettings ReadSettings { get; }
 
@@ -112,10 +113,12 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 		public ICommand SelectAllAgentsCommand { get; }
 		public ICommand DeselectAllAgentsCommand { get; }
 
-		public AgentReadSettingsViewModel(AgentReadSettings settings, ICollection<AgentDescriptor>? chatAgents = null)
+		public AgentReadSettingsViewModel(AgentReadSettings settings,
+			ICollection<AgentDescriptor> chatAgents, Guid agentId)
 		{
 			ReadSettings = settings;
-			_chatAgents = chatAgents ?? [];
+			_chatAgents = chatAgents;
+			_agentId = agentId;
 
 			InitializePermissions();
 			InitializeAgentFilter();
@@ -180,6 +183,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 
 			foreach (var (descriptor, isGlobal) in allAgents)
 			{
+				if (descriptor.Id == _agentId) continue;
+
 				bool isSelected = ReadSettings.AgentIdsReadFilter.Contains(descriptor.Id);
 				AgentFilterItems.Add(new AgentFilterItem(this, descriptor, isGlobal, isSelected));
 			}

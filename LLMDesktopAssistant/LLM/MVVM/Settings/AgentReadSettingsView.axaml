@@ -56,42 +56,46 @@
 					   Opacity="0.6"
 					   TextWrapping="Wrap"/>
 
-			<!-- Filter mode selector -->
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="*"/>
-				</Grid.ColumnDefinitions>
+			<DockPanel>
+				
+				<!-- Filter mode selector -->
+				<Grid DockPanel.Dock="Right" HorizontalAlignment="Right">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
 
-				<TextBlock Grid.Column="0"
-						   Text="{loc:Loc settings_filter_mode}"
-						   VerticalAlignment="Center"
-						   Margin="0,0,8,0"/>
+					<TextBlock Grid.Column="0"
+								 Text="{loc:Loc settings_filter_mode}"
+								 VerticalAlignment="Center"
+								 Margin="0,0,8,0"/>
 
-				<ComboBox Grid.Column="1"
-						  SelectedIndex="{Binding FilterModeIndex, Mode=TwoWay}"
-						  Width="160"
-						  HorizontalAlignment="Left">
-					<ComboBox.Items>
-						<ComboBoxItem Content="{loc:Loc settings_filter_whitelist}"/>
-						<ComboBoxItem Content="{loc:Loc settings_filter_blacklist}"/>
-					</ComboBox.Items>
-				</ComboBox>
-			</Grid>
+					<ComboBox Grid.Column="1"
+								SelectedIndex="{Binding FilterModeIndex, Mode=TwoWay}"
+								Width="160"
+								HorizontalAlignment="Left">
+						<ComboBox.Items>
+							<ComboBoxItem Content="{loc:Loc settings_filter_whitelist}"/>
+							<ComboBoxItem Content="{loc:Loc settings_filter_blacklist}"/>
+						</ComboBox.Items>
+					</ComboBox>
+				</Grid>
+				
+				<!-- Select / Deselect all buttons -->
+				<StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Left" DockPanel.Dock="Left">
+					<Button Command="{Binding SelectAllAgentsCommand}"
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc settings_select_all}">
+						<ico:MaterialIcon Kind="CheckAll"/>
+					</Button>
+					<Button Command="{Binding DeselectAllAgentsCommand}"
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc settings_deselect_all}">
+						<ico:MaterialIcon Kind="CloseBoxMultiple"/>
+					</Button>
+				</StackPanel>
 
-			<!-- Select / Deselect all buttons -->
-			<StackPanel Orientation="Horizontal" Spacing="6">
-				<Button Command="{Binding SelectAllAgentsCommand}"
-						Classes="IconButton"
-						ToolTip.Tip="{loc:Loc settings_select_all}">
-					<ico:MaterialIcon Kind="CheckAll"/>
-				</Button>
-				<Button Command="{Binding DeselectAllAgentsCommand}"
-						Classes="IconButton"
-						ToolTip.Tip="{loc:Loc settings_deselect_all}">
-					<ico:MaterialIcon Kind="CloseBoxMultiple"/>
-				</Button>
-			</StackPanel>
+			</DockPanel>
 
 			<!-- Agent filter list -->
 			<Border BorderBrush="{DynamicResource DefaultForeground}"

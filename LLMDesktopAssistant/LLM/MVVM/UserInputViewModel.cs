@@ -264,6 +264,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				var viewModel = new PromptManagerViewModel();
 				await DialogManager.ShowDialogAsync(viewModel);
 			});
+
 			OpenAttachmentsManagerCommand = new AsyncRelayCommand(async () =>
 			{
 				var viewModel = new AttachmentsManagerViewModel(this);

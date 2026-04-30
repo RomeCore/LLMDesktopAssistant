@@ -1,9 +1,13 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+﻿using Avalonia.Media.Imaging;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.UIExtensions.MessageExtensions;
+using Serilog;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Reflection;
 using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.LLM.Messages
@@ -13,6 +17,10 @@ namespace LLMDesktopAssistant.LLM.Messages
 	{
 		private readonly AssistantMessage _assistantMessage;
 		public AssistantMessage AssistantMessage => _assistantMessage;
+
+		public bool ShowAvatar { get; }
+		public Bitmap? SenderAvatar { get; }
+		public string? SenderName { get; }
 
 		private bool _isCompleted;
 		public bool IsCompleted
@@ -59,6 +67,32 @@ namespace LLMDesktopAssistant.LLM.Messages
 				throw new InvalidOperationException("Invalid message type. Expected IAssistantMessage.");
 			_assistantMessage = assistantMessage;
 
+			// Determine that we can apply avatar
+			var prevMessage = branchedMessage.MessageIndex - 1 >= 0
+				? chatVM.Chat.Messages[branchedMessage.MessageIndex - 1].Message as AssistantMessage
+				: null;
+			if (prevMessage == null || assistantMessage.SenderAgent != prevMessage.SenderAgent)
+			{
+				var agentManager = chatVM.Chat.Services.GetRequiredService<IAgentManagementService>();
+				var agent = agentManager.GetAgentDescriptor(assistantMessage.SenderAgent);
+
+				try
+				{
+					if (!string.IsNullOrWhiteSpace(agent.Info.Base64ProfileImage))
+					{
+						var bytes = Convert.FromBase64String(agent.Info.Base64ProfileImage);
+						using var ms = new MemoryStream(bytes);
+						SenderAvatar = new Bitmap(ms);
+					}
+				}
+				catch
+				{
+					SenderAvatar = null;
+				}
+				SenderName = agent.Info.Name;
+				ShowAvatar = true;
+			}
+
 			if (!string.IsNullOrEmpty(assistantMessage.ReasoningContent))
 			{
 				ReasoningPart ??= new AssistantMessageReasoningPartViewModel(assistantMessage);
@@ -78,8 +112,13 @@ namespace LLMDesktopAssistant.LLM.Messages
 			Error = assistantMessage.Error;
 			Extensions = MessageExtensionManager.CreateExtensions(this, chatVM.Chat);
 
-			IsCompleted = assistantMessage.IsCompleted;
-			if (!assistantMessage.IsCompleted)
+			SubscribeToAssistantMessageEvents();
+		}
+
+		private void SubscribeToAssistantMessageEvents()
+		{
+			IsCompleted = _assistantMessage.IsCompleted;
+			if (!_assistantMessage.IsCompleted)
 			{
 				void OnMessagePropertyChanged(object? s, PropertyChangedEventArgs e)
 				{
@@ -89,17 +128,17 @@ namespace LLMDesktopAssistant.LLM.Messages
 						{
 							case nameof(AssistantMessage.ReasoningContent):
 
-								if (ReasoningPart == null && !string.IsNullOrEmpty(assistantMessage.ReasoningContent))
+								if (ReasoningPart == null && !string.IsNullOrEmpty(_assistantMessage.ReasoningContent))
 								{
-									ReasoningPart = new AssistantMessageReasoningPartViewModel(assistantMessage);
+									ReasoningPart = new AssistantMessageReasoningPartViewModel(_assistantMessage);
 								}
 								break;
 
 							case nameof(AssistantMessage.Content):
 
-								if (TextPart == null && !string.IsNullOrEmpty(assistantMessage.Content))
+								if (TextPart == null && !string.IsNullOrEmpty(_assistantMessage.Content))
 								{
-									TextPart = new AssistantMessageTextPartViewModel(assistantMessage);
+									TextPart = new AssistantMessageTextPartViewModel(_assistantMessage);
 								}
 								break;
 
@@ -109,28 +148,28 @@ namespace LLMDesktopAssistant.LLM.Messages
 								if (ToolPart.ToolCalls.FirstOrDefault(t => t.Status == ToolStatus.Pending) is ToolCallViewModel pendingToolCall)
 									ToolPart.ToolCalls.Remove(pendingToolCall);
 
-								if (assistantMessage.PendingToolName != null)
+								if (_assistantMessage.PendingToolName != null)
 								{
-									var toolsetCache = chatVM.Chat.Services.GetRequiredService<IToolsetCacheService>();
-									var title = toolsetCache.AvailableTools.TryGetValue(assistantMessage.PendingToolName, out var toolInfo) ?
-										toolInfo.DisplayName : assistantMessage.PendingToolName;
+									var toolsetCache = ChatViewModel.Chat.Services.GetRequiredService<IToolsetCacheService>();
+									var title = toolsetCache.AvailableTools.TryGetValue(_assistantMessage.PendingToolName, out var toolInfo) ?
+										toolInfo.DisplayName : _assistantMessage.PendingToolName;
 
 									ToolPart.ToolCalls.Add(new ToolCallViewModel(new ToolCall
 									{
-										ToolName = assistantMessage.PendingToolName,
+										ToolName = _assistantMessage.PendingToolName,
 										Title = title,
 										Arguments = new JsonObject(),
 										CompletionToken = RCLargeLanguageModels.Tasks.CompletionToken.Success,
 										Id = "",
 										Status = ToolStatus.Pending
-									}, chatVM.Chat));
+									}, ChatViewModel.Chat));
 								}
 
 								break;
 						}
 
 
-						Error = assistantMessage.Error;
+						Error = _assistantMessage.Error;
 					});
 				}
 
@@ -143,7 +182,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 							ToolPart ??= new AssistantMessageToolPartViewModel();
 							foreach (ToolCall toolCall in e.NewItems)
 							{
-								ToolPart.ToolCalls.Add(new ToolCallViewModel(toolCall, chatVM.Chat));
+								ToolPart.ToolCalls.Add(new ToolCallViewModel(toolCall, ChatViewModel.Chat));
 							}
 
 							RaisePropertyChanged(nameof(ContainsToolCalls));
@@ -151,13 +190,13 @@ namespace LLMDesktopAssistant.LLM.Messages
 					}
 				}
 
-				assistantMessage.PropertyChanged += OnMessagePropertyChanged;
-				assistantMessage.ToolCalls.CollectionChanged += OnToolCallsChanged;
+				_assistantMessage.PropertyChanged += OnMessagePropertyChanged;
+				_assistantMessage.ToolCalls.CollectionChanged += OnToolCallsChanged;
 
-				assistantMessage.CompletionToken.OnCompleted(() =>
+				_assistantMessage.CompletionToken.OnCompleted(() =>
 				{
-					assistantMessage.PropertyChanged -= OnMessagePropertyChanged;
-					assistantMessage.ToolCalls.CollectionChanged -= OnToolCallsChanged;
+					_assistantMessage.PropertyChanged -= OnMessagePropertyChanged;
+					_assistantMessage.ToolCalls.CollectionChanged -= OnToolCallsChanged;
 					IsCompleted = true;
 				});
 			}

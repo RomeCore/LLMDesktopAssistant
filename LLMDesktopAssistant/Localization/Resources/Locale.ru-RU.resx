@@ -813,8 +813,8 @@
   <data name="settings_max_visible_rounds_hint" xml:space="preserve">
     <value>Ограничивает количество последних раундов (сообщение пользователя + ответ ассистента), видимых каждому агенту. 0 — без лимита. Помогает экономить контекстное окно.</value>
   </data>
-  <data name="chat_settings_visibility" xml:space="preserve">
-    <value>Видимость</value>
+  <data name="chat_settings_read" xml:space="preserve">
+    <value>Права чтения</value>
   </data>
   <data name="fs-replace_lines" xml:space="preserve">
     <value>Заменить строки в файле</value>
@@ -918,15 +918,44 @@
   <data name="settings-llm_enable_custom_model" xml:space="preserve">
     <value>Включить кастомную модель</value>
   </data>
-
   <data name="settings_select_all" xml:space="preserve">
     <value>Выбрать всех</value>
   </data>
   <data name="settings_deselect_all" xml:space="preserve">
     <value>Снять выбор со всех</value>
   </data>
-
+  <data name="chat_settings_global" xml:space="preserve">
+    <value>Общие</value>
+  </data>
   <data name="message_visibility_only_agents" xml:space="preserve">
     <value>Только агентам</value>
   </data>
+  <data name="settings_promote_to_global" xml:space="preserve">
+    <value>Сделать глобальным</value>
+  </data>
+  <data name="settings_copy_to_local" xml:space="preserve">
+    <value>Скопировать в чат</value>
+  </data>
+  <data name="agent_info" xml:space="preserve">
+    <value>Об агенте</value>
+  </data>
+  <data name="agent_info_name_hint" xml:space="preserve">
+    <value>Задайте имя агента. Оно используется в списке агентов и в чате.</value>
+  </data>
+  <data name="agent_info_name_placeholder" xml:space="preserve">
+    <value>Введите имя агента...</value>
+  </data>
+  <data name="agent_info_profile_image" xml:space="preserve">
+    <value>Аватарка</value>
+  </data>
+  <data name="agent_info_profile_image_hint" xml:space="preserve">
+    <value>Выберите изображение для аватарки агента. Будет автоматически обрезано до 128x128.</value>
+  </data>
+  <data name="agent_info_select_image" xml:space="preserve">
+    <value>Выбрать изображение</value>
+  </data>
+  <data name="agent_info_clear_image" xml:space="preserve">
+    <value>Удалить аватарку</value>
+  </data>
+
 </root>

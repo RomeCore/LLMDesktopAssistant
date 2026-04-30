@@ -1,21 +1,25 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings
 {
+	// TODO: Тут дикий нейрослоп, нужно фиксить
+
 	/// <summary>
 	/// ViewModel for the Agents management tab in chat settings.
-	/// Handles listing, adding, removing, activating/deactivating and reordering agents.
+	/// Handles listing, adding, removing, activating/deactivating, reordering,
+	/// and promoting/demoting agents between global and local scopes.
 	/// </summary>
 	[ViewModelFor(typeof(ChatAgentsSettingsView))]
 	public class ChatAgentsSettingsViewModel : ViewModelBase
 	{
 		public ChatAgentSettings AgentSettings { get; }
-		public Chat Chat { get; }
+		public IAgentManagementService AgentManager { get; }
 
 		public RangeObservableCollection<AgentOptionViewModel> AgentOptions { get; } = [];
 
@@ -26,26 +30,39 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			set => SetProperty(ref _selectedAgent, value);
 		}
 
-
 		public IRelayCommand AddAgentCommand { get; }
 		public IRelayCommand RemoveAgentCommand { get; }
 		public IRelayCommand<AgentOptionViewModel> ToggleAgentActiveCommand { get; }
 		public IRelayCommand<AgentOptionViewModel> MoveAgentUpCommand { get; }
 		public IRelayCommand<AgentOptionViewModel> MoveAgentDownCommand { get; }
+		public IRelayCommand<AgentOptionViewModel> PromoteToGlobalCommand { get; }
+		public IRelayCommand<AgentOptionViewModel> CopyToLocalCommand { get; }
 
-		public ChatAgentsSettingsViewModel(ChatAgentSettings agentSettings, Chat chat)
+		/// <summary>
+		/// Raised when the agent list changes (promote/demote) so parent VM can rebuild tree.
+		/// </summary>
+		public event Action? AgentsChanged;
+
+		public ChatAgentsSettingsViewModel(ChatAgentSettings agentSettings, IAgentManagementService agentManager)
 		{
 			AgentSettings = agentSettings;
-			Chat = chat;
+			AgentManager = agentManager;
 
 			AddAgentCommand = new RelayCommand(AddAgent);
 			RemoveAgentCommand = new RelayCommand(RemoveSelectedAgent);
 			ToggleAgentActiveCommand = new RelayCommand<AgentOptionViewModel>(ToggleAgentActive);
-			MoveAgentUpCommand = new RelayCommand<AgentOptionViewModel>(MoveAgentUp);
-			MoveAgentDownCommand = new RelayCommand<AgentOptionViewModel>(MoveAgentDown);
+			MoveAgentUpCommand = new RelayCommand<AgentOptionViewModel>(MoveAgentUp, CanMoveAgentUp);
+			MoveAgentDownCommand = new RelayCommand<AgentOptionViewModel>(MoveAgentDown, CanMoveAgentDown);
+			PromoteToGlobalCommand = new RelayCommand<AgentOptionViewModel>(PromoteToGlobal);
+			CopyToLocalCommand = new RelayCommand<AgentOptionViewModel>(CopyToLocal, CanCopyToLocal);
 
 			EnsureDefaultAgent();
 			RefreshAgentList();
+		}
+
+		private void NotifyAgentsChanged()
+		{
+			AgentsChanged?.Invoke();
 		}
 
 		private void EnsureDefaultAgent()
@@ -57,7 +74,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			if (AgentSettings.ChatAgents.Count == 0)
 			{
 				var defaultAgent = new AgentDescriptor();
-				defaultAgent.Prompts.Nickname = "Default Assistant";
+				defaultAgent.Info.Name = "Default Assistant";
 				AgentSettings.ChatAgents.Add(defaultAgent);
 			}
 
@@ -69,20 +86,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 					Enabled = true
 				});
 			}
-		}
-
-		private List<(AgentDescriptor Descriptor, bool IsGlobal)> GetAllAgentsWithFlags()
-		{
-			var globalConfig = SettingsManager.Get<AgentsConfiguration>();
-			var result = new List<(AgentDescriptor, bool)>();
-
-			foreach (var agent in globalConfig.Agents)
-				result.Add((agent, true));
-			foreach (var agent in AgentSettings.ChatAgents)
-				if (!result.Any(a => a.Item1.Id == agent.Id))
-					result.Add((agent, false));
-
-			return result;
 		}
 
 		private bool IsAgentActive(AgentDescriptor agent)
@@ -101,20 +104,18 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 		private void RefreshAgentList()
 		{
 			AgentOptions.Clear();
-			var allAgents = GetAllAgentsWithFlags();
+			var allAgents = AgentManager.ListAgents();
 
-			// Сортируем согласно порядку в ActiveAgents:
-			// активные — по индексу очереди, неактивные — в конец списка
 			var sorted = allAgents
 				.Select(a => new
 				{
-					Descriptor = a.Descriptor,
+					Descriptor = a.Agent,
 					IsGlobal = a.IsGlobal,
-					OrderIndex = GetAgentOrderIndex(a.Descriptor)
+					OrderIndex = GetAgentOrderIndex(a.Agent)
 				})
-				.OrderByDescending(a => a.OrderIndex >= 0)   // активные выше
-				.ThenBy(a => a.OrderIndex >= 0 ? a.OrderIndex : int.MaxValue) // по очереди
-				.ThenBy(a => a.IsGlobal ? 0 : 1)             // среди неактивных: глобальные выше
+				.OrderByDescending(a => a.OrderIndex >= 0)
+				.ThenBy(a => a.OrderIndex >= 0 ? a.OrderIndex : int.MaxValue)
+				.ThenBy(a => a.IsGlobal ? 0 : 1)
 				.ToList();
 
 			foreach (var item in sorted)
@@ -123,8 +124,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 				{
 					Agent = item.Descriptor,
 					IsGlobal = item.IsGlobal,
-					IsActive = item.OrderIndex >= 0,
-					OrderIndex = item.OrderIndex
+					IsActive = item.OrderIndex >= 0
 				});
 			}
 		}
@@ -132,10 +132,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 		private void AddAgent()
 		{
 			var newAgent = new AgentDescriptor();
-			newAgent.Prompts.Nickname = $"Agent {AgentSettings.ChatAgents.Count + 1}";
+			newAgent.Info.Name = $"Agent {AgentSettings.ChatAgents.Count + 1}";
 			AgentSettings.ChatAgents.Add(newAgent);
 
 			RefreshAgentList();
+			NotifyAgentsChanged();
 		}
 
 		private void RemoveSelectedAgent()
@@ -156,6 +157,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			}
 
 			RefreshAgentList();
+			NotifyAgentsChanged();
 		}
 
 		private void ToggleAgentActive(AgentOptionViewModel? option)
@@ -167,7 +169,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			{
 				AgentSettings.ActiveAgents.Remove(existing);
 				option.IsActive = false;
-				option.OrderIndex = -1;
 			}
 			else
 			{
@@ -177,7 +178,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 					Enabled = true
 				});
 				option.IsActive = true;
-				option.OrderIndex = AgentSettings.ActiveAgents.Count - 1;
 			}
 		}
 
@@ -191,6 +191,15 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			AgentSettings.ActiveAgents.Move(idx, idx - 1);
 			RefreshAgentList();
 		}
+		private bool CanMoveAgentUp(AgentOptionViewModel? option)
+		{
+			if (option == null || !option.IsActive) return false;
+
+			var idx = GetAgentOrderIndex(option.Agent);
+			if (idx <= 0) return false;
+
+			return true;
+		}
 
 		private void MoveAgentDown(AgentOptionViewModel? option)
 		{
@@ -199,8 +208,78 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			var idx = GetAgentOrderIndex(option.Agent);
 			if (idx < 0 || idx >= AgentSettings.ActiveAgents.Count - 1) return;
 
-			AgentSettings.ActiveAgents.Move(idx, idx + 2);
+			AgentSettings.ActiveAgents.Move(idx, idx + 2); // idx + 2 will decrease to idx + 1 inside
 			RefreshAgentList();
+		}
+		private bool CanMoveAgentDown(AgentOptionViewModel? option)
+		{
+			if (option == null || !option.IsActive) return false;
+
+			var idx = GetAgentOrderIndex(option.Agent);
+			if (idx < 0 || idx >= AgentSettings.ActiveAgents.Count - 1) return false;
+
+			return true;
+		}
+
+		/// <summary>
+		/// Promotes a local agent to global: copies it to global config and removes from local.
+		/// </summary>
+		private void PromoteToGlobal(AgentOptionViewModel? option)
+		{
+			if (option == null || option.IsGlobal)
+				return;
+
+			var agent = option.Agent;
+			var globalConfig = SettingsManager.Get<AgentsConfiguration>();
+
+			AgentSettings.ChatAgents.Remove(agent);
+			globalConfig.Agents.Add(agent);
+
+			for (int i = AgentSettings.ActiveAgents.Count - 1; i >= 0; i--)
+			{
+				if (AgentSettings.ActiveAgents[i].AgentId == agent.Id)
+				{
+					AgentSettings.ActiveAgents.RemoveAt(i);
+					break;
+				}
+			}
+
+			RefreshAgentList();
+			NotifyAgentsChanged();
+		}
+
+		/// <summary>
+		/// Copies a global agent to local chat agents (makes it available in this chat).
+		/// </summary>
+		private void CopyToLocal(AgentOptionViewModel? option)
+		{
+			if (option == null || !option.IsGlobal)
+				return;
+			var agent = option.Agent;
+			if (AgentSettings.ChatAgents.Any(a => a.Id == agent.Id))
+				return;
+
+			// Add a copy of the global agent to local chat agents.
+			var clone = agent.Clone();
+			AgentSettings.ChatAgents.Add(clone);
+
+			AgentSettings.ActiveAgents.Add(new AgentInstanceSettings
+			{
+				AgentId = clone.Id,
+				Enabled = option.IsActive
+			});
+
+			RefreshAgentList();
+			NotifyAgentsChanged();
+		}
+		private bool CanCopyToLocal(AgentOptionViewModel? option)
+		{
+			if (option == null || !option.IsGlobal)
+				return false;
+			var agent = option.Agent;
+			if (AgentSettings.ChatAgents.Any(a => a.Id == agent.Id))
+				return false;
+			return true;
 		}
 	}
 
@@ -214,13 +293,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 		{
 			get => _isActive;
 			set => SetProperty(ref _isActive, value);
-		}
-
-		private int _orderIndex = -1;
-		public int OrderIndex
-		{
-			get => _orderIndex;
-			set => SetProperty(ref _orderIndex, value);
 		}
 	}
 }

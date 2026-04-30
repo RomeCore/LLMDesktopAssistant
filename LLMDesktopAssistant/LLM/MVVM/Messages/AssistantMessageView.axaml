@@ -2,7 +2,6 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:spreadsheet="using:DocumentFormat.OpenXml.Spreadsheet"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.Messages"
 			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
@@ -15,12 +14,35 @@
 			VerticalAlignment="Top"
 			Margin="40,8">
 
+		<StackPanel Orientation="Horizontal" IsVisible="{Binding ShowAvatar}">
+			
+			<Panel>
+				
+				<Border IsVisible="{Binding SenderAvatar, Converter={StaticResource NotnullToBooleanConverter}}"
+								Width="32" Height="32" CornerRadius="4" ClipToBounds="True" Margin="4">
+					<Image Source="{Binding SenderAvatar}" Width="32" Height="32"/>
+				</Border>
+				
+				
+				<ico:MaterialIcon Kind="Account" Width="32" Height="32" Margin="4"
+													IsVisible="{Binding SenderAvatar, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
+
+			</Panel>
+
+			<TextBlock Text="{Binding SenderName}"
+								 FontSize="16"
+								 FontWeight="Bold"
+								 Margin="4"
+								 VerticalAlignment="Center"/>
+
+		</StackPanel>
+
 		<ContentControl Content="{Binding ReasoningPart}"/>
 		<ContentControl Content="{Binding TextPart}"/>
 		<ContentControl Content="{Binding ToolPart}"/>
 		<Label Content="{Binding Error}"
-			   Foreground="Red"
-			   IsVisible="{Binding Error, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+				 Foreground="Red"
+				 IsVisible="{Binding Error, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 
 		<ItemsControl ItemsSource="{Binding AssistantMessage.AdditionalViewModels}">
 			<ItemsControl.ItemsPanel>
@@ -71,8 +93,7 @@
 				</Button>
 
 				<ComboBox ItemsSource="{Binding BranchIndices}"
-						  SelectedItem="{Binding SelectedBranchIndex}"
-						  Foreground="{DynamicResource MaterialDesignBody}"/>
+							SelectedItem="{Binding SelectedBranchIndex}"/>
 
 				<Button Command="{Binding SwitchBranchCommand}"
 						Classes="IconButton"

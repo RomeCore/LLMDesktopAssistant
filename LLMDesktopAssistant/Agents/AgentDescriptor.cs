@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 
 namespace LLMDesktopAssistant.Agents
 {
@@ -9,6 +10,14 @@ namespace LLMDesktopAssistant.Agents
 	/// </summary>
 	public class AgentDescriptor : NotifyPropertyChanged
 	{
+		private static readonly JsonSerializerOptions _cloneOptions = new JsonSerializerOptions
+		{
+			WriteIndented = false,
+			DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+			IncludeFields = true,
+			PropertyNameCaseInsensitive = true,
+		};
+
 		private Guid _id = Guid.NewGuid();
 		/// <summary>
 		/// Unique identifier for this agent.
@@ -17,6 +26,16 @@ namespace LLMDesktopAssistant.Agents
 		{
 			get => _id;
 			set => SetProperty(ref _id, value);
+		}
+
+		private AgentInformation _info = new();
+		/// <summary>
+		/// Information about the agent, such as its name and profile image.
+		/// </summary>
+		public AgentInformation Info
+		{
+			get => _info;
+			set => SetProperty(ref _info, value);
 		}
 
 		private AgentExecutionConditionsSettings _executionConditionsSettings = new();
@@ -67,6 +86,17 @@ namespace LLMDesktopAssistant.Agents
 		{
 			get => _toolSettings;
 			set => SetProperty(ref _toolSettings, value);
+		}
+
+		/// <summary>
+		/// Creates a deep clone of this agent descriptor via JSON serialization.
+		/// </summary>
+		public AgentDescriptor Clone()
+		{
+			var json = JsonSerializer.Serialize(this, _cloneOptions);
+			var clone = JsonSerializer.Deserialize<AgentDescriptor>(json, _cloneOptions);
+			clone!._id = Guid.NewGuid();
+			return clone;
 		}
 	}
 }
