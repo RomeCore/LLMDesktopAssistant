@@ -5,24 +5,24 @@
 	/// </summary>
 	public class AgentExecutionConditionsSettings : NotifyPropertyChanged
 	{
-		private bool _canExecuteAgain = false;
+		private bool _canBeMentioned = true;
 		/// <summary>
-		/// Whether the agent can execute again after it has already executed.
+		/// Whether the agent can be mentioned by other agents and users, causing the agent to execute.
 		/// </summary>
-		public bool CanExecuteAgain
+		public bool CanBeMentioned
 		{
-			get => _canExecuteAgain;
-			set => SetProperty(ref _canExecuteAgain, value);
+			get => _canBeMentioned;
+			set => SetProperty(ref _canBeMentioned, value);
 		}
 
-		private AgentExecutionChecker _executionChecker = AgentExecutionChecker.Always;
+		private bool _canMentionOthers = true;
 		/// <summary>
-		/// The checker that determines when to execute the agent.
+		/// Whether the agent can mention other agents, causing them to be executed.
 		/// </summary>
-		public AgentExecutionChecker ExecutionChecker
+		public bool CanMentionOthers
 		{
-			get => _executionChecker;
-			set => SetProperty(ref _executionChecker, value);
+			get => _canMentionOthers;
+			set => SetProperty(ref _canMentionOthers, value);
 		}
 	}
 }

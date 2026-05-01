@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
-
+	[JsonDerivedType(typeof(AgentExecutionSequentialStage), "sequential")]
+	[JsonDerivedType(typeof(AgentExecutionRandomStage), "random")]
 	public abstract class AgentExecutionStage : NotifyPropertyChanged
 	{
 		private Guid _id;
