@@ -38,7 +38,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				ToolStatus.Success => ToolResultStatus.Success,
 				ToolStatus.Error => ToolResultStatus.Error,
 				ToolStatus.Cancelled => ToolResultStatus.Cancelled,
-				_ => throw new ArgumentOutOfRangeException(nameof(status), status, "Invalid status."),
+				ToolStatus.NoResult => ToolResultStatus.NoResult,
+				_ => ToolResultStatus.NoResult
 			};
 		}
 
@@ -65,6 +66,9 @@ namespace LLMDesktopAssistant.LLM.Services
 					.Where(c => !string.IsNullOrWhiteSpace(c))
 					.ToArray(),
 				assistantNickname = promptSettings.Nickname,
+				specialization = promptSettings.UseCustomSpecialization ?
+					promptSettings.CustomSpecialization :
+					(promptSettings.SpecializationId != null ? PromptRegistry.GetSpecialization(promptSettings.SpecializationId.Value)?.Template.Template.Render(componentsContext) : null),
 				persona = promptSettings.UseCustomPersona ?
 					promptSettings.CustomPersona :
 					(promptSettings.PersonaId != null ? PromptRegistry.GetPersona(promptSettings.PersonaId.Value)?.Template.Template.Render(componentsContext) : null),

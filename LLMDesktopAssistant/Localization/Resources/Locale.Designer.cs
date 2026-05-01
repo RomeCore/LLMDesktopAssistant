@@ -1879,6 +1879,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Remove.
+        /// </summary>
+        public static string remove {
+            get {
+                return ResourceManager.GetString("remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Resend.
         /// </summary>
         public static string resend {
@@ -2014,6 +2023,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Can be mentioned.
+        /// </summary>
+        public static string settings_can_be_mentioned {
+            get {
+                return ResourceManager.GetString("settings_can_be_mentioned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Whether the agent can be mentioned by other agents and users, causing it to execute..
+        /// </summary>
+        public static string settings_can_be_mentioned_hint {
+            get {
+                return ResourceManager.GetString("settings_can_be_mentioned_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Can execute again.
         /// </summary>
         public static string settings_can_execute_again {
@@ -2028,6 +2055,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_can_execute_again_hint {
             get {
                 return ResourceManager.GetString("settings_can_execute_again_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Can mention others.
+        /// </summary>
+        public static string settings_can_mention_others {
+            get {
+                return ResourceManager.GetString("settings_can_mention_others", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Whether the agent can mention and trigger other agents..
+        /// </summary>
+        public static string settings_can_mention_others_hint {
+            get {
+                return ResourceManager.GetString("settings_can_mention_others_hint", resourceCulture);
             }
         }
         

@@ -1029,4 +1029,45 @@
   <data name="settings_can_mention_others_hint" xml:space="preserve">
     <value>Whether the agent can mention and trigger other agents.</value>
   </data>
+  <data name="remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <!-- Specialization -->
+  <data name="prompt_specialization" xml:space="preserve">
+    <value>Specialization</value>
+  </data>
+  <data name="prompt_specializations" xml:space="preserve">
+    <value>Specializations</value>
+  </data>
+  <data name="prompt_specialization_hint" xml:space="preserve">
+    <value>Choose a professional specialization for the assistant. This defines what the assistant knows and can do.</value>
+  </data>
+  <data name="prompt_use_custom_specialization" xml:space="preserve">
+    <value>Use custom specialization</value>
+  </data>
+  <data name="prompt_custom_specialization_hint" xml:space="preserve">
+    <value>Enter custom specialization description...</value>
+  </data>
+  <data name="prompt_select_specialization" xml:space="preserve">
+    <value>Select specialization...</value>
+  </data>
+  <data name="prompt_selected_specialization_hint" xml:space="preserve">
+    <value>Select a specialization to define the assistant's professional role</value>
+  </data>
+  <data name="prompt_custom_specialization_placeholder" xml:space="preserve">
+    <value>Describe the professional role you want the assistant to have...</value>
+  </data>
+  <data name="prompt_edit_specialization" xml:space="preserve">
+    <value>Edit Specialization</value>
+  </data>
+  <data name="prompt_new_specialization" xml:space="preserve">
+    <value>New specialization</value>
+  </data>
+  <data name="prompt_import_specialization" xml:space="preserve">
+    <value>Import specialization</value>
+  </data>
+  <data name="specialization_clear" xml:space="preserve">
+    <value>Clear specialization</value>
+  </data>
+
 </root>

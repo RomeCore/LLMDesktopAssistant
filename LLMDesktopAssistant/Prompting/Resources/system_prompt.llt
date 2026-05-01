@@ -1,4 +1,4 @@
-﻿@template system_prompt
+@template system_prompt
 {
 	@if prompt
 	{
@@ -12,6 +12,16 @@
 	{
 		Act as:
 		@persona
+	}
+	@if specialization
+	{
+		Your specialization is:
+		@specialization
+	}
+	@if persona && specialization
+	{
+		Integrate your personality with your specialization naturally.
+		Your personality defines who you are, your specialization defines what you do.
 	}
 	@if assistantNickname
 	{

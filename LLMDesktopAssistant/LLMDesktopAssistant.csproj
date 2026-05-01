@@ -19,6 +19,7 @@
 		<None Remove="Prompting\Resources\components.llt" />
 		<None Remove="Prompting\Resources\foreign_assistant_prompt.llt" />
 		<None Remove="Prompting\Resources\personas.llt" />
+		<None Remove="Prompting\Resources\specializations.llt" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -27,6 +28,7 @@
 		<EmbeddedResource Include="Prompting\Resources\image_describer.llt" />
 		<EmbeddedResource Include="Prompting\Resources\components.llt" />
 		<EmbeddedResource Include="Prompting\Resources\personas.llt" />
+		<EmbeddedResource Include="Prompting\Resources\specializations.llt" />
 		<EmbeddedResource Include="Prompting\Resources\summarizer.llt" />
 		<EmbeddedResource Include="Prompting\Resources\system_prompt.llt" />
 		<EmbeddedResource Include="Prompting\Resources\user_prompt.llt" />

@@ -1029,4 +1029,45 @@
   <data name="settings_can_mention_others_hint" xml:space="preserve">
     <value>Может ли агент упоминать и вызывать других агентов.</value>
   </data>
+  <data name="remove" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <!-- Specialization -->
+  <data name="prompt_specialization" xml:space="preserve">
+    <value>Специализация</value>
+  </data>
+  <data name="prompt_specializations" xml:space="preserve">
+    <value>Специализации</value>
+  </data>
+  <data name="prompt_specialization_hint" xml:space="preserve">
+    <value>Выберите профессиональную специализацию ассистента. Определяет, что ассистент знает и умеет.</value>
+  </data>
+  <data name="prompt_use_custom_specialization" xml:space="preserve">
+    <value>Использовать свою специализацию</value>
+  </data>
+  <data name="prompt_custom_specialization_hint" xml:space="preserve">
+    <value>Введите описание специализации...</value>
+  </data>
+  <data name="prompt_select_specialization" xml:space="preserve">
+    <value>Выберите специализацию...</value>
+  </data>
+  <data name="prompt_selected_specialization_hint" xml:space="preserve">
+    <value>Выберите специализацию для определения профессиональной роли ассистента</value>
+  </data>
+  <data name="prompt_custom_specialization_placeholder" xml:space="preserve">
+    <value>Опишите профессиональную роль, которую должен выполнять ассистент...</value>
+  </data>
+  <data name="prompt_edit_specialization" xml:space="preserve">
+    <value>Редактировать специализацию</value>
+  </data>
+  <data name="prompt_new_specialization" xml:space="preserve">
+    <value>Новая специализация</value>
+  </data>
+  <data name="prompt_import_specialization" xml:space="preserve">
+    <value>Импорт специализации</value>
+  </data>
+  <data name="specialization_clear" xml:space="preserve">
+    <value>Очистить специализацию</value>
+  </data>
+
 </root>

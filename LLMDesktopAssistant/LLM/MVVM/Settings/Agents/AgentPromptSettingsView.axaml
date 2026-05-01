@@ -119,6 +119,82 @@
 					   Opacity="0.2"
 					   Margin="0,5"/>
 
+			<!-- Specialization -->
+			<TextBlock Text="{loc:Loc prompt_specialization}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
+			<TextBlock Text="{loc:Loc prompt_specialization_hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
+			<CheckBox IsChecked="{Binding PromptSettings.UseCustomSpecialization, Mode=TwoWay}"
+					  Content="{loc:Loc prompt_use_custom_specialization}"/>
+
+			<!-- Custom Specialization -->
+			<StackPanel IsVisible="{Binding PromptSettings.UseCustomSpecialization}"
+						Spacing="4"
+						Margin="20,0,0,0">
+
+				<TextBlock Text="{loc:Loc prompt_custom_specialization_hint}"
+						   Opacity="0.6"
+						   TextWrapping="Wrap"/>
+
+				<TextBox Text="{Binding PromptSettings.CustomSpecialization, Mode=TwoWay}"
+						 AcceptsReturn="True"
+						 TextWrapping="Wrap"
+						 MinHeight="100"
+						 MaxHeight="200"
+						 ScrollViewer.VerticalScrollBarVisibility="Auto"
+						 PlaceholderText="{loc:Loc prompt_custom_specialization_placeholder}"/>
+
+			</StackPanel>
+
+			<!-- Preset Specialization -->
+			<StackPanel IsVisible="{Binding PromptSettings.UseCustomSpecialization, Converter={StaticResource InverseBooleanConverter}}"
+						Spacing="4"
+						Margin="20,0,0,0">
+
+				<StackPanel Orientation="Horizontal"
+							Spacing="5">
+
+					<ComboBox SelectedItem="{Binding SelectedSpecialization, Mode=TwoWay}"
+							  ItemsSource="{Binding AvailableSpecializations}"
+							  PlaceholderText="{loc:Loc prompt_select_specialization}"
+							  MinWidth="200">
+
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="local:SpecializationItemViewModel">
+								<TextBlock Text="{Binding Specialization.Name}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+
+					</ComboBox>
+
+					<Button Classes="IconButton"
+							Command="{Binding ClearSpecializationCommand}"
+							ToolTip.Tip="{loc:Loc specialization_clear}">
+
+						<ico:MaterialIcon Kind="Remove"/>
+
+					</Button>
+
+				</StackPanel>
+
+				<TextBlock Text="{loc:Loc prompt_selected_specialization_hint}"
+						   Opacity="0.6"
+						   FontSize="12"/>
+
+			</StackPanel>
+
+			<!-- Separator -->
+			<Rectangle Height="1"
+					   Fill="{DynamicResource DefaultForeground}"
+					   Opacity="0.2"
+					   Margin="0,5"/>
+
+
 			<!-- Components -->
 			<TextBlock Text="{loc:Loc prompt_components}"
 					   FontWeight="Bold"

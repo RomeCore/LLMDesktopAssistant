@@ -23,6 +23,7 @@ namespace LLMDesktopAssistant.Prompting
 
 		public static ImmutableDictionary<Guid, PromptComponent> BuiltinComponents { get; }
 		public static ImmutableDictionary<Guid, Persona> BuiltinPersonas { get; }
+		public static ImmutableDictionary<Guid, Specialization> BuiltinSpecializations { get; }
 
 		static PromptRegistry()
 		{
@@ -40,6 +41,7 @@ namespace LLMDesktopAssistant.Prompting
 
 			var componentsBuilder = ImmutableDictionary.CreateBuilder<Guid, PromptComponent>();
 			var personasBuilder = ImmutableDictionary.CreateBuilder<Guid, Persona>();
+			var specializationsBuilder = ImmutableDictionary.CreateBuilder<Guid, Specialization>();
 
 			foreach (var template in SharedLibrary)
 			{
@@ -48,34 +50,47 @@ namespace LLMDesktopAssistant.Prompting
 
 				// Log.Debug("Loading template: {Id}", id);
 
-				if (type == "component" || type == "persona")
+				if (type == "component" || type == "persona" || type == "specialization")
 				{
 					if (template is not ITextTemplate textTemplate)
-						throw new InvalidDataException($"Invalid component/persona template: {id} is not a text template.");
+						throw new InvalidDataException($"Invalid template: {id} is not a text template.");
 
 					var title = template.Metadata.TryGetAdditional<string>("title");
 					var guidStr = template.Metadata.TryGetAdditional<string>("guid")
-						?? throw new InvalidDataException($"Invalid component/persona template: {id} missing 'guid' metadata.");
+						?? throw new InvalidDataException($"Invalid template: {id} missing 'guid' metadata.");
 					var guid = Guid.Parse(guidStr);
+					var category = template.Metadata.TryGetAdditional<string>("category") ?? string.Empty;
 
-					if (type == "component")
+					switch (type)
 					{
-						componentsBuilder.Add(guid, new PromptComponent
-						{
-							Id = guid,
-							Name = title ?? LocalizationManager.LocalizeStatic("promptcomponent-" + id),
-							Category = string.Empty,
-							Template = new SerializableTextTemplate(textTemplate)
-						});
-					}
-					else if (type == "persona")
-					{
-						personasBuilder.Add(guid, new Persona
-						{
-							Id = guid,
-							Name = title ?? LocalizationManager.LocalizeStatic("persona-" + id),
-							Template = new SerializableTextTemplate(textTemplate)
-						});
+						case "component":
+							componentsBuilder.Add(guid, new PromptComponent
+							{
+								Id = guid,
+								Name = title ?? LocalizationManager.LocalizeStatic("promptcomponent-" + id),
+								Category = category,
+								Template = new SerializableTextTemplate(textTemplate)
+							});
+							break;
+
+						case "persona":
+							personasBuilder.Add(guid, new Persona
+							{
+								Id = guid,
+								Name = title ?? LocalizationManager.LocalizeStatic("persona-" + id),
+								Template = new SerializableTextTemplate(textTemplate)
+							});
+							break;
+
+						case "specialization":
+							specializationsBuilder.Add(guid, new Specialization
+							{
+								Id = guid,
+								Name = title ?? LocalizationManager.LocalizeStatic("specialization-" + id),
+								Category = category,
+								Template = new SerializableTextTemplate(textTemplate)
+							});
+							break;
 					}
 				}
 				else
@@ -86,6 +101,7 @@ namespace LLMDesktopAssistant.Prompting
 
 			BuiltinComponents = componentsBuilder.ToImmutable();
 			BuiltinPersonas = personasBuilder.ToImmutable();
+			BuiltinSpecializations = specializationsBuilder.ToImmutable();
 		}
 
 		public static PromptComponent? GetComponent(Guid id)
@@ -110,6 +126,19 @@ namespace LLMDesktopAssistant.Prompting
 
 			if (BuiltinPersonas.TryGetValue(id, out var persona2))
 				return persona2;
+
+			return null;
+		}
+
+		public static Specialization? GetSpecialization(Guid id)
+		{
+			var specializationsConfig = SettingsManager.Get<SpecializationsConfiguration>();
+			foreach (var specialization1 in specializationsConfig.Specializations)
+				if (specialization1.Id == id)
+					return specialization1;
+
+			if (BuiltinSpecializations.TryGetValue(id, out var specialization2))
+				return specialization2;
 
 			return null;
 		}

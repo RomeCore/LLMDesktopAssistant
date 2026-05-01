@@ -68,6 +68,43 @@
 					</StackPanel>
 				</TabItem>
 
+				<TabItem Header="{loc:Loc prompt_specializations}">
+					<StackPanel>
+						<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+							<Button Command="{Binding AddSpecializationCommand}"
+									Classes="IconButton"
+									ToolTip.Tip="{loc:Loc add}">
+								<ico:MaterialIcon Kind="Plus"/>
+							</Button>
+							<Button Command="{Binding RemoveSpecializationCommand}"
+									Classes="IconButton"
+									Margin="5,0,0,0"
+									ToolTip.Tip="{loc:Loc remove}">
+								<ico:MaterialIcon Kind="Delete"/>
+							</Button>
+							<Button Command="{Binding ImportSpecializationCommand}"
+									Classes="IconButton"
+									Margin="5,0,0,0"
+									ToolTip.Tip="{loc:Loc prompt_import}">
+								<ico:MaterialIcon Kind="Import"/>
+							</Button>
+						</StackPanel>
+
+						<ListBox ItemsSource="{Binding Specializations}"
+								 SelectedItem="{Binding SelectedSpecialization}"
+								 ScrollViewer.VerticalScrollBarVisibility="Auto">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<StackPanel>
+										<TextBlock Text="{Binding Specialization.Name}"
+												   FontWeight="Bold"/>
+									</StackPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</StackPanel>
+				</TabItem>
+
 				<TabItem Header="{loc:Loc prompt_personas}">
 					<StackPanel>
 						<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
@@ -116,6 +153,30 @@
 						 Margin="0,0,0,10"/>
 			
 				<TextBox Text="{Binding Component.Category, Mode=TwoWay}"
+						 PlaceholderText="{loc:Loc prompt_category}"
+						 Margin="0,0,0,10"/>
+			
+				<TextBox Text="{Binding Text, Mode=TwoWay}"
+						 AcceptsReturn="True"
+						 TextWrapping="Wrap"
+						 Height="300"
+						 ScrollViewer.VerticalScrollBarVisibility="Auto"
+						 PlaceholderText="{loc:Loc prompt_text}"
+						 Margin="0,0,0,10"/>
+			</StackPanel>
+			
+			<StackPanel Grid.Column="2"
+						DataContext="{Binding SelectedSpecialization}"
+						IsVisible="{Binding Converter={StaticResource NotnullToBooleanConverter}}">
+				<TextBlock Text="{loc:Loc prompt_edit_specialization}"
+						   FontSize="18"
+						   Margin="0,0,0,15"/>
+			
+				<TextBox Text="{Binding Specialization.Name, Mode=TwoWay}"
+						 PlaceholderText="{loc:Loc prompt_name}"
+						 Margin="0,0,0,10"/>
+			
+				<TextBox Text="{Binding Specialization.Category, Mode=TwoWay}"
 						 PlaceholderText="{loc:Loc prompt_category}"
 						 Margin="0,0,0,10"/>
 			

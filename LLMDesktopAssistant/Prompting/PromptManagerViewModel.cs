@@ -50,13 +50,31 @@ namespace LLMDesktopAssistant.Prompting
 		}
 	}
 
+	public class SpecializationItemViewModel : ViewModelBase
+	{
+		public Specialization Specialization { get; }
+
+		public string Text
+		{
+			get => Specialization.Template.SourceCode;
+			set => Specialization.Template = new SerializableTextTemplate(value, TextTemplateType.PlainText);
+		}
+
+		public SpecializationItemViewModel(Specialization specialization)
+		{
+			Specialization = specialization;
+		}
+	}
+
 	[ViewModelFor(typeof(PromptManagerView))]
 	public class PromptManagerViewModel : ViewModelBase
 	{
 		public PromptComponentsConfiguration ComponentsConfig { get; }
+		public SpecializationsConfiguration SpecializationsConfig { get; }
 		public PersonasConfiguration PersonasConfig { get; }
 
 		public ObservableCollection<PromptComponentItemViewModel> Components { get; }
+		public ObservableCollection<SpecializationItemViewModel> Specializations { get; }
 		public ObservableCollection<PersonaItemViewModel> Personas { get; }
 
 		private PromptComponentItemViewModel? _selectedComponent;
@@ -68,7 +86,10 @@ namespace LLMDesktopAssistant.Prompting
 				if (SetProperty(ref _selectedComponent, value))
 				{
 					if (value != null)
+					{
 						SelectedPersona = null;
+						SelectedSpecialization = null;
+					}
 					RemoveComponentCommand.NotifyCanExecuteChanged();
 				}
 			}
@@ -83,8 +104,29 @@ namespace LLMDesktopAssistant.Prompting
 				if (SetProperty(ref _selectedPersona, value))
 				{
 					if (value != null)
+					{
 						SelectedComponent = null;
+						SelectedSpecialization = null;
+					}
 					RemovePersonaCommand.NotifyCanExecuteChanged();
+				}
+			}
+		}
+
+		private SpecializationItemViewModel? _selectedSpecialization;
+		public SpecializationItemViewModel? SelectedSpecialization
+		{
+			get => _selectedSpecialization;
+			set
+			{
+				if (SetProperty(ref _selectedSpecialization, value))
+				{
+					if (value != null)
+					{
+						SelectedComponent = null;
+						SelectedPersona = null;
+					}
+					RemoveSpecializationCommand.NotifyCanExecuteChanged();
 				}
 			}
 		}
@@ -97,13 +139,21 @@ namespace LLMDesktopAssistant.Prompting
 		public RelayCommand RemovePersonaCommand { get; }
 		public AsyncRelayCommand ImportPersonaCommand { get; }
 
+		public AsyncRelayCommand AddSpecializationCommand { get; }
+		public RelayCommand RemoveSpecializationCommand { get; }
+		public AsyncRelayCommand ImportSpecializationCommand { get; }
+
 		public PromptManagerViewModel()
 		{
 			ComponentsConfig = SettingsManager.Get<PromptComponentsConfiguration>();
+			SpecializationsConfig = SettingsManager.Get<SpecializationsConfiguration>();
 			PersonasConfig = SettingsManager.Get<PersonasConfiguration>();
 
 			Components = new ObservableCollection<PromptComponentItemViewModel>(
 				ComponentsConfig.Components.Select(c => new PromptComponentItemViewModel(c))
+			);
+			Specializations = new ObservableCollection<SpecializationItemViewModel>(
+				SpecializationsConfig.Specializations.Select(s => new SpecializationItemViewModel(s))
 			);
 			Personas = new ObservableCollection<PersonaItemViewModel>(
 				PersonasConfig.Personas.Select(p => new PersonaItemViewModel(p))
@@ -116,6 +166,10 @@ namespace LLMDesktopAssistant.Prompting
 			AddPersonaCommand = new AsyncRelayCommand(AddPersona);
 			RemovePersonaCommand = new RelayCommand(RemovePersona, () => SelectedPersona != null);
 			ImportPersonaCommand = new AsyncRelayCommand(ImportPersona);
+
+			AddSpecializationCommand = new AsyncRelayCommand(AddSpecialization);
+			RemoveSpecializationCommand = new RelayCommand(RemoveSpecialization, () => SelectedSpecialization != null);
+			ImportSpecializationCommand = new AsyncRelayCommand(ImportSpecialization);
 		}
 
 		private async Task AddComponent()
@@ -242,6 +296,66 @@ namespace LLMDesktopAssistant.Prompting
 				catch (Exception ex)
 				{
 					Log.Error(ex, "Failed to import persona from file: {Path}", file.Path.LocalPath);
+				}
+			}
+		}
+
+		private async Task AddSpecialization()
+		{
+			var specialization = new Specialization
+			{
+				Name = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_new_specialization"),
+				Category = string.Empty,
+				Template = SerializableTextTemplate.Empty
+			};
+
+			SpecializationsConfig.Specializations.Add(specialization);
+
+			var vm = new SpecializationItemViewModel(specialization);
+			Specializations.Add(vm);
+			SelectedSpecialization = vm;
+		}
+
+		private void RemoveSpecialization()
+		{
+			if (SelectedSpecialization == null) return;
+
+			SpecializationsConfig.Specializations.Remove(SelectedSpecialization.Specialization);
+			Specializations.Remove(SelectedSpecialization);
+			SelectedSpecialization = null;
+		}
+
+		private async Task ImportSpecialization()
+		{
+			var files = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+			{
+				Title = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_import_specialization"),
+				FileTypeFilter = new[]
+				{
+					new FilePickerFileType("Text files") { Patterns = new[] { "*.txt", "*.md" } },
+					new FilePickerFileType("All files") { Patterns = new[] { "*" } }
+				},
+				AllowMultiple = true
+			});
+
+			foreach (var file in files)
+			{
+				try
+				{
+					var text = await File.ReadAllTextAsync(file.Path.LocalPath);
+					var specialization = new Specialization
+					{
+						Name = Path.GetFileNameWithoutExtension(file.Name),
+						Category = string.Empty,
+						Template = new SerializableTextTemplate(text, TextTemplateType.PlainText)
+					};
+
+					SpecializationsConfig.Specializations.Add(specialization);
+					Specializations.Add(new SpecializationItemViewModel(specialization));
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Failed to import specialization from file: {Path}", file.Path.LocalPath);
 				}
 			}
 		}

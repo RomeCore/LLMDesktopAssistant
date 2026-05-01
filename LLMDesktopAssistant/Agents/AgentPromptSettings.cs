@@ -4,7 +4,7 @@ namespace LLMDesktopAssistant.Agents
 {
 	/// <summary>
 	/// Describes an agent prompt settings.
-	/// Contains the system prompt, nickname, persona and other settings.
+	/// Contains the system prompt, nickname, persona, specialization and other settings.
 	/// </summary>
 	public class AgentPromptSettings : NotifyPropertyChanged
 	{
@@ -69,6 +69,37 @@ namespace LLMDesktopAssistant.Agents
 		{
 			get => _personaId;
 			set => SetProperty(ref _personaId, value);
+		}
+
+		private bool _useCustomSpecialization = false;
+		/// <summary>
+		/// Whether to use a custom specialization. False for <see cref="SpecializationId"/>, true for <see cref="CustomSpecialization"/>.
+		/// </summary>
+		public bool UseCustomSpecialization
+		{
+			get => _useCustomSpecialization;
+			set => SetProperty(ref _useCustomSpecialization, value);
+		}
+
+		private string? _customSpecialization;
+		/// <summary>
+		/// The custom specialization prompt to use, if not null or empty, this will be used instead of <see cref="SpecializationId"/>.
+		/// </summary>
+		public string? CustomSpecialization
+		{
+			get => _customSpecialization;
+			set => SetProperty(ref _customSpecialization, value);
+		}
+
+		private Guid? _specializationId;
+		/// <summary>
+		/// The specialization ID for the chatbot. Defines the professional role/knowledge domain.
+		/// The identifier leads to <see cref="Prompting.PromptRegistry.GetSpecialization(Guid)"/>
+		/// </summary>
+		public Guid? SpecializationId
+		{
+			get => _specializationId;
+			set => SetProperty(ref _specializationId, value);
 		}
 	}
 }

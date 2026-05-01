@@ -59,6 +59,19 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		}
 	}
 
+	public class SpecializationItemViewModel : ObservableObject
+	{
+		private readonly AgentPromptSettingsViewModel _parent;
+		public Specialization Specialization { get; }
+
+		public SpecializationItemViewModel(AgentPromptSettingsViewModel parent, Specialization specialization)
+		{
+			_parent = parent;
+			Specialization = specialization;
+		}
+	}
+
+
 	[ViewModelFor(typeof(AgentPromptSettingsView))]
 	public class AgentPromptSettingsViewModel : ViewModelBase
 	{
@@ -84,12 +97,33 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		public ICommand ClearPersonaCommand { get; }
 
+		public ObservableCollection<SpecializationItemViewModel> AvailableSpecializations { get; } = new();
+		private SpecializationItemViewModel? _selectedSpecialization;
+		public SpecializationItemViewModel? SelectedSpecialization
+		{
+			get => _selectedSpecialization;
+			set
+			{
+				if (SetProperty(ref _selectedSpecialization, value))
+				{
+					if (value != null)
+						PromptSettings.SpecializationId = value.Specialization.Id;
+					else
+						PromptSettings.SpecializationId = null;
+				}
+			}
+		}
+
+		public ICommand ClearSpecializationCommand { get; }
+
+
 		public AgentPromptSettingsViewModel(AgentPromptSettings settings)
 		{
 			PromptSettings = settings;
 
 			ClearPersonaCommand = new RelayCommand(() => SelectedPersona = null);
 			Refresh();
+			ClearSpecializationCommand = new RelayCommand(() => SelectedSpecialization = null);
 		}
 
 		public void Refresh()
@@ -129,6 +163,22 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			else
 			{
 				SelectedPersona = null;
+			}
+
+			AvailableSpecializations.Clear();
+			var specializationsConfig = SettingsManager.Get<SpecializationsConfiguration>();
+			foreach (var specialization in PromptRegistry.BuiltinSpecializations.Values)
+				AvailableSpecializations.Add(new SpecializationItemViewModel(this, specialization));
+			foreach (var specialization in specializationsConfig.Specializations)
+				AvailableSpecializations.Add(new SpecializationItemViewModel(this, specialization));
+
+			if (PromptSettings.SpecializationId.HasValue)
+			{
+				SelectedSpecialization = AvailableSpecializations.FirstOrDefault(s => s.Specialization.Id == PromptSettings.SpecializationId.Value);
+			}
+			else
+			{
+				SelectedSpecialization = null;
 			}
 		}
 
