@@ -82,9 +82,9 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				if (message is AssistantMessage asm)
 				{
-					assistantMessages.Add(asm);
 					if (foundUser)
 						break;
+					assistantMessages.Add(asm);
 				}
 				else if (message is UserMessage usm)
 				{

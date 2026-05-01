@@ -25,11 +25,16 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public AgentDescriptor GetAgentDescriptor(Guid agentId)
 		{
+			return TryGetAgentDescriptor(agentId) ?? 
+				throw new KeyNotFoundException($"Agent with id '{agentId}' not found.");
+		}
+
+		public AgentDescriptor? TryGetAgentDescriptor(Guid agentId)
+		{
 			var agents = SettingsManager.Get<AgentsConfiguration>().Agents;
 			var chatAgents = chat.Settings.Agents.ChatAgents;
 
-			return chatAgents.Concat(agents).FirstOrDefault(a => a.Id == agentId) ?? 
-				throw new KeyNotFoundException($"Agent with id '{agentId}' not found.");
+			return chatAgents.Concat(agents).FirstOrDefault(a => a.Id == agentId);
 		}
 	}
 }

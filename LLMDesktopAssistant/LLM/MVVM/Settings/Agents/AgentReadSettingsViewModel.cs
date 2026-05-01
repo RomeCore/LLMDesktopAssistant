@@ -7,7 +7,7 @@ using LLMDesktopAssistant.Settings;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
 	public class ReadPermissionItem : ObservableObject
 	{

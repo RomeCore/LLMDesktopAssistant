@@ -3,12 +3,13 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+			 xmlns:sett="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
 			 x:Name="ThisControl"
-			 x:Class="LLMDesktopAssistant.LLM.Settings.AgentGenerationSettingsView"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentGenerationSettingsView"
 			 x:DataType="local:AgentGenerationSettingsViewModel">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -152,7 +153,7 @@
 				<ItemsControl ItemsSource="{Binding GenerationSettings.AdditionalParameters}">
 
 					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="local:AdditionalParameter">
+						<DataTemplate x:DataType="sett:AdditionalParameter">
 							<Grid ColumnDefinitions="Auto,*,Auto,*,Auto,Auto"
 									RowDefinitions="Auto"
 									ColumnSpacing="6"

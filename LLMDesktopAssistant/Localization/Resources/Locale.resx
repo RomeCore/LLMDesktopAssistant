@@ -951,11 +951,82 @@
   <data name="agent_info_profile_image_hint" xml:space="preserve">
     <value>Paste a base64-encoded image to use as the agent's avatar.</value>
   </data>
-  <data name="agent_info_profile_image_placeholder" xml:space="preserve">
-    <value>base64 encoded image data...</value>
-  </data>
   <data name="agent_info_clear_image" xml:space="preserve">
     <value>Clear image</value>
   </data>
-
+  <data name="settings_add_stage" xml:space="preserve">
+    <value>Add execution stage</value>
+  </data>
+  <data name="settings_remove_stage" xml:space="preserve">
+    <value>Remove stage</value>
+  </data>
+  <data name="settings_clone_stage" xml:space="preserve">
+    <value>Clone stage</value>
+  </data>
+  <data name="settings_move_stage_up" xml:space="preserve">
+    <value>Move stage up</value>
+  </data>
+  <data name="settings_move_stage_down" xml:space="preserve">
+    <value>Move stage down</value>
+  </data>
+  <data name="settings_agent_list" xml:space="preserve">
+    <value>Agent List</value>
+  </data>
+  <data name="settings_execution_stages" xml:space="preserve">
+    <value>Execution Stages</value>
+  </data>
+  <data name="settings_sequential_stage" xml:space="preserve">
+    <value>Sequential</value>
+  </data>
+  <data name="settings_random_stage" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="settings_stage_can_agents_execute_again" xml:space="preserve">
+    <value>Can agents execute again</value>
+  </data>
+  <data name="settings_stage_min_iterations" xml:space="preserve">
+    <value>Min iterations</value>
+  </data>
+  <data name="settings_stage_max_iterations" xml:space="preserve">
+    <value>Max iterations</value>
+  </data>
+  <data name="settings_stage_stop_chance" xml:space="preserve">
+    <value>Stop chance</value>
+  </data>
+  <data name="settings_stage_weighted_agents" xml:space="preserve">
+    <value>Weighted agents</value>
+  </data>
+  <data name="settings_stage_add_agent" xml:space="preserve">
+    <value>Add agent to stage</value>
+  </data>
+  <data name="settings_stage_remove_agent" xml:space="preserve">
+    <value>Remove agent from stage</value>
+  </data>
+  <data name="settings_stage_move_agent_up" xml:space="preserve">
+    <value>Move agent up in stage</value>
+  </data>
+  <data name="settings_stage_move_agent_down" xml:space="preserve">
+    <value>Move agent down in stage</value>
+  </data>
+  <data name="agent_info_select_image" xml:space="preserve">
+    <value>Select image</value>
+  </data>
+  <data name="stage_type_sequential" xml:space="preserve">
+    <value>Sequential</value>
+  </data>
+  <data name="stage_type_random" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="settings_can_be_mentioned" xml:space="preserve">
+    <value>Can be mentioned</value>
+  </data>
+  <data name="settings_can_be_mentioned_hint" xml:space="preserve">
+    <value>Whether the agent can be mentioned by other agents and users, causing it to execute.</value>
+  </data>
+  <data name="settings_can_mention_others" xml:space="preserve">
+    <value>Can mention others</value>
+  </data>
+  <data name="settings_can_mention_others_hint" xml:space="preserve">
+    <value>Whether the agent can mention and trigger other agents.</value>
+  </data>
 </root>

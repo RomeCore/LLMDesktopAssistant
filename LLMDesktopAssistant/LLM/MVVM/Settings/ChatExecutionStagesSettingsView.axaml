@@ -1,0 +1,115 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:stages="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ChatExecutionStagesSettingsView"
+			 x:DataType="local:ChatExecutionStagesSettingsViewModel">
+
+	<UserControl.DataTemplates>
+		<DataTemplate DataType="stages:SequentialStageViewModel">
+			<stages:SequentialStageView/>
+		</DataTemplate>
+		<DataTemplate DataType="stages:RandomStageViewModel">
+			<stages:RandomStageView/>
+		</DataTemplate>
+	</UserControl.DataTemplates>
+
+	<DockPanel>
+		<!-- Toolbar -->
+		<Border DockPanel.Dock="Top"
+				BorderBrush="{DynamicResource SystemAccentColor}"
+				BorderThickness="0,0,0,1"
+				Padding="8,6">
+			<StackPanel Orientation="Horizontal" Spacing="4">
+				<Button Command="{Binding AddStageCommand}" Classes="IconButton"
+						ToolTip.Tip="{loc:Loc settings_add_stage}">
+					<ico:MaterialIcon Kind="Plus"/>
+				</Button>
+			</StackPanel>
+		</Border>
+
+		<!-- Stages list -->
+		<ScrollViewer Margin="8">
+			<ItemsControl ItemsSource="{Binding Stages}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate DataType="stages:StageContainerViewModel">
+						<Border BorderBrush="{DynamicResource SystemAccentColor}"
+								BorderThickness="1"
+								CornerRadius="4"
+								Padding="8"
+								Margin="0,0,0,8">
+							<StackPanel>
+								<!-- Stage Header -->
+								<Border BorderBrush="{DynamicResource SystemAccentColor}"
+										BorderThickness="0,0,0,1"
+										Padding="0,0,0,6"
+										Margin="0,0,0,6">
+									<Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
+										<!-- Type selector -->
+										<ComboBox Grid.Column="0"
+												  ItemsSource="{Binding AvailableStageTypes}"
+												  SelectedItem="{Binding SelectedType}"
+												  Width="180"
+												  Margin="0,0,8,0">
+										
+											<ComboBox.ItemTemplate>
+												<DataTemplate>
+													<TextBlock Text="{Binding DisplayName}"/>
+												</DataTemplate>
+											</ComboBox.ItemTemplate>
+										</ComboBox>
+
+										<!-- Move up -->
+										<Button Grid.Column="3"
+												Command="{Binding MoveUpCommand}"
+												Classes="IconButton"
+												Margin="2,0"
+												ToolTip.Tip="{loc:Loc settings_move_stage_up}">
+											<ico:MaterialIcon Kind="ChevronUp"/>
+										</Button>
+
+										<!-- Move down -->
+										<Button Grid.Column="4"
+												Command="{Binding MoveDownCommand}"
+												Classes="IconButton"
+												Margin="2,0"
+												ToolTip.Tip="{loc:Loc settings_move_stage_down}">
+											<ico:MaterialIcon Kind="ChevronDown"/>
+										</Button>
+
+										<!-- Clone -->
+										<Button Grid.Column="5"
+												Command="{Binding CloneCommand}"
+												Classes="IconButton"
+												Margin="2,0"
+												ToolTip.Tip="{loc:Loc settings_clone_stage}">
+											<ico:MaterialIcon Kind="ContentCopy"/>
+										</Button>
+
+										<!-- Delete -->
+										<Button Grid.Column="6"
+												Command="{Binding DeleteCommand}"
+												Classes="IconButton"
+												Margin="2,0"
+												ToolTip.Tip="{loc:Loc settings_remove_stage}">
+											<ico:MaterialIcon Kind="Delete"/>
+										</Button>
+									</Grid>
+								</Border>
+
+								<!-- Stage Body - content depends on type -->
+								<ContentControl Content="{Binding StageVM}"/>
+							</StackPanel>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+	</DockPanel>
+
+</UserControl>

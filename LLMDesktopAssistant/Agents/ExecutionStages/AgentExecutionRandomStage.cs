@@ -12,6 +12,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			get => _agentInstances;
 			set => _agentInstances.Reset(value);
 		}
+		public override IReadOnlyList<AgentInstance> Children => AgentInstances;
 
 		private bool _canAgentsExecuteAgain = true;
 		/// <summary>

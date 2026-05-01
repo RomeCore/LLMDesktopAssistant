@@ -5,11 +5,12 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.LLM.Settings
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
 	public class ToolItemViewModel : ViewModelBase
 	{

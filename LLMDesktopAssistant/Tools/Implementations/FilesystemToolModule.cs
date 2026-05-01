@@ -114,18 +114,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					AskForConfirmation = true
 				});
 
-			AddTool(ReplaceInFileLines,
-				new ToolInitializationInfo
-				{
-					Name = "fs-replace_lines",
-					Description = """
-						Replaces all occurrences of a string or regex pattern in a text file line-by-line.
-						Returns detailed information about applied changes including line numbers.
-						""",
-					Category = "filesystem",
-					AskForConfirmation = true
-				});
-
 			AddTool(ListDirectory,
 				new ToolInitializationInfo
 				{
@@ -760,7 +748,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 				if (deletedContent.Count > 5)
 				{
-					int startIdx = Math.Max(0, deletedContent.Count - 5);
+					int startIdx = Math.Max(Math.Min(5, deletedContent.Count), deletedContent.Count - 5);
 					for (int i = startIdx; i < deletedContent.Count; i++)
 					{
 						report.AppendLine($"> {deletedStartLine + i,6}: {deletedContent[i]}");
@@ -811,7 +799,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 				if (insertedContent.Count > 5)
 				{
-					int startIdx = Math.Max(0, insertedContent.Count - 5);
+					int startIdx = Math.Max(Math.Min(5, insertedContent.Count), insertedContent.Count - 5);
 					for (int i = startIdx; i < insertedContent.Count; i++)
 					{
 						report.AppendLine($"> {insertedStartLine + i,6}: {insertedContent[i]}");
@@ -969,141 +957,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 				var changeDescription = string.Format(
 					LocalizationManager.LocalizeStatic("fs-changes_text_replaced"),
-					totalReplacements);
-
-				var result = new ReactiveToolResult
-				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
-					StatusTitle = $"**{fileName}** *({changeDescription})*",
-					ResultContent = report.ToString()
-				};
-
-				return result.Complete(true);
-			}
-			catch (Exception ex)
-			{
-				return ReactiveToolResult.CreateError($"Error replacing text in file: {ex.Message}");
-			}
-		}
-
-		public ReactiveToolResult ReplaceInFileLines(
-			string path,
-			[Description("The string to search for. If null or empty, the 'oldRegex' must be provided.")]
-			string? oldString = null,
-			[Description("The regex to search for. If null or empty, the 'oldString' must be provided.")]
-			string? oldRegex = null,
-			[Description("The replacement string. If null, the oldString or oldRegex will be removed (replaced with empty string).")]
-			string? newString = null)
-		{
-			try
-			{
-				var fullPath = ResolvePath(path);
-				var fileName = Path.GetFileName(fullPath);
-
-				if (!File.Exists(fullPath))
-					return ReactiveToolResult.CreateError("File not found.");
-
-				if (FileUtils.IsBinaryFile(fullPath))
-					return ReactiveToolResult.CreateError("Cannot replace text in binary files.");
-
-				if (string.IsNullOrEmpty(oldString) && string.IsNullOrEmpty(oldRegex))
-					return ReactiveToolResult.CreateError("Both 'oldString' and 'oldRegex' parameters cannot be null or empty.");
-
-				var content = File.ReadAllText(fullPath);
-				var lines = content.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
-
-				var changes = new List<(int lineNumber, string oldLine, string newLine)>();
-				var newLines = new List<string>();
-				var totalReplacements = 0;
-
-				var regex = oldString != null ?
-					new Regex(Regex.Escape(oldString), RegexOptions.Compiled) :
-					new Regex(oldRegex!, RegexOptions.Compiled);
-				newString ??= string.Empty;
-
-				for (int i = 0; i < lines.Length; i++)
-				{
-					var line = lines[i];
-					var lineNumber = i + 1;
-
-					var matches = regex.Matches(line);
-					if (matches.Count > 0)
-					{
-						var newLine = regex.Replace(line, newString);
-						totalReplacements += matches.Count;
-
-						changes.Add((lineNumber, line, newLine));
-						newLines.Add(newLine);
-					}
-					else
-					{
-						newLines.Add(line);
-					}
-				}
-
-				if (totalReplacements == 0)
-				{
-					var noChangeResult = new ReactiveToolResult
-					{
-						StatusIcon = Material.Icons.MaterialIconKind.Information,
-						StatusTitle = $"**{fileName}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
-						ResultContent = $"No occurrences of '{oldString ?? oldRegex}' found in file '{path}'."
-					};
-					return noChangeResult.Complete(true);
-				}
-
-				var newContent = string.Join(Environment.NewLine, newLines);
-				File.WriteAllText(fullPath, newContent);
-
-				var report = new StringBuilder();
-				var oldPattern = oldString ?? oldRegex!;
-				report.AppendLine($"Successfully replaced '{oldPattern}' with '{newString ?? "(empty)"}' in file '{path}'");
-				report.AppendLine($"Summary:");
-				report.AppendLine($"  Total lines modified: {changes.Count}");
-				report.AppendLine($"  Total replacements: {totalReplacements}");
-				report.AppendLine($"  File size before: {content.Length} bytes");
-				report.AppendLine($"  File size after: {newContent.Length} bytes");
-
-				if (changes.Count <= 10) // Show all changes if 10 or less
-				{
-					report.AppendLine();
-					report.AppendLine($"Detailed changes:");
-					foreach (var change in changes)
-					{
-						report.AppendLine($"  Line {change.lineNumber}:");
-						report.AppendLine($"    Before: {Truncate(change.oldLine, 80)}");
-						report.AppendLine($"    After:  {Truncate(change.newLine, 80)}");
-						report.AppendLine();
-					}
-				}
-				else // Show only first 5 and last 5 changes
-				{
-					report.AppendLine();
-					report.AppendLine($"First 5 changes:");
-					for (int i = 0; i < Math.Min(5, changes.Count); i++)
-					{
-						var change = changes[i];
-						report.AppendLine($"  Line {change.lineNumber}: {Truncate(change.oldLine, 60)} → {Truncate(change.newLine, 60)}");
-					}
-
-					if (changes.Count > 10)
-					{
-						report.AppendLine($"   ... and {changes.Count - 10} more lines");
-					}
-
-					if (changes.Count > 5)
-					{
-						report.AppendLine($"📝 Last 5 changes:");
-						for (int i = Math.Max(5, changes.Count - 5); i < changes.Count; i++)
-						{
-							var change = changes[i];
-							report.AppendLine($"  Line {change.lineNumber}: {Truncate(change.oldLine, 60)} → {Truncate(change.newLine, 60)}");
-						}
-					}
-				}
-
-				var changeDescription = string.Format(
-					LocalizationManager.LocalizeStatic("fs-changes_lines_replaced"),
 					totalReplacements);
 
 				var result = new ReactiveToolResult

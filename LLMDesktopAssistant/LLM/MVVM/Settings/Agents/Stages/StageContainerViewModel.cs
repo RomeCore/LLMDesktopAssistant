@@ -1,0 +1,173 @@
+using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents.ExecutionStages;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Utils;
+using System.Text.Json;
+
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages;
+
+/// <summary>
+/// Represents the available stage type in the UI combobox.
+/// </summary>
+public sealed class StageTypeOption
+{
+	public required string Name { get; init; }
+	public string DisplayName => LocalizationManager.LocalizeStatic(Name);
+	public required Type StageType { get; init; }
+
+	public static StageTypeOption Sequential { get; } = new StageTypeOption
+	{
+		Name = "stage_type_sequential",
+		StageType = typeof(AgentExecutionSequentialStage)
+	};
+	public static StageTypeOption Random { get; } = new StageTypeOption
+	{
+		Name = "stage_type_random",
+		StageType = typeof(AgentExecutionRandomStage)
+	};
+}
+
+/// <summary>
+/// Wrapper ViewModel for any execution stage.
+/// Handles the header UI: type selection, move up/down, delete, clone.
+/// Delegates the body content to the stage-specific <see cref="IStageViewModel"/>.
+/// </summary>
+public class StageContainerViewModel : ViewModelBase
+{
+	private readonly ChatExecutionStagesSettingsViewModel _parent;
+	private AgentExecutionStage _modelStage;
+
+	private StageViewModelBase _stageVM;
+	public StageViewModelBase StageVM
+	{
+		get => _stageVM;
+		set => SetProperty(ref _stageVM, value);
+	}
+
+	/// <summary>
+	/// Available stage types for the type ComboBox.
+	/// Set externally by parent VM.
+	/// </summary>
+	public List<StageTypeOption> AvailableStageTypes { get; set; } = [];
+
+	private StageTypeOption _selectedType;
+	public StageTypeOption SelectedType
+	{
+		get => _selectedType;
+		set
+		{
+			if (SetProperty(ref _selectedType, value))
+			{
+				OnTypeChanged();
+			}
+		}
+	}
+
+	public IRelayCommand MoveUpCommand { get; }
+	public IRelayCommand MoveDownCommand { get; }
+	public IRelayCommand DeleteCommand { get; }
+	public IRelayCommand CloneCommand { get; }
+
+	public StageContainerViewModel(
+		ChatExecutionStagesSettingsViewModel parent,
+		AgentExecutionStage stage,
+		List<StageTypeOption> availableStageTypes)
+	{
+		_parent = parent;
+		_modelStage = stage;
+		_stageVM = StageViewModelFactory.CreateViewModel(_modelStage, _parent.AgentManager);
+		_selectedType = stage switch
+		{
+			AgentExecutionSequentialStage => StageTypeOption.Sequential,
+			AgentExecutionRandomStage => StageTypeOption.Random,
+			_ => StageTypeOption.Sequential
+		};
+
+		AvailableStageTypes = availableStageTypes;
+
+		MoveUpCommand = new RelayCommand<StageContainerViewModel>(_ => MoveStage(-1));
+		MoveDownCommand = new RelayCommand<StageContainerViewModel>(_ => MoveStage(+1));
+		DeleteCommand = new RelayCommand<StageContainerViewModel>(_ => RemoveStage());
+		CloneCommand = new RelayCommand<StageContainerViewModel>(_ => CloneStage());
+	}
+
+	private void RemoveStage()
+	{
+		var idx = _parent.Stages.IndexOf(this);
+		if (idx < 0) return;
+
+		_parent.Stages.RemoveAt(idx);
+		_parent.AgentSettings.ExecutionStages.RemoveAt(idx);
+	}
+
+	private void CloneStage()
+	{
+		var idx = _parent.Stages.IndexOf(this);
+		if (idx < 0) return;
+
+		var json = JsonSerializer.Serialize(_modelStage);
+		var clone = JsonSerializer.Deserialize<AgentExecutionStage>(json);
+		if (clone == null) return;
+
+		clone.Id = Guid.NewGuid();
+
+		_parent.AgentSettings.ExecutionStages.Insert(idx + 1, clone);
+		_parent.Stages.Insert(idx + 1, _parent.CreateContainer(clone));
+	}
+
+	private void MoveStage(int direction)
+	{
+		var idx = _parent.Stages.IndexOf(this);
+		if (idx < 0) return;
+		var newIdx = idx + direction;
+		if (newIdx < 0 || newIdx >= _parent.Stages.Count) return;
+
+		_parent.Stages.Move(idx, newIdx);
+		_parent.AgentSettings.ExecutionStages.Move(idx, newIdx);
+	}
+
+	private void OnTypeChanged()
+	{
+		var prevStage = _modelStage;
+		var prevIndex = _parent.AgentSettings.ExecutionStages.IndexOf(prevStage);
+
+		if (SelectedType.StageType == typeof(AgentExecutionSequentialStage))
+		{
+			_modelStage = new AgentExecutionSequentialStage
+			{
+				Id = _modelStage.Id,
+				Enabled = _modelStage.Enabled,
+				AgentInstances = new(_modelStage.Children)
+			};
+		}
+		else if (SelectedType.StageType == typeof(AgentExecutionRandomStage))
+		{
+			_modelStage = new AgentExecutionRandomStage
+			{
+				Id = _modelStage.Id,
+				Enabled = _modelStage.Enabled,
+				AgentInstances = new(_modelStage.Children.Select(a =>
+				{
+					if (a is WeightedAgentInstance w)
+						return w;
+					return new WeightedAgentInstance
+					{
+						Enabled = a.Enabled,
+						AgentId = a.AgentId,
+						Weight = 1.0
+					};
+				}))
+			};
+		}
+		else
+		{
+			throw new ArgumentOutOfRangeException(nameof(SelectedType.StageType));
+		}
+
+		if (prevIndex != -1)
+			_parent.AgentSettings.ExecutionStages[prevIndex] = _modelStage;
+
+		StageVM = StageViewModelFactory.CreateViewModel(_modelStage, _parent.AgentManager);
+	}
+}

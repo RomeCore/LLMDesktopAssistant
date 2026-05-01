@@ -23,6 +23,9 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			set => SetProperty(ref _enabled, value);
 		}
 
+		[JsonIgnore]
+		public abstract IReadOnlyList<AgentInstance> Children { get; }
+
 		/// <summary>
 		/// Returns the next agent ID to execute based on the provided context.
 		/// </summary>

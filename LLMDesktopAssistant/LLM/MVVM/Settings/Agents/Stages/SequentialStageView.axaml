@@ -1,0 +1,76 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages.SequentialStageView"
+			 x:DataType="local:SequentialStageViewModel">
+
+	<StackPanel>
+		<!-- Agent list -->
+		<ItemsControl ItemsSource="{Binding Agents}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate DataType="local:SequentialStageAgentViewModel">
+					<Border Padding="4,2" Margin="0,1"
+							BorderBrush="{DynamicResource SystemAccentColor}"
+							BorderThickness="0,0,0,0.5">
+						<Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+							<!-- Enabled checkbox -->
+							<CheckBox Grid.Column="0"
+									  IsChecked="{Binding Instance.Enabled}"
+									  VerticalAlignment="Center"/>
+
+							<!-- Agent name -->
+							<TextBlock Grid.Column="1"
+									   Text="{Binding Agent.Info.Name}"
+									   VerticalAlignment="Center"
+									   Margin="4,0"/>
+
+							<!-- Move up -->
+							<Button Grid.Column="2"
+									Command="{Binding MoveUpCommand}"
+									Classes="IconButton"
+									Margin="2,0"
+									ToolTip.Tip="{loc:Loc settings_stage_move_agent_up}">
+								<ico:MaterialIcon Kind="ChevronUp"/>
+							</Button>
+
+							<!-- Move down -->
+							<Button Grid.Column="3"
+									Command="{Binding MoveDownCommand}"
+									Classes="IconButton"
+									Margin="2,0"
+									ToolTip.Tip="{loc:Loc settings_stage_move_agent_down}">
+								<ico:MaterialIcon Kind="ChevronDown"/>
+							</Button>
+
+							<!-- Remove -->
+							<Button Grid.Column="4"
+									Command="{Binding RemoveCommand}"
+									Classes="IconButton"
+									Margin="2,0"
+									ToolTip.Tip="{loc:Loc settings_stage_remove_agent}">
+								<ico:MaterialIcon Kind="Close"/>
+							</Button>
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<!-- Add agent button -->
+		<Button Command="{Binding AddAgentCommand}"
+				Margin="0,4"
+				HorizontalAlignment="Left"
+				ToolTip.Tip="{loc:Loc settings_stage_add_agent}">
+			<StackPanel Orientation="Horizontal" Spacing="4">
+				<ico:MaterialIcon Kind="Plus"/>
+				<TextBlock Text="{loc:Loc settings_stage_add_agent}"/>
+			</StackPanel>
+		</Button>
+	</StackPanel>
+
+</UserControl>

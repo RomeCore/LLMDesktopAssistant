@@ -1,13 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Settings;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 
-namespace LLMDesktopAssistant.LLM.Settings
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
 	public class ComponentItemViewModel : ObservableObject
 	{

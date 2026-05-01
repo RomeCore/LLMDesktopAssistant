@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace LLMDesktopAssistant.LLM.Settings;
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 
 public partial class AgentGenerationSettingsView : UserControl
 {

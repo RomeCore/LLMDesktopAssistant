@@ -151,11 +151,11 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на base64 encoded image data....
+        ///   Ищет локализованную строку, похожую на Select image.
         /// </summary>
-        public static string agent_info_profile_image_placeholder {
+        public static string agent_info_select_image {
             get {
-                return ResourceManager.GetString("agent_info_profile_image_placeholder", resourceCulture);
+                return ResourceManager.GetString("agent_info_select_image", resourceCulture);
             }
         }
         
@@ -1960,11 +1960,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Add execution stage.
+        /// </summary>
+        public static string settings_add_stage {
+            get {
+                return ResourceManager.GetString("settings_add_stage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на (global).
         /// </summary>
         public static string settings_agent_global {
             get {
                 return ResourceManager.GetString("settings_agent_global", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent List.
+        /// </summary>
+        public static string settings_agent_list {
+            get {
+                return ResourceManager.GetString("settings_agent_list", resourceCulture);
             }
         }
         
@@ -2019,6 +2037,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_chat_model_hint {
             get {
                 return ResourceManager.GetString("settings-chat_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Clone stage.
+        /// </summary>
+        public static string settings_clone_stage {
+            get {
+                return ResourceManager.GetString("settings_clone_stage", resourceCulture);
             }
         }
         
@@ -2082,6 +2109,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_execution_order_hint {
             get {
                 return ResourceManager.GetString("settings_execution_order_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execution Stages.
+        /// </summary>
+        public static string settings_execution_stages {
+            get {
+                return ResourceManager.GetString("settings_execution_stages", resourceCulture);
             }
         }
         
@@ -2257,6 +2293,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Move stage down.
+        /// </summary>
+        public static string settings_move_stage_down {
+            get {
+                return ResourceManager.GetString("settings_move_stage_down", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move stage up.
+        /// </summary>
+        public static string settings_move_stage_up {
+            get {
+                return ResourceManager.GetString("settings_move_stage_up", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Profile:.
         /// </summary>
         public static string settings_profile {
@@ -2271,6 +2325,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_promote_to_global {
             get {
                 return ResourceManager.GetString("settings_promote_to_global", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Random.
+        /// </summary>
+        public static string settings_random_stage {
+            get {
+                return ResourceManager.GetString("settings_random_stage", resourceCulture);
             }
         }
         
@@ -2302,6 +2365,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Remove stage.
+        /// </summary>
+        public static string settings_remove_stage {
+            get {
+                return ResourceManager.GetString("settings_remove_stage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Select an agent first.
         /// </summary>
         public static string settings_select_agent_first {
@@ -2325,6 +2397,96 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_selected_agent {
             get {
                 return ResourceManager.GetString("settings_selected_agent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Sequential.
+        /// </summary>
+        public static string settings_sequential_stage {
+            get {
+                return ResourceManager.GetString("settings_sequential_stage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Add agent to stage.
+        /// </summary>
+        public static string settings_stage_add_agent {
+            get {
+                return ResourceManager.GetString("settings_stage_add_agent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Can agents execute again.
+        /// </summary>
+        public static string settings_stage_can_agents_execute_again {
+            get {
+                return ResourceManager.GetString("settings_stage_can_agents_execute_again", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Max iterations.
+        /// </summary>
+        public static string settings_stage_max_iterations {
+            get {
+                return ResourceManager.GetString("settings_stage_max_iterations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Min iterations.
+        /// </summary>
+        public static string settings_stage_min_iterations {
+            get {
+                return ResourceManager.GetString("settings_stage_min_iterations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move agent down in stage.
+        /// </summary>
+        public static string settings_stage_move_agent_down {
+            get {
+                return ResourceManager.GetString("settings_stage_move_agent_down", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move agent up in stage.
+        /// </summary>
+        public static string settings_stage_move_agent_up {
+            get {
+                return ResourceManager.GetString("settings_stage_move_agent_up", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Remove agent from stage.
+        /// </summary>
+        public static string settings_stage_remove_agent {
+            get {
+                return ResourceManager.GetString("settings_stage_remove_agent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Stop chance.
+        /// </summary>
+        public static string settings_stage_stop_chance {
+            get {
+                return ResourceManager.GetString("settings_stage_stop_chance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Weighted agents.
+        /// </summary>
+        public static string settings_stage_weighted_agents {
+            get {
+                return ResourceManager.GetString("settings_stage_weighted_agents", resourceCulture);
             }
         }
         
@@ -2388,6 +2550,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_vision_model_hint {
             get {
                 return ResourceManager.GetString("settings-vision_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Random.
+        /// </summary>
+        public static string stage_type_random {
+            get {
+                return ResourceManager.GetString("stage_type_random", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Sequential.
+        /// </summary>
+        public static string stage_type_sequential {
+            get {
+                return ResourceManager.GetString("stage_type_sequential", resourceCulture);
             }
         }
         

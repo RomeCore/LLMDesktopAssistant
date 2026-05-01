@@ -2,11 +2,11 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
-			 x:Class="LLMDesktopAssistant.LLM.Settings.AgentInfoSettingsView"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentInfoSettingsView"
 			 x:DataType="local:AgentInfoSettingsViewModel">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto">

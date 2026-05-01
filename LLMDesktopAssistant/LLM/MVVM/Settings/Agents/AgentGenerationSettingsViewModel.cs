@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 
-namespace LLMDesktopAssistant.LLM.Settings
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
 	public class ReasoningLevelItem
 	{

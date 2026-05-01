@@ -951,11 +951,82 @@
   <data name="agent_info_profile_image_hint" xml:space="preserve">
     <value>Выберите изображение для аватарки агента. Будет автоматически обрезано до 128x128.</value>
   </data>
-  <data name="agent_info_select_image" xml:space="preserve">
-    <value>Выбрать изображение</value>
-  </data>
   <data name="agent_info_clear_image" xml:space="preserve">
     <value>Удалить аватарку</value>
   </data>
-
+  <data name="settings_add_stage" xml:space="preserve">
+    <value>Добавить этап выполнения</value>
+  </data>
+  <data name="settings_remove_stage" xml:space="preserve">
+    <value>Удалить этап</value>
+  </data>
+  <data name="settings_clone_stage" xml:space="preserve">
+    <value>Клонировать этап</value>
+  </data>
+  <data name="settings_move_stage_up" xml:space="preserve">
+    <value>Переместить этап вверх</value>
+  </data>
+  <data name="settings_move_stage_down" xml:space="preserve">
+    <value>Переместить этап вниз</value>
+  </data>
+  <data name="settings_agent_list" xml:space="preserve">
+    <value>Список агентов</value>
+  </data>
+  <data name="settings_execution_stages" xml:space="preserve">
+    <value>Этапы выполнения</value>
+  </data>
+  <data name="settings_sequential_stage" xml:space="preserve">
+    <value>Последовательный</value>
+  </data>
+  <data name="settings_random_stage" xml:space="preserve">
+    <value>Случайный</value>
+  </data>
+  <data name="settings_stage_can_agents_execute_again" xml:space="preserve">
+    <value>Агенты могут выполняться повторно</value>
+  </data>
+  <data name="settings_stage_min_iterations" xml:space="preserve">
+    <value>Мин. итераций</value>
+  </data>
+  <data name="settings_stage_max_iterations" xml:space="preserve">
+    <value>Макс. итераций</value>
+  </data>
+  <data name="settings_stage_stop_chance" xml:space="preserve">
+    <value>Шанс остановки</value>
+  </data>
+  <data name="settings_stage_weighted_agents" xml:space="preserve">
+    <value>Взвешенные агенты</value>
+  </data>
+  <data name="settings_stage_add_agent" xml:space="preserve">
+    <value>Добавить агента в этап</value>
+  </data>
+  <data name="settings_stage_remove_agent" xml:space="preserve">
+    <value>Удалить агента из этапа</value>
+  </data>
+  <data name="settings_stage_move_agent_up" xml:space="preserve">
+    <value>Переместить агента вверх</value>
+  </data>
+  <data name="settings_stage_move_agent_down" xml:space="preserve">
+    <value>Переместить агента вниз</value>
+  </data>
+  <data name="agent_info_select_image" xml:space="preserve">
+    <value>Выбрать изображение</value>
+  </data>
+  <data name="stage_type_sequential" xml:space="preserve">
+    <value>Последовательный</value>
+  </data>
+  <data name="stage_type_random" xml:space="preserve">
+    <value>Случайный</value>
+  </data>
+  <data name="settings_can_be_mentioned" xml:space="preserve">
+    <value>Можно упомянуть</value>
+  </data>
+  <data name="settings_can_be_mentioned_hint" xml:space="preserve">
+    <value>Может ли агент быть упомянут другими агентами или пользователями, вызывая его выполнение.</value>
+  </data>
+  <data name="settings_can_mention_others" xml:space="preserve">
+    <value>Может упоминать других</value>
+  </data>
+  <data name="settings_can_mention_others_hint" xml:space="preserve">
+    <value>Может ли агент упоминать и вызывать других агентов.</value>
+  </data>
 </root>

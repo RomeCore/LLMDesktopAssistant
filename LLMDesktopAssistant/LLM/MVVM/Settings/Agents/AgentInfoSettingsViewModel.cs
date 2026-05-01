@@ -2,6 +2,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.LLM.Settings;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
@@ -9,7 +10,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace LLMDesktopAssistant.LLM.Settings
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
 	[ViewModelFor(typeof(AgentInfoSettingsView))]
 	public class AgentInfoSettingsViewModel : ViewModelBase

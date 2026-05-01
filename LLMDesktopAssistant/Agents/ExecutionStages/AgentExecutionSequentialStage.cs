@@ -10,6 +10,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			get => _agentInstances;
 			set => _agentInstances.Reset(value);
 		}
+		public override IReadOnlyList<AgentInstance> Children => AgentInstances;
 
 		public override Task<Guid?> GetNextAgentAsync(AgentPreExecutionContext context,
 			CancellationToken cancellationToken = default)

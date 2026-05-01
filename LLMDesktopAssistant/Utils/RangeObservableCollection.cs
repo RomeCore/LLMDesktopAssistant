@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Utils
 	/// A thread-safe ObservableCollection that notifies when a range of items is added or removed.
 	/// </summary>
 	/// <typeparam name="T">The type of elements in the collection.</typeparam>
-	public class RangeObservableCollection<T> : IList<T>, IList, INotifyPropertyChanged, INotifyCollectionChanged
+	public class RangeObservableCollection<T> : IList<T>, IList, IReadOnlyList<T>, INotifyPropertyChanged, INotifyCollectionChanged
 	{
 		private readonly List<T> _items;
 		private readonly object _lock;
