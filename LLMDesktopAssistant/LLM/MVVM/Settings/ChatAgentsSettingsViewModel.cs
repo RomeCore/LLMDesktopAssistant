@@ -56,36 +56,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			PromoteToGlobalCommand = new RelayCommand<AgentOptionViewModel>(PromoteToGlobal);
 			CopyToLocalCommand = new RelayCommand<AgentOptionViewModel>(CopyToLocal, CanCopyToLocal);
 
-			EnsureDefaultAgent();
+			AgentSettings.EnsureDefaultAgent();
 			RefreshAgentList();
 		}
 
 		private void NotifyAgentsChanged()
 		{
 			AgentsChanged?.Invoke();
-		}
-
-		private void EnsureDefaultAgent()
-		{
-			var globalConfig = SettingsManager.Get<AgentsConfiguration>();
-			if (globalConfig.Agents.Count > 0)
-				return;
-
-			if (AgentSettings.ChatAgents.Count == 0)
-			{
-				var defaultAgent = new AgentDescriptor();
-				defaultAgent.Info.Name = "Default Assistant";
-				AgentSettings.ChatAgents.Add(defaultAgent);
-			}
-
-			if (AgentSettings.ActiveAgents.Count == 0 && AgentSettings.ChatAgents.Count > 0)
-			{
-				AgentSettings.ActiveAgents.Add(new AgentInstanceSettings
-				{
-					AgentId = AgentSettings.ChatAgents[0].Id,
-					Enabled = true
-				});
-			}
 		}
 
 		private bool IsAgentActive(AgentDescriptor agent)

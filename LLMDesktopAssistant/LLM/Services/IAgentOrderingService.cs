@@ -9,7 +9,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Determines what agent should be executed next. Returns null if no agent should be executed.
 		/// </summary>
 		/// <param name="cancellationToken">The token to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
-		/// <returns>The next agent ID to execute, or null if no agent should be executed.</returns>
-		Task<Guid?> GetNextAgentAsync(CancellationToken cancellationToken = default);
+		/// <returns>The next agent ID to execute paired with stage ID, or null if no agent should be executed.</returns>
+		Task<(Guid, Guid)?> GetNextAgentAsync(CancellationToken cancellationToken = default);
 	}
 }

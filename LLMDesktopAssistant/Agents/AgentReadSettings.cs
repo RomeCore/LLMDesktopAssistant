@@ -34,7 +34,7 @@ namespace LLMDesktopAssistant.Agents
 			set => _agentIdsReadFilter.Reset(value);
 		}
 
-		private bool _isFilterWhiteList = true;
+		private bool _isFilterWhiteList = false;
 		/// <summary>
 		/// Whether the filter is a white list or black list.
 		/// If true, only agents in the <see cref="AgentIdsReadFilter"/> can be read. If false, all agents except those in the filter can be read.

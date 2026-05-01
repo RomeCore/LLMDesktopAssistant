@@ -28,5 +28,10 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// If empty, it means that the message is visible to all users and agents.
 		/// </summary>
 		public required ImmutableList<string> VisibleTo { get; init; }
+
+		/// <summary>
+		/// Indicates whether the message visibility is controlled by a whitelist or blacklist. If true, only users in the VisibleTo list can see the message. If false, all users except those in the VisibleTo list can see the message.
+		/// </summary>
+		public required bool IsVisibleToWhiteList { get; init; }
 	}
 }

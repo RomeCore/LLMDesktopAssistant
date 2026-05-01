@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents.ExecutionStages;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Settings
@@ -15,15 +16,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => _agents.Reset(value);
 		}
 
-		private RangeObservableCollection<AgentInstanceSettings> _activeAgents = [];
+		private RangeObservableCollection<AgentExecutionStage> _executionStages = [];
 		/// <summary>
-		/// The list of active agent instances in the chat session.
-		/// ActiveAgents defines the ordered execution list and which agents are enabled.
+		/// The list of ordered agent execution stages for the chat session.
 		/// </summary>
-		public RangeObservableCollection<AgentInstanceSettings> ActiveAgents
+		public RangeObservableCollection<AgentExecutionStage> ExecutionStages
 		{
-			get => _activeAgents;
-			set => _activeAgents.Reset(value);
+			get => _executionStages;
+			set => _executionStages.Reset(value);
 		}
 
 		/// <summary>
@@ -40,15 +40,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				ChatAgents.Add(defaultAgent);
 			}
 
-			// If no active agents, activate the first one
-			if (ActiveAgents.Count == 0 && ChatAgents.Count > 0)
-			{
-				ActiveAgents.Add(new AgentInstanceSettings
-				{
-					AgentId = ChatAgents[0].Id,
-					Enabled = true
-				});
-			}
+			// TODO: Add default sequential execution stage if none exist
 		}
 	}
 }

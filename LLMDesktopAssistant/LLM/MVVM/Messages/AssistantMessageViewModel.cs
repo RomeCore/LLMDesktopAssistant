@@ -71,10 +71,10 @@ namespace LLMDesktopAssistant.LLM.Messages
 			var prevMessage = branchedMessage.MessageIndex - 1 >= 0
 				? chatVM.Chat.Messages[branchedMessage.MessageIndex - 1].Message as AssistantMessage
 				: null;
-			if (prevMessage == null || assistantMessage.SenderAgent != prevMessage.SenderAgent)
+			if (prevMessage == null || assistantMessage.SenderAgentId != prevMessage.SenderAgentId)
 			{
 				var agentManager = chatVM.Chat.Services.GetRequiredService<IAgentManagementService>();
-				var agent = agentManager.GetAgentDescriptor(assistantMessage.SenderAgent);
+				var agent = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
 
 				try
 				{

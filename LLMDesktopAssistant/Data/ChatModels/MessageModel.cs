@@ -40,6 +40,11 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		public string Sender { get; set; } = string.Empty;
 
 		/// <summary>
+		/// Gets or sets the ID of the agent stage associated with this message.
+		/// </summary>
+		public Guid AgentStageId { get; set; }
+
+		/// <summary>
 		/// Gets or sets the visibility of the message. This can be used to control whether the message is visible to all users/agents or aonly specific.
 		/// </summary>
 		public MessageVisibility Visibility { get; set; } = MessageVisibility.Always;
@@ -48,6 +53,11 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		/// Gets or sets a list of users/agents that this message is visible to.
 		/// </summary>
 		public ImmutableList<string> VisibleTo { get; set; } = [];
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this message is visible to white list users/agents.
+		/// </summary>
+		public bool IsVisibleToWhiteList { get; set; }
 
 		/// <summary>
 		/// Gets or sets the main content of the message.

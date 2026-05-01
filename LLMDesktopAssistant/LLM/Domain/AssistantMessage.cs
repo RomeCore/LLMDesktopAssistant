@@ -8,15 +8,15 @@ namespace LLMDesktopAssistant.LLM.Domain
 	/// </summary>
 	public class AssistantMessage : ChatMessage
 	{
-		private Guid _senderAgent = Guid.Empty;
 		/// <summary>
 		/// The agent ID that sent the message.
 		/// </summary>
-		public Guid SenderAgent
-		{
-			get => _senderAgent;
-			set => SetProperty(ref _senderAgent, value);
-		}
+		public required Guid SenderAgentId { get; init; }
+
+		/// <summary>
+		/// The stage ID that the agent is currently in.
+		/// </summary>
+		public required Guid AgentStageId { get; init; }
 
 		private string? _reasoningContent = null;
 		/// <summary>

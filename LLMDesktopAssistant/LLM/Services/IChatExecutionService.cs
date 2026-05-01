@@ -18,8 +18,9 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Generates a response asynchronously using specific agent and puts it into a <see cref="IChatStorageService"/>.
 		/// </summary>
 		/// <param name="agentId">The identifier of the agent to use.</param>
+		/// <param name="agentStageId">The identifier of the stage within the agent to use.</param>
 		/// <param name="cancellationToken">Token for cancellation of the operation.</param>
 		/// <returns>A task representing the asynchronous operation.</returns>
-		Task GenerateResponseWithAgentAsync(Guid agentId, CancellationToken cancellationToken = default);
+		Task GenerateResponseWithAgentAsync(Guid agentId, Guid agentStageId, CancellationToken cancellationToken = default);
 	}
 }

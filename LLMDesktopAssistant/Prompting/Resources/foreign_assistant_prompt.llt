@@ -4,20 +4,20 @@
 	{
 		lang: 'en-US'
 	}
-
+	[OTHER AGENT MESSAGE: '@agent_name']:
+	[MESSAGE SENT AT: @time_sent]
 	@if can_read_reasoning && reasoning_content
 	{
-		[OTHER AGENT: '@agent_name' REASONING]:
+		[REASONING]:
 		@reasoning_content
 	}
-	[OTHER AGENT: '@agent_name']:
+	[CONTENT]:
 	@content
 	@if tool_calls
 	{
-		@if can_read_tool_calls || true
+		@if can_read_tool_calls
 		{
-			
-			[OTHER AGENT: '@agent_name' TOOL CALLS]:
+			[TOOL CALLS]:
 			@foreach tool_call in tool_calls
 			{
 				- @tool_call.name:
@@ -27,8 +27,7 @@
 		}
 		else
 		{
-			
-			[OTHER AGENT: '@agent_name' TOOL CALLS]:
+			[TOOL CALLS]:
 			@foreach tool_call in tool_calls
 			{
 				- @tool_call.name:

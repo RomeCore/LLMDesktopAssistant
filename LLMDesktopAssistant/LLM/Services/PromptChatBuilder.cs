@@ -80,6 +80,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
 			var context = new
 			{
+				user_name = message.SenderLogin,
 				time_sent = message.CreatedAt.ToString(),
 				attachments = message.Attachments,
 				content = message.Content
@@ -94,6 +95,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
 			var context = new
 			{
+				user_name = message.SenderLogin,
 				time_sent = message.CreatedAt.ToString(),
 				attachments = readSettings.ReadPermissions.HasFlag(AgentReadPermissions.UserAttachments)
 					? message.Attachments
@@ -115,8 +117,21 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!permissions.HasFlag(AgentReadPermissions.UserMessages))
 				return false;
 
-			if (permissions.HasFlag(AgentReadPermissions.UserAttachments))
-				return true;
+			switch (userMessage.Visibility)
+			{
+				case MessageVisibility.OnlyUsers:
+					return false;
+				case MessageVisibility.OnlyAgents:
+				case MessageVisibility.Always:
+				case MessageVisibility.RevealAfterSend:
+				default:
+					break;
+			}
+
+			// If its a white list, then 'contains' must return true to skip this check -> true == true
+			// If its a black list, then 'contains' must return false to skip this check -> false == false
+			if (userMessage.VisibleTo.Contains(agentId.ToString()) != userMessage.IsVisibleToWhiteList)
+				return false;
 
 			return true;
 		}
@@ -126,7 +141,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// </summary>
 		private bool IsAssistantMessageVisibleToAgent(Domain.AssistantMessage assistantMessage, Guid agentId, AgentReadSettings readSettings)
 		{
-			var messageAgentId = assistantMessage.SenderAgent;
+			var messageAgentId = assistantMessage.SenderAgentId;
 			var permissions = readSettings.ReadPermissions;
 
 			// Own messages
@@ -163,7 +178,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// </summary>
 		private string BuildForeignAgentMessageText(Domain.AssistantMessage message, Guid currentAgentId, AgentReadSettings readSettings)
 		{
-			var agentDescriptor = agentSettings.GetAgentDescriptor(message.SenderAgent);
+			var agentDescriptor = agentSettings.GetAgentDescriptor(message.SenderAgentId);
 			var agentName = agentDescriptor.Info.Name ?? agentDescriptor.Id.ToString()[..8];
 			var permissions = readSettings.ReadPermissions;
 
@@ -198,7 +213,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				if (!IsUserMessageVisibleToAgent(userMessage, agentId, readSettings))
 					return [];
 
-				return BuildUserMessageAsMessages(userMessage);
+				return [new RCLargeLanguageModels.Messages.UserMessage(
+					BuildUserMessageForAgent(userMessage, agentId, readSettings))];
 			}
 			else if (message is Domain.AssistantMessage assistantMessage)
 			{
@@ -206,7 +222,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					return [];
 
 				// Own assistant message — full fidelity with tool calls
-				if (assistantMessage.SenderAgent == agentId)
+				if (assistantMessage.SenderAgentId == agentId)
 					return BuildOwnAssistantMessageAsMessages(assistantMessage);
 
 				// Foreign assistant message — merged as quoted user message

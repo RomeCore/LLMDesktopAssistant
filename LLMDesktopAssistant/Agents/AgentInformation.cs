@@ -12,6 +12,16 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _name, value);
 		}
 
+		private string _description = string.Empty;
+		/// <summary>
+		/// The description of the agent.
+		/// </summary>
+		public string Description
+		{
+			get => _description;
+			set => SetProperty(ref _description, value);
+		}
+
 		private string _base64ProfileImage = string.Empty;
 		/// <summary>
 		/// The base64 encoded profile image of the agent. If empty, no image is displayed.

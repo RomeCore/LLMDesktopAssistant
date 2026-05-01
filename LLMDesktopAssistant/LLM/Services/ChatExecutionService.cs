@@ -43,17 +43,24 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					var lastAssistantMessage = chat.Messages.LastOrDefault()?.Message as Domain.AssistantMessage;
 					Guid? nextAgentId = lastAssistantMessage != null && lastAssistantMessage.ToolCalls.Count != 0
-						? lastAssistantMessage.SenderAgent
+						? lastAssistantMessage.SenderAgentId
+						: null;
+					Guid? agentStageId = lastAssistantMessage != null && lastAssistantMessage.ToolCalls.Count != 0
+						? lastAssistantMessage.AgentStageId
 						: null;
 
 					cancellationToken.ThrowIfCancellationRequested();
-					if (nextAgentId == null)
-						nextAgentId = await agentOrderer.GetNextAgentAsync(cancellationToken);
-					if (nextAgentId == null)
+					if (nextAgentId == null || agentStageId == null)
+					{
+						var agentTuple = await agentOrderer.GetNextAgentAsync(cancellationToken);
+						nextAgentId = agentTuple?.Item1;
+						agentStageId = agentTuple?.Item2;
+					}
+					if (nextAgentId == null || agentStageId == null)
 						return;
 
 					cancellationToken.ThrowIfCancellationRequested();
-					await GenerateResponseWithAgentAsync(nextAgentId.Value, cancellationToken);
+					await GenerateResponseWithAgentAsync(nextAgentId.Value, agentStageId.Value, cancellationToken);
 				}
 			}
 			catch (Exception ex)
@@ -62,7 +69,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		public async Task GenerateResponseWithAgentAsync(Guid agentId, CancellationToken cancellationToken = default)
+		public async Task GenerateResponseWithAgentAsync(Guid agentId, Guid agentStageId,
+			CancellationToken cancellationToken = default)
 		{
 			try
 			{
@@ -94,7 +102,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				var domainResponseMessage = new Domain.AssistantMessage
 				{
 					Status = AssistantMessageStatus.Pending,
-					SenderAgent = agentId,
+					SenderAgentId = agentId,
+					AgentStageId = agentStageId,
 					CompletionToken = completionSource.Token
 				};
 
@@ -301,7 +310,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					domainResponseMessage = new Domain.AssistantMessage
 					{
 						Status = AssistantMessageStatus.Pending,
-						SenderAgent = agentId,
+						SenderAgentId = agentId,
+						AgentStageId = agentStageId,
 						CompletionToken = completionSource.Token
 					};
 					storage.AppendMessage(domainResponseMessage);

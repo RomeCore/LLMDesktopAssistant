@@ -16,12 +16,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 	/// </summary>
 	public abstract class ChatMessage : NotifyPropertyChanged
 	{
-		private DateTime _createdAt = DateTime.Now;
-		public DateTime CreatedAt
-		{
-			get => _createdAt;
-			set => SetProperty(ref _createdAt, value);
-		}
+		public DateTime CreatedAt { get; init; } = DateTime.Now;
 
 		private string _content = string.Empty;
 		/// <summary>

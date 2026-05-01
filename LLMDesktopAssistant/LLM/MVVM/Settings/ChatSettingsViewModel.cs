@@ -53,7 +53,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 			Info = info;
 			IsGlobal = isGlobal;
 			DisplayName = info.Name;
-			Log.Information("Creating agent parent node for {name}", info.Name);
 			Icon = MaterialIconKind.Robot;
 			Children = children;
 			ViewModel = new AgentInfoSettingsViewModel(info);
