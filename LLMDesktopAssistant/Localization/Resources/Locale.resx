@@ -1170,6 +1170,11 @@
     <value>Cancel tool</value>
   </data>
 
+  <data name="copy-arguments" xml:space="preserve">
+    <value>Copy arguments</value>
+  </data>
+
+
   <data name="copy-result" xml:space="preserve">
     <value>Copy result</value>
   </data>

@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -11,6 +11,15 @@ namespace LLMDesktopAssistant.LLM.Messages
 			Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
 			WriteIndented = true
 		};
+
+		public static string? FormatToJson(JsonNode? arguments)
+		{
+			if (arguments == null)
+				return null;
+
+			return arguments.ToJsonString(_toolCallSerializerOptions);
+		}
+
 
 		public static string FormatToMarkdown(JsonNode? arguments)
 		{

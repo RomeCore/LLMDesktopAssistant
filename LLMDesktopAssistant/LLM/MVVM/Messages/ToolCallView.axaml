@@ -11,13 +11,230 @@
 			 x:Class="LLMDesktopAssistant.LLM.Messages.ToolCallView"
 			 x:DataType="local:ToolCallViewModel">
 	
+	<UserControl.Styles>
+		<Style Selector="FlyoutPresenter">
+			<Setter Property="Padding" Value="0"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="MaxWidth" Value="755"/>
+			<Setter Property="MaxHeight" Value="655"/>
+			<Setter Property="MinWidth" Value="505"/>
+			<Setter Property="MinHeight" Value="305"/>
+		</Style>
+	</UserControl.Styles>
+
 	<Panel>
 		
 		<!-- Main tool call button -->
-		<Button Name="ToolButton"
-				Click="ToolButton_Click"
-				Padding="2"
-				Classes="ToolCallButton">
+		<Button Padding="2">
+
+			<Button.Flyout>
+			
+				<Flyout Placement="BottomEdgeAlignedLeft"
+						ShowMode="Standard">
+
+					<Border Background="{DynamicResource CardBackground}"
+							BorderBrush="{DynamicResource CardBorderBrush}"
+							BorderThickness="1"
+							MinWidth="500"
+							MaxWidth="750"
+							MinHeight="300"
+							MaxHeight="650"
+							CornerRadius="8"
+							Padding="0">
+
+						<Grid RowDefinitions="Auto,*,Auto" Margin="0">
+
+							<Border Grid.Row="0"
+									Background="{DynamicResource WindowBackground}"
+									CornerRadius="8,8,0,0"
+									Padding="16,12,8,12">
+
+								<Grid ColumnDefinitions="Auto,*,Auto,*,Auto,Auto">
+
+									<!-- Status Icon -->
+									<Grid Grid.Column="0" Width="28" Height="28" Margin="0,0,10,0">
+										<ico:MaterialIcon Kind="Edit"
+																			IsVisible="{Binding IsPending}"
+																			Classes="MidIcon">
+											<ico:MaterialIcon.Styles>
+												<Style Selector="ico|MaterialIcon">
+													<Style.Animations>
+														<Animation Duration="0:0:1"
+																			 IterationCount="INFINITE"
+																			 PlaybackDirection="Alternate"
+																			 Easing="SineEaseInOut">
+															<KeyFrame Cue="0%">
+																<Setter Property="Opacity" Value="1.0"/>
+															</KeyFrame>
+															<KeyFrame Cue="100%">
+																<Setter Property="Opacity" Value="0.3"/>
+															</KeyFrame>
+														</Animation>
+													</Style.Animations>
+												</Style>
+											</ico:MaterialIcon.Styles>
+										</ico:MaterialIcon>
+
+										<flui:FAProgressRing IsVisible="{Binding InProgress}"
+																				 Minimum="{Binding MinProgress}"
+																				 Maximum="{Binding MaxProgress}"
+																				 Value="{Binding Progress}"
+																				 IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
+										
+										<ico:MaterialIcon Kind="{Binding ToolIcon}"
+																			Classes="MidIcon"
+																			IsVisible="{Binding ToolIconVisible}"/>
+
+									</Grid>
+
+									<!-- Tool Name: localized + raw -->
+									<StackPanel Grid.Column="1" Orientation="Vertical" Spacing="1" VerticalAlignment="Center">
+
+										<TextBlock Text="{loc:Loc {Binding ToolTitle}}"
+															 FontSize="16"
+															 FontWeight="Bold"
+															 HorizontalAlignment="Left"/>
+
+										<TextBlock Text="{Binding ToolName}"
+															 FontSize="13"
+															 Opacity="0.45"
+															 HorizontalAlignment="Left"/>
+
+									</StackPanel>
+
+									<!-- Approval buttons in header -->
+									<StackPanel Orientation="Horizontal"
+															Grid.Column="2" 
+															Spacing="4"
+															IsVisible="{Binding UserAsked}">
+
+										<Button Classes="MidIconButton"
+														Command="{Binding ApproveCommand}">
+											<ico:MaterialIcon Kind="Check"/>
+										</Button>
+
+										<Button Classes="MidIconButton"
+														Command="{Binding CancelCommand}">
+											<ico:MaterialIcon Kind="Close"/>
+										</Button>
+
+									</StackPanel>
+
+									<!-- Tool Call ID -->
+									<TextBlock Grid.Column="3"
+														 Text="{Binding ToolCallId}"
+														 FontSize="11"
+														 Opacity="0.35"
+														 VerticalAlignment="Center"
+														 HorizontalAlignment="Right"
+														 Margin="0,0,8,0"/>
+
+									<!-- Copy Arguments button -->
+									<Button Grid.Column="4"
+													Classes="IconButton"
+													Command="{Binding CopyArgumentsCommand}"
+													IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+													ToolTip.Tip="{loc:Loc copy-arguments}"
+													Margin="3,0,0,0">
+
+										<ico:MaterialIcon Kind="CodeBraces"/>
+
+									</Button>
+
+									<!-- Copy Result button -->
+									<Button Grid.Column="5"
+													Classes="IconButton"
+													Command="{Binding CopyResultCommand}"
+													IsVisible="{Binding Result, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+													ToolTip.Tip="{loc:Loc copy-result}"
+													Margin="3,0,0,0">
+
+										<ico:MaterialIcon Kind="ContentCopy"/>
+
+									</Button>
+
+								</Grid>
+
+							</Border>
+
+							<!-- Separator -->
+							<Rectangle Grid.Row="1" Grid.RowSpan="2"
+												 Fill="{DynamicResource SystemAccentColor}"
+												 Height="1"
+												 VerticalAlignment="Top"/>
+
+							<ScrollViewer Grid.Row="1"
+											VerticalScrollBarVisibility="Auto"
+											HorizontalScrollBarVisibility="Auto"
+											Padding="16,16,16,8">
+
+								<StackPanel Orientation="Vertical" Spacing="20">
+
+									<!-- Arguments Section -->
+									<StackPanel Orientation="Vertical"
+															Spacing="8"
+															IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+										
+										<Border DockPanel.Dock="Top"
+														BorderBrush="{DynamicResource DefaultForeground}"
+														BorderThickness="0,0,0,1"
+														Padding="8,6">
+											<TextBlock Text="{loc:Loc tool-arguments}"
+																 FontSize="18"
+																 FontWeight="Bold"/>
+										</Border>
+
+										<Border Background="{DynamicResource CodeBackground}"
+														BorderBrush="{DynamicResource CardBorderBrush}"
+														BorderThickness="1"
+														CornerRadius="6"
+														Padding="14">
+
+											<ctrl:MarkdownControl MarkdownText="{Binding Arguments}"
+																						Background="Transparent"/>
+
+										</Border>
+
+									</StackPanel>
+
+									<!-- Result Section -->
+									<StackPanel Orientation="Vertical"
+															Spacing="8"
+															IsVisible="{Binding Result, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+										
+										<Border DockPanel.Dock="Top"
+														BorderBrush="{DynamicResource DefaultForeground}"
+														BorderThickness="0,0,0,1"
+														Padding="8,6">
+											<TextBlock Text="{loc:Loc tool-result}"
+																 FontSize="18"
+																 FontWeight="Bold"/>
+										</Border>
+
+										<Border Background="{DynamicResource CardBackground}"
+														BorderBrush="{DynamicResource CardBorderBrush}"
+														BorderThickness="1"
+														CornerRadius="6"
+														Padding="14">
+
+											<ctrl:MarkdownControl MarkdownText="{Binding Result}"
+																						UsePlaintext="True"
+																						Background="Transparent"/>
+
+										</Border>
+
+									</StackPanel>
+
+								</StackPanel>
+
+							</ScrollViewer>
+
+						</Grid>
+
+					</Border>
+
+				</Flyout>
+			</Button.Flyout>
 
 			<StackPanel Orientation="Horizontal"
 									Spacing="4">
@@ -62,7 +279,7 @@
 
 				</Grid>
 				
-				<TextBlock Text="{loc:Loc {Binding ToolName}}"
+				<TextBlock Text="{loc:Loc {Binding ToolTitle}}"
 									 FontSize="{DynamicResource FontSizeM}"
 									 FontWeight="Medium"
 									 VerticalAlignment="Bottom"
@@ -109,253 +326,6 @@
 
 		</Button>
 
-		<!-- Flyout with detailed tool information -->
-		<FlyoutBase.AttachedFlyout>
-			<Flyout x:Name="ToolFlyout"
-					Placement="BottomEdgeAlignedLeft"
-					ShowMode="Standard"
-					OverlayDismiss="True"
-					MinWidth="500"
-					MaxWidth="750"
-					MinHeight="300"
-					MaxHeight="650">
-
-				<Flyout.FlyoutPresenterClasses>
-					<Style Selector="FlyoutPresenter">
-						<Setter Property="Padding" Value="0"/>
-						<Setter Property="CornerRadius" Value="8"/>
-						<Setter Property="MaxWidth" Value="750"/>
-						<Setter Property="MaxHeight" Value="650"/>
-						<Setter Property="MinWidth" Value="500"/>
-						<Setter Property="MinHeight" Value="300"/>
-					</Style>
-				</Flyout.FlyoutPresenterClasses>
-
-				<Border Background="{DynamicResource CardBackground}"
-						BorderBrush="{DynamicResource CardBorderBrush}"
-						BorderThickness="1"
-						CornerRadius="8"
-						Padding="0">
-
-					<Grid RowDefinitions="Auto,*,Auto" Margin="0">
-
-						<!-- ═══════════════ HEADER ═══════════════ -->
-						<Border Grid.Row="0"
-								Background="{DynamicResource WindowBackground}"
-								CornerRadius="8,8,0,0"
-								Padding="16,12,8,12">
-
-							<Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
-
-								<!-- Status Icon -->
-								<Grid Grid.Column="0" Width="26" Height="26" Margin="0,0,10,0">
-									<ico:MaterialIcon Kind="Edit"
-													  IsVisible="{Binding IsPending}">
-										<ico:MaterialIcon.Styles>
-											<Style Selector="ico|MaterialIcon">
-												<Style.Animations>
-													<Animation Duration="0:0:1"
-															   IterationCount="INFINITE"
-															   PlaybackDirection="Alternate"
-															   Easing="SineEaseInOut">
-														<KeyFrame Cue="0%">
-															<Setter Property="Opacity" Value="1.0"/>
-														</KeyFrame>
-														<KeyFrame Cue="100%">
-															<Setter Property="Opacity" Value="0.3"/>
-														</KeyFrame>
-													</Animation>
-												</Style.Animations>
-											</Style>
-										</ico:MaterialIcon.Styles>
-									</ico:MaterialIcon>
-									<flui:FAProgressRing IsVisible="{Binding InProgress}"
-														 Minimum="{Binding MinProgress}"
-														 Maximum="{Binding MaxProgress}"
-														 Value="{Binding Progress}"
-														 IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
-									<ico:MaterialIcon Kind="{Binding ToolIcon}"
-													  IsVisible="{Binding ToolIconVisible}"/>
-								</Grid>
-
-								<!-- Tool Name: localized + raw -->
-								<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-									<TextBlock Text="{loc:Loc {Binding ToolName}}"
-											   FontSize="16"
-											   FontWeight="Bold"/>
-									<TextBlock Text="{Binding ToolName}"
-											   FontSize="13"
-											   Opacity="0.35"
-											   VerticalAlignment="Bottom"/>
-								</StackPanel>
-
-								<!-- Approval buttons in header -->
-								<StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4"
-											IsVisible="{Binding UserAsked}"
-											Margin="4,0,0,0">
-									<Button Classes="IconButton"
-											Command="{Binding ApproveCommand}"
-											ToolTip.Tip="{loc:Loc approve}">
-										<ico:MaterialIcon Kind="CheckCircle" Foreground="{DynamicResource SuccessColor}"/>
-									</Button>
-									<Button Classes="IconButton"
-											Command="{Binding CancelCommand}"
-											ToolTip.Tip="{loc:Loc cancel}">
-										<ico:MaterialIcon Kind="Cancel" Foreground="{DynamicResource ErrorColor}"/>
-									</Button>
-								</StackPanel>
-
-								<!-- Copy Arguments button -->
-								<Button Grid.Column="3"
-										Classes="IconButton"
-										Width="32" Height="32"
-										Command="{Binding CopyArgumentsCommand}"
-										IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-										ToolTip.Tip="{loc:Loc copy-arguments}"
-										Margin="2,0,0,0">
-									<ico:MaterialIcon Kind="CodeJson" Width="18" Height="18"/>
-								</Button>
-
-								<!-- Copy Result button -->
-								<Button Grid.Column="4"
-										Classes="IconButton"
-										Width="32" Height="32"
-										Command="{Binding CopyResultCommand}"
-										IsVisible="{Binding Result, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-										ToolTip.Tip="{loc:Loc copy-result}"
-										Margin="2,0,0,0">
-									<ico:MaterialIcon Kind="ContentCopy" Width="18" Height="18"/>
-								</Button>
-
-							</Grid>
-
-						</Border>
-
-						<!-- Separator -->
-						<Rectangle Grid.Row="1" Grid.RowSpan="2"
-								   Fill="{DynamicResource CardBorderBrush}"
-								   Height="1"
-								   VerticalAlignment="Top"/>
-
-						<!-- ═══════════════ SCROLLABLE CONTENT ═══════════════ -->
-						<ScrollViewer Grid.Row="1"
-									  VerticalScrollBarVisibility="Auto"
-									  HorizontalScrollBarVisibility="Auto"
-									  Padding="16,16,16,8">
-
-							<StackPanel Orientation="Vertical" Spacing="20">
-
-								<!-- Arguments Section -->
-								<StackPanel Orientation="Vertical"
-											Spacing="8"
-											IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
-
-									<TextBlock Text="{loc:Loc tool-arguments}"
-											   FontSize="18"
-											   FontWeight="Bold"/>
-
-									<Border Background="{DynamicResource CodeBackground}"
-											BorderBrush="{DynamicResource CardBorderBrush}"
-											BorderThickness="1"
-											CornerRadius="6"
-											Padding="14">
-
-										<ctrl:MarkdownControl MarkdownText="{Binding Arguments}"
-															  Background="Transparent"/>
-
-									</Border>
-
-								</StackPanel>
-
-								<!-- Execution Progress -->
-								<StackPanel Orientation="Vertical"
-											Spacing="8"
-											IsVisible="{Binding InProgress}">
-
-									<TextBlock Text="{loc:Loc tool-executing}"
-											   FontSize="18"
-											   FontWeight="Bold"/>
-
-									<ProgressBar Minimum="{Binding MinProgress}"
-												 Maximum="{Binding MaxProgress}"
-												 Value="{Binding Progress}"
-												 IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"
-												 Height="10"
-												 CornerRadius="5"/>
-
-								</StackPanel>
-
-								<!-- Result Section -->
-								<StackPanel Orientation="Vertical"
-											Spacing="8"
-											IsVisible="{Binding Result, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
-
-									<TextBlock Text="{loc:Loc tool-result}"
-											   FontSize="18"
-											   FontWeight="Bold"/>
-
-									<Border Background="{DynamicResource CardBackground}"
-											BorderBrush="{DynamicResource CardBorderBrush}"
-											BorderThickness="1"
-											CornerRadius="6"
-											Padding="14">
-
-										<ctrl:MarkdownControl MarkdownText="{Binding Result}"
-															  Background="Transparent"/>
-
-									</Border>
-
-								</StackPanel>
-
-							</StackPanel>
-
-						</ScrollViewer>
-
-						<!-- ═══════════════ BOTTOM BAR ═══════════════ -->
-						<Border Grid.Row="2"
-								Background="{DynamicResource WindowBackground}"
-								CornerRadius="0,0,8,8"
-								Padding="12,8">
-
-							<StackPanel Orientation="Horizontal"
-										HorizontalAlignment="Right"
-										Spacing="8">
-
-								<TextBlock Text="{Binding ToolCallId}"
-										   FontSize="11"
-										   Opacity="0.25"
-										   VerticalAlignment="Center"
-										   Margin="0,0,8,0"/>
-
-								<Button Classes="Secondary"
-										Command="{Binding CopyArgumentsCommand}"
-										IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
-									<StackPanel Orientation="Horizontal" Spacing="6">
-										<ico:MaterialIcon Kind="CodeJson" Width="16" Height="16"/>
-										<TextBlock Text="{loc:Loc copy-arguments}"/>
-									</StackPanel>
-								</Button>
-
-								<Button Classes="Secondary"
-										Command="{Binding CopyResultCommand}"
-										IsVisible="{Binding Result, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
-									<StackPanel Orientation="Horizontal" Spacing="6">
-										<ico:MaterialIcon Kind="ContentCopy" Width="16" Height="16"/>
-										<TextBlock Text="{loc:Loc copy-result}"/>
-									</StackPanel>
-								</Button>
-
-							</StackPanel>
-
-						</Border>
-
-					</Grid>
-
-				</Border>
-
-			</Flyout>
-		</FlyoutBase.AttachedFlyout>
-		
 	</Panel>
 	
 </UserControl>

@@ -23,6 +23,13 @@ namespace LLMDesktopAssistant.LLM.Messages
 			set => SetProperty(ref _toolName, value);
 		}
 
+		private string _toolTitle = string.Empty;
+		public string ToolTitle
+		{
+			get => _toolTitle;
+			set => SetProperty(ref _toolTitle, value);
+		}
+
 		private string _toolCallId = string.Empty;
 		public string ToolCallId
 		{
@@ -174,6 +181,16 @@ namespace LLMDesktopAssistant.LLM.Messages
 			toolCall.UserAskCompletionSource?.TrySetResult(false);
 		}
 
+		public ICommand CopyArgumentsCommand { get; }
+		public void CopyArguments()
+		{
+			var json = ToolCallArgumentFormatter.FormatToJson(toolCall.Arguments);
+			if (!string.IsNullOrEmpty(json))
+			{
+				App.MainTopLevel.Clipboard?.SetTextAsync(json);
+			}
+		}
+
 		public ICommand CopyResultCommand { get; }
 		public void CopyResult()
 		{
@@ -189,7 +206,8 @@ namespace LLMDesktopAssistant.LLM.Messages
 		{
 			this.toolCall = toolCall;
 
-			ToolName = toolCall.Title ?? toolCall.ToolName;
+			ToolName = toolCall.ToolName;
+			ToolTitle = toolCall.Title ?? toolCall.ToolName;
 			ToolCallId = toolCall.Id;
 			Arguments = ToolCallArgumentFormatter.FormatToMarkdown(toolCall.Arguments);
 
@@ -205,6 +223,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 			ApproveCommand = new RelayCommand(Approve);
 			CancelCommand = new RelayCommand(Cancel);
+			CopyArgumentsCommand = new RelayCommand(CopyArguments);
 			CopyResultCommand = new RelayCommand(CopyResult);
 
 			if (!toolCall.IsCompleted)
