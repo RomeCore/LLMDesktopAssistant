@@ -381,16 +381,12 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		private void SubscribeAdditionalViewModel(AdditionalMessageViewModel viewModel, ChatMessage message, AdditionalMessageViewDataModel model)
 		{
-			async void OnAdditionalViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+			void OnAdditionalViewModelPropertyChanged()
 			{
 				database.AdditionalMessageViewModels.Update(model);
 			}
-			viewModel.PropertyChanged += OnAdditionalViewModelPropertyChanged;
-
-			_unsubscribers.Add(message, () =>
-			{
-				viewModel.PropertyChanged -= OnAdditionalViewModelPropertyChanged;
-			});
+			var changeTracker = new ChangeTracker(viewModel, OnAdditionalViewModelPropertyChanged);
+			_unsubscribers.Add(message, changeTracker.Dispose);
 		}
 
 		private void CreateAndInsertAdditionalViewModelAndSubscribe(AdditionalMessageViewModel viewModel, ChatMessage message, MessageModel model)

@@ -1,5 +1,9 @@
 @template system_prompt
 {
+	@metadata
+	{
+		lang: 'en-US'
+	}
 	@if prompt
 	{
 		@prompt

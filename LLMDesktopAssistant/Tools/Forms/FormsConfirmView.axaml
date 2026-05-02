@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+			 xmlns:local="using:LLMDesktopAssistant.Tools.Forms"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 x:Class="LLMDesktopAssistant.Tools.Forms.FormsConfirmView"
+			 x:DataType="local:FormsConfirmViewModel">
+
+	<Border Background="{DynamicResource CardBackground}"
+			BorderBrush="{DynamicResource CardBorderBrush}"
+			BorderThickness="1"
+			CornerRadius="8"
+			Padding="16"
+			Margin="4"
+			MinWidth="280"
+			MaxWidth="420">
+
+		<StackPanel Orientation="Vertical" Spacing="12">
+
+			<!-- Заголовок -->
+			<TextBlock Text="{Binding Title}"
+					   FontSize="16"
+					   FontWeight="Bold"
+					   TextWrapping="Wrap"/>
+
+			<!-- Описание -->
+			<TextBlock Text="{Binding Description}"
+					   FontSize="13"
+					   TextWrapping="Wrap"
+					   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+					   Opacity="0.8"/>
+
+			<!-- Кнопки -->
+			<StackPanel Orientation="Horizontal"
+						HorizontalAlignment="Right"
+						Spacing="8"
+						Margin="0,8,0,0">
+
+				<!-- Кнопка отмены -->
+				<Button Content="{Binding CancelText}"
+						Command="{Binding CancelCommand}"
+						IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"
+						Classes="Secondary"
+						MinWidth="80"/>
+
+				<!-- Кнопка подтверждения -->
+				<Button x:Name="ConfirmButton"
+						Content="{Binding ConfirmText}"
+						Command="{Binding ConfirmCommand}"
+						IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"
+						MinWidth="80"/>
+
+				<!-- Результат (после выбора) -->
+				<StackPanel Orientation="Horizontal" Spacing="4"
+							IsVisible="{Binding IsResultSet}">
+					<ico:MaterialIcon Kind="CheckCircle"
+									  Width="20" Height="20"
+									  Foreground="{DynamicResource SuccessColor}"/>
+					<TextBlock Text="Подтверждено" FontSize="13" Opacity="0.7"/>
+				</StackPanel>
+
+			</StackPanel>
+
+		</StackPanel>
+
+	</Border>
+
+</UserControl>

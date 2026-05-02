@@ -1046,11 +1046,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						{
 							if (offset <= totalCount && totalCount <= offset + maxEntries)
 							{
-								var fileInfo = new FileInfo(entry);
-								var sizeStr = FileUtils.BytesToDisplaySize(fileInfo.Length);
-								var edited = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm");
+								var fileMetrics = FileUtils.GetFileMetrics(entry);
+								var sizeStr = FileUtils.BytesToDisplaySize(fileMetrics.Size);
+								var linesStr = fileMetrics.LineCount != null ? $"{fileMetrics.LineCount} lines" : "binary";
+								var edited = fileMetrics.Modified.ToString("yyyy-MM-dd HH:mm");
 
-								sb.AppendLine($"{indent}[FILE] {name} ({sizeStr}, {edited})");
+								sb.AppendLine($"{indent}[FILE] {name} ({sizeStr}, {linesStr}, {edited})");
 							}
 
 							totalCount++;
