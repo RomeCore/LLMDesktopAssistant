@@ -11,12 +11,13 @@
 
 	<Border Background="{DynamicResource CardBackground}"
 			BorderBrush="{DynamicResource CardBorderBrush}"
+			HorizontalAlignment="Left"
 			BorderThickness="1"
 			CornerRadius="8"
 			Padding="16"
 			Margin="4"
 			MinWidth="280"
-			MaxWidth="420">
+			MaxWidth="520">
 
 		<StackPanel Orientation="Vertical" Spacing="10">
 
