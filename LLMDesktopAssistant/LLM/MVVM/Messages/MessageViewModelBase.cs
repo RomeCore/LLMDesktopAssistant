@@ -33,10 +33,6 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 		public ChatViewModel ChatViewModel { get; }
 
-		public virtual void OnRemoved()
-		{
-		}
-
 		public MessageViewModelBase(BranchedMessage branchedMessage, ChatViewModel chatVM)
 		{
 			this.branchedMessage = branchedMessage;

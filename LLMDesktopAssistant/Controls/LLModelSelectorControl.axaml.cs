@@ -137,8 +137,20 @@ namespace LLMDesktopAssistant.Controls
 		{
 			InitializeComponent();
 
+			// Из-за этой ебучей подписки у меня ебейшие утечки
 			var list = ServiceRegistry.Get<LLModelListService>();
-			list.Registry.RefreshCompleted += Registry_RefreshCompleted;
+			var weakRef = new WeakReference(this);
+
+			void ListRefreshed(object? s, EventArgs e)
+			{
+				var target = weakRef.Target as LLModelSelectorControl;
+				if (target == null)
+					list.Registry.RefreshCompleted -= ListRefreshed;
+				else
+					target.Registry_RefreshCompleted(s, e);
+			}
+			list.Registry.RefreshCompleted += ListRefreshed;
+
 			Rebuild();
 			IsRefreshButtonVisiblePropertyChanged(IsRefreshButtonVisible);
 

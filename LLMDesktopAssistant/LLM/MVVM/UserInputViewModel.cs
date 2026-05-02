@@ -334,7 +334,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		public bool IsEmpty()
 		{
-			return string.IsNullOrWhiteSpace(_text) && Attachments.Count > 0;
+			return string.IsNullOrWhiteSpace(_text) && Attachments.Count == 0;
 		}
 
 		public async Task AcceptDropAsync(DragEventArgs args)

@@ -31,5 +31,16 @@ namespace LLMDesktopAssistant.LLM
 			UserInput = new UserInputViewModel(this);
 			MessageSequence = new MessageSequenceViewModel(this);
 		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				MessageSequence.Dispose();
+				UserInput.Dispose();
+			}
+		}
 	}
 }

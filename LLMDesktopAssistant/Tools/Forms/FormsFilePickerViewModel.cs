@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LiteDB;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Tools.Forms;
 
@@ -59,21 +60,14 @@ public class FormsFilePickerViewModel : AdditionalMessageViewModel
 		set => SetProperty(ref _allowMultiple, value);
 	}
 
-	private string? _selectedPath;
-	public string? SelectedPath
+	private RangeObservableCollection<string> _selectedPaths = [];
+	public ICollection<string> SelectedPaths
 	{
-		get => _selectedPath;
-		set
-		{
-			if (SetProperty(ref _selectedPath, value))
-				RaisePropertyChanged(nameof(CanSubmit));
-		}
+		get => _selectedPaths;
+		set => _selectedPaths.Reset(value);
 	}
 
-	public List<string>? SelectedPaths { get; private set; }
-
-	public bool CanSubmit =>
-		(AllowMultiple ? SelectedPaths?.Count > 0 : !string.IsNullOrWhiteSpace(SelectedPath)) == true;
+	public bool CanSubmit => SelectedPaths.Count > 0;
 
 	private bool _isResultSet;
 	public bool IsResultSet
@@ -87,25 +81,6 @@ public class FormsFilePickerViewModel : AdditionalMessageViewModel
 
 	[BsonIgnore]
 	public IRelayCommand SubmitCommand { get; }
-
-	public void SetPaths(string[] paths)
-	{
-		if (IsResultSet) return;
-
-		if (AllowMultiple)
-		{
-			SelectedPaths = [.. paths];
-			SelectedPath = null;
-		}
-		else
-		{
-			SelectedPath = paths.FirstOrDefault();
-			SelectedPaths = null;
-		}
-
-		RaisePropertyChanged(nameof(CanSubmit));
-		SubmitCommand.NotifyCanExecuteChanged();
-	}
 
 	private async Task PickFiles()
 	{
@@ -122,7 +97,7 @@ public class FormsFilePickerViewModel : AdditionalMessageViewModel
 				};
 
 				var resultDirs = await storageProvider.OpenFolderPickerAsync(dirParams);
-				SetPaths(resultDirs.Select(r => r.Path.LocalPath).ToArray());
+				SelectedPaths = resultDirs.Select(r => r.Path.LocalPath).ToArray();
 
 				break;
 
@@ -139,7 +114,7 @@ public class FormsFilePickerViewModel : AdditionalMessageViewModel
 				};
 
 				var resultFiles = await storageProvider.OpenFilePickerAsync(fileParams);
-				SetPaths(resultFiles.Select(r => r.Path.LocalPath).ToArray());
+				SelectedPaths = resultFiles.Select(r => r.Path.LocalPath).ToArray();
 
 				break;
 
@@ -156,9 +131,9 @@ public class FormsFilePickerViewModel : AdditionalMessageViewModel
 
 				var resultFile = await storageProvider.SaveFilePickerAsync(saveParams);
 				if (resultFile != null)
-					SetPaths([resultFile.Path.LocalPath]);
+					SelectedPaths = [resultFile.Path.LocalPath];
 				else
-					SetPaths([]);
+					SelectedPaths = [];
 
 				break;
 		}
@@ -171,10 +146,7 @@ public class FormsFilePickerViewModel : AdditionalMessageViewModel
 
 		_tcs.TrySetResult(new FilePickerResult
 		{
-			Paths = AllowMultiple
-				? (SelectedPaths ?? []).ToArray()
-				: [SelectedPath ?? string.Empty],
-			SinglePath = AllowMultiple ? null : SelectedPath
+			Paths = SelectedPaths.ToArray()
 		});
 	}
 
@@ -182,12 +154,15 @@ public class FormsFilePickerViewModel : AdditionalMessageViewModel
 	{
 		PickCommand = new AsyncRelayCommand(PickFiles, () => !IsResultSet);
 		SubmitCommand = new RelayCommand(Submit, () => CanSubmit && !IsResultSet);
+		_selectedPaths.CollectionChanged += (_, _) =>
+		{
+			RaisePropertyChanged(nameof(CanSubmit));
+			SubmitCommand.NotifyCanExecuteChanged();
+		};
 	}
 }
 
 public class FilePickerResult
 {
 	public required string[] Paths { get; init; }
-
-	public string? SinglePath { get; init; }
 }

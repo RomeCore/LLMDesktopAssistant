@@ -36,32 +36,60 @@
 
 			<!-- Buttons -->
 			<StackPanel Orientation="Horizontal"
-						HorizontalAlignment="Right"
+						HorizontalAlignment="Left"
 						Spacing="8"
 						Margin="0,8,0,0">
 
 				<!-- Cancel button -->
 				<Button Content="{Binding CancelText}"
-						Command="{Binding CancelCommand}"
-						IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"
-						Classes="Secondary"
-						MinWidth="80"/>
+								Command="{Binding CancelCommand}"
+								IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"
+								Classes="Secondary"
+								MinWidth="80"/>
 
 				<!-- Confirm button -->
-				<Button x:Name="ConfirmButton"
-						Content="{Binding ConfirmText}"
-						Command="{Binding ConfirmCommand}"
-						IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"
-						MinWidth="80"/>
+				<Panel IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}">
+					
+					<Button Content="{Binding ConfirmText}"
+									Command="{Binding ConfirmCommand}"
+									IsVisible="{Binding IsDanger}"
+									Foreground="#FF5733"
+									MinWidth="80"/>
+					
+					<Button Content="{Binding ConfirmText}"
+									Command="{Binding ConfirmCommand}"
+									IsVisible="{Binding IsDanger, Converter={StaticResource InverseBooleanConverter}}"
+									MinWidth="80"/>
+					
+				</Panel>
 
 				<!-- Result (after selection) -->
-				<StackPanel Orientation="Horizontal" Spacing="4"
-							IsVisible="{Binding IsResultSet}">
-					<ico:MaterialIcon Kind="CheckCircle"
-									  Width="20" Height="20"
-									  Foreground="{DynamicResource SuccessColor}"/>
-					<TextBlock Text="{loc:Loc forms_confirmed}" FontSize="13" Opacity="0.7"/>
-				</StackPanel>
+
+				<Panel IsVisible="{Binding IsResultSet}">
+				
+					<StackPanel Orientation="Horizontal" Spacing="4"
+											IsVisible="{Binding IsConfirmed}">
+
+						<ico:MaterialIcon Kind="CheckCircle"
+											Width="20" Height="20"
+											Foreground="{DynamicResource SuccessColor}"/>
+
+						<TextBlock Text="{loc:Loc forms_confirmed}" FontSize="13" Opacity="0.7"/>
+
+					</StackPanel>
+					
+					<StackPanel Orientation="Horizontal" Spacing="4"
+											IsVisible="{Binding IsConfirmed, Converter={StaticResource InverseBooleanConverter}}">
+
+						<ico:MaterialIcon Kind="Cancel"
+											Width="20" Height="20"
+											Foreground="{DynamicResource CancelColor}"/>
+
+						<TextBlock Text="{loc:Loc forms_canceled}" FontSize="13" Opacity="0.7"/>
+
+					</StackPanel>
+					
+				</Panel>
 
 			</StackPanel>
 

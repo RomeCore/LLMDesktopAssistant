@@ -49,5 +49,16 @@ namespace LLMDesktopAssistant.LLM.Messages
 				chatVM.UserInput.EditMessage(branchedMessage);
 			});
 		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				foreach (var extension in Extensions)
+					extension.Dispose();
+			}
+		}
 	}
 }

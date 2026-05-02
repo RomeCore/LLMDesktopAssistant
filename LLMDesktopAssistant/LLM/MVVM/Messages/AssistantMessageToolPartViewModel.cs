@@ -15,5 +15,17 @@ namespace LLMDesktopAssistant.LLM.Messages
 		public AssistantMessageToolPartViewModel()
 		{
 		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				foreach (var toolCall in ToolCalls)
+					toolCall.Dispose();
+				ToolCalls.Clear();
+			}
+		}
 	}
 }

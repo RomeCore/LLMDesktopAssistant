@@ -277,6 +277,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Approve.
+        /// </summary>
+        public static string approve {
+            get {
+                return ResourceManager.GetString("approve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Ask.
         /// </summary>
         public static string ask_for_confirmation {
@@ -381,6 +390,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string cancel {
             get {
                 return ResourceManager.GetString("cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancel tool.
+        /// </summary>
+        public static string cancel_tool {
+            get {
+                return ResourceManager.GetString("cancel-tool", resourceCulture);
             }
         }
         
@@ -574,6 +592,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Close.
+        /// </summary>
+        public static string close {
+            get {
+                return ResourceManager.GetString("close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Connect.
         /// </summary>
         public static string connect {
@@ -588,6 +615,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string copy {
             get {
                 return ResourceManager.GetString("copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy arguments.
+        /// </summary>
+        public static string copy_arguments {
+            get {
+                return ResourceManager.GetString("copy-arguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy result.
+        /// </summary>
+        public static string copy_result {
+            get {
+                return ResourceManager.GetString("copy-result", resourceCulture);
             }
         }
         
@@ -705,6 +750,141 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string filesystem {
             get {
                 return ResourceManager.GetString("filesystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Forms.
+        /// </summary>
+        public static string forms {
+            get {
+                return ResourceManager.GetString("forms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancelled.
+        /// </summary>
+        public static string forms_canceled {
+            get {
+                return ResourceManager.GetString("forms_canceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Choose options.
+        /// </summary>
+        public static string forms_choice {
+            get {
+                return ResourceManager.GetString("forms-choice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Confirm action.
+        /// </summary>
+        public static string forms_confirm {
+            get {
+                return ResourceManager.GetString("forms-confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Confirmed.
+        /// </summary>
+        public static string forms_confirmed {
+            get {
+                return ResourceManager.GetString("forms_confirmed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Custom option....
+        /// </summary>
+        public static string forms_custom_option {
+            get {
+                return ResourceManager.GetString("forms_custom_option", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Field &quot;{0}&quot; is required..
+        /// </summary>
+        public static string forms_field_required {
+            get {
+                return ResourceManager.GetString("forms_field_required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на File picker.
+        /// </summary>
+        public static string forms_file_picker {
+            get {
+                return ResourceManager.GetString("forms-file_picker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на File selected.
+        /// </summary>
+        public static string forms_file_selected {
+            get {
+                return ResourceManager.GetString("forms_file_selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Form submitted.
+        /// </summary>
+        public static string forms_form_submitted {
+            get {
+                return ResourceManager.GetString("forms_form_submitted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Input form.
+        /// </summary>
+        public static string forms_input {
+            get {
+                return ResourceManager.GetString("forms-input", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Make your selection.
+        /// </summary>
+        public static string forms_make_selection {
+            get {
+                return ResourceManager.GetString("forms_make_selection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select file....
+        /// </summary>
+        public static string forms_select_file {
+            get {
+                return ResourceManager.GetString("forms_select_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Selected files.
+        /// </summary>
+        public static string forms_selected_files {
+            get {
+                return ResourceManager.GetString("forms_selected_files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Selection confirmed.
+        /// </summary>
+        public static string forms_selection_confirmed {
+            get {
+                return ResourceManager.GetString("forms_selection_confirmed", resourceCulture);
             }
         }
         
@@ -1447,6 +1627,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter custom specialization description....
+        /// </summary>
+        public static string prompt_custom_specialization_hint {
+            get {
+                return ResourceManager.GetString("prompt_custom_specialization_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Describe the professional role you want the assistant to have....
+        /// </summary>
+        public static string prompt_custom_specialization_placeholder {
+            get {
+                return ResourceManager.GetString("prompt_custom_specialization_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Edit Component.
         /// </summary>
         public static string prompt_edit_component {
@@ -1461,6 +1659,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string prompt_edit_persona {
             get {
                 return ResourceManager.GetString("prompt_edit_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit Specialization.
+        /// </summary>
+        public static string prompt_edit_specialization {
+            get {
+                return ResourceManager.GetString("prompt_edit_specialization", resourceCulture);
             }
         }
         
@@ -1488,6 +1695,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string prompt_import_persona {
             get {
                 return ResourceManager.GetString("prompt_import_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Import specialization.
+        /// </summary>
+        public static string prompt_import_specialization {
+            get {
+                return ResourceManager.GetString("prompt_import_specialization", resourceCulture);
             }
         }
         
@@ -1546,6 +1762,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на New specialization.
+        /// </summary>
+        public static string prompt_new_specialization {
+            get {
+                return ResourceManager.GetString("prompt_new_specialization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Persona.
         /// </summary>
         public static string prompt_persona {
@@ -1573,11 +1798,56 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Select specialization....
+        /// </summary>
+        public static string prompt_select_specialization {
+            get {
+                return ResourceManager.GetString("prompt_select_specialization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Select a persona to apply to the chat.
         /// </summary>
         public static string prompt_selected_persona_hint {
             get {
                 return ResourceManager.GetString("prompt_selected_persona_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select a specialization to define the assistant&apos;s professional role.
+        /// </summary>
+        public static string prompt_selected_specialization_hint {
+            get {
+                return ResourceManager.GetString("prompt_selected_specialization_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Specialization.
+        /// </summary>
+        public static string prompt_specialization {
+            get {
+                return ResourceManager.GetString("prompt_specialization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Choose a professional specialization for the assistant. This defines what the assistant knows and can do..
+        /// </summary>
+        public static string prompt_specialization_hint {
+            get {
+                return ResourceManager.GetString("prompt_specialization_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Specializations.
+        /// </summary>
+        public static string prompt_specializations {
+            get {
+                return ResourceManager.GetString("prompt_specializations", resourceCulture);
             }
         }
         
@@ -1623,6 +1893,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string prompt_use_custom_persona {
             get {
                 return ResourceManager.GetString("prompt_use_custom_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Use custom specialization.
+        /// </summary>
+        public static string prompt_use_custom_specialization {
+            get {
+                return ResourceManager.GetString("prompt_use_custom_specialization", resourceCulture);
             }
         }
         
@@ -2599,6 +2878,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Clear specialization.
+        /// </summary>
+        public static string specialization_clear {
+            get {
+                return ResourceManager.GetString("specialization_clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Random.
         /// </summary>
         public static string stage_type_random {
@@ -2644,11 +2932,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Executing....
+        /// </summary>
+        public static string tool_executing {
+            get {
+                return ResourceManager.GetString("tool-executing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на {0} tools.
         /// </summary>
         public static string tool_name_suffix_hint {
             get {
                 return ResourceManager.GetString("tool_name_suffix_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Requires approval.
+        /// </summary>
+        public static string tool_requires_approval {
+            get {
+                return ResourceManager.GetString("tool-requires-approval", resourceCulture);
             }
         }
         
@@ -2689,11 +2995,110 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на  Additional text: &quot;{0}&quot;..
+        /// </summary>
+        public static string user_additional_text {
+            get {
+                return ResourceManager.GetString("user_additional_text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User cancelled file selection..
+        /// </summary>
+        public static string user_cancelled_file_picker {
+            get {
+                return ResourceManager.GetString("user_cancelled_file_picker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User cancelled data input..
+        /// </summary>
+        public static string user_cancelled_input {
+            get {
+                return ResourceManager.GetString("user_cancelled_input", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User cancelled the operation or the request was interrupted..
+        /// </summary>
+        public static string user_cancelled_operation {
+            get {
+                return ResourceManager.GetString("user_cancelled_operation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User cancelled the selection..
+        /// </summary>
+        public static string user_cancelled_selection {
+            get {
+                return ResourceManager.GetString("user_cancelled_selection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User confirmed: &quot;{0}&quot;..
+        /// </summary>
+        public static string user_confirmed {
+            get {
+                return ResourceManager.GetString("user_confirmed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User declined: &quot;{0}&quot;..
+        /// </summary>
+        public static string user_declined {
+            get {
+                return ResourceManager.GetString("user_declined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User entered data: {0}..
+        /// </summary>
+        public static string user_entered_data {
+            get {
+                return ResourceManager.GetString("user_entered_data", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Visibility:.
         /// </summary>
         public static string user_message_visibility_hint {
             get {
                 return ResourceManager.GetString("user_message_visibility_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User did not select any files..
+        /// </summary>
+        public static string user_no_files_selected {
+            get {
+                return ResourceManager.GetString("user_no_files_selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User selected: {0}..
+        /// </summary>
+        public static string user_selected {
+            get {
+                return ResourceManager.GetString("user_selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User selected files: {0}..
+        /// </summary>
+        public static string user_selected_files {
+            get {
+                return ResourceManager.GetString("user_selected_files", resourceCulture);
             }
         }
         

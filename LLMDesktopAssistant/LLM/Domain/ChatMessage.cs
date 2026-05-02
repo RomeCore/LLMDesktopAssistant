@@ -38,6 +38,26 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _summaryOfPrevMessages, value);
 		}
 
+		private bool _hasContextShield;
+		/// <summary>
+		/// Gets or sets a flag indicating whether the message has a context shield.
+		/// Context shield means that this message and all previous will not be included in the generation.
+		/// </summary>
+		public bool HasContextShield
+		{
+			get => _hasContextShield;
+			set => SetProperty(ref _hasContextShield, value);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				foreach (var viewModel in AdditionalViewModels)
+					viewModel.Dispose();
+		}
+
 		/// <summary>
 		/// The collection of additional view models associated with this chat message.
 		/// These can be used for displaying extra information in the UI or store additional data.

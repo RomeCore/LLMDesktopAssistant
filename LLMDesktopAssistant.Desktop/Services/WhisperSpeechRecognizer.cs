@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.Desktop.Services
 	/// <summary>
 	/// Class that uses the Whisper speech recognition model to recognize speech.
 	/// </summary>
-	[DynamicService("WhisperSpeechRecognizer", typeof(ISpeechRecognizer), IsDefault = true)]
+	// [DynamicService("WhisperSpeechRecognizer", typeof(ISpeechRecognizer), IsDefault = true)]
 	public class WhisperSpeechRecognizer : ISpeechRecognizer
 	{
 		WhisperFactory? _factory = null;

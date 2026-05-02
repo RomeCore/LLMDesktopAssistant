@@ -43,27 +43,44 @@
 				</StackPanel>
 			</Button>
 
-			<!-- Selected path -->
-			<TextBlock Text="{Binding SelectedPath}"
-					   FontSize="12"
-					   TextWrapping="Wrap"
-					   IsVisible="{Binding SelectedPath, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-					   Opacity="0.7"/>
+			<!-- Selected paths -->
+			<ItemsControl ItemsSource="{Binding SelectedPaths}">
+				
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Vertical" Spacing="2"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding}"
+											 FontSize="12"
+											 TextWrapping="Wrap"
+											 Opacity="0.7"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+				
+			</ItemsControl>
 
 			<!-- Submit button -->
 			<Button Content="{loc:Loc ok}"
-					Command="{Binding SubmitCommand}"
-					HorizontalAlignment="Right"
-					MinWidth="80"
-					IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"/>
+							Command="{Binding SubmitCommand}"
+							HorizontalAlignment="Left"
+							MinWidth="80"
+							IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"/>
 
 			<!-- Result -->
 			<StackPanel Orientation="Horizontal" Spacing="4"
-						IsVisible="{Binding IsResultSet}">
+									HorizontalAlignment="Left"
+									IsVisible="{Binding IsResultSet}">
+
 				<ico:MaterialIcon Kind="CheckCircle"
-								  Width="20" Height="20"
-								  Foreground="{DynamicResource SuccessColor}"/>
+													Width="20" Height="20"
+													Foreground="{DynamicResource SuccessColor}"/>
+
 				<TextBlock Text="{loc:Loc forms_file_selected}" FontSize="13" Opacity="0.7"/>
+
 			</StackPanel>
 
 		</StackPanel>

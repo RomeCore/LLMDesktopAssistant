@@ -78,5 +78,10 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		/// Gets or sets the summary of this message and previous messages until another summary (and including it).
 		/// </summary>
 		public string? SummaryOfPrevMessages { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this message has context shield.
+		/// </summary>
+		public bool HasContextShield { get; set; }
 	}
 }

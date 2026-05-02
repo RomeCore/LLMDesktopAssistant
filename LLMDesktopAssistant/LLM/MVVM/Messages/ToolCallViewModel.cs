@@ -273,5 +273,15 @@ namespace LLMDesktopAssistant.LLM.Messages
 				});
 			}
 		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				
+			}
+		}
 	}
 }

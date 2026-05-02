@@ -32,37 +32,31 @@ namespace LLMDesktopAssistant.LLM.Messages
 		{
 			ReasoningText = message.ReasoningContent ?? string.Empty;
 
-			if (!message.IsCompleted)
+			Completed = message.IsCompleted;
+			if (message.IsCompleted) return;
+
+			void PropertyChangedHandler(object? s, PropertyChangedEventArgs e)
 			{
-				Completed = false;
-
-				void PropertyChangedHandler(object? s, PropertyChangedEventArgs e)
+				_currentUpdateOperation = InvokeUIAsync(() =>
 				{
-					_currentUpdateOperation = InvokeUIAsync(() =>
-					{
-						_currentUpdateOperation?.Abort();
-						ReasoningText = message.ReasoningContent ?? string.Empty;
-					});
-				}
-
-				message.PropertyChanged += PropertyChangedHandler;
-				message.CompletionToken.OnCompleted(() =>
-				{
-					InvokeUIAsync(() =>
-					{
-						_currentUpdateOperation?.Abort();
-						_currentUpdateOperation = null;
-						Completed = true;
-						RaisePropertyChanged(nameof(NotCompleted));
-					});
-
-					message.PropertyChanged -= PropertyChangedHandler;
+					_currentUpdateOperation?.Abort();
+					ReasoningText = message.ReasoningContent ?? string.Empty;
 				});
 			}
-			else
+
+			message.PropertyChanged += PropertyChangedHandler;
+			message.CompletionToken.OnCompleted(() =>
 			{
-				Completed = true;
-			}
+				InvokeUIAsync(() =>
+				{
+					_currentUpdateOperation?.Abort();
+					_currentUpdateOperation = null;
+					Completed = true;
+					RaisePropertyChanged(nameof(NotCompleted));
+				});
+
+				message.PropertyChanged -= PropertyChangedHandler;
+			});
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using Avalonia.Collections;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Utils;
+using LLTSharp;
 using System.Collections.Specialized;
 
 namespace LLMDesktopAssistant.LLM.Messages
@@ -8,11 +9,10 @@ namespace LLMDesktopAssistant.LLM.Messages
 	[ViewModelFor(typeof(MessageSequenceView))]
 	public class MessageSequenceViewModel : ViewModelBase
 	{
-		// TODO: Maybe change to RangeObservableCollection?
 		/// <summary>
 		/// Collection of message view models that represent the sequence of messages.
 		/// </summary>
-		public AvaloniaList<MessageViewModelBase> MessageViewModels { get; }
+		public RangeObservableCollection<MessageViewModelBase> MessageViewModels { get; }
 
 		/// <summary>
 		/// The chat view model instance associated with this message sequence.
@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 		public MessageSequenceViewModel(ChatViewModel chatVM)
 		{
-			MessageViewModels = new AvaloniaList<MessageViewModelBase>();
+			MessageViewModels = new RangeObservableCollection<MessageViewModelBase>();
 			ChatViewModel = chatVM;
 
 			MessageViewModels.AddRange(chatVM.Chat.Messages.Select(CreateMessageViewModel));
@@ -97,7 +97,20 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 		private void OnMessageViewModelRemoved(MessageViewModelBase viewModel)
 		{
-			viewModel.OnRemoved();
+			viewModel.Dispose();
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				foreach (var viewModel in MessageViewModels)
+					viewModel.Dispose();
+				ChatViewModel.Chat.Messages.CollectionChanged -= OnMessagesCollectionChanged;
+				MessageViewModels.Clear();
+			}
 		}
 	}
 }

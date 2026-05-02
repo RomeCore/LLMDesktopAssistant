@@ -17,15 +17,15 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// </summary>
 		public ImmutableList<Attachment> Attachments { get; init; } = [];
 
-	/// <summary>
-	/// Gets or sets the visibility of the user input. Determines who can see the message.
-	/// </summary>
-	public MessageVisibility Visibility { get; init; } = MessageVisibility.Always;
+		/// <summary>
+		/// Gets or sets the visibility of the user input. Determines who can see the message.
+		/// </summary>
+		public MessageVisibility Visibility { get; init; } = MessageVisibility.Always;
 
-	/// <summary>
-	/// Gets or sets the list of users (logins) or agents (guids) to whom the message is visible.
-	/// If empty, it means that the message is visible to all.
-	/// </summary>
-	public ImmutableList<string> VisibleTo { get; init; } = [];
+		/// <summary>
+		/// Gets or sets the list of users (logins) or agents (guids) to whom the message is visible.
+		/// If empty, it means that the message is visible to all.
+		/// </summary>
+		public ImmutableList<string> VisibleTo { get; init; } = [];
 	}
 }

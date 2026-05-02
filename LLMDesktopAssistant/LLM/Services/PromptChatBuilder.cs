@@ -391,6 +391,11 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				var message = messagesToProcess[i].Message;
 
+				if (message.HasContextShield)
+					break;
+
+				
+
 				if (message is Domain.UserMessage)
 				{
 					encounteredUserMessage = true;

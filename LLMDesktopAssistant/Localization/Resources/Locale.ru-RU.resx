@@ -1032,7 +1032,6 @@
   <data name="remove" xml:space="preserve">
     <value>Удалить</value>
   </data>
-  <!-- Specialization -->
   <data name="prompt_specialization" xml:space="preserve">
     <value>Специализация</value>
   </data>
@@ -1069,8 +1068,6 @@
   <data name="specialization_clear" xml:space="preserve">
     <value>Очистить специализацию</value>
   </data>
-
-  <!-- Forms tool module UI strings -->
   <data name="forms_form_submitted" xml:space="preserve">
     <value>Форма отправлена</value>
   </data>
@@ -1113,6 +1110,28 @@
   <data name="forms" xml:space="preserve">
     <value>Формы</value>
   </data>
-
-
+  <data name="tool-executing" xml:space="preserve">
+    <value>Выполняется...</value>
+  </data>
+  <data name="tool-requires-approval" xml:space="preserve">
+    <value>Требуется подтверждение</value>
+  </data>
+  <data name="approve" xml:space="preserve">
+    <value>Подтвердить</value>
+  </data>
+  <data name="cancel-tool" xml:space="preserve">
+    <value>Отменить инструмент</value>
+  </data>
+  <data name="copy-arguments" xml:space="preserve">
+    <value>Копировать аргументы</value>
+  </data>
+  <data name="copy-result" xml:space="preserve">
+    <value>Копировать результат</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="forms_canceled" xml:space="preserve">
+    <value>Отменено</value>
+  </data>
 </root>

@@ -4,6 +4,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
+using LLTSharp;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
 using System.Collections.Concurrent;
@@ -88,6 +89,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			_mainUnsubscriber?.Invoke();
 			for (int i = 0; i < chat.Messages.Count; i++)
 				Unsubscribe(chat.Messages[i].Message);
+			chat.Messages.Clear();
 		}
 
 		public void AppendMessage(ChatMessage chatMessage)
@@ -366,34 +368,52 @@ namespace LLMDesktopAssistant.LLM.Services
 			SubscribeToolCall(toolCall, assistantMessage, toolCallModel);
 		}
 
-		private AdditionalMessageViewDataModel CreateAndInsertAdditionalViewModel(AdditionalMessageViewModel viewModel, MessageModel model)
+		private AdditionalMessageViewDataModel CreateAndInsertAdditionalViewModel(AdditionalMessageViewModel viewModel,
+			MessageModel model)
 		{
 			var additionalViewDataModel = new AdditionalMessageViewDataModel
 			{
 				MessageId = model.Id,
 				ViewModel = viewModel
 			};
-
 			database.AdditionalMessageViewModels.Insert(additionalViewDataModel);
-
 			return additionalViewDataModel;
 		}
 
-		private void SubscribeAdditionalViewModel(AdditionalMessageViewModel viewModel, ChatMessage message, AdditionalMessageViewDataModel model)
+		private void SubscribeAdditionalViewModel(AdditionalMessageViewModel viewModel, ChatMessage message,
+			MessageModel messageModel, AdditionalMessageViewDataModel? model)
 		{
+			bool prevTemporary = viewModel.IsTemporary;
 			void OnAdditionalViewModelPropertyChanged()
 			{
-				database.AdditionalMessageViewModels.Update(model);
+				if (prevTemporary != viewModel.IsTemporary)
+				{
+					prevTemporary = viewModel.IsTemporary;
+
+					if (prevTemporary) // Became persistent
+					{
+						model = CreateAndInsertAdditionalViewModel(viewModel, messageModel);
+					}
+					else // Became temporary
+					{
+						database.AdditionalMessageViewModels.DeleteMany(avm => avm.ViewModel.Guid == viewModel.Guid);
+					}
+				}
+				else if (model != null)
+					database.AdditionalMessageViewModels.Update(model);
 			}
 			var changeTracker = new ChangeTracker(viewModel, OnAdditionalViewModelPropertyChanged);
 			_unsubscribers.Add(message, changeTracker.Dispose);
 		}
 
-		private void CreateAndInsertAdditionalViewModelAndSubscribe(AdditionalMessageViewModel viewModel, ChatMessage message, MessageModel model)
+		private void CreateAndInsertAdditionalViewModelAndSubscribe(AdditionalMessageViewModel viewModel,
+			ChatMessage message, MessageModel messageModel)
 		{
-			var additionalViewDataModel = CreateAndInsertAdditionalViewModel(viewModel, model);
+			var additionalViewDataModel = viewModel.IsTemporary
+				? null
+				: CreateAndInsertAdditionalViewModel(viewModel, messageModel);
 
-			SubscribeAdditionalViewModel(viewModel, message, additionalViewDataModel);
+			SubscribeAdditionalViewModel(viewModel, message, messageModel, additionalViewDataModel);
 		}
 
 		private void SubscribeMessage(ChatMessage message, MessageModel model)
@@ -402,8 +422,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				async void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 				{
-					model.CreatedAt = userMessage.CreatedAt;
 					model.SummaryOfPrevMessages = userMessage.SummaryOfPrevMessages;
+					model.HasContextShield = userMessage.HasContextShield;
 					model.Content = userMessage.Content;
 
 					database.Messages.Update(model);
@@ -420,6 +440,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				async void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 				{
 					model.SummaryOfPrevMessages = assistantMessage.SummaryOfPrevMessages;
+					model.HasContextShield = assistantMessage.HasContextShield;
 					model.ReasoningContent = assistantMessage.ReasoningContent;
 					model.Content = assistantMessage.Content;
 					model.Error = assistantMessage.Error;
@@ -463,8 +484,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				if (e.NewItems != null)
 					foreach (AdditionalMessageViewModel newVm in e.NewItems)
-						if (!newVm.IsTemporary)
-							CreateAndInsertAdditionalViewModelAndSubscribe(newVm, message, model);
+						CreateAndInsertAdditionalViewModelAndSubscribe(newVm, message, model);
 			}
 			message.AdditionalViewModels.CollectionChanged += AdditionalViewModelsCollectionChanged;
 
@@ -491,6 +511,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					CreatedAt = userMessage.CreatedAt,
 					SummaryOfPrevMessages = message.SummaryOfPrevMessages,
+					HasContextShield = message.HasContextShield,
 					Content = userMessage.Content,
 					Visibility = userMessage.Visibility,
 					VisibleTo = userMessage.VisibleTo,
@@ -534,6 +555,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					Sender = assistantMessage.SenderAgentId.ToString(),
 					AgentStageId = assistantMessage.AgentStageId,
 					SummaryOfPrevMessages = assistantMessage.SummaryOfPrevMessages,
+					HasContextShield = message.HasContextShield,
 					ReasoningContent = assistantMessage.ReasoningContent,
 					Content = assistantMessage.Content,
 					Error = assistantMessage.Error,
@@ -599,12 +621,13 @@ namespace LLMDesktopAssistant.LLM.Services
 					VisibleTo = messageModel.VisibleTo,
 					IsVisibleToWhiteList = messageModel.IsVisibleToWhiteList,
 					SummaryOfPrevMessages = messageModel.SummaryOfPrevMessages,
+					HasContextShield = messageModel.HasContextShield,
 					Attachments = attachments.ToImmutableList()
 				};
 
 				foreach (var additionalViewDataModel in additionalViewModels)
 				{
-					SubscribeAdditionalViewModel(additionalViewDataModel.ViewModel, result, additionalViewDataModel);
+					SubscribeAdditionalViewModel(additionalViewDataModel.ViewModel, result, messageModel, additionalViewDataModel);
 					result.AdditionalViewModels.Add(additionalViewDataModel.ViewModel);
 				}
 
@@ -628,13 +651,14 @@ namespace LLMDesktopAssistant.LLM.Services
 					ReasoningContent = messageModel.ReasoningContent,
 					Content = messageModel.Content,
 					SummaryOfPrevMessages = messageModel.SummaryOfPrevMessages,
+					HasContextShield = messageModel.HasContextShield,
 					CompletionToken = CompletionToken.Success,
 					Error = messageModel.Error
 				};
 
 				foreach (var additionalViewDataModel in additionalViewModels)
 				{
-					SubscribeAdditionalViewModel(additionalViewDataModel.ViewModel, result, additionalViewDataModel);
+					SubscribeAdditionalViewModel(additionalViewDataModel.ViewModel, result, messageModel, additionalViewDataModel);
 					result.AdditionalViewModels.Add(additionalViewDataModel.ViewModel);
 				}
 

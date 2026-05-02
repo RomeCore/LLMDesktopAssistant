@@ -73,7 +73,12 @@ namespace LLMDesktopAssistant
 
 		protected override IEnumerable<EventData> GetEventData() => [_propertyChangedEvt];
 
-		public event PropertyChangedEventHandler? PropertyChanged;
+		private PropertyChangedEventHandler? _propertyChangedHandler = null;
+		public event PropertyChangedEventHandler? PropertyChanged
+		{
+			add => _propertyChangedHandler += value;
+			remove => _propertyChangedHandler -= value;
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NotifyPropertyChanged"/> class.
@@ -85,7 +90,7 @@ namespace LLMDesktopAssistant
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-			PropertyChanged = null;
+			_propertyChangedHandler = null;
 		}
 
 		/// <summary>
@@ -99,7 +104,7 @@ namespace LLMDesktopAssistant
 			OnPropertyChanged(propertyName, oldValue, newValue);
 			if (propertyName != null)
 				_propertyChangedEvt.Call(propertyName, (c, e) => e(c, oldValue, newValue));
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			_propertyChangedHandler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		/// <summary>

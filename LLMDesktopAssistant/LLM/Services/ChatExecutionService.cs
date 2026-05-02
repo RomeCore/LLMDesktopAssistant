@@ -66,6 +66,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			catch (Exception ex)
 			{
 				Log.Error(ex, "An error occurred while generating the response using default agent: {ErrorMessage}", ex.Message);
+				throw;
 			}
 		}
 
@@ -320,6 +321,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			catch (Exception ex)
 			{
 				Log.Error(ex, "An error occurred while generating the response using agent: {ErrorMessage}", ex.Message);
+				throw;
 			}
 		}
 

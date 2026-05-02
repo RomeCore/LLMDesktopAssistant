@@ -54,6 +54,13 @@ public class FormsConfirmViewModel : AdditionalMessageViewModel
 		private set => SetProperty(ref _isResultSet, value);
 	}
 
+	private bool _isConfirmed;
+	public bool IsConfirmed
+	{
+		get => _isConfirmed;
+		private set => SetProperty(ref _isConfirmed, value);
+	}
+
 	[BsonIgnore]
 	public IRelayCommand ConfirmCommand { get; }
 
@@ -64,6 +71,7 @@ public class FormsConfirmViewModel : AdditionalMessageViewModel
 	{
 		if (IsResultSet) return;
 		IsResultSet = true;
+		IsConfirmed = true;
 		_tcs.TrySetResult(true);
 	}
 
@@ -71,6 +79,7 @@ public class FormsConfirmViewModel : AdditionalMessageViewModel
 	{
 		if (IsResultSet) return;
 		IsResultSet = true;
+		IsConfirmed = false;
 		_tcs.TrySetResult(false);
 	}
 

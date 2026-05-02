@@ -1032,7 +1032,6 @@
   <data name="remove" xml:space="preserve">
     <value>Remove</value>
   </data>
-  <!-- Specialization -->
   <data name="prompt_specialization" xml:space="preserve">
     <value>Specialization</value>
   </data>
@@ -1069,8 +1068,6 @@
   <data name="specialization_clear" xml:space="preserve">
     <value>Clear specialization</value>
   </data>
-
-  <!-- Forms tool module UI strings -->
   <data name="forms_form_submitted" xml:space="preserve">
     <value>Form submitted</value>
   </data>
@@ -1131,10 +1128,6 @@
   <data name="user_selected_files" xml:space="preserve">
     <value>User selected files: {0}.</value>
   </data>
-  <data name="failed_to_parse_fields" xml:space="preserve">
-    <value>Failed to parse form fields. Make sure a valid array of fields with id and label is provided.</value>
-  </data>
-  <!-- Forms tool names (displayed in UI) -->
   <data name="forms-confirm" xml:space="preserve">
     <value>Confirm action</value>
   </data>
@@ -1153,38 +1146,25 @@
   <data name="tool-executing" xml:space="preserve">
     <value>Executing...</value>
   </data>
-
   <data name="tool-requires-approval" xml:space="preserve">
     <value>Requires approval</value>
   </data>
-
   <data name="approve" xml:space="preserve">
     <value>Approve</value>
   </data>
-
-  <data name="cancel" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-
   <data name="cancel-tool" xml:space="preserve">
     <value>Cancel tool</value>
   </data>
-
   <data name="copy-arguments" xml:space="preserve">
     <value>Copy arguments</value>
   </data>
-
-
   <data name="copy-result" xml:space="preserve">
     <value>Copy result</value>
   </data>
-
   <data name="close" xml:space="preserve">
     <value>Close</value>
   </data>
-
-
-
-
+  <data name="forms_canceled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
 </root>
-

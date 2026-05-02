@@ -118,87 +118,104 @@ namespace LLMDesktopAssistant.LLM.Messages
 		private void SubscribeToAssistantMessageEvents()
 		{
 			IsCompleted = _assistantMessage.IsCompleted;
-			if (!_assistantMessage.IsCompleted)
+			if (_assistantMessage.IsCompleted) return;
+
+			void OnMessagePropertyChanged(object? s, PropertyChangedEventArgs e)
 			{
-				void OnMessagePropertyChanged(object? s, PropertyChangedEventArgs e)
+				InvokeUI(() =>
+				{
+					switch (e.PropertyName)
+					{
+						case nameof(AssistantMessage.ReasoningContent):
+
+							if (ReasoningPart == null && !string.IsNullOrEmpty(_assistantMessage.ReasoningContent))
+							{
+								ReasoningPart = new AssistantMessageReasoningPartViewModel(_assistantMessage);
+							}
+							break;
+
+						case nameof(AssistantMessage.Content):
+
+							if (TextPart == null && !string.IsNullOrEmpty(_assistantMessage.Content))
+							{
+								TextPart = new AssistantMessageTextPartViewModel(_assistantMessage);
+							}
+							break;
+
+						case nameof(AssistantMessage.PendingToolName):
+
+							ToolPart ??= new AssistantMessageToolPartViewModel();
+							if (ToolPart.ToolCalls.FirstOrDefault(t => t.Status == ToolStatus.Pending) is ToolCallViewModel pendingToolCall)
+								ToolPart.ToolCalls.Remove(pendingToolCall);
+
+							if (_assistantMessage.PendingToolName != null)
+							{
+								var toolsetCache = ChatViewModel.Chat.Services.GetRequiredService<IToolsetCacheService>();
+								var title = toolsetCache.AvailableTools.TryGetValue(_assistantMessage.PendingToolName, out var toolInfo) ?
+									toolInfo.DisplayName : _assistantMessage.PendingToolName;
+
+								ToolPart.ToolCalls.Add(new ToolCallViewModel(new ToolCall
+								{
+									ToolName = _assistantMessage.PendingToolName,
+									Title = title,
+									Arguments = new JsonObject(),
+									CompletionToken = RCLargeLanguageModels.Tasks.CompletionToken.Success,
+									Id = "",
+									Status = ToolStatus.Pending
+								}, ChatViewModel.Chat));
+							}
+
+							break;
+					}
+
+
+					Error = _assistantMessage.Error;
+				});
+			}
+
+			void OnToolCallsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+			{
+				if (e.NewItems != null)
 				{
 					InvokeUI(() =>
 					{
-						switch (e.PropertyName)
+						ToolPart ??= new AssistantMessageToolPartViewModel();
+						foreach (ToolCall toolCall in e.NewItems)
 						{
-							case nameof(AssistantMessage.ReasoningContent):
-
-								if (ReasoningPart == null && !string.IsNullOrEmpty(_assistantMessage.ReasoningContent))
-								{
-									ReasoningPart = new AssistantMessageReasoningPartViewModel(_assistantMessage);
-								}
-								break;
-
-							case nameof(AssistantMessage.Content):
-
-								if (TextPart == null && !string.IsNullOrEmpty(_assistantMessage.Content))
-								{
-									TextPart = new AssistantMessageTextPartViewModel(_assistantMessage);
-								}
-								break;
-
-							case nameof(AssistantMessage.PendingToolName):
-
-								ToolPart ??= new AssistantMessageToolPartViewModel();
-								if (ToolPart.ToolCalls.FirstOrDefault(t => t.Status == ToolStatus.Pending) is ToolCallViewModel pendingToolCall)
-									ToolPart.ToolCalls.Remove(pendingToolCall);
-
-								if (_assistantMessage.PendingToolName != null)
-								{
-									var toolsetCache = ChatViewModel.Chat.Services.GetRequiredService<IToolsetCacheService>();
-									var title = toolsetCache.AvailableTools.TryGetValue(_assistantMessage.PendingToolName, out var toolInfo) ?
-										toolInfo.DisplayName : _assistantMessage.PendingToolName;
-
-									ToolPart.ToolCalls.Add(new ToolCallViewModel(new ToolCall
-									{
-										ToolName = _assistantMessage.PendingToolName,
-										Title = title,
-										Arguments = new JsonObject(),
-										CompletionToken = RCLargeLanguageModels.Tasks.CompletionToken.Success,
-										Id = "",
-										Status = ToolStatus.Pending
-									}, ChatViewModel.Chat));
-								}
-
-								break;
+							ToolPart.ToolCalls.Add(new ToolCallViewModel(toolCall, ChatViewModel.Chat));
 						}
 
-
-						Error = _assistantMessage.Error;
+						RaisePropertyChanged(nameof(ContainsToolCalls));
 					});
 				}
+			}
 
-				void OnToolCallsChanged(object? sender, NotifyCollectionChangedEventArgs e)
-				{
-					if (e.NewItems != null)
-					{
-						InvokeUI(() =>
-						{
-							ToolPart ??= new AssistantMessageToolPartViewModel();
-							foreach (ToolCall toolCall in e.NewItems)
-							{
-								ToolPart.ToolCalls.Add(new ToolCallViewModel(toolCall, ChatViewModel.Chat));
-							}
+			_assistantMessage.PropertyChanged += OnMessagePropertyChanged;
+			_assistantMessage.ToolCalls.CollectionChanged += OnToolCallsChanged;
 
-							RaisePropertyChanged(nameof(ContainsToolCalls));
-						});
-					}
-				}
+			_assistantMessage.CompletionToken.OnCompleted(() =>
+			{
+				_assistantMessage.PropertyChanged -= OnMessagePropertyChanged;
+				_assistantMessage.ToolCalls.CollectionChanged -= OnToolCallsChanged;
+				IsCompleted = true;
+			});
+		}
 
-				_assistantMessage.PropertyChanged += OnMessagePropertyChanged;
-				_assistantMessage.ToolCalls.CollectionChanged += OnToolCallsChanged;
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
 
-				_assistantMessage.CompletionToken.OnCompleted(() =>
-				{
-					_assistantMessage.PropertyChanged -= OnMessagePropertyChanged;
-					_assistantMessage.ToolCalls.CollectionChanged -= OnToolCallsChanged;
-					IsCompleted = true;
-				});
+			if (disposing)
+			{
+				ReasoningPart?.Dispose();
+				ReasoningPart = null;
+				TextPart?.Dispose();
+				TextPart = null;
+				ToolPart?.Dispose();
+				ToolPart = null;
+
+				foreach (var extension in Extensions)
+					extension.Dispose();
 			}
 		}
 	}
