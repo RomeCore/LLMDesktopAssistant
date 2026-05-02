@@ -6,6 +6,9 @@
 			 xmlns:md="using:LiveMarkdown.Avalonia"
 			 x:Class="LLMDesktopAssistant.Controls.MarkdownControl">
 	
-	<md:MarkdownRenderer x:Name="MarkdownRenderer"/>
+	<Panel>
+		<md:MarkdownRenderer x:Name="MarkdownRenderer"/>
+		<md:MarkdownTextBlock x:Name="MarkdownTextBlock"/>
+	</Panel>
 
 </UserControl>

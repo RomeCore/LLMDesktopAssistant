@@ -1,10 +1,13 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.Messages
 {
@@ -112,6 +115,9 @@ namespace LLMDesktopAssistant.LLM.Messages
 			set => SetProperty(ref _result, value);
 		}
 
+		public bool ShowResult => !string.IsNullOrEmpty(Result);
+		public bool ShowArguments => !string.IsNullOrEmpty(Arguments);
+
 
 
 		public MaterialIconKind ToolIcon =>
@@ -168,6 +174,15 @@ namespace LLMDesktopAssistant.LLM.Messages
 			toolCall.UserAskCompletionSource?.TrySetResult(false);
 		}
 
+		public ICommand CopyResultCommand { get; }
+		public void CopyResult()
+		{
+			if (!string.IsNullOrEmpty(Result))
+			{
+				App.MainTopLevel.Clipboard?.SetTextAsync(Result);
+			}
+		}
+
 
 
 		public ToolCallViewModel(ToolCall toolCall, Chat chat)
@@ -190,6 +205,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 			ApproveCommand = new RelayCommand(Approve);
 			CancelCommand = new RelayCommand(Cancel);
+			CopyResultCommand = new RelayCommand(CopyResult);
 
 			if (!toolCall.IsCompleted)
 			{

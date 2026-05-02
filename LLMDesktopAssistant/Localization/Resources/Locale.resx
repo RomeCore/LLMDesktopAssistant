@@ -1150,6 +1150,35 @@
   <data name="forms" xml:space="preserve">
     <value>Forms</value>
   </data>
+  <data name="tool-executing" xml:space="preserve">
+    <value>Executing...</value>
+  </data>
+
+  <data name="tool-requires-approval" xml:space="preserve">
+    <value>Requires approval</value>
+  </data>
+
+  <data name="approve" xml:space="preserve">
+    <value>Approve</value>
+  </data>
+
+  <data name="cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+
+  <data name="cancel-tool" xml:space="preserve">
+    <value>Cancel tool</value>
+  </data>
+
+  <data name="copy-result" xml:space="preserve">
+    <value>Copy result</value>
+  </data>
+
+  <data name="close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+
+
 
 
 </root>
