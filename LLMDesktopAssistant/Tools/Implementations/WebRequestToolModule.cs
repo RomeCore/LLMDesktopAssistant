@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Net.Http;
@@ -8,7 +8,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using AngleSharp;
-using DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using Ganss.Xss;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;

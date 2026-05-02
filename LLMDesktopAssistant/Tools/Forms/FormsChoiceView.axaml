@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
 			 xmlns:local="using:LLMDesktopAssistant.Tools.Forms"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.Tools.Forms.FormsChoiceView"
 			 x:DataType="local:FormsChoiceViewModel"
@@ -33,12 +34,10 @@
 					   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
 					   Opacity="0.8"/>
 
-			<!-- Hint -->
+			<!-- Selection hint -->
 			<TextBlock FontSize="11" Opacity="0.5"
 					   IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}">
-				<TextBlock.Text>
-					<Binding Path="AllowMultiple"/>
-				</TextBlock.Text>
+				<Run Text="{loc:Loc forms_make_selection}"/>
 			</TextBlock>
 
 			<ItemsControl ItemsSource="{Binding Options}"
@@ -50,20 +49,23 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<Button Content="{Binding Label}"
+						<ToggleButton Content="{Binding Label}"
 								Command="{Binding #Form.DataContext.ToggleCommand}"
 								CommandParameter="{Binding}"
 								HorizontalAlignment="Stretch"
+								IsChecked="{Binding IsSelected}"
 								Classes="ChoiceOption"/>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 
-			<TextBox Text="{Binding CustomInput}"
-					 PlaceholderText="Свой вариант..."
-					 IsVisible="{Binding AllowCustom}"/>
+			<Panel IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}">
+				<TextBox Text="{Binding CustomInput}"
+						 PlaceholderText="{loc:Loc forms_custom_option}"
+						 IsVisible="{Binding AllowCustom}"/>
+			</Panel>
 
-			<Button Content="OK"
+			<Button Content="{loc:Loc ok}"
 					Command="{Binding SubmitCommand}"
 					HorizontalAlignment="Right"
 					MinWidth="80"
@@ -74,7 +76,7 @@
 				<ico:MaterialIcon Kind="CheckCircle"
 								  Width="20" Height="20"
 								  Foreground="{DynamicResource SuccessColor}"/>
-				<TextBlock Text="Выбор подтверждён" FontSize="13" Opacity="0.7"/>
+				<TextBlock Text="{loc:Loc forms_selection_confirmed}" FontSize="13" Opacity="0.7"/>
 			</StackPanel>
 
 		</StackPanel>

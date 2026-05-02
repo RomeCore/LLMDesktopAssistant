@@ -33,10 +33,17 @@ public partial class FormsConfirmView : UserControl
     private void UpdateDangerStyle(bool isDanger)
     {
         var button = this.FindControl<Button>("ConfirmButton");
-        if (button != null && isDanger)
+        if (button == null) return;
+
+        if (isDanger)
         {
             button.Background = new SolidColorBrush(Color.Parse("#D32F2F"));
             button.Foreground = new SolidColorBrush(Colors.White);
+        }
+        else
+        {
+            button.Background = this.FindResource("CardBackground") as IBrush;
+            button.Foreground = this.FindResource("DefaultTextBrush") as IBrush;
         }
     }
 }

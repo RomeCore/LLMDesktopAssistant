@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
 			 xmlns:local="using:LLMDesktopAssistant.Tools.Forms"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.Tools.Forms.FormsConfirmView"
 			 x:DataType="local:FormsConfirmViewModel">
@@ -19,46 +20,46 @@
 
 		<StackPanel Orientation="Vertical" Spacing="12">
 
-			<!-- Заголовок -->
+			<!-- Title -->
 			<TextBlock Text="{Binding Title}"
 					   FontSize="16"
 					   FontWeight="Bold"
 					   TextWrapping="Wrap"/>
 
-			<!-- Описание -->
+			<!-- Description -->
 			<TextBlock Text="{Binding Description}"
 					   FontSize="13"
 					   TextWrapping="Wrap"
 					   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
 					   Opacity="0.8"/>
 
-			<!-- Кнопки -->
+			<!-- Buttons -->
 			<StackPanel Orientation="Horizontal"
 						HorizontalAlignment="Right"
 						Spacing="8"
 						Margin="0,8,0,0">
 
-				<!-- Кнопка отмены -->
+				<!-- Cancel button -->
 				<Button Content="{Binding CancelText}"
 						Command="{Binding CancelCommand}"
 						IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"
 						Classes="Secondary"
 						MinWidth="80"/>
 
-				<!-- Кнопка подтверждения -->
+				<!-- Confirm button -->
 				<Button x:Name="ConfirmButton"
 						Content="{Binding ConfirmText}"
 						Command="{Binding ConfirmCommand}"
 						IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"
 						MinWidth="80"/>
 
-				<!-- Результат (после выбора) -->
+				<!-- Result (after selection) -->
 				<StackPanel Orientation="Horizontal" Spacing="4"
 							IsVisible="{Binding IsResultSet}">
 					<ico:MaterialIcon Kind="CheckCircle"
 									  Width="20" Height="20"
 									  Foreground="{DynamicResource SuccessColor}"/>
-					<TextBlock Text="Подтверждено" FontSize="13" Opacity="0.7"/>
+					<TextBlock Text="{loc:Loc forms_confirmed}" FontSize="13" Opacity="0.7"/>
 				</StackPanel>
 
 			</StackPanel>

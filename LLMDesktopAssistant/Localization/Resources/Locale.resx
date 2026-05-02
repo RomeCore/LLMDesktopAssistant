@@ -1070,4 +1070,87 @@
     <value>Clear specialization</value>
   </data>
 
+  <!-- Forms tool module UI strings -->
+  <data name="forms_form_submitted" xml:space="preserve">
+    <value>Form submitted</value>
+  </data>
+  <data name="forms_selection_confirmed" xml:space="preserve">
+    <value>Selection confirmed</value>
+  </data>
+  <data name="forms_confirmed" xml:space="preserve">
+    <value>Confirmed</value>
+  </data>
+  <data name="forms_file_selected" xml:space="preserve">
+    <value>File selected</value>
+  </data>
+  <data name="forms_select_file" xml:space="preserve">
+    <value>Select file...</value>
+  </data>
+  <data name="forms_custom_option" xml:space="preserve">
+    <value>Custom option...</value>
+  </data>
+  <data name="forms_make_selection" xml:space="preserve">
+    <value>Make your selection</value>
+  </data>
+  <data name="forms_selected_files" xml:space="preserve">
+    <value>Selected files</value>
+  </data>
+  <data name="forms_field_required" xml:space="preserve">
+    <value>Field "{0}" is required.</value>
+  </data>
+  <data name="user_confirmed" xml:space="preserve">
+    <value>User confirmed: "{0}".</value>
+  </data>
+  <data name="user_declined" xml:space="preserve">
+    <value>User declined: "{0}".</value>
+  </data>
+  <data name="user_cancelled_operation" xml:space="preserve">
+    <value>User cancelled the operation or the request was interrupted.</value>
+  </data>
+  <data name="user_cancelled_selection" xml:space="preserve">
+    <value>User cancelled the selection.</value>
+  </data>
+  <data name="user_cancelled_input" xml:space="preserve">
+    <value>User cancelled data input.</value>
+  </data>
+  <data name="user_cancelled_file_picker" xml:space="preserve">
+    <value>User cancelled file selection.</value>
+  </data>
+  <data name="user_no_files_selected" xml:space="preserve">
+    <value>User did not select any files.</value>
+  </data>
+  <data name="user_selected" xml:space="preserve">
+    <value>User selected: {0}.</value>
+  </data>
+  <data name="user_additional_text" xml:space="preserve">
+    <value> Additional text: "{0}".</value>
+  </data>
+  <data name="user_entered_data" xml:space="preserve">
+    <value>User entered data: {0}.</value>
+  </data>
+  <data name="user_selected_files" xml:space="preserve">
+    <value>User selected files: {0}.</value>
+  </data>
+  <data name="failed_to_parse_fields" xml:space="preserve">
+    <value>Failed to parse form fields. Make sure a valid array of fields with id and label is provided.</value>
+  </data>
+  <!-- Forms tool names (displayed in UI) -->
+  <data name="forms-confirm" xml:space="preserve">
+    <value>Confirm action</value>
+  </data>
+  <data name="forms-choice" xml:space="preserve">
+    <value>Choose options</value>
+  </data>
+  <data name="forms-input" xml:space="preserve">
+    <value>Input form</value>
+  </data>
+  <data name="forms-file_picker" xml:space="preserve">
+    <value>File picker</value>
+  </data>
+  <data name="forms" xml:space="preserve">
+    <value>Forms</value>
+  </data>
+
+
 </root>
+

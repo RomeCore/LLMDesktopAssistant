@@ -1,9 +1,7 @@
-using LLMDesktopAssistant.LLM.Domain;
-
-
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using LiteDB;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Forms;
 
@@ -125,7 +123,7 @@ public class FormsInputViewModel : AdditionalMessageViewModel
 			inputField.Error = null;
 			if (inputField.IsRequired && string.IsNullOrWhiteSpace(inputField.Value))
 			{
-				inputField.Error = $"Поле \"{inputField.Label}\" обязательно для заполнения.";
+				inputField.Error = string.Format(LocalizationManager.LocalizeStatic("forms_field_required"), inputField.Label);
 			}
 		}
 

@@ -28,10 +28,10 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "metatools-create_or_update",
 					Description = """
-			Creates or updates a meta tool with the specified details.
-			If the tool already exists, it will be updated.
-			If tool does not exists, all parameters must not be null.
-			""",
+						Creates or updates a meta tool with the specified details.
+						If the tool already exists, it will be updated.
+						If tool does not exists, all parameters must not be null.
+						""",
 					Category = "metatools",
 					AskForConfirmation = true
 				});

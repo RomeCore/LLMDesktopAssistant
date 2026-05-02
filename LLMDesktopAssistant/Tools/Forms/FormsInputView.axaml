@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
 			 xmlns:local="using:LLMDesktopAssistant.Tools.Forms"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.Tools.Forms.FormsInputView"
 			 x:DataType="local:FormsInputViewModel">
@@ -19,20 +20,20 @@
 
 		<StackPanel Orientation="Vertical" Spacing="10">
 
-			<!-- Заголовок -->
+			<!-- Title -->
 			<TextBlock Text="{Binding Title}"
 					   FontSize="16"
 					   FontWeight="Bold"
 					   TextWrapping="Wrap"/>
 
-			<!-- Описание -->
+			<!-- Description -->
 			<TextBlock Text="{Binding Description}"
 					   FontSize="13"
 					   TextWrapping="Wrap"
 					   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
 					   Opacity="0.8"/>
 
-			<!-- Поля формы -->
+			<!-- Form fields -->
 			<ItemsControl ItemsSource="{Binding Fields}"
 						  IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}">
 				<ItemsControl.ItemsPanel>
@@ -52,15 +53,14 @@
 										   IsVisible="{Binding IsRequired}"/>
 							</StackPanel>
 
-							<!-- Многострочное поле -->
+							<!-- Field input: uses AcceptsReturn only for multiline type -->
 							<TextBox Text="{Binding Value}"
 									 PlaceholderText="{Binding Placeholder}"
-									 AcceptsReturn="True"
 									 MinLines="3"
 									 MaxLines="8"
-									 IsVisible="{Binding FieldType, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+									 AcceptsReturn="{Binding FieldType, Converter={StaticResource StringEqualsConverter}, ConverterParameter=multiline}"/>
 
-							<!-- Ошибка -->
+							<!-- Error -->
 							<TextBlock Text="{Binding Error}"
 									   Foreground="Red"
 									   FontSize="11"
@@ -70,20 +70,20 @@
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 
-			<!-- Кнопка Submit -->
-			<Button Content="OK"
+			<!-- Submit button -->
+			<Button Content="{loc:Loc ok}"
 					Command="{Binding SubmitCommand}"
 					HorizontalAlignment="Right"
 					MinWidth="80"
 					IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"/>
 
-			<!-- Результат -->
+			<!-- Result -->
 			<StackPanel Orientation="Horizontal" Spacing="4"
 						IsVisible="{Binding IsResultSet}">
 				<ico:MaterialIcon Kind="CheckCircle"
 								  Width="20" Height="20"
 								  Foreground="{DynamicResource SuccessColor}"/>
-				<TextBlock Text="Форма отправлена" FontSize="13" Opacity="0.7"/>
+				<TextBlock Text="{loc:Loc forms_form_submitted}" FontSize="13" Opacity="0.7"/>
 			</StackPanel>
 
 		</StackPanel>

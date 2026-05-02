@@ -1,4 +1,5 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,11 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	[ToolModule]
 	public class DesktopFilesystemToolModule : ToolModule
 	{
-		private readonly Chat _chat;
+		private readonly FileAccessService _fileAccess;
 
-		public DesktopFilesystemToolModule(Chat chat)
+		public DesktopFilesystemToolModule(FileAccessService fileAccess)
 		{
-			_chat = chat;
+			_fileAccess = fileAccess;
 
 			AddTool(OpenFile,
 				new ToolInitializationInfo
@@ -27,17 +28,17 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				});
 		}
 
-		public ReactiveToolResult OpenFile(string filename)
+		public ReactiveToolResult OpenFile(string path)
 		{
 			try
 			{
-				var workDir = _chat.Settings.Environment.GetWorkingDirectory();
-				var fullPath = Path.Combine(workDir, filename);
+				var workingDirectory = _fileAccess.GetWorkingDirectory();
+				var fullPath = _fileAccess.AccessPath(path);
 				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
 				{
-					return ReactiveToolResult.CreateError($"File not found: {filename}");
+					return ReactiveToolResult.CreateError($"File not found: {path}");
 				}
 
 				using (Process process = new Process())
@@ -45,7 +46,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					process.StartInfo = new ProcessStartInfo
 					{
 						FileName = fullPath,
-						WorkingDirectory = workDir,
+						WorkingDirectory = workingDirectory,
 						UseShellExecute = true
 					};
 					process.Start();
@@ -55,14 +56,14 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.OpenInNew,
 					StatusTitle = $"**{fileName}**",
-					ResultContent = $"Successfully opened: {filename}"
+					ResultContent = $"Successfully opened: {path}"
 				};
 
 				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error opening file {filename}: {ex.Message}");
+				return ReactiveToolResult.CreateError($"Error opening file {path}: {ex.Message}");
 			}
 		}
 

@@ -1,4 +1,3 @@
-﻿using DocumentFormat.OpenXml.InkML;
 using RCLargeLanguageModels.Json;
 using RCLargeLanguageModels.Json.Schema;
 using RCLargeLanguageModels.Tools;

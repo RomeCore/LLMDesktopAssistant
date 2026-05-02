@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.LLM.Domain;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using LiteDB;
 
 namespace LLMDesktopAssistant.Tools.Forms;
 
@@ -28,14 +29,12 @@ public class ChoiceOption : NotifyPropertyChanged
 	}
 }
 
-/// <summary>
-/// ViewModel для формы выбора варианта(ов).
-/// </summary>
 [ViewModelFor(typeof(FormsChoiceView))]
 public class FormsChoiceViewModel : AdditionalMessageViewModel
 {
 	private readonly TaskCompletionSource<ChoiceResult> _tcs = new();
 
+	[BsonIgnore]
 	public Task<ChoiceResult> Result => _tcs.Task;
 
 	private string _title = string.Empty;
@@ -52,7 +51,7 @@ public class FormsChoiceViewModel : AdditionalMessageViewModel
 		set => SetProperty(ref _description, value);
 	}
 
-	public ObservableCollection<ChoiceOption> Options { get; } = [];
+	public ImmutableList<ChoiceOption> Options { get; }
 
 	private bool _allowMultiple;
 	public bool AllowMultiple
@@ -89,10 +88,14 @@ public class FormsChoiceViewModel : AdditionalMessageViewModel
 		set
 		{
 			if (SetProperty(ref _customInput, value))
+			{
 				RaisePropertyChanged(nameof(CanSubmit));
+				SubmitCommand.NotifyCanExecuteChanged();
+			}
 		}
 	}
 
+	[BsonIgnore]
 	public bool CanSubmit
 	{
 		get
@@ -112,9 +115,11 @@ public class FormsChoiceViewModel : AdditionalMessageViewModel
 		private set => SetProperty(ref _isResultSet, value);
 	}
 
-	public ICommand ToggleCommand => new RelayCommand<ChoiceOption>(ToggleOption);
+	[BsonIgnore]
+	public IRelayCommand ToggleCommand { get; }
 
-	public ICommand SubmitCommand => new RelayCommand(Submit, () => CanSubmit && !IsResultSet);
+	[BsonIgnore]
+	public IRelayCommand SubmitCommand { get; }
 
 	public void ToggleOption(ChoiceOption? option)
 	{
@@ -123,14 +128,11 @@ public class FormsChoiceViewModel : AdditionalMessageViewModel
 		if (!AllowMultiple)
 		{
 			foreach (var o in Options)
-				o.IsSelected = o == option ? !o.IsSelected : false;
-		}
-		else
-		{
-			option.IsSelected = !option.IsSelected;
+				o.IsSelected = o == option ? o.IsSelected : false;
 		}
 
 		RaisePropertyChanged(nameof(CanSubmit));
+		SubmitCommand.NotifyCanExecuteChanged();
 	}
 
 	public void Submit()
@@ -153,9 +155,19 @@ public class FormsChoiceViewModel : AdditionalMessageViewModel
 		});
 	}
 
-	public FormsChoiceViewModel()
+	[BsonCtor]
+	private FormsChoiceViewModel()
 	{
-		IsTemporary = true;
+		Options = [];
+		ToggleCommand = new RelayCommand<ChoiceOption>(ToggleOption);
+		SubmitCommand = new RelayCommand(Submit, () => CanSubmit && !IsResultSet);
+	}
+
+	public FormsChoiceViewModel(IEnumerable<ChoiceOption> options)
+	{
+		Options = options.ToImmutableList();
+		ToggleCommand = new RelayCommand<ChoiceOption>(ToggleOption);
+		SubmitCommand = new RelayCommand(Submit, () => CanSubmit && !IsResultSet);
 	}
 }
 

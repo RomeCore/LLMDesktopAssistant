@@ -1,5 +1,6 @@
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools.Forms;
+using RCLargeLanguageModels.Json.Schema;
 using RCLargeLanguageModels.Tools;
 using System.ComponentModel;
 using System.Text.Json.Nodes;
@@ -7,7 +8,7 @@ using System.Text.Json.Nodes;
 namespace LLMDesktopAssistant.Tools.Implementations;
 
 /// <summary>
-/// Модуль инструментов для взаимодействия с пользователем через формы (Human-in-the-Loop).
+/// Module for user interaction tools via forms (Human-in-the-Loop).
 /// </summary>
 [ToolModule]
 public class FormsToolModule : ToolModule
@@ -18,9 +19,9 @@ public class FormsToolModule : ToolModule
 			new ToolInitializationInfo
 			{
 				Name = "forms-confirm",
-				Description = "Запрашивает у пользователя подтверждение действия. " +
-					"Показывает сообщение с кнопками 'Подтвердить' и 'Отмена'. " +
-					"Используй этот инструмент когда нужно спросить разрешение пользователя перед выполнением важного или опасного действия.",
+				Description = "Requests the user to confirm an action. " +
+					"Shows a message with 'Confirm' and 'Cancel' buttons. " +
+					"Use this tool when you need to ask the user for permission before performing an important or dangerous action.",
 				Category = "forms",
 				AskForConfirmation = false
 			});
@@ -29,9 +30,9 @@ public class FormsToolModule : ToolModule
 			new ToolInitializationInfo
 			{
 				Name = "forms-choice",
-				Description = "Предлагает пользователю выбрать один или несколько вариантов из списка. " +
-					"Может разрешить ввод своего варианта (allowCustom). " +
-					"Используй когда нужно, чтобы пользователь сделал выбор из предложенных опций.",
+				Description = "Offers the user to choose one or more options from a list. " +
+					"Can allow custom input (allowCustom). " +
+					"Use when the user needs to make a selection from the provided options.",
 				Category = "forms",
 				AskForConfirmation = false
 			});
@@ -40,9 +41,9 @@ public class FormsToolModule : ToolModule
 			new ToolInitializationInfo
 			{
 				Name = "forms-input",
-				Description = "Запрашивает у пользователя ввод данных через форму с одним или несколькими полями. " +
-					"Поддерживает поля разных типов: text, number, password, multiline. " +
-					"Используй когда нужно получить от пользователя структурированные данные.",
+				Description = "Requests data input from the user via a form with one or more fields. " +
+					"Supports field types: text, number, password, multiline. " +
+					"Use when you need structured data from the user.",
 				Category = "forms",
 				AskForConfirmation = false
 			});
@@ -51,38 +52,30 @@ public class FormsToolModule : ToolModule
 			new ToolInitializationInfo
 			{
 				Name = "forms-file_picker",
-				Description = "Открывает диалог выбора файла для пользователя. " +
-					"Может фильтровать по расширениям и разрешать выбор нескольких файлов. " +
-					"Используй когда нужно, чтобы пользователь указал путь к файлу на своей системе.",
+				Description = "Opens a file selection dialog for the user. " +
+					"Can filter by extensions and allow multiple file selection. " +
+					"Use when the user needs to specify a file path on their system.",
 				Category = "forms",
 				AskForConfirmation = false
 			});
 	}
 
-	/// <summary>
-	/// Возвращает AssistantMessage из контекста выполнения.
-	/// </summary>
-	private static AssistantMessage GetMessage(ToolExecutionContext context)
-	{
-		return context.Message;
-	}
-
 	public async Task<ReactiveToolResult> FormsConfirm(
-		[Description("Заголовок вопроса/подтверждения. Например: 'Удалить файл?', 'Подтвердить отправку?'")] string title,
-		[Description("Подробное описание того, что нужно подтвердить. Уточни контекст для пользователя.")] string? description,
-		[Description("Текст на кнопке подтверждения (по умолчанию 'OK')")] string? confirmText,
-		[Description("Текст на кнопке отмены (по умолчанию 'Отмена')")] string? cancelText,
-		[Description("Опасное ли действие? Если true, кнопка будет красной (по умолчанию false)")] bool? isDanger,
+		[Description("Title of the confirmation question. For example: 'Delete file?', 'Confirm sending?'")] string title,
+		[Description("Detailed description of what needs to be confirmed. Provide context for the user.")] string? description,
+		[Description("Text on the confirm button (default: 'OK')")] string? confirmText,
+		[Description("Text on the cancel button (default: 'Cancel')")] string? cancelText,
+		[Description("Is this a dangerous action? If true, the button will be red (default: false)")] bool? isDanger,
 		ToolExecutionContext context,
 		CancellationToken cancellationToken = default)
 	{
-		var message = GetMessage(context);
+		var message = context.Message;
 		var viewModel = new FormsConfirmViewModel
 		{
 			Title = title,
 			Description = description ?? string.Empty,
 			ConfirmText = confirmText ?? "OK",
-			CancelText = cancelText ?? "Отмена",
+			CancelText = cancelText ?? "Cancel",
 			IsDanger = isDanger ?? false
 		};
 
@@ -96,29 +89,40 @@ public class FormsToolModule : ToolModule
 		catch (OperationCanceledException)
 		{
 			message.AdditionalViewModels.Remove(viewModel);
-			return ReactiveToolResult.CreateError("Пользователь отменил операцию или запрос был прерван.");
+			return ReactiveToolResult.CreateError("User cancelled the operation or the request was interrupted.");
 		}
 
 		if (confirmed)
-			return ReactiveToolResult.CreateSuccess($"Пользователь подтвердил: \"{title}\".");
+			return ReactiveToolResult.CreateSuccess($"User confirmed: \"{title}\".");
 		else
-			return ReactiveToolResult.CreateSuccess($"Пользователь отказался: \"{title}\".");
+			return ReactiveToolResult.CreateSuccess($"User declined: \"{title}\".");
 	}
 
 	public async Task<ReactiveToolResult> FormsChoice(
 		ToolExecutionContext context,
-		[Description("Заголовок вопроса")] string title,
-		[Description("Подробное описание того, что нужно выбрать")] string? description,
-		[Description("Массив вариантов для выбора. Каждый вариант — строка, которая будет показана пользователю и возвращена как значение.")]
+		[Description("Title of the question")] string title,
+		[Description("Detailed description of what needs to be selected")] string? description,
+		[Description("Array of options to choose from. Each option is a string that will be shown to the user and returned as a value.")]
 		string[] options,
-		[Description("Можно ли выбрать несколько вариантов (по умолчанию false)")] bool? allowMultiple,
-		[Description("Можно ли ввести свой вариант (по умолчанию false)")] bool? allowCustom,
-		[Description("Минимальное количество выбираемых вариантов (по умолчанию 1)")] int? minSelect,
-		[Description("Максимальное количество выбираемых вариантов (по умолчанию 1, при allowMultiple=true по умолчанию все варианты)")] int? maxSelect,
+		[Description("Can multiple options be selected (default: false)")] bool? allowMultiple,
+		[Description("Can the user enter a custom option (default: false)")] bool? allowCustom,
+		[Description("Minimum number of selectable options (default: 1)")] int? minSelect,
+		[Description("Maximum number of selectable options (default: 1, when allowMultiple=true: all options)")] int? maxSelect,
 		CancellationToken cancellationToken = default)
 	{
-		var message = GetMessage(context);
-		var viewModel = new FormsChoiceViewModel
+		var message = context.Message;
+		var formOptions = new List<ChoiceOption>();
+
+		foreach (var option in options)
+		{
+			formOptions.Add(new ChoiceOption
+			{
+				Value = option,
+				Label = option
+			});
+		}
+
+		var viewModel = new FormsChoiceViewModel(formOptions)
 		{
 			Title = title,
 			Description = description ?? string.Empty,
@@ -127,15 +131,6 @@ public class FormsToolModule : ToolModule
 			MinSelect = minSelect ?? 1,
 			MaxSelect = maxSelect ?? (allowMultiple == true ? options.Length : 1)
 		};
-
-		foreach (var option in options)
-		{
-			viewModel.Options.Add(new ChoiceOption
-			{
-				Value = option,
-				Label = option
-			});
-		}
 
 		message.AdditionalViewModels.Add(viewModel);
 
@@ -147,22 +142,22 @@ public class FormsToolModule : ToolModule
 		catch (OperationCanceledException)
 		{
 			message.AdditionalViewModels.Remove(viewModel);
-			return ReactiveToolResult.CreateError("Пользователь отменил выбор.");
+			return ReactiveToolResult.CreateError("User cancelled the selection.");
 		}
 
 		var selectedStr = string.Join(", ", result.Selected);
-		var resultText = $"Пользователь выбрал: {selectedStr}.";
+		var resultText = $"User selected: {selectedStr}.";
 		if (!string.IsNullOrWhiteSpace(result.Custom))
-			resultText += $" Дополнительный текст: \"{result.Custom}\".";
+			resultText += $" Additional text: \"{result.Custom}\".";
 
 		return ReactiveToolResult.CreateSuccess(resultText);
 	}
 
 	public async Task<ReactiveToolResult> FormsInput(
 		ToolExecutionContext context,
-		[Description("Заголовок формы")] string title,
-		[Description("Описание формы")] string? description,
-		[Description("Массив JSON-объектов, описывающих поля формы. Каждый объект должен содержать:\n- id (string, обязательный) — ключ поля в результате\n- label (string, обязательный) — отображаемая подпись поля\n- type (string, опционально) — тип поля: 'text' (по умолчанию), 'number', 'password', 'multiline'\n- placeholder (string, опционально) — подсказка внутри поля\n- required (bool, опционально) — обязательно ли поле (по умолчанию false)\n- default (string, опционально) — значение по умолчанию\nПример: [{\"id\": \"name\", \"label\": \"Имя\", \"required\": true}, {\"id\": \"comment\", \"label\": \"Комментарий\", \"type\": \"multiline\"}]")]
+		[Description("Title of the form")] string title,
+		[Description("Description of the form")] string? description,
+		[Description("Array of JSON objects describing form fields. Each object must contain:\n- id (string, required) — field key in the result\n- label (string, required) — display label for the field\n- type (string, optional) — field type: 'text' (default), 'number', 'password', 'multiline'\n- placeholder (string, optional) — placeholder text inside the field\n- required (bool, optional) — whether the field is required (default: false)\n- default (string, optional) — default value\nExample: [{\"id\": \"name\", \"label\": \"Name\", \"required\": true}, {\"id\": \"comment\", \"label\": \"Comment\", \"type\": \"multiline\"}]")]
 		JsonNode[] fields,
 		CancellationToken cancellationToken = default)
 	{
@@ -189,9 +184,9 @@ public class FormsToolModule : ToolModule
 		}
 
 		if (formFields.Count == 0)
-			return ReactiveToolResult.CreateError("Не удалось распарсить поля формы. Убедитесь, что передан корректный массив полей с id и label.");
+			return ReactiveToolResult.CreateError("Failed to parse form fields. Make sure a valid array of fields with id and label is provided.");
 
-		var message = GetMessage(context);
+		var message = context.Message;
 		var viewModel = new FormsInputViewModel(formFields)
 		{
 			Title = title,
@@ -208,47 +203,45 @@ public class FormsToolModule : ToolModule
 		catch (OperationCanceledException)
 		{
 			message.AdditionalViewModels.Remove(viewModel);
-			return ReactiveToolResult.CreateError("Пользователь отменил ввод данных.");
+			return ReactiveToolResult.CreateError("User cancelled data input.");
 		}
 
 		var valuesStr = string.Join(", ", result.Values.Select(kv => $"{kv.Key}=\"{kv.Value}\""));
-		return ReactiveToolResult.CreateSuccess($"Пользователь ввёл данные: {valuesStr}.");
+		return ReactiveToolResult.CreateSuccess($"User entered data: {valuesStr}.");
 	}
 
 	public async Task<ReactiveToolResult> FormsFilePicker(
 		ToolExecutionContext context,
-		[Description("Заголовок диалога выбора файла")] string title,
-		[Description("Описание или инструкция для пользователя")] string? description,
-		[Description("Фильтр расширений, например '*.cs;*.py;*.js'")] string? filter,
-		[Description("Разрешить выбор нескольких файлов (по умолчанию false)")] bool? allowMultiple,
+		[Description("Title of the file selection dialog")] string title,
+		[Description("Description or instructions for the user")] string? description,
+		[Description("The mode of the dialog."), Enum(["open", "save", "directory"])] string mode,
+		[Description("Extension filter, e.g. '*.cs;*.py;*.js'")] string? filter = null,
+		[Description("Allow multiple file selection")] bool allowMultiple = false,
 		CancellationToken cancellationToken = default)
 	{
-		var message = GetMessage(context);
+		var message = context.Message;
 		var viewModel = new FormsFilePickerViewModel
 		{
 			Title = title,
 			Description = description ?? string.Empty,
+			Mode = mode switch
+			{
+				"open" => FilePickerMode.Open,
+				"save" => FilePickerMode.Save,
+				"directory" => FilePickerMode.Directory,
+				_ => throw new ArgumentException("Invalid mode specified for file picker.", nameof(mode))
+			},
 			Filter = filter,
-			AllowMultiple = allowMultiple ?? false
+			AllowMultiple = allowMultiple
 		};
 
 		message.AdditionalViewModels.Add(viewModel);
 
-		FilePickerResult result;
-		try
-		{
-			result = await viewModel.Result.WaitAsync(cancellationToken);
-		}
-		catch (OperationCanceledException)
-		{
-			message.AdditionalViewModels.Remove(viewModel);
-			return ReactiveToolResult.CreateError("Пользователь отменил выбор файла.");
-		}
-
+		var result = await viewModel.Result.WaitAsync(cancellationToken);
 		if (result.Paths.Length == 0)
-			return ReactiveToolResult.CreateError("Пользователь не выбрал ни одного файла.");
+			return ReactiveToolResult.CreateError("User did not select any files.");
 
 		var pathsStr = string.Join(", ", result.Paths);
-		return ReactiveToolResult.CreateSuccess($"Пользователь выбрал файлы: {pathsStr}.");
+		return ReactiveToolResult.CreateSuccess($"User selected files: {pathsStr}.");
 	}
 }

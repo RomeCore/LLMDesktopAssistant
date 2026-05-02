@@ -8,5 +8,7 @@
 	<conv:StringNonEmptyToBooleanConverter x:Key="StringNonEmptyToBooleanConverter"/>
 	<conv:NotnullToBooleanConverter x:Key="NotnullToBooleanConverter"/>
 	<conv:NotnullToBooleanConverter Invert="True" x:Key="NotnullToBooleanConverterInverted"/>
+	<conv:StringEqualsConverter x:Key="StringEqualsConverter"/>
+
 
 </ResourceDictionary>

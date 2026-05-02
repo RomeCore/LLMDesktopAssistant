@@ -1,7 +1,7 @@
-using DocumentFormat.OpenXml.Bibliography;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils.Files;
 using RCLargeLanguageModels.Tools;
@@ -18,12 +18,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	[ToolModule]
 	public class FilesystemToolModule : ToolModule
 	{
-		private readonly Chat _chat;
+		private readonly FileAccessService _fileAccess;
 		private readonly IDocumentReadingService _documentReader;
 
-		public FilesystemToolModule(Chat chat, IDocumentReadingService documentReader)
+		public FilesystemToolModule(FileAccessService fileAccess, IDocumentReadingService documentReader)
 		{
-			_chat = chat;
+			_fileAccess = fileAccess;
 			_documentReader = documentReader;
 
 			AddTool(GetFileInfo,
@@ -200,25 +200,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				});
 		}
 
-		private string ResolvePath(string path)
-		{
-			var baseDir = Path.GetFullPath(_chat.Settings.Environment.GetWorkingDirectory());
-			if (string.IsNullOrWhiteSpace(path) || path == ".")
-				return baseDir;
-
-			var fullPath = Path.GetFullPath(Path.Combine(baseDir, path));
-
-			if (!fullPath.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase))
-				throw new AccessViolationException("Access outside working directory is not allowed.");
-
-			return fullPath;
-		}
-
 		public ReactiveToolResult GetFileInfo(string path)
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var metrics = FileUtils.GetFileMetrics(fullPath);
 				var fileName = Path.GetFileName(fullPath);
 
@@ -276,7 +262,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
@@ -336,7 +322,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
@@ -394,7 +380,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
@@ -443,7 +429,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var fileName = Path.GetFileName(fullPath);
 				var dir = Path.GetDirectoryName(fullPath);
 
@@ -491,7 +477,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var fileName = Path.GetFileName(fullPath);
 				var dir = Path.GetDirectoryName(fullPath);
 
@@ -564,7 +550,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
@@ -860,7 +846,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
@@ -996,7 +982,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var dirName = path + "/";
 
 				if (!Directory.Exists(fullPath))
@@ -1100,7 +1086,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var dirName = path + "/";
 
 				if (Directory.Exists(fullPath))
@@ -1127,7 +1113,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
@@ -1161,7 +1147,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				if (path == "." || path == "" || path == "/")
 					return ReactiveToolResult.CreateError("Cannot delete the root working directory.");
 
-				var fullPath = ResolvePath(path);
+				var fullPath = _fileAccess.AccessPath(path);
 				var dirName = path + "/";
 
 				if (!Directory.Exists(fullPath))
@@ -1193,8 +1179,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullOldPath = ResolvePath(oldPath);
-				var fullNewPath = ResolvePath(newPath);
+				var fullOldPath = _fileAccess.AccessPath(oldPath);
+				var fullNewPath = _fileAccess.AccessPath(newPath);
 
 				var oldFileName = Path.GetFileName(fullOldPath);
 				var newFileName = Path.GetFileName(fullNewPath);
@@ -1232,8 +1218,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullSourcePath = ResolvePath(sourcePath);
-				var fullDestPath = ResolvePath(destinationPath);
+				var fullSourcePath = _fileAccess.AccessPath(sourcePath);
+				var fullDestPath = _fileAccess.AccessPath(destinationPath);
 				var dirName = Path.GetFileName(fullSourcePath);
 
 				if (!Directory.Exists(fullSourcePath))
@@ -1267,8 +1253,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullOldPath = ResolvePath(oldPath);
-				var fullNewPath = ResolvePath(newPath);
+				var fullOldPath = _fileAccess.AccessPath(oldPath);
+				var fullNewPath = _fileAccess.AccessPath(newPath);
 
 				var oldFileName = Path.GetFileName(fullOldPath);
 				var newFileName = Path.GetFileName(fullNewPath);
@@ -1306,8 +1292,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var fullSourcePath = ResolvePath(sourcePath);
-				var fullDestPath = ResolvePath(destinationPath);
+				var fullSourcePath = _fileAccess.AccessPath(sourcePath);
+				var fullDestPath = _fileAccess.AccessPath(destinationPath);
 				var dirName = Path.GetFileName(fullSourcePath);
 
 				if (!Directory.Exists(fullSourcePath))
@@ -1370,8 +1356,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var workingDirectory = _chat.Settings.Environment.GetWorkingDirectory();
-				var fullPath = ResolvePath(path);
+				var workingDirectory = _fileAccess.GetWorkingDirectory();
+				var fullPath = _fileAccess.AccessPath(path);
 				var regexIgnoreCaseOptions = ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
 				var regex = new Regex(pattern, regexIgnoreCaseOptions | RegexOptions.Compiled);
 

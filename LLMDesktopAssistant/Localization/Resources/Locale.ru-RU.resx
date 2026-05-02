@@ -1070,4 +1070,49 @@
     <value>Очистить специализацию</value>
   </data>
 
+  <!-- Forms tool module UI strings -->
+  <data name="forms_form_submitted" xml:space="preserve">
+    <value>Форма отправлена</value>
+  </data>
+  <data name="forms_selection_confirmed" xml:space="preserve">
+    <value>Выбор подтверждён</value>
+  </data>
+  <data name="forms_confirmed" xml:space="preserve">
+    <value>Подтверждено</value>
+  </data>
+  <data name="forms_file_selected" xml:space="preserve">
+    <value>Файл выбран</value>
+  </data>
+  <data name="forms_select_file" xml:space="preserve">
+    <value>Выбрать файл...</value>
+  </data>
+  <data name="forms_custom_option" xml:space="preserve">
+    <value>Свой вариант...</value>
+  </data>
+  <data name="forms_make_selection" xml:space="preserve">
+    <value>Сделайте выбор</value>
+  </data>
+  <data name="forms_selected_files" xml:space="preserve">
+    <value>Выбранные файлы</value>
+  </data>
+  <data name="forms_field_required" xml:space="preserve">
+    <value>Поле "{0}" обязательно для заполнения.</value>
+  </data>
+  <data name="forms-confirm" xml:space="preserve">
+    <value>Подтверждение действия</value>
+  </data>
+  <data name="forms-choice" xml:space="preserve">
+    <value>Выбор вариантов</value>
+  </data>
+  <data name="forms-input" xml:space="preserve">
+    <value>Форма ввода</value>
+  </data>
+  <data name="forms-file_picker" xml:space="preserve">
+    <value>Выбор файла</value>
+  </data>
+  <data name="forms" xml:space="preserve">
+    <value>Формы</value>
+  </data>
+
+
 </root>

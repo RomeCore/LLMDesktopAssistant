@@ -1,172 +1,193 @@
-using LLMDesktopAssistant.LLM.Domain;
-
-
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using LiteDB;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Forms;
 
-/// <summary>
-/// ViewModel для выбора файла через диалог.
-/// </summary>
+public enum FilePickerMode
+{
+	Directory,
+	Open,
+	Save
+}
+
 [ViewModelFor(typeof(FormsFilePickerView))]
 public class FormsFilePickerViewModel : AdditionalMessageViewModel
 {
-    private readonly TaskCompletionSource<FilePickerResult> _tcs = new();
+	private readonly TaskCompletionSource<FilePickerResult> _tcs = new();
 
-    /// <summary>
-    /// Таска с результатом выбора файла.
-    /// </summary>
-    public Task<FilePickerResult> Result => _tcs.Task;
+	[BsonIgnore]
+	public Task<FilePickerResult> Result => _tcs.Task;
 
-    private string _title = string.Empty;
-    /// <summary>
-    /// Заголовок диалога.
-    /// </summary>
-    public string Title
-    {
-        get => _title;
-        set => SetProperty(ref _title, value);
-    }
+	private string _title = string.Empty;
+	public string Title
+	{
+		get => _title;
+		set => SetProperty(ref _title, value);
+	}
 
-    private string _description = string.Empty;
-    public string Description
-    {
-        get => _description;
-        set => SetProperty(ref _description, value);
-    }
+	private string _description = string.Empty;
+	public string Description
+	{
+		get => _description;
+		set => SetProperty(ref _description, value);
+	}
 
-    private string? _filter;
-    /// <summary>
-    /// Фильтр файлов (например "*.cs;*.py;*.js").
-    /// </summary>
-    public string? Filter
-    {
-        get => _filter;
-        set => SetProperty(ref _filter, value);
-    }
+	private FilePickerMode _mode;
+	public FilePickerMode Mode
+	{
+		get => _mode;
+		set => SetProperty(ref _mode, value);
+	}
 
-    private bool _allowMultiple;
-    /// <summary>
-    /// Можно ли выбрать несколько файлов.
-    /// </summary>
-    public bool AllowMultiple
-    {
-        get => _allowMultiple;
-        set => SetProperty(ref _allowMultiple, value);
-    }
+	private string? _filter;
+	/// <summary>
+	/// Extension filter, e.g. '*.cs;*.py;*.js'
+	/// </summary>
+	public string? Filter
+	{
+		get => _filter;
+		set => SetProperty(ref _filter, value);
+	}
 
-    private string? _selectedPath;
-    /// <summary>
-    /// Выбранный путь (если single).
-    /// </summary>
-    public string? SelectedPath
-    {
-        get => _selectedPath;
-        set
-        {
-            if (SetProperty(ref _selectedPath, value))
-                RaisePropertyChanged(nameof(CanSubmit));
-        }
-    }
+	private bool _allowMultiple;
+	public bool AllowMultiple
+	{
+		get => _allowMultiple;
+		set => SetProperty(ref _allowMultiple, value);
+	}
 
-    /// <summary>
-    /// Выбранные пути (если multiple).
-    /// </summary>
-    public List<string>? SelectedPaths { get; private set; }
+	private string? _selectedPath;
+	public string? SelectedPath
+	{
+		get => _selectedPath;
+		set
+		{
+			if (SetProperty(ref _selectedPath, value))
+				RaisePropertyChanged(nameof(CanSubmit));
+		}
+	}
 
-    /// <summary>
-    /// Можно ли подтвердить выбор.
-    /// </summary>
-    public bool CanSubmit =>
-        (AllowMultiple ? SelectedPaths?.Count > 0 : !string.IsNullOrWhiteSpace(SelectedPath)) == true;
+	public List<string>? SelectedPaths { get; private set; }
 
-    private bool _isResultSet;
-    public bool IsResultSet
-    {
-        get => _isResultSet;
-        private set => SetProperty(ref _isResultSet, value);
-    }
+	public bool CanSubmit =>
+		(AllowMultiple ? SelectedPaths?.Count > 0 : !string.IsNullOrWhiteSpace(SelectedPath)) == true;
 
-    /// <summary>
-    /// Команда открытия диалога выбора файла.
-    /// </summary>
-    public ICommand PickCommand => new RelayCommand(PickFile, () => !IsResultSet);
+	private bool _isResultSet;
+	public bool IsResultSet
+	{
+		get => _isResultSet;
+		private set => SetProperty(ref _isResultSet, value);
+	}
 
-    /// <summary>
-    /// Команда подтверждения выбора.
-    /// </summary>
-    public ICommand SubmitCommand => new RelayCommand(Submit, () => CanSubmit && !IsResultSet);
+	[BsonIgnore]
+	public IRelayCommand PickCommand { get; }
 
-    /// <summary>
-    /// Событие для запроса открытия диалога выбора файла.
-    /// View подписывается и открывает файловый диалог Avalonia.
-    /// </summary>
-    public event EventHandler? FilePickRequested;
+	[BsonIgnore]
+	public IRelayCommand SubmitCommand { get; }
 
-    /// <summary>
-    /// Открыть диалог выбора файла.
-    /// </summary>
-    public void PickFile()
-    {
-        FilePickRequested?.Invoke(this, EventArgs.Empty);
-    }
+	public void SetPaths(string[] paths)
+	{
+		if (IsResultSet) return;
 
-    /// <summary>
-    /// Устанавливает результат выбора файла из диалога.
-    /// </summary>
-    public void SetPaths(string[] paths)
-    {
-        if (IsResultSet) return;
+		if (AllowMultiple)
+		{
+			SelectedPaths = [.. paths];
+			SelectedPath = null;
+		}
+		else
+		{
+			SelectedPath = paths.FirstOrDefault();
+			SelectedPaths = null;
+		}
 
-        if (AllowMultiple)
-        {
-            SelectedPaths = [.. paths];
-            SelectedPath = null;
-        }
-        else
-        {
-            SelectedPath = paths.FirstOrDefault();
-            SelectedPaths = null;
-        }
+		RaisePropertyChanged(nameof(CanSubmit));
+		SubmitCommand.NotifyCanExecuteChanged();
+	}
 
-        RaisePropertyChanged(nameof(CanSubmit));
-    }
+	private async Task PickFiles()
+	{
+		var storageProvider = App.MainTopLevel.StorageProvider;
 
-    /// <summary>
-    /// Подтвердить выбор.
-    /// </summary>
-    public void Submit()
-    {
-        if (IsResultSet || !CanSubmit) return;
-        IsResultSet = true;
+		switch (Mode)
+		{
+			case FilePickerMode.Directory:
 
-        _tcs.TrySetResult(new FilePickerResult
-        {
-            Paths = AllowMultiple
-                ? (SelectedPaths ?? []).ToArray()
-                : [SelectedPath ?? string.Empty],
-            SinglePath = AllowMultiple ? null : SelectedPath
-        });
-    }
+				var dirParams = new FolderPickerOpenOptions
+				{
+					AllowMultiple = AllowMultiple,
+					Title = Title
+				};
 
-    public FormsFilePickerViewModel()
-    {
-        IsTemporary = true;
-    }
+				var resultDirs = await storageProvider.OpenFolderPickerAsync(dirParams);
+				SetPaths(resultDirs.Select(r => r.Path.LocalPath).ToArray());
+
+				break;
+
+			case FilePickerMode.Open:
+
+				var fileParams = new FilePickerOpenOptions
+				{
+					AllowMultiple = AllowMultiple,
+					Title = Title,
+					FileTypeFilter = [new FilePickerFileType(LocalizationManager.LocalizeStatic("forms_selected_files"))
+					{
+						Patterns = Filter?.Split(';')
+					}]
+				};
+
+				var resultFiles = await storageProvider.OpenFilePickerAsync(fileParams);
+				SetPaths(resultFiles.Select(r => r.Path.LocalPath).ToArray());
+
+				break;
+
+			case FilePickerMode.Save:
+
+				var saveParams = new FilePickerSaveOptions
+				{
+					Title = Title,
+					FileTypeChoices = [new FilePickerFileType(LocalizationManager.LocalizeStatic("forms_selected_files"))
+					{
+						Patterns = Filter?.Split(';')
+					}]
+				};
+
+				var resultFile = await storageProvider.SaveFilePickerAsync(saveParams);
+				if (resultFile != null)
+					SetPaths([resultFile.Path.LocalPath]);
+				else
+					SetPaths([]);
+
+				break;
+		}
+	}
+
+	public void Submit()
+	{
+		if (IsResultSet || !CanSubmit) return;
+		IsResultSet = true;
+
+		_tcs.TrySetResult(new FilePickerResult
+		{
+			Paths = AllowMultiple
+				? (SelectedPaths ?? []).ToArray()
+				: [SelectedPath ?? string.Empty],
+			SinglePath = AllowMultiple ? null : SelectedPath
+		});
+	}
+
+	public FormsFilePickerViewModel()
+	{
+		PickCommand = new AsyncRelayCommand(PickFiles, () => !IsResultSet);
+		SubmitCommand = new RelayCommand(Submit, () => CanSubmit && !IsResultSet);
+	}
 }
 
-/// <summary>
-/// Результат выбора файла.
-/// </summary>
 public class FilePickerResult
 {
-    /// <summary>
-    /// Выбранные пути.
-    /// </summary>
-    public required string[] Paths { get; init; }
+	public required string[] Paths { get; init; }
 
-    /// <summary>
-    /// Одиночный путь (если AllowMultiple = false).
-    /// </summary>
-    public string? SinglePath { get; init; }
+	public string? SinglePath { get; init; }
 }
