@@ -1135,10 +1135,28 @@
     <value>Отменено</value>
   </data>
 	<data name="message_summary" xml:space="preserve">
-    <value>Сводка</value>
+  <value>Сводка</value>
   </data>
   <data name="message_context_shield" xml:space="preserve">
     <value>Контекстный щит активирован</value>
+  </data>
+  <data name="settings-llm_max_tokens" xml:space="preserve">
+    <value>Макс. токенов</value>
+  </data>
+  <data name="settings-llm_enable_max_tokens" xml:space="preserve">
+    <value>Включить переопределение макс. токенов</value>
+  </data>
+  <data name="settings-llm_max_tokens_value" xml:space="preserve">
+    <value>Максимум выходных токенов</value>
+  </data>
+  <data name="agent_info_description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="agent_info_description_hint" xml:space="preserve">
+    <value>Кратко опишите роль и назначение агента. Это помогает другим агентам понимать, когда делегировать задачи.</value>
+  </data>
+  <data name="agent_info_description_placeholder" xml:space="preserve">
+    <value>Введите описание агента...</value>
   </data>
 
 </root>

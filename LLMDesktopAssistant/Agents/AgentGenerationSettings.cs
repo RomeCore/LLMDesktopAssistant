@@ -69,6 +69,26 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _temperature, value);
 		}
 
+		private bool _enableMaxTokens = false;
+		/// <summary>
+		/// Whether to enable max tokens settings overriding the model's default settings.
+		/// </summary>
+		public bool EnableMaxTokens
+		{
+			get => _enableMaxTokens;
+			set => SetProperty(ref _enableMaxTokens, value);
+		}
+
+		private int _maxTokens = 8096;
+		/// <summary>
+		/// The maximum number of tokens to generate for the agent. This overrides the model's default settings if <see cref="EnableMaxTokens"/> is true.
+		/// </summary>
+		public int MaxTokens
+		{
+			get => _maxTokens;
+			set => SetProperty(ref _maxTokens, value);
+		}
+
 		private RangeObservableCollection<AdditionalParameter> _additionalParameters = [];
 		/// <summary>
 		/// The additional parameters to use for the agent. These are represented in a key-value format and passed to API.

@@ -115,6 +115,33 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Description.
+        /// </summary>
+        public static string agent_info_description {
+            get {
+                return ResourceManager.GetString("agent_info_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Provide a brief description of the agent&apos;s role and purpose. This helps other agents understand when to delegate tasks..
+        /// </summary>
+        public static string agent_info_description_hint {
+            get {
+                return ResourceManager.GetString("agent_info_description_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter agent description....
+        /// </summary>
+        public static string agent_info_description_placeholder {
+            get {
+                return ResourceManager.GetString("agent_info_description_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Set a custom name for this agent. This name is used in the agent list and in the chat..
         /// </summary>
         public static string agent_info_name_hint {
@@ -1308,6 +1335,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string mcp_manager_hint {
             get {
                 return ResourceManager.GetString("mcp_manager_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Context shield is active.
+        /// </summary>
+        public static string message_context_shield {
+            get {
+                return ResourceManager.GetString("message_context_shield", resourceCulture);
             }
         }
         
@@ -2518,6 +2554,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable max tokens override.
+        /// </summary>
+        public static string settings_llm_enable_max_tokens {
+            get {
+                return ResourceManager.GetString("settings-llm_enable_max_tokens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Enable reasoning settings override.
         /// </summary>
         public static string settings_llm_enable_reasoning {
@@ -2532,6 +2577,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_llm_enable_temperature {
             get {
                 return ResourceManager.GetString("settings-llm_enable_temperature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Max tokens.
+        /// </summary>
+        public static string settings_llm_max_tokens {
+            get {
+                return ResourceManager.GetString("settings-llm_max_tokens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Max output tokens.
+        /// </summary>
+        public static string settings_llm_max_tokens_value {
+            get {
+                return ResourceManager.GetString("settings-llm_max_tokens_value", resourceCulture);
             }
         }
         

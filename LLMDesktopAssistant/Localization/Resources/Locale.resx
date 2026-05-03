@@ -1173,5 +1173,23 @@
   <data name="message_context_shield" xml:space="preserve">
     <value>Context shield is active</value>
   </data>
+  <data name="settings-llm_max_tokens" xml:space="preserve">
+    <value>Max tokens</value>
+  </data>
+  <data name="settings-llm_enable_max_tokens" xml:space="preserve">
+    <value>Enable max tokens override</value>
+  </data>
+  <data name="settings-llm_max_tokens_value" xml:space="preserve">
+    <value>Max output tokens</value>
+  </data>
+  <data name="agent_info_description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="agent_info_description_hint" xml:space="preserve">
+    <value>Provide a brief description of the agent's role and purpose. This helps other agents understand when to delegate tasks.</value>
+  </data>
+  <data name="agent_info_description_placeholder" xml:space="preserve">
+    <value>Enter agent description...</value>
+  </data>
 
 </root>

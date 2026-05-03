@@ -16,11 +16,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			var result = new List<CompletionProperty>();
 			var properties = agentSettings.GetAgentDescriptor(agentId).Generation;
 
-			if (properties.EnableTemperature)
-			{
-				result.Add(new TemperatureProperty(properties.Temperature / 2.0f));
-			}
-
 			if (properties.EnableReasoningSettings)
 			{
 				if (properties.ReasoningSettings == ReasoningSettings.Disabled)
@@ -38,6 +33,16 @@ namespace LLMDesktopAssistant.LLM.Services
 						ReasoningSettings.Maximum => ReasoningEffort.Max,
 						_ => ReasoningEffort.Medium
 					}));
+			}
+
+			if (properties.EnableTemperature)
+			{
+				result.Add(new TemperatureProperty(properties.Temperature / 2.0f));
+			}
+
+			if (properties.EnableMaxTokens)
+			{
+				result.Add(new MaxTokensProperty(properties.MaxTokens));
 			}
 
 			foreach (var parameter in properties.AdditionalParameters)
