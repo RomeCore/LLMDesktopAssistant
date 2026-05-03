@@ -138,6 +138,7 @@ namespace LLMDesktopAssistant.Controls
 			InitializeComponent();
 
 			// Из-за этой ебучей подписки у меня ебейшие утечки
+			// Не удаляетя UserInput -> MessageSequence (ChatMessage+++), и настройки заодно тоже не удаляются
 			var list = ServiceRegistry.Get<LLModelListService>();
 			var weakRef = new WeakReference(this);
 

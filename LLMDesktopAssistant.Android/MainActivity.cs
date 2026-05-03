@@ -1,8 +1,10 @@
 ﻿using Android.App;
 using Android.Content.PM;
-using Android.Content.Res;
-using Avalonia;
 using Avalonia.Android;
+using Avalonia.Controls.ApplicationLifetimes;
+using LLMDesktopAssistant.Android.Utils;
+using Serilog;
+using System;
 
 namespace LLMDesktopAssistant.Avalonia.Android
 {
@@ -14,10 +16,9 @@ namespace LLMDesktopAssistant.Avalonia.Android
 		ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode)]
 	public class MainActivity : AvaloniaMainActivity
 	{
-		/*protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
+		public MainActivity()
 		{
-			return base.CustomizeAppBuilder(builder)
-				.WithInterFont();
-		}*/
+			Log.Information("MainActivity created. Logging initialized.");
+		}
 	}
 }

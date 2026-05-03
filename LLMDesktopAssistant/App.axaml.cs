@@ -10,9 +10,9 @@ using LLMDesktopAssistant;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using Serilog;
-using Serilog.Sinks.SystemConsole.Themes;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
 
 namespace LLMDesktopAssistant
 {
@@ -30,7 +30,6 @@ namespace LLMDesktopAssistant
 
 			var loggerConfig = new LoggerConfiguration()
 				.MinimumLevel.Debug();
-
 			Log.Logger = ConfigureLogger(loggerConfig)
 				.CreateLogger();
 

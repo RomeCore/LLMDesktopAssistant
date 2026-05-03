@@ -1,4 +1,6 @@
-﻿namespace LLMDesktopAssistant.LLM.Domain
+using LiteDB;
+
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// The base class for additional message view models.
@@ -16,6 +18,12 @@
 			get => _guid;
 			set => SetProperty(ref _guid, value);
 		}
+
+		/// <summary>
+		/// Gets the order of this additional view model. Used for sorting in the UI. Lower values appear first.
+		/// </summary>
+		[BsonIgnore]
+		public virtual int Order { get; } = 0;
 
 		private bool _isVisible = true;
 		/// <summary>
