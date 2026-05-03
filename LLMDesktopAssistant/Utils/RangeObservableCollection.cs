@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Utils
 	/// A thread-safe ObservableCollection that notifies when a range of items is added or removed.
 	/// </summary>
 	/// <typeparam name="T">The type of elements in the collection.</typeparam>
-	public class RangeObservableCollection<T> : IList<T>, IList, IReadOnlyList<T>, INotifyPropertyChanged, INotifyCollectionChanged
+	public class RangeObservableCollection<T> : NotifyPropertyChanged, IList<T>, IList, IReadOnlyList<T>, INotifyCollectionChanged
 	{
 		private readonly List<T> _items;
 		private readonly object _lock;
@@ -77,11 +77,6 @@ namespace LLMDesktopAssistant.Utils
 		public bool RaiseInUIThread { get; set; } = false;
 
 		/// <summary>
-		/// The event that is raised when a property value changes.
-		/// </summary>
-		public event PropertyChangedEventHandler? PropertyChanged;
-
-		/// <summary>
 		/// The event that is raised when the collection changes.
 		/// </summary>
 		public event NotifyCollectionChangedEventHandler? CollectionChanged;
@@ -110,15 +105,6 @@ namespace LLMDesktopAssistant.Utils
 		}
 
 		/// <summary>
-		/// Raises the <see cref="PropertyChanged"/> event with the provided arguments.
-		/// </summary>
-		/// <param name="e">The event arguments.</param>
-		protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
-		{
-			PropertyChanged?.Invoke(this, e);
-		}
-
-		/// <summary>
 		/// Raises the <see cref="CollectionChanged"/> event with the provided arguments.
 		/// </summary>
 		/// <param name="e">The event arguments.</param>
@@ -138,18 +124,26 @@ namespace LLMDesktopAssistant.Utils
 				Dispatcher.UIThread.Invoke(() =>
 				{
 					OnCollectionChanged(e);
-					OnPropertyChanged(EventArgsCache.CountPropertyChanged);
-					OnPropertyChanged(EventArgsCache.AnyPropertyChanged);
-					OnPropertyChanged(EventArgsCache.IndexerPropertyChanged);
+					RaisePropertyChanged(nameof(Count));
+					RaisePropertyChanged(nameof(Any));
+					RaisePropertyChanged("Item[]");
 				});
 			}
 			else
 			{
 				OnCollectionChanged(e);
-				OnPropertyChanged(EventArgsCache.CountPropertyChanged);
-				OnPropertyChanged(EventArgsCache.AnyPropertyChanged);
-				OnPropertyChanged(EventArgsCache.IndexerPropertyChanged);
+				RaisePropertyChanged(nameof(Count));
+				RaisePropertyChanged(nameof(Any));
+				RaisePropertyChanged("Item[]");
 			}
+		}
+
+		/// <summary>
+		/// Updates the count of items in the collection.
+		/// </summary>
+		protected void UpdateCount()
+		{
+			_count = _items.Count;
 		}
 
 		/// <summary>
@@ -261,7 +255,7 @@ namespace LLMDesktopAssistant.Utils
 		/// Removes the first occurrence of a specific object from the <see cref="RangeObservableCollection{T}"/>.
 		/// </summary>
 		/// <param name="item">The object to remove.</param>
-		/// <returns><see langword="true"/> if the item was successfully removed; otherwise, <see langword="false"/>./returns>
+		/// <returns><see langword="true"/> if the item was successfully removed; otherwise, <see langword="false"/>.</returns>
 		public virtual bool Remove(T item)
 		{
 			int index = IndexOf(item);
@@ -377,7 +371,7 @@ namespace LLMDesktopAssistant.Utils
 		/// <param name="oldIndex">The zero-based index of the item to move.</param>
 		/// <param name="newIndex">The zero-based index to which the item should be moved.</param>
 		/// <exception cref="ArgumentOutOfRangeException">The specified <paramref name="oldIndex"/> or <paramref name="newIndex"/> is out of range.</exception>
-		public void Move(int oldIndex, int newIndex)
+		public virtual void Move(int oldIndex, int newIndex)
 		{
 			if (oldIndex < 0 || oldIndex >= _count)
 				throw new ArgumentOutOfRangeException(nameof(oldIndex));
@@ -410,8 +404,9 @@ namespace LLMDesktopAssistant.Utils
 		/// <param name="oldIndex">The zero-based index at which the first item to move should be located.</param>
 		/// <param name="count">The number of items to move.</param>
 		/// <param name="newIndex">The zero-based index to which the first item should be moved.</param>
+		/// <param name="decrement">Indicates whether to decrement the <paramref name="newIndex"/> if it is greater than or equal to the <paramref name="oldIndex"/>.</param>
 		/// <exception cref="ArgumentOutOfRangeException">The specified <paramref name="oldIndex"/> or <paramref name="newIndex"/> is out of range.</exception>
-		public void MoveRange(int oldIndex, int count, int newIndex)
+		public virtual void MoveRange(int oldIndex, int count, int newIndex, bool decrement = true)
 		{
 			if (oldIndex < 0 || oldIndex >= _count)
 				throw new ArgumentOutOfRangeException(nameof(oldIndex));
@@ -420,20 +415,20 @@ namespace LLMDesktopAssistant.Utils
 			if (newIndex < 0 || newIndex >= _count)
 				throw new ArgumentOutOfRangeException(nameof(newIndex));
 
-			if (count == 0 || newIndex == oldIndex || (newIndex > oldIndex && newIndex <= oldIndex + count))
+			// Determine if move operation will take no effect
+			if (count == 0 || newIndex == oldIndex || (decrement && newIndex > oldIndex && newIndex <= oldIndex + count))
 				return;
 
 			List<T> movedItems;
+
+			int insertIndex = newIndex;
+			if (decrement && insertIndex >= oldIndex + count)
+				insertIndex -= count;
 
 			lock (_lock)
 			{
 				movedItems = _items.GetRange(oldIndex, count);
 				_items.RemoveRange(oldIndex, count);
-
-				int insertIndex = newIndex;
-				if (insertIndex >= oldIndex + count)
-					insertIndex -= count;
-
 				_items.InsertRange(insertIndex, movedItems);
 			}
 
@@ -639,9 +634,6 @@ namespace LLMDesktopAssistant.Utils
 
 	internal static class EventArgsCache
 	{
-		public static readonly PropertyChangedEventArgs CountPropertyChanged = new PropertyChangedEventArgs("Count");
-		public static readonly PropertyChangedEventArgs AnyPropertyChanged = new PropertyChangedEventArgs("Any");
-		public static readonly PropertyChangedEventArgs IndexerPropertyChanged = new PropertyChangedEventArgs("Item[]");
 		public static readonly NotifyCollectionChangedEventArgs ResetCollectionChanged = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
 	}
 }

@@ -1167,4 +1167,11 @@
   <data name="forms_canceled" xml:space="preserve">
     <value>Cancelled</value>
   </data>
+  <data name="message_summary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="message_context_shield" xml:space="preserve">
+    <value>Context shield is active</value>
+  </data>
+
 </root>

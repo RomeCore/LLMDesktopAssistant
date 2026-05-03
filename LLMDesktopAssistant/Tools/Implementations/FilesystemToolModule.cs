@@ -252,9 +252,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		public ReactiveToolResult ReadFile(
 			string path,
 			[Description("The 1-based index of the first line to read.")]
-			int startLine = 1,
+			int startLine,
 			[Description("The 1-based index of the last line to read.")]
-			int endLine = 300,
+			int endLine,
 			[Description("The maximum length of each line to read.")]
 			int maxLineLength = 2000,
 			[Description("Whether to include line numbers before every line in format '   1: *line content*'.")]
@@ -295,7 +295,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 				string nextReadTip = string.Empty;
 				if (endShown < totalLines)
-					nextReadTip = $" (Continue reading from line {endShown + 1}";
+					nextReadTip = $" (Continue reading from line {endShown + 1}, e.g. {endShown + 1}-{Math.Min(endShown + 100, totalLines)})";
 
 				var output = $"""
 					File: {path}
@@ -1337,7 +1337,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Description("The maximum count of matched files to return.")]
 			int limitFiles = 20,
 			[Description("The maximum count of matched lines per file to return.")]
-			int limitLinesPerFile = 10,
+			int limitLinesPerFile = 20,
 			[Description("Whether to ignore case when searching for the pattern.")]
 			bool ignoreCase = false,
 			[Description("Whether to return line numbers with the matched lines.")]
@@ -1351,7 +1351,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Description("The number of lines to show after each match.")]
 			int afterContext = 0,
 			[Description("Whether to search recursively through subdirectories.")]
-			bool recursive = false,
+			bool recursive = true,
 			CancellationToken cancellationToken = default)
 		{
 			try

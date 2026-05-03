@@ -246,7 +246,7 @@ namespace LLMDesktopAssistant.LLM.Services
 										success: true);
 								}
 
-								await summarizer.TrySummarizeChat(llmInfo, usageMetadata);
+								await summarizer.TrySummarizeChatAsync(usageMetadata, cancellationToken);
 							}
 
 							domainResponseMessage.Status = cancellationToken.IsCancellationRequested ?

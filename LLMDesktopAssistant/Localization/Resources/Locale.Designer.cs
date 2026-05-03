@@ -1312,6 +1312,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Summary.
+        /// </summary>
+        public static string message_summary {
+            get {
+                return ResourceManager.GetString("message_summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Always.
         /// </summary>
         public static string message_visibility_always {

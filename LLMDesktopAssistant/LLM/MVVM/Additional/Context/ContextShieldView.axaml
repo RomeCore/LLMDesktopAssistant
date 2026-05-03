@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Additional.Context"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Additional.Context.ContextShieldView"
+			 x:DataType="local:ContextShieldViewModel">
+
+	<Border Height="28"
+					Margin="20,0,20,8"
+					CornerRadius="4"
+					Background="#448BCC"
+					HorizontalAlignment="Stretch"
+					Padding="12,0">
+
+		<TextBlock Text="{loc:Loc message_context_shield}"
+							 Foreground="White"
+							 FontSize="12"
+							 VerticalAlignment="Center"
+							 HorizontalAlignment="Center"/>
+
+	</Border>
+
+</UserControl>

@@ -422,8 +422,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				async void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 				{
-					model.SummaryOfPrevMessages = userMessage.SummaryOfPrevMessages;
-					model.HasContextShield = userMessage.HasContextShield;
 					model.Content = userMessage.Content;
 
 					database.Messages.Update(model);
@@ -439,8 +437,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				async void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 				{
-					model.SummaryOfPrevMessages = assistantMessage.SummaryOfPrevMessages;
-					model.HasContextShield = assistantMessage.HasContextShield;
 					model.ReasoningContent = assistantMessage.ReasoningContent;
 					model.Content = assistantMessage.Content;
 					model.Error = assistantMessage.Error;
@@ -510,8 +506,6 @@ namespace LLMDesktopAssistant.LLM.Services
 				var model = new MessageModel
 				{
 					CreatedAt = userMessage.CreatedAt,
-					SummaryOfPrevMessages = message.SummaryOfPrevMessages,
-					HasContextShield = message.HasContextShield,
 					Content = userMessage.Content,
 					Visibility = userMessage.Visibility,
 					VisibleTo = userMessage.VisibleTo,
@@ -554,8 +548,6 @@ namespace LLMDesktopAssistant.LLM.Services
 					CreatedAt = assistantMessage.CreatedAt,
 					Sender = assistantMessage.SenderAgentId.ToString(),
 					AgentStageId = assistantMessage.AgentStageId,
-					SummaryOfPrevMessages = assistantMessage.SummaryOfPrevMessages,
-					HasContextShield = message.HasContextShield,
 					ReasoningContent = assistantMessage.ReasoningContent,
 					Content = assistantMessage.Content,
 					Error = assistantMessage.Error,
@@ -620,8 +612,6 @@ namespace LLMDesktopAssistant.LLM.Services
 					Visibility = messageModel.Visibility,
 					VisibleTo = messageModel.VisibleTo,
 					IsVisibleToWhiteList = messageModel.IsVisibleToWhiteList,
-					SummaryOfPrevMessages = messageModel.SummaryOfPrevMessages,
-					HasContextShield = messageModel.HasContextShield,
 					Attachments = attachments.ToImmutableList()
 				};
 
@@ -650,8 +640,6 @@ namespace LLMDesktopAssistant.LLM.Services
 					AgentStageId = messageModel.AgentStageId,
 					ReasoningContent = messageModel.ReasoningContent,
 					Content = messageModel.Content,
-					SummaryOfPrevMessages = messageModel.SummaryOfPrevMessages,
-					HasContextShield = messageModel.HasContextShield,
 					CompletionToken = CompletionToken.Success,
 					Error = messageModel.Error
 				};

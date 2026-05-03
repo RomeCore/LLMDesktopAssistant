@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// Whether auto-summarization is enabled.
 		/// Auto summarization triggers when total usage tokens exceeds a certain threshold (<see cref="SummarizationTriggerTokens"/>).
 		/// </summary>
-		public bool SummarizationEnabled
+		public bool AutoSummarizationEnabled
 		{
 			get => _summarizationEnabled;
 			set => SetProperty(ref _summarizationEnabled, value);
@@ -27,6 +27,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 		{
 			get => _summarizationTriggerTokens;
 			set => SetProperty(ref _summarizationTriggerTokens, value);
+		}
+
+		private int _ignoreLastRounds = 3;
+		/// <summary>
+		/// The number of turns that will be ignored when auto-summarizing.
+		/// </summary>
+		public int IgnoreLastRounds
+		{
+			get => _ignoreLastRounds;
+			set => SetProperty(ref _ignoreLastRounds, value);
 		}
 
 		private LLModelDescriptorTracked _summarizerModel = LLModelDescriptorTracked.Empty;

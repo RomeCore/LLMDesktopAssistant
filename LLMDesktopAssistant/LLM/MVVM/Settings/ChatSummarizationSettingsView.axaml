@@ -14,7 +14,7 @@
 		<StackPanel Orientation="Vertical" Margin="10">
 
 			<CheckBox Content="{loc:Loc settings-summarization_enabled}"
-					  IsChecked="{Binding SummarizationSettings.SummarizationEnabled, Mode=TwoWay}"/>
+					  IsChecked="{Binding SummarizationSettings.AutoSummarizationEnabled, Mode=TwoWay}"/>
 
 			<TextBlock Text="{loc:Loc settings-summarization_trigger_tokens_hint}"
 					   Margin="0,15,0,2"/>

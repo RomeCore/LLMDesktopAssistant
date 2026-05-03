@@ -44,12 +44,14 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 
 					return _userMessageExtensionTypes
 						.Instantiate<MessageExtension>(chat.Services, messageVm)
+						.OrderBy(ext => ext.Order)
 						.ToImmutableList();
 
 				case AssistantMessageViewModel:
 
 					return _assistantMessageExtensionTypes
 						.Instantiate<MessageExtension>(chat.Services, messageVm)
+						.OrderBy(ext => ext.Order)
 						.ToImmutableList();
 
 				default:

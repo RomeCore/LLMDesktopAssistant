@@ -1,5 +1,6 @@
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLTSharp;
@@ -391,10 +392,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				var message = messagesToProcess[i].Message;
 
-				if (message.HasContextShield)
+				if (message.AdditionalViewModels.Has<ContextShieldViewModel>())
 					break;
-
-				
 
 				if (message is Domain.UserMessage)
 				{
@@ -406,9 +405,10 @@ namespace LLMDesktopAssistant.LLM.Services
 					}
 				}
 
-				if (!string.IsNullOrWhiteSpace(message.SummaryOfPrevMessages))
+				if (message.AdditionalViewModels.TryGet<SummaryViewModel>(out var summaryViewModel) &&
+					summaryViewModel.Completed)
 				{
-					summaryOfPrevMessages = message.SummaryOfPrevMessages;
+					summaryOfPrevMessages = summaryViewModel.Summary;
 					if (encounteredUserMessage)
 						break;
 				}
