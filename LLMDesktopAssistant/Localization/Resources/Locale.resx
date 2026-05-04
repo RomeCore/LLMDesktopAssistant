@@ -1191,5 +1191,72 @@
   <data name="agent_info_description_placeholder" xml:space="preserve">
     <value>Enter agent description...</value>
   </data>
+  <data name="perm_other_agent_attachments" xml:space="preserve">
+    <value>Other agent attachments</value>
+  </data>
+  <data name="perm_other_agent_attachments_hint" xml:space="preserve">
+    <value>Agent can read attachments from other agents.</value>
+  </data>
+  <data name="perm_messages_with_tool_calls" xml:space="preserve">
+    <value>Messages with tool calls</value>
+  </data>
+  <data name="perm_messages_with_tool_calls_hint" xml:space="preserve">
+    <value>Agent can read messages that contain tool calls from other agents. If disabled, messages with tool calls are filtered out.</value>
+  </data>
+  <data name="perm_identify_agents_as_users" xml:space="preserve">
+    <value>Identify agents as users</value>
+  </data>
+  <data name="perm_identify_agents_as_users_hint" xml:space="preserve">
+    <value>Other agents will be visible and treated as user messages to this agent.</value>
+  </data>
+  <data name="settings_exposure_mode" xml:space="preserve">
+    <value>Exposure mode (how this agent appears to others)</value>
+  </data>
+  <data name="settings_exposure_mode_hint" xml:space="preserve">
+    <value>Controls what parts of this agent's messages are visible to other agents.</value>
+  </data>
+  <data name="exposure_content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="exposure_content_hint" xml:space="preserve">
+    <value>Expose the main content/text of this agent's messages to other agents.</value>
+  </data>
+  <data name="exposure_reasoning" xml:space="preserve">
+    <value>Reasoning</value>
+  </data>
+  <data name="exposure_reasoning_hint" xml:space="preserve">
+    <value>Expose the reasoning/thoughts of this agent to other agents.</value>
+  </data>
+  <data name="exposure_tool_calls" xml:space="preserve">
+    <value>Tool calls</value>
+  </data>
+  <data name="exposure_tool_calls_hint" xml:space="preserve">
+    <value>Expose tool calls and their results from this agent to other agents.</value>
+  </data>
+  <data name="exposure_attachments" xml:space="preserve">
+    <value>Attachments</value>
+  </data>
+  <data name="exposure_attachments_hint" xml:space="preserve">
+    <value>Expose attachments from this agent's messages to other agents.</value>
+  </data>
+  <data name="exposure_messages_with_tool_calls" xml:space="preserve">
+    <value>Messages with tool calls</value>
+  </data>
+  <data name="exposure_messages_with_tool_calls_hint" xml:space="preserve">
+    <value>Expose messages that contain tool calls. If disabled, such messages may be hidden entirely from other agents.</value>
+  </data>
+  <data name="exposure_identify_self_as_user" xml:space="preserve">
+    <value>Identify self as user</value>
+  </data>
+  <data name="exposure_identify_self_as_user_hint" xml:space="preserve">
+    <value>When enabled, this agent identifies itself as a user to other agents. Tool calls and reasoning become inaccessible regardless of other flags.</value>
+  </data>
+
+  <data name="prompt_behavior_sliders" xml:space="preserve">
+    <value>Behavior sliders</value>
+  </data>
+  <data name="prompt_behavior_sliders_hint" xml:space="preserve">
+    <value>Adjust behavior sliders to control the assistant's tone, style, and personality</value>
+  </data>
 
 </root>

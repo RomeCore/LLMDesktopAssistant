@@ -194,6 +194,71 @@
 					   Opacity="0.2"
 					   Margin="0,5"/>
 
+			<!-- ===================== Behavior Sliders ===================== -->
+			<TextBlock Text="{loc:Loc prompt_behavior_sliders}"
+					   FontWeight="Bold"
+					   FontSize="{DynamicResource FontSizeL}"
+					   Margin="0,5,0,0"/>
+
+			<TextBlock Text="{loc:Loc prompt_behavior_sliders_hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
+			<ItemsControl ItemsSource="{Binding SliderItems}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="local:BehaviorSliderItemViewModel">
+						<StackPanel Margin="0,6">
+							<TextBlock Text="{Binding DisplayName}"
+									   FontWeight="Medium"
+									   FontSize="13"
+									   Margin="0,0,0,2"/>
+
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+
+								<!-- Current hint label on the left -->
+								<TextBlock Grid.Column="0"
+										   Text="{Binding Hints[0]}"
+										   Opacity="0.5"
+										   FontSize="11"
+										   VerticalAlignment="Center"
+										   MinWidth="80"
+										   TextTrimming="CharacterEllipsis"/>
+
+								<!-- Slider -->
+								<Slider Grid.Column="1"
+										Value="{Binding Value, Mode=TwoWay}"
+										Minimum="{Binding MinValue}"
+										Maximum="{Binding MaxValue}"
+										TickFrequency="1"
+										IsSnapToTickEnabled="True"
+										Margin="8,0"/>
+
+								<!-- Current hint label on the right -->
+								<TextBlock Grid.Column="2"
+										   Text="{Binding Hints[4]}"
+										   Opacity="0.5"
+										   FontSize="11"
+										   VerticalAlignment="Center"
+										   MinWidth="80"
+										   TextTrimming="CharacterEllipsis"
+										   TextAlignment="Right"/>
+							</Grid>
+						</StackPanel>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+			<!-- Separator -->
+			<Rectangle Height="1"
+					   Fill="{DynamicResource DefaultForeground}"
+					   Opacity="0.2"
+					   Margin="0,5"/>
+
 
 			<!-- Components -->
 			<TextBlock Text="{loc:Loc prompt_components}"

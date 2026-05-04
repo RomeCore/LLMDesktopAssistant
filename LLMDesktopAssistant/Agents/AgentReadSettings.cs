@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents
 {
@@ -12,7 +12,9 @@ namespace LLMDesktopAssistant.Agents
 			AgentReadPermissions.UserAttachments |
 			AgentReadPermissions.OwnMessages |
 			AgentReadPermissions.OtherAgentMessages |
-			AgentReadPermissions.OtherAgentToolCalls;
+			AgentReadPermissions.OtherAgentToolCalls |
+			AgentReadPermissions.OtherAgentAttachments |
+			AgentReadPermissions.MessagesWithToolCalls;
 		/// <summary>
 		/// The permissions that determines what the agent can read.
 		/// </summary>
@@ -20,6 +22,22 @@ namespace LLMDesktopAssistant.Agents
 		{
 			get => _readPermissions;
 			set => SetProperty(ref _readPermissions, value);
+		}
+
+		private AgentExposureMode _exposureMode =
+			AgentExposureMode.Reasoning |
+			AgentExposureMode.Content |
+			AgentExposureMode.ToolCalls |
+			AgentExposureMode.Attachments |
+			AgentExposureMode.MessagesWithToolCalls;
+		/// <summary>
+		/// The exposure mode that determines what parts of this agent's messages
+		/// are visible to other agents.
+		/// </summary>
+		public AgentExposureMode ExposureMode
+		{
+			get => _exposureMode;
+			set => SetProperty(ref _exposureMode, value);
 		}
 
 		private RangeObservableCollection<Guid> _agentIdsReadFilter = [];

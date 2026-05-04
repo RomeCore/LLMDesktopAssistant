@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents
 {
 	/// <summary>
 	/// Describes the mode in which an agent can read messages.
@@ -40,5 +40,24 @@
 		/// The agent can read the tool calls of other agents.
 		/// </summary>
 		OtherAgentToolCalls = 1 << 5,
+
+		/// <summary>
+		/// The agent can read attachments from other agents.
+		/// Reserved for future use when agents can have attachments.
+		/// </summary>
+		OtherAgentAttachments = 1 << 6,
+
+		/// <summary>
+		/// The agent can read messages that contain tool calls from other agents.
+		/// If not set, messages with tool calls may be filtered out even if OtherAgentMessages is set.
+		/// </summary>
+		MessagesWithToolCalls = 1 << 7,
+
+		/// <summary>
+		/// The agent can identify other agents as users.
+		/// When set, agents that have <see cref="AgentExposureMode.IdentifySelfAsUser"/> will be
+		/// visible and treated as user messages to this agent.
+		/// </summary>
+		IdentifyAgentsAsUsers = 1 << 8,
 	}
 }

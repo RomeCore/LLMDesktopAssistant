@@ -66,6 +66,17 @@ namespace LLMDesktopAssistant.LLM.Services
 					.Select(id => PromptRegistry.GetComponent(id)?.Template.Template.Render(componentsContext))
 					.Where(c => !string.IsNullOrWhiteSpace(c))
 					.ToArray(),
+				sliders = promptSettings.SliderValues.Select(s =>
+					{
+						var sliderTemplate = PromptRegistry.GetSlider(s.SliderId)?.Template.Template;
+						var sliderContext = new
+						{
+							sliderValue = s.Value
+						};
+						return sliderTemplate?.Render(sliderContext);
+					})
+					.Where(c => !string.IsNullOrWhiteSpace(c))
+					.ToArray(),
 				assistantNickname = promptSettings.Nickname,
 				specialization = promptSettings.UseCustomSpecialization ?
 					promptSettings.CustomSpecialization :

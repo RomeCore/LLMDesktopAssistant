@@ -101,5 +101,16 @@ namespace LLMDesktopAssistant.Agents
 			get => _specializationId;
 			set => SetProperty(ref _specializationId, value);
 		}
+		private readonly RangeObservableCollection<BehaviorSliderValue> _sliderValues = [];
+		/// <summary>
+		/// The collection of behavior slider values for this agent.
+		/// Each slider has a Guid (matching slider definition in .llt) and integer value.
+		/// </summary>
+		public ICollection<BehaviorSliderValue> SliderValues
+		{
+			get => _sliderValues;
+			set => _sliderValues.Reset(value);
+		}
+
 	}
 }

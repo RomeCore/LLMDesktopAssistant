@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 	/// Adds a button to summarize the message with all previous messages.
 	/// If a summary already exists, removes it.
 	/// </summary>
-	[MessageExtension(Targets = MessageExtensionTargets.Assistant)]
+	[MessageExtension(Targets = MessageExtensionTargets.Both)]
 	public class SummarizeMessageExtension : MessageExtension
 	{
 		public override MaterialIconKind Icon => MaterialIconKind.TextBoxSearchOutline;

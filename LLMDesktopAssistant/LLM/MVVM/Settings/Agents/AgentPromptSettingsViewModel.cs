@@ -2,8 +2,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Settings;
+using LLTSharp;
+using LLTSharp.Metadata;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -71,6 +74,77 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		}
 	}
 
+	/// <summary>
+	/// ViewModel for a single behavior slider.
+	/// Loads metadata from the slider's .llt template definition.
+	/// </summary>
+	public class BehaviorSliderItemViewModel : ObservableObject
+	{
+		private readonly AgentPromptSettingsViewModel _parent;
+		private readonly BehaviorSliderValue _sliderValue;
+
+		/// <summary>
+		/// The GUID of the slider definition.
+		/// </summary>
+		public Guid SliderId { get; }
+
+		/// <summary>
+		/// Display name of the slider (from .llt metadata "title").
+		/// </summary>
+		public string DisplayName { get; }
+
+		/// <summary>
+		/// Minimum value of the slider (from .llt metadata "sliderMin").
+		/// </summary>
+		public int MinValue { get; }
+
+		/// <summary>
+		/// Maximum value of the slider (from .llt metadata "sliderMax").
+		/// </summary>
+		public int MaxValue { get; }
+
+		/// <summary>
+		/// Hints/labels for each slider position (from .llt metadata "hints").
+		/// Index 0 corresponds to MinValue, last index to MaxValue.
+		/// null entries mean no label for that position.
+		/// </summary>
+		public string[] Hints { get; }
+
+		/// <summary>
+		/// The current value of the slider (two-way bound to UI).
+		/// </summary>
+		public int Value
+		{
+			get => _sliderValue.Value;
+			set
+			{
+				if (_sliderValue.Value != value)
+				{
+					_sliderValue.Value = value;
+					OnPropertyChanged();
+				}
+			}
+		}
+
+		public BehaviorSliderItemViewModel(
+			AgentPromptSettingsViewModel parent,
+			BehaviorSliderValue sliderValue,
+			Guid sliderId,
+			string displayName,
+			int minValue,
+			int maxValue,
+			string[] hints)
+		{
+			_parent = parent;
+			_sliderValue = sliderValue;
+			SliderId = sliderId;
+			DisplayName = displayName;
+			MinValue = minValue;
+			MaxValue = maxValue;
+			Hints = hints;
+		}
+	}
+
 
 	[ViewModelFor(typeof(AgentPromptSettingsView))]
 	public class AgentPromptSettingsViewModel : ViewModelBase
@@ -116,25 +190,31 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		public ICommand ClearSpecializationCommand { get; }
 
+		/// <summary>
+		/// Collection of behavior slider ViewModels for the UI.
+		/// </summary>
+		public ObservableCollection<BehaviorSliderItemViewModel> SliderItems { get; } = new();
+
 
 		public AgentPromptSettingsViewModel(AgentPromptSettings settings)
 		{
 			PromptSettings = settings;
 
 			ClearPersonaCommand = new RelayCommand(() => SelectedPersona = null);
-			Refresh();
 			ClearSpecializationCommand = new RelayCommand(() => SelectedSpecialization = null);
+			Refresh();
 		}
 
 		public void Refresh()
 		{
+			// --- Components ---
 			var allComponents = new List<PromptComponent>();
 			var componentsConfig = SettingsManager.Get<PromptComponentsConfiguration>();
 			allComponents.AddRange(componentsConfig.Components);
 			allComponents.AddRange(PromptRegistry.BuiltinComponents.Values);
 
 			var grouped = allComponents.GroupBy(c => string.IsNullOrEmpty(c.Category) 
-				? LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_category_uncategorized") 
+				? LocalizationManager.LocalizeStatic("prompt_category_uncategorized") 
 				: c.Category);
 
 			ComponentCategories.Clear();
@@ -149,6 +229,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				ComponentCategories.Add(categoryVm);
 			}
 
+			// --- Personas ---
 			AvailablePersonas.Clear();
 			var personasConfig = SettingsManager.Get<PersonasConfiguration>();
 			foreach (var persona in PromptRegistry.BuiltinPersonas.Values)
@@ -165,6 +246,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				SelectedPersona = null;
 			}
 
+			// --- Specializations ---
 			AvailableSpecializations.Clear();
 			var specializationsConfig = SettingsManager.Get<SpecializationsConfiguration>();
 			foreach (var specialization in PromptRegistry.BuiltinSpecializations.Values)
@@ -179,6 +261,44 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			else
 			{
 				SelectedSpecialization = null;
+			}
+
+			// --- Sliders ---
+			RefreshSliders();
+		}
+
+		/// <summary>
+		/// Loads slider definitions from PromptRegistry and creates ViewModel items.
+		/// For each builtin slider, finds or creates a matching BehaviorSliderValue in PromptSettings.
+		/// </summary>
+		private void RefreshSliders()
+		{
+			SliderItems.Clear();
+
+			foreach (var (sliderId, slider) in PromptRegistry.BuiltinSliders)
+			{
+				// Find existing slider value or create new one with default (0)
+				var existingValue = PromptSettings.SliderValues.FirstOrDefault(sv => sv.SliderId == sliderId);
+				if (existingValue == null)
+				{
+					existingValue = new BehaviorSliderValue
+					{
+						SliderId = sliderId,
+						Value = 0 // default
+					};
+					PromptSettings.SliderValues.Add(existingValue);
+				}
+
+				var itemVm = new BehaviorSliderItemViewModel(
+					this,
+					existingValue,
+					sliderId,
+					slider.Name,
+					slider.MinimumValue,
+					slider.MaximumValue,
+					slider.Titles.Values.ToArray());
+
+				SliderItems.Add(itemVm);
 			}
 		}
 

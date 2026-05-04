@@ -10,6 +10,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
+using LLTSharp.DataAccessors;
 using LLTSharp.Locale;
 using LLTSharp.Metadata;
 using RCParsing;
@@ -24,6 +25,7 @@ namespace LLMDesktopAssistant.Prompting
 		public static ImmutableDictionary<Guid, PromptComponent> BuiltinComponents { get; }
 		public static ImmutableDictionary<Guid, Persona> BuiltinPersonas { get; }
 		public static ImmutableDictionary<Guid, Specialization> BuiltinSpecializations { get; }
+		public static ImmutableDictionary<Guid, BehaviourSlider> BuiltinSliders { get; }
 
 		static PromptRegistry()
 		{
@@ -42,6 +44,7 @@ namespace LLMDesktopAssistant.Prompting
 			var componentsBuilder = ImmutableDictionary.CreateBuilder<Guid, PromptComponent>();
 			var personasBuilder = ImmutableDictionary.CreateBuilder<Guid, Persona>();
 			var specializationsBuilder = ImmutableDictionary.CreateBuilder<Guid, Specialization>();
+			var slidersBuilder = ImmutableDictionary.CreateBuilder<Guid, BehaviourSlider>();
 
 			foreach (var template in SharedLibrary)
 			{
@@ -50,7 +53,7 @@ namespace LLMDesktopAssistant.Prompting
 
 				// Log.Debug("Loading template: {Id}", id);
 
-				if (type == "component" || type == "persona" || type == "specialization")
+				if (type == "component" || type == "persona" || type == "specialization" || type == "slider")
 				{
 					if (template is not ITextTemplate textTemplate)
 						throw new InvalidDataException($"Invalid template: {id} is not a text template.");
@@ -60,6 +63,7 @@ namespace LLMDesktopAssistant.Prompting
 						?? throw new InvalidDataException($"Invalid template: {id} missing 'guid' metadata.");
 					var guid = Guid.Parse(guidStr);
 					var category = template.Metadata.TryGetAdditional<string>("category") ?? string.Empty;
+					
 
 					switch (type)
 					{
@@ -91,17 +95,47 @@ namespace LLMDesktopAssistant.Prompting
 								Template = new SerializableTextTemplate(textTemplate)
 							});
 							break;
-					}
-				}
-				else
-				{
 
+						case "slider":
+							var hintsRaw = template.Metadata.TryGetAdditional<object?[]>("hints") ?? [];
+							var sliderMin = template.Metadata.TryGetAdditional<int>("slider_min");
+							var sliderMax = template.Metadata.TryGetAdditional<int>("slider_max");
+							var sliderDefault = template.Metadata.TryGetAdditional<int>("slider_default");
+
+							var hints = ImmutableDictionary.CreateBuilder<int, string>();
+							var hintsLength = sliderMax - sliderMin + 1;
+
+							if (hintsLength != hintsRaw.Length)
+								throw new InvalidDataException($"Slider template '{id}' has invalid hints: " +
+									$"length of hint array must be equal to length of range, but currently hints:{hintsRaw.Length} != range:{hintsLength}");
+
+							if (hintsRaw != null)
+							{
+								for (int i = 0; i < hintsLength; i++)
+								{
+									hints[i + sliderMin] = hintsRaw[i]?.ToString() ?? string.Empty;
+								}
+							}
+
+							slidersBuilder.Add(guid, new BehaviourSlider
+							{
+								Id = guid,
+								Name = title ?? LocalizationManager.LocalizeStatic("behaviourslider-" + id),
+								MinimumValue = sliderMin,
+								MaximumValue = sliderMax,
+								DefaultValue = sliderDefault,
+								Titles = hints.ToImmutable(),
+								Template = new SerializableTextTemplate(textTemplate)
+							});
+							break;
+					}
 				}
 			}
 
 			BuiltinComponents = componentsBuilder.ToImmutable();
 			BuiltinPersonas = personasBuilder.ToImmutable();
 			BuiltinSpecializations = specializationsBuilder.ToImmutable();
+			BuiltinSliders = slidersBuilder.ToImmutable();
 		}
 
 		public static PromptComponent? GetComponent(Guid id)
@@ -139,6 +173,14 @@ namespace LLMDesktopAssistant.Prompting
 
 			if (BuiltinSpecializations.TryGetValue(id, out var specialization2))
 				return specialization2;
+
+			return null;
+		}
+
+		public static BehaviourSlider? GetSlider(Guid id)
+		{
+			if (BuiltinSliders.TryGetValue(id, out var slider))
+				return slider;
 
 			return null;
 		}

@@ -39,6 +39,36 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		}
 	}
 
+	public class ExposureModeItem : ObservableObject
+	{
+		private readonly AgentReadSettingsViewModel _parent;
+		public AgentExposureMode Mode { get; }
+		public string DisplayName { get; }
+		public string Description { get; }
+
+		private bool _isEnabled;
+		public bool IsEnabled
+		{
+			get => _isEnabled;
+			set
+			{
+				if (SetProperty(ref _isEnabled, value))
+				{
+					_parent.ReadSettings.ExposureMode = (_parent.ReadSettings.ExposureMode & ~Mode) | (value ? Mode : 0);
+				}
+			}
+		}
+
+		public ExposureModeItem(AgentReadSettingsViewModel parent, AgentExposureMode mode, string displayName, string description, bool isEnabled)
+		{
+			_parent = parent;
+			Mode = mode;
+			DisplayName = displayName;
+			Description = description;
+			_isEnabled = isEnabled;
+		}
+	}
+
 	/// <summary>
 	/// ViewModel for an agent entry in the read filter list.
 	/// </summary>
@@ -83,6 +113,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public AgentReadSettings ReadSettings { get; }
 
 		public ObservableCollection<ReadPermissionItem> ReadPermissionItems { get; } = [];
+		public ObservableCollection<ExposureModeItem> ExposureModeItems { get; } = [];
 
 		/// <summary>
 		/// Filter mode: 0 = Whitelist, 1 = Blacklist
@@ -121,6 +152,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			_agentId = agentId;
 
 			InitializePermissions();
+			InitializeExposureMode();
 			InitializeAgentFilter();
 
 			SelectAllAgentsCommand = new RelayCommand(() => SetAllAgentsFilter(true));
@@ -162,6 +194,58 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				LocalizationManager.LocalizeStatic("perm_other_agent_tool_calls"),
 				LocalizationManager.LocalizeStatic("perm_other_agent_tool_calls_hint"),
 				perms.HasFlag(AgentReadPermissions.OtherAgentToolCalls)));
+
+			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.OtherAgentAttachments,
+				LocalizationManager.LocalizeStatic("perm_other_agent_attachments"),
+				LocalizationManager.LocalizeStatic("perm_other_agent_attachments_hint"),
+				perms.HasFlag(AgentReadPermissions.OtherAgentAttachments)));
+
+			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.MessagesWithToolCalls,
+				LocalizationManager.LocalizeStatic("perm_messages_with_tool_calls"),
+				LocalizationManager.LocalizeStatic("perm_messages_with_tool_calls_hint"),
+				perms.HasFlag(AgentReadPermissions.MessagesWithToolCalls)));
+
+			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.IdentifyAgentsAsUsers,
+				LocalizationManager.LocalizeStatic("perm_identify_agents_as_users"),
+				LocalizationManager.LocalizeStatic("perm_identify_agents_as_users_hint"),
+				perms.HasFlag(AgentReadPermissions.IdentifyAgentsAsUsers)));
+		}
+
+		private void InitializeExposureMode()
+		{
+			ExposureModeItems.Clear();
+
+			var mode = ReadSettings.ExposureMode;
+
+			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.Content,
+				LocalizationManager.LocalizeStatic("exposure_content"),
+				LocalizationManager.LocalizeStatic("exposure_content_hint"),
+				mode.HasFlag(AgentExposureMode.Content)));
+
+			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.Reasoning,
+				LocalizationManager.LocalizeStatic("exposure_reasoning"),
+				LocalizationManager.LocalizeStatic("exposure_reasoning_hint"),
+				mode.HasFlag(AgentExposureMode.Reasoning)));
+
+			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.ToolCalls,
+				LocalizationManager.LocalizeStatic("exposure_tool_calls"),
+				LocalizationManager.LocalizeStatic("exposure_tool_calls_hint"),
+				mode.HasFlag(AgentExposureMode.ToolCalls)));
+
+			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.Attachments,
+				LocalizationManager.LocalizeStatic("exposure_attachments"),
+				LocalizationManager.LocalizeStatic("exposure_attachments_hint"),
+				mode.HasFlag(AgentExposureMode.Attachments)));
+
+			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.MessagesWithToolCalls,
+				LocalizationManager.LocalizeStatic("exposure_messages_with_tool_calls"),
+				LocalizationManager.LocalizeStatic("exposure_messages_with_tool_calls_hint"),
+				mode.HasFlag(AgentExposureMode.MessagesWithToolCalls)));
+
+			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.IdentifySelfAsUser,
+				LocalizationManager.LocalizeStatic("exposure_identify_self_as_user"),
+				LocalizationManager.LocalizeStatic("exposure_identify_self_as_user_hint"),
+				mode.HasFlag(AgentExposureMode.IdentifySelfAsUser)));
 		}
 
 		private void InitializeAgentFilter()
