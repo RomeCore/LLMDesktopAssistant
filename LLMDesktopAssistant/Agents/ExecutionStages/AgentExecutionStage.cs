@@ -1,12 +1,15 @@
-﻿using System;
+﻿using LLMDesktopAssistant.Utils;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
-	[JsonDerivedType(typeof(AgentExecutionSequentialStage), "sequential")]
-	[JsonDerivedType(typeof(AgentExecutionRandomStage), "random")]
+	[JsonDerivedType(typeof(SequentialAgentExecutionStage), "sequential")]
+	[JsonDerivedType(typeof(MentionOnlyAgentExecutionStage), "mentionOnly")]
+	[JsonDerivedType(typeof(RandomAgentExecutionStage), "random")]
+	[JsonDerivedType(typeof(AdaptiveAgentExecutionStage), "adaptive")]
 	public abstract class AgentExecutionStage : NotifyPropertyChanged
 	{
 		private Guid _id;
@@ -23,8 +26,12 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			set => SetProperty(ref _enabled, value);
 		}
 
-		[JsonIgnore]
-		public abstract IReadOnlyList<AgentInstance> Children { get; }
+		private RangeObservableCollection<AgentInstance> _agentInstances = [];
+		public RangeObservableCollection<AgentInstance> AgentInstances
+		{
+			get => _agentInstances;
+			set => _agentInstances.Reset(value);
+		}
 
 		/// <summary>
 		/// Returns the next agent ID to execute based on the provided context.

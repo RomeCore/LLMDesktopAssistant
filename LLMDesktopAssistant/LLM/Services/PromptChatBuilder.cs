@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	public class PromptChatBuilder(
 		Chat chat,
 		TemplateLibrary templates,
-		IAgentManagementService agentSettings
+		IAgentManagementService agentManager
 		) : IPromptChatBuilder
 	{
 		private ToolResultStatus ConvertToolStatus(ToolStatus status)
@@ -53,7 +53,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			var language = GetCurrentLanguageMetadata();
 			var template = templates.TryRetrieveBestWithFallback("system_prompt", language) as ITextTemplate;
-			var promptSettings = agentSettings.GetAgentDescriptor(agentId).Prompts;
+			var promptSettings = agentManager.GetAgentDescriptor(agentId).Prompts;
 
 			var componentsContext = new
 			{
@@ -98,8 +98,11 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				user_name = message.SenderLogin,
 				time_sent = message.CreatedAt.ToString(),
+				content = message.Content,
 				attachments = message.Attachments,
-				content = message.Content
+
+				can_read_content = true,
+				can_read_attachments = true
 			};
 			var result = template!.Render(context);
 			return result;
@@ -113,10 +116,11 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				user_name = message.SenderLogin,
 				time_sent = message.CreatedAt.ToString(),
-				attachments = readSettings.ReadPermissions.HasFlag(AgentReadPermissions.UserAttachments)
-					? message.Attachments
-					: [],
-				content = message.Content
+				content = message.Content,
+				attachments = message.Attachments,
+
+				can_read_content = true,
+				can_read_attachments = readSettings.ReadPermissions.HasFlag(AgentReadPermissions.UserAttachments)
 			};
 			var result = template!.Render(context);
 			return result;
@@ -155,36 +159,43 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <summary>
 		/// Checks whether the agent with given <paramref name="agentId"/> can see an assistant message.
 		/// </summary>
-		private bool IsAssistantMessageVisibleToAgent(Domain.AssistantMessage assistantMessage, Guid agentId, AgentReadSettings readSettings)
+		private bool IsAssistantMessageVisibleToAgent(Domain.AssistantMessage message, Guid agentId, AgentReadSettings readSettings)
 		{
-			var messageAgentId = assistantMessage.SenderAgentId;
-			var permissions = readSettings.ReadPermissions;
+			var messageAgentId = message.SenderAgentId;
+			var agentDescriptor = agentManager.GetAgentDescriptor(message.SenderAgentId);
+			var exposure = agentDescriptor.Read.ExposureMode; // What sender agent exposes
+			var permissions = readSettings.ReadPermissions; // What current agent can see
 
 			// Own messages
-			if (messageAgentId == agentId && permissions.HasFlag(AgentReadPermissions.OwnMessages))
-				return true;
-
-			// Other agent messages
-			if (messageAgentId != agentId)
+			if (messageAgentId == agentId)
 			{
-				if (!permissions.HasFlag(AgentReadPermissions.OtherAgentMessages))
-					return false;
+				if (permissions.HasFlag(AgentReadPermissions.OwnMessages))
+					return true;
 
-				// Apply agent ID filter (white/black list)
-				var filter = readSettings.AgentIdsReadFilter;
-				if (filter.Count > 0)
-				{
-					bool inFilter = filter.Contains(messageAgentId);
-					if (readSettings.IsFilterWhiteList && !inFilter)
-						return false;
-					if (!readSettings.IsFilterWhiteList && inFilter)
-						return false;
-				}
-
-				return true;
+				return false;
 			}
 
-			return false;
+			// Other agent messages
+			if (!permissions.HasFlag(AgentReadPermissions.OtherAgentMessages))
+				return false;
+
+			// Messages with tool calls
+			if (message.ToolCalls.Count > 0 && !(permissions.HasFlag(AgentReadPermissions.MessagesWithToolCalls)
+				&& exposure.HasFlag(AgentExposureMode.MessagesWithToolCalls)))
+				return false;
+
+			// Apply agent ID filter (white/black list)
+			var filter = readSettings.AgentIdsReadFilter;
+			if (filter.Count > 0)
+			{
+				bool inFilter = filter.Contains(messageAgentId);
+				if (readSettings.IsFilterWhiteList && !inFilter)
+					return false;
+				if (!readSettings.IsFilterWhiteList && inFilter)
+					return false;
+			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -194,35 +205,64 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// </summary>
 		private string BuildForeignAgentMessageText(Domain.AssistantMessage message, Guid currentAgentId, AgentReadSettings readSettings)
 		{
-			var agentDescriptor = agentSettings.GetAgentDescriptor(message.SenderAgentId);
-			var agentName = agentDescriptor.Info.Name ?? agentDescriptor.Id.ToString()[..8];
-			var permissions = readSettings.ReadPermissions;
+			var senderDescriptor = agentManager.GetAgentDescriptor(message.SenderAgentId);
+			var agentName = senderDescriptor.Info.Name ?? senderDescriptor.Id.ToString()[..8];
+			var exposure = senderDescriptor.Read.ExposureMode; // What sender agent exposes
+			var permissions = readSettings.ReadPermissions; // What current agent can see
 
 			var language = GetCurrentLanguageMetadata();
-			var template = templates.TryRetrieveBestWithFallback("foreign_assistant_prompt", language) as ITextTemplate;
-			var context = new
+			if (exposure.HasFlag(AgentExposureMode.IdentifySelfAsUser) || permissions.HasFlag(AgentReadPermissions.IdentifyAgentsAsUsers))
 			{
-				time_sent = message.CreatedAt.ToString(),
-				agent_name = agentName,
-				reasoning_content = message.ReasoningContent,
-				content = message.Content ?? "(no content)",
-				tool_calls = message.ToolCalls.Select(tc => new
+				var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
+				var context = new
 				{
-					name = tc.ToolName,
-					arguments = tc.Arguments.ToJsonString(),
-					result_content = tc.ResultContent ?? "(no content)",
-				}).ToArray(),
+					time_sent = message.CreatedAt.ToString(),
+					agent_name = agentName,
+					attachments = Array.Empty<Attachment>(),
 
-				can_read_reasoning = permissions.HasFlag(AgentReadPermissions.OtherAgentReasoning),
-				can_read_tool_calls = permissions.HasFlag(AgentReadPermissions.OtherAgentToolCalls)
-			};
-			var result = template!.Render(context);
-			return result;
+					can_read_content =
+						permissions.HasFlag(AgentReadPermissions.OtherAgentContent) &&
+						exposure.HasFlag(AgentExposureMode.Content),
+					can_read_attachments =
+						permissions.HasFlag(AgentReadPermissions.OtherAgentAttachments) &&
+						exposure.HasFlag(AgentExposureMode.Attachments)
+				};
+				var result = template!.Render(context);
+				return result;
+			}
+			else
+			{
+				var template = templates.TryRetrieveBestWithFallback("foreign_assistant_prompt", language) as ITextTemplate;
+				var context = new
+				{
+					time_sent = message.CreatedAt.ToString(),
+					user_name = agentName,
+					content = message.Content,
+					tool_calls = message.ToolCalls.Select(tc => new
+					{
+						name = tc.ToolName,
+						arguments = tc.Arguments.ToJsonString(),
+						result_content = tc.ResultContent,
+					}).ToArray(),
+
+					can_read_reasoning =
+						permissions.HasFlag(AgentReadPermissions.OtherAgentReasoning) &&
+						exposure.HasFlag(AgentExposureMode.Reasoning),
+					can_read_content =
+						permissions.HasFlag(AgentReadPermissions.OtherAgentContent) &&
+						exposure.HasFlag(AgentExposureMode.Content),
+					can_read_tool_calls =
+						permissions.HasFlag(AgentReadPermissions.OtherAgentToolCalls) &&
+						exposure.HasFlag(AgentExposureMode.ToolCalls)
+				};
+				var result = template!.Render(context);
+				return result;
+			}
 		}
 
 		public IEnumerable<IMessage> ConvertMessage(ChatMessage message, Guid agentId)
 		{
-			var readSettings = agentSettings.GetAgentDescriptor(agentId).Read;
+			var readSettings = agentManager.GetAgentDescriptor(agentId).Read;
 
 			if (message is Domain.UserMessage userMessage)
 			{
@@ -356,7 +396,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public IEnumerable<IMessage> Build(Guid agentId)
 		{
-			var readSettings = agentSettings.GetAgentDescriptor(agentId).Read;
+			var readSettings = agentManager.GetAgentDescriptor(agentId).Read;
 			int maxRounds = readSettings.MaxVisibleRounds;
 
 			// Build a flat list of visible messages first (filtered by permissions)

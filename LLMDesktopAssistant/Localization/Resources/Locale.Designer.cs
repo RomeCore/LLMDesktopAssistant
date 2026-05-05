@@ -772,6 +772,114 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Attachments.
+        /// </summary>
+        public static string exposure_attachments {
+            get {
+                return ResourceManager.GetString("exposure_attachments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Expose attachments from this agent&apos;s messages to other agents..
+        /// </summary>
+        public static string exposure_attachments_hint {
+            get {
+                return ResourceManager.GetString("exposure_attachments_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Content.
+        /// </summary>
+        public static string exposure_content {
+            get {
+                return ResourceManager.GetString("exposure_content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Expose the main content/text of this agent&apos;s messages to other agents..
+        /// </summary>
+        public static string exposure_content_hint {
+            get {
+                return ResourceManager.GetString("exposure_content_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Identify self as user.
+        /// </summary>
+        public static string exposure_identify_self_as_user {
+            get {
+                return ResourceManager.GetString("exposure_identify_self_as_user", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на When enabled, this agent identifies itself as a user to other agents. Tool calls and reasoning become inaccessible regardless of other flags..
+        /// </summary>
+        public static string exposure_identify_self_as_user_hint {
+            get {
+                return ResourceManager.GetString("exposure_identify_self_as_user_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Messages with tool calls.
+        /// </summary>
+        public static string exposure_messages_with_tool_calls {
+            get {
+                return ResourceManager.GetString("exposure_messages_with_tool_calls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Expose messages that contain tool calls. If disabled, such messages may be hidden entirely from other agents..
+        /// </summary>
+        public static string exposure_messages_with_tool_calls_hint {
+            get {
+                return ResourceManager.GetString("exposure_messages_with_tool_calls_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Reasoning.
+        /// </summary>
+        public static string exposure_reasoning {
+            get {
+                return ResourceManager.GetString("exposure_reasoning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Expose the reasoning/thoughts of this agent to other agents..
+        /// </summary>
+        public static string exposure_reasoning_hint {
+            get {
+                return ResourceManager.GetString("exposure_reasoning_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tool calls.
+        /// </summary>
+        public static string exposure_tool_calls {
+            get {
+                return ResourceManager.GetString("exposure_tool_calls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Expose tool calls and their results from this agent to other agents..
+        /// </summary>
+        public static string exposure_tool_calls_hint {
+            get {
+                return ResourceManager.GetString("exposure_tool_calls_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на File system.
         /// </summary>
         public static string filesystem {
@@ -1474,6 +1582,78 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Identify agents as users.
+        /// </summary>
+        public static string perm_identify_agents_as_users {
+            get {
+                return ResourceManager.GetString("perm_identify_agents_as_users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Other agents will be visible and treated as user messages to this agent..
+        /// </summary>
+        public static string perm_identify_agents_as_users_hint {
+            get {
+                return ResourceManager.GetString("perm_identify_agents_as_users_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Messages with tool calls.
+        /// </summary>
+        public static string perm_messages_with_tool_calls {
+            get {
+                return ResourceManager.GetString("perm_messages_with_tool_calls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent can read messages that contain tool calls from other agents. If disabled, messages with tool calls are filtered out..
+        /// </summary>
+        public static string perm_messages_with_tool_calls_hint {
+            get {
+                return ResourceManager.GetString("perm_messages_with_tool_calls_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Other agent attachments.
+        /// </summary>
+        public static string perm_other_agent_attachments {
+            get {
+                return ResourceManager.GetString("perm_other_agent_attachments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent can read attachments from other agents..
+        /// </summary>
+        public static string perm_other_agent_attachments_hint {
+            get {
+                return ResourceManager.GetString("perm_other_agent_attachments_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Other agent main content.
+        /// </summary>
+        public static string perm_other_agent_content {
+            get {
+                return ResourceManager.GetString("perm_other_agent_content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent can read main message&apos;s content from other agents..
+        /// </summary>
+        public static string perm_other_agent_content_hint {
+            get {
+                return ResourceManager.GetString("perm_other_agent_content_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Other agent messages.
         /// </summary>
         public static string perm_other_agent_messages {
@@ -1614,6 +1794,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string prompt_assistant_nickname_placeholder {
             get {
                 return ResourceManager.GetString("prompt_assistant_nickname_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Behavior sliders.
+        /// </summary>
+        public static string prompt_behavior_sliders {
+            get {
+                return ResourceManager.GetString("prompt_behavior_sliders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Adjust behavior sliders to control the assistant&apos;s tone, style, and personality.
+        /// </summary>
+        public static string prompt_behavior_sliders_hint {
+            get {
+                return ResourceManager.GetString("prompt_behavior_sliders_hint", resourceCulture);
             }
         }
         
@@ -2487,6 +2685,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_execution_stages {
             get {
                 return ResourceManager.GetString("settings_execution_stages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Exposure mode (how this agent appears to others).
+        /// </summary>
+        public static string settings_exposure_mode {
+            get {
+                return ResourceManager.GetString("settings_exposure_mode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Controls what parts of this agent&apos;s messages are visible to other agents..
+        /// </summary>
+        public static string settings_exposure_mode_hint {
+            get {
+                return ResourceManager.GetString("settings_exposure_mode_hint", resourceCulture);
             }
         }
         

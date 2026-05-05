@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
-	public class ComponentItemViewModel : ObservableObject
+	public class ComponentItemViewModel : NotifyPropertyChanged
 	{
 		private readonly AgentPromptSettingsViewModel _parent;
 		public PromptComponent Component { get; }
@@ -39,7 +39,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		}
 	}
 
-	public class ComponentCategoryViewModel : ObservableObject
+	public class ComponentCategoryViewModel : NotifyPropertyChanged
 	{
 		public string CategoryName { get; }
 		public ObservableCollection<ComponentItemViewModel> Components { get; } = new();
@@ -50,7 +50,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		}
 	}
 
-	public class PersonaItemViewModel : ObservableObject
+	public class PersonaItemViewModel : NotifyPropertyChanged
 	{
 		private readonly AgentPromptSettingsViewModel _parent;
 		public Persona Persona { get; }
@@ -62,7 +62,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		}
 	}
 
-	public class SpecializationItemViewModel : ObservableObject
+	public class SpecializationItemViewModel : NotifyPropertyChanged
 	{
 		private readonly AgentPromptSettingsViewModel _parent;
 		public Specialization Specialization { get; }
@@ -74,11 +74,18 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		}
 	}
 
+	public class BehaviorSliderHintViewModel : NotifyPropertyChanged
+	{
+		public string? Label { get; set; }
+
+		public int Column { get; set; }
+	}
+
 	/// <summary>
 	/// ViewModel for a single behavior slider.
 	/// Loads metadata from the slider's .llt template definition.
 	/// </summary>
-	public class BehaviorSliderItemViewModel : ObservableObject
+	public class BehaviorSliderItemViewModel : NotifyPropertyChanged
 	{
 		private readonly AgentPromptSettingsViewModel _parent;
 		private readonly BehaviorSliderValue _sliderValue;
@@ -108,10 +115,15 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// Index 0 corresponds to MinValue, last index to MaxValue.
 		/// null entries mean no label for that position.
 		/// </summary>
-		public string[] Hints { get; }
+		public BehaviorSliderHintViewModel[] Hints { get; }
 
 		/// <summary>
-		/// The current value of the slider (two-way bound to UI).
+		/// The number of positions on the slider. Range = MaxValue - MinValue + 1.
+		/// </summary>
+		public int Range => MaxValue - MinValue + 1;
+
+		/// <summary>
+		/// The current value of the slider.
 		/// </summary>
 		public int Value
 		{
@@ -121,7 +133,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				if (_sliderValue.Value != value)
 				{
 					_sliderValue.Value = value;
-					OnPropertyChanged();
+					RaisePropertyChanged();
 				}
 			}
 		}
@@ -133,7 +145,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			string displayName,
 			int minValue,
 			int maxValue,
-			string[] hints)
+			BehaviorSliderHintViewModel[] hints)
 		{
 			_parent = parent;
 			_sliderValue = sliderValue;
@@ -284,7 +296,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					existingValue = new BehaviorSliderValue
 					{
 						SliderId = sliderId,
-						Value = 0 // default
+						Value = slider.DefaultValue
 					};
 					PromptSettings.SliderValues.Add(existingValue);
 				}
@@ -296,7 +308,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					slider.Name,
 					slider.MinimumValue,
 					slider.MaximumValue,
-					slider.Titles.Values.ToArray());
+					slider.Titles.Values
+						.Select((label, index) => new BehaviorSliderHintViewModel
+						{
+							Label = label,
+							Column = index
+						})
+						.ToArray());
 
 				SliderItems.Add(itemVm);
 			}

@@ -185,6 +185,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				LocalizationManager.LocalizeStatic("perm_other_agent_messages_hint"),
 				perms.HasFlag(AgentReadPermissions.OtherAgentMessages)));
 
+			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.OtherAgentContent,
+				LocalizationManager.LocalizeStatic("perm_other_agent_content"),
+				LocalizationManager.LocalizeStatic("perm_other_agent_content_hint"),
+				perms.HasFlag(AgentReadPermissions.OtherAgentContent)));
+
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.OtherAgentReasoning,
 				LocalizationManager.LocalizeStatic("perm_other_agent_reasoning"),
 				LocalizationManager.LocalizeStatic("perm_other_agent_reasoning_hint"),

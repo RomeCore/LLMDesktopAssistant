@@ -19,12 +19,12 @@ public sealed class StageTypeOption
 	public static StageTypeOption Sequential { get; } = new StageTypeOption
 	{
 		Name = "stage_type_sequential",
-		StageType = typeof(AgentExecutionSequentialStage)
+		StageType = typeof(SequentialAgentExecutionStage)
 	};
 	public static StageTypeOption Random { get; } = new StageTypeOption
 	{
 		Name = "stage_type_random",
-		StageType = typeof(AgentExecutionRandomStage)
+		StageType = typeof(RandomAgentExecutionStage)
 	};
 }
 
@@ -79,8 +79,8 @@ public class StageContainerViewModel : ViewModelBase
 		_stageVM = StageViewModelFactory.CreateViewModel(_modelStage, _parent.AgentManager);
 		_selectedType = stage switch
 		{
-			AgentExecutionSequentialStage => StageTypeOption.Sequential,
-			AgentExecutionRandomStage => StageTypeOption.Random,
+			SequentialAgentExecutionStage => StageTypeOption.Sequential,
+			RandomAgentExecutionStage => StageTypeOption.Random,
 			_ => StageTypeOption.Sequential
 		};
 
@@ -132,32 +132,22 @@ public class StageContainerViewModel : ViewModelBase
 		var prevStage = _modelStage;
 		var prevIndex = _parent.AgentSettings.ExecutionStages.IndexOf(prevStage);
 
-		if (SelectedType.StageType == typeof(AgentExecutionSequentialStage))
+		if (SelectedType.StageType == typeof(SequentialAgentExecutionStage))
 		{
-			_modelStage = new AgentExecutionSequentialStage
+			_modelStage = new SequentialAgentExecutionStage
 			{
 				Id = _modelStage.Id,
 				Enabled = _modelStage.Enabled,
-				AgentInstances = new(_modelStage.Children)
+				AgentInstances = _modelStage.AgentInstances
 			};
 		}
-		else if (SelectedType.StageType == typeof(AgentExecutionRandomStage))
+		else if (SelectedType.StageType == typeof(RandomAgentExecutionStage))
 		{
-			_modelStage = new AgentExecutionRandomStage
+			_modelStage = new RandomAgentExecutionStage
 			{
 				Id = _modelStage.Id,
 				Enabled = _modelStage.Enabled,
-				AgentInstances = new(_modelStage.Children.Select(a =>
-				{
-					if (a is WeightedAgentInstance w)
-						return w;
-					return new WeightedAgentInstance
-					{
-						Enabled = a.Enabled,
-						AgentId = a.AgentId,
-						Weight = 1.0
-					};
-				}))
+				AgentInstances = _modelStage.AgentInstances
 			};
 		}
 		else

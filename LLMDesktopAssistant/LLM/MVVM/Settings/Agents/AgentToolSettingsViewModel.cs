@@ -213,14 +213,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		private readonly IToolsetBuildingService _toolsetBuildingService;
 		public AgentToolSettings ToolSettings { get; }
 
-		private AvaloniaList<ToolCategoryViewModel> _toolCategories = [];
+		private RangeObservableCollection<ToolCategoryViewModel> _toolCategories = [];
 		public ICollection<ToolCategoryViewModel> ToolCategories
 		{
 			get => _toolCategories;
 			set
 			{
-				_toolCategories.Clear();
-				_toolCategories.AddRange(value);
+				_toolCategories.Reset(value);
 				RaisePropertyChanged(nameof(ToolCategories));
 			}
 		}

@@ -2,16 +2,8 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
-	public class AgentExecutionSequentialStage : AgentExecutionStage
+	public class SequentialAgentExecutionStage : AgentExecutionStage
 	{
-		private RangeObservableCollection<AgentInstance> _agentInstances = [];
-		public RangeObservableCollection<AgentInstance> AgentInstances
-		{
-			get => _agentInstances;
-			set => _agentInstances.Reset(value);
-		}
-		public override IReadOnlyList<AgentInstance> Children => AgentInstances;
-
 		public override Task<Guid?> GetNextAgentAsync(AgentPreExecutionContext context,
 			CancellationToken cancellationToken = default)
 		{

@@ -1251,12 +1251,16 @@
   <data name="exposure_identify_self_as_user_hint" xml:space="preserve">
     <value>When enabled, this agent identifies itself as a user to other agents. Tool calls and reasoning become inaccessible regardless of other flags.</value>
   </data>
-
   <data name="prompt_behavior_sliders" xml:space="preserve">
     <value>Behavior sliders</value>
   </data>
   <data name="prompt_behavior_sliders_hint" xml:space="preserve">
     <value>Adjust behavior sliders to control the assistant's tone, style, and personality</value>
   </data>
-
+  <data name="perm_other_agent_content" xml:space="preserve">
+    <value>Other agent main content</value>
+  </data>
+  <data name="perm_other_agent_content_hint" xml:space="preserve">
+    <value>Agent can read main message's content from other agents.</value>
+  </data>
 </root>

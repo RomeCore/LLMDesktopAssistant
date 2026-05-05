@@ -99,7 +99,7 @@ namespace LLMDesktopAssistant
 		/// <param name="propertyName">The name of the property that has changed.</param>
 		/// <param name="oldValue">The old value of the property.</param>
 		/// <param name="newValue">The new value of the property.</param>
-		protected void RaisePropertyChanged(string? propertyName, object? oldValue = null, object? newValue = null)
+		protected void RaisePropertyChanged([CallerMemberName] string? propertyName = null, object? oldValue = null, object? newValue = null)
 		{
 			OnPropertyChanged(propertyName, oldValue, newValue);
 			if (propertyName != null)

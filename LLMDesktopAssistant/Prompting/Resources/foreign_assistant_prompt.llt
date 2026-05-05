@@ -11,8 +11,11 @@
 		[REASONING]:
 		@reasoning_content
 	}
-	[CONTENT]:
-	@content
+	@if can_read_content
+	{
+		[CONTENT]:
+		@content
+	}
 	@if tool_calls
 	{
 		@if can_read_tool_calls

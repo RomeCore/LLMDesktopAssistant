@@ -36,7 +36,6 @@ public class SequentialStageAgentViewModel : StageAgentItemViewModelBase
 /// </summary>
 public class RandomStageAgentViewModel : StageAgentItemViewModelBase
 {
-	public required WeightedAgentInstance WeightedInstance { get; init; }
 	public IRelayCommand RemoveCommand { get; }
 
 	public RandomStageAgentViewModel(

@@ -13,8 +13,8 @@ public static class StageViewModelFactory
 	{
 		return stage switch
 		{
-			AgentExecutionSequentialStage sequential => new SequentialStageViewModel(sequential, agentManager),
-			AgentExecutionRandomStage random => new RandomStageViewModel(random, agentManager),
+			SequentialAgentExecutionStage sequential => new SequentialStageViewModel(sequential, agentManager),
+			RandomAgentExecutionStage random => new RandomStageViewModel(random, agentManager),
 			_ => throw new ArgumentException($"Unknown stage type: {stage.GetType()}")
 		};
 	}

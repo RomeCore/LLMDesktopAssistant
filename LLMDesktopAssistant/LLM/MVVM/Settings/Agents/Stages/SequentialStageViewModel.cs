@@ -13,13 +13,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages;
 public class SequentialStageViewModel : StageViewModelBase
 {
 	public override AgentExecutionStage ModelStage { get; }
-	public AgentExecutionSequentialStage SequentialStage => (AgentExecutionSequentialStage)ModelStage;
+	public SequentialAgentExecutionStage SequentialStage => (SequentialAgentExecutionStage)ModelStage;
 
 	public RangeObservableCollection<SequentialStageAgentViewModel> Agents { get; } = [];
 
 	public IRelayCommand AddAgentCommand { get; }
 
-	public SequentialStageViewModel(AgentExecutionSequentialStage stage, IAgentManagementService agentManager) : base(agentManager)
+	public SequentialStageViewModel(SequentialAgentExecutionStage stage, IAgentManagementService agentManager) : base(agentManager)
 	{
 		ModelStage = stage;
 

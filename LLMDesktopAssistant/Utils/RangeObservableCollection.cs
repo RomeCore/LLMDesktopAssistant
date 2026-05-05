@@ -568,7 +568,9 @@ namespace LLMDesktopAssistant.Utils
 		}
 		int IList.IndexOf(object? value)
 		{
-			return IndexOf((T)value!);
+			if (value is T _value)
+				return IndexOf(_value);
+			return IndexOf(default!);
 		}
 
 		/// <summary>
@@ -598,7 +600,9 @@ namespace LLMDesktopAssistant.Utils
 		}
 		bool IList.Contains(object? value)
 		{
-			return Contains((T)value!);
+			if (value is T _value)
+				return Contains(_value);
+			return Contains(default!);
 		}
 
 		/// <summary>

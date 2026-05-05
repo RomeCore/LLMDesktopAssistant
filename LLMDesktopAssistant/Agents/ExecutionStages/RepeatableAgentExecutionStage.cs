@@ -1,18 +1,8 @@
-using LLMDesktopAssistant.Utils;
-
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
-	public class AgentExecutionRandomStage : AgentExecutionStage
+	public abstract class RepeatableAgentExecutionStage : AgentExecutionStage
 	{
 		private readonly Random _random = new();
-
-		private RangeObservableCollection<WeightedAgentInstance> _agentInstances = [];
-		public RangeObservableCollection<WeightedAgentInstance> AgentInstances
-		{
-			get => _agentInstances;
-			set => _agentInstances.Reset(value);
-		}
-		public override IReadOnlyList<AgentInstance> Children => AgentInstances;
 
 		private bool _canAgentsExecuteAgain = true;
 		/// <summary>
@@ -54,6 +44,9 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			set => SetProperty(ref _stopChance, value);
 		}
 
+		protected abstract Task<Guid?> SelectNextAgentAsync(List<AgentInstance> selectFrom,
+			AgentPreExecutionContext context, CancellationToken cancellationToken = default);
+
 		public override Task<Guid?> GetNextAgentAsync(AgentPreExecutionContext context,
 			CancellationToken cancellationToken = default)
 		{
@@ -73,18 +66,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			if (instancesList.Count == 0)
 				return Task.FromResult<Guid?>(null);
 
-			double weightSum = instancesList.Sum(a => a.Weight);
-			double randomValue = _random.NextDouble() * weightSum;
-			double currentWeight = 0;
-
-			foreach (var agent in instancesList)
-			{
-				currentWeight += agent.Weight;
-				if (currentWeight >= randomValue)
-					return Task.FromResult<Guid?>(agent.AgentId);
-			}
-
-			return Task.FromResult<Guid?>(null);
+			return SelectNextAgentAsync(instancesList, context, cancellationToken);
 		}
 	}
 }

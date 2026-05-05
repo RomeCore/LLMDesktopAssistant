@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.Agents
 	/// Each slider has a unique identifier and an integer value.
 	/// Value 0 represents the default (no modification to prompt).
 	/// </summary>
-	public class BehaviorSliderValue : ObservableObject
+	public class BehaviorSliderValue : NotifyPropertyChanged
 	{
 		private Guid _sliderId;
 		/// <summary>

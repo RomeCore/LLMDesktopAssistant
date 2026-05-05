@@ -16,10 +16,14 @@
 			<TextBlock Text="{loc:Loc settings-chat_model_hint}"
 					   Margin="0,15,0,2"/>
 			<ctrl:LLModelSelectorControl SelectedModel="{Binding ModelSettings.ChatModel, Mode=TwoWay}"/>
-
-			<TextBlock Text="{loc:Loc settings-agentic_model_hint}"
+			
+			<TextBlock Text="{loc:Loc settings-agentic_router_model_hint}"
 					   Margin="0,15,0,2"/>
-			<ctrl:LLModelSelectorControl SelectedModel="{Binding ModelSettings.AgenticModel, Mode=TwoWay}"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding ModelSettings.AgenticRouterModel, Mode=TwoWay}"/>
+			
+			<TextBlock Text="{loc:Loc settings-agentic_tools_model_hint}"
+					   Margin="0,15,0,2"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding ModelSettings.AgenticToolsModel, Mode=TwoWay}"/>
 			
 			<TextBlock Text="{loc:Loc settings-vision_model_hint}"
 					   Margin="0,15,0,2"/>

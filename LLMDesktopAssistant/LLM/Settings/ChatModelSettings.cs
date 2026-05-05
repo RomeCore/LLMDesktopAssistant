@@ -1,4 +1,6 @@
 ﻿using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Tools.Implementations;
+using LLMDesktopAssistant.Agents.ExecutionStages;
 using RCLargeLanguageModels.Clients;
 
 namespace LLMDesktopAssistant.LLM.Settings
@@ -18,14 +20,24 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _chatModel, value);
 		}
 
-		private LLModelDescriptorTracked _agenticModel = LLModelDescriptorTracked.Empty;
+		private LLModelDescriptorTracked _agenticToolsModel = LLModelDescriptorTracked.Empty;
 		/// <summary>
-		/// The model to use for agentic tasks.
+		/// The model to use for <see cref="AgenticToolModule"/>.
 		/// </summary>
-		public LLModelDescriptorTracked AgenticModel
+		public LLModelDescriptorTracked AgenticToolsModel
 		{
-			get => _agenticModel;
-			set => SetProperty(ref _agenticModel, value);
+			get => _agenticToolsModel;
+			set => SetProperty(ref _agenticToolsModel, value);
+		}
+
+		private LLModelDescriptorTracked _routerModel = LLModelDescriptorTracked.Empty;
+		/// <summary>
+		/// The model to use for agentic routing in the <see cref="AdaptiveAgentExecutionStage"/>.
+		/// </summary>
+		public LLModelDescriptorTracked AgenticRouterModel
+		{
+			get => _routerModel;
+			set => SetProperty(ref _routerModel, value);
 		}
 
 		private LLModelDescriptorTracked _visionModel = LLModelDescriptorTracked.Empty;

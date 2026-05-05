@@ -101,6 +101,7 @@ namespace LLMDesktopAssistant.Agents
 			get => _specializationId;
 			set => SetProperty(ref _specializationId, value);
 		}
+
 		private readonly RangeObservableCollection<BehaviorSliderValue> _sliderValues = [];
 		/// <summary>
 		/// The collection of behavior slider values for this agent.
@@ -111,6 +112,5 @@ namespace LLMDesktopAssistant.Agents
 			get => _sliderValues;
 			set => _sliderValues.Reset(value);
 		}
-
 	}
 }

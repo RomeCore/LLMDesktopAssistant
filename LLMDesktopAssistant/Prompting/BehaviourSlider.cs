@@ -5,27 +5,10 @@ using System.Text.Json.Serialization;
 
 namespace LLMDesktopAssistant.Prompting
 {
-	public class BehaviourSlider : NotifyPropertyChanged
+	public class BehaviourSlider : PromptBase
 	{
-		private Guid _id = Guid.NewGuid();
-		/// <summary>
-		/// Unique identifier for this slider.
-		/// </summary>
-		public Guid Id
-		{
-			get => _id;
-			set => SetProperty(ref _id, value);
-		}
-
 		[JsonIgnore]
-		public bool IsBuiltin => PromptRegistry.BuiltinSliders.ContainsKey(Id);
-
-		private string _name = string.Empty;
-		public string Name
-		{
-			get => _name;
-			set => SetProperty(ref _name, value);
-		}
+		public override bool IsBuiltin => PromptRegistry.BuiltinSliders.ContainsKey(Id);
 
 		private int _minimumValue = 0;
 		public int MinimumValue
@@ -53,13 +36,6 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			get => _titles;
 			set => SetProperty(ref _titles, value);
-		}
-
-		private SerializableTextTemplate _template = SerializableTextTemplate.Empty;
-		public SerializableTextTemplate Template
-		{
-			get => _template;
-			set => SetProperty(ref _template, value);
 		}
 	}
 }

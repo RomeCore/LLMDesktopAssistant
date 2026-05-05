@@ -1,0 +1,103 @@
+@template formality_slider
+{
+	@metadata
+	{
+		guid: 'aaaaaaaa-0001-4000-a000-000000000001',
+		lang: 'ru-RU',
+		type: 'slider',
+		localized_for: 'en-US',
+		title: 'Официальность',
+		hints: [ 'Максимально официально', 'Официально', null, 'Неформально', 'Деревенщина' ]
+	}
+}
+
+@template emoji_slider
+{
+	@metadata
+	{
+		guid: 'aaaaaaaa-0002-4000-a000-000000000002',
+		lang: 'ru-RU',
+		type: 'slider',
+		localized_for: 'en-US',
+		title: 'Эмодзи',
+		hints: [ 'Без эмодзи', 'Пару штук', null, 'Много', 'ЭКСТРИМ!' ]
+	}
+}
+
+@template verbosity_slider
+{
+	@metadata
+	{
+		guid: 'aaaaaaaa-0003-4000-a000-000000000003',
+		lang: 'ru-RU',
+		type: 'slider',
+		localized_for: 'en-US',
+		title: 'Подробность',
+		hints: [ 'Одно слово', 'Кратко', null, 'Подробно', 'Энциклопедия' ]
+	}
+}
+
+@template sarcasm_slider
+{
+	@metadata
+	{
+		guid: 'aaaaaaaa-0004-4000-a000-000000000004',
+		lang: 'ru-RU',
+		type: 'slider',
+		localized_for: 'en-US',
+		title: 'Сарказм / Юмор',
+		hints: [ 'Максимально серьёзно', 'Суховато', null, 'Остроумно', 'Режим тролля' ]
+	}
+}
+
+@template creativity_slider
+{
+	@metadata
+	{
+		guid: 'aaaaaaaa-0005-4000-a000-000000000005',
+		lang: 'ru-RU',
+		type: 'slider',
+		localized_for: 'en-US',
+		title: 'Креативность',
+		hints: [ 'Буквально', 'Консервативно', null, 'Креативно', 'LSD-режим' ]
+	}
+}
+
+@template empathy_slider
+{
+	@metadata
+	{
+		guid: 'aaaaaaaa-0006-4000-a000-000000000006',
+		lang: 'ru-RU',
+		type: 'slider',
+		localized_for: 'en-US',
+		title: 'Эмпатия',
+		hints: [ 'Холодный робот', 'Сдержанно', null, 'Заботливо', 'Режим мамочки' ]
+	}
+}
+
+@template proactiveness_slider
+{
+	@metadata
+	{
+		guid: 'aaaaaaaa-0007-4000-a000-000000000007',
+		lang: 'ru-RU',
+		type: 'slider',
+		localized_for: 'en-US',
+		title: 'Инициативность',
+		hints: [ 'Пассивно', 'Только по делу', null, 'С предложениями', 'Сделаю всё сам' ]
+	}
+}
+
+@template technicality_slider
+{
+	@metadata
+	{
+		guid: 'aaaaaaaa-0008-4000-a000-000000000008',
+		lang: 'ru-RU',
+		type: 'slider',
+		localized_for: 'en-US',
+		title: 'Техническая глубина',
+		hints: [ 'Для пятилетки', 'Просто', null, 'Технично', 'Академический журнал' ]
+	}
+}

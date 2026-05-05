@@ -90,7 +90,7 @@
 							  MinWidth="200">
 
 						<ComboBox.ItemTemplate>
-							<DataTemplate x:DataType="local:PersonaItemViewModel">
+							<DataTemplate>
 								<TextBlock Text="{Binding Persona.Name}"/>
 							</DataTemplate>
 						</ComboBox.ItemTemplate>
@@ -165,7 +165,7 @@
 							  MinWidth="200">
 
 						<ComboBox.ItemTemplate>
-							<DataTemplate x:DataType="local:SpecializationItemViewModel">
+							<DataTemplate>
 								<TextBlock Text="{Binding Specialization.Name}"/>
 							</DataTemplate>
 						</ComboBox.ItemTemplate>
@@ -194,7 +194,7 @@
 					   Opacity="0.2"
 					   Margin="0,5"/>
 
-			<!-- ===================== Behavior Sliders ===================== -->
+			<!-- Behavior Sliders -->
 			<TextBlock Text="{loc:Loc prompt_behavior_sliders}"
 					   FontWeight="Bold"
 					   FontSize="{DynamicResource FontSizeL}"
@@ -206,48 +206,47 @@
 
 			<ItemsControl ItemsSource="{Binding SliderItems}">
 				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="local:BehaviorSliderItemViewModel">
+					<DataTemplate>
 						<StackPanel Margin="0,6">
+
 							<TextBlock Text="{Binding DisplayName}"
-									   FontWeight="Medium"
-									   FontSize="13"
-									   Margin="0,0,0,2"/>
+												 FontWeight="Medium"
+												 FontSize="{DynamicResource FontSizeM}"
+												 Margin="0,0,0,4"/>
+							
+							<ItemsControl x:Name="HintItemsControl"
+														SizeChanged="HintItemsControl_SizeChanged"
+														Margin="10,0"
+														ItemsSource="{Binding Hints}">
+								
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<UniformGrid Columns="{Binding Range}"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
 
-							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto"/>
-									<ColumnDefinition Width="*"/>
-									<ColumnDefinition Width="Auto"/>
-								</Grid.ColumnDefinitions>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate x:DataType="local:BehaviorSliderHintViewModel">
+										<TextBlock Text="{Binding Label}"
+															 Opacity="0.6"
+															 TextAlignment="Center"
+															 VerticalAlignment="Bottom"
+															 HorizontalAlignment="Center"
+															 Grid.Column="{Binding Column}"/>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
 
-								<!-- Current hint label on the left -->
-								<TextBlock Grid.Column="0"
-										   Text="{Binding Hints[0]}"
-										   Opacity="0.5"
-										   FontSize="11"
-										   VerticalAlignment="Center"
-										   MinWidth="80"
-										   TextTrimming="CharacterEllipsis"/>
+							</ItemsControl>
+							
+							<!-- Slider -->
+							<Slider x:Name="BehaviorSlider"
+											Value="{Binding Value, Mode=TwoWay}"
+											Minimum="{Binding MinValue}"
+											Maximum="{Binding MaxValue}"
+											TickFrequency="1"
+											IsSnapToTickEnabled="True"
+											TickPlacement="TopLeft"/>
 
-								<!-- Slider -->
-								<Slider Grid.Column="1"
-										Value="{Binding Value, Mode=TwoWay}"
-										Minimum="{Binding MinValue}"
-										Maximum="{Binding MaxValue}"
-										TickFrequency="1"
-										IsSnapToTickEnabled="True"
-										Margin="8,0"/>
-
-								<!-- Current hint label on the right -->
-								<TextBlock Grid.Column="2"
-										   Text="{Binding Hints[4]}"
-										   Opacity="0.5"
-										   FontSize="11"
-										   VerticalAlignment="Center"
-										   MinWidth="80"
-										   TextTrimming="CharacterEllipsis"
-										   TextAlignment="Right"/>
-							</Grid>
 						</StackPanel>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
@@ -255,10 +254,9 @@
 
 			<!-- Separator -->
 			<Rectangle Height="1"
-					   Fill="{DynamicResource DefaultForeground}"
-					   Opacity="0.2"
-					   Margin="0,5"/>
-
+								 Fill="{DynamicResource DefaultForeground}"
+							   Opacity="0.2"
+							   Margin="0,5"/>
 
 			<!-- Components -->
 			<TextBlock Text="{loc:Loc prompt_components}"

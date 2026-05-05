@@ -67,7 +67,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 
 		private void AddStage()
 		{
-			var stage = new AgentExecutionSequentialStage
+			var stage = new SequentialAgentExecutionStage
 			{
 				Id = Guid.NewGuid(),
 				Enabled = true

@@ -43,7 +43,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			// Add default sequential execution stage if none exist
 			if (ExecutionStages.Count == 0)
 			{
-				var sequentialStage = new AgentExecutionSequentialStage();
+				var sequentialStage = new SequentialAgentExecutionStage();
 				sequentialStage.AgentInstances.Add(new AgentInstance
 				{
 					AgentId = ChatAgents[0].Id,

@@ -13,13 +13,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages;
 public class RandomStageViewModel : StageViewModelBase
 {
 	public override AgentExecutionStage ModelStage { get; }
-	public AgentExecutionRandomStage RandomStage => (AgentExecutionRandomStage)ModelStage;
+	public RandomAgentExecutionStage RandomStage => (RandomAgentExecutionStage)ModelStage;
 
 	public RangeObservableCollection<RandomStageAgentViewModel> Agents { get; } = [];
 
 	public IRelayCommand AddAgentCommand { get; }
 
-	public RandomStageViewModel(AgentExecutionRandomStage stage, IAgentManagementService agentManager) : base(agentManager)
+	public RandomStageViewModel(RandomAgentExecutionStage stage, IAgentManagementService agentManager) : base(agentManager)
 	{
 		ModelStage = stage;
 
@@ -34,8 +34,7 @@ public class RandomStageViewModel : StageViewModelBase
 			Agents.Add(new RandomStageAgentViewModel(vm => RemoveAgent(vm))
 			{
 				Agent = agent,
-				Instance = instance,
-				WeightedInstance = instance
+				Instance = instance
 			});
 		}
 	}
@@ -54,7 +53,7 @@ public class RandomStageViewModel : StageViewModelBase
 		if (available == null || available.Count == 0) return;
 
 		var agent = available[0];
-		var instance = new WeightedAgentInstance
+		var instance = new AgentInstance
 		{
 			AgentId = agent.Id,
 			Enabled = true,
@@ -65,8 +64,7 @@ public class RandomStageViewModel : StageViewModelBase
 		Agents.Add(new RandomStageAgentViewModel(vm => RemoveAgent(vm))
 		{
 			Agent = agent,
-			Instance = instance,
-			WeightedInstance = instance
+			Instance = instance
 		});
 	}
 

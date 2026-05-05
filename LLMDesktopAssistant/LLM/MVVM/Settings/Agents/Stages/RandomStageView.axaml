@@ -77,7 +77,7 @@
 
 							<!-- Weight -->
 							<NumericUpDown Grid.Column="2"
-										   Value="{Binding WeightedInstance.Weight}"
+										   Value="{Binding Instance.Weight}"
 										   Minimum="0"
 										   Increment="0.1"
 										   Width="120"

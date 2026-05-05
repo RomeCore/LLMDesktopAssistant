@@ -99,7 +99,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			// Also remove from all execution stages
 			foreach (var stage in AgentSettings.ExecutionStages)
 			{
-				if (stage is AgentExecutionSequentialStage seq)
+				if (stage is SequentialAgentExecutionStage seq)
 				{
 					for (int i = seq.AgentInstances.Count - 1; i >= 0; i--)
 					{
@@ -107,7 +107,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 							seq.AgentInstances.RemoveAt(i);
 					}
 				}
-				else if (stage is AgentExecutionRandomStage rnd)
+				else if (stage is RandomAgentExecutionStage rnd)
 				{
 					for (int i = rnd.AgentInstances.Count - 1; i >= 0; i--)
 					{

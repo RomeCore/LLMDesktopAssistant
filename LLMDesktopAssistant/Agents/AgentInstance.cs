@@ -15,5 +15,12 @@ namespace LLMDesktopAssistant.Agents
 			get => _enabled;
 			set => SetProperty(ref _enabled, value);
 		}
+
+		private double _weight = 1.0;
+		public double Weight
+		{
+			get => _weight;
+			set => SetProperty(ref _weight, value);
+		}
 	}
 }

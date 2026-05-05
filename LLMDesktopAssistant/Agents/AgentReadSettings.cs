@@ -12,6 +12,7 @@ namespace LLMDesktopAssistant.Agents
 			AgentReadPermissions.UserAttachments |
 			AgentReadPermissions.OwnMessages |
 			AgentReadPermissions.OtherAgentMessages |
+			AgentReadPermissions.OtherAgentContent |
 			AgentReadPermissions.OtherAgentToolCalls |
 			AgentReadPermissions.OtherAgentAttachments |
 			AgentReadPermissions.MessagesWithToolCalls;

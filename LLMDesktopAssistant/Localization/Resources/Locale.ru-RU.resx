@@ -1134,8 +1134,8 @@
   <data name="forms_canceled" xml:space="preserve">
     <value>Отменено</value>
   </data>
-	<data name="message_summary" xml:space="preserve">
-  <value>Сводка</value>
+  <data name="message_summary" xml:space="preserve">
+    <value>Сводка</value>
   </data>
   <data name="message_context_shield" xml:space="preserve">
     <value>Контекстный щит активирован</value>
@@ -1218,13 +1218,16 @@
   <data name="exposure_identify_self_as_user_hint" xml:space="preserve">
     <value>При включении этот агент представляется другим агентам как пользователь. Вызовы инструментов и рассуждения становятся недоступны независимо от других флагов.</value>
   </data>
-
   <data name="prompt_behavior_sliders" xml:space="preserve">
     <value>Слайдеры поведения</value>
   </data>
   <data name="prompt_behavior_sliders_hint" xml:space="preserve">
     <value>Настройте слайдеры, чтобы управлять тоном, стилем и личностью ассистента</value>
   </data>
-
-
+  <data name="perm_other_agent_content" xml:space="preserve">
+    <value>Основной контент других агентов</value>
+  </data>
+  <data name="perm_other_agent_content_hint" xml:space="preserve">
+    <value>Агент может читать основной контент сообщений от других агентов.</value>
+  </data>
 </root>
