@@ -84,7 +84,9 @@
 	@user message
 	{
 		@context
+		`````
 		[AGENTS]
+		`````
 		@foreach agent in agents
 		{
 			- @@@agent.name:

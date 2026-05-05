@@ -217,7 +217,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				var context = new
 				{
 					time_sent = message.CreatedAt.ToString(),
-					agent_name = agentName,
+					user_name = agentName,
 					attachments = Array.Empty<Attachment>(),
 
 					can_read_content =
@@ -236,7 +236,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				var context = new
 				{
 					time_sent = message.CreatedAt.ToString(),
-					user_name = agentName,
+					agent_name = agentName,
+					reasoning_content = message.ReasoningContent,
 					content = message.Content,
 					tool_calls = message.ToolCalls.Select(tc => new
 					{

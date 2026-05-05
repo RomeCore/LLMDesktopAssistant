@@ -6,29 +6,29 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages;
 
-[ViewModelFor(typeof(RandomStageView))]
-public class RandomStageViewModel : StageViewModelBase
+[ViewModelFor(typeof(MentionOnlyStageView))]
+public class MentionOnlyStageViewModel : StageViewModelBase
 {
 	public override AgentExecutionStage ModelStage { get; }
-	public RandomAgentExecutionStage RandomStage => (RandomAgentExecutionStage)ModelStage;
+	public MentionOnlyAgentExecutionStage MentionStage => (MentionOnlyAgentExecutionStage)ModelStage;
 
-	public RangeObservableCollection<RandomStageAgentViewModel> Agents { get; } = [];
+	public RangeObservableCollection<MentionStageAgentViewModel> Agents { get; } = [];
 
 	public IRelayCommand AddAgentCommand { get; }
 
-	public RandomStageViewModel(RandomAgentExecutionStage stage, IAgentManagementService agentManager) : base(agentManager)
+	public MentionOnlyStageViewModel(MentionOnlyAgentExecutionStage stage, IAgentManagementService agentManager) : base(agentManager)
 	{
 		ModelStage = stage;
 
 		AddAgentCommand = new RelayCommand(AddAgent);
 
 		Agents.Clear();
-		foreach (var instance in RandomStage.AgentInstances)
+		foreach (var instance in MentionStage.AgentInstances)
 		{
 			var agent = FindAgentDescriptor(instance.AgentId);
 			if (agent == null) continue;
 
-			Agents.Add(new RandomStageAgentViewModel(vm => RemoveAgent(vm))
+			Agents.Add(new MentionStageAgentViewModel(vm => RemoveAgent(vm))
 			{
 				Agent = agent,
 				Instance = instance
@@ -44,7 +44,7 @@ public class RandomStageViewModel : StageViewModelBase
 	private void AddAgent()
 	{
 		var available = AgentManager.ListAgents().Select(a => a.Agent)
-			.Where(a => !RandomStage.AgentInstances.Any(ai => ai.AgentId == a.Id))
+			.Where(a => !MentionStage.AgentInstances.Any(ai => ai.AgentId == a.Id))
 			.ToList();
 
 		if (available == null || available.Count == 0) return;
@@ -53,24 +53,23 @@ public class RandomStageViewModel : StageViewModelBase
 		var instance = new AgentInstance
 		{
 			AgentId = agent.Id,
-			Enabled = true,
-			Weight = 1.0
+			Enabled = true
 		};
-		RandomStage.AgentInstances.Add(instance);
+		MentionStage.AgentInstances.Add(instance);
 
-		Agents.Add(new RandomStageAgentViewModel(vm => RemoveAgent(vm))
+		Agents.Add(new MentionStageAgentViewModel(vm => RemoveAgent(vm))
 		{
 			Agent = agent,
 			Instance = instance
 		});
 	}
 
-	private void RemoveAgent(RandomStageAgentViewModel vm)
+	private void RemoveAgent(MentionStageAgentViewModel vm)
 	{
 		var idx = Agents.IndexOf(vm);
 		if (idx < 0) return;
 
 		Agents.RemoveAt(idx);
-		RandomStage.AgentInstances.RemoveAt(idx);
+		MentionStage.AgentInstances.RemoveAt(idx);
 	}
 }

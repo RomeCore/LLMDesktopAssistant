@@ -10,15 +10,6 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ChatExecutionStagesSettingsView"
 			 x:DataType="local:ChatExecutionStagesSettingsViewModel">
 
-	<UserControl.DataTemplates>
-		<DataTemplate DataType="stages:SequentialStageViewModel">
-			<stages:SequentialStageView/>
-		</DataTemplate>
-		<DataTemplate DataType="stages:RandomStageViewModel">
-			<stages:RandomStageView/>
-		</DataTemplate>
-	</UserControl.DataTemplates>
-
 	<DockPanel>
 		<!-- Toolbar -->
 		<Border DockPanel.Dock="Top"
@@ -50,8 +41,13 @@
 										Padding="0,0,0,6"
 										Margin="0,0,0,6">
 									<Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
+
+										<!-- Enabled checkbox -->
+										<CheckBox Grid.Column="0"
+															IsChecked="{Binding Stage.Enabled}"/>
+
 										<!-- Type selector -->
-										<ComboBox Grid.Column="0"
+										<ComboBox Grid.Column="1"
 												  ItemsSource="{Binding AvailableStageTypes}"
 												  SelectedItem="{Binding SelectedType}"
 												  Width="180"

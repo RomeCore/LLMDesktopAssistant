@@ -1230,4 +1230,20 @@
   <data name="perm_other_agent_content_hint" xml:space="preserve">
     <value>Агент может читать основной контент сообщений от других агентов.</value>
   </data>
+  <data name="stage_type_mention_only" xml:space="preserve">
+    <value>Только по упоминанию</value>
+  </data>
+  <data name="stage_type_adaptive" xml:space="preserve">
+    <value>Адаптивный (LLM выбирает)</value>
+  </data>
+  <data name="settings_stage_enable_mentions" xml:space="preserve">
+    <value>Включить @упоминания</value>
+  </data>
+  <data name="settings_stage_mentionable_agents" xml:space="preserve">
+    <value>Упоминаемые агенты</value>
+  </data>
+  <data name="settings_stage_adaptive_agents" xml:space="preserve">
+    <value>Пул агентов</value>
+  </data>
+
 </root>

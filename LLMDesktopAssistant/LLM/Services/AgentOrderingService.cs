@@ -12,7 +12,9 @@ namespace LLMDesktopAssistant.LLM.Services
 	{
 		public async Task<(Guid, Guid)?> GetNextAgentAsync(CancellationToken cancellationToken = default)
 		{
-			var stages = chat.Settings.Agents.ExecutionStages;
+			var stages = chat.Settings.Agents.ExecutionStages
+				.Where(s => s.Enabled)
+				.ToList();
 			if (stages.Count == 0)
 				return null;
 
@@ -50,8 +52,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			for (int i = targetStageIndex; i < stages.Count; i++)
 			{
 				var stage = stages[i];
-				if (!stage.Enabled)
-					continue;
 
 				var context = BuildContext(currentStageMessages, currentStageExecuted);
 				var nextAgentId = await stage.GetNextAgentAsync(context, cancellationToken);

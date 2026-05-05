@@ -1263,4 +1263,20 @@
   <data name="perm_other_agent_content_hint" xml:space="preserve">
     <value>Agent can read main message's content from other agents.</value>
   </data>
+  <data name="stage_type_mention_only" xml:space="preserve">
+    <value>Mention only</value>
+  </data>
+  <data name="stage_type_adaptive" xml:space="preserve">
+    <value>Adaptive (LLM selects)</value>
+  </data>
+  <data name="settings_stage_enable_mentions" xml:space="preserve">
+    <value>Enable @mentions</value>
+  </data>
+  <data name="settings_stage_mentionable_agents" xml:space="preserve">
+    <value>Mentionable agents</value>
+  </data>
+  <data name="settings_stage_adaptive_agents" xml:space="preserve">
+    <value>Agent pool</value>
+  </data>
+
 </root>

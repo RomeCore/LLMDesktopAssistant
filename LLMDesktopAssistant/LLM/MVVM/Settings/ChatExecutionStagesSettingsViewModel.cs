@@ -24,7 +24,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 		/// </summary>
 		public List<StageTypeOption> AvailableStageTypes { get; } =
 		[
-			StageTypeOption.Sequential, StageTypeOption.Random
+			StageTypeOption.Sequential,
+			StageTypeOption.Random,
+			StageTypeOption.MentionOnly,
+			StageTypeOption.Adaptive
 		];
 
 		public RangeObservableCollection<StageContainerViewModel> Stages { get; } = [];

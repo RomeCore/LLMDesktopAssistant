@@ -44,3 +44,18 @@ public class RandomStageAgentViewModel : StageAgentItemViewModelBase
 		RemoveCommand = new RelayCommand<RandomStageAgentViewModel>(_ => onRemove(this));
 	}
 }
+
+/// <summary>
+/// ViewModel for an agent inside a mention-only stage or adaptive stage.
+/// No weight, no ordering — just enabled/disabled with remove.
+/// </summary>
+public class MentionStageAgentViewModel : StageAgentItemViewModelBase
+{
+	public IRelayCommand RemoveCommand { get; }
+
+	public MentionStageAgentViewModel(
+		Action<MentionStageAgentViewModel> onRemove)
+	{
+		RemoveCommand = new RelayCommand<MentionStageAgentViewModel>(_ => onRemove(this));
+	}
+}

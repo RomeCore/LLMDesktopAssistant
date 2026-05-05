@@ -26,6 +26,18 @@ public sealed class StageTypeOption
 		Name = "stage_type_random",
 		StageType = typeof(RandomAgentExecutionStage)
 	};
+	public static StageTypeOption MentionOnly { get; } = new StageTypeOption
+	{
+		Name = "stage_type_mention_only",
+		StageType = typeof(MentionOnlyAgentExecutionStage)
+	};
+	public static StageTypeOption Adaptive { get; } = new StageTypeOption
+	{
+		Name = "stage_type_adaptive",
+		StageType = typeof(AdaptiveAgentExecutionStage)
+	};
+
+
 }
 
 /// <summary>
@@ -36,7 +48,13 @@ public sealed class StageTypeOption
 public class StageContainerViewModel : ViewModelBase
 {
 	private readonly ChatExecutionStagesSettingsViewModel _parent;
-	private AgentExecutionStage _modelStage;
+
+	private AgentExecutionStage _stage;
+	public AgentExecutionStage Stage
+	{
+		get => _stage;
+		set => SetProperty(ref _stage, value);
+	}
 
 	private StageViewModelBase _stageVM;
 	public StageViewModelBase StageVM
@@ -75,12 +93,14 @@ public class StageContainerViewModel : ViewModelBase
 		List<StageTypeOption> availableStageTypes)
 	{
 		_parent = parent;
-		_modelStage = stage;
-		_stageVM = StageViewModelFactory.CreateViewModel(_modelStage, _parent.AgentManager);
+		_stage = stage;
+		_stageVM = StageViewModelFactory.CreateViewModel(Stage, _parent.AgentManager);
 		_selectedType = stage switch
 		{
 			SequentialAgentExecutionStage => StageTypeOption.Sequential,
 			RandomAgentExecutionStage => StageTypeOption.Random,
+			MentionOnlyAgentExecutionStage => StageTypeOption.MentionOnly,
+			AdaptiveAgentExecutionStage => StageTypeOption.Adaptive,
 			_ => StageTypeOption.Sequential
 		};
 
@@ -106,7 +126,7 @@ public class StageContainerViewModel : ViewModelBase
 		var idx = _parent.Stages.IndexOf(this);
 		if (idx < 0) return;
 
-		var json = JsonSerializer.Serialize(_modelStage);
+		var json = JsonSerializer.Serialize(Stage);
 		var clone = JsonSerializer.Deserialize<AgentExecutionStage>(json);
 		if (clone == null) return;
 
@@ -129,25 +149,60 @@ public class StageContainerViewModel : ViewModelBase
 
 	private void OnTypeChanged()
 	{
-		var prevStage = _modelStage;
+		var prevStage = Stage;
+		var prevRepeatable = prevStage as RepeatableAgentExecutionStage;
+		var prevMentionable = prevStage as MentionableAgentExecutionStage;
 		var prevIndex = _parent.AgentSettings.ExecutionStages.IndexOf(prevStage);
 
 		if (SelectedType.StageType == typeof(SequentialAgentExecutionStage))
 		{
-			_modelStage = new SequentialAgentExecutionStage
+			Stage = new SequentialAgentExecutionStage
 			{
-				Id = _modelStage.Id,
-				Enabled = _modelStage.Enabled,
-				AgentInstances = _modelStage.AgentInstances
+				Id = Stage.Id,
+				Enabled = Stage.Enabled,
+				AgentInstances = Stage.AgentInstances
 			};
 		}
 		else if (SelectedType.StageType == typeof(RandomAgentExecutionStage))
 		{
-			_modelStage = new RandomAgentExecutionStage
+			Stage = new RandomAgentExecutionStage
 			{
-				Id = _modelStage.Id,
-				Enabled = _modelStage.Enabled,
-				AgentInstances = _modelStage.AgentInstances
+				Id = Stage.Id,
+				Enabled = Stage.Enabled,
+				AgentInstances = Stage.AgentInstances,
+				EnableMentions = prevMentionable?.EnableMentions ?? true,
+				CanAgentsExecuteAgain = prevRepeatable?.CanAgentsExecuteAgain ?? false,
+				MinIterations = prevRepeatable?.MinIterations ?? -1,
+				MaxIterations = prevRepeatable?.MaxIterations ?? -1,
+				StopChance = prevRepeatable?.StopChance ?? 0.0,
+			};
+		}
+		else if (SelectedType.StageType == typeof(MentionOnlyAgentExecutionStage))
+		{
+			Stage = new MentionOnlyAgentExecutionStage
+			{
+				Id = Stage.Id,
+				Enabled = Stage.Enabled,
+				AgentInstances = Stage.AgentInstances,
+				EnableMentions = prevMentionable?.EnableMentions ?? true,
+				CanAgentsExecuteAgain = prevRepeatable?.CanAgentsExecuteAgain ?? false,
+				MinIterations = prevRepeatable?.MinIterations ?? -1,
+				MaxIterations = prevRepeatable?.MaxIterations ?? -1,
+				StopChance = prevRepeatable?.StopChance ?? 0.0,
+			};
+		}
+		else if (SelectedType.StageType == typeof(AdaptiveAgentExecutionStage))
+		{
+			Stage = new AdaptiveAgentExecutionStage
+			{
+				Id = Stage.Id,
+				Enabled = Stage.Enabled,
+				AgentInstances = Stage.AgentInstances,
+				EnableMentions = prevMentionable?.EnableMentions ?? true,
+				CanAgentsExecuteAgain = prevRepeatable?.CanAgentsExecuteAgain ?? false,
+				MinIterations = prevRepeatable?.MinIterations ?? -1,
+				MaxIterations = prevRepeatable?.MaxIterations ?? -1,
+				StopChance = prevRepeatable?.StopChance ?? 0.0,
 			};
 		}
 		else
@@ -156,8 +211,8 @@ public class StageContainerViewModel : ViewModelBase
 		}
 
 		if (prevIndex != -1)
-			_parent.AgentSettings.ExecutionStages[prevIndex] = _modelStage;
+			_parent.AgentSettings.ExecutionStages[prevIndex] = Stage;
 
-		StageVM = StageViewModelFactory.CreateViewModel(_modelStage, _parent.AgentManager);
+		StageVM = StageViewModelFactory.CreateViewModel(Stage, _parent.AgentManager);
 	}
 }

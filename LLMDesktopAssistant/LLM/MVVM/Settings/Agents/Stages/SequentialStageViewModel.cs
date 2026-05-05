@@ -6,10 +6,7 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages;
 
-/// <summary>
-/// ViewModel for a sequential execution stage.
-/// Agents are executed one after another in order.
-/// </summary>
+[ViewModelFor(typeof(SequentialStageView))]
 public class SequentialStageViewModel : StageViewModelBase
 {
 	public override AgentExecutionStage ModelStage { get; }
