@@ -946,10 +946,10 @@
     <value>Введите имя агента...</value>
   </data>
   <data name="agent_info_profile_image" xml:space="preserve">
-    <value>Аватарка</value>
+    <value>Изображение профиля</value>
   </data>
   <data name="agent_info_profile_image_hint" xml:space="preserve">
-    <value>Выберите изображение для аватарки агента. Будет автоматически обрезано до 128x128.</value>
+    <value>Выберите изображение для профиля агента. Будет автоматически обрезано до 128x128.</value>
   </data>
   <data name="agent_info_clear_image" xml:space="preserve">
     <value>Удалить аватарку</value>
@@ -1259,5 +1259,59 @@
   </data>
   <data name="python-repl_reset" xml:space="preserve">
     <value>Сбросить контекст Python REPL</value>
+  </data>
+  <data name="chat_settings_users" xml:space="preserve">
+    <value>Пользователи</value>
+  </data>
+  <data name="user_login" xml:space="preserve">
+    <value>Логин</value>
+  </data>
+  <data name="user_login_hint" xml:space="preserve">
+    <value>Уникальный идентификатор пользователя</value>
+  </data>
+  <data name="user_name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="user_name_hint" xml:space="preserve">
+    <value>Отображаемое имя в разговорах и для агентов</value>
+  </data>
+  <data name="user_description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="user_description_hint" xml:space="preserve">
+    <value>Дополнительная информация о пользователе, которую агенты могут использовать для персонализации ответов</value>
+  </data>
+  <data name="user_profile_image" xml:space="preserve">
+    <value>Изображение профиля</value>
+  </data>
+  <data name="user_profile_image_hint" xml:space="preserve">
+    <value>Выберите изображение для профиля пользователя. Будет автоматически обрезано до 128x128.</value>
+  </data>
+  <data name="user_select_image" xml:space="preserve">
+    <value>Выбрать изображение...</value>
+  </data>
+  <data name="user_clear_image" xml:space="preserve">
+    <value>Очистить</value>
+  </data>
+  <data name="user_select_prompt" xml:space="preserve">
+    <value>Выберите пользователя из списка для редактирования</value>
+  </data>
+  <data name="user_select_image_title" xml:space="preserve">
+    <value>Выберите изображение профиля пользователя</value>
+  </data>
+  <data name="time-get" xml:space="preserve">
+    <value>Получить текущее время</value>
+  </data>
+  <data name="time-wait" xml:space="preserve">
+    <value>Подождать</value>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>Время</value>
+  </data>
+  <data name="time_wait_status" xml:space="preserve">
+    <value>Ждём... {0} осталось</value>
+  </data>
+  <data name="time_wait_completed" xml:space="preserve">
+    <value>Завершено ({0})</value>
   </data>
 </root>

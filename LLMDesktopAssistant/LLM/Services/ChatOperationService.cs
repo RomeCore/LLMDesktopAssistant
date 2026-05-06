@@ -56,8 +56,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				storage.AppendMessage(new UserMessage
 				{
 					Content = userInput.Content,
+					SenderLogin = userInput.SenderLogin,
 					Attachments = userInput.Attachments,
-					SenderLogin = "user",
 					Visibility = userInput.Visibility,
 					VisibleTo = userInput.VisibleTo,
 					IsVisibleToWhiteList = false
@@ -81,8 +81,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				storage.EditMessage(messageIndex, new UserMessage
 				{
 					Content = userInput.Content,
+					SenderLogin = userInput.SenderLogin,
 					Attachments = userInput.Attachments,
-					SenderLogin = "user",
 					Visibility = userInput.Visibility,
 					VisibleTo = userInput.VisibleTo,
 					IsVisibleToWhiteList = false

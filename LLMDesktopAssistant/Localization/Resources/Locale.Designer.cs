@@ -601,6 +601,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Users.
+        /// </summary>
+        public static string chat_settings_users {
+            get {
+                return ResourceManager.GetString("chat_settings_users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Stop generation.
         /// </summary>
         public static string chat_stop_button_hint {
@@ -3292,6 +3301,51 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Time.
+        /// </summary>
+        public static string time {
+            get {
+                return ResourceManager.GetString("time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Get current time.
+        /// </summary>
+        public static string time_get {
+            get {
+                return ResourceManager.GetString("time-get", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Wait.
+        /// </summary>
+        public static string time_wait {
+            get {
+                return ResourceManager.GetString("time-wait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Completed ({0}).
+        /// </summary>
+        public static string time_wait_completed {
+            get {
+                return ResourceManager.GetString("time_wait_completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Waiting... {0} remaining.
+        /// </summary>
+        public static string time_wait_status {
+            get {
+                return ResourceManager.GetString("time_wait_status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Niggalink AI.
         /// </summary>
         public static string title {
@@ -3373,74 +3427,47 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на  Additional text: &quot;{0}&quot;..
+        ///   Ищет локализованную строку, похожую на Clear.
         /// </summary>
-        public static string user_additional_text {
+        public static string user_clear_image {
             get {
-                return ResourceManager.GetString("user_additional_text", resourceCulture);
+                return ResourceManager.GetString("user_clear_image", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на User cancelled file selection..
+        ///   Ищет локализованную строку, похожую на Description.
         /// </summary>
-        public static string user_cancelled_file_picker {
+        public static string user_description {
             get {
-                return ResourceManager.GetString("user_cancelled_file_picker", resourceCulture);
+                return ResourceManager.GetString("user_description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на User cancelled data input..
+        ///   Ищет локализованную строку, похожую на Additional information about the user that agents can use to personalize responses.
         /// </summary>
-        public static string user_cancelled_input {
+        public static string user_description_hint {
             get {
-                return ResourceManager.GetString("user_cancelled_input", resourceCulture);
+                return ResourceManager.GetString("user_description_hint", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на User cancelled the operation or the request was interrupted..
+        ///   Ищет локализованную строку, похожую на Login.
         /// </summary>
-        public static string user_cancelled_operation {
+        public static string user_login {
             get {
-                return ResourceManager.GetString("user_cancelled_operation", resourceCulture);
+                return ResourceManager.GetString("user_login", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на User cancelled the selection..
+        ///   Ищет локализованную строку, похожую на A unique identifier for the user account.
         /// </summary>
-        public static string user_cancelled_selection {
+        public static string user_login_hint {
             get {
-                return ResourceManager.GetString("user_cancelled_selection", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на User confirmed: &quot;{0}&quot;..
-        /// </summary>
-        public static string user_confirmed {
-            get {
-                return ResourceManager.GetString("user_confirmed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на User declined: &quot;{0}&quot;..
-        /// </summary>
-        public static string user_declined {
-            get {
-                return ResourceManager.GetString("user_declined", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на User entered data: {0}..
-        /// </summary>
-        public static string user_entered_data {
-            get {
-                return ResourceManager.GetString("user_entered_data", resourceCulture);
+                return ResourceManager.GetString("user_login_hint", resourceCulture);
             }
         }
         
@@ -3454,29 +3481,65 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на User did not select any files..
+        ///   Ищет локализованную строку, похожую на Name.
         /// </summary>
-        public static string user_no_files_selected {
+        public static string user_name {
             get {
-                return ResourceManager.GetString("user_no_files_selected", resourceCulture);
+                return ResourceManager.GetString("user_name", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на User selected: {0}..
+        ///   Ищет локализованную строку, похожую на The display name shown in conversations and for agents.
         /// </summary>
-        public static string user_selected {
+        public static string user_name_hint {
             get {
-                return ResourceManager.GetString("user_selected", resourceCulture);
+                return ResourceManager.GetString("user_name_hint", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на User selected files: {0}..
+        ///   Ищет локализованную строку, похожую на Profile Image.
         /// </summary>
-        public static string user_selected_files {
+        public static string user_profile_image {
             get {
-                return ResourceManager.GetString("user_selected_files", resourceCulture);
+                return ResourceManager.GetString("user_profile_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Upload a profile image for the user. PNG and JPG supported, will be resized to 128x128..
+        /// </summary>
+        public static string user_profile_image_hint {
+            get {
+                return ResourceManager.GetString("user_profile_image_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Choose Image....
+        /// </summary>
+        public static string user_select_image {
+            get {
+                return ResourceManager.GetString("user_select_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select user profile image.
+        /// </summary>
+        public static string user_select_image_title {
+            get {
+                return ResourceManager.GetString("user_select_image_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select a user from the list to edit.
+        /// </summary>
+        public static string user_select_prompt {
+            get {
+                return ResourceManager.GetString("user_select_prompt", resourceCulture);
             }
         }
         

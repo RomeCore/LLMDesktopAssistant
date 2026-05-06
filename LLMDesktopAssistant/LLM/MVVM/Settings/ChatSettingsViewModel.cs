@@ -87,6 +87,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ChatMCPSettingsViewModel McpSettings { get; }
 		public ChatSummarizationSettingsViewModel SummarizationSettings { get; }
 		public ChatAgentsSettingsViewModel AgentsSettings { get; }
+		public ChatUserSettingsViewModel UserSettings { get; }
+
 		public ChatExecutionStagesSettingsViewModel ExecutionStagesSettings { get; }
 
 		private int _generalSettingsCount;
@@ -110,6 +112,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 			ExecutionStagesSettings = new ChatExecutionStagesSettingsViewModel(settings.Agents, agentManager);
 			ModelSettings = new ChatModelSettingsViewModel(settings.Models);
 			SummarizationSettings = new ChatSummarizationSettingsViewModel(settings.Summarization);
+			UserSettings = new ChatUserSettingsViewModel(settings.Users.Users);
+
 			EnvironmentSettings = new ChatEnvironmentSettingsViewModel(settings.Environment);
 			McpSettings = new ChatMCPSettingsViewModel(settings.Mcp, chat.Services.GetRequiredService<IMCPManagementService>());
 
@@ -141,6 +145,11 @@ namespace LLMDesktopAssistant.LLM.Settings
 				SummarizationSettings));
 
 			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_users"),
+				MaterialIconKind.AccountCircle,
+				UserSettings));
+
+			SettingsTree.Add(
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_environment"),
 				MaterialIconKind.FolderSettings,
 				EnvironmentSettings));
@@ -150,7 +159,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				MaterialIconKind.Connection,
 				McpSettings));
 
-			_generalSettingsCount = 6; // Only the agents parent node
+			_generalSettingsCount = 7; // General nodes (agents, users, models, summarization, etc.)
 
 			RebuildAgents();
 		}

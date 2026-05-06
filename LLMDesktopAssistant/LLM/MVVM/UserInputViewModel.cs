@@ -10,6 +10,7 @@ using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using Serilog;
+using LLMDesktopAssistant.LLM.Services.Users;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -293,9 +294,13 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		{
 			if (IsEmpty())
 				return null;
+
+			var userManager = Chat.Services.GetRequiredService<IUserManagementService>();
+
 			return new UserInput
 			{
 				Content = _text,
+				SenderLogin = userManager.GetAllUsers().FirstOrDefault()?.Login ?? "user",
 				Attachments = _attachments.Select(a => a.Attachment).ToImmutableList(),
 				Visibility = _selectedVisibility.Visibility,
 			};

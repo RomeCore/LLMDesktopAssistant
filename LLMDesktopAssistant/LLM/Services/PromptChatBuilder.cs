@@ -2,6 +2,7 @@ using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLMDesktopAssistant.LLM.Services.Agents;
+using LLMDesktopAssistant.LLM.Services.Users;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLTSharp;
@@ -29,7 +30,8 @@ namespace LLMDesktopAssistant.LLM.Services
 	public class PromptChatBuilder(
 		Chat chat,
 		TemplateLibrary templates,
-		IAgentManagementService agentManager
+		IAgentManagementService agentManager,
+		IUserManagementService userManager
 		) : IPromptChatBuilder
 	{
 		private ToolResultStatus ConvertToolStatus(ToolStatus status)
@@ -99,7 +101,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
 			var context = new
 			{
-				user_name = message.SenderLogin,
+				user_name = userManager.FindByLogin(message.SenderLogin)?.Name ?? message.SenderLogin,
 				time_sent = message.CreatedAt.ToString(),
 				content = message.Content,
 				attachments = message.Attachments,
@@ -117,7 +119,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
 			var context = new
 			{
-				user_name = message.SenderLogin,
+				user_name = userManager.FindByLogin(message.SenderLogin)?.Name ?? message.SenderLogin,
 				time_sent = message.CreatedAt.ToString(),
 				content = message.Content,
 				attachments = message.Attachments,

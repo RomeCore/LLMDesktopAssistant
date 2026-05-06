@@ -13,6 +13,11 @@ namespace LLMDesktopAssistant.LLM.Domain
 		public required string Content { get; init; }
 
 		/// <summary>
+		/// Gets or sets the login name of the sender who provided the user input.
+		/// </summary>
+		public required string SenderLogin { get; init; }
+
+		/// <summary>
 		/// Gets or sets the collection of attachments associated with the user input. These can include images, files, or other types of data. If no attachments are present, this property is an empty collection.
 		/// </summary>
 		public ImmutableList<Attachment> Attachments { get; init; } = [];

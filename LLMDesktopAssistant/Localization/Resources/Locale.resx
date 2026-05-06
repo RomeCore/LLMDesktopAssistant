@@ -1095,39 +1095,6 @@
   <data name="forms_field_required" xml:space="preserve">
     <value>Field "{0}" is required.</value>
   </data>
-  <data name="user_confirmed" xml:space="preserve">
-    <value>User confirmed: "{0}".</value>
-  </data>
-  <data name="user_declined" xml:space="preserve">
-    <value>User declined: "{0}".</value>
-  </data>
-  <data name="user_cancelled_operation" xml:space="preserve">
-    <value>User cancelled the operation or the request was interrupted.</value>
-  </data>
-  <data name="user_cancelled_selection" xml:space="preserve">
-    <value>User cancelled the selection.</value>
-  </data>
-  <data name="user_cancelled_input" xml:space="preserve">
-    <value>User cancelled data input.</value>
-  </data>
-  <data name="user_cancelled_file_picker" xml:space="preserve">
-    <value>User cancelled file selection.</value>
-  </data>
-  <data name="user_no_files_selected" xml:space="preserve">
-    <value>User did not select any files.</value>
-  </data>
-  <data name="user_selected" xml:space="preserve">
-    <value>User selected: {0}.</value>
-  </data>
-  <data name="user_additional_text" xml:space="preserve">
-    <value> Additional text: "{0}".</value>
-  </data>
-  <data name="user_entered_data" xml:space="preserve">
-    <value>User entered data: {0}.</value>
-  </data>
-  <data name="user_selected_files" xml:space="preserve">
-    <value>User selected files: {0}.</value>
-  </data>
   <data name="forms-confirm" xml:space="preserve">
     <value>Confirm action</value>
   </data>
@@ -1292,5 +1259,59 @@
   </data>
   <data name="python-repl_reset" xml:space="preserve">
     <value>Reset Python REPL context</value>
+  </data>
+  <data name="chat_settings_users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="user_login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="user_login_hint" xml:space="preserve">
+    <value>A unique identifier for the user account</value>
+  </data>
+  <data name="user_name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="user_name_hint" xml:space="preserve">
+    <value>The display name shown in conversations and for agents</value>
+  </data>
+  <data name="user_description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="user_description_hint" xml:space="preserve">
+    <value>Additional information about the user that agents can use to personalize responses</value>
+  </data>
+  <data name="user_profile_image" xml:space="preserve">
+    <value>Profile Image</value>
+  </data>
+  <data name="user_profile_image_hint" xml:space="preserve">
+    <value>Upload a profile image for the user. PNG and JPG supported, will be resized to 128x128.</value>
+  </data>
+  <data name="user_select_image" xml:space="preserve">
+    <value>Choose Image...</value>
+  </data>
+  <data name="user_clear_image" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="user_select_prompt" xml:space="preserve">
+    <value>Select a user from the list to edit</value>
+  </data>
+  <data name="user_select_image_title" xml:space="preserve">
+    <value>Select user profile image</value>
+  </data>
+  <data name="time-get" xml:space="preserve">
+    <value>Get current time</value>
+  </data>
+  <data name="time-wait" xml:space="preserve">
+    <value>Wait</value>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="time_wait_status" xml:space="preserve">
+    <value>Waiting... {0} remaining</value>
+  </data>
+  <data name="time_wait_completed" xml:space="preserve">
+    <value>Completed ({0})</value>
   </data>
 </root>
