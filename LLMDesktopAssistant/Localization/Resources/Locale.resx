@@ -1284,4 +1284,13 @@
   <data name="settings-agentic_tools_model_hint" xml:space="preserve">
     <value>Agentic tools model</value>
   </data>
+  <data name="execute-python_repl" xml:space="preserve">
+    <value>Execute Python script using REPL</value>
+  </data>
+  <data name="python-repl_get_var" xml:space="preserve">
+    <value>Get Python REPL variable</value>
+  </data>
+  <data name="python-repl_reset" xml:space="preserve">
+    <value>Reset Python REPL context</value>
+  </data>
 </root>

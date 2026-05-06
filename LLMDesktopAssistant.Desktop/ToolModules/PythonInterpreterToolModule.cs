@@ -25,8 +25,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				new ToolInitializationInfo
 				{
 					Name = "execute-python",
-					Description = "Executes Python and returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!').",
-					Category = "scripting",
+					Description = "Executes Python in isolated virtual environment (global variables are not accessible between scripts, use other, REPL tools for context sharing). It returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!').",
+					Category = "Python",
 					AskForConfirmation = true
 				});
 
@@ -35,7 +35,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "execute-python_venv_shell",
 					Description = "Executes Windows shell script in a Python's virtual environment. Useful for installing packages via 'pip'.",
-					Category = "scripting",
+					Category = "Python",
 					AskForConfirmation = true
 				});
 
@@ -44,7 +44,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "python-get_installed_packages_list",
 					Description = "Returns the list of installed packages in the current Python's virtual environment.",
-					Category = "scripting",
+					Category = "Python",
 					AskForConfirmation = false
 				});
 		}

@@ -1251,4 +1251,13 @@
   <data name="settings-agentic_tools_model_hint" xml:space="preserve">
     <value>Модель для агентных инструментов</value>
   </data>
+  <data name="execute-python_repl" xml:space="preserve">
+    <value>Выполнить Python скрипт при помощи REPL</value>
+  </data>
+  <data name="python-repl_get_var" xml:space="preserve">
+    <value>Получить переменную из Python REPL</value>
+  </data>
+  <data name="python-repl_reset" xml:space="preserve">
+    <value>Сбросить контекст Python REPL</value>
+  </data>
 </root>

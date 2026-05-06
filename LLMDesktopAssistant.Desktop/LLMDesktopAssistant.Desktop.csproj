@@ -10,8 +10,16 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <None Remove="Execution\Python\repl_server.py" />
+	</ItemGroup>
+
   <ItemGroup>
     <AvaloniaResource Include="Assets\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Execution\Python\repl_server.py" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -20,6 +28,7 @@
 			<IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
 			<PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="Iciclecreek.Avalonia.Terminal" Version="2.0.2" />
 		<PackageReference Include="LiveMarkdown.Avalonia.Math" Version="2.0.0" />
 		<PackageReference Include="Tmds.DBus.Protocol" Version="0.92.0" />
 		<PackageReference Include="Whisper.net" Version="1.9.0" />

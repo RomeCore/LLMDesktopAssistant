@@ -1,3 +1,4 @@
+using Avalonia.Threading;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLTSharp;
@@ -124,9 +125,6 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			try
 			{
-				if (!chat.Settings.Summarization.AutoSummarizationEnabled)
-					return;
-
 				var summarizationLLM = llmBuilder.BuildSummarizationLLM();
 				// If the summarization LLM is not available, do not summarize
 				if (summarizationLLM == null)
@@ -143,8 +141,27 @@ namespace LLMDesktopAssistant.LLM.Services
 				];
 
 				var timeRequested = DateTime.Now;
-				var summary = await summarizationLLM.LLM.ChatAsync(messages);
+				var summary = await summarizationLLM.LLM.ChatStreamingAsync(messages);
 				var timeFinished = DateTime.Now;
+
+				var viewModel = new SummaryViewModel
+				{
+					Summary = summary.Content ?? string.Empty,
+					Completed = false
+				};
+				message.AdditionalViewModels.TryReplace(viewModel);
+				EventHandler<AssistantMessageDelta> summaryPartAdded = (s, e) =>
+				{
+					Dispatcher.UIThread.Post(() =>
+					{
+						viewModel.Summary = summary.Content ?? string.Empty;
+					});
+				};
+				summary.Message.PartAdded += summaryPartAdded;
+
+				await summary;
+				summary.Message.PartAdded -= summaryPartAdded;
+				viewModel.Completed = true;
 
 				var summaryUsageMetadata = summary.UsageMetadata;
 				if (summaryUsageMetadata != null)
@@ -171,11 +188,6 @@ namespace LLMDesktopAssistant.LLM.Services
 					}
 				}
 
-				message.AdditionalViewModels.TryReplace(new SummaryViewModel
-				{
-					Summary = summary.Content ?? string.Empty,
-					Completed = true
-				});
 
 				Log.Information("Chat summarized successfully. Summary length: {Length}, Summary: {Summary}",
 					summary.Content?.Length, summary.Content);

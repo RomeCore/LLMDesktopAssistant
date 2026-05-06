@@ -745,6 +745,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute Python script using REPL.
+        /// </summary>
+        public static string execute_python_repl {
+            get {
+                return ResourceManager.GetString("execute-python_repl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Execute Shell script in Python virt. environment.
         /// </summary>
         public static string execute_python_venv_shell {
@@ -2226,6 +2235,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string python_get_installed_packages_list {
             get {
                 return ResourceManager.GetString("python-get_installed_packages_list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Get Python REPL variable.
+        /// </summary>
+        public static string python_repl_get_var {
+            get {
+                return ResourceManager.GetString("python-repl_get_var", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Reset Python REPL context.
+        /// </summary>
+        public static string python_repl_reset {
+            get {
+                return ResourceManager.GetString("python-repl_reset", resourceCulture);
             }
         }
         

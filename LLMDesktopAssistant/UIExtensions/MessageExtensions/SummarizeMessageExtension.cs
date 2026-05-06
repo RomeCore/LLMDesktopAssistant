@@ -4,6 +4,7 @@ using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLMDesktopAssistant.LLM.Services;
 using Material.Icons;
+using Serilog;
 
 namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 {
@@ -24,16 +25,23 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		{
 			Command = new AsyncRelayCommand(async () =>
 			{
-				var viewModels = viewModel.Message.AdditionalViewModels;
-				var existing = viewModels.TryGet<SummaryViewModel>();
-				if (existing != null)
+				try
 				{
-					viewModels.Remove(existing);
-					return;
-				}
+					var viewModels = viewModel.Message.AdditionalViewModels;
+					var existing = viewModels.TryGet<SummaryViewModel>();
+					if (existing != null)
+					{
+						viewModels.Remove(existing);
+						return;
+					}
 
-				var summarizer = viewModel.ChatViewModel.Chat.Services.GetRequiredService<IChatSummarizationService>();
-				await summarizer.SummarizeMessageWithPreviousMessagesAsync(viewModel.Message);
+					var summarizer = viewModel.ChatViewModel.Chat.Services.GetRequiredService<IChatSummarizationService>();
+					await summarizer.SummarizeMessageWithPreviousMessagesAsync(viewModel.Message);
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Failed to summarize message: {Error}", ex);
+				}
 			});
 		}
 	}

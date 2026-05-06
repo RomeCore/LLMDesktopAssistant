@@ -67,7 +67,10 @@ namespace LLMDesktopAssistant.Desktop.Execution
 					lua.Execute(code, out var print);
 					foreach (var line in print)
 						sb.AppendLine(line);
-					AdditionalViewModel = sb.ToString();
+					AdditionalViewModel = new ExecutionResultViewModel
+					{
+						OutputText = sb.ToString()
+					};
 
 					break;
 
@@ -79,7 +82,10 @@ namespace LLMDesktopAssistant.Desktop.Execution
 					sb.Append(result.StdOut);
 					if (!string.IsNullOrWhiteSpace(result.StdErr))
 						sb.AppendLine().AppendLine().AppendLine("Errors:").Append(result.StdErr);
-					AdditionalViewModel = sb.ToString();
+					AdditionalViewModel = new ExecutionResultViewModel
+					{
+						OutputText = sb.ToString()
+					};
 
 					break;
 
@@ -90,7 +96,10 @@ namespace LLMDesktopAssistant.Desktop.Execution
 					sb.Append(result.StdOut);
 					if (!string.IsNullOrWhiteSpace(result.StdErr))
 						sb.AppendLine().AppendLine().AppendLine("Errors:").Append(result.StdErr);
-					AdditionalViewModel = sb.ToString();
+					AdditionalViewModel = new ExecutionResultViewModel
+					{
+						OutputText = sb.ToString()
+					};
 
 					break;
 
@@ -102,7 +111,10 @@ namespace LLMDesktopAssistant.Desktop.Execution
 					sb.Append(result.StdOut);
 					if (!string.IsNullOrWhiteSpace(result.StdErr))
 						sb.AppendLine().AppendLine().AppendLine("Errors:").Append(result.StdErr);
-					AdditionalViewModel = sb.ToString();
+					AdditionalViewModel = new ExecutionResultViewModel
+					{
+						OutputText = sb.ToString()
+					};
 
 					break;
 
@@ -114,7 +126,10 @@ namespace LLMDesktopAssistant.Desktop.Execution
 					sb.Append(result.StdOut);
 					if (!string.IsNullOrWhiteSpace(result.StdErr))
 						sb.AppendLine().AppendLine().AppendLine("Errors:").Append(result.StdErr);
-					AdditionalViewModel = sb.ToString();
+					AdditionalViewModel = new ExecutionResultViewModel
+					{
+						OutputText = sb.ToString()
+					};
 
 					break;
 			}

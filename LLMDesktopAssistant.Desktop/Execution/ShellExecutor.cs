@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,9 @@ namespace LLMDesktopAssistant.Scripting
 		public static async Task<ProcessExecutionResult> ExecuteWindowsAsync(string command,
 			string? workDir = null, CancellationToken cancellationToken = default)
 		{
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				throw new PlatformNotSupportedException("Windows Shell is only supported on Windows.");
+
 			return await ExecuteProcessAsync("cmd.exe", $"/c \"{command}\"",
 				workDir, cancellationToken);
 		}
@@ -37,6 +41,9 @@ namespace LLMDesktopAssistant.Scripting
 		public static async Task<ProcessExecutionResult> ExecuteWindowsScriptAsync(string script,
 			string? workDir = null, CancellationToken cancellationToken = default)
 		{
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				throw new PlatformNotSupportedException("Windows Shell is only supported on Windows.");
+
 			var tempFile = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.bat");
 			File.WriteAllText(tempFile, script);
 
@@ -60,6 +67,9 @@ namespace LLMDesktopAssistant.Scripting
 		public static async Task<ProcessExecutionResult> ExecuteWindowsPSAsync(string command,
 			string? workDir = null, CancellationToken cancellationToken = default)
 		{
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				throw new PlatformNotSupportedException("Windows PowerShell is only supported on Windows.");
+
 			return await ExecuteProcessAsync("powershell.exe", $"-ExecutionPolicy Bypass -Command \"{command}\"",
 				workDir, cancellationToken);
 		}
@@ -73,6 +83,9 @@ namespace LLMDesktopAssistant.Scripting
 		public static async Task<ProcessExecutionResult> ExecuteWindowsPSScriptAsync(string script,
 			string? workDir = null, CancellationToken cancellationToken = default)
 		{
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				throw new PlatformNotSupportedException("Windows PowerShell is only supported on Windows.");
+
 			var tempFile = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.ps1");
 			File.WriteAllText(tempFile, script);
 
@@ -106,7 +119,7 @@ namespace LLMDesktopAssistant.Scripting
 		}
 
 		/// <summary>
-		/// Executes a Bash command via WSL asynchronously.
+		/// Executes a Bash command asynchronously.
 		/// </summary>
 		/// <param name="command">The Bash command to execute.</param>
 		/// <param name="workDir">The working directory (Windows path will be converted to WSL path).</param>
@@ -114,11 +127,15 @@ namespace LLMDesktopAssistant.Scripting
 		public static async Task<ProcessExecutionResult> ExecuteBashAsync(string command,
 			string? workDir = null, CancellationToken cancellationToken = default)
 		{
-			return await ExecuteProcessAsync("wsl", $"-- sh -c \"{command}\"", workDir, cancellationToken);
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) // Execute via Windows Subsystem for Linux (WSL)
+				return await ExecuteProcessAsync("wsl", $"-- sh -c \"{command}\"", workDir, cancellationToken);
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) // Execute directly on Unix-like systems
+				return await ExecuteProcessAsync("sh", $"-c \"{command}\"", workDir, cancellationToken);
+			throw new PlatformNotSupportedException("This method is only supported on Windows, Linux and macOS.");
 		}
 
 		/// <summary>
-		/// Executes a multiline Bash script via WSL asynchronously.
+		/// Executes a multiline Bash script asynchronously.
 		/// </summary>
 		/// <param name="script">The Bash script content.</param>
 		/// <param name="workDir">The working directory (Windows path will be converted to WSL path).</param>
@@ -126,32 +143,54 @@ namespace LLMDesktopAssistant.Scripting
 		public static async Task<ProcessExecutionResult> ExecuteBashScriptAsync(string script,
 			string? workDir = null, CancellationToken cancellationToken = default)
 		{
-			string tempScript = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.sh");
-
-			// Add shebang and make script executable-friendly
-			script = script.Replace("\r\n", "\n"); // Ensure Unix-style line endings
-			File.WriteAllText(tempScript, script, Encoding.UTF8);
-
-			try
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) // Execute via Windows Subsystem for Linux (WSL)
 			{
-				// Convert Windows path to WSL path for the script
-				string wslScriptPath = ConvertToWslPath(tempScript);
+				string tempScript = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.sh");
 
-				// Make script executable (WSL can execute it directly)
-				await ExecuteProcessAsync("wsl", $"chmod +x \"{wslScriptPath}\"", workDir, cancellationToken);
-				return await ExecuteProcessAsync("wsl", $"\"{wslScriptPath}\"", workDir, cancellationToken);
+				// Add shebang and make script executable-friendly
+				script = script.Replace("\r\n", "\n"); // Ensure Unix-style line endings
+				File.WriteAllText(tempScript, script, Encoding.UTF8);
+
+				try
+				{
+					// Convert Windows path to WSL path for the script
+					string wslScriptPath = ConvertToWslPath(tempScript);
+
+					// Make script executable (WSL can execute it directly)
+					await ExecuteProcessAsync("wsl", $"chmod +x \"{wslScriptPath}\"", workDir, cancellationToken);
+					return await ExecuteProcessAsync("wsl", $"\"{wslScriptPath}\"", workDir, cancellationToken);
+				}
+				finally
+				{
+					if (File.Exists(tempScript))
+						File.Delete(tempScript);
+				}
 			}
-			finally
+			else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) // Execute directly on Unix-like systems
 			{
-				if (File.Exists(tempScript))
-					File.Delete(tempScript);
+				string tempScript = Path.Combine(Environment.CurrentDirectory, Directories.TempScripts, $"{Guid.NewGuid()}.sh");
+
+				// Add shebang and make script executable-friendly
+				script = script.Replace("\r\n", "\n"); // Ensure Unix-style line endings
+				File.WriteAllText(tempScript, $"#!/bin/bash\n{script}", Encoding.UTF8);
+
+				try
+				{
+					// Make script executable (Unix-like systems can execute it directly)
+					await ExecuteProcessAsync("chmod", $"+x \"{tempScript}\"", workDir, cancellationToken);
+					return await ExecuteProcessAsync("sh", $"\"{tempScript}\"", workDir, cancellationToken);
+				}
+				finally
+				{
+					if (File.Exists(tempScript))
+						File.Delete(tempScript);
+				}
 			}
+
+			throw new PlatformNotSupportedException("This method is only supported on Windows, Linux and macOS.");
 		}
 
-		/// <summary>
-		/// Core method for process execution.
-		/// </summary>
-		private static async Task<ProcessExecutionResult> ExecuteProcessAsync(string fileName, string arguments,
+		public static async Task<ProcessExecutionResult> ExecuteProcessAsync(string fileName, string arguments,
 			string? workDir, CancellationToken cancellationToken = default)
 		{
 			var psi = new ProcessStartInfo

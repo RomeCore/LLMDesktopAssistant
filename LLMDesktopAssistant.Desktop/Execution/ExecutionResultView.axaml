@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+						 xmlns:local="using:LLMDesktopAssistant.Desktop.Execution"
+						 x:Class="LLMDesktopAssistant.Desktop.Execution.ExecutionResultView"
+						 x:DataType="local:ExecutionResultViewModel">
+	
+	<Border Background="Black"
+					BorderBrush="Black"
+					CornerRadius="2"
+					BorderThickness="3"
+					Margin="0,4,0,0"
+					Padding="2">
+		
+		<Panel>
+			
+			<TextBlock Text="{Binding OutputText}"
+								 FontFamily="Consolas"
+								 IsVisible="{Binding IsError, Converter={StaticResource InverseBooleanConverter}}"/>
+
+			<TextBlock Text="{Binding OutputText}"
+								 FontFamily="Consolas"
+								 Foreground="Red"
+								 IsVisible="{Binding IsError}"/>
+
+		</Panel>
+
+	</Border>
+
+</UserControl>
