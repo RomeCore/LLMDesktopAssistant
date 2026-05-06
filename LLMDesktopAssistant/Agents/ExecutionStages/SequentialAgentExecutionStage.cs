@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			if (agentsList.Count == 0)
 				return Task.FromResult<Guid?>(null);
 
-			Guid? previousId = context.PrevousAgentExecuted;
+			Guid? previousId = context.PreviousAgentExecuted;
 			int startIndex = 0;
 
 			if (previousId.HasValue)

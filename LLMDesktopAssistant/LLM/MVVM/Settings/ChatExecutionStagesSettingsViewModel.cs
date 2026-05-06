@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.ExecutionStages;
-using LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages;
-using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Utils;
 using System.Text.Json;

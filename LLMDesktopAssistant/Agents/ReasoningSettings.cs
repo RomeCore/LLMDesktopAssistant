@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.LLM.Settings
+﻿namespace LLMDesktopAssistant.Agents
 {
 	public enum ReasoningSettings
 	{

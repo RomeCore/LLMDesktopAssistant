@@ -18,8 +18,8 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 		protected virtual Task<Guid?> DetectMentionAsync(List<AgentInstance> selectFrom,
 			AgentPreExecutionContext context, CancellationToken cancellationToken = default)
 		{
-			if (context.PrevousAgentExecuted.HasValue && 
-				!context.AgentManager.GetAgentDescriptor(context.PrevousAgentExecuted.Value).ExecutionConditions.CanMentionOthers)
+			if (context.PreviousAgentExecuted.HasValue && 
+				!context.AgentManager.GetAgentDescriptor(context.PreviousAgentExecuted.Value).ExecutionConditions.CanMentionOthers)
 				return Task.FromResult<Guid?>(null);
 
 			var strToSearch = context.Chat.Messages.LastOrDefault()?.Message.Content;

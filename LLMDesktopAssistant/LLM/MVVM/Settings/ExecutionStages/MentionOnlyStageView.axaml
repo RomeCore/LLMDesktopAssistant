@@ -3,45 +3,38 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
-			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages.AdaptiveStageView"
-			 x:DataType="local:AdaptiveStageViewModel">
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages.MentionOnlyStageView"
+			 x:DataType="local:MentionOnlyStageViewModel">
 
 	<StackPanel>
 
 		<!-- Global repeatable stage settings -->
-		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto"
-			  Margin="0,0,0,8">
+		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto"
+				  Margin="0,0,0,8">
 			
 			<TextBlock Grid.Row="0" Grid.Column="0"
-					   Text="{loc:Loc settings_stage_enable_mentions}"
-					   VerticalAlignment="Center" Margin="0,0,8,0"/>
-			<CheckBox Grid.Row="0" Grid.Column="1"
-					  IsChecked="{Binding AdaptiveStage.EnableMentions}"
-					  VerticalAlignment="Center"/>
-
-			<TextBlock Grid.Row="1" Grid.Column="0"
 					   Text="{loc:Loc settings_stage_can_agents_execute_again}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
-			<CheckBox Grid.Row="1" Grid.Column="1"
-					  IsChecked="{Binding AdaptiveStage.CanAgentsExecuteAgain}"
+			<CheckBox Grid.Row="0" Grid.Column="1"
+					  IsChecked="{Binding MentionStage.CanAgentsExecuteAgain}"
 					  VerticalAlignment="Center" Margin="0,0,0,4"/>
 
-			<TextBlock Grid.Row="2" Grid.Column="0"
+			<TextBlock Grid.Row="1" Grid.Column="0"
 					   Text="{loc:Loc settings_stage_min_iterations}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
-			<NumericUpDown Grid.Row="2" Grid.Column="1"
-						   Value="{Binding AdaptiveStage.MinIterations}"
+			<NumericUpDown Grid.Row="1" Grid.Column="1"
+						   Value="{Binding MentionStage.MinIterations}"
 						   Minimum="-1"
 						   Margin="0,0,0,4"/>
 
-			<TextBlock Grid.Row="3" Grid.Column="0"
+			<TextBlock Grid.Row="2" Grid.Column="0"
 					   Text="{loc:Loc settings_stage_max_iterations}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
-			<NumericUpDown Grid.Row="3" Grid.Column="1"
-						   Value="{Binding AdaptiveStage.MaxIterations}"
+			<NumericUpDown Grid.Row="2" Grid.Column="1"
+						   Value="{Binding MentionStage.MaxIterations}"
 						   Minimum="-1"
 						   Margin="0,0,0,4"/>
 		</Grid>
@@ -52,7 +45,7 @@
 				Opacity="0.3"
 				Margin="0,0,0,6"/>
 
-		<TextBlock Text="{loc:Loc settings_stage_adaptive_agents}"
+		<TextBlock Text="{loc:Loc settings_stage_mentionable_agents}"
 				   FontWeight="Bold"
 				   Margin="0,0,0,4"/>
 
@@ -63,7 +56,9 @@
 					<Border Padding="4,2" Margin="0,1"
 							BorderBrush="{DynamicResource SystemAccentColor}"
 							BorderThickness="0,0,0,0.5">
+
 						<Grid ColumnDefinitions="Auto,*,Auto">
+
 							<!-- Enabled checkbox -->
 							<CheckBox Grid.Column="0"
 									  IsChecked="{Binding Instance.Enabled}"
@@ -83,7 +78,9 @@
 									ToolTip.Tip="{loc:Loc settings_stage_remove_agent}">
 								<ico:MaterialIcon Kind="Close"/>
 							</Button>
+
 						</Grid>
+
 					</Border>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>

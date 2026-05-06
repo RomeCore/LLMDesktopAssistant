@@ -1,7 +1,7 @@
 using LLMDesktopAssistant.Agents.ExecutionStages;
-using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Agents;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages;
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages;
 
 public static class StageViewModelFactory
 {

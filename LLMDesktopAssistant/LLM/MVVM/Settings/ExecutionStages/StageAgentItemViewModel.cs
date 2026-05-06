@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.ExecutionStages;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages;
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages;
 
 public abstract class StageAgentItemViewModelBase : NotifyPropertyChanged
 {

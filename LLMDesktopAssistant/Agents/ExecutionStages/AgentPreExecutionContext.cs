@@ -1,5 +1,5 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Agents;
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
@@ -43,11 +43,11 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 		/// <summary>
 		/// A list of messages from previous agent.
 		/// </summary>
-		public required IReadOnlyList<AssistantMessage> PrevousAgentMessages { get; init; }
+		public required IReadOnlyList<AssistantMessage> PreviousAgentMessages { get; init; }
 
 		/// <summary>
 		/// The ID of the previously executed agent, this can be agent from previous stage. Use it to prevent same agent execution in a row.
 		/// </summary>
-		public required Guid? PrevousAgentExecuted { get; init; }
+		public required Guid? PreviousAgentExecuted { get; init; }
 	}
 }

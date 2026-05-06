@@ -60,7 +60,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			var instances = AgentInstances.Where(a => a.Enabled);
 			if (!CanAgentsExecuteAgain)
 				instances = instances.ExceptBy(context.ExecutedInThisStage, a => a.AgentId);
-			instances = instances.Where(a => a.AgentId != context.PrevousAgentExecuted);
+			instances = instances.Where(a => a.AgentId != context.PreviousAgentExecuted);
 			var instancesList = instances.ToList();
 
 			if (instancesList.Count == 0)

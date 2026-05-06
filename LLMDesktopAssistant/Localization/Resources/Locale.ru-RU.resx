@@ -1245,5 +1245,10 @@
   <data name="settings_stage_adaptive_agents" xml:space="preserve">
     <value>Пул агентов</value>
   </data>
-
+  <data name="settings-agentic_router_model_hint" xml:space="preserve">
+    <value>Модель для роутера агентов</value>
+  </data>
+  <data name="settings-agentic_tools_model_hint" xml:space="preserve">
+    <value>Модель для агентных инструментов</value>
+  </data>
 </root>

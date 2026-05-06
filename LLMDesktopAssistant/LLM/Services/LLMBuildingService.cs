@@ -1,5 +1,6 @@
 ﻿using AngleSharp.Common;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;

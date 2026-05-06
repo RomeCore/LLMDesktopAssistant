@@ -4,7 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
-			 xmlns:stages="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages"
+			 xmlns:stages="using:LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ChatExecutionStagesSettingsView"

@@ -14,6 +14,31 @@
 				VerticalAlignment="Top"
 				Margin="40,8"
 				Spacing="4">
+		
+		<StackPanel Orientation="Horizontal"
+								HorizontalAlignment="Right"
+								IsVisible="{Binding ShowAvatar}">
+			
+			<TextBlock Text="{Binding SenderName}"
+								 FontSize="16"
+								 FontWeight="Bold"
+								 Margin="4"
+								 VerticalAlignment="Center"/>
+
+			<Panel>
+				
+				<Border IsVisible="{Binding SenderAvatar, Converter={StaticResource NotnullToBooleanConverter}}"
+								Width="32" Height="32" CornerRadius="4" ClipToBounds="True" Margin="4">
+					<Image Source="{Binding SenderAvatar}" Width="32" Height="32"/>
+				</Border>
+				
+				
+				<ico:MaterialIcon Kind="Account" Width="32" Height="32" Margin="4"
+													IsVisible="{Binding SenderAvatar, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
+
+			</Panel>
+
+		</StackPanel>
 
 		<Border Grid.Column="1"
 				HorizontalAlignment="Right"

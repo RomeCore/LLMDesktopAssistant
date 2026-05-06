@@ -2,7 +2,7 @@ using LLMDesktopAssistant.Agents.ExecutionStages;
 using LLMDesktopAssistant.LLM.Domain;
 using Serilog;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services.Agents
 {
 	[ChatService(typeof(IAgentOrderingService))]
 	public class AgentOrderingService(
@@ -44,8 +44,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					ExecutedInThisRound = executedInThisRound,
 					ThisStageMessages = thisStageMessages,
 					ExecutedInThisStage = executedInThisStage,
-					PrevousAgentMessages = prevAgentMessages,
-					PrevousAgentExecuted = prevAgentId
+					PreviousAgentMessages = prevAgentMessages,
+					PreviousAgentExecuted = prevAgentId
 				};
 			}
 

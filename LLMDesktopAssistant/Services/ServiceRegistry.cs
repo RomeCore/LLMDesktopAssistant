@@ -132,7 +132,7 @@ namespace LLMDesktopAssistant.Services
 				foreach (var typeInfo in category)
 				{
 					if (!categoryType.IsAssignableFrom(typeInfo.Type))
-						invalidDynModules.Add($"Dynamic module '{typeInfo.Type.Name}' with ID '{typeInfo.Id}' cannod be assigned to category '{categoryType.Name}'.");
+						invalidDynModules.Add($"Dynamic module '{typeInfo.Type.Name}' with ID '{typeInfo.Id}' cannot be assigned to category '{categoryType.Name}'.");
 				}
 			}
 			if (invalidDynModules.Count > 0)

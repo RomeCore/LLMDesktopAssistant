@@ -507,6 +507,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					CreatedAt = userMessage.CreatedAt,
 					Content = userMessage.Content,
+					Sender = userMessage.SenderLogin,
 					Visibility = userMessage.Visibility,
 					VisibleTo = userMessage.VisibleTo,
 					IsVisibleToWhiteList = userMessage.IsVisibleToWhiteList,

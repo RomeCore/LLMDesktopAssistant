@@ -1,4 +1,4 @@
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services.Agents
 {
 	/// <summary>
 	/// Interface for the agent ordering service.

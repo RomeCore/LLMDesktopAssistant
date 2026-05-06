@@ -5,7 +5,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Utils;
 using System.Text.Json;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages;
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages;
 
 /// <summary>
 /// Represents the available stage type in the UI combobox.
@@ -184,7 +184,7 @@ public class StageContainerViewModel : ViewModelBase
 				Id = Stage.Id,
 				Enabled = Stage.Enabled,
 				AgentInstances = Stage.AgentInstances,
-				EnableMentions = prevMentionable?.EnableMentions ?? true,
+				EnableMentions = true,
 				CanAgentsExecuteAgain = prevRepeatable?.CanAgentsExecuteAgain ?? false,
 				MinIterations = prevRepeatable?.MinIterations ?? -1,
 				MaxIterations = prevRepeatable?.MaxIterations ?? -1,

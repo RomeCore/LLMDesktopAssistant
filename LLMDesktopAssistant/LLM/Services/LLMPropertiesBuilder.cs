@@ -1,4 +1,5 @@
-using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using RCLargeLanguageModels.Completions;
 using RCLargeLanguageModels.Completions.Properties;
 using System.Text.Json;

@@ -2,6 +2,7 @@ using DocumentFormat.OpenXml.VariantTypes;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Messages;

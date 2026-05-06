@@ -1,6 +1,6 @@
 ﻿using Avalonia.Media.Imaging;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.UIExtensions.MessageExtensions;
 using Serilog;

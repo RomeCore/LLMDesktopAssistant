@@ -1,10 +1,10 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.ExecutionStages;
-using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages;
+namespace LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages;
 
 [ViewModelFor(typeof(MentionOnlyStageView))]
 public class MentionOnlyStageViewModel : StageViewModelBase

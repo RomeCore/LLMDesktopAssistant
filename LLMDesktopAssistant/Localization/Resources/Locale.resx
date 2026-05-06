@@ -1278,5 +1278,10 @@
   <data name="settings_stage_adaptive_agents" xml:space="preserve">
     <value>Agent pool</value>
   </data>
-
+  <data name="settings-agentic_router_model_hint" xml:space="preserve">
+    <value>Agentic routing model</value>
+  </data>
+  <data name="settings-agentic_tools_model_hint" xml:space="preserve">
+    <value>Agentic tools model</value>
+  </data>
 </root>

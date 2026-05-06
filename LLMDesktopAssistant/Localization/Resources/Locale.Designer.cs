@@ -2545,6 +2545,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Agentic routing model.
+        /// </summary>
+        public static string settings_agentic_router_model_hint {
+            get {
+                return ResourceManager.GetString("settings-agentic_router_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agentic tools model.
+        /// </summary>
+        public static string settings_agentic_tools_model_hint {
+            get {
+                return ResourceManager.GetString("settings-agentic_tools_model_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Can be mentioned.
         /// </summary>
         public static string settings_can_be_mentioned {
@@ -3022,6 +3040,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent pool.
+        /// </summary>
+        public static string settings_stage_adaptive_agents {
+            get {
+                return ResourceManager.GetString("settings_stage_adaptive_agents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Add agent to stage.
         /// </summary>
         public static string settings_stage_add_agent {
@@ -3040,11 +3067,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable @mentions.
+        /// </summary>
+        public static string settings_stage_enable_mentions {
+            get {
+                return ResourceManager.GetString("settings_stage_enable_mentions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Max iterations.
         /// </summary>
         public static string settings_stage_max_iterations {
             get {
                 return ResourceManager.GetString("settings_stage_max_iterations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Mentionable agents.
+        /// </summary>
+        public static string settings_stage_mentionable_agents {
+            get {
+                return ResourceManager.GetString("settings_stage_mentionable_agents", resourceCulture);
             }
         }
         
@@ -3171,6 +3216,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string specialization_clear {
             get {
                 return ResourceManager.GetString("specialization_clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Adaptive (LLM selects).
+        /// </summary>
+        public static string stage_type_adaptive {
+            get {
+                return ResourceManager.GetString("stage_type_adaptive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Mention only.
+        /// </summary>
+        public static string stage_type_mention_only {
+            get {
+                return ResourceManager.GetString("stage_type_mention_only", resourceCulture);
             }
         }
         

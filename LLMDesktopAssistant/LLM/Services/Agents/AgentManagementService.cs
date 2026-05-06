@@ -2,7 +2,7 @@ using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Settings;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services.Agents
 {
 	[ChatService(typeof(IAgentManagementService))]
 	public class AgentManagementService(

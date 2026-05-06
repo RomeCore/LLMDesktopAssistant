@@ -12,7 +12,7 @@
 		public Type? ServiceType { get; set; }
 
 		/// <summary>
-		/// Gets or sets the order in which the service should be registereg and accessed. <br/>
+		/// Gets or sets the order in which the service should be registered and accessed. <br/>
 		/// For example <see cref="int.MinValue"/> means that this module is initialized first
 		/// and guaranteed to be and returned by <see cref="ServiceRegistry.Get{T}"/> method.
 		/// </summary>

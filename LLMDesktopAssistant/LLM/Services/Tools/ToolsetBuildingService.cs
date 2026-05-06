@@ -1,8 +1,11 @@
 ﻿using AngleSharp.Common;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using System.Text.Json.Serialization.Metadata;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {
@@ -51,7 +54,13 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						result.Add(toolInfo);
 				}
 			}
-
+/*
+			Log.Information("Tool list:\n{Tools}", string.Join("\n", result.Select(t => $"""
+				Tool: {t.Name}
+				Description: {t.DescriptionGetter()}
+				Arguments: {t.ArgumentSchema.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true, TypeInfoResolver = new DefaultJsonTypeInfoResolver() })}
+				""")));
+*/
 			return result;
 		}
 

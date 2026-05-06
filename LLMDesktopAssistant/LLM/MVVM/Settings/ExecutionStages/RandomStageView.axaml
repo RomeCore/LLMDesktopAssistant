@@ -3,47 +3,55 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
-			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages.MentionOnlyStageView"
-			 x:DataType="local:MentionOnlyStageViewModel">
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages.RandomStageView"
+			 x:DataType="local:RandomStageViewModel">
 
 	<StackPanel>
 
-		<!-- Global repeatable stage settings -->
-		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto"
-				  Margin="0,0,0,8">
+		<!-- Global random stage settings -->
+		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+			  Margin="0,0,0,8">
 			
 			<TextBlock Grid.Row="0" Grid.Column="0"
 					   Text="{loc:Loc settings_stage_enable_mentions}"
 					   VerticalAlignment="Center" Margin="0,0,8,0"/>
 			<CheckBox Grid.Row="0" Grid.Column="1"
-					  IsChecked="{Binding MentionStage.EnableMentions}"
+					  IsChecked="{Binding RandomStage.EnableMentions}"
 					  VerticalAlignment="Center"/>
-
-			<TextBlock Grid.Row="1" Grid.Column="0"
+			
+			<TextBlock Grid.Row="1" Grid.Column="0" 
 					   Text="{loc:Loc settings_stage_can_agents_execute_again}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
 			<CheckBox Grid.Row="1" Grid.Column="1"
-					  IsChecked="{Binding MentionStage.CanAgentsExecuteAgain}"
+					  IsChecked="{Binding RandomStage.CanAgentsExecuteAgain}"
 					  VerticalAlignment="Center" Margin="0,0,0,4"/>
 
-			<TextBlock Grid.Row="2" Grid.Column="0"
+			<TextBlock Grid.Row="2" Grid.Column="0" 
 					   Text="{loc:Loc settings_stage_min_iterations}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
 			<NumericUpDown Grid.Row="2" Grid.Column="1"
-						   Value="{Binding MentionStage.MinIterations}"
+						   Value="{Binding RandomStage.MinIterations}"
 						   Minimum="-1"
 						   Margin="0,0,0,4"/>
 
-			<TextBlock Grid.Row="3" Grid.Column="0"
+			<TextBlock Grid.Row="3" Grid.Column="0" 
 					   Text="{loc:Loc settings_stage_max_iterations}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
 			<NumericUpDown Grid.Row="3" Grid.Column="1"
-						   Value="{Binding MentionStage.MaxIterations}"
+						   Value="{Binding RandomStage.MaxIterations}"
 						   Minimum="-1"
 						   Margin="0,0,0,4"/>
+
+			<TextBlock Grid.Row="4" Grid.Column="0" 
+					   Text="{loc:Loc settings_stage_stop_chance}"
+					   VerticalAlignment="Center" Margin="0,0,8,0"/>
+			<NumericUpDown Grid.Row="4" Grid.Column="1"
+						   Value="{Binding RandomStage.StopChance}"
+						   Minimum="0" Maximum="1"
+						   Increment="0.05"/>
 		</Grid>
 
 		<!-- Divider -->
@@ -52,20 +60,18 @@
 				Opacity="0.3"
 				Margin="0,0,0,6"/>
 
-		<TextBlock Text="{loc:Loc settings_stage_mentionable_agents}"
+		<TextBlock Text="{loc:Loc settings_stage_weighted_agents}"
 				   FontWeight="Bold"
 				   Margin="0,0,0,4"/>
 
-		<!-- Agent list (no weights, no ordering) -->
+		<!-- Weighted agent list -->
 		<ItemsControl ItemsSource="{Binding Agents}">
 			<ItemsControl.ItemTemplate>
-				<DataTemplate DataType="local:MentionStageAgentViewModel">
+				<DataTemplate DataType="local:RandomStageAgentViewModel">
 					<Border Padding="4,2" Margin="0,1"
 							BorderBrush="{DynamicResource SystemAccentColor}"
 							BorderThickness="0,0,0,0.5">
-
-						<Grid ColumnDefinitions="Auto,*,Auto">
-
+						<Grid ColumnDefinitions="Auto,*,Auto,Auto">
 							<!-- Enabled checkbox -->
 							<CheckBox Grid.Column="0"
 									  IsChecked="{Binding Instance.Enabled}"
@@ -77,17 +83,24 @@
 									   VerticalAlignment="Center"
 									   Margin="4,0"/>
 
+							<!-- Weight -->
+							<NumericUpDown Grid.Column="2"
+										   Value="{Binding Instance.Weight}"
+										   Minimum="0"
+										   Increment="0.1"
+										   Width="120"
+										   VerticalAlignment="Center"
+										   Margin="4,0"/>
+
 							<!-- Remove -->
-							<Button Grid.Column="2"
+							<Button Grid.Column="3"
 									Command="{Binding RemoveCommand}"
 									Classes="IconButton"
 									Margin="2,0"
 									ToolTip.Tip="{loc:Loc settings_stage_remove_agent}">
 								<ico:MaterialIcon Kind="Close"/>
 							</Button>
-
 						</Grid>
-
 					</Border>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>

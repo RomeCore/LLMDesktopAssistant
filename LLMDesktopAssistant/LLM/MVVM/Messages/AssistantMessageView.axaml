@@ -24,7 +24,7 @@
 				</Border>
 				
 				
-				<ico:MaterialIcon Kind="Account" Width="32" Height="32" Margin="4"
+				<ico:MaterialIcon Kind="Robot" Width="32" Height="32" Margin="4"
 													IsVisible="{Binding SenderAvatar, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
 
 			</Panel>

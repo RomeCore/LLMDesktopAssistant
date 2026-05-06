@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.Agents;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services.Agents
 {
 	public interface IAgentManagementService
 	{

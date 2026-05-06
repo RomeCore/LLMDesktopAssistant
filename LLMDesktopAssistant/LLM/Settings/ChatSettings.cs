@@ -11,6 +11,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// </summary>
 	public class ChatSettings : SettingsObject
 	{
+		private ChatUserSettings _userSettings = new();
+		/// <summary>
+		/// Settings for the users interacting with the chat.
+		/// </summary>
+		public ChatUserSettings Users
+		{
+			get => _userSettings;
+			set => SetProperty(ref _userSettings, value);
+		}
+
 		private ChatModelSettings _modelSettings = new();
 		/// <summary>
 		/// Settings related to language models used in chat.

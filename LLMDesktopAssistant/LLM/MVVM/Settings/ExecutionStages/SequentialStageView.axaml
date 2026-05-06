@@ -3,10 +3,10 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
-			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.Stages.SequentialStageView"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages.SequentialStageView"
 			 x:DataType="local:SequentialStageViewModel">
 
 	<StackPanel>
