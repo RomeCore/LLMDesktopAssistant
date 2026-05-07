@@ -6,7 +6,6 @@
 	}
 	[USER MESSAGE: '@user_name']
 	[MESSAGE SENT AT: @time_sent]
-	
 	@if can_read_attachments && attachments
 	{
 		@foreach attachment in attachments

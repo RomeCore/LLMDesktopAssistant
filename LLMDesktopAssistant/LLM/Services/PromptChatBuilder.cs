@@ -224,6 +224,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					time_sent = message.CreatedAt.ToString(),
 					user_name = agentName,
 					attachments = Array.Empty<Attachment>(),
+					content = message.Content,
 
 					can_read_content =
 						permissions.HasFlag(AgentReadPermissions.OtherAgentContent) &&

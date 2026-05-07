@@ -1,5 +1,7 @@
+using System.Reflection;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Services;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Serilog;
 
@@ -34,6 +36,19 @@ namespace LLMDesktopAssistant.Blazor
 					EnvironmentName = "Development",
 				});
 
+				// Add existing services
+				var services = chatServices;
+				var chatServiceCollection = services.GetRequiredKeyedService<IServiceCollection>(ServiceRegistry.ChatServicesKey);
+				var allServices = chatServiceCollection
+					.SelectMany(s => chatServices.GetServices(s.ServiceType)
+						.Select(si => (s.ServiceType, si)))
+					.Distinct()
+					.ToList();
+
+				foreach (var (serviceType, instance) in allServices)
+					if (instance != null)
+						builder.Services.AddSingleton(serviceType, instance);
+
 				builder.Services.AddServerSideBlazor();
 
 				// Add services to the container.
@@ -44,11 +59,7 @@ namespace LLMDesktopAssistant.Blazor
 				_webApp = app;
 
 				// Configure the HTTP request pipeline.
-				if (app.Environment.IsDevelopment())
-				{
-					// app.UseWebAssemblyDebugging();
-				}
-				else
+				if (!app.Environment.IsDevelopment())
 				{
 					app.UseExceptionHandler("/Error");
 					app.UseHsts();

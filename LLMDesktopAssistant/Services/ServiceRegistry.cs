@@ -19,6 +19,9 @@ namespace LLMDesktopAssistant.Services
 	/// </summary>
 	public static class ServiceRegistry
 	{
+		public static object? AppServicesKey { get; } = "Main";
+		public static object? ChatServicesKey { get; } = "Chat";
+
 		private enum State
 		{
 			None,
@@ -102,7 +105,10 @@ namespace LLMDesktopAssistant.Services
 
 			var collection = new ServiceCollection();
 			var serviceTypes = new HashSet<Type>();
-			
+
+			serviceTypes.Add(typeof(IServiceCollection));
+			collection.AddKeyedSingleton<IServiceCollection>(AppServicesKey, collection);
+
 			foreach (var service in ReflectionUtility.GetTypesWithAttribute<object, ServiceAttribute>()
 				.OrderBy(t => t.Attribute.Order))
 			{

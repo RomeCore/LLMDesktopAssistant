@@ -21,6 +21,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			var usageDatabase = new UsageDatabase(Path.Combine(Directories.Data, "usage.db"));
 
 			var serviceBuilder = new ServiceCollection();
+			serviceBuilder.AddKeyedSingleton<IServiceCollection>(ServiceRegistry.ChatServicesKey, serviceBuilder);
 			serviceBuilder.AddAppServices();
 			serviceBuilder.AddSingleton(database);
 			serviceBuilder.AddSingleton(usageDatabase);
