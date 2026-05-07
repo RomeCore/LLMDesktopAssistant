@@ -62,6 +62,11 @@ namespace LLMDesktopAssistant.Utils
 			Type = type;
 			Attribute = attribute;
 		}
+
+		public override string ToString()
+		{
+			return $"{Type} [{Attribute}]";
+		}
 	}
 
 	/// <summary>
@@ -106,7 +111,7 @@ namespace LLMDesktopAssistant.Utils
 		/// Registers the assembly for <see cref="ReflectionUtility"/> observation.
 		/// </summary>
 		[AttributeUsage(AttributeTargets.Assembly)]
-		public class RegisterAttribute : Attribute { }
+		public class ObserveAttribute : Attribute { }
 
 		private static bool _initialized;
 		private static Assembly[] _allAssemblies;
@@ -150,6 +155,13 @@ namespace LLMDesktopAssistant.Utils
 				throw new InvalidOperationException("ReflectionUtility has not been initialized.");
 		}
 
+		private static readonly List<(Assembly, bool)> _additionalAssemblies = [];
+
+		public static void AddAdditionalAssembly(Assembly assembly, bool observe = true)
+		{
+			_additionalAssemblies.Add((assembly, observe));
+		}
+
 		/// <summary>
 		/// Initializes the <see cref="ReflectionUtility"/> class.
 		/// </summary>
@@ -159,9 +171,15 @@ namespace LLMDesktopAssistant.Utils
 			if (_initialized)
 				throw new InvalidOperationException("ReflectionUtility has already been initialized.");
 
-			_allAssemblies = domain.GetAssemblies();
+			_allAssemblies = domain.GetAssemblies()
+				.Concat(_additionalAssemblies.Select(a => a.Item1))
+				.Distinct()
+				.ToArray();
+
 			_observedAssemblies = _allAssemblies
-				.Where(a => a.GetCustomAttributes(typeof(RegisterAttribute), false).Length > 0)
+				.Where(a => a.GetCustomAttributes(typeof(ObserveAttribute), false).Length > 0)
+				.Concat(_additionalAssemblies.Where(a => a.Item2).Select(a => a.Item1))
+				.Distinct()
 				.ToArray();
 
 			_allTypes = _allAssemblies
@@ -188,7 +206,7 @@ namespace LLMDesktopAssistant.Utils
 		}
 
 		/// <summary>
-		/// Gets all assemblies registered with <see cref="RegisterAttribute"/>.
+		/// Gets all assemblies registered with <see cref="ObserveAttribute"/>.
 		/// </summary>
 		public static IReadOnlyList<Assembly> ObservedAssemblies
 		{
@@ -212,7 +230,7 @@ namespace LLMDesktopAssistant.Utils
 		}
 
 		/// <summary>
-		/// Gets all types from observed assemblies (i.e., those with <see cref="RegisterAttribute"/> applied).
+		/// Gets all types from observed assemblies (i.e., those with <see cref="ObserveAttribute"/> applied).
 		/// </summary>
 		public static IReadOnlyList<Type> ObservedTypes
 		{

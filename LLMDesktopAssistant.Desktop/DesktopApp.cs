@@ -3,6 +3,8 @@ using LLMDesktopAssistant;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
+using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Blazor;
 
 namespace LLMDesktopAssistant.Desktop
 {
@@ -19,6 +21,7 @@ namespace LLMDesktopAssistant.Desktop
 		{
 			// Load plugins only for desktops
 			PluginManager.LoadPluginsInto(AppDomain.CurrentDomain);
+			ReflectionUtility.AddAdditionalAssembly(typeof(ChatBlazorUIStarter).Assembly, observe: true);
 
 			base.Initialize();
 		}

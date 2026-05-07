@@ -32,7 +32,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				services.AddScoped(typeof(ToolModule), toolModule.Type);
 			}
 
-			foreach (var service in ReflectionUtility.GetTypesWithAttribute<ChatServiceAttribute>())
+			var chatServices = ReflectionUtility.GetTypesWithAttribute<ChatServiceAttribute>().ToList();
+			foreach (var service in chatServices)
 			{
 				services.AddScoped(service.Attribute.ServiceType ?? service.Type, service.Type);
 			}

@@ -112,7 +112,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		}
 
 		private ReactiveToolResult TimeWait(
-			[Description("Duration to wait in format 'hours:minutes:seconds' or 'minutes:seconds' (e.g., '0:05', '1:30', '0:00:10')")]
+			[Description("Duration to wait in format 'hours:minutes:seconds' or 'minutes:seconds' (e.g., '0:05', '1:30', '1:00:10')")]
 			string span = "0:00",
 			CancellationToken cancellationToken = default)
 		{
@@ -188,7 +188,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						result.StatusTitle = $"Error: {ex.Message}";
 						result.Complete(false);
 					}
-				}, cancellationToken);
+				}, CancellationToken.None);
 
 				return result;
 			}

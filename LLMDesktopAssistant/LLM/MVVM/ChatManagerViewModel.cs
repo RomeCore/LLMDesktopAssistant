@@ -63,10 +63,17 @@ namespace LLMDesktopAssistant.LLM
 			_currentChatScope?.Dispose();
 			CurrentChat?.Dispose();
 			ChatCleanup();
-			GC.Collect();
+
 			_currentChatScope = ChatServices.ManagementService.OpenChatScope(id);
-			var chat = _currentChatScope.ServiceProvider.GetRequiredService<Chat>();
+			var chatServices = _currentChatScope.ServiceProvider;
+			var chat = chatServices.GetRequiredService<Chat>();
+			var blazorStarter = chatServices.GetService<IChatBlazorUIStarter>();
 			CurrentChat = new ChatViewModel(chat);
+
+			if (blazorStarter != null)
+			{
+				blazorStarter.Start();
+			}
 		}
 
 		private void CreateConversation()

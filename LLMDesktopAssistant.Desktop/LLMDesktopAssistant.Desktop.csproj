@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFrameworks>net10.0</TargetFrameworks>
@@ -41,7 +42,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\LLMDesktopAssistant.Blazor\LLMDesktopAssistant.Blazor.csproj" />
 		<ProjectReference Include="..\LLMDesktopAssistant\LLMDesktopAssistant.csproj" />
 	</ItemGroup>
-
+	
+	<Target Name="PublishBlazorStaticAssets" BeforeTargets="BeforeBuild">
+		<Exec Command="dotnet publish &quot;..\LLMDesktopAssistant.Blazor\LLMDesktopAssistant.Blazor.csproj&quot; -c $(Configuration) -o &quot;$(TargetDir)&quot;" />
+	</Target>
+	
 </Project>

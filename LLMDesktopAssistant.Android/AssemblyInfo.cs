@@ -1,2 +1,2 @@
 using LLMDesktopAssistant.Utils;
-[assembly: ReflectionUtility.Register]
+[assembly: ReflectionUtility.Observe]

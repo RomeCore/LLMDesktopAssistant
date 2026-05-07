@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using LLMDesktopAssistant.Desktop.Utils;
 using Serilog;
 using System;
 
@@ -11,6 +12,8 @@ namespace LLMDesktopAssistant.Desktop
 		{
 			try
 			{
+				ConsoleManager.EnsureConsole();
+
 				BuildAvaloniaApp()
 					.StartWithClassicDesktopLifetime(args);
 			}
