@@ -1352,6 +1352,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			int afterContext = 0,
 			[Description("Whether to search recursively through subdirectories.")]
 			bool recursive = true,
+			[Description("The maximum length of each line to return.")]
+			int maxLineLength = 2000,
 			CancellationToken cancellationToken = default)
 		{
 			try
@@ -1438,6 +1440,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 															lineNumbers, beforeContext, afterContext, cancellationToken);
 							if (fileMatches.Count > 0)
 							{
+								fileMatches = fileMatches.Select(m =>
+								{
+									if (m.Length > maxLineLength)
+										return m.Substring(0, maxLineLength) + $"...truncated, {m.Length - maxLineLength} more characters";
+									return m;
+								}).ToList();
+
 								result.ResultContentLines.Add($"\n--- {relativePath} ---");
 								result.ResultContentLines.AddRange(fileMatches);
 

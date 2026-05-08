@@ -13,10 +13,15 @@
 @code {
 	private int currentCount = 0;
 
-	public Counter()
+	protected override void OnInitialized()
 	{
-		Log.Information("Chat: {Chat}", chat);
+		base.OnInitialized();
+
 		currentCount = chat.Messages.Count;
-		chat.Messages.PropertyChanged += (s, e) => currentCount = chat.Messages.Count;
+		chat.Messages.PropertyChanged += (s, e) =>
+		{
+			currentCount = chat.Messages.Count;
+			InvokeAsync(StateHasChanged);
+		};
 	}
 }

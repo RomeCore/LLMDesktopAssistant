@@ -1,0 +1,31 @@
+﻿@page "/chat"
+@using System.Collections.Specialized
+@using LLMDesktopAssistant.Blazor.Components.Messages
+@using LLMDesktopAssistant.LLM.Domain
+@implements IDisposable
+@inject Chat chat
+@rendermode InteractiveServer
+
+@foreach (var message in chat.Messages)
+{
+	<ChatMessageComponent Message="@message" />
+}
+
+@code {
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		chat.Messages.CollectionChanged += MessagesChanged;
+	}
+
+	private void MessagesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		InvokeAsync(StateHasChanged);
+	}
+
+	public void Dispose()
+	{
+		chat.Messages.CollectionChanged -= MessagesChanged;
+	}
+}

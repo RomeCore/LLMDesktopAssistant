@@ -1,0 +1,31 @@
+﻿@using System.ComponentModel
+@using LLMDesktopAssistant.LLM.Domain;
+@implements IDisposable
+@rendermode InteractiveServer
+
+<MarkdownComponent MarkdownText="@Message.Content" />
+
+@code {
+	[Parameter]
+	public required BranchedMessage BranchedMessage { get; init; }
+
+	[Parameter]
+	public required AssistantMessage Message { get; init; }
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		Message.PropertyChanged += MessagePropertyChanged;
+	}
+
+	private void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		InvokeAsync(StateHasChanged);
+	}
+
+	public void Dispose()
+	{
+		Message.PropertyChanged -= MessagePropertyChanged;
+	}
+}

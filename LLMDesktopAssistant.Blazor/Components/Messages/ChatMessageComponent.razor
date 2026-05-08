@@ -1,0 +1,15 @@
+﻿@using LLMDesktopAssistant.LLM.Domain;
+
+@if (Message.Message is UserMessage userMsg)
+{
+	<UserMessageComponent BranchedMessage="@Message" Message="@userMsg" />
+}
+else if (Message.Message is AssistantMessage assistantMsg)
+{
+	<AssistantMessageComponent BranchedMessage="@Message" Message="@assistantMsg" />
+}
+
+@code {
+	[Parameter]
+	public required BranchedMessage Message { get; init; }
+}

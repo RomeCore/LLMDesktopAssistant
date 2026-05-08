@@ -1,0 +1,72 @@
+﻿@using Markdig
+@using Markdig.Syntax
+@using Markdig.Renderers.Html
+
+<div class="markdown-content">
+	@((MarkupString)HtmlContent)
+</div>
+
+@code {
+	[Parameter]
+	public required string MarkdownText { get; init; }
+
+	private string HtmlContent { get; set; } = string.Empty;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		await Task.Run(() => HtmlContent = ConvertMarkdownToHtml(MarkdownText));
+	}
+
+	private string ConvertMarkdownToHtml(string markdown)
+	{
+		if (string.IsNullOrWhiteSpace(markdown))
+			return string.Empty;
+
+		var pipeline = GetMarkdownPipeline();
+		var html = Markdown.ToHtml(markdown, pipeline);
+
+		return html;
+	}
+
+	private static MarkdownPipeline? _pipeline, _pipelineWithAdvancedExtensions;
+
+	private static MarkdownPipeline GetMarkdownPipeline(bool enabledAdvancedExtensions = true)
+	{
+		if (enabledAdvancedExtensions)
+		{
+			if (_pipelineWithAdvancedExtensions != null)
+				return _pipelineWithAdvancedExtensions;
+		}
+		else
+		{
+			if (_pipeline != null)
+				return _pipeline;
+		}
+
+		var builder = new MarkdownPipelineBuilder();
+
+		builder.UseAdvancedExtensions();
+
+		if (enabledAdvancedExtensions)
+		{
+			builder.UseFootnotes();
+			builder.UseGridTables();
+			builder.UseAutoIdentifiers();
+			builder.UseMediaLinks();
+			builder.UsePipeTables();
+			builder.UseListExtras();
+			builder.UseTaskLists();
+			builder.UseDiagrams();
+			builder.UseCustomContainers();
+		}
+
+		var pipeline = builder.Build();
+
+		if (enabledAdvancedExtensions)
+			_pipelineWithAdvancedExtensions = pipeline;
+		else
+			_pipeline = pipeline;
+
+		return pipeline;
+	}
+}

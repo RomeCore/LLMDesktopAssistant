@@ -20,12 +20,12 @@ namespace LLMDesktopAssistant.Blazor
 		public void Start()
 		{
 			if (IsRunning)
-				throw new InvalidOperationException("Chat Blazor UI is already running.");
+				throw new InvalidOperationException("Blazor Chat UI is already running.");
 			if (_stateSemaphore.CurrentCount == 0)
-				throw new InvalidOperationException("Chat Blazor UI is already starting or stopping.");
+				throw new InvalidOperationException("Blazor UI is already starting or stopping.");
 			_stateSemaphore.Wait();
 
-			Log.Information("Starting Chat Blazor UI...");
+			Log.Information("Starting Blazor Chat UI...");
 
 			try
 			{
@@ -47,9 +47,16 @@ namespace LLMDesktopAssistant.Blazor
 
 				foreach (var (serviceType, instance) in allServices)
 					if (instance != null)
+					{
 						builder.Services.AddSingleton(serviceType, instance);
+						Log.Information("Added service {Service} of type {Type}", instance.GetType(), serviceType);
+					}
 
-				builder.Services.AddServerSideBlazor();
+				builder.Services.AddServerSideBlazor(options =>
+				{
+					options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(1);
+					options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1);
+				});
 
 				// Add services to the container.
 				builder.Services.AddRazorComponents()
@@ -80,7 +87,7 @@ namespace LLMDesktopAssistant.Blazor
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, "Failed to start Chat Blazor UI.");
+				Log.Error(ex, "Failed to start Blazor Chat UI.");
 			}
 			finally
 			{
@@ -91,12 +98,12 @@ namespace LLMDesktopAssistant.Blazor
 		public void Stop()
 		{
 			if (!IsRunning)
-				throw new InvalidOperationException("Chat Blazor UI is not running.");
+				throw new InvalidOperationException("Blazor Chat UI is not running.");
 			if (_stateSemaphore.CurrentCount == 0)
-				throw new InvalidOperationException("Chat Blazor UI is already starting or stopping.");
+				throw new InvalidOperationException("Blazor Chat UI is already starting or stopping.");
 			_stateSemaphore.Wait();
 
-			Log.Information("Stopping Chat Blazor UI...");
+			Log.Information("Stopping Blazor Chat UI...");
 
 			try
 			{
@@ -106,7 +113,7 @@ namespace LLMDesktopAssistant.Blazor
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, "Failed to start Chat Blazor UI.");
+				Log.Error(ex, "Failed to start Blazor Chat UI.");
 			}
 			finally
 			{
