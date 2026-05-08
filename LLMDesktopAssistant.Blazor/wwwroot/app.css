@@ -58,3 +58,115 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* ========== MESSAGES ========== */
+.message-row {
+    display: flex;
+    flex-direction: column;
+    margin: 4px 40px;
+    max-width: 75%;
+    min-width: 0;
+}
+
+.user-message-row {
+    align-items: flex-end;
+    margin-left: auto;
+}
+
+.assistant-message-row {
+    align-items: flex-start;
+}
+
+.message-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+}
+
+.user-message-header {
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+}
+
+.avatar-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    background: rgba(128, 128, 128, 0.2);
+    border-radius: 4px;
+}
+
+.sender-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.user-message-header .sender-name {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.assistant-message-row .sender-name {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.message-body {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.user-message-body {
+    display: flex;
+    justify-content: flex-end;
+    min-width: 0;
+}
+
+.message-bubble {
+    padding: 8px 12px;
+    border-radius: 16px;
+    max-width: 100%;
+    width: fit-content;
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.user-bubble {
+    background-color: #0078d4;
+    color: white;
+    border-radius: 16px 16px 4px 16px;
+}
+
+.chat-messages-container {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-x: hidden;
+}
+
+.chat-messages-container pre,
+.chat-messages-container code {
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}

@@ -1,4 +1,4 @@
-﻿@page "/chat"
+@page "/chat"
 @using System.Collections.Specialized
 @using LLMDesktopAssistant.Blazor.Components.Messages
 @using LLMDesktopAssistant.LLM.Domain
@@ -6,10 +6,12 @@
 @inject Chat chat
 @rendermode InteractiveServer
 
-@foreach (var message in chat.Messages)
-{
-	<ChatMessageComponent Message="@message" />
-}
+<div class="chat-messages-container">
+	@foreach (var message in chat.Messages)
+	{
+		<ChatMessageComponent Message="@message" />
+	}
+</div>
 
 @code {
 	protected override void OnInitialized()

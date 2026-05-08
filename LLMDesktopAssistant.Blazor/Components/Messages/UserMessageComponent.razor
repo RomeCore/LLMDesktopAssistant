@@ -1,9 +1,35 @@
-﻿@using System.ComponentModel
-@using LLMDesktopAssistant.LLM.Domain;
+@using System.ComponentModel
+@using LLMDesktopAssistant.LLM.Domain
+@using LLMDesktopAssistant.LLM.Services.Users
 @implements IDisposable
 @rendermode InteractiveServer
 
-<MarkdownComponent MarkdownText="@Message.Content"/>
+@inject Chat Chat
+@inject IUserManagementService UserManager
+
+<div class="message-row user-message-row">
+	@if (_showAvatar)
+	{
+		<div class="message-header user-message-header">
+			<span class="sender-name">@_senderName</span>
+			<div class="message-avatar">
+				@if (!string.IsNullOrWhiteSpace(_avatarBase64))
+				{
+					<img src="data:image/png;base64,@_avatarBase64" alt="@_senderName" class="avatar-img" />
+				}
+				else
+				{
+					<span class="avatar-placeholder">👤</span>
+				}
+			</div>
+		</div>
+	}
+	<div class="message-body user-message-body">
+		<div class="message-bubble user-bubble">
+			<MarkdownComponent MarkdownText="@Message.Content" />
+		</div>
+	</div>
+</div>
 
 @code {
 	[Parameter]
@@ -12,11 +38,38 @@
 	[Parameter]
 	public required UserMessage Message { get; init; }
 
+	private bool _showAvatar = true;
+	private string _avatarBase64 = string.Empty;
+	private string _senderName = string.Empty;
+
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
+		LoadAvatar();
 		Message.PropertyChanged += MessagePropertyChanged;
+	}
+
+	private void LoadAvatar()
+	{
+		var prevMessage = BranchedMessage.MessageIndex - 1 >= 0
+				? Chat.Messages[BranchedMessage.MessageIndex - 1].Message as UserMessage
+				: null;
+		_showAvatar = prevMessage == null || Message.SenderLogin != prevMessage.SenderLogin;
+		if (_showAvatar)
+		{
+			var user = UserManager.FindByLogin(Message.SenderLogin);
+			_senderName = user?.Name ?? Message.SenderLogin;
+
+			try
+			{
+				_avatarBase64 = user?.Base64ProfileImage ?? string.Empty;
+			}
+			catch
+			{
+				_avatarBase64 = string.Empty;
+			}
+		}
 	}
 
 	private void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)

@@ -1,9 +1,33 @@
-﻿@using System.ComponentModel
-@using LLMDesktopAssistant.LLM.Domain;
+@using System.ComponentModel
+@using LLMDesktopAssistant.LLM.Domain
+@using LLMDesktopAssistant.LLM.Services.Agents
 @implements IDisposable
 @rendermode InteractiveServer
 
-<MarkdownComponent MarkdownText="@Message.Content" />
+@inject Chat Chat
+@inject IAgentManagementService AgentManager
+
+<div class="message-row assistant-message-row">
+	@if (_showAvatar)
+	{
+		<div class="message-header">
+			<div class="message-avatar">
+				@if (!string.IsNullOrWhiteSpace(_avatarBase64))
+				{
+					<img src="data:image/png;base64,@_avatarBase64" alt="@_senderName" class="avatar-img" />
+				}
+				else
+				{
+					<span class="avatar-placeholder">🤖</span>
+				}
+			</div>
+			<span class="sender-name">@_senderName</span>
+		</div>
+	}
+	<div class="message-body">
+		<MarkdownComponent MarkdownText="@Message.Content" />
+	</div>
+</div>
 
 @code {
 	[Parameter]
@@ -12,11 +36,43 @@
 	[Parameter]
 	public required AssistantMessage Message { get; init; }
 
+	private bool _showAvatar = true;
+	private string _avatarBase64 = string.Empty;
+	private string _senderName = string.Empty;
+
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
+		LoadAvatar();
 		Message.PropertyChanged += MessagePropertyChanged;
+	}
+
+	private void LoadAvatar()
+	{
+		var prevMessage = BranchedMessage.MessageIndex - 1 >= 0
+				? Chat.Messages[BranchedMessage.MessageIndex - 1].Message as AssistantMessage
+				: null;
+
+		_showAvatar = prevMessage == null || Message.SenderAgentId != prevMessage.SenderAgentId;
+		if (_showAvatar)
+		{
+			try
+			{
+				var agent = AgentManager.GetAgentDescriptor(Message.SenderAgentId);
+				_senderName = agent.Info.Name;
+
+				if (!string.IsNullOrWhiteSpace(agent.Info.Base64ProfileImage))
+				{
+					_avatarBase64 = agent.Info.Base64ProfileImage;
+				}
+			}
+			catch
+			{
+				_senderName = "Assistant";
+				_avatarBase64 = string.Empty;
+			}
+		}
 	}
 
 	private void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
