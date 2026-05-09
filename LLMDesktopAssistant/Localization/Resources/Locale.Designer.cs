@@ -2599,6 +2599,42 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Allow context shields.
+        /// </summary>
+        public static string settings_allow_context_shields {
+            get {
+                return ResourceManager.GetString("settings_allow_context_shields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на If enabled, the agent will respect context shields and will not see messages placed after them..
+        /// </summary>
+        public static string settings_allow_context_shields_hint {
+            get {
+                return ResourceManager.GetString("settings_allow_context_shields_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Allow summaries.
+        /// </summary>
+        public static string settings_allow_summaries {
+            get {
+                return ResourceManager.GetString("settings_allow_summaries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на If enabled, the agent will be able to see summaries of the earlier chat history and stop reading at summarized segments..
+        /// </summary>
+        public static string settings_allow_summaries_hint {
+            get {
+                return ResourceManager.GetString("settings_allow_summaries_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Can be mentioned.
         /// </summary>
         public static string settings_can_be_mentioned {
@@ -2667,6 +2703,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_clone_stage {
             get {
                 return ResourceManager.GetString("settings_clone_stage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Context.
+        /// </summary>
+        public static string settings_context {
+            get {
+                return ResourceManager.GetString("settings_context", resourceCulture);
             }
         }
         

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.WebUI
 {
-	public interface IChatBlazorUIStarter
+	public interface IChatWebUIStarter
 	{
 		public bool IsRunning { get; }
 
-		public void Start();
+		public void Start(WebUIStartupSettings settings);
 		public void Stop();
 	}
 }

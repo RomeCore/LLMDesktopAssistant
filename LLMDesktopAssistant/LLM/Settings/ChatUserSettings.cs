@@ -1,6 +1,6 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Settings;
+﻿using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.WebUI;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {

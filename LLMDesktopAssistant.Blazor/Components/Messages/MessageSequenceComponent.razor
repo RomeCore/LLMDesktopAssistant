@@ -1,0 +1,32 @@
+﻿@using System.Collections.Specialized
+@using LLMDesktopAssistant.Blazor.Components.Messages
+@using LLMDesktopAssistant.Utils
+@using LLMDesktopAssistant.LLM.Domain
+@rendermode InteractiveServer
+
+@foreach (var message in Messages)
+{
+	<ChatMessageComponent Message="@message" />
+}
+
+@code {
+	[Parameter]
+	public required RangeObservableCollection<BranchedMessage> Messages { get; init; }
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		Messages.CollectionChanged += MessagesChanged;
+	}
+
+	private void MessagesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		InvokeAsync(StateHasChanged);
+	}
+
+	public void Dispose()
+	{
+		Messages.CollectionChanged -= MessagesChanged;
+	}
+}

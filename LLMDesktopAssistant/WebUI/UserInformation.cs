@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LLMDesktopAssistant.LLM.Domain
+namespace LLMDesktopAssistant.WebUI
 {
 	public class UserInformation : NotifyPropertyChanged
 	{
@@ -14,6 +14,27 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _login;
 			set => SetProperty(ref _login, value);
+		}
+
+		private bool _isLocallyActive = true;
+		/// <summary>
+		/// Indicates whether the user is currently active as a local user.
+		/// </summary>
+		public bool IsLocallyActive
+		{
+			get => _isLocallyActive;
+			set => SetProperty(ref _isLocallyActive, value);
+		}
+
+		private string? _passwordHash;
+		/// <summary>
+		/// The hash of the user's password. This is used for authentication purposes.
+		/// Not usable when user is local.
+		/// </summary>
+		public string? PasswordHash
+		{
+			get => _passwordHash;
+			set => SetProperty(ref _passwordHash, value);
 		}
 
 		private string _name = string.Empty;

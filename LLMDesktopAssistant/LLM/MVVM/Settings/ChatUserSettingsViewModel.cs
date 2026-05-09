@@ -1,7 +1,7 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.WebUI;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Utils;
 using SixLabors.ImageSharp;

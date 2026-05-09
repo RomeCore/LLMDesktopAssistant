@@ -2,22 +2,23 @@ using System.Reflection;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.WebUI;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Serilog;
 
 namespace LLMDesktopAssistant.Blazor
 {
-	[ChatService(typeof(IChatBlazorUIStarter))]
+	[ChatService(typeof(IChatWebUIStarter))]
 	public class ChatBlazorUIStarter(
 		IServiceProvider chatServices
-	) : Disposable, IChatBlazorUIStarter
+	) : Disposable, IChatWebUIStarter
 	{
 		private WebApplication? _webApp;
 		private SemaphoreSlim _stateSemaphore = new SemaphoreSlim(1, 1);
 
 		public bool IsRunning { get; private set; } = false;
 
-		public void Start()
+		public void Start(WebUIStartupSettings settings)
 		{
 			if (IsRunning)
 				throw new InvalidOperationException("Blazor Chat UI is already running.");
@@ -33,7 +34,11 @@ namespace LLMDesktopAssistant.Blazor
 				{
 					WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
 					ContentRootPath = Directory.GetCurrentDirectory(),
-					EnvironmentName = "Development",
+#if DEBUG
+					EnvironmentName = Environments.Development,
+#else
+					EnvironmentName = Environments.Production,
+#endif
 				});
 
 				// Add existing services
@@ -47,10 +52,10 @@ namespace LLMDesktopAssistant.Blazor
 
 				foreach (var (serviceType, instance) in allServices)
 					if (instance != null)
-					{
 						builder.Services.AddSingleton(serviceType, instance);
-						Log.Information("Added service {Service} of type {Type}", instance.GetType(), serviceType);
-					}
+
+				// Add startup settings
+				builder.Services.AddSingleton(settings);
 
 				builder.Services.AddServerSideBlazor(options =>
 				{
@@ -81,7 +86,7 @@ namespace LLMDesktopAssistant.Blazor
 				app.MapRazorComponents<Components.App>()
 					.AddInteractiveServerRenderMode();
 
-				app.RunAsync();
+				app.RunAsync(settings.EndpointUrl);
 
 				IsRunning = true;
 			}
@@ -113,7 +118,7 @@ namespace LLMDesktopAssistant.Blazor
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, "Failed to start Blazor Chat UI.");
+				Log.Error(ex, "Failed to stop Blazor Chat UI.");
 			}
 			finally
 			{

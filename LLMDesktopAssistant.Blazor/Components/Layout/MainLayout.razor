@@ -1,16 +1,23 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+<div class="page @(_isChatPage ? "chat-page" : "")">
+    @if (!_isChatPage)
+    {
+        <div class="sidebar">
+            <NavMenu />
         </div>
+    }
 
-        <article class="content px-4">
+    <main class="@(_isChatPage ? "chat-main" : "")">
+        @if (!_isChatPage)
+        {
+            <div class="top-row px-4">
+                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            </div>
+        }
+
+        <article class="content @(_isChatPage ? "chat-content" : "px-4")">
             @Body
         </article>
     </main>
@@ -21,3 +28,12 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private bool _isChatPage = false;
+
+    protected override void OnInitialized()
+    {
+        _isChatPage = Navigation.Uri.EndsWith("/chat") || Navigation.Uri.Contains("/chat");
+    }
+}

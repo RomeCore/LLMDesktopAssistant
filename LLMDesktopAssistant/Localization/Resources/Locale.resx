@@ -1314,4 +1314,19 @@
   <data name="time_wait_completed" xml:space="preserve">
     <value>Completed ({0})</value>
   </data>
+  <data name="settings_allow_context_shields" xml:space="preserve">
+    <value>Allow context shields</value>
+  </data>
+  <data name="settings_allow_context_shields_hint" xml:space="preserve">
+    <value>If enabled, the agent will respect context shields and will not see messages placed after them.</value>
+  </data>
+  <data name="settings_allow_summaries" xml:space="preserve">
+    <value>Allow summaries</value>
+  </data>
+  <data name="settings_allow_summaries_hint" xml:space="preserve">
+    <value>If enabled, the agent will be able to see summaries of the earlier chat history and stop reading at summarized segments.</value>
+  </data>
+  <data name="settings_context" xml:space="preserve">
+    <value>Context</value>
+  </data>
 </root>

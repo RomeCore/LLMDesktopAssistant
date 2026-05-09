@@ -1,29 +1,117 @@
 @page "/chat"
-@using System.Collections.Specialized
 @using LLMDesktopAssistant.Blazor.Components.Messages
 @using LLMDesktopAssistant.LLM.Domain
+@using LLMDesktopAssistant.LLM.Services
+@using LLMDesktopAssistant.LLM.Services.Users
+
 @implements IDisposable
 @inject Chat chat
+@inject IChatOperationService chatOperation
+@inject IUserManagementService userManager
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
-<div class="chat-messages-container">
-	@foreach (var message in chat.Messages)
-	{
-		<ChatMessageComponent Message="@message" />
-	}
+<div class="chat-layout">
+	<div class="chat-messages-container" id="messages-container">
+		<MessageSequenceComponent Messages="@chat.Messages" />
+	</div>
+
+	<div class="chat-input-area">
+		<div class="chat-input-row">
+			<input class="chat-input"
+				   @bind="_inputText"
+				   @bind:event="oninput"
+				   @onkeydown="HandleKeyDown"
+				   placeholder="Введите сообщение..."
+				   disabled="@_isSending" />
+			<button class="chat-send-btn"
+					@onclick="SendMessage"
+					disabled="@_isSending || string.IsNullOrWhiteSpace(_inputText)">
+				@if (_isSending)
+				{
+					<span class="sending-spinner">⏳</span>
+				}
+				else
+				{
+					<span>➤</span>
+				}
+			</button>
+		</div>
+	</div>
 </div>
 
 @code {
-	protected override void OnInitialized()
+	private string _inputText = string.Empty;
+	private bool _isSending = false;
+
+	protected override async Task OnInitializedAsync()
 	{
-		base.OnInitialized();
+		await base.OnInitializedAsync();
 
 		chat.Messages.CollectionChanged += MessagesChanged;
 	}
 
-	private void MessagesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		InvokeAsync(StateHasChanged);
+		await base.OnAfterRenderAsync(firstRender);
+
+		await ScrollToBottom();
+	}
+
+	private async void MessagesChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+	{
+		await InvokeAsync(StateHasChanged);
+		await ScrollToBottom();
+	}
+
+	private async Task HandleKeyDown(KeyboardEventArgs e)
+	{
+		if (e.Key == "Enter" && !e.ShiftKey)
+		{
+			await SendMessage();
+		}
+	}
+
+	private async Task SendMessage()
+	{
+		var text = _inputText?.Trim();
+		if (string.IsNullOrWhiteSpace(text) || _isSending)
+			return;
+
+		_isSending = true;
+		_inputText = string.Empty;
+
+		try
+		{
+			var user = userManager.GetAllUsers().FirstOrDefault();
+			var senderLogin = user?.Login ?? "anonymous";
+
+			await chatOperation.SendUserInputAsync(new UserInput
+			{
+				Content = text,
+				SenderLogin = senderLogin,
+				Attachments = [],
+				Visibility = MessageVisibility.Always,
+				VisibleTo = []
+			});
+		}
+		catch (Exception ex)
+		{
+			Console.Error.WriteLine($"Failed to send message: {ex.Message}");
+		}
+		finally
+		{
+			_isSending = false;
+		}
+	}
+
+	private async Task ScrollToBottom()
+	{
+		await InvokeAsync(async () =>
+		{
+			await Task.Delay(50);
+			await JS.InvokeVoidAsync("scrollToBottom", "messages-container");
+		});
 	}
 
 	public void Dispose()

@@ -65,10 +65,33 @@ namespace LLMDesktopAssistant.Agents
 		}
 
 		private int _maxVisibleRounds = 0;
+		/// <summary>
+		/// The maximum number of rounds that the agent can see in its context.
+		/// </summary>
 		public int MaxVisibleRounds
 		{
 			get => _maxVisibleRounds;
 			set => SetProperty(ref _maxVisibleRounds, value);
+		}
+
+		private bool _allowContextShields = true;
+		/// <summary>
+		/// Whether the agent can use context shields to prevent seeing messages after shields.
+		/// </summary>
+		public bool AllowContextShields
+		{
+			get => _allowContextShields;
+			set => SetProperty(ref _allowContextShields, value);
+		}
+
+		private bool _allowSummaries = true;
+		/// <summary>
+		/// Whether the agent is allowed to see summaries of messages in chat history and stop on them.
+		/// </summary>
+		public bool AllowSummaries
+		{
+			get => _allowSummaries;
+			set => SetProperty(ref _allowSummaries, value);
 		}
 	}
 }

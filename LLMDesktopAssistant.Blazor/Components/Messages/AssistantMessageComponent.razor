@@ -24,9 +24,40 @@
 			<span class="sender-name">@_senderName</span>
 		</div>
 	}
-	<div class="message-body">
-		<MarkdownComponent MarkdownText="@Message.Content" />
-	</div>
+
+	@if (!string.IsNullOrWhiteSpace(_reasoningContent))
+	{
+		<div class="reasoning-container">
+			<details class="reasoning-details" open="@_reasoningExpanded">
+				<summary class="reasoning-summary">💭 Reasoning</summary>
+				<div class="reasoning-text">
+					<MarkdownComponent MarkdownText="@_reasoningContent" />
+				</div>
+			</details>
+		</div>
+	}
+
+	@if (!string.IsNullOrWhiteSpace(Message.Content))
+	{
+		<div class="message-body">
+			<MarkdownComponent MarkdownText="@Message.Content" />
+		</div>
+	}
+
+	@if (_toolCalls.Count > 0)
+	{
+		<div class="toolcalls-container">
+			@foreach (var toolCall in _toolCalls)
+			{
+				<ToolCallComponent ToolCall="@toolCall" />
+			}
+		</div>
+	}
+
+	@if (!string.IsNullOrWhiteSpace(_error))
+	{
+		<div class="message-error">❌ @_error</div>
+	}
 </div>
 
 @code {
@@ -39,12 +70,17 @@
 	private bool _showAvatar = true;
 	private string _avatarBase64 = string.Empty;
 	private string _senderName = string.Empty;
+	private string _reasoningContent = string.Empty;
+	private bool _reasoningExpanded = false;
+	private List<ToolCall> _toolCalls = [];
+	private string _error = string.Empty;
 
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
 		LoadAvatar();
+		LoadParts();
 		Message.PropertyChanged += MessagePropertyChanged;
 	}
 
@@ -75,9 +111,31 @@
 		}
 	}
 
+	private void LoadParts()
+	{
+		_reasoningContent = Message.ReasoningContent ?? string.Empty;
+		_reasoningExpanded = !Message.IsCompleted;
+		_toolCalls = [.. Message.ToolCalls];
+		_error = Message.Error ?? string.Empty;
+	}
+
 	private void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		InvokeAsync(StateHasChanged);
+		InvokeAsync(() =>
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(AssistantMessage.ReasoningContent):
+					_reasoningContent = Message.ReasoningContent ?? string.Empty;
+					break;
+				case nameof(AssistantMessage.Error):
+					_error = Message.Error ?? string.Empty;
+					break;
+			}
+			_reasoningExpanded = !Message.IsCompleted;
+			_toolCalls = [.. Message.ToolCalls];
+			StateHasChanged();
+		});
 	}
 
 	public void Dispose()

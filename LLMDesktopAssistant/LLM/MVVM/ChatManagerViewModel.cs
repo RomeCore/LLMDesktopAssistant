@@ -3,6 +3,7 @@ using LiveMarkdown.Avalonia;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization.Resources;
+using LLMDesktopAssistant.WebUI;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -67,12 +68,12 @@ namespace LLMDesktopAssistant.LLM
 			_currentChatScope = ChatServices.ManagementService.OpenChatScope(id);
 			var chatServices = _currentChatScope.ServiceProvider;
 			var chat = chatServices.GetRequiredService<Chat>();
-			var blazorStarter = chatServices.GetService<IChatBlazorUIStarter>();
+			var blazorStarter = chatServices.GetService<IChatWebUIStarter>();
 			CurrentChat = new ChatViewModel(chat);
 
 			if (blazorStarter != null)
 			{
-				blazorStarter.Start();
+				blazorStarter.Start(new WebUIStartupSettings());
 			}
 		}
 

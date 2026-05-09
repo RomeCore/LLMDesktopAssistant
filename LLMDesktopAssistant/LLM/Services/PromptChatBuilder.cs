@@ -450,7 +450,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				var message = messagesToProcess[i].Message;
 
-				if (message.AdditionalViewModels.Has<ContextShieldViewModel>())
+				if (readSettings.AllowContextShields && message.AdditionalViewModels.Has<ContextShieldViewModel>())
 					break;
 
 				if (message is Domain.UserMessage)
@@ -463,7 +463,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					}
 				}
 
-				if (message.AdditionalViewModels.TryGet<SummaryViewModel>(out var summaryViewModel) &&
+				if (readSettings.AllowSummaries &&
+					message.AdditionalViewModels.TryGet<SummaryViewModel>(out var summaryViewModel) &&
 					summaryViewModel.Completed)
 				{
 					summaryOfPrevMessages = summaryViewModel.Summary;

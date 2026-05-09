@@ -1314,4 +1314,19 @@
   <data name="time_wait_completed" xml:space="preserve">
     <value>Завершено ({0})</value>
   </data>
+  <data name="settings_allow_context_shields" xml:space="preserve">
+    <value>Учитывать щиты контекста</value>
+  </data>
+  <data name="settings_allow_context_shields_hint" xml:space="preserve">
+    <value>Если включено, агент будет уважать щиты контекста и не будет видеть сообщения, размещённые после них.</value>
+  </data>
+  <data name="settings_allow_summaries" xml:space="preserve">
+    <value>Учитывать суммаризацию</value>
+  </data>
+  <data name="settings_allow_summaries_hint" xml:space="preserve">
+    <value>Если включено, агент сможет видеть суммаризацию ранних сообщений чата и останавливаться на суммаризированных сегментах.</value>
+  </data>
+  <data name="settings_context" xml:space="preserve">
+    <value>Контекст</value>
+  </data>
 </root>
