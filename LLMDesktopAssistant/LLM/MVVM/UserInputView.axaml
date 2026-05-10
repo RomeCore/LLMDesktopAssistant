@@ -75,6 +75,15 @@
 
 					<ico:MaterialIcon Kind="Paperclip"/>
 				</Button>
+				<!-- Blazor Web UI Host -->
+				<Button Classes="IconButton"
+						Command="{Binding OpenBlazorWebUICommand}"
+						ToolTip.Tip="{loc:Loc blazor_host_title}">
+
+					<ico:MaterialIcon Kind="Web"/>
+				</Button>
+
+
 
 			</StackPanel>
 

@@ -1329,4 +1329,41 @@
   <data name="settings_context" xml:space="preserve">
     <value>Context</value>
   </data>
+  <data name="blazor_host_title" xml:space="preserve">
+    <value>Blazor Web UI Host</value>
+  </data>
+  <data name="blazor_host_status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="blazor_host_url" xml:space="preserve">
+    <value>Endpoint URL</value>
+  </data>
+  <data name="blazor_host_copy_url" xml:space="preserve">
+    <value>Copy URL to clipboard</value>
+  </data>
+  <data name="blazor_host_open_browser" xml:space="preserve">
+    <value>Open in browser</value>
+  </data>
+  <data name="blazor_host_settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="blazor_host_port" xml:space="preserve">
+    <value>Endpoint URL</value>
+  </data>
+  <data name="blazor_host_password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="blazor_host_password_placeholder" xml:space="preserve">
+    <value>Leave empty for no password</value>
+  </data>
+  <data name="blazor_host_start" xml:space="preserve">
+    <value>▶ Start</value>
+  </data>
+  <data name="blazor_host_stop" xml:space="preserve">
+    <value>■ Stop</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+
 </root>

@@ -11,12 +11,17 @@ namespace LLMDesktopAssistant.Blazor
 	[ChatService(typeof(IChatWebUIStarter))]
 	public class ChatBlazorUIStarter(
 		IServiceProvider chatServices
-	) : Disposable, IChatWebUIStarter
+	) : NotifyPropertyChanged, IChatWebUIStarter
 	{
 		private WebApplication? _webApp;
 		private SemaphoreSlim _stateSemaphore = new SemaphoreSlim(1, 1);
 
-		public bool IsRunning { get; private set; } = false;
+		private bool _isRunning = false;
+		public bool IsRunning
+		{
+			get => _isRunning;
+			private set => SetProperty(ref _isRunning, value);
+		}
 
 		public void Start(WebUIStartupSettings settings)
 		{

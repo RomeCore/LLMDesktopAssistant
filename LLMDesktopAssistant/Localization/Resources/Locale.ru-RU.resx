@@ -1329,4 +1329,41 @@
   <data name="settings_context" xml:space="preserve">
     <value>Контекст</value>
   </data>
+  <data name="blazor_host_title" xml:space="preserve">
+    <value>Blazor Веб-интерфейс</value>
+  </data>
+  <data name="blazor_host_status" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="blazor_host_url" xml:space="preserve">
+    <value>Адрес</value>
+  </data>
+  <data name="blazor_host_copy_url" xml:space="preserve">
+    <value>Скопировать адрес</value>
+  </data>
+  <data name="blazor_host_open_browser" xml:space="preserve">
+    <value>Открыть в браузере</value>
+  </data>
+  <data name="blazor_host_settings" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="blazor_host_port" xml:space="preserve">
+    <value>Адрес</value>
+  </data>
+  <data name="blazor_host_password" xml:space="preserve">
+    <value>Пароль</value>
+  </data>
+  <data name="blazor_host_password_placeholder" xml:space="preserve">
+    <value>Оставьте пустым, если пароль не нужен</value>
+  </data>
+  <data name="blazor_host_start" xml:space="preserve">
+    <value>▶ Запустить</value>
+  </data>
+  <data name="blazor_host_stop" xml:space="preserve">
+    <value>■ Остановить</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+
 </root>

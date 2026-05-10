@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel;
 
 namespace LLMDesktopAssistant.WebUI
 {
-	public interface IChatWebUIStarter
+	public interface IChatWebUIStarter : INotifyPropertyChanged
 	{
 		public bool IsRunning { get; }
 

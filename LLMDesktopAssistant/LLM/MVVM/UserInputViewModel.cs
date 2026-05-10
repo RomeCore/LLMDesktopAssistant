@@ -10,6 +10,8 @@ using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using Serilog;
+using LLMDesktopAssistant.WebUI;
+
 using LLMDesktopAssistant.LLM.Services.Users;
 
 namespace LLMDesktopAssistant.LLM.MVVM
@@ -160,6 +162,13 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public ICommand OpenAttachmentsManagerCommand { get; }
 
 		/// <summary>
+		/// Command to open Blazor Web UI hosting dialog.
+		/// </summary>
+		public ICommand OpenBlazorWebUICommand { get; }
+
+
+
+		/// <summary>
 		/// Command to send a message.
 		/// </summary>
 		public ICommand SendMessageCommand { get; }
@@ -271,6 +280,14 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				var viewModel = new AttachmentsManagerViewModel(this);
 				await DialogManager.ShowDialogAsync(viewModel);
 			});
+
+			OpenBlazorWebUICommand = new AsyncRelayCommand(async () =>
+			{
+				var viewModel = new BlazorHostViewModel(Chat.Services);
+				await DialogManager.ShowDialogAsync(viewModel);
+			});
+
+
 
 			SendMessageCommand = new SendMessageCommandObject(this);
 			CancelEditCommand = new CancelEditCommandObject(this);
