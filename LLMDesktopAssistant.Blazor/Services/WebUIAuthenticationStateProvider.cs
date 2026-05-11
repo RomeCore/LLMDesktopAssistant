@@ -1,7 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-
-
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,27 +12,47 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 {
 	private readonly IUserManagementService _userManager;
 	private readonly IPasswordHashingService _passwordHasher;
-	private readonly ILogger<WebUIAuthenticationStateProvider> _logger;
+	private readonly IHttpContextAccessor _httpContextAccessor;
 	private readonly RemoteUsersConfiguration _remoteConfig;
-
+	private readonly ILogger<WebUIAuthenticationStateProvider> _logger;
 	private readonly ReaderWriterLockSlim _lock = new();
 
-	private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
+	private ClaimsPrincipal? _currentUser;
 	private Timer? _sessionTimer;
 	private DateTime _lastActivity = DateTime.UtcNow;
 	private readonly TimeSpan _sessionTimeout = TimeSpan.FromHours(8);
+	private bool _initialized = false;
 
 	public WebUIAuthenticationStateProvider(
 		IUserManagementService userManager,
 		IPasswordHashingService passwordHasher,
-		ILogger<WebUIAuthenticationStateProvider> logger)
+		ILogger<WebUIAuthenticationStateProvider> logger,
+		IHttpContextAccessor httpContextAccessor)
 	{
 		_userManager = userManager;
 		_passwordHasher = passwordHasher;
-		_logger = logger;
+		_httpContextAccessor = httpContextAccessor;
 		_remoteConfig = SettingsManager.Get<RemoteUsersConfiguration>();
+		_logger = logger;
 
 		_sessionTimer = new Timer(_ => CheckSession(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
+	}
+
+	private ClaimsPrincipal GetUserClaims()
+	{
+		if (_currentUser != null)
+			return _currentUser;
+
+		var httpContext = _httpContextAccessor.HttpContext;
+		if (httpContext?.User.Identity?.IsAuthenticated == true)
+		{
+			_currentUser = httpContext.User;
+			_logger.LogInformation("Session restored from cookie for user: {User}",
+				_currentUser.Identity?.Name);
+		}
+
+		_lastActivity = DateTime.UtcNow;
+		return _currentUser ?? new ClaimsPrincipal(new ClaimsIdentity());
 	}
 
 	public override Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -44,8 +60,7 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 		_lock.EnterReadLock();
 		try
 		{
-			_lastActivity = DateTime.UtcNow;
-			return Task.FromResult(new AuthenticationState(_currentUser));
+			return Task.FromResult(new AuthenticationState(GetUserClaims()));
 		}
 		finally
 		{
@@ -100,7 +115,7 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 		return true;
 	}
 
-	public async Task LogoutAsync()
+	public void Logout()
 	{
 		_lock.EnterWriteLock();
 		try
@@ -144,20 +159,20 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 
 	public UserInformation? GetCurrentUser()
 	{
-		var login = _currentUser.FindFirst("Login")?.Value;
+		var login = GetUserClaims().FindFirst("Login")?.Value;
 		if (login == null) return null;
 		return _userManager.FindByLogin(login);
 	}
 
 	private void CheckSession()
 	{
-		if (!_currentUser.Identity?.IsAuthenticated ?? false)
+		if (!GetUserClaims().Identity?.IsAuthenticated ?? false)
 			return;
 
 		if (DateTime.UtcNow - _lastActivity > _sessionTimeout)
 		{
-			_logger.LogInformation("Session timeout for user: {User}", _currentUser.Identity?.Name);
-			_ = LogoutAsync();
+			_logger.LogInformation("Session timeout for user: {User}", GetUserClaims().Identity?.Name);
+			Logout();
 		}
 	}
 

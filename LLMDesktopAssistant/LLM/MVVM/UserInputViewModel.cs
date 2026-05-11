@@ -28,9 +28,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			public event EventHandler? CanExecuteChanged;
 
 			private readonly UserInputViewModel _vm;
-			public SendMessageCommandObject(UserInputViewModel vm)
+			private readonly bool _generate;
+			public SendMessageCommandObject(UserInputViewModel vm, bool generate)
 			{
 				_vm = vm;
+				_generate = generate;
 				_vm.Chat.SubscribeChanged(nameof(Chat.GenerationCts), _ =>
 				{
 					InvokeUI(() =>
@@ -49,7 +51,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				try
 				{
-					await _vm.SendCurrentUserInputAsync();
+					await _vm.SendCurrentUserInputAsync(_generate);
 				}
 				catch (Exception ex)
 				{
@@ -172,6 +174,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public ICommand SendMessageCommand { get; }
 
 		/// <summary>
+		/// Command to send a message.
+		/// </summary>
+		public ICommand SendGenerateMessageCommand { get; }
+
+		/// <summary>
 		/// Command to cancel edit of the current message.
 		/// </summary>
 		public ICommand CancelEditCommand { get; }
@@ -287,7 +294,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 
 
-			SendMessageCommand = new SendMessageCommandObject(this);
+			SendMessageCommand = new SendMessageCommandObject(this, generate: false);
+			SendGenerateMessageCommand = new SendMessageCommandObject(this, generate: true);
 			CancelEditCommand = new CancelEditCommandObject(this);
 			CancelGenerationCommand = new CancelGenerationCommandObject(this);
 
@@ -315,7 +323,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			return new UserInput
 			{
 				Content = _text,
-				SenderLogin = userManager.GetAllUsers().FirstOrDefault()?.Login ?? "user",
+				SenderLogin = userManager.GetLocalUsers().FirstOrDefault()?.Login ?? "user",
 				Attachments = _attachments.Select(a => a.Attachment).ToImmutableList(),
 				Visibility = _selectedVisibility.Visibility,
 			};
@@ -371,7 +379,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		/// <param name="cts">The cancellation token to monitor for cancellation requests.</param>
 		/// <returns>A task that represents the asynchronous operation.</returns>
-		public Task SendCurrentUserInputAsync(CancellationToken cts = default)
+		public Task SendCurrentUserInputAsync(bool generate, CancellationToken cts = default)
 		{
 			var userInput = GetCurrentUserInput();
 			var editingMessage = EditingMessage;
@@ -381,8 +389,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				var chatOperator = Chat.Services.GetRequiredService<IChatOperationService>();
 				if (editingMessage != null)
-					return chatOperator.SendEditedUserInputAsync(editingMessage.MessageIndex, userInput, cts);
-				return chatOperator.SendUserInputAsync(userInput, cts);
+					return chatOperator.SendEditedUserInputAsync(editingMessage.MessageIndex, userInput, generate, cts);
+				return chatOperator.SendUserInputAsync(userInput, generate, cts);
 			}
 
 			return Task.CompletedTask;

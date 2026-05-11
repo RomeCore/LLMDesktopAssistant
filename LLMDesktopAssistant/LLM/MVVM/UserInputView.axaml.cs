@@ -34,7 +34,7 @@ public partial class UserInputView : UserControl
 					if (viewModel.IsGenerating)
 						viewModel.CancelGenerationCommand.Execute(null);
 					else if (!string.IsNullOrWhiteSpace(viewModel.Text))
-						viewModel.SendCurrentUserInputAsync();
+						viewModel.SendCurrentUserInputAsync(generate: true);
 					e.Handled = true;
 				}
 			}

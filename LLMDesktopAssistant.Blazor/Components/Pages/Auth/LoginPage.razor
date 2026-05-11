@@ -1,8 +1,7 @@
 @page "/login"
 @using Material.Icons
-@using LLMDesktopAssistant.Blazor.Services
-@inject WebUIAuthenticationStateProvider AuthProvider
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 @implements IDisposable
@@ -14,7 +13,7 @@
 				<MaterialIconComponent Kind="@MaterialIconKind.ShieldAccount" Size="48" Color="#0078d4" />
 			</div>
 			<h1 class="auth-title">dASS WebUI</h1>
-			<p class="auth-subtitle">Авторизация</p>
+			<p class="auth-subtitle">Sign in to your account</p>
 		</div>
 
 		@if (_errorMessage != null)
@@ -27,25 +26,25 @@
 
 		<div class="auth-form">
 			<div class="auth-field">
-				<label for="login-input">Логин</label>
+				<label for="login-input">Login</label>
 				<input id="login-input"
 					   type="text"
 					   @bind="_login"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="Введи логин..."
+					   placeholder="Enter your login..."
 					   disabled="@_isLoading"
 					   @onkeydown="HandleKeyDown" />
 			</div>
 
 			<div class="auth-field">
-				<label for="password-input">Пароль</label>
+				<label for="password-input">Password</label>
 				<input id="password-input"
 					   type="password"
 					   @bind="_password"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="Введи пароль..."
+					   placeholder="Enter your password..."
 					   disabled="@_isLoading"
 					   @onkeydown="HandleKeyDown" />
 			</div>
@@ -56,18 +55,18 @@
 				@if (_isLoading)
 				{
 					<span class="auth-spinner"></span>
-					<span>Вхожу...</span>
+					<span>Signing in...</span>
 				}
 				else
 				{
 					<MaterialIconComponent Kind="@MaterialIconKind.Login" Size="18" Color="white" />
-					<span>Войти</span>
+					<span>Sign In</span>
 				}
 			</button>
 
 			<div class="auth-footer">
-				<span>Нет аккаунта?</span>
-				<a href="/register" class="auth-link">Зарегистрироваться</a>
+				<span>Don't have an account?</span>
+				<a href="/register" class="auth-link">Create one</a>
 			</div>
 		</div>
 	</div>
@@ -82,10 +81,17 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		var state = await AuthProvider.GetAuthenticationStateAsync();
-		if (state.User.Identity?.IsAuthenticated == true)
+		try
 		{
-			Navigation.NavigateTo("/chat");
+			var isAuthed = await JS.InvokeAsync<bool>("checkAuth");
+			if (isAuthed)
+			{
+				Navigation.NavigateTo("/chat", forceLoad: true);
+			}
+		}
+		catch
+		{
+			// Not authenticated, show login form
 		}
 	}
 
@@ -108,25 +114,20 @@
 
 		try
 		{
-			var success = await AuthProvider.LoginAsync(_login.Trim(), _password);
+			var success = await JS.InvokeAsync<bool>("loginUser", _login.Trim(), _password);
 
 			if (success)
 			{
-				_redirectCts?.Cancel();
-				_redirectCts = new CancellationTokenSource();
-				
-				await Task.Delay(200, _redirectCts.Token);
-				
-				Navigation.NavigateTo("/chat", forceLoad: false);
+				await JS.InvokeVoidAsync("locationReplace", "/chat");
 			}
 			else
 			{
-				_errorMessage = "Неверный логин или пароль!";
+				_errorMessage = "Invalid login or password.";
 			}
 		}
 		catch (Exception ex)
 		{
-			_errorMessage = $"Ошибка: {ex.Message}";
+			_errorMessage = $"Error: {ex.Message}";
 		}
 		finally
 		{

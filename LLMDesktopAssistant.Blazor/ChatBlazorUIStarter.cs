@@ -74,8 +74,10 @@ namespace LLMDesktopAssistant.Blazor
 				builder.Services.AddRazorComponents()
 					.AddInteractiveServerComponents();
 
-				builder.Services.AddControllers();
+				builder.Services.AddControllers()
+					.AddApplicationPart(typeof(ChatBlazorUIStarter).Assembly);
 
+				builder.Services.AddHttpClient();
 				builder.Services.AddHttpContextAccessor();
 
 				// Register WebUI authentication services

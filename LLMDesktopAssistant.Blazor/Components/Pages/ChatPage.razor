@@ -26,7 +26,7 @@
 	<div class="chat-topbar">
 		<div class="chat-topbar-left">
 			<MaterialIconComponent Kind="@MaterialIconKind.ShieldAccount" Size="20" Color="#0078d4" />
-			<span class="chat-topbar-user">@(AuthProvider.GetCurrentUser()?.Name ?? "Unknown")</span>
+			<span class="chat-topbar-user">@(AuthProvider.GetCurrentUser()?.Name ?? "Anonymous")</span>
 		</div>
 		<div class="chat-topbar-right">
 			<button class="chat-topbar-logout-btn" @onclick="Logout" title="Выйти, сука~">
@@ -49,6 +49,13 @@
 				   placeholder="Введите сообщение..."
 				   disabled="@_isGenerating" />
 
+			@* Send message without generation *@
+			<button class="chat-send-btn"
+					@onclick="SendMessageWithoutGeneration"
+					disabled="@(string.IsNullOrWhiteSpace(_inputText) || _isGenerating)">
+				<MaterialIconComponent Kind="@MaterialIconKind.SendClock" Size="18" Color="white" />
+			</button>
+
 			@if (_isGenerating)
 			{
 				@* Stop / Cancel generation *@
@@ -60,7 +67,7 @@
 			{
 				@* Send message *@
 				<button class="chat-send-btn"
-						@onclick="SendMessage"
+						@onclick="SendMessageWithGeneration"
 						disabled="@string.IsNullOrWhiteSpace(_inputText)">
 					<MaterialIconComponent Kind="@MaterialIconKind.Send" Size="18" Color="white" />
 				</button>
@@ -108,11 +115,11 @@
 
 				if (_isGenerating)
 				{
-					//StartAutoScroll();
+					StartAutoScroll();
 				}
 				else
 				{
-					//StopAutoScroll();
+					StopAutoScroll();
 				}
 			});
 		}
@@ -142,7 +149,7 @@
 			}
 			catch (OperationCanceledException)
 			{
-				
+
 			}
 		}, token);
 	}
@@ -158,21 +165,24 @@
 	{
 		if (e.Key == "Enter" && !e.ShiftKey)
 		{
-			await SendMessage();
+			await SendMessage(generate: true);
 		}
 	}
 
-	private async Task SendMessage()
+	private async Task SendMessage(bool generate)
 	{
+		if (_isGenerating)
+			return;
+
 		var text = _inputText?.Trim();
-		if (string.IsNullOrWhiteSpace(text) || _isGenerating)
+		if (string.IsNullOrWhiteSpace(text))
 			return;
 
 		_inputText = string.Empty;
 
 		try
 		{
-			var user = userManager.GetAllUsers().FirstOrDefault();
+			var user = AuthProvider.GetCurrentUser();
 			var senderLogin = user?.Login ?? "anonymous";
 
 			await chatOperation.SendUserInputAsync(new UserInput
@@ -182,12 +192,22 @@
 				Attachments = [],
 				Visibility = MessageVisibility.Always,
 				VisibleTo = []
-			});
+			}, generate);
 		}
 		catch (Exception ex)
 		{
 			Console.Error.WriteLine($"Failed to send message: {ex.Message}");
 		}
+	}
+
+	private Task SendMessageWithoutGeneration()
+	{
+		return SendMessage(false);
+	}
+
+	private Task SendMessageWithGeneration()
+	{
+		return SendMessage(true);
 	}
 
 	private void StopGeneration()
@@ -206,7 +226,7 @@
 	{
 		try
 		{
-			await JS.InvokeVoidAsync("scrollToBottom", "messages-container");
+			await JS.InvokeVoidAsync("scrollToBottomIfNeeded", "messages-container");
 		}
 		catch
 		{
@@ -216,7 +236,7 @@
 
 	private async Task Logout()
 	{
-		await AuthProvider.LogoutAsync();
+		await JS.InvokeVoidAsync("logoutUser");
 		NavigationManager.NavigateTo("/login", forceLoad: false);
 	}
 

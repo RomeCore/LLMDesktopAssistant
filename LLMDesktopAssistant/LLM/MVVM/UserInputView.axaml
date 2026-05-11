@@ -118,10 +118,18 @@
 
 					<ico:MaterialIcon Kind="EditOff"/>
 				</Button>
-
+				
 				<!-- Send -->
 				<Button Classes="IconButton"
 						Command="{Binding SendMessageCommand}"
+						ToolTip.Tip="{loc:Loc chat-send_button_hint}">
+
+					<ico:MaterialIcon Kind="SendClock"/>
+				</Button>
+
+				<!-- Send with generation -->
+				<Button Classes="IconButton"
+						Command="{Binding SendGenerateMessageCommand}"
 						IsVisible="{Binding IsGenerating, Converter={StaticResource InverseBooleanConverter}}"
 						ToolTip.Tip="{loc:Loc chat-send_button_hint}">
 

@@ -48,7 +48,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		public async Task SendUserInputAsync(UserInput userInput, CancellationToken cancellationToken = default)
+		public async Task SendUserInputAsync(UserInput userInput, bool generate, CancellationToken cancellationToken = default)
 		{
 			cancellationToken = UpdateCTS(cancellationToken);
 			try
@@ -62,7 +62,9 @@ namespace LLMDesktopAssistant.LLM.Services
 					VisibleTo = userInput.VisibleTo,
 					IsVisibleToWhiteList = false
 				});
-				await executor.GenerateResponseAsync(cancellationToken);
+
+				if (generate)
+					await executor.GenerateResponseAsync(cancellationToken);
 			}
 			finally
 			{
@@ -70,7 +72,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		public async Task SendEditedUserInputAsync(int messageIndex, UserInput userInput, CancellationToken cancellationToken = default)
+		public async Task SendEditedUserInputAsync(int messageIndex, UserInput userInput, bool generate, CancellationToken cancellationToken = default)
 		{
 			if (messageIndex < 0 || messageIndex >= chat.Messages.Count)
 				throw new ArgumentOutOfRangeException(nameof(messageIndex));
@@ -87,7 +89,9 @@ namespace LLMDesktopAssistant.LLM.Services
 					VisibleTo = userInput.VisibleTo,
 					IsVisibleToWhiteList = false
 				});
-				await executor.GenerateResponseAsync(cancellationToken);
+
+				if (generate)
+					await executor.GenerateResponseAsync(cancellationToken);
 			}
 			finally
 			{
