@@ -20,8 +20,7 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 	private ClaimsPrincipal? _currentUser;
 	private Timer? _sessionTimer;
 	private DateTime _lastActivity = DateTime.UtcNow;
-	private readonly TimeSpan _sessionTimeout = TimeSpan.FromHours(8);
-	private bool _initialized = false;
+	private readonly TimeSpan _sessionTimeout = WebUIStaticConfiguration.AuthExpiryTimeSpan;
 
 	public WebUIAuthenticationStateProvider(
 		IUserManagementService userManager,

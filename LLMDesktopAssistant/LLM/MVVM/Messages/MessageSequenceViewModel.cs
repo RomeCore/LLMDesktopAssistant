@@ -1,5 +1,6 @@
 ﻿using Avalonia.Collections;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using System.Collections.Specialized;

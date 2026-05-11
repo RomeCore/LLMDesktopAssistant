@@ -1,0 +1,86 @@
+@using LLMDesktopAssistant.LLM.Domain
+
+@implements IDisposable
+
+@inject Chat chat
+
+<div class="chat-status-bar @(_animating ? "chat-status-animating" : "")" 
+	 style="display: @(_isActive ? "flex" : "none")">
+	
+	<MaterialIconComponent Kind="@chat.StatusIcon" Size="16" Color="#0078d4" />
+	
+	<span class="chat-status-text">@chat.StatusText</span>
+	<span class="chat-status-dots">@_animatedDots</span>
+</div>
+
+@code {
+	private bool _isActive = false;
+	private string _animatedDots = string.Empty;
+	private int _dotCount = 0;
+	private System.Threading.Timer? _dotTimer;
+	private bool _animating = true;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		chat.PropertyChanged += ChatPropertyChanged;
+
+		UpdateStatusFromChat();
+	}
+
+	private void ChatPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(Chat.StatusText) or nameof(Chat.StatusIcon))
+		{
+			InvokeAsync(UpdateStatusFromChat);
+		}
+	}
+
+	private void UpdateStatusFromChat()
+	{
+		_isActive = chat.StatusText != null;
+		StateHasChanged();
+
+		if (_isActive && _dotTimer == null)
+			StartDotTimer();
+		else if (!_isActive && _dotTimer != null)
+			StopDotTimer();
+	}
+
+	private void StartDotTimer()
+	{
+		_dotCount = 0;
+		_dotTimer = new System.Threading.Timer(_ =>
+		{
+			_dotCount = (_dotCount + 1) % 4;
+			var dots = _dotCount switch
+			{
+				0 => "",
+				1 => ".",
+				2 => "..",
+				3 => "...",
+				_ => ""
+			};
+
+			InvokeAsync(() =>
+			{
+				_animatedDots = dots;
+				StateHasChanged();
+			});
+		}, null, 400, 400);
+	}
+
+	private void StopDotTimer()
+	{
+		_dotTimer?.Dispose();
+		_dotTimer = null;
+		_animatedDots = string.Empty;
+	}
+
+	public void Dispose()
+	{
+		chat.PropertyChanged -= ChatPropertyChanged;
+		StopDotTimer();
+	}
+}

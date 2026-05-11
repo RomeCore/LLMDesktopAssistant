@@ -101,7 +101,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
 			var context = new
 			{
-				user_name = userManager.FindByLogin(message.SenderLogin)?.Name ?? message.SenderLogin,
+				user_name = userManager.FindByLogin(message.SenderLogin)?.GetAgentShownName() ?? message.SenderLogin,
 				time_sent = message.CreatedAt.ToString(),
 				content = message.Content,
 				attachments = message.Attachments,
@@ -119,7 +119,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
 			var context = new
 			{
-				user_name = userManager.FindByLogin(message.SenderLogin)?.Name ?? message.SenderLogin,
+				user_name = userManager.FindByLogin(message.SenderLogin)?.GetAgentShownName() ?? message.SenderLogin,
 				time_sent = message.CreatedAt.ToString(),
 				content = message.Content,
 				attachments = message.Attachments,
@@ -208,7 +208,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// so the current agent sees what the other agent said as a quoted user message.
 		/// Reasoning and tool calls are optionally stripped based on permissions.
 		/// </summary>
-		private string BuildForeignAgentMessageText(Domain.AssistantMessage message, Guid currentAgentId, AgentReadSettings readSettings)
+		private string BuildForeignAgentMessageText(Domain.AssistantMessage message, AgentReadSettings readSettings)
 		{
 			var senderDescriptor = agentManager.GetAgentDescriptor(message.SenderAgentId);
 			var agentName = senderDescriptor.Info.Name ?? senderDescriptor.Id.ToString()[..8];
@@ -267,7 +267,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		public IEnumerable<IMessage> ConvertMessage(ChatMessage message, Guid agentId)
+		public IEnumerable<IMessage> ConvertMessageForAgent(ChatMessage message, Guid agentId)
 		{
 			var readSettings = agentManager.GetAgentDescriptor(agentId).Read;
 
@@ -295,6 +295,24 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				throw new InvalidOperationException($"Unsupported message type: {message.GetType()}.");
 			}
+		}
+
+		public string RenderMessage(ChatMessage message)
+		{
+			if (message is Domain.UserMessage userMessage)
+			{
+				return BuildUserMessage(userMessage);
+			}
+
+			if (message is Domain.AssistantMessage assistantMessage)
+			{
+				return BuildForeignAgentMessageText(assistantMessage, new AgentReadSettings
+				{
+					ReadPermissions = (AgentReadPermissions)0x7fffffff
+				});
+			}
+
+			throw new InvalidOperationException($"Unsupported message type: {message.GetType()}.");
 		}
 
 		private IEnumerable<IMessage> BuildUserMessageAsMessages(Domain.UserMessage userMessage)
@@ -327,7 +345,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		private IEnumerable<IMessage> BuildForeignAssistantMessageAsMessages(Domain.AssistantMessage assistantMessage, Guid agentId, AgentReadSettings readSettings)
 		{
-			var text = BuildForeignAgentMessageText(assistantMessage, agentId, readSettings);
+			var text = BuildForeignAgentMessageText(assistantMessage, readSettings);
 			return [new RCLargeLanguageModels.Messages.UserMessage(text)];
 		}
 
@@ -335,7 +353,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Converts a message to LLM messages without applying agent-specific visibility filters.
 		/// Used for summarization and other background processes.
 		/// </summary>
-		public IEnumerable<IMessage> ConvertMessageUnsafe(ChatMessage message)
+		public IEnumerable<IMessage> ConvertMessage(ChatMessage message)
 		{
 			if (message is Domain.UserMessage userMessage)
 			{
@@ -351,96 +369,16 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		/// <summary>
-		/// Groups messages into rounds.
-		/// A round = [one or more consecutive user messages] + [one or more consecutive assistant messages].
-		/// </summary>
-		private static List<List<BranchedMessage>> GroupMessagesIntoRounds(IReadOnlyList<BranchedMessage> messages)
-		{
-			var rounds = new List<List<BranchedMessage>>();
-			if (messages.Count == 0)
-				return rounds;
-
-			List<BranchedMessage>? currentRound = null;
-			bool? lastWasUser = null;
-
-			foreach (var branched in messages)
-			{
-				bool isUser = branched.Message is Domain.UserMessage;
-				bool isAssistant = branched.Message is Domain.AssistantMessage;
-
-				if (isUser)
-				{
-					// Start a new round if previous was assistant, or first message is user
-					if (lastWasUser == false || lastWasUser == null)
-					{
-						currentRound = [branched];
-						rounds.Add(currentRound);
-					}
-					else
-					{
-						currentRound?.Add(branched);
-					}
-					lastWasUser = true;
-				}
-				else if (isAssistant)
-				{
-					if (lastWasUser == true || lastWasUser == null)
-					{
-						currentRound = [branched];
-						rounds.Add(currentRound);
-					}
-					else
-					{
-						currentRound?.Add(branched);
-					}
-					lastWasUser = false;
-				}
-			}
-
-			return rounds;
-		}
-
 		public IEnumerable<IMessage> Build(Guid agentId)
 		{
 			var readSettings = agentManager.GetAgentDescriptor(agentId).Read;
 			int maxRounds = readSettings.MaxVisibleRounds;
 
-			// Build a flat list of visible messages first (filtered by permissions)
-			var visibleMessages = new List<(int OriginalIndex, BranchedMessage Branched)>();
-			for (int i = 0; i < chat.Messages.Count; i++)
-			{
-				var branched = chat.Messages[i];
-				if (branched.Message is Domain.UserMessage userMsg)
-				{
-					if (IsUserMessageVisibleToAgent(userMsg, agentId, readSettings))
-						visibleMessages.Add((i, branched));
-				}
-				else if (branched.Message is Domain.AssistantMessage asstMsg)
-				{
-					if (IsAssistantMessageVisibleToAgent(asstMsg, agentId, readSettings))
-						visibleMessages.Add((i, branched));
-				}
-			}
+			var messagesToProcess = MessagesInterface
+				.GroupMessagesIntoRounds(chat.Messages, maxRounds)
+				.SelectMany(g => g)
+				.ToList();
 
-			// Group into rounds
-			var allRounds = GroupMessagesIntoRounds(visibleMessages.Select(v => v.Branched).ToList());
-
-			// Apply round limit
-			List<BranchedMessage> messagesToProcess;
-			if (maxRounds > 0 && allRounds.Count > maxRounds)
-			{
-				messagesToProcess = allRounds
-					.Skip(allRounds.Count - maxRounds)
-					.SelectMany(r => r)
-					.ToList();
-			}
-			else
-			{
-				messagesToProcess = visibleMessages.Select(v => v.Branched).ToList();
-			}
-
-			// Build the actual LLM message list
 			List<IMessage> result = [];
 
 			string? summaryOfPrevMessages = null;
@@ -451,14 +389,26 @@ namespace LLMDesktopAssistant.LLM.Services
 				var message = messagesToProcess[i].Message;
 
 				if (readSettings.AllowContextShields && message.AdditionalViewModels.Has<ContextShieldViewModel>())
+				{
 					break;
+				}
+				if (message is Domain.UserMessage userMsg)
+				{
+					if (!IsUserMessageVisibleToAgent(userMsg, agentId, readSettings))
+						continue;
+				}
+				else if (message is Domain.AssistantMessage asstMsg)
+				{
+					if (!IsAssistantMessageVisibleToAgent(asstMsg, agentId, readSettings))
+						continue;
+				}
 
 				if (message is Domain.UserMessage)
 				{
 					encounteredUserMessage = true;
 					if (summaryOfPrevMessages != null)
 					{
-						result.InsertRange(0, ConvertMessage(message, agentId));
+						result.InsertRange(0, ConvertMessageForAgent(message, agentId));
 						break;
 					}
 				}
@@ -474,14 +424,14 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				if (summaryOfPrevMessages == null)
 				{
-					result.InsertRange(0, ConvertMessage(message, agentId));
+					result.InsertRange(0, ConvertMessageForAgent(message, agentId));
 				}
 			}
 
 			string systemPrompt = BuildSystemPrompt(summaryOfPrevMessages, agentId);
 			result.Insert(0, new SystemMessage(systemPrompt));
-/*
-			var array = new JsonArray();
+
+			/*var array = new JsonArray();
 			foreach (var message in result)
 			{
 				switch (message)
@@ -528,9 +478,10 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 			File.WriteAllText($"{DateTime.Now:yyyyMMddHHmmssfff}.json", array.ToJsonString(new System.Text.Json.JsonSerializerOptions
 			{
-				WriteIndented = true
-			}));
-*/
+				WriteIndented = true,
+				Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All)
+			}));*/
+
 			return result;
 		}
 	}

@@ -1,0 +1,189 @@
+@using LLMDesktopAssistant.WebUI
+@using LLMDesktopAssistant.Localization
+@using Material.Icons
+
+<div class="user-profile-overlay @(_isVisible ? "visible" : "")" @onclick="HandleOverlayClick">
+	<div class="user-profile-panel" @onclick:stopPropagation>
+		<div class="user-profile-header">
+			<h3>Настройки профиля</h3>
+			<button class="user-profile-close-btn" @onclick="Close" title="Закрыть">
+				<MaterialIconComponent Kind="@MaterialIconKind.Close" Size="20" Color="#666" />
+			</button>
+		</div>
+
+		<div class="user-profile-body">
+			@* Profile *@
+			<div class="user-profile-avatar-section">
+				@if (!string.IsNullOrEmpty(_user?.Base64ProfileImage))
+				{
+					<div class="user-profile-avatar">
+						<img src="data:image/png;base64,@_user.Base64ProfileImage" alt="Avatar" />
+					</div>
+				}
+				else
+				{
+					<div class="user-profile-avatar user-profile-avatar-placeholder">
+						<MaterialIconComponent Kind="@MaterialIconKind.AccountCircle" Size="64" Color="#888" />
+					</div>
+				}
+				<button class="user-profile-avatar-btn" @onclick="SelectImage">
+					<MaterialIconComponent Kind="@MaterialIconKind.Camera" Size="16" Color="white" />
+				</button>
+			</div>
+
+			@* Fields *@
+			<div class="user-profile-field">
+				<label class="user-profile-label">Логин</label>
+				<input class="user-profile-input" @bind="_editLogin" placeholder="user_login" disabled="@_isDisabled" />
+			</div>
+
+			<div class="user-profile-field">
+				<label class="user-profile-label">Имя</label>
+				<input class="user-profile-input" @bind="_editName" placeholder="User" />
+			</div>
+
+			<div class="user-profile-field">
+				<label class="user-profile-label">Описание</label>
+				<textarea class="user-profile-textarea" @bind="_editDescription" placeholder="Описание для агентов..." rows="4"></textarea>
+			</div>
+
+			@if (!string.IsNullOrEmpty(_statusMessage))
+			{
+				<div class="user-profile-status @(_statusIsError ? "error" : "success")">
+					@_statusMessage
+				</div>
+			}
+		</div>
+
+		<div class="user-profile-footer">
+			<div class="user-profile-footer-left">
+				<button class="user-profile-logout-btn" @onclick="Logout">
+					<MaterialIconComponent Kind="@MaterialIconKind.Logout" Size="16" Color="#d32f2f" />
+					<span>Выйти</span>
+				</button>
+			</div>
+			<div class="user-profile-footer-right">
+				<button class="user-profile-cancel-btn" @onclick="Close">Отмена</button>
+				<button class="user-profile-save-btn" @onclick="Save" disabled="@_isSaving">
+					@if (_isSaving)
+					{
+						<span>Сохранение...</span>
+					}
+					else
+					{
+						<span>Сохранить</span>
+					}
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public bool IsVisible { get; set; }
+
+	[Parameter]
+	public EventCallback OnClose { get; set; }
+
+	[Parameter]
+	public UserInformation? User { get; set; }
+
+	[Inject]
+	private IJSRuntime JS { get; set; } = default!;
+
+	[Inject]
+	private NavigationManager NavigationManager { get; set; } = default!;
+
+	private bool _isVisible;
+	private bool _isSaving;
+	private bool _isDisabled;
+	private string? _statusMessage;
+	private bool _statusIsError;
+
+	private string _editLogin = string.Empty;
+	private string _editName = string.Empty;
+	private string _editDescription = string.Empty;
+	private UserInformation? _user;
+
+	protected override void OnParametersSet()
+	{
+		_isVisible = IsVisible;
+		_user = User;
+
+		if (_user != null)
+		{
+			_editLogin = _user.Login;
+			_editName = _user.Name;
+			_editDescription = _user.Description;
+			_isDisabled = true;
+		}
+
+		_statusMessage = null;
+	}
+
+	private async Task Save()
+	{
+		if (_user == null) return;
+
+		_isSaving = true;
+		_statusMessage = null;
+
+		try
+		{
+			_user.Name = _editName;
+			_user.Description = _editDescription;
+
+			_statusMessage = "Сохранено!";
+			_statusIsError = false;
+		}
+		catch (Exception ex)
+		{
+			_statusMessage = $"Ошибка: {ex.Message}";
+			_statusIsError = true;
+		}
+		finally
+		{
+			_isSaving = false;
+		}
+	}
+
+	private void Close()
+	{
+		OnClose.InvokeAsync();
+	}
+
+	private async Task Logout()
+	{
+		await JS.InvokeVoidAsync("logoutUser");
+		NavigationManager.NavigateTo("/login", forceLoad: false);
+	}
+
+	private async Task SelectImage()
+	{
+		if (_user == null) return;
+
+		try
+		{
+			var base64 = await JS.InvokeAsync<string>("selectProfileImage");
+			if (!string.IsNullOrEmpty(base64))
+			{
+				_user.Base64ProfileImage = base64;
+				StateHasChanged();
+
+				_statusMessage = "Аватарка обновлена!";
+				_statusIsError = false;
+			}
+		}
+		catch (Exception ex)
+		{
+			_statusMessage = $"Ошибка загрузки: {ex.Message}";
+			_statusIsError = true;
+		}
+	}
+
+	private void HandleOverlayClick()
+	{
+		Close();
+	}
+}

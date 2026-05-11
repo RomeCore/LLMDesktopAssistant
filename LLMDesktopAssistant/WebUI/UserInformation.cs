@@ -47,6 +47,25 @@ namespace LLMDesktopAssistant.WebUI
 			set => SetProperty(ref _name, value);
 		}
 
+		private string? _agentShownName;
+		/// <summary>
+		/// The name of the user that is shown to other users. This can be different from the actual name.
+		/// </summary>
+		public string? AgentShownName
+		{
+			get => _agentShownName;
+			set => SetProperty(ref _agentShownName, value);
+		}
+
+		public string GetAgentShownName()
+		{
+			if (!string.IsNullOrEmpty(AgentShownName))
+				return AgentShownName;
+			if (!string.IsNullOrEmpty(Name))
+				return Name;
+			return Login;
+		}
+
 		private string _description = string.Empty;
 		/// <summary>
 		/// The description of the user, contains additional information for agents.

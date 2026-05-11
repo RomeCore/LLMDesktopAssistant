@@ -367,6 +367,123 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy URL to clipboard.
+        /// </summary>
+        public static string blazor_host_copy_url {
+            get {
+                return ResourceManager.GetString("blazor_host_copy_url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Open in browser.
+        /// </summary>
+        public static string blazor_host_open_browser {
+            get {
+                return ResourceManager.GetString("blazor_host_open_browser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Password.
+        /// </summary>
+        public static string blazor_host_password {
+            get {
+                return ResourceManager.GetString("blazor_host_password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Leave empty for no password.
+        /// </summary>
+        public static string blazor_host_password_placeholder {
+            get {
+                return ResourceManager.GetString("blazor_host_password_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Endpoint URL.
+        /// </summary>
+        public static string blazor_host_port {
+            get {
+                return ResourceManager.GetString("blazor_host_port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Settings.
+        /// </summary>
+        public static string blazor_host_settings {
+            get {
+                return ResourceManager.GetString("blazor_host_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Start.
+        /// </summary>
+        public static string blazor_host_start {
+            get {
+                return ResourceManager.GetString("blazor_host_start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Status.
+        /// </summary>
+        public static string blazor_host_status {
+            get {
+                return ResourceManager.GetString("blazor_host_status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Running.
+        /// </summary>
+        public static string blazor_host_status_running {
+            get {
+                return ResourceManager.GetString("blazor_host_status_running", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Stopped.
+        /// </summary>
+        public static string blazor_host_status_stopped {
+            get {
+                return ResourceManager.GetString("blazor_host_status_stopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Stop.
+        /// </summary>
+        public static string blazor_host_stop {
+            get {
+                return ResourceManager.GetString("blazor_host_stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Blazor WebUI.
+        /// </summary>
+        public static string blazor_host_title {
+            get {
+                return ResourceManager.GetString("blazor_host_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Endpoint URL.
+        /// </summary>
+        public static string blazor_host_url {
+            get {
+                return ResourceManager.GetString("blazor_host_url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Browser.
         /// </summary>
         public static string browser {
@@ -606,6 +723,42 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string chat_settings_users {
             get {
                 return ResourceManager.GetString("chat_settings_users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Selecting agent.
+        /// </summary>
+        public static string chat_status_selecting_agent {
+            get {
+                return ResourceManager.GetString("chat_status_selecting_agent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Waiting for first token.
+        /// </summary>
+        public static string chat_status_waiting_for_first_response {
+            get {
+                return ResourceManager.GetString("chat_status_waiting_for_first_response", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Connecting to MCP.
+        /// </summary>
+        public static string chat_status_waiting_for_mcp_connections {
+            get {
+                return ResourceManager.GetString("chat_status_waiting_for_mcp_connections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Executing tools.
+        /// </summary>
+        public static string chat_status_waiting_for_tools {
+            get {
+                return ResourceManager.GetString("chat_status_waiting_for_tools", resourceCulture);
             }
         }
         
@@ -1092,6 +1245,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string fs_changes_none {
             get {
                 return ResourceManager.GetString("fs-changes_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Replaced {0} entries.
+        /// </summary>
+        public static string fs_changes_text_replaced {
+            get {
+                return ResourceManager.GetString("fs-changes_text_replaced", resourceCulture);
             }
         }
         
@@ -3126,6 +3288,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_stage_adaptive_agents {
             get {
                 return ResourceManager.GetString("settings_stage_adaptive_agents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Max visible rounds for router agent.
+        /// </summary>
+        public static string settings_stage_adaptive_max_visible_rounds {
+            get {
+                return ResourceManager.GetString("settings_stage_adaptive_max_visible_rounds", resourceCulture);
             }
         }
         

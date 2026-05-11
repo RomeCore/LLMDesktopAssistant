@@ -1,8 +1,8 @@
-﻿using LLMDesktopAssistant.LLM.Messages;
+using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
 	[ViewModelFor(typeof(ChatView))]
 	public class ChatViewModel : ViewModelBase
@@ -11,6 +11,11 @@ namespace LLMDesktopAssistant.LLM
 		/// Gets the message sequence that represents the conversation history.
 		/// </summary>
 		public MessageSequenceViewModel MessageSequence { get; }
+
+		/// <summary>
+		/// Gets the chat status view model.
+		/// </summary>
+		public ChatStatusViewModel ChatStatus { get; }
 
 		/// <summary>
 		/// Gets the conversation manager that manages the current conversation.
@@ -29,6 +34,7 @@ namespace LLMDesktopAssistant.LLM
 		{
 			Chat = chat;
 			UserInput = new UserInputViewModel(this);
+			ChatStatus = new ChatStatusViewModel(chat);
 			MessageSequence = new MessageSequenceViewModel(this);
 		}
 
@@ -40,6 +46,8 @@ namespace LLMDesktopAssistant.LLM
 			{
 				MessageSequence.Dispose();
 				UserInput.Dispose();
+				ChatStatus.Dispose();
+
 			}
 		}
 	}

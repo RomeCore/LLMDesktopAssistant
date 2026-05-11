@@ -4,6 +4,7 @@ using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -52,12 +53,32 @@ namespace LLMDesktopAssistant.LLM.Domain
 		private CancellationTokenSource? _generationCts;
 		/// <summary>
 		/// Gets or sets the current message generation <see cref="CancellationTokenSource"/>.
-		/// Use this  to cancel the current message generation (inference) task.
+		/// Use this to cancel the current message generation (inference) task.
 		/// </summary>
 		public CancellationTokenSource? GenerationCts
 		{
 			get => _generationCts;
 			set => SetProperty(ref _generationCts, value);
+		}
+
+		private MaterialIconKind _statusIcon;
+		/// <summary>
+		/// Gets or sets the icon kind to display in the status bar of the chat window.
+		/// </summary>
+		public MaterialIconKind StatusIcon
+		{
+			get => _statusIcon;
+			set => SetProperty(ref _statusIcon, value);
+		}
+
+		private string? _statusText;
+		/// <summary>
+		/// Gets or sets the text to display in the status bar of the chat window.
+		/// </summary>
+		public string? StatusText
+		{
+			get => _statusText;
+			set => SetProperty(ref _statusText, value);
 		}
 
 		private ChatSettings _settings = SettingsManager.Get<ChatSettings>();

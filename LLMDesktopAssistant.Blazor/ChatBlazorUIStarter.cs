@@ -86,13 +86,13 @@ namespace LLMDesktopAssistant.Blazor
 				builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
 					sp.GetRequiredService<WebUIAuthenticationStateProvider>());
 				
-				builder.Services.AddAuthentication("WebUICookies")
-					.AddCookie("WebUICookies", options =>
+				builder.Services.AddAuthentication(WebUIStaticConfiguration.CookiesAuthScheme)
+					.AddCookie(WebUIStaticConfiguration.CookiesAuthScheme, options =>
 					{
 						options.LoginPath = "/login";
 						options.LogoutPath = "/login";
 						options.AccessDeniedPath = "/login";
-						options.ExpireTimeSpan = TimeSpan.FromHours(8);
+						options.ExpireTimeSpan = WebUIStaticConfiguration.AuthExpiryTimeSpan;
 						options.SlidingExpiration = true;
 					});
 				

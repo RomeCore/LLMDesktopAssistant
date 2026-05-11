@@ -56,13 +56,13 @@ public class AuthController : ControllerBase
 			new(ClaimTypes.GivenName, user.Name),
 			new("Login", user.Login),
 		};
-		var identity = new ClaimsIdentity(claims, "WebUICookies");
+		var identity = new ClaimsIdentity(claims, WebUIStaticConfiguration.CookiesAuthScheme);
 		var principal = new ClaimsPrincipal(identity);
 
-		await HttpContext.SignInAsync("WebUICookies", principal, new AuthenticationProperties
+		await HttpContext.SignInAsync(WebUIStaticConfiguration.CookiesAuthScheme, principal, new AuthenticationProperties
 		{
 			IsPersistent = true,
-			ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
+			ExpiresUtc = DateTimeOffset.UtcNow.Add(WebUIStaticConfiguration.AuthExpiryTimeSpan)
 		});
 
 		_logger.LogInformation("User logged in: {Login} ({Name})", user.Login, user.Name);
@@ -73,7 +73,7 @@ public class AuthController : ControllerBase
 	public async Task<IActionResult> Logout()
 	{
 		var login = User.FindFirst("Login")?.Value ?? "unknown";
-		await HttpContext.SignOutAsync("WebUICookies");
+		await HttpContext.SignOutAsync(WebUIStaticConfiguration.CookiesAuthScheme);
 		_logger.LogInformation("User logged out: {Login}", login);
 		return Ok();
 	}

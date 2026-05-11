@@ -12,7 +12,7 @@
 	<StackPanel>
 
 		<!-- Global repeatable stage settings -->
-		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto"
+		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
 			  Margin="0,0,0,8">
 			
 			<TextBlock Grid.Row="0" Grid.Column="0"
@@ -43,6 +43,14 @@
 			<NumericUpDown Grid.Row="3" Grid.Column="1"
 						   Value="{Binding AdaptiveStage.MaxIterations}"
 						   Minimum="-1"
+						   Margin="0,0,0,4"/>
+			
+			<TextBlock Grid.Row="4" Grid.Column="0"
+					   Text="{loc:Loc settings_stage_adaptive_max_visible_rounds}"
+					   VerticalAlignment="Center" Margin="0,0,8,4"/>
+			<NumericUpDown Grid.Row="4" Grid.Column="1"
+						   Value="{Binding AdaptiveStage.MaxVisibleRounds}"
+						   Minimum="1"
 						   Margin="0,0,0,4"/>
 		</Grid>
 

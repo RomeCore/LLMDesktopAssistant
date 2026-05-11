@@ -17,22 +17,22 @@ else
 	private static readonly MaterialIconDataProvider _dataProvider = new();
 
 	[Parameter]
-	public required MaterialIconKind Kind { get; init; }
+	public MaterialIconKind Kind { get; set; }
 
 	[Parameter]
-	public int Size { get; init; } = 20;
+	public int Size { get; set; } = 20;
 
 	[Parameter]
-	public string Color { get; init; } = "currentColor";
+	public string Color { get; set; } = "currentColor";
 
 	[Parameter]
-	public string AdditionalStyle { get; init; } = string.Empty;
+	public string AdditionalStyle { get; set; } = string.Empty;
 
 	private string? SvgContent { get; set; }
 
-	protected override void OnInitialized()
+	protected override void OnParametersSet()
 	{
-		base.OnInitialized();
+		base.OnParametersSet();
 		SvgContent = GetIconData(Kind);
 	}
 

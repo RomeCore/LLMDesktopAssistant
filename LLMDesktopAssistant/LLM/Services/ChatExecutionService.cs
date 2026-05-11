@@ -4,7 +4,9 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
+using Material.Icons;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Metadata;
 using RCLargeLanguageModels.Tasks;
@@ -42,6 +44,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				while (true)
 				{
+					cancellationToken.ThrowIfCancellationRequested();
+
 					var lastAssistantMessage = chat.Messages.LastOrDefault()?.Message as Domain.AssistantMessage;
 					Guid? nextAgentId = lastAssistantMessage != null && lastAssistantMessage.ToolCalls.Count != 0
 						? lastAssistantMessage.SenderAgentId
@@ -50,13 +54,16 @@ namespace LLMDesktopAssistant.LLM.Services
 						? lastAssistantMessage.AgentStageId
 						: null;
 
-					cancellationToken.ThrowIfCancellationRequested();
 					if (nextAgentId == null || agentStageId == null)
 					{
+						chat.StatusIcon = MaterialIconKind.RobotConfused;
+						chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_selecting_agent");
+
 						var agentTuple = await agentOrderer.GetNextAgentAsync(cancellationToken);
 						nextAgentId = agentTuple?.Item1;
 						agentStageId = agentTuple?.Item2;
 					}
+
 					if (nextAgentId == null || agentStageId == null)
 						return;
 
@@ -68,6 +75,11 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				Log.Error(ex, "An error occurred while generating the response using default agent: {ErrorMessage}", ex.Message);
 				throw;
+			}
+			finally
+			{
+				chat.StatusIcon = MaterialIconKind.ChatProcessing;
+				chat.StatusText = null;
 			}
 		}
 
@@ -82,16 +94,25 @@ namespace LLMDesktopAssistant.LLM.Services
 				_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 				cancellationToken = _cts.Token;
 
-				await mcpManager.EnsureCurrentMCPConnectionsAsync(cancellationToken);
-
 				var llmInfo = llmBuilder.BuildChatLLM(agentId);
 				if (llmInfo == null)
 					throw new InvalidOperationException("Chat LLM is not configured. Please configure it first.");
 				var llm = llmInfo.LLM;
 				llm = llm.WithProperties(propertiesBuilder.BuildProperties(agentId));
 
+				if (mcpManager.HasMCPConnections())
+				{
+					chat.StatusIcon = MaterialIconKind.Connection;
+					chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_mcp_connections");
+
+					await mcpManager.EnsureCurrentMCPConnectionsAsync(cancellationToken);
+				}
+
 				var timeRequested = DateTime.Now;
 				DateTime? timeFirstToken = null;
+
+				chat.StatusIcon = MaterialIconKind.ChatProcessing;
+				chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
 
 				var inputMessages = promptBuilder.Build(agentId);
 				toolsetCache.Invalidate(agentId);
@@ -180,7 +201,14 @@ namespace LLMDesktopAssistant.LLM.Services
 
 					void PartHandler(object? s, AssistantMessageDelta delta)
 					{
-						timeFirstToken ??= DateTime.Now;
+						if (timeFirstToken == null)
+						{
+							timeFirstToken ??= DateTime.Now;
+
+							chat.StatusIcon = MaterialIconKind.ChatProcessing;
+							chat.StatusText = null;
+						}
+
 						domainResponseMessage.Status = AssistantMessageStatus.Streaming;
 
 						if (!string.IsNullOrEmpty(delta.DeltaReasoningContent))
@@ -301,6 +329,9 @@ namespace LLMDesktopAssistant.LLM.Services
 					timeRequested = DateTime.Now;
 					timeFirstToken = null;
 
+					chat.StatusIcon = MaterialIconKind.ChatProcessing;
+					chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
+
 					inputMessages = promptBuilder.Build(agentId);
 					toolsetCache.Invalidate(agentId);
 					tools = toolsetCache.ValidTools;
@@ -323,6 +354,11 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				Log.Error(ex, "An error occurred while generating the response using agent: {ErrorMessage}", ex.Message);
 				throw;
+			}
+			finally
+			{
+				chat.StatusIcon = MaterialIconKind.ChatProcessing;
+				chat.StatusText = null;
 			}
 		}
 

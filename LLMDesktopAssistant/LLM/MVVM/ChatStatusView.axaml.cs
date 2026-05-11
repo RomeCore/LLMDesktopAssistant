@@ -4,10 +4,10 @@ using Avalonia.Markup.Xaml;
 
 namespace LLMDesktopAssistant.LLM.MVVM;
 
-public partial class ChatView : UserControl
+public partial class ChatStatusView : UserControl
 {
-    public ChatView()
-    {
-        InitializeComponent();
-    }
+	public ChatStatusView()
+	{
+		InitializeComponent();
+	}
 }

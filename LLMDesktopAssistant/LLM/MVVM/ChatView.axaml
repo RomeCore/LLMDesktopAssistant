@@ -3,9 +3,9 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM"
+			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM.MVVM"
 			 xmlns:beh="clr-namespace:LLMDesktopAssistant.Behaviours"
-			 x:Class="LLMDesktopAssistant.LLM.ChatView"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.ChatView"
 			 x:DataType="local:ChatViewModel">
 	
 	<Grid>
@@ -19,7 +19,13 @@
 					  VerticalScrollBarVisibility="Visible"
 					  beh:ScrollViewerBehavior.AutoScrollEnabled="True">
 
-			<ContentControl Content="{Binding MessageSequence}"/>
+			<StackPanel>
+				<ContentControl Content="{Binding MessageSequence}"/>
+				<!-- Chat Status — фикс. высота, чтобы жопа Рикардо Милоса не тряслась -->
+				<ContentControl Content="{Binding ChatStatus}" />
+
+				
+			</StackPanel>
 		</ScrollViewer>
 
 		<!-- Input Area -->

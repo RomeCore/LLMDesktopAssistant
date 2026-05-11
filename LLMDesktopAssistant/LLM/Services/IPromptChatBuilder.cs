@@ -18,13 +18,18 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// For user message there will be single message.
 		/// For own assistant message there will be at least one message with tool messages appended.
 		/// For foreign assistant message it will be merged into a single user message.</returns>
-		IEnumerable<IMessage> ConvertMessage(ChatMessage message, Guid agentId);
+		IEnumerable<IMessage> ConvertMessageForAgent(ChatMessage message, Guid agentId);
 
 		/// <summary>
 		/// Converts a message to LLM messages without applying agent-specific visibility filters.
 		/// Used for summarization and other background processes.
 		/// </summary>
-		IEnumerable<IMessage> ConvertMessageUnsafe(ChatMessage message);
+		IEnumerable<IMessage> ConvertMessage(ChatMessage message);
+
+		/// <summary>
+		/// Converts a message to string without applying agent-specific visibility filters.
+		/// </summary>
+		string RenderMessage(ChatMessage message);
 
 		/// <summary>
 		/// Builds a list of messages for the LLM chat input.

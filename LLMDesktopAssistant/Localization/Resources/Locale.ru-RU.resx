@@ -1330,7 +1330,7 @@
     <value>Контекст</value>
   </data>
   <data name="blazor_host_title" xml:space="preserve">
-    <value>Blazor Веб-интерфейс</value>
+    <value>Blazor WebUI</value>
   </data>
   <data name="blazor_host_status" xml:space="preserve">
     <value>Статус</value>
@@ -1357,13 +1357,33 @@
     <value>Оставьте пустым, если пароль не нужен</value>
   </data>
   <data name="blazor_host_start" xml:space="preserve">
-    <value>▶ Запустить</value>
+    <value>Запустить</value>
   </data>
   <data name="blazor_host_stop" xml:space="preserve">
-    <value>■ Остановить</value>
+    <value>Остановить</value>
   </data>
-  <data name="close" xml:space="preserve">
-    <value>Закрыть</value>
+  <data name="chat_status_selecting_agent" xml:space="preserve">
+    <value>Подбираем агента</value>
   </data>
-
+  <data name="chat_status_waiting_for_mcp_connections" xml:space="preserve">
+    <value>Подключаем MCP</value>
+  </data>
+  <data name="chat_status_waiting_for_first_response" xml:space="preserve">
+    <value>Ждём первый токен</value>
+  </data>
+  <data name="chat_status_waiting_for_tools" xml:space="preserve">
+    <value>Выполняем инструменты</value>
+  </data>
+  <data name="blazor_host_status_stopped" xml:space="preserve">
+    <value>Остановлен</value>
+  </data>
+  <data name="blazor_host_status_running" xml:space="preserve">
+    <value>Запущен</value>
+  </data>
+  <data name="settings_stage_adaptive_max_visible_rounds" xml:space="preserve">
+    <value>Макс. количество видимых раундов для агента-роутера</value>
+  </data>
+  <data name="fs-changes_text_replaced" xml:space="preserve">
+    <value>Заменено {0} вхождений</value>
+  </data>
 </root>

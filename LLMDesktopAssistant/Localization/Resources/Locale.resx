@@ -1330,7 +1330,7 @@
     <value>Context</value>
   </data>
   <data name="blazor_host_title" xml:space="preserve">
-    <value>Blazor Web UI Host</value>
+    <value>Blazor WebUI</value>
   </data>
   <data name="blazor_host_status" xml:space="preserve">
     <value>Status</value>
@@ -1357,13 +1357,33 @@
     <value>Leave empty for no password</value>
   </data>
   <data name="blazor_host_start" xml:space="preserve">
-    <value>▶ Start</value>
+    <value>Start</value>
   </data>
   <data name="blazor_host_stop" xml:space="preserve">
-    <value>■ Stop</value>
+    <value>Stop</value>
   </data>
-  <data name="close" xml:space="preserve">
-    <value>Close</value>
+  <data name="chat_status_selecting_agent" xml:space="preserve">
+    <value>Selecting agent</value>
   </data>
-
+  <data name="chat_status_waiting_for_mcp_connections" xml:space="preserve">
+    <value>Connecting to MCP</value>
+  </data>
+  <data name="chat_status_waiting_for_first_response" xml:space="preserve">
+    <value>Waiting for first token</value>
+  </data>
+  <data name="chat_status_waiting_for_tools" xml:space="preserve">
+    <value>Executing tools</value>
+  </data>
+  <data name="blazor_host_status_stopped" xml:space="preserve">
+    <value>Stopped</value>
+  </data>
+  <data name="blazor_host_status_running" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="settings_stage_adaptive_max_visible_rounds" xml:space="preserve">
+    <value>Max visible rounds for router agent</value>
+  </data>
+  <data name="fs-changes_text_replaced" xml:space="preserve">
+    <value>Replaced {0} entries</value>
+  </data>
 </root>

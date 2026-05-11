@@ -1,4 +1,5 @@
-﻿using LLTSharp;
+﻿using LLMDesktopAssistant.LLM.Services;
+using LLTSharp;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Messages;
 using Serilog;
@@ -10,6 +11,16 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
 	public class AdaptiveAgentExecutionStage : MentionableAgentExecutionStage
 	{
+		private int _maxVisibleRounds = 1;
+		/// <summary>
+		/// Maximum number of rounds that is visible to router agent.
+		/// </summary>
+		public int MaxVisibleRounds
+		{
+			get => _maxVisibleRounds;
+			set => SetProperty(ref _maxVisibleRounds, value);
+		}
+
 		protected override async Task<Guid?> SelectNextAgentAsync(List<AgentInstance> selectFrom,
 			AgentPreExecutionContext context, CancellationToken cancellationToken = default)
 		{
@@ -35,7 +46,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			var template = (IMessagesTemplate)templateLibrary.Retrieve("router_prompt");
 			var rendered = template.Render(new
 			{
-				context = context.Chat.Messages.LastOrDefault()?.Message.Content,
+				context = SelectContext(context),
 				agents = agents.Select(a => new
 				{
 					name = a.Info.Name,
@@ -53,6 +64,24 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			var content = response.Message.Content?.TrimStart('@');
 			Log.Information("Router model selected next agent: {Content}", content);
 			return agents.FirstOrDefault(a => a.Info.Name == content)?.Id;
+		}
+
+		private string? SelectContext(AgentPreExecutionContext context)
+		{
+			var rounds = MessagesInterface.GroupMessagesIntoRounds(context.Chat.Messages, MaxVisibleRounds);
+			var promptBuilder = context.Services.GetRequiredService<IPromptChatBuilder>();
+
+			var sb = new StringBuilder();
+
+			foreach (var round in rounds)
+			{
+				foreach (var message in round)
+				{
+					sb.AppendLine(promptBuilder.RenderMessage(message.Message));
+				}
+			}
+
+			return sb.ToString();
 		}
 	}
 }

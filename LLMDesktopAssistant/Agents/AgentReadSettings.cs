@@ -66,7 +66,7 @@ namespace LLMDesktopAssistant.Agents
 
 		private int _maxVisibleRounds = 0;
 		/// <summary>
-		/// The maximum number of rounds that the agent can see in its context.
+		/// The maximum number of rounds that the agent can see in its context. If zero, there is no limit.
 		/// </summary>
 		public int MaxVisibleRounds
 		{

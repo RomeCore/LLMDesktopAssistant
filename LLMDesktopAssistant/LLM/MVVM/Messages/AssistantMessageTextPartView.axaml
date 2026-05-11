@@ -11,6 +11,6 @@
 			 x:DataType="local:AssistantMessageTextPartViewModel">
 	
 	<ctrl:MarkdownControl MarkdownText="{Binding Text}"
-						  Margin="0,5"/>
+											  Margin="0,5"/>
 
 </UserControl>

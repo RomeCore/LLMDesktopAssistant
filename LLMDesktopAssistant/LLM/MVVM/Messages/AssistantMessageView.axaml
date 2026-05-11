@@ -124,12 +124,6 @@
 
 		</StackPanel>
 
-		<Grid IsVisible="{Binding IsCompleted, Converter={StaticResource InverseBooleanConverter}}">
-
-			<ProgressBar IsIndeterminate="True" Height="5" Margin="0,5"/>
-
-		</Grid>
-
 	</StackPanel>
 
 </UserControl>

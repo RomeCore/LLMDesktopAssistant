@@ -1,5 +1,6 @@
 ﻿using Avalonia.Media.Imaging;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.UIExtensions.MessageExtensions;

@@ -670,7 +670,7 @@ h1:focus {
     user-select: none;
 }
 
-/* ========== PROGRESS BAR ========== */
+/* PROGRESS BAR */
 .message-progress {
     margin-top: 4px;
 }
@@ -696,4 +696,328 @@ h1:focus {
     }
 }
 
+.chat-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 40px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #0078d4;
+    min-height: 28px;
+}
 
+.chat-status-animating {
+    animation: chat-status-pulse 1s ease-in-out infinite alternate;
+}
+
+.chat-status-text {
+    font-weight: 500;
+}
+
+.chat-status-dots {
+    font-weight: 700;
+    letter-spacing: 1px;
+    min-width: 24px;
+}
+
+@keyframes chat-status-pulse {
+    0% {
+        opacity: 1.0;
+    }
+
+    100% {
+        opacity: 0.3;
+    }
+}
+
+/* User Profile Overlay */
+.user-profile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+    .user-profile-overlay.visible {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+.user-profile-panel {
+    background: #ffffff;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    border-radius: 12px;
+    width: 480px;
+    max-width: 90vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    color: #333;
+}
+
+.user-profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+    .user-profile-header h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+.user-profile-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}
+
+    .user-profile-close-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+.user-profile-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.user-profile-avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.user-profile-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(128, 128, 128, 0.2);
+}
+
+    .user-profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.user-profile-avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(128, 128, 128, 0.08);
+}
+
+.user-profile-avatar-btn {
+    position: absolute;
+    bottom: 0;
+    right: calc(50% - 48px);
+    background: #666;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+    .user-profile-avatar-btn:hover {
+        background: #444;
+    }
+
+.user-profile-field {
+    margin-bottom: 16px;
+}
+
+.user-profile-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-profile-input {
+    width: 100%;
+    padding: 10px 12px;
+    background: #f5f5f5;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 8px;
+    color: #333;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+    .user-profile-input:focus {
+        border-color: #0078d4;
+        background: #fff;
+    }
+
+    .user-profile-input:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f0f0f0;
+    }
+
+.user-profile-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: #f5f5f5;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 8px;
+    color: #333;
+    font-size: 14px;
+    outline: none;
+    resize: vertical;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+    .user-profile-textarea:focus {
+        border-color: #0078d4;
+        background: #fff;
+    }
+
+.user-profile-status {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+    .user-profile-status.success {
+        background: rgba(0, 120, 212, 0.08);
+        color: #0078d4;
+        border: 1px solid rgba(0, 120, 212, 0.2);
+    }
+
+    .user-profile-status.error {
+        background: rgba(211, 47, 47, 0.08);
+        color: #d32f2f;
+        border: 1px solid rgba(211, 47, 47, 0.2);
+    }
+
+.user-profile-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+.user-profile-footer-left {
+    display: flex;
+    align-items: center;
+}
+
+.user-profile-footer-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.user-profile-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    color: #d32f2f;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+    .user-profile-logout-btn:hover {
+        background: rgba(211, 47, 47, 0.06);
+        border-color: #d32f2f;
+    }
+
+.user-profile-cancel-btn {
+    background: none;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    color: #666;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.15s;
+}
+
+    .user-profile-cancel-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+.user-profile-save-btn {
+    background: #0078d4;
+    border: none;
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+    .user-profile-save-btn:hover {
+        background: #106ebe;
+    }
+
+    .user-profile-save-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+.chat-topbar-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #666;
+    transition: background 0.15s, color 0.15s;
+}
+
+    .chat-topbar-profile-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: #0078d4;
+    }

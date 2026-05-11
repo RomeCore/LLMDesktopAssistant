@@ -15,7 +15,6 @@ namespace LLMDesktopAssistant.LLM.Services
 		Chat chat,
 		ILLMBuildingService llmBuilder,
 		IPromptChatBuilder promptBuilder,
-		IMessageTokenSerializationSchema messageSerializer,
 		TemplateLibrary templates,
 		IUsageStatsCollector usageStatsCollector
 		) : IChatSummarizationService
@@ -246,8 +245,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					encounteredUserMessage = true;
 					if (latestSummary != null)
 					{
-						parts.Insert(0, string.Join(Environment.NewLine, promptBuilder.ConvertMessageUnsafe(message)
-							.Select(m => messageSerializer.SerializeMessage(m, []))));
+						parts.Insert(0, promptBuilder.RenderMessage(message));
 						break;
 					}
 				}
@@ -263,8 +261,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				if (latestSummary == null)
 				{
-					parts.Insert(0, string.Join(Environment.NewLine, promptBuilder.ConvertMessageUnsafe(message)
-						.Select(m => messageSerializer.SerializeMessage(m, []))));
+					parts.Insert(0, promptBuilder.RenderMessage(message));
 				}
 			}
 

@@ -8,7 +8,7 @@ using Serilog;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
-namespace LLMDesktopAssistant.LLM
+namespace LLMDesktopAssistant.LLM.MVVM
 {
 	[ViewModelFor(typeof(ChatManagerView))]
 	public class ChatManagerViewModel : ViewModelBase

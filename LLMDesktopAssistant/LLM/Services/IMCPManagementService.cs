@@ -13,6 +13,12 @@ namespace LLMDesktopAssistant.LLM.Services
 	public interface IMCPManagementService
 	{
 		/// <summary>
+		/// Checks if chat has any MCP in their configuration.
+		/// </summary>
+		/// <returns>true if any chat has an MCP configuration; otherwise, false.</returns>
+		bool HasMCPConnections();
+
+		/// <summary>
 		/// Ensures that all current MCP (Message Control Protocol) connections are established and active asynchronously.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>

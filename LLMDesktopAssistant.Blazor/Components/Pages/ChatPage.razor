@@ -22,22 +22,22 @@
 @rendermode InteractiveServer
 
 <div class="chat-layout">
-	
+
 	<div class="chat-topbar">
 		<div class="chat-topbar-left">
 			<MaterialIconComponent Kind="@MaterialIconKind.ShieldAccount" Size="20" Color="#0078d4" />
 			<span class="chat-topbar-user">@(AuthProvider.GetCurrentUser()?.Name ?? "Anonymous")</span>
 		</div>
 		<div class="chat-topbar-right">
-			<button class="chat-topbar-logout-btn" @onclick="Logout" title="Выйти, сука~">
-				<MaterialIconComponent Kind="@MaterialIconKind.Logout" Size="18" Color="#666" />
-				<span>Выйти</span>
+			<button class="chat-topbar-profile-btn" @onclick="ToggleProfileOverlay" title="Настройки профиля">
+				<MaterialIconComponent Kind="@MaterialIconKind.AccountSettings" Size="18" Color="#666" />
+				<span>Профиль</span>
 			</button>
 		</div>
 	</div>
-
 	<div class="chat-messages-container" id="messages-container">
 		<MessageSequenceComponent Messages="@chat.Messages" />
+		<ChatStatusComponent />
 	</div>
 
 	<div class="chat-input-area">
@@ -76,11 +76,18 @@
 	</div>
 </div>
 
+<UserProfileOverlay IsVisible="_showProfileOverlay"
+					User="@(AuthProvider.GetCurrentUser())"
+					OnClose="CloseProfileOverlay" />
+
 @code {
 	private string _inputText = string.Empty;
 	private bool _isGenerating = false;
+	private bool _showProfileOverlay = false;
 	private PeriodicTimer? _autoScrollTimer;
 	private CancellationTokenSource? _autoScrollCts;
+
+	// Chat Status
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -127,13 +134,11 @@
 
 	private void StartAutoScroll()
 	{
-		// Stop the previous scroll timer if it's running
 		StopAutoScroll();
 
 		_autoScrollCts = new CancellationTokenSource();
 		var token = _autoScrollCts.Token;
 
-		// Start a new scroll timer that activates every 100ms
 		_ = Task.Run(async () =>
 		{
 			using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
@@ -147,10 +152,7 @@
 					});
 				}
 			}
-			catch (OperationCanceledException)
-			{
-
-			}
+			catch (OperationCanceledException) { }
 		}, token);
 	}
 
@@ -200,15 +202,8 @@
 		}
 	}
 
-	private Task SendMessageWithoutGeneration()
-	{
-		return SendMessage(false);
-	}
-
-	private Task SendMessageWithGeneration()
-	{
-		return SendMessage(true);
-	}
+	private Task SendMessageWithoutGeneration() => SendMessage(false);
+	private Task SendMessageWithGeneration() => SendMessage(true);
 
 	private void StopGeneration()
 	{
@@ -228,22 +223,15 @@
 		{
 			await JS.InvokeVoidAsync("scrollToBottomIfNeeded", "messages-container");
 		}
-		catch
-		{
-			// Ignore JS errors
-		}
+		catch { }
 	}
 
-	private async Task Logout()
-	{
-		await JS.InvokeVoidAsync("logoutUser");
-		NavigationManager.NavigateTo("/login", forceLoad: false);
-	}
+	private void ToggleProfileOverlay() => _showProfileOverlay = !_showProfileOverlay;
+	private void CloseProfileOverlay() => _showProfileOverlay = false;
 
 	public void Dispose()
 	{
 		chat.Messages.CollectionChanged -= MessagesChanged;
-		chat.PropertyChanged -= ChatPropertyChanged;
 		StopAutoScroll();
 	}
 }
