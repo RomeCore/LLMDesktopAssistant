@@ -12,8 +12,6 @@ using LLMDesktopAssistant.LLM.Services;
 using Serilog;
 using LLMDesktopAssistant.WebUI;
 
-using LLMDesktopAssistant.LLM.Services.Users;
-
 namespace LLMDesktopAssistant.LLM.MVVM
 {
 	public class UserMessageVisibilityItemModel

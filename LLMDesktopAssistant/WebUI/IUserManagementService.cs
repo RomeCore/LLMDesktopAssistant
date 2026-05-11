@@ -1,11 +1,10 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.WebUI;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LLMDesktopAssistant.LLM.Services.Users
+namespace LLMDesktopAssistant.WebUI
 {
 	/// <summary>
 	/// Provides methods for managing user information.
@@ -29,6 +28,13 @@ namespace LLMDesktopAssistant.LLM.Services.Users
 		/// </summary>
 		/// <returns>A collection of remote user information.</returns>
 		IEnumerable<UserInformation> GetRemoteUsers();
+
+		/// <summary>
+		/// Determines whether the specified user is a local user that have been defined in chat settings.
+		/// </summary>
+		/// <param name="userLogin">The user login to check.</param>
+		/// <returns>true if the specified user is a local user; otherwise, false.</returns>
+		bool IsLocalUser(string userLogin);
 
 		/// <summary>
 		/// Lists all active users. Returns an empty collection if no active users are found.

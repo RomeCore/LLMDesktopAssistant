@@ -1,0 +1,33 @@
+@using LLMDesktopAssistant.Blazor.Services
+@inject WebUIAuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+@implements IDisposable
+
+@code {
+	private CancellationTokenSource? _cts;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var state = await AuthProvider.GetAuthenticationStateAsync();
+		if (state.User.Identity?.IsAuthenticated == true)
+		{
+			Navigation.NavigateTo("/chat");
+			return;
+		}
+
+		_cts = new CancellationTokenSource();
+		try
+		{
+			await Task.Delay(100, _cts.Token);
+		}
+		catch (OperationCanceledException) { }
+
+		Navigation.NavigateTo("/login");
+	}
+
+	public void Dispose()
+	{
+		_cts?.Cancel();
+		_cts?.Dispose();
+	}
+}

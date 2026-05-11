@@ -1,12 +1,15 @@
-﻿@using LLMDesktopAssistant.LLM.Domain;
+@using LLMDesktopAssistant.LLM.Domain;
+@using LLMDesktopAssistant.LLM.Services;
+@inject IChatOperationService ChatOperation
+@inject Chat Chat
 
 @if (Message.Message is UserMessage userMsg)
 {
-	<UserMessageComponent BranchedMessage="@Message" Message="@userMsg" />
+	<UserMessageComponent BranchedMessage="@Message" Message="@userMsg" ChatOperation="@ChatOperation" Chat="@Chat" />
 }
 else if (Message.Message is AssistantMessage assistantMsg)
 {
-	<AssistantMessageComponent BranchedMessage="@Message" Message="@assistantMsg" />
+	<AssistantMessageComponent BranchedMessage="@Message" Message="@assistantMsg" ChatOperation="@ChatOperation" Chat="@Chat" />
 }
 
 @code {

@@ -1,0 +1,199 @@
+.markdown-content {
+    line-height: 1.75;
+    color: #1a1a1a;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+    margin-top: 1.2em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #0d0d0d;
+}
+
+.markdown-content h1 { font-size: 1.7em; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 0.3em; }
+.markdown-content h2 { font-size: 1.4em; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 0.2em; }
+.markdown-content h3 { font-size: 1.2em; }
+.markdown-content h4 { font-size: 1.1em; }
+.markdown-content h5 { font-size: 1em; }
+.markdown-content h6 { font-size: 0.9em; color: #555; }
+
+.markdown-content p {
+    margin: 0.6em 0;
+}
+
+.markdown-content a {
+    color: #0078d4;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.markdown-content a:hover {
+    border-bottom-color: #0078d4;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+    margin: 0.5em 0;
+    padding-left: 1.8em;
+}
+
+.markdown-content li {
+    margin: 0.25em 0;
+}
+
+.markdown-content li > p {
+    margin: 0.2em 0;
+}
+
+.markdown-content ul.task-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.markdown-content .task-list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0.3em 0;
+}
+
+.markdown-content .task-list-item input[type="checkbox"] {
+    margin-top: 0.3em;
+    flex-shrink: 0;
+    accent-color: #0078d4;
+}
+
+.markdown-content blockquote {
+    margin: 0.8em 0;
+    padding: 0.5em 1em;
+    border-left: 4px solid #0078d4;
+    background: rgba(0, 120, 212, 0.04);
+    border-radius: 0 6px 6px 0;
+    color: #444;
+}
+
+.markdown-content blockquote p {
+    margin: 0.3em 0;
+}
+
+.markdown-content code:not(pre code) {
+    background: rgba(0, 0, 0, 0.06);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    color: #d63384;
+}
+
+.markdown-content pre {
+    margin: 0.8em 0;
+    padding: 1em;
+    background: #1e1e2e;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.5;
+    font-size: 0.88em;
+    position: relative;
+}
+
+.markdown-content pre code {
+    background: none;
+    padding: 0;
+    color: #cdd6f4;
+    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 0.95em;
+    tab-size: 4;
+}
+
+.markdown-content pre:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.markdown-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.8em 0;
+    font-size: 0.93em;
+}
+
+.markdown-content th,
+.markdown-content td {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0.5em 0.75em;
+    text-align: left;
+}
+
+.markdown-content th {
+    background: rgba(0, 120, 212, 0.06);
+    font-weight: 600;
+}
+
+.markdown-content tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.markdown-content tr:hover {
+    background: rgba(0, 120, 212, 0.03);
+}
+
+.markdown-content hr {
+    border: none;
+    border-top: 2px solid rgba(0, 0, 0, 0.08);
+    margin: 1.5em 0;
+}
+
+.markdown-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 0.5em 0;
+}
+
+.markdown-content strong {
+    font-weight: 600;
+    color: #0d0d0d;
+}
+
+.markdown-content em {
+    font-style: italic;
+}
+
+.markdown-content details {
+    margin: 0.5em 0;
+    padding: 0.5em 1em;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.markdown-content details summary {
+    font-weight: 500;
+    cursor: pointer;
+    color: #444;
+}
+
+.markdown-content .footnotes {
+    margin-top: 2em;
+    padding-top: 1em;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0.85em;
+    color: #555;
+}
+
+.markdown-content .footnotes ol {
+    padding-left: 1.2em;
+}
+
+.markdown-content .mermaid {
+    margin: 0.8em 0;
+    text-align: center;
+}

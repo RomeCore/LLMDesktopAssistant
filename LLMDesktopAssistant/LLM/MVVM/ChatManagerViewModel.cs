@@ -68,13 +68,7 @@ namespace LLMDesktopAssistant.LLM
 			_currentChatScope = ChatServices.ManagementService.OpenChatScope(id);
 			var chatServices = _currentChatScope.ServiceProvider;
 			var chat = chatServices.GetRequiredService<Chat>();
-			var blazorStarter = chatServices.GetService<IChatWebUIStarter>();
 			CurrentChat = new ChatViewModel(chat);
-
-			if (blazorStarter != null)
-			{
-				blazorStarter.Start(new WebUIStartupSettings());
-			}
 		}
 
 		private void CreateConversation()

@@ -1,10 +1,11 @@
 @using System.ComponentModel
 @using LLMDesktopAssistant.LLM.Domain
-@using LLMDesktopAssistant.LLM.Services.Users
+@using LLMDesktopAssistant.LLM.Services
+@using LLMDesktopAssistant.WebUI
+@using Material.Icons
 @implements IDisposable
 @rendermode InteractiveServer
 
-@inject Chat Chat
 @inject IUserManagementService UserManager
 
 <div class="message-row user-message-row">
@@ -18,16 +19,45 @@
 				}
 				else
 				{
-					<span class="avatar-placeholder">👤</span>
+					<span class="avatar-placeholder">
+						<MaterialIconComponent Kind="@MaterialIconKind.Account" Size="20" />
+					</span>
 				}
 			</div>
 			<span class="sender-name">@_senderName</span>
 		</div>
 	}
+
 	<div class="message-body user-message-body">
 		<div class="message-bubble user-bubble">
 			<MarkdownComponent MarkdownText="@Message.Content" />
 		</div>
+	</div>
+
+	<div class="message-actions user-message-actions">
+		@* Resend *@
+		<button class="msg-action-btn" title="Resend" @onclick="ResendMessage">
+			<MaterialIconComponent Kind="@MaterialIconKind.ArrowUDownLeft" Size="18" />
+		</button>
+
+		@* Edit *@
+		<button class="msg-action-btn" title="Edit" @onclick="EditMessage">
+			<MaterialIconComponent Kind="@MaterialIconKind.Edit" Size="18" />
+		</button>
+
+		@* Branching *@
+		@if (BranchedMessage.AvailableBranchesCount > 1)
+		{
+			<button class="msg-action-btn" title="Previous branch" @onclick="PreviousBranch" disabled="@(BranchedMessage.SelectedBranchIndex <= 0)">
+				<MaterialIconComponent Kind="@MaterialIconKind.ChevronLeft" Size="18" />
+			</button>
+
+			<span class="branch-indicator">@(BranchedMessage.SelectedBranchIndex + 1) / @BranchedMessage.AvailableBranchesCount</span>
+
+			<button class="msg-action-btn" title="Next branch" @onclick="NextBranch" disabled="@(BranchedMessage.SelectedBranchIndex >= BranchedMessage.AvailableBranchesCount - 1)">
+				<MaterialIconComponent Kind="@MaterialIconKind.ChevronRight" Size="18" />
+			</button>
+		}
 	</div>
 </div>
 
@@ -37,6 +67,12 @@
 
 	[Parameter]
 	public required UserMessage Message { get; init; }
+
+	[Parameter]
+	public required IChatOperationService ChatOperation { get; init; }
+
+	[Parameter]
+	public required Chat Chat { get; init; }
 
 	private bool _showAvatar = true;
 	private string _avatarBase64 = string.Empty;
@@ -75,6 +111,39 @@
 	private void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		InvokeAsync(StateHasChanged);
+	}
+
+	private async Task ResendMessage()
+	{
+		try
+		{
+			await ChatOperation.ResendMessageAsync(BranchedMessage.MessageIndex);
+		}
+		catch (Exception ex)
+		{
+			Console.Error.WriteLine($"Failed to resend: {ex.Message}");
+		}
+	}
+
+	private void EditMessage()
+	{
+		Console.WriteLine($"Edit message {BranchedMessage.MessageIndex} — not implemented yet");
+	}
+
+	private void PreviousBranch()
+	{
+		if (BranchedMessage.SelectedBranchIndex > 0)
+		{
+			ChatOperation.SwitchBranch(BranchedMessage.MessageIndex, BranchedMessage.SelectedBranchIndex - 1);
+		}
+	}
+
+	private void NextBranch()
+	{
+		if (BranchedMessage.SelectedBranchIndex < BranchedMessage.AvailableBranchesCount - 1)
+		{
+			ChatOperation.SwitchBranch(BranchedMessage.MessageIndex, BranchedMessage.SelectedBranchIndex + 1);
+		}
 	}
 
 	public void Dispose()

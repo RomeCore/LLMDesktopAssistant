@@ -2,35 +2,64 @@
 @using LLMDesktopAssistant.LLM.Domain
 @using LLMDesktopAssistant.LLM.Messages
 @using LLMDesktopAssistant.Localization
+@using Material.Icons
 @implements IDisposable
 @rendermode InteractiveServer
 
-<div class="toolcall-item" data-status="@_status">
-	<span class="toolcall-icon">@GetToolStatusIcon()</span>
+<div class="toolcall-item" data-status="@ToolCall.Status">
+	<span class="toolcall-icon">
+		@switch (ToolCall.Status)
+		{
+			case ToolStatus.Pending:
+				<MaterialIconComponent Kind="@MaterialIconKind.Hammer" Size="16" />
+				break;
+			case ToolStatus.Executing:
+				<MaterialIconComponent Kind="@MaterialIconKind.Hammer" Size="16" Color="#0078d4" />
+				break;
+			case ToolStatus.ExecutionInterrupted:
+				<MaterialIconComponent Kind="@MaterialIconKind.Hammer" Size="16" Color="#1976d2" />
+				break;
+			case ToolStatus.NoResult:
+				<MaterialIconComponent Kind="@MaterialIconKind.FlaskEmpty" Size="16" Color="#0078d4" />
+				break;
+			case ToolStatus.Success:
+				<MaterialIconComponent Kind="@MaterialIconKind.CheckCircle" Size="16" Color="#388e3c" />
+				break;
+			case ToolStatus.Error:
+				<MaterialIconComponent Kind="@MaterialIconKind.AlertCircle" Size="16" Color="#d32f2f" />
+				break;
+			case ToolStatus.Cancelled:
+				<MaterialIconComponent Kind="@MaterialIconKind.CancelCircle" Size="16" Color="#d32f2f" />
+				break;
+			default:
+				<MaterialIconComponent Kind="@MaterialIconKind.Hammer" Size="16" />
+				break;
+		}
+	</span>
 	<span class="toolcall-name">@_title</span>
-	@if (!string.IsNullOrWhiteSpace(_statusTitle))
+	@if (!string.IsNullOrWhiteSpace(ToolCall.StatusTitle))
 	{
-		<span class="toolcall-status"><MarkdownComponent MarkdownText="@_statusTitle" /></span>
+		<span class="toolcall-status"><MarkdownComponent MarkdownText="@ToolCall.StatusTitle" /></span>
 	}
 
-	@if (false)
+	@if (_showArgs)
 	{
-		@if (_showArgs)
-		{
-			<div class="toolcall-args">
-				<MarkdownComponent MarkdownText="@_argsPreview" />
-			</div>
-		}
+		<div class="toolcall-args">
+			<MarkdownComponent MarkdownText="@_argsPreview" />
+		</div>
+	}
 
-		@if (!string.IsNullOrWhiteSpace(_resultContent))
-		{
-			<details class="toolcall-result-details">
-				<summary class="toolcall-result-summary">📋 Result</summary>
-				<div class="toolcall-result-content">
-					<pre><code>@_resultContent</code></pre>
-				</div>
-			</details>
-		}
+	@if (!string.IsNullOrWhiteSpace(ToolCall.ResultContent))
+	{
+		<details class="toolcall-result-details">
+			<summary class="toolcall-result-summary">
+				<MaterialIconComponent Kind="@MaterialIconKind.CodeBraces" Size="14" Color="rgba(0,0,0,0.5)" AdditionalStyle="margin-right: 4px;" />
+				Result
+			</summary>
+			<div class="toolcall-result-content">
+				<pre><code>@ToolCall.ResultContent</code></pre>
+			</div>
+		</details>
 	}
 </div>
 
@@ -39,21 +68,13 @@
 	[Parameter]
 	public required ToolCall ToolCall { get; init; }
 
-	private string _toolName = string.Empty;
 	private string? _title;
-	private string _status = "Pending";
-	private string? _statusTitle;
 	private bool _showArgs;
 	private string _argsPreview = string.Empty;
-	private string? _resultContent;
 
 	protected override void OnInitialized()
 	{
-		_toolName = ToolCall.ToolName;
-		_title = LocalizationManager.LocalizeStatic(ToolCall.Title ?? _toolName);
-		_status = ToolCall.Status.ToString();
-		_statusTitle = ToolCall.StatusTitle;
-		_resultContent = ToolCall.ResultContent;
+		_title = LocalizationManager.LocalizeStatic(ToolCall.Title ?? ToolCall.ToolName);
 
 		if (ToolCall.Arguments is not null)
 		{
@@ -72,30 +93,9 @@
 	{
 		InvokeAsync(() =>
 		{
-			switch (e.PropertyName)
-			{
-				case nameof(ToolCall.Status):
-					_status = ToolCall.Status.ToString();
-					break;
-				case nameof(ToolCall.StatusTitle):
-					_statusTitle = ToolCall.StatusTitle;
-					break;
-				case nameof(ToolCall.ResultContent):
-					_resultContent = ToolCall.ResultContent;
-					break;
-			}
 			StateHasChanged();
 		});
 	}
-
-	private string GetToolStatusIcon() => _status switch
-	{
-		"Pending" => "⏳",
-		"Running" => "🔄",
-		"Completed" => "✅",
-		"Failed" => "❌",
-		_ => "⚙️"
-	};
 
 	public void Dispose()
 	{

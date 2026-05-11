@@ -1,8 +1,10 @@
 using System.Reflection;
+using LLMDesktopAssistant.Blazor.Services;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.WebUI;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Serilog;
 
@@ -72,6 +74,28 @@ namespace LLMDesktopAssistant.Blazor
 				builder.Services.AddRazorComponents()
 					.AddInteractiveServerComponents();
 
+				builder.Services.AddControllers();
+
+				builder.Services.AddHttpContextAccessor();
+
+				// Register WebUI authentication services
+				builder.Services.AddAuthorizationCore();
+				builder.Services.AddScoped<WebUIAuthenticationStateProvider>();
+				builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
+					sp.GetRequiredService<WebUIAuthenticationStateProvider>());
+				
+				builder.Services.AddAuthentication("WebUICookies")
+					.AddCookie("WebUICookies", options =>
+					{
+						options.LoginPath = "/login";
+						options.LogoutPath = "/login";
+						options.AccessDeniedPath = "/login";
+						options.ExpireTimeSpan = TimeSpan.FromHours(8);
+						options.SlidingExpiration = true;
+					});
+				
+				builder.Services.AddCascadingAuthenticationState();
+
 				var app = builder.Build();
 				_webApp = app;
 
@@ -84,9 +108,14 @@ namespace LLMDesktopAssistant.Blazor
 
 				app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
+				app.UseAuthentication();
+				app.UseAuthorization();
+
 				app.UseAntiforgery();
 
 				app.MapStaticAssets("LLMDesktopAssistant.Blazor.staticwebassets.endpoints.json");
+
+				app.MapControllers();
 
 				app.MapRazorComponents<Components.App>()
 					.AddInteractiveServerRenderMode();

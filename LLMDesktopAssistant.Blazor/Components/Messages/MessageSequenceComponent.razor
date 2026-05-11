@@ -1,7 +1,7 @@
-﻿@using System.Collections.Specialized
-@using LLMDesktopAssistant.Blazor.Components.Messages
-@using LLMDesktopAssistant.Utils
+@using System.Collections.Specialized
 @using LLMDesktopAssistant.LLM.Domain
+@using LLMDesktopAssistant.Utils
+@implements IDisposable
 @rendermode InteractiveServer
 
 @foreach (var message in Messages)

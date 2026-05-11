@@ -13,11 +13,15 @@ namespace LLMDesktopAssistant.WebUI
 	public class BlazorHostViewModel : ViewModelBase
 	{
 		private readonly IChatWebUIStarter? _blazorStarter;
+		private readonly IPasswordHashingService _passwordHashingService;
 		private readonly WebUIStartupSettings _settings;
+
+		public WebUIStartupSettings Settings => _settings;
 
 		public BlazorHostViewModel(IServiceProvider chatServices)
 		{
 			_blazorStarter = chatServices.GetService<IChatWebUIStarter>();
+			_passwordHashingService = chatServices.GetRequiredService<IPasswordHashingService>();
 			_settings = SettingsManager.Get<WebUIStartupSettings>();
 
 			if (_blazorStarter != null)
@@ -42,7 +46,6 @@ namespace LLMDesktopAssistant.WebUI
 		private void UpdateStatus()
 		{
 			IsRunning = _blazorStarter?.IsRunning ?? false;
-			EndpointUrl = _settings.EndpointUrl;
 			StartCommand.NotifyCanExecuteChanged();
 			StopCommand.NotifyCanExecuteChanged();
 		}
@@ -52,13 +55,6 @@ namespace LLMDesktopAssistant.WebUI
 		{
 			get => _isRunning;
 			private set => SetProperty(ref _isRunning, value);
-		}
-
-		private string _endpointUrl = "http://localhost:5000";
-		public string EndpointUrl
-		{
-			get => _endpointUrl;
-			private set => SetProperty(ref _endpointUrl, value);
 		}
 
 		private string? _password;
@@ -80,10 +76,8 @@ namespace LLMDesktopAssistant.WebUI
 
 			try
 			{
-				_settings.EndpointUrl = EndpointUrl;
-
 				if (!string.IsNullOrWhiteSpace(Password))
-					_settings.PasswordHash = Password;
+					_settings.PasswordHash = _passwordHashingService.HashPassword(Password);
 
 				_blazorStarter.Start(_settings);
 				UpdateStatus();
@@ -114,7 +108,7 @@ namespace LLMDesktopAssistant.WebUI
 		{
 			try
 			{
-				App.MainTopLevel.Clipboard?.SetTextAsync(EndpointUrl);
+				App.MainTopLevel.Clipboard?.SetTextAsync(Settings.EndpointUrl);
 			}
 			catch { }
 		}
@@ -123,7 +117,7 @@ namespace LLMDesktopAssistant.WebUI
 		{
 			try
 			{
-				Process.Start(new ProcessStartInfo(EndpointUrl) { UseShellExecute = true });
+				Process.Start(new ProcessStartInfo(Settings.EndpointUrl) { UseShellExecute = true });
 			}
 			catch { }
 		}

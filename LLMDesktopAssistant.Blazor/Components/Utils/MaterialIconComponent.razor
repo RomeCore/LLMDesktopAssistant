@@ -1,0 +1,50 @@
+@using Material.Icons
+
+@if (SvgContent != null)
+{
+	<span class="material-icon-component" style="display: inline-flex; align-items: center; justify-content: center; width: @(Size)px; height: @(Size)px; @(AdditionalStyle)">
+		<svg viewBox="0 0 24 24" style="width: @(Size)px; height: @(Size)px; fill: @Color;">
+			<path d="@SvgContent" />
+		</svg>
+	</span>
+}
+else
+{
+	<span style="display: inline-flex; align-items: center; justify-content: center; width: @(Size)px; height: @(Size)px; font-size: @(Size)px; @(AdditionalStyle)">⚙️</span>
+}
+
+@code {
+	private static readonly MaterialIconDataProvider _dataProvider = new();
+
+	[Parameter]
+	public required MaterialIconKind Kind { get; init; }
+
+	[Parameter]
+	public int Size { get; init; } = 20;
+
+	[Parameter]
+	public string Color { get; init; } = "currentColor";
+
+	[Parameter]
+	public string AdditionalStyle { get; init; } = string.Empty;
+
+	private string? SvgContent { get; set; }
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+		SvgContent = GetIconData(Kind);
+	}
+
+	private static string? GetIconData(MaterialIconKind kind)
+	{
+		try
+		{
+			return _dataProvider.ProvideData(kind);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+}

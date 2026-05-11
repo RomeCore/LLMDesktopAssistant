@@ -1,17 +1,41 @@
 @page "/chat"
+
+@using Microsoft.AspNetCore.Authorization
+@using LLMDesktopAssistant.Blazor.Services
 @using LLMDesktopAssistant.Blazor.Components.Messages
 @using LLMDesktopAssistant.LLM.Domain
 @using LLMDesktopAssistant.LLM.Services
-@using LLMDesktopAssistant.LLM.Services.Users
+@using LLMDesktopAssistant.WebUI
+@using Material.Icons
 
 @implements IDisposable
+
+@inject NavigationManager NavigationManager
+@inject WebUIAuthenticationStateProvider AuthProvider
 @inject Chat chat
 @inject IChatOperationService chatOperation
 @inject IUserManagementService userManager
 @inject IJSRuntime JS
+
+@attribute [Authorize]
+
 @rendermode InteractiveServer
 
 <div class="chat-layout">
+	
+	<div class="chat-topbar">
+		<div class="chat-topbar-left">
+			<MaterialIconComponent Kind="@MaterialIconKind.ShieldAccount" Size="20" Color="#0078d4" />
+			<span class="chat-topbar-user">@(AuthProvider.GetCurrentUser()?.Name ?? "Unknown")</span>
+		</div>
+		<div class="chat-topbar-right">
+			<button class="chat-topbar-logout-btn" @onclick="Logout" title="Выйти, сука~">
+				<MaterialIconComponent Kind="@MaterialIconKind.Logout" Size="18" Color="#666" />
+				<span>Выйти</span>
+			</button>
+		</div>
+	</div>
+
 	<div class="chat-messages-container" id="messages-container">
 		<MessageSequenceComponent Messages="@chat.Messages" />
 	</div>
@@ -23,32 +47,41 @@
 				   @bind:event="oninput"
 				   @onkeydown="HandleKeyDown"
 				   placeholder="Введите сообщение..."
-				   disabled="@_isSending" />
-			<button class="chat-send-btn"
-					@onclick="SendMessage"
-					disabled="@_isSending || string.IsNullOrWhiteSpace(_inputText)">
-				@if (_isSending)
-				{
-					<span class="sending-spinner">⏳</span>
-				}
-				else
-				{
-					<span>➤</span>
-				}
-			</button>
+				   disabled="@_isGenerating" />
+
+			@if (_isGenerating)
+			{
+				@* Stop / Cancel generation *@
+				<button class="chat-stop-btn" title="Stop generation" @onclick="StopGeneration">
+					<MaterialIconComponent Kind="@MaterialIconKind.Stop" Size="20" Color="white" />
+				</button>
+			}
+			else
+			{
+				@* Send message *@
+				<button class="chat-send-btn"
+						@onclick="SendMessage"
+						disabled="@string.IsNullOrWhiteSpace(_inputText)">
+					<MaterialIconComponent Kind="@MaterialIconKind.Send" Size="18" Color="white" />
+				</button>
+			}
 		</div>
 	</div>
 </div>
 
 @code {
 	private string _inputText = string.Empty;
-	private bool _isSending = false;
+	private bool _isGenerating = false;
+	private PeriodicTimer? _autoScrollTimer;
+	private CancellationTokenSource? _autoScrollCts;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 
 		chat.Messages.CollectionChanged += MessagesChanged;
+		chat.PropertyChanged += ChatPropertyChanged;
+		_isGenerating = chat.GenerationCts != null;
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -64,6 +97,63 @@
 		await ScrollToBottom();
 	}
 
+	private void ChatPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName == nameof(Chat.GenerationCts))
+		{
+			InvokeAsync(() =>
+			{
+				_isGenerating = chat.GenerationCts != null;
+				StateHasChanged();
+
+				if (_isGenerating)
+				{
+					//StartAutoScroll();
+				}
+				else
+				{
+					//StopAutoScroll();
+				}
+			});
+		}
+	}
+
+	private void StartAutoScroll()
+	{
+		// Stop the previous scroll timer if it's running
+		StopAutoScroll();
+
+		_autoScrollCts = new CancellationTokenSource();
+		var token = _autoScrollCts.Token;
+
+		// Start a new scroll timer that activates every 100ms
+		_ = Task.Run(async () =>
+		{
+			using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
+			try
+			{
+				while (await timer.WaitForNextTickAsync(token))
+				{
+					await InvokeAsync(async () =>
+					{
+						await ScrollToBottom();
+					});
+				}
+			}
+			catch (OperationCanceledException)
+			{
+				
+			}
+		}, token);
+	}
+
+	private void StopAutoScroll()
+	{
+		_autoScrollCts?.Cancel();
+		_autoScrollCts?.Dispose();
+		_autoScrollCts = null;
+	}
+
 	private async Task HandleKeyDown(KeyboardEventArgs e)
 	{
 		if (e.Key == "Enter" && !e.ShiftKey)
@@ -75,10 +165,9 @@
 	private async Task SendMessage()
 	{
 		var text = _inputText?.Trim();
-		if (string.IsNullOrWhiteSpace(text) || _isSending)
+		if (string.IsNullOrWhiteSpace(text) || _isGenerating)
 			return;
 
-		_isSending = true;
 		_inputText = string.Empty;
 
 		try
@@ -99,23 +188,42 @@
 		{
 			Console.Error.WriteLine($"Failed to send message: {ex.Message}");
 		}
-		finally
+	}
+
+	private void StopGeneration()
+	{
+		try
 		{
-			_isSending = false;
+			chat.GenerationCts?.Cancel();
+		}
+		catch (Exception ex)
+		{
+			Console.Error.WriteLine($"Failed to stop generation: {ex.Message}");
 		}
 	}
 
 	private async Task ScrollToBottom()
 	{
-		await InvokeAsync(async () =>
+		try
 		{
-			await Task.Delay(50);
 			await JS.InvokeVoidAsync("scrollToBottom", "messages-container");
-		});
+		}
+		catch
+		{
+			// Ignore JS errors
+		}
+	}
+
+	private async Task Logout()
+	{
+		await AuthProvider.LogoutAsync();
+		NavigationManager.NavigateTo("/login", forceLoad: false);
 	}
 
 	public void Dispose()
 	{
 		chat.Messages.CollectionChanged -= MessagesChanged;
+		chat.PropertyChanged -= ChatPropertyChanged;
+		StopAutoScroll();
 	}
 }

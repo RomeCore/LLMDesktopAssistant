@@ -1,10 +1,11 @@
 @using System.ComponentModel
 @using LLMDesktopAssistant.LLM.Domain
+@using LLMDesktopAssistant.LLM.Services
 @using LLMDesktopAssistant.LLM.Services.Agents
+@using Material.Icons
 @implements IDisposable
 @rendermode InteractiveServer
 
-@inject Chat Chat
 @inject IAgentManagementService AgentManager
 
 <div class="message-row assistant-message-row">
@@ -18,20 +19,25 @@
 				}
 				else
 				{
-					<span class="avatar-placeholder">🤖</span>
+					<span class="avatar-placeholder">
+						<MaterialIconComponent Kind="@MaterialIconKind.Robot" Size="20" />
+					</span>
 				}
 			</div>
 			<span class="sender-name">@_senderName</span>
 		</div>
 	}
 
-	@if (!string.IsNullOrWhiteSpace(_reasoningContent))
+	@if (!string.IsNullOrWhiteSpace(Message.ReasoningContent))
 	{
 		<div class="reasoning-container">
-			<details class="reasoning-details" open="@_reasoningExpanded">
-				<summary class="reasoning-summary">💭 Reasoning</summary>
+			<details class="reasoning-details" open="@(!Message.IsCompleted)">
+				<summary class="reasoning-summary">
+					<MaterialIconComponent Kind="@MaterialIconKind.Brain" Size="16" Color="rgba(0,0,0,0.5)" AdditionalStyle="margin-right: 4px;" />
+					Reasoning
+				</summary>
 				<div class="reasoning-text">
-					<MarkdownComponent MarkdownText="@_reasoningContent" />
+					<MarkdownComponent MarkdownText="@Message.ReasoningContent" />
 				</div>
 			</details>
 		</div>
@@ -44,19 +50,66 @@
 		</div>
 	}
 
-	@if (_toolCalls.Count > 0)
+	@if (Message.ToolCalls.Count > 0)
 	{
 		<div class="toolcalls-container">
-			@foreach (var toolCall in _toolCalls)
+			@foreach (var toolCall in Message.ToolCalls)
 			{
 				<ToolCallComponent ToolCall="@toolCall" />
 			}
 		</div>
 	}
 
-	@if (!string.IsNullOrWhiteSpace(_error))
+	@if (!string.IsNullOrWhiteSpace(Message.Error))
 	{
-		<div class="message-error">❌ @_error</div>
+		<div class="message-error">
+			<MaterialIconComponent Kind="@MaterialIconKind.AlertCircle" Size="16" Color="#d32f2f" AdditionalStyle="margin-right: 4px;" />
+			@Message.Error
+		</div>
+	}
+
+	@if (Message.IsCompleted)
+	{
+		<div class="message-actions">
+			@* Regenerate *@
+			<button class="msg-action-btn" title="Regenerate" @onclick="RegenerateMessage">
+				<MaterialIconComponent Kind="@MaterialIconKind.Refresh" Size="18" />
+			</button>
+
+			@* Resend *@
+			@if (Message.ToolCalls.Count > 0)
+			{
+				<button class="msg-action-btn" title="Resend" @onclick="ResendMessage">
+					<MaterialIconComponent Kind="@MaterialIconKind.ArrowUDownLeft" Size="18" />
+				</button>
+			}
+			else
+			{
+				<button class="msg-action-btn" title="Resend" @onclick="ResendMessage">
+					<MaterialIconComponent Kind="@MaterialIconKind.ChevronDoubleDown" Size="18" />
+				</button>
+			}
+
+			@* Branching *@
+			@if (BranchedMessage.AvailableBranchesCount > 1)
+			{
+				<button class="msg-action-btn" title="Previous branch" @onclick="PreviousBranch" disabled="@(BranchedMessage.SelectedBranchIndex <= 0)">
+					<MaterialIconComponent Kind="@MaterialIconKind.ChevronLeft" Size="18" />
+				</button>
+
+				<span class="branch-indicator">@(BranchedMessage.SelectedBranchIndex + 1) / @BranchedMessage.AvailableBranchesCount</span>
+
+				<button class="msg-action-btn" title="Next branch" @onclick="NextBranch" disabled="@(BranchedMessage.SelectedBranchIndex >= BranchedMessage.AvailableBranchesCount - 1)">
+					<MaterialIconComponent Kind="@MaterialIconKind.ChevronRight" Size="18" />
+				</button>
+			}
+		</div>
+	}
+	else
+	{
+		<div class="message-progress">
+			<div class="progress-bar"></div>
+		</div>
 	}
 </div>
 
@@ -67,21 +120,35 @@
 	[Parameter]
 	public required AssistantMessage Message { get; init; }
 
+	[Parameter]
+	public required IChatOperationService ChatOperation { get; init; }
+
+	[Parameter]
+	public required Chat Chat { get; init; }
+
 	private bool _showAvatar = true;
 	private string _avatarBase64 = string.Empty;
 	private string _senderName = string.Empty;
-	private string _reasoningContent = string.Empty;
-	private bool _reasoningExpanded = false;
-	private List<ToolCall> _toolCalls = [];
-	private string _error = string.Empty;
 
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
 		LoadAvatar();
-		LoadParts();
+
 		Message.PropertyChanged += MessagePropertyChanged;
+		Message.ToolCalls.CollectionChanged += ToolCallsChanged;
+
+		if (!Message.IsCompleted)
+		{
+			Message.CompletionToken.OnCompleted(() =>
+			{
+				InvokeAsync(() =>
+				{
+					StateHasChanged();
+				});
+			});
+		}
 	}
 
 	private void LoadAvatar()
@@ -111,35 +178,65 @@
 		}
 	}
 
-	private void LoadParts()
-	{
-		_reasoningContent = Message.ReasoningContent ?? string.Empty;
-		_reasoningExpanded = !Message.IsCompleted;
-		_toolCalls = [.. Message.ToolCalls];
-		_error = Message.Error ?? string.Empty;
-	}
-
 	private void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		InvokeAsync(() =>
 		{
-			switch (e.PropertyName)
-			{
-				case nameof(AssistantMessage.ReasoningContent):
-					_reasoningContent = Message.ReasoningContent ?? string.Empty;
-					break;
-				case nameof(AssistantMessage.Error):
-					_error = Message.Error ?? string.Empty;
-					break;
-			}
-			_reasoningExpanded = !Message.IsCompleted;
-			_toolCalls = [.. Message.ToolCalls];
 			StateHasChanged();
 		});
+	}
+
+	private void ToolCallsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+	{
+		InvokeAsync(() =>
+		{
+			StateHasChanged();
+		});
+	}
+
+	private async Task RegenerateMessage()
+	{
+		try
+		{
+			await ChatOperation.RegenerateMessageAsync(BranchedMessage.MessageIndex);
+		}
+		catch (Exception ex)
+		{
+			Console.Error.WriteLine($"Failed to regenerate: {ex.Message}");
+		}
+	}
+
+	private async Task ResendMessage()
+	{
+		try
+		{
+			await ChatOperation.ResendMessageAsync(BranchedMessage.MessageIndex);
+		}
+		catch (Exception ex)
+		{
+			Console.Error.WriteLine($"Failed to resend: {ex.Message}");
+		}
+	}
+
+	private void PreviousBranch()
+	{
+		if (BranchedMessage.SelectedBranchIndex > 0)
+		{
+			ChatOperation.SwitchBranch(BranchedMessage.MessageIndex, BranchedMessage.SelectedBranchIndex - 1);
+		}
+	}
+
+	private void NextBranch()
+	{
+		if (BranchedMessage.SelectedBranchIndex < BranchedMessage.AvailableBranchesCount - 1)
+		{
+			ChatOperation.SwitchBranch(BranchedMessage.MessageIndex, BranchedMessage.SelectedBranchIndex + 1);
+		}
 	}
 
 	public void Dispose()
 	{
 		Message.PropertyChanged -= MessagePropertyChanged;
+		Message.ToolCalls.CollectionChanged -= ToolCallsChanged;
 	}
 }

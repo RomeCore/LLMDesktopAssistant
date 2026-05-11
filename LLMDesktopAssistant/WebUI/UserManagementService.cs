@@ -1,8 +1,8 @@
-﻿using LLMDesktopAssistant.WebUI;
-using LLMDesktopAssistant.LLM.Domain;
+﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.LLM.Services;
 
-namespace LLMDesktopAssistant.LLM.Services.Users
+namespace LLMDesktopAssistant.WebUI
 {
 	[ChatService(typeof(IUserManagementService))]
 	public class UserManagementService(
@@ -22,6 +22,11 @@ namespace LLMDesktopAssistant.LLM.Services.Users
 		public IEnumerable<UserInformation> GetRemoteUsers()
 		{
 			return SettingsManager.Get<RemoteUsersConfiguration>().Users;
+		}
+
+		public bool IsLocalUser(string userLogin)
+		{
+			return chat.Settings.Users.Users.Any(u => u.Login == userLogin);
 		}
 
 		public IEnumerable<UserInformation> GetActiveUsers()
