@@ -64,7 +64,8 @@
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 
-				<ctrl:MarkdownControl MarkdownText="{Binding Text}"/>
+				<ctrl:MarkdownControl MarkdownText="{Binding Text}"
+															UsePlaintext="True"/>
 
 			</StackPanel>
 

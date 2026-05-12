@@ -11,13 +11,13 @@
 		@switch (ToolCall.Status)
 		{
 			case ToolStatus.Pending:
-				<MaterialIconComponent Kind="@MaterialIconKind.Hammer" Size="16" />
+				<MaterialIconComponent Kind="@MaterialIconKind.Wrench" Size="16" />
 				break;
 			case ToolStatus.Executing:
-				<MaterialIconComponent Kind="@MaterialIconKind.Hammer" Size="16" Color="#0078d4" />
+				<MaterialIconComponent Kind="@MaterialIconKind.Wrench" Size="16" Color="#0078d4" />
 				break;
 			case ToolStatus.ExecutionInterrupted:
-				<MaterialIconComponent Kind="@MaterialIconKind.Hammer" Size="16" Color="#1976d2" />
+				<MaterialIconComponent Kind="@MaterialIconKind.Wrench" Size="16" Color="#1976d2" />
 				break;
 			case ToolStatus.NoResult:
 				<MaterialIconComponent Kind="@MaterialIconKind.FlaskEmpty" Size="16" Color="#0078d4" />
@@ -32,14 +32,20 @@
 				<MaterialIconComponent Kind="@MaterialIconKind.CancelCircle" Size="16" Color="#d32f2f" />
 				break;
 			default:
-				<MaterialIconComponent Kind="@MaterialIconKind.Hammer" Size="16" />
+				<MaterialIconComponent Kind="@MaterialIconKind.Wrench" Size="16" />
 				break;
 		}
 	</span>
 	<span class="toolcall-name">@_title</span>
 	@if (!string.IsNullOrWhiteSpace(ToolCall.StatusTitle))
 	{
-		<span class="toolcall-status"><MarkdownComponent MarkdownText="@ToolCall.StatusTitle" /></span>
+		@if (ToolCall.StatusIcon.HasValue)
+		{
+			<MaterialIconComponent Kind="@ToolCall.StatusIcon.Value" />
+		}
+		<span class="toolcall-status">
+			<MarkdownComponent MarkdownText="@ToolCall.StatusTitle" />
+		</span>
 	}
 
 	@if (_showArgs)
