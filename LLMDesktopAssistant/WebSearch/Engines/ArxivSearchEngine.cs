@@ -120,7 +120,8 @@ public class ArxivSearchEngine : SearchEngineBase
                     var authors = entry.Elements(_atomNs + "author")
                         .Select(a => a.Element(_atomNs + "name")?.Value?.Trim())
                         .Where(n => !string.IsNullOrEmpty(n))
-                        .ToList()!;
+                        .Cast<string>()
+                        .ToList();
 
                     // DOI
                     var doi = entry.Element(_arxivNs + "doi")?.Value?.Trim();
@@ -137,7 +138,8 @@ public class ArxivSearchEngine : SearchEngineBase
                     var tags = entry.Elements(_atomNs + "category")
                         .Select(c => c.Attribute("term")?.Value)
                         .Where(t => !string.IsNullOrEmpty(t))
-                        .ToList()!;
+                        .Cast<string>()
+                        .ToList();
 
                     // Comments
                     var comments = entry.Element(_arxivNs + "comment")?.Value?.Trim();

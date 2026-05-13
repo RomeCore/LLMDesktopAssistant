@@ -60,4 +60,14 @@ public enum SearchCategory
     /// Maps and geographic content.
     /// </summary>
     Map,
+
+	/// <summary>
+	/// Code repositories (GitHub, GitLab, etc.).
+	/// </summary>
+	Repos,
+
+	/// <summary>
+	/// Software packages and registries (npm, PyPI, Docker Hub, etc.).
+	/// </summary>
+	Packages,
 }
