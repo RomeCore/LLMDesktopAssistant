@@ -1,4 +1,5 @@
 ﻿using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Messages;
@@ -11,6 +12,8 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
 	public class AdaptiveAgentExecutionStage : MentionableAgentExecutionStage
 	{
+		private readonly Random _random = new();
+
 		private int _maxVisibleRounds = 1;
 		/// <summary>
 		/// Maximum number of rounds that is visible to router agent.
@@ -19,6 +22,27 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 		{
 			get => _maxVisibleRounds;
 			set => SetProperty(ref _maxVisibleRounds, value);
+		}
+
+		private string? _additionalRouterPrompt = null;
+		/// <summary>
+		/// Additional prompt to be added to system prompt for router agent.
+		/// </summary>
+		public string? AdditionalRouterPrompt
+		{
+			get => _additionalRouterPrompt;
+			set => SetProperty(ref _additionalRouterPrompt, value);
+		}
+
+		private bool _enforceRouterSelection = false;
+		/// <summary>
+		/// Whether to enforce router selection for the next agent. If disabled, router can choose none.
+		/// If enabled and router not chooses anything, a random weighted agent will be selected.
+		/// </summary>
+		public bool EnforceRouterSelection
+		{
+			get => _enforceRouterSelection;
+			set => SetProperty(ref _enforceRouterSelection, value);
 		}
 
 		protected override async Task<Guid?> SelectNextAgentAsync(List<AgentInstance> selectFrom,
@@ -44,26 +68,42 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			var agentNames = string.Join("\n", agents.Select(a => a.Info.Name));
 
 			var template = (IMessagesTemplate)templateLibrary.Retrieve("router_prompt");
-			var rendered = template.Render(new
+			var messages = template.RenderRCLLM(new
 			{
-				context = SelectContext(context),
 				agents = agents.Select(a => new
 				{
 					name = a.Info.Name,
 					description = a.Info.Description
-				}).ToArray()
-			});
-			var messages = rendered.Select(m => m.Role switch
-			{
-				LLTSharp.Role.System => (IMessage)new SystemMessage(m.Content),
-				LLTSharp.Role.User => new UserMessage(m.Content),
-				_ => throw new ArgumentOutOfRangeException(nameof(m.Role), $"Unknown role: {m.Role}")
+				}).ToArray(),
+				enforce_selection = EnforceRouterSelection,
+				additional_prompt = AdditionalRouterPrompt,
+				context = SelectContext(context),
 			}).ToList();
 
 			var response = await llm.ChatAsync(messages, cancellationToken: cancellationToken);
 			var content = response.Message.Content?.TrimStart('@');
+			var selectedAgent = agents.FirstOrDefault(a => a.Info.Name == content)?.Id;
+
 			Log.Information("Router model selected next agent: {Content}", content);
-			return agents.FirstOrDefault(a => a.Info.Name == content)?.Id;
+
+			if (selectedAgent == null && EnforceRouterSelection)
+			{
+				Log.Information("Picking a random agent...");
+
+				// Pick a random agent, if router did not choose anything
+				double weightSum = selectFrom.Sum(a => a.Weight);
+				double randomValue = _random.NextDouble() * weightSum;
+				double currentWeight = 0;
+
+				foreach (var agent in selectFrom)
+				{
+					currentWeight += agent.Weight;
+					if (currentWeight >= randomValue)
+						return agent.AgentId;
+				}
+			}
+
+			return selectedAgent;
 		}
 
 		private string? SelectContext(AgentPreExecutionContext context)

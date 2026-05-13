@@ -13,6 +13,8 @@ using Serilog;
 using System.IO;
 using System.Linq;
 using System.Diagnostics;
+using LLMDesktopAssistant.WebSearch;
+using Serilog.Core;
 
 namespace LLMDesktopAssistant
 {
@@ -22,6 +24,11 @@ namespace LLMDesktopAssistant
 		{
 			return config
 				.WriteTo.File(Path.Combine(Directories.LogFiles, "log.txt"), rollingInterval: RollingInterval.Day);
+		}
+
+		protected virtual void ConfigureServices(IServiceCollection services)
+		{
+			services.AddSingleton<ILogger>(sp => Log.Logger);
 		}
 
 		public override void Initialize()
@@ -35,7 +42,10 @@ namespace LLMDesktopAssistant
 
 			// PluginManager.LoadPluginsInto(AppDomain.CurrentDomain); <- This method is called in desktop version
 			ReflectionUtility.Initialize(AppDomain.CurrentDomain);
-			ServiceRegistry.Initialize([Log.Logger,]);
+			ServiceRegistry.Initialize(
+			[
+				Log.Logger,
+			], ConfigureServices);
 
 			AvaloniaXamlLoader.Load(this);
 		}

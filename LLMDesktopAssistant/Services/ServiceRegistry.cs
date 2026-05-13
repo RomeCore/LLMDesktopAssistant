@@ -31,7 +31,6 @@ namespace LLMDesktopAssistant.Services
 
 		private static State _state;
 		private static IServiceProvider _serviceProvider = null!;
-		private static ImmutableUniqueTypeDictionary<(Type, object)> _serviceTuples = null!;
 		private static ImmutableUniqueTypeDictionary<object> _services = null!;
 		private static ImmutableDictionary<Type, ImmutableList<DynamicServiceTypeInfo>> _dynamicRegistry = null!;
 		private static ConcurrentDictionary<Type, DynamicServiceTracker> _dynamicTrackers = null!;
@@ -40,18 +39,6 @@ namespace LLMDesktopAssistant.Services
 		/// Gets the service provider for the application. This is used to resolve services by their type.
 		/// </summary>
 		public static IServiceProvider Provider => _serviceProvider;
-
-		/// <summary>
-		/// Gets the collection of all registered services.
-		/// </summary>
-		public static ITypeDictionary<(Type, object)> ServiceTuples
-		{
-			get
-			{
-				CheckInitialized();
-				return _serviceTuples;
-			}
-		}
 
 		/// <summary>
 		/// Gets the collection of all registered services.
@@ -74,8 +61,10 @@ namespace LLMDesktopAssistant.Services
 		{
 			CheckInitialized();
 
-			foreach (var service in ServiceTuples)
-				services.AddSingleton(service.Item1, service.Item2);
+			var originalCollection = _serviceProvider.GetRequiredKeyedService<IServiceCollection>(AppServicesKey);
+			foreach (var service in originalCollection)
+				if (!service.IsKeyedService)
+					services.AddSingleton(service.ServiceType, _serviceProvider.GetRequiredService(service.ServiceType));
 
 			return services;
 		}
@@ -98,27 +87,25 @@ namespace LLMDesktopAssistant.Services
 		/// <summary>
 		/// Initializes all registered services.
 		/// </summary>
-		public static void Initialize(IEnumerable<object> services)
+		public static void Initialize(IEnumerable<object> services, Action<IServiceCollection> configureServices)
 		{
 			if (_state != State.None)
 				throw new InvalidOperationException("ModuleManager is already initialized.");
 
 			var collection = new ServiceCollection();
-			var serviceTypes = new HashSet<Type>();
 
-			serviceTypes.Add(typeof(IServiceCollection));
 			collection.AddKeyedSingleton<IServiceCollection>(AppServicesKey, collection);
 
+			foreach (var service in services)
+			{
+				collection.AddSingleton(service);
+			}
+			configureServices?.Invoke(collection);
 			foreach (var service in ReflectionUtility.GetTypesWithAttribute<object, ServiceAttribute>()
 				.OrderBy(t => t.Attribute.Order))
 			{
 				var serviceType = service.Attribute.ServiceType ?? service.Type;
-				serviceTypes.Add(serviceType);
 				collection.AddSingleton(serviceType, service.Type);
-			}
-			foreach (var service in services)
-			{
-				collection.AddSingleton(service);
 			}
 
 			_serviceProvider = collection.BuildServiceProvider();
@@ -155,10 +142,10 @@ namespace LLMDesktopAssistant.Services
 				}));
 
 			var allServices = new List<(Type, object)>();
-			foreach (var serviceType in serviceTypes)
-				allServices.AddRange(_serviceProvider.GetServices(serviceType).Select((s) => (serviceType, s))!);
-			_serviceTuples = new(allServices.DistinctBy(s => s.Item2).Where(s => s.Item2 != null));
-			_services = new(_serviceTuples.Select(s => s.Item2));
+			foreach (var service in collection)
+				allServices.AddRange(_serviceProvider.GetServices(service.ServiceType).Select((s) => (service.ServiceType, s))!);
+			// _serviceTuples = new(allServices.DistinctBy(s => s.Item2).Where(s => s.Item2 != null));
+			_services = new(allServices.Select(s => s.Item2).Distinct());
 
 			foreach (var tracker in _dynamicTrackers.Values)
 				tracker.Initialize();

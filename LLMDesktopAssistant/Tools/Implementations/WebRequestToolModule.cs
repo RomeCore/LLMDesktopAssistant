@@ -86,13 +86,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Category = "web"
 				});
 
-			AddTool(Search_SearXNG,
+			/*AddTool(Search_SearXNG,
 				new ToolInitializationInfo
 				{
 					Name = "web-search",
 					Description = "Search through the web using query.",
 					Category = "web"
-				});
+				});*/
 		}
 
 		private async Task<ToolResult> WebRequest(

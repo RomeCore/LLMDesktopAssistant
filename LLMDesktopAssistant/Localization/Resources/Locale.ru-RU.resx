@@ -1386,4 +1386,10 @@
   <data name="fs-changes_text_replaced" xml:space="preserve">
     <value>Заменено {0} вхождений</value>
   </data>
+  <data name="settings_stage_adaptive_additional_router_prompt" xml:space="preserve">
+    <value>Дополнительный промпт для агента-роутера</value>
+  </data>
+  <data name="settings_stage_adaptive_enforce_router_selection" xml:space="preserve">
+    <value>Обеспечить выбор</value>
+  </data>
 </root>

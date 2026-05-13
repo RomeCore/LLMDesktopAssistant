@@ -12,9 +12,24 @@
 		2. **Consider already executed agents.** Some agents may have already responded this round. Avoid selecting the same agent twice unless necessary.
 		3. **Match the request to agent capabilities.** Read each agent's name and description carefully. Pick the one whose expertise best matches the current need.
 		4. **Return ONLY the agent's @name.** Do not include any explanation, formatting, or extra text. Your output must be exactly one line containing the agent name, prefixed with @.
-		5. **If no agent is needed**, respond with exactly "None". This means the conversation should proceed without further agent intervention.
-		6. **If the user is just chatting, thanking, or confirming** — respond with "None". No agent needed for casual conversation.
+		`````
 
+		@if enforce_selection
+		{
+			`````
+			5. You must select an agent from the provided list of agents, even if it seems like no agent fits perfectly.
+			6. If you cannot find a suitable agent, choose one that can handle the most generic tasks or provide general information.
+			`````
+		}
+		else
+		{
+			`````
+			5. **If no agent is needed**, respond with exactly "None". This means the conversation should proceed without further agent intervention.
+			6. **If the user is just chatting, thanking, or confirming** — respond with "None". No agent needed for casual conversation.
+			`````
+		}
+
+		`````
 		## Examples
 
 		**Example 1:**
@@ -80,6 +95,13 @@
 		- @Reviewer
 		[You: None]
 		`````
+
+		@if additional_prompt
+		{
+			## Additional routing instructions
+
+			@additional_prompt
+		}
 	}
 	@user message
 	{

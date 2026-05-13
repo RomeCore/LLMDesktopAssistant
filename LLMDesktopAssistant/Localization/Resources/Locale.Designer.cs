@@ -3283,11 +3283,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Additional agentic router prompt.
+        /// </summary>
+        public static string settings_stage_adaptive_additional_router_prompt {
+            get {
+                return ResourceManager.GetString("settings_stage_adaptive_additional_router_prompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Agent pool.
         /// </summary>
         public static string settings_stage_adaptive_agents {
             get {
                 return ResourceManager.GetString("settings_stage_adaptive_agents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enforce selection.
+        /// </summary>
+        public static string settings_stage_adaptive_enforce_router_selection {
+            get {
+                return ResourceManager.GetString("settings_stage_adaptive_enforce_router_selection", resourceCulture);
             }
         }
         
