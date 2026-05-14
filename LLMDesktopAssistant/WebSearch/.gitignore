@@ -1,3 +1,0 @@
-# Ignore the entire SearXNG copy — it's a reference, not part of the project.
-# The actual implementation is in the WebSearch/Models/ and WebSearch/Engines/ directories.
-searxng/

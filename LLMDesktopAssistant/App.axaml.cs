@@ -5,16 +5,11 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using LiveMarkdown.Avalonia;
-using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant;
+using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using Serilog;
-using System.IO;
-using System.Linq;
-using System.Diagnostics;
-using LLMDesktopAssistant.WebSearch;
-using Serilog.Core;
 
 namespace LLMDesktopAssistant
 {
@@ -29,6 +24,69 @@ namespace LLMDesktopAssistant
 		protected virtual void ConfigureServices(IServiceCollection services)
 		{
 			services.AddSingleton<ILogger>(sp => Log.Logger);
+
+			services.AddSingleton<SearXSharp.ILogger, SearXSharpLoggerAdapter>();
+			services.AddSingleton<SearXSharp.SearchEngineManager>(sp =>
+			{
+				var logger = sp.GetRequiredService<SearXSharp.ILogger>();
+				logger = SearXSharp.EmptyLogger.Instance; // Disable logging for now.
+				var manager = new SearXSharp.SearchEngineManager(logger);
+				
+				//manager.RegisterEngines(SearXSharp.SearchEngines.AllEngines(logger));
+
+				manager.RegisterEngines(
+				[
+					// General
+					SearXSharp.SearchEngines.Google(logger),
+					SearXSharp.SearchEngines.Bing(logger),
+					SearXSharp.SearchEngines.Brave(logger),
+					SearXSharp.SearchEngines.DuckDuckGo(logger),
+					SearXSharp.SearchEngines.Yandex(logger),
+					SearXSharp.SearchEngines.Qwant(logger),
+					SearXSharp.SearchEngines.Startpage(logger),
+					SearXSharp.SearchEngines.Mojeek(logger),
+					SearXSharp.SearchEngines.Searx(logger),
+					SearXSharp.SearchEngines.Ask(logger),
+					SearXSharp.SearchEngines.Yahoo(logger),
+
+					// Images
+					SearXSharp.SearchEngines.GoogleImages(logger),
+					SearXSharp.SearchEngines.BingImages(logger),
+					SearXSharp.SearchEngines.Pixabay(logger),
+					SearXSharp.SearchEngines.Pexels(logger),
+					SearXSharp.SearchEngines.Unsplash(logger),
+					SearXSharp.SearchEngines.Flickr(logger),
+					SearXSharp.SearchEngines.DeviantArt(logger),
+					SearXSharp.SearchEngines.Pixiv(logger),
+					SearXSharp.SearchEngines.Wallhaven(logger),
+					SearXSharp.SearchEngines.WikiCommons(logger),
+					SearXSharp.SearchEngines.Pinterest(logger),
+					SearXSharp.SearchEngines.Imgur(logger),
+					SearXSharp.SearchEngines.ArtStation(logger),
+
+					// Videos
+					SearXSharp.SearchEngines.YouTube(logger),
+					SearXSharp.SearchEngines.Dailymotion(logger),
+					SearXSharp.SearchEngines.Vimeo(logger),
+					SearXSharp.SearchEngines.Bilibili(logger),
+					SearXSharp.SearchEngines.GoogleVideos(logger),
+					SearXSharp.SearchEngines.BingVideos(logger),
+					SearXSharp.SearchEngines.Odysee(logger),
+					SearXSharp.SearchEngines.PeerTube(logger),
+					SearXSharp.SearchEngines.Rumble(logger),
+					
+					// News
+					SearXSharp.SearchEngines.GoogleNews(logger),
+					SearXSharp.SearchEngines.BingNews(logger),
+					SearXSharp.SearchEngines.Reuters(logger),
+					SearXSharp.SearchEngines.YahooNews(logger),
+
+					// Maps
+					SearXSharp.SearchEngines.OpenStreetMap(logger),
+				]);
+
+				return manager;
+			});
 		}
 
 		public override void Initialize()
