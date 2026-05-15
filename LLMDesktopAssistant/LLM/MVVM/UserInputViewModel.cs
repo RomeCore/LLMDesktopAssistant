@@ -1,7 +1,7 @@
 using Avalonia.Collections;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.DIalogs;
+using LLMDesktopAssistant.Dialogs;
 using LLMDesktopAssistant.LLM.Attachments;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.MCP;

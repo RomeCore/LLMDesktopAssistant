@@ -17,7 +17,7 @@
 @inject IUserManagementService userManager
 @inject IJSRuntime JS
 
-@attribute [Authorize]
+@attribute [Authorize(AuthenticationSchemes = WebUIStaticConfiguration.LoginCookiesScheme + ", " + WebUIStaticConfiguration.MasterCookiesScheme)]
 
 @rendermode InteractiveServer
 

@@ -184,7 +184,7 @@ namespace LLMDesktopAssistant.MVVM
 		/// <returns>True if a view exists for the specified type; otherwise, false.</returns>
 		public static bool HasView(Type viewModelType)
 		{
-			return _ViewModel_to_View_map.ContainsKey(viewModelType);
+			return ResolveViewType(viewModelType) != null;
 		}
 
 		/// <summary>
@@ -194,7 +194,7 @@ namespace LLMDesktopAssistant.MVVM
 		/// <returns>True if a view exists for the specified type; otherwise, false.</returns>
 		public static bool HasView<T>()
 		{
-			return _ViewModel_to_View_map.ContainsKey(typeof(T));
+			return HasView(typeof(T));
 		}
 
 		public Control Build(object? data)

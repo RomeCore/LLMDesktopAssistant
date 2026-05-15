@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.DIalogs
+﻿namespace LLMDesktopAssistant.Dialogs
 {
 	[Flags]
 	public enum DialogButttons

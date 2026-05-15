@@ -18,9 +18,6 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 	private readonly ReaderWriterLockSlim _lock = new();
 
 	private ClaimsPrincipal? _currentUser;
-	private Timer? _sessionTimer;
-	private DateTime _lastActivity = DateTime.UtcNow;
-	private readonly TimeSpan _sessionTimeout = WebUIStaticConfiguration.AuthExpiryTimeSpan;
 
 	public WebUIAuthenticationStateProvider(
 		IUserManagementService userManager,
@@ -33,8 +30,6 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 		_httpContextAccessor = httpContextAccessor;
 		_remoteConfig = SettingsManager.Get<RemoteUsersConfiguration>();
 		_logger = logger;
-
-		_sessionTimer = new Timer(_ => CheckSession(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
 	}
 
 	private ClaimsPrincipal GetUserClaims()
@@ -50,7 +45,6 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 				_currentUser.Identity?.Name);
 		}
 
-		_lastActivity = DateTime.UtcNow;
 		return _currentUser ?? new ClaimsPrincipal(new ClaimsIdentity());
 	}
 
@@ -65,69 +59,6 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 		{
 			_lock.ExitReadLock();
 		}
-	}
-
-	public async Task<bool> LoginAsync(string login, string password)
-	{
-		var user = _userManager.FindByLogin(login);
-		if (user == null)
-		{
-			_logger.LogWarning("Login attempt for non-existent user: {Login}", login);
-			return false;
-		}
-		if (_userManager.IsLocalUser(login))
-		{
-			_logger.LogWarning("Remote login attempt without password for user: {Login}", login);
-			return false;
-		}
-
-		if (!string.IsNullOrEmpty(user.PasswordHash) && !_passwordHasher.VerifyPassword(user.PasswordHash, password))
-		{
-			_logger.LogWarning("Failed login attempt for user: {Login}", login);
-			return false;
-		}
-
-		var claims = new List<Claim>
-		{
-			new(ClaimTypes.Name, user.Login),
-			new(ClaimTypes.GivenName, user.Name),
-			new("Login", user.Login),
-		};
-
-		var identity = new ClaimsIdentity(claims, "WebUIAuth");
-		var principal = new ClaimsPrincipal(identity);
-
-		_lock.EnterWriteLock();
-		try
-		{
-			_currentUser = principal;
-			_lastActivity = DateTime.UtcNow;
-		}
-		finally
-		{
-			_lock.ExitWriteLock();
-		}
-
-		NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
-
-		_logger.LogInformation("User logged in: {Login} ({Name})", login, user.Name);
-		return true;
-	}
-
-	public void Logout()
-	{
-		_lock.EnterWriteLock();
-		try
-		{
-			_currentUser = new ClaimsPrincipal(new ClaimsIdentity());
-		}
-		finally
-		{
-			_lock.ExitWriteLock();
-		}
-
-		NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
-		_logger.LogInformation("User logged out");
 	}
 
 	public async Task<bool> RegisterAsync(string login, string password, string name, string description = "")
@@ -163,21 +94,8 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 		return _userManager.FindByLogin(login);
 	}
 
-	private void CheckSession()
-	{
-		if (!GetUserClaims().Identity?.IsAuthenticated ?? false)
-			return;
-
-		if (DateTime.UtcNow - _lastActivity > _sessionTimeout)
-		{
-			_logger.LogInformation("Session timeout for user: {User}", GetUserClaims().Identity?.Name);
-			Logout();
-		}
-	}
-
 	public void Dispose()
 	{
-		_sessionTimer?.Dispose();
 		_lock?.Dispose();
 	}
 }

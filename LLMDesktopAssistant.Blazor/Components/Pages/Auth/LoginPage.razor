@@ -77,7 +77,6 @@
 	private string _password = string.Empty;
 	private bool _isLoading = false;
 	private string? _errorMessage = null;
-	private CancellationTokenSource? _redirectCts;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -138,7 +137,5 @@
 
 	public void Dispose()
 	{
-		_redirectCts?.Cancel();
-		_redirectCts?.Dispose();
 	}
 }

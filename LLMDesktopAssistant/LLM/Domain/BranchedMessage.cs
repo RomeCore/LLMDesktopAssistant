@@ -11,6 +11,11 @@
 		public required ChatMessage Message { get; init; }
 
 		/// <summary>
+		/// Gets or sets the ID of the message in the database.
+		/// </summary>
+		public required int MessageId { get; init; }
+
+		/// <summary>
 		/// Gets or sets the index of the message in the chat history (e.g. the index in the <see cref="Chat.Messages"/> collection).
 		/// </summary>
 		public required int MessageIndex { get; init; }

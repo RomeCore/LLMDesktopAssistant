@@ -3,6 +3,7 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:LLMDesktopAssistant.MVVM"
+			 xmlns:dialogHost="using:DialogHostAvalonia"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 x:Class="LLMDesktopAssistant.MVVM.MainView"
 			 x:DataType="vm:MainViewModel">
@@ -11,6 +12,9 @@
 		<vm:MainViewModel />
 	</Design.DataContext>
 
-	<ContentControl Content="{Binding ChatManager}"/>
+	<dialogHost:DialogHost CloseOnClickAway="True">
+		<ContentControl Content="{Binding ChatManager}"/>
+	</dialogHost:DialogHost>
+	
 
 </UserControl>

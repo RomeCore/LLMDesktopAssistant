@@ -1,0 +1,64 @@
+<!--
+  VIBECODED
+  ─────────────────────────────────────────────────────────────────
+  ProgressRing — ControlTheme
+  ─────────────────────────────────────────────────────────────────
+  Defines the default visual appearance for the ProgressRing
+  templated control using styled paths for track and indicator.
+  
+  Resources consumed:
+    ProgressRingThickness  - Stroke thickness (default: 4)
+    ProgressRingSize       - Default control size  (default: 40)
+  ─────────────────────────────────────────────────────────────────
+-->
+
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="using:LLMDesktopAssistant.Controls">
+
+  <x:Double x:Key="ProgressRingThickness">4</x:Double>
+  <x:Double x:Key="ProgressRingSize">24</x:Double>
+
+  <!-- Default theme for ProgressRing -->
+  <ControlTheme x:Key="{x:Type local:ProgressRing}"
+                TargetType="local:ProgressRing">
+
+    <Setter Property="Width" Value="{DynamicResource ProgressRingSize}" />
+    <Setter Property="Height" Value="{DynamicResource ProgressRingSize}" />
+    <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+    <Setter Property="Background" Value="Transparent" />
+
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Grid x:Name="PART_RootGrid"
+              Width="{TemplateBinding Width}"
+              Height="{TemplateBinding Height}"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+
+          <!-- Track ring (background) -->
+          <Path x:Name="PART_Track"
+                Stroke="{TemplateBinding Foreground}"
+                StrokeThickness="{DynamicResource ProgressRingThickness}"
+                StrokeDashArray=""
+                Opacity="0.2"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                IsHitTestVisible="False" />
+
+          <!-- Progress indicator (foreground arc) -->
+          <Path x:Name="PART_Indicator"
+                Stroke="{TemplateBinding Foreground}"
+                StrokeThickness="{DynamicResource ProgressRingThickness}"
+                StrokeDashArray=""
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                IsHitTestVisible="False" />
+
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+
+  </ControlTheme>
+
+</ResourceDictionary>

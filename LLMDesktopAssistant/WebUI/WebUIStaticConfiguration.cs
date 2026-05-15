@@ -6,7 +6,8 @@ namespace LLMDesktopAssistant.WebUI
 {
 	public static class WebUIStaticConfiguration
 	{
-		public static string CookiesAuthScheme { get; } = "WebUICookies";
+		public const string MasterCookiesScheme = "MasterCookies";
+		public const string LoginCookiesScheme = "LoginCookies";
 
 		public static TimeSpan AuthExpiryTimeSpan { get; } = TimeSpan.FromHours(24);
 	}

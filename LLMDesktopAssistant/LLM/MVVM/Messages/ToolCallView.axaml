@@ -75,7 +75,7 @@
 											</ico:MaterialIcon.Styles>
 										</ico:MaterialIcon>
 
-										<flui:FAProgressRing IsVisible="{Binding InProgress}"
+										<ctrl:ProgressRing IsVisible="{Binding InProgress}"
 																				 Minimum="{Binding MinProgress}"
 																				 Maximum="{Binding MaxProgress}"
 																				 Value="{Binding Progress}"
@@ -267,10 +267,10 @@
 				
 					</ico:MaterialIcon>
 
-					<flui:FAProgressRing IsVisible="{Binding InProgress}"
-															 Minimum="{Binding MinProgress}" Maximum="{Binding MaxProgress}"
-															 Value="{Binding Progress}"
-															 IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
+					<ctrl:ProgressRing IsVisible="{Binding InProgress}"
+														 Minimum="{Binding MinProgress}" Maximum="{Binding MaxProgress}"
+														 Value="{Binding Progress}"
+														 IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
 
 					<ico:MaterialIcon Kind="{Binding ToolIcon}"
 														Margin="0"

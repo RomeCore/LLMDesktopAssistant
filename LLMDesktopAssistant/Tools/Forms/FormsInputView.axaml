@@ -48,9 +48,11 @@
 							<StackPanel Orientation="Horizontal" Spacing="4">
 								<TextBlock Text="{Binding Label}"
 										   FontSize="13"
+										   TextWrapping="Wrap"
 										   VerticalAlignment="Center"/>
 								<TextBlock Text="*"
 										   Foreground="Red"
+											 VerticalAlignment="Bottom"
 										   IsVisible="{Binding IsRequired}"/>
 							</StackPanel>
 

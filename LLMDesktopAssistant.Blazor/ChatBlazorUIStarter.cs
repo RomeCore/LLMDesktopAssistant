@@ -86,8 +86,8 @@ namespace LLMDesktopAssistant.Blazor
 				builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
 					sp.GetRequiredService<WebUIAuthenticationStateProvider>());
 				
-				builder.Services.AddAuthentication(WebUIStaticConfiguration.CookiesAuthScheme)
-					.AddCookie(WebUIStaticConfiguration.CookiesAuthScheme, options =>
+				builder.Services.AddAuthentication()
+					.AddCookie(WebUIStaticConfiguration.LoginCookiesScheme, options =>
 					{
 						options.LoginPath = "/login";
 						options.LogoutPath = "/login";

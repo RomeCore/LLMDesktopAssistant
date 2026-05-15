@@ -699,6 +699,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			return new BranchedMessage
 			{
 				Message = message,
+				MessageId = nodeModel.MessageId,
 				MessageIndex = messageIndex,
 				AvailableBranchesCount = sameOrderNodes.Count,
 				SelectedBranchIndex = selectedNode
