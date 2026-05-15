@@ -1,47 +1,28 @@
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.WebUI;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server;
 
 namespace LLMDesktopAssistant.Blazor.Services;
 
-public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDisposable
+public class WebUIAuthenticationStateProvider(
+	ILogger<WebUIAuthenticationStateProvider> logger,
+	IHttpContextAccessor httpContextAccessor,
+	WebUIStartupSettings settings
+) : AuthenticationStateProvider
 {
-	private readonly IUserManagementService _userManager;
-	private readonly IPasswordHashingService _passwordHasher;
-	private readonly IHttpContextAccessor _httpContextAccessor;
-	private readonly RemoteUsersConfiguration _remoteConfig;
-	private readonly ILogger<WebUIAuthenticationStateProvider> _logger;
-	private readonly ReaderWriterLockSlim _lock = new();
-
 	private ClaimsPrincipal? _currentUser;
-
-	public WebUIAuthenticationStateProvider(
-		IUserManagementService userManager,
-		IPasswordHashingService passwordHasher,
-		ILogger<WebUIAuthenticationStateProvider> logger,
-		IHttpContextAccessor httpContextAccessor)
-	{
-		_userManager = userManager;
-		_passwordHasher = passwordHasher;
-		_httpContextAccessor = httpContextAccessor;
-		_remoteConfig = SettingsManager.Get<RemoteUsersConfiguration>();
-		_logger = logger;
-	}
 
 	private ClaimsPrincipal GetUserClaims()
 	{
 		if (_currentUser != null)
 			return _currentUser;
 
-		var httpContext = _httpContextAccessor.HttpContext;
+		var httpContext = httpContextAccessor.HttpContext;
 		if (httpContext?.User.Identity?.IsAuthenticated == true)
 		{
 			_currentUser = httpContext.User;
-			_logger.LogInformation("Session restored from cookie for user: {User}",
+			logger.LogInformation("Session restored from cookie for user: {User}",
 				_currentUser.Identity?.Name);
 		}
 
@@ -50,52 +31,40 @@ public class WebUIAuthenticationStateProvider : AuthenticationStateProvider, IDi
 
 	public override Task<AuthenticationState> GetAuthenticationStateAsync()
 	{
-		_lock.EnterReadLock();
-		try
-		{
-			return Task.FromResult(new AuthenticationState(GetUserClaims()));
-		}
-		finally
-		{
-			_lock.ExitReadLock();
-		}
+		return Task.FromResult(new AuthenticationState(GetUserClaims()));
 	}
 
-	public async Task<bool> RegisterAsync(string login, string password, string name, string description = "")
+	public void NotifyAuthState()
 	{
-		if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
+		_currentUser = null;
+		NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+	}
+
+	public bool HasMasterAccess()
+	{
+		var httpContext = httpContextAccessor.HttpContext;
+		if (httpContext == null)
 			return false;
 
-		if (_userManager.FindByLogin(login) != null)
-		{
-			_logger.LogWarning("Registration attempt with existing login: {Login}", login);
+		var masterResult = httpContext.AuthenticateAsync(WebUIStaticConfiguration.MasterCookiesScheme).Result;
+		return masterResult.Succeeded && masterResult.Principal?.Identity?.IsAuthenticated == true;
+	}
+
+	public bool HasLoginAccess()
+	{
+		var httpContext = httpContextAccessor.HttpContext;
+		if (httpContext == null)
 			return false;
-		}
 
-		var hash = _passwordHasher.HashPassword(password);
-		var newUser = new UserInformation
-		{
-			Login = login,
-			Name = name,
-			PasswordHash = hash,
-			Description = description
-		};
-
-		_remoteConfig.Users.Add(newUser);
-
-		_logger.LogInformation("New user registered: {Login} ({Name})", login, name);
-		return true;
+		var loginResult = httpContext.AuthenticateAsync(WebUIStaticConfiguration.LoginCookiesScheme).Result;
+		return loginResult.Succeeded && loginResult.Principal?.Identity?.IsAuthenticated == true;
 	}
 
-	public UserInformation? GetCurrentUser()
+	public bool CanAccessChat()
 	{
-		var login = GetUserClaims().FindFirst("Login")?.Value;
-		if (login == null) return null;
-		return _userManager.FindByLogin(login);
-	}
+		if (string.IsNullOrEmpty(settings.PasswordHash))
+			return HasLoginAccess();
 
-	public void Dispose()
-	{
-		_lock?.Dispose();
+		return HasMasterAccess() || HasLoginAccess();
 	}
 }

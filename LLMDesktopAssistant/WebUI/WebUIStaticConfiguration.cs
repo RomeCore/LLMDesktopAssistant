@@ -9,6 +9,8 @@ namespace LLMDesktopAssistant.WebUI
 		public const string MasterCookiesScheme = "MasterCookies";
 		public const string LoginCookiesScheme = "LoginCookies";
 
-		public static TimeSpan AuthExpiryTimeSpan { get; } = TimeSpan.FromHours(24);
+		public static TimeSpan DisconnectTimeout { get; } = TimeSpan.FromMinutes(2);
+		public static TimeSpan MasterExpiryTimeSpan { get; } = TimeSpan.FromHours(24);
+		public static TimeSpan LoginExpiryTimeSpan { get; } = TimeSpan.FromHours(24);
 	}
 }

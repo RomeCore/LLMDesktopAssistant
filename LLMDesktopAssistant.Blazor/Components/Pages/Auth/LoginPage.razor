@@ -13,7 +13,7 @@
 				<MaterialIconComponent Kind="@MaterialIconKind.ShieldAccount" Size="48" Color="#0078d4" />
 			</div>
 			<h1 class="auth-title">dASS WebUI</h1>
-			<p class="auth-subtitle">Sign in to your account</p>
+			<p class="auth-subtitle">Войдите в аккаунт</p>
 		</div>
 
 		@if (_errorMessage != null)
@@ -26,25 +26,25 @@
 
 		<div class="auth-form">
 			<div class="auth-field">
-				<label for="login-input">Login</label>
+				<label for="login-input">Логин</label>
 				<input id="login-input"
 					   type="text"
 					   @bind="_login"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="Enter your login..."
+					   placeholder="Введите логин..."
 					   disabled="@_isLoading"
 					   @onkeydown="HandleKeyDown" />
 			</div>
 
 			<div class="auth-field">
-				<label for="password-input">Password</label>
+				<label for="password-input">Пароль</label>
 				<input id="password-input"
 					   type="password"
 					   @bind="_password"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="Enter your password..."
+					   placeholder="Введите пароль..."
 					   disabled="@_isLoading"
 					   @onkeydown="HandleKeyDown" />
 			</div>
@@ -60,13 +60,13 @@
 				else
 				{
 					<MaterialIconComponent Kind="@MaterialIconKind.Login" Size="18" Color="white" />
-					<span>Sign In</span>
+					<span>Войти</span>
 				}
 			</button>
 
 			<div class="auth-footer">
-				<span>Don't have an account?</span>
-				<a href="/register" class="auth-link">Create one</a>
+				<span>Нет аккаунта?</span>
+				<a href="/register" class="auth-link">Создать</a>
 			</div>
 		</div>
 	</div>

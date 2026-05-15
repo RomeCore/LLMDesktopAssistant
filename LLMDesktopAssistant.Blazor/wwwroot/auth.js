@@ -35,6 +35,28 @@ window.logoutUser = async function () {
 	window.location.replace('/login');
 };
 
+window.checkMasterAuth = async function () {
+	try {
+		const response = await fetch('/api/auth/master/status');
+		return response.ok;
+	} catch {
+		return false;
+	}
+};
+
+window.enterMasterPassword = async function (password) {
+	try {
+		const response = await fetch('/api/auth/master/enter', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ password })
+		});
+		return response.ok;
+	} catch {
+		return false;
+	}
+};
+
 window.locationReplace = function (url) {
 	window.location.replace(url);
 };

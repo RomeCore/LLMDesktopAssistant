@@ -10,14 +10,15 @@
 
 @implements IDisposable
 
-@inject NavigationManager NavigationManager
+@inject NavigationManager Navigation
 @inject WebUIAuthenticationStateProvider AuthProvider
+@inject UserStateService UserState
 @inject Chat chat
 @inject IChatOperationService chatOperation
 @inject IUserManagementService userManager
 @inject IJSRuntime JS
 
-@attribute [Authorize(AuthenticationSchemes = WebUIStaticConfiguration.LoginCookiesScheme + ", " + WebUIStaticConfiguration.MasterCookiesScheme)]
+@attribute [Authorize]
 
 @rendermode InteractiveServer
 
@@ -26,7 +27,7 @@
 	<div class="chat-topbar">
 		<div class="chat-topbar-left">
 			<MaterialIconComponent Kind="@MaterialIconKind.ShieldAccount" Size="20" Color="#0078d4" />
-			<span class="chat-topbar-user">@(AuthProvider.GetCurrentUser()?.Name ?? "Anonymous")</span>
+			<span class="chat-topbar-user">@(UserState.GetCurrentUser()?.Name ?? "Anonymous")</span>
 		</div>
 		<div class="chat-topbar-right">
 			<button class="chat-topbar-profile-btn" @onclick="ToggleProfileOverlay" title="Настройки профиля">
@@ -77,7 +78,7 @@
 </div>
 
 <UserProfileOverlay IsVisible="_showProfileOverlay"
-					User="@(AuthProvider.GetCurrentUser())"
+					User="@(UserState.GetCurrentUser())"
 					OnClose="CloseProfileOverlay" />
 
 @code {
@@ -184,7 +185,7 @@
 
 		try
 		{
-			var user = AuthProvider.GetCurrentUser();
+			var user = UserState.GetCurrentUser();
 			var senderLogin = user?.Login ?? "anonymous";
 
 			await chatOperation.SendUserInputAsync(new UserInput

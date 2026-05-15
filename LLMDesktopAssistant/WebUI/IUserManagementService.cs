@@ -49,5 +49,15 @@ namespace LLMDesktopAssistant.WebUI
 		/// <param name="login">The login of the user to find.</param>
 		/// <returns>The user information if found; otherwise, null.</returns>
 		UserInformation? FindByLogin(string login);
+
+		/// <summary>
+		/// Registers a new user with the specified login and password. If the user already exists, returns null.
+		/// </summary>
+		/// <param name="login">The login for the new user.</param>
+		/// <param name="password">The password for the new user.</param>
+		/// <param name="name">The name of the new user (optional).</param>
+		/// <param name="description">The description of the new user (optional).</param>
+		/// <returns>The new user information if registration is successful; otherwise, null.</returns>
+		UserInformation? RegisterUser(string login, string password, string? name, string? description);
 	}
 }

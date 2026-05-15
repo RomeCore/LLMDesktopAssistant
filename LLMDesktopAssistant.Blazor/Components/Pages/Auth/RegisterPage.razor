@@ -1,7 +1,8 @@
 @page "/register"
 @using Material.Icons
 @using LLMDesktopAssistant.Blazor.Services
-@inject WebUIAuthenticationStateProvider AuthProvider
+@using LLMDesktopAssistant.WebUI
+@inject IUserManagementService UserManager
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 
@@ -130,13 +131,14 @@
 
 		try
 		{
-			var success = await AuthProvider.RegisterAsync(
+			var registeredUser = UserManager.RegisterUser(
 				_login.Trim(),
 				_password,
-				string.IsNullOrWhiteSpace(_name) ? _login.Trim() : _name.Trim()
+				string.IsNullOrWhiteSpace(_name) ? _login.Trim() : _name.Trim(),
+				null
 			);
 
-			if (success)
+			if (registeredUser != null)
 			{
 				_successMessage = "Аккаунт создан! Теперь можно войти";
 				_login = string.Empty;

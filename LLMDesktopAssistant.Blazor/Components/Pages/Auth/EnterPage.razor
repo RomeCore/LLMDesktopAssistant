@@ -1,0 +1,141 @@
+@page "/enter"
+@using Material.Icons
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+@implements IDisposable
+
+<div class="auth-page">
+	<div class="auth-card">
+		<div class="auth-header">
+			<div class="auth-icon">
+				<MaterialIconComponent Kind="@MaterialIconKind.Lock" Size="48" Color="#0078d4" />
+			</div>
+			<h1 class="auth-title">dASS WebUI</h1>
+			<p class="auth-subtitle">Введите мастер-пароль для доступа к чату</p>
+		</div>
+
+		@if (_errorMessage != null)
+		{
+			<div class="auth-error">
+				<MaterialIconComponent Kind="@MaterialIconKind.AlertCircle" Size="16" Color="#d32f2f" />
+				<span>@_errorMessage</span>
+			</div>
+		}
+
+		@if (_successMessage != null)
+		{
+			<div class="auth-success">
+				<MaterialIconComponent Kind="@MaterialIconKind.CheckCircle" Size="16" Color="#2e7d32" />
+				<span>@_successMessage</span>
+			</div>
+		}
+
+		<div class="auth-form">
+			<div class="auth-field">
+				<label for="master-password-input">Мастер-пароль</label>
+				<input id="master-password-input"
+					   type="password"
+					   @bind="_masterPassword"
+					   @bind:event="oninput"
+					   class="auth-input"
+					   placeholder="Введите мастер-пароль..."
+					   disabled="@_isLoading"
+					   @onkeydown="HandleKeyDown" />
+			</div>
+
+			<button class="auth-btn"
+					@onclick="Enter"
+					disabled="@(_isLoading || string.IsNullOrWhiteSpace(_masterPassword))">
+				@if (_isLoading)
+				{
+					<span class="auth-spinner"></span>
+					<span>Проверка...</span>
+				}
+				else
+				{
+					<MaterialIconComponent Kind="@MaterialIconKind.LockOpen" Size="18" Color="white" />
+					<span>Войти</span>
+				}
+			</button>
+
+			<div class="auth-footer">
+				<span>Уже есть доступ?</span>
+				<a href="/chat" class="auth-link">Перейти к чату</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	private string _masterPassword = string.Empty;
+	private bool _isLoading = false;
+	private string? _errorMessage = null;
+	private string? _successMessage = null;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			var isMasterAuthed = await JS.InvokeAsync<bool>("checkMasterAuth");
+			if (isMasterAuthed)
+			{
+				Navigation.NavigateTo("/chat", forceLoad: true);
+			}
+		}
+		catch
+		{
+			// Not authorized with master password, show form
+		}
+	}
+
+	private async Task HandleKeyDown(KeyboardEventArgs e)
+	{
+		if (e.Key == "Enter")
+		{
+			await Enter();
+		}
+	}
+
+	private async Task Enter()
+	{
+		if (string.IsNullOrWhiteSpace(_masterPassword) || _isLoading)
+			return;
+
+		_isLoading = true;
+		_errorMessage = null;
+		_successMessage = null;
+		StateHasChanged();
+
+		try
+		{
+			var success = await JS.InvokeAsync<bool>("enterMasterPassword", _masterPassword);
+
+			if (success)
+			{
+				_successMessage = "Доступ разрешён! Перенаправляю...";
+				StateHasChanged();
+				await Task.Delay(500);
+				Navigation.NavigateTo("/chat");
+			}
+			else
+			{
+				_errorMessage = "Неверный мастер-пароль.";
+			}
+		}
+		catch (Exception ex)
+		{
+			_errorMessage = $"Ошибка: {ex.Message}";
+		}
+		finally
+		{
+			_isLoading = false;
+			StateHasChanged();
+		}
+	}
+
+	public void Dispose()
+	{
+	}
+}

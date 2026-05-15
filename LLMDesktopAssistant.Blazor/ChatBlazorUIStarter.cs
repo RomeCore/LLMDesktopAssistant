@@ -81,21 +81,50 @@ namespace LLMDesktopAssistant.Blazor
 				builder.Services.AddHttpContextAccessor();
 
 				// Register WebUI authentication services
-				builder.Services.AddAuthorizationCore();
+				builder.Services.AddAuthorizationCore(opts =>
+				{
+					if (settings.PasswordHash != null)
+						opts.AddPolicy("MasterAuth", policy =>
+						{
+							policy.AuthenticationSchemes.Add(WebUIStaticConfiguration.MasterCookiesScheme);
+							policy.AuthenticationSchemes.Add(WebUIStaticConfiguration.LoginCookiesScheme);
+							policy.RequireAuthenticatedUser();
+						});
+					else
+						opts.AddPolicy("LoginAuth", policy =>
+						{
+							policy.AuthenticationSchemes.Add(WebUIStaticConfiguration.LoginCookiesScheme);
+							policy.RequireAuthenticatedUser();
+						});
+				});
+				builder.Services.AddScoped<UserStateService>();
 				builder.Services.AddScoped<WebUIAuthenticationStateProvider>();
 				builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
 					sp.GetRequiredService<WebUIAuthenticationStateProvider>());
-				
-				builder.Services.AddAuthentication()
+
+				// Add Cookie multi-authentication scheme
+				var authBuilder = builder.Services.AddAuthentication(opts =>
+				{
+					opts.DefaultScheme = WebUIStaticConfiguration.LoginCookiesScheme;
+				});
+				if (settings.PasswordHash != null)
+				{
+					authBuilder
+						.AddCookie(WebUIStaticConfiguration.MasterCookiesScheme, options =>
+						{
+							options.LoginPath = "/enter";
+							options.ExpireTimeSpan = WebUIStaticConfiguration.MasterExpiryTimeSpan;
+							options.SlidingExpiration = true;
+						});
+				}
+				authBuilder
 					.AddCookie(WebUIStaticConfiguration.LoginCookiesScheme, options =>
 					{
 						options.LoginPath = "/login";
-						options.LogoutPath = "/login";
-						options.AccessDeniedPath = "/login";
-						options.ExpireTimeSpan = WebUIStaticConfiguration.AuthExpiryTimeSpan;
+						options.ExpireTimeSpan = WebUIStaticConfiguration.LoginExpiryTimeSpan;
 						options.SlidingExpiration = true;
 					});
-				
+
 				builder.Services.AddCascadingAuthenticationState();
 
 				var app = builder.Build();

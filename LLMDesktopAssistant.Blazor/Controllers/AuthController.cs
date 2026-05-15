@@ -62,7 +62,7 @@ public class AuthController : ControllerBase
 		await HttpContext.SignInAsync(WebUIStaticConfiguration.LoginCookiesScheme, principal, new AuthenticationProperties
 		{
 			IsPersistent = true,
-			ExpiresUtc = DateTimeOffset.UtcNow.Add(WebUIStaticConfiguration.AuthExpiryTimeSpan)
+			ExpiresUtc = DateTimeOffset.UtcNow.Add(WebUIStaticConfiguration.LoginExpiryTimeSpan)
 		});
 
 		_logger.LogInformation("User logged in: {Login} ({Name})", user.Login, user.Name);
@@ -92,4 +92,59 @@ public class AuthController : ControllerBase
 	}
 
 	public record AuthRequest(string Login, string Password);
+
+	[HttpPost("master/enter")]
+	public async Task<IActionResult> EnterMasterPassword([FromBody] MasterPasswordRequest request)
+	{
+		var settings = HttpContext.RequestServices.GetRequiredService<WebUIStartupSettings>();
+		if (string.IsNullOrEmpty(settings.PasswordHash))
+			return BadRequest(new { error = "Мастер-пароль не настроен" });
+
+		if (string.IsNullOrWhiteSpace(request.Password))
+			return BadRequest(new { error = "Пароль обязателен" });
+
+		var passwordHasher = HttpContext.RequestServices.GetRequiredService<IPasswordHashingService>();
+		if (!passwordHasher.VerifyPassword(settings.PasswordHash, request.Password))
+		{
+			_logger.LogWarning("Failed master password attempt");
+			return Unauthorized(new { error = "Неверный пароль" });
+		}
+
+		var claims = new List<Claim>
+		{
+			new(ClaimTypes.Name, "master"),
+			new("MasterAccess", "true"),
+		};
+		var identity = new ClaimsIdentity(claims, WebUIStaticConfiguration.MasterCookiesScheme);
+		var principal = new ClaimsPrincipal(identity);
+
+		await HttpContext.SignInAsync(WebUIStaticConfiguration.MasterCookiesScheme, principal, new AuthenticationProperties
+		{
+			IsPersistent = true,
+			ExpiresUtc = DateTimeOffset.UtcNow.Add(WebUIStaticConfiguration.MasterExpiryTimeSpan)
+		});
+
+		_logger.LogInformation("Master password access granted");
+		return Ok(new { status = "ok" });
+	}
+
+	[HttpGet("master/status")]
+	public IActionResult MasterStatus()
+	{
+		var result = HttpContext.AuthenticateAsync(WebUIStaticConfiguration.MasterCookiesScheme).Result;
+		if (result.Succeeded && result.Principal?.Identity?.IsAuthenticated == true)
+			return Ok(new { status = "authenticated" });
+
+		return Unauthorized(new { error = "Не авторизован по мастер-паролю" });
+	}
+
+	[HttpPost("master/logout")]
+	public async Task<IActionResult> LogoutMaster()
+	{
+		await HttpContext.SignOutAsync(WebUIStaticConfiguration.MasterCookiesScheme);
+		_logger.LogInformation("Master password access revoked");
+		return Ok();
+	}
+
+	public record MasterPasswordRequest(string Password);
 }
