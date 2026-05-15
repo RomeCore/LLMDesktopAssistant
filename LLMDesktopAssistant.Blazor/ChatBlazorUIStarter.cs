@@ -1,12 +1,13 @@
-using System.Reflection;
 using LLMDesktopAssistant.Blazor.Services;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.WebUI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Serilog;
+using System.Reflection;
 
 namespace LLMDesktopAssistant.Blazor
 {
@@ -66,8 +67,8 @@ namespace LLMDesktopAssistant.Blazor
 
 				builder.Services.AddServerSideBlazor(options =>
 				{
-					options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(1);
-					options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1);
+					options.DisconnectedCircuitRetentionPeriod = WebUIStaticConfiguration.DisconnectTimeout;
+					options.JSInteropDefaultCallTimeout = WebUIStaticConfiguration.DisconnectTimeout;
 				});
 
 				// Add services to the container.
@@ -81,51 +82,25 @@ namespace LLMDesktopAssistant.Blazor
 				builder.Services.AddHttpContextAccessor();
 
 				// Register WebUI authentication services
-				builder.Services.AddAuthorizationCore(opts =>
-				{
-					if (settings.PasswordHash != null)
-						opts.AddPolicy("MasterAuth", policy =>
-						{
-							policy.AuthenticationSchemes.Add(WebUIStaticConfiguration.MasterCookiesScheme);
-							policy.AuthenticationSchemes.Add(WebUIStaticConfiguration.LoginCookiesScheme);
-							policy.RequireAuthenticatedUser();
-						});
-					else
-						opts.AddPolicy("LoginAuth", policy =>
-						{
-							policy.AuthenticationSchemes.Add(WebUIStaticConfiguration.LoginCookiesScheme);
-							policy.RequireAuthenticatedUser();
-						});
-				});
+				builder.Services.AddAuthorization();
 				builder.Services.AddScoped<UserStateService>();
 				builder.Services.AddScoped<WebUIAuthenticationStateProvider>();
 				builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
 					sp.GetRequiredService<WebUIAuthenticationStateProvider>());
 
-				// Add Cookie multi-authentication scheme
+				// Add Cookie authentication scheme
 				var authBuilder = builder.Services.AddAuthentication(opts =>
 				{
-					opts.DefaultScheme = WebUIStaticConfiguration.LoginCookiesScheme;
-				});
-				if (settings.PasswordHash != null)
-				{
-					authBuilder
-						.AddCookie(WebUIStaticConfiguration.MasterCookiesScheme, options =>
-						{
-							options.LoginPath = "/enter";
-							options.ExpireTimeSpan = WebUIStaticConfiguration.MasterExpiryTimeSpan;
-							options.SlidingExpiration = true;
-						});
-				}
-				authBuilder
-					.AddCookie(WebUIStaticConfiguration.LoginCookiesScheme, options =>
+
+				})
+					.AddCookie(WebUIStaticConfiguration.CookiesScheme, options =>
 					{
 						options.LoginPath = "/login";
 						options.ExpireTimeSpan = WebUIStaticConfiguration.LoginExpiryTimeSpan;
 						options.SlidingExpiration = true;
 					});
 
-				builder.Services.AddCascadingAuthenticationState();
+				// builder.Services.AddCascadingAuthenticationState();
 
 				var app = builder.Build();
 				_webApp = app;

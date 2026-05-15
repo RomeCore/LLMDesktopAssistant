@@ -11,16 +11,15 @@
 @implements IDisposable
 
 @inject NavigationManager Navigation
-@inject WebUIAuthenticationStateProvider AuthProvider
 @inject UserStateService UserState
 @inject Chat chat
 @inject IChatOperationService chatOperation
 @inject IUserManagementService userManager
 @inject IJSRuntime JS
 
-@attribute [Authorize]
-
 @rendermode InteractiveServer
+
+@attribute [Authorize]
 
 <div class="chat-layout">
 
@@ -103,7 +102,7 @@
 	{
 		await base.OnAfterRenderAsync(firstRender);
 
-		await ScrollToBottom();
+		// await ScrollToBottom();
 	}
 
 	private async void MessagesChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

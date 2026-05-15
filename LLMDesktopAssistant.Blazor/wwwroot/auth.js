@@ -10,12 +10,12 @@ window.checkAuth = async function () {
 	}
 };
 
-window.loginUser = async function (login, password) {
+window.loginUser = async function (login, password, masterPassword) {
 	try {
 		const response = await fetch('/api/auth/login', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ login, password })
+			body: JSON.stringify({ login, password, masterPassword })
 		});
 		return response.ok;
 	} catch {

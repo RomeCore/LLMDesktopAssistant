@@ -12,15 +12,18 @@ public class AuthController : ControllerBase
 {
 	private readonly IUserManagementService _userManager;
 	private readonly IPasswordHashingService _passwordHasher;
+	private readonly WebUIStartupSettings _settings;
 	private readonly ILogger<AuthController> _logger;
 
 	public AuthController(
 		IUserManagementService userManager,
 		IPasswordHashingService passwordHasher,
+		WebUIStartupSettings settings,
 		ILogger<AuthController> logger)
 	{
 		_userManager = userManager;
 		_passwordHasher = passwordHasher;
+		_settings = settings;
 		_logger = logger;
 	}
 
@@ -29,6 +32,15 @@ public class AuthController : ControllerBase
 	{
 		if (string.IsNullOrWhiteSpace(request.Login) || string.IsNullOrWhiteSpace(request.Password))
 			return BadRequest(new { error = "Логин и пароль обязательны" });
+		if (_settings.PasswordHash != null && request.MasterPassword == null)
+			return BadRequest(new { error = "Мастер-пароль не предоставлен" });
+
+		// Lul... VS thinks that request.MasterPassword can be null down here
+		if (_settings.PasswordHash != null && !_passwordHasher.VerifyPassword(_settings.PasswordHash, request.MasterPassword!))
+		{
+			_logger.LogError("Failed to verify master password for login: {Login}", request.Login);
+			return Unauthorized(new { error = "Неверный мастер-пароль" });
+		}
 
 		var user = _userManager.FindByLogin(request.Login);
 		if (user == null)
@@ -54,12 +66,16 @@ public class AuthController : ControllerBase
 		{
 			new(ClaimTypes.Name, user.Login),
 			new(ClaimTypes.GivenName, user.Name),
-			new("Login", user.Login),
+			new(WebUIStaticConfiguration.LoginClaim, user.Login),
+			new(WebUIStaticConfiguration.PasswordClaim, user.PasswordHash ?? string.Empty),
 		};
-		var identity = new ClaimsIdentity(claims, WebUIStaticConfiguration.LoginCookiesScheme);
+		if (_settings.PasswordHash != null)
+			claims.Add(new(WebUIStaticConfiguration.MasterPasswordClaim, _settings.PasswordHash));
+
+		var identity = new ClaimsIdentity(claims, WebUIStaticConfiguration.CookiesScheme);
 		var principal = new ClaimsPrincipal(identity);
 
-		await HttpContext.SignInAsync(WebUIStaticConfiguration.LoginCookiesScheme, principal, new AuthenticationProperties
+		await HttpContext.SignInAsync(WebUIStaticConfiguration.CookiesScheme, principal, new AuthenticationProperties
 		{
 			IsPersistent = true,
 			ExpiresUtc = DateTimeOffset.UtcNow.Add(WebUIStaticConfiguration.LoginExpiryTimeSpan)
@@ -73,7 +89,7 @@ public class AuthController : ControllerBase
 	public async Task<IActionResult> Logout()
 	{
 		var login = User.FindFirst("Login")?.Value ?? "unknown";
-		await HttpContext.SignOutAsync(WebUIStaticConfiguration.LoginCookiesScheme);
+		await HttpContext.SignOutAsync(WebUIStaticConfiguration.CookiesScheme);
 		_logger.LogInformation("User logged out: {Login}", login);
 		return Ok();
 	}
@@ -87,64 +103,9 @@ public class AuthController : ControllerBase
 		return Ok(new
 		{
 			name = User.FindFirst(ClaimTypes.GivenName)?.Value ?? User.Identity.Name,
-			login = User.FindFirst("Login")?.Value ?? User.Identity.Name,
+			login = User.FindFirst(WebUIStaticConfiguration.LoginClaim)?.Value ?? User.Identity.Name,
 		});
 	}
 
-	public record AuthRequest(string Login, string Password);
-
-	[HttpPost("master/enter")]
-	public async Task<IActionResult> EnterMasterPassword([FromBody] MasterPasswordRequest request)
-	{
-		var settings = HttpContext.RequestServices.GetRequiredService<WebUIStartupSettings>();
-		if (string.IsNullOrEmpty(settings.PasswordHash))
-			return BadRequest(new { error = "Мастер-пароль не настроен" });
-
-		if (string.IsNullOrWhiteSpace(request.Password))
-			return BadRequest(new { error = "Пароль обязателен" });
-
-		var passwordHasher = HttpContext.RequestServices.GetRequiredService<IPasswordHashingService>();
-		if (!passwordHasher.VerifyPassword(settings.PasswordHash, request.Password))
-		{
-			_logger.LogWarning("Failed master password attempt");
-			return Unauthorized(new { error = "Неверный пароль" });
-		}
-
-		var claims = new List<Claim>
-		{
-			new(ClaimTypes.Name, "master"),
-			new("MasterAccess", "true"),
-		};
-		var identity = new ClaimsIdentity(claims, WebUIStaticConfiguration.MasterCookiesScheme);
-		var principal = new ClaimsPrincipal(identity);
-
-		await HttpContext.SignInAsync(WebUIStaticConfiguration.MasterCookiesScheme, principal, new AuthenticationProperties
-		{
-			IsPersistent = true,
-			ExpiresUtc = DateTimeOffset.UtcNow.Add(WebUIStaticConfiguration.MasterExpiryTimeSpan)
-		});
-
-		_logger.LogInformation("Master password access granted");
-		return Ok(new { status = "ok" });
-	}
-
-	[HttpGet("master/status")]
-	public IActionResult MasterStatus()
-	{
-		var result = HttpContext.AuthenticateAsync(WebUIStaticConfiguration.MasterCookiesScheme).Result;
-		if (result.Succeeded && result.Principal?.Identity?.IsAuthenticated == true)
-			return Ok(new { status = "authenticated" });
-
-		return Unauthorized(new { error = "Не авторизован по мастер-паролю" });
-	}
-
-	[HttpPost("master/logout")]
-	public async Task<IActionResult> LogoutMaster()
-	{
-		await HttpContext.SignOutAsync(WebUIStaticConfiguration.MasterCookiesScheme);
-		_logger.LogInformation("Master password access revoked");
-		return Ok();
-	}
-
-	public record MasterPasswordRequest(string Password);
+	public record AuthRequest(string Login, string Password, string? MasterPassword);
 }

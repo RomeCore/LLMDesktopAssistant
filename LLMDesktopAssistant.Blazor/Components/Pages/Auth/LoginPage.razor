@@ -1,10 +1,17 @@
 @page "/login"
+
+@using Microsoft.AspNetCore.Authorization
 @using Material.Icons
+
 @inject NavigationManager Navigation
+@inject WebUI.WebUIStartupSettings Settings
 @inject IJSRuntime JS
+
 @rendermode InteractiveServer
 
 @implements IDisposable
+
+@attribute [AllowAnonymous]
 
 <div class="auth-page">
 	<div class="auth-card">
@@ -49,6 +56,21 @@
 					   @onkeydown="HandleKeyDown" />
 			</div>
 
+			@if (Settings.PasswordHash != null)
+			{
+				<div class="auth-field">
+					<label for="master-password-input">Пароль для входа в чат</label>
+					<input id="master-password-input"
+						   type="password"
+						   @bind="_masterPassword"
+						   @bind:event="oninput"
+						   class="auth-input"
+						   placeholder="Введите мастер-пароль..."
+						   disabled="@_isLoading"
+						   @onkeydown="HandleKeyDown" />
+				</div>
+			}
+
 			<button class="auth-btn"
 					@onclick="Login"
 					disabled="@(_isLoading || string.IsNullOrWhiteSpace(_login))">
@@ -75,6 +97,7 @@
 @code {
 	private string _login = string.Empty;
 	private string _password = string.Empty;
+	private string _masterPassword = string.Empty;
 	private bool _isLoading = false;
 	private string? _errorMessage = null;
 
@@ -113,7 +136,8 @@
 
 		try
 		{
-			var success = await JS.InvokeAsync<bool>("loginUser", _login.Trim(), _password);
+			var requireMasterPass = Settings.PasswordHash != null;
+			var success = await JS.InvokeAsync<bool>("loginUser", _login.Trim(), _password, requireMasterPass ? _masterPassword : null);
 
 			if (success)
 			{
@@ -121,7 +145,7 @@
 			}
 			else
 			{
-				_errorMessage = "Invalid login or password.";
+				_errorMessage = "Некорректный логин или пароль. Попробуйте снова.";
 			}
 		}
 		catch (Exception ex)

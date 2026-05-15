@@ -57,13 +57,6 @@ namespace LLMDesktopAssistant.WebUI
 			private set => SetProperty(ref _isRunning, value);
 		}
 
-		private string? _password;
-		public string? Password
-		{
-			get => _password;
-			set => SetProperty(ref _password, value);
-		}
-
 		public IAsyncRelayCommand StartCommand { get; }
 		public IAsyncRelayCommand StopCommand { get; }
 		public ICommand CopyUrlCommand { get; }
@@ -76,8 +69,10 @@ namespace LLMDesktopAssistant.WebUI
 
 			try
 			{
-				if (!string.IsNullOrWhiteSpace(Password))
-					_settings.PasswordHash = _passwordHashingService.HashPassword(Password);
+				if (!string.IsNullOrEmpty(_settings.Password))
+					_settings.PasswordHash = _passwordHashingService.HashPassword(_settings.Password);
+				else
+					_settings.PasswordHash = null;
 
 				_blazorStarter.Start(_settings);
 				UpdateStatus();

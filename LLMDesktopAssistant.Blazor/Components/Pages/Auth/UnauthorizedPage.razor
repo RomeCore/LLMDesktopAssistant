@@ -1,0 +1,13 @@
+﻿@inject IJSRuntime JS
+
+<p>You are not authorized to view this content.</p>
+
+@rendermode InteractiveServer
+
+@code {
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+		await JS.InvokeVoidAsync("logoutUser");
+	}
+}

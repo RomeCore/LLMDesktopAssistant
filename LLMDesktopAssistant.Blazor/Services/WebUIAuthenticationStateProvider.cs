@@ -2,69 +2,68 @@ using System.Security.Claims;
 using LLMDesktopAssistant.WebUI;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 
 namespace LLMDesktopAssistant.Blazor.Services;
 
 public class WebUIAuthenticationStateProvider(
-	ILogger<WebUIAuthenticationStateProvider> logger,
 	IHttpContextAccessor httpContextAccessor,
-	WebUIStartupSettings settings
+	WebUIStartupSettings settings,
+	IUserManagementService userManager,
+	// IJSRuntime js,
+	ILogger<WebUIAuthenticationStateProvider> logger
 ) : AuthenticationStateProvider
 {
 	private ClaimsPrincipal? _currentUser;
 
-	private ClaimsPrincipal GetUserClaims()
+	private async Task<ClaimsPrincipal> LogoutUserAsync()
+	{
+		// await js.InvokeVoidAsync("logoutUser");
+		return new ClaimsPrincipal(new ClaimsIdentity());
+	}
+
+	private async Task<ClaimsPrincipal> GetUserClaimsAsync()
 	{
 		if (_currentUser != null)
 			return _currentUser;
 
 		var httpContext = httpContextAccessor.HttpContext;
-		if (httpContext?.User.Identity?.IsAuthenticated == true)
-		{
-			_currentUser = httpContext.User;
-			logger.LogInformation("Session restored from cookie for user: {User}",
-				_currentUser.Identity?.Name);
-		}
+		if (httpContext == null)
+			return await LogoutUserAsync();
 
-		return _currentUser ?? new ClaimsPrincipal(new ClaimsIdentity());
+		var user = httpContext.User;
+		if (user.Identity?.IsAuthenticated != true)
+			return await LogoutUserAsync();
+
+		var login = user.FindFirst(WebUIStaticConfiguration.LoginClaim)?.Value;
+		if (login == null)
+			return await LogoutUserAsync();
+
+		if (userManager.FindByLogin(login) is not UserInformation userInfo)
+			return await LogoutUserAsync();
+
+		var passwordHash = user.FindFirst(WebUIStaticConfiguration.PasswordClaim)?.Value;
+		if (passwordHash != userInfo.PasswordHash)
+			return await LogoutUserAsync();
+
+		var masterPasswordHash = user.FindFirst(WebUIStaticConfiguration.MasterPasswordClaim)?.Value;
+		if (settings.PasswordHash != null && masterPasswordHash != settings.PasswordHash)
+			return await LogoutUserAsync();
+
+		_currentUser = user;
+		logger.LogInformation("Session restored from login cookie for user: {User}",
+			_currentUser.Identity?.Name);
+		return _currentUser;
 	}
 
-	public override Task<AuthenticationState> GetAuthenticationStateAsync()
+	public override async Task<AuthenticationState> GetAuthenticationStateAsync()
 	{
-		return Task.FromResult(new AuthenticationState(GetUserClaims()));
+		return new AuthenticationState(await GetUserClaimsAsync());
 	}
 
 	public void NotifyAuthState()
 	{
 		_currentUser = null;
 		NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-	}
-
-	public bool HasMasterAccess()
-	{
-		var httpContext = httpContextAccessor.HttpContext;
-		if (httpContext == null)
-			return false;
-
-		var masterResult = httpContext.AuthenticateAsync(WebUIStaticConfiguration.MasterCookiesScheme).Result;
-		return masterResult.Succeeded && masterResult.Principal?.Identity?.IsAuthenticated == true;
-	}
-
-	public bool HasLoginAccess()
-	{
-		var httpContext = httpContextAccessor.HttpContext;
-		if (httpContext == null)
-			return false;
-
-		var loginResult = httpContext.AuthenticateAsync(WebUIStaticConfiguration.LoginCookiesScheme).Result;
-		return loginResult.Succeeded && loginResult.Principal?.Identity?.IsAuthenticated == true;
-	}
-
-	public bool CanAccessChat()
-	{
-		if (string.IsNullOrEmpty(settings.PasswordHash))
-			return HasLoginAccess();
-
-		return HasMasterAccess() || HasLoginAccess();
 	}
 }

@@ -91,7 +91,7 @@
 						   Margin="0,8,8,0"/>
 				
 				<TextBox Grid.Row="1" Grid.Column="1"
-						 Text="{Binding Password, Mode=TwoWay}"
+						 Text="{Binding Settings.Password, Mode=TwoWay}"
 						 PlaceholderText="{loc:Loc blazor_host_password_placeholder}"
 						 IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBooleanConverter}}"
 						 PasswordChar="•"
