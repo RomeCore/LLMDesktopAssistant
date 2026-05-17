@@ -1,0 +1,145 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="10">
+        <RadioButton Content="Option 1" />
+        <RadioButton Content="Option 2" />
+        <RadioButton IsEnabled="False" Content="Disabled" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base RadioButton style -->
+  <Style Selector="RadioButton">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="#EAEAEA" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="8 0 0 0" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Outer ellipse (unchecked) -->
+  <Style Selector="RadioButton /template/ Ellipse#OuterEllipse">
+    <Setter Property="Fill" Value="#2A2A3E" />
+    <Setter Property="Stroke" Value="#3A3A5E" />
+    <Setter Property="StrokeThickness" Value="2" />
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Opacity" Value="1" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Fill" Duration="0:0:0.2" />
+        <BrushTransition Property="Stroke" Duration="0:0:0.2" />
+        <DoubleTransition Property="Opacity" Duration="0:0:0.15" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- CheckOuterEllipse (checked filled circle) -->
+  <Style Selector="RadioButton /template/ Ellipse#CheckOuterEllipse">
+    <Setter Property="Fill" Value="#6C5CE7" />
+    <Setter Property="Stroke" Value="#6C5CE7" />
+    <Setter Property="StrokeThickness" Value="2" />
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Opacity" Value="0" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Fill" Duration="0:0:0.2" />
+        <BrushTransition Property="Stroke" Duration="0:0:0.2" />
+        <DoubleTransition Property="Opacity" Duration="0:0:0.15" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- CheckGlyph (inner dot) -->
+  <Style Selector="RadioButton /template/ Ellipse#CheckGlyph">
+    <Setter Property="Fill" Value="#FFFFFF" />
+    <Setter Property="Stroke" Value="#FFFFFF" />
+    <Setter Property="Width" Value="8" />
+    <Setter Property="Height" Value="8" />
+    <Setter Property="Opacity" Value="0" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.15" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Checked: show checked ellipse and glyph, hide outer -->
+  <Style Selector="RadioButton:checked /template/ Ellipse#CheckGlyph">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+
+  <Style Selector="RadioButton:checked /template/ Ellipse#OuterEllipse">
+    <Setter Property="Opacity" Value="0" />
+  </Style>
+
+  <Style Selector="RadioButton:checked /template/ Ellipse#CheckOuterEllipse">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+
+  <Style Selector="RadioButton:checked">
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Hover (unchecked) -->
+  <Style Selector="RadioButton:pointerover /template/ Ellipse#OuterEllipse">
+    <Setter Property="Stroke" Value="#6C5CE7" />
+    <Setter Property="Fill" Value="#3A3A5E" />
+  </Style>
+
+  <Style Selector="RadioButton:pointerover">
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Hover (checked) -->
+  <Style Selector="RadioButton:checked:pointerover /template/ Ellipse#CheckOuterEllipse">
+    <Setter Property="Fill" Value="#7C6CF7" />
+    <Setter Property="Stroke" Value="#7C6CF7" />
+  </Style>
+
+  <!-- Pressed (unchecked) -->
+  <Style Selector="RadioButton:pressed /template/ Ellipse#OuterEllipse">
+    <Setter Property="Fill" Value="#1A1A2E" />
+    <Setter Property="Stroke" Value="#5A4CD7" />
+  </Style>
+
+  <!-- Pressed (checked) -->
+  <Style Selector="RadioButton:checked:pressed /template/ Ellipse#CheckOuterEllipse">
+    <Setter Property="Fill" Value="#5C4CD7" />
+    <Setter Property="Stroke" Value="#5C4CD7" />
+  </Style>
+
+  <!-- Disabled (unchecked) -->
+  <Style Selector="RadioButton:disabled /template/ Ellipse#OuterEllipse">
+    <Setter Property="Fill" Value="#1A1A22" />
+    <Setter Property="Stroke" Value="#2A2A3E" />
+  </Style>
+
+  <Style Selector="RadioButton:disabled">
+    <Setter Property="Foreground" Value="#555555" />
+  </Style>
+
+  <!-- Disabled (checked) -->
+  <Style Selector="RadioButton:checked:disabled /template/ Ellipse#CheckOuterEllipse">
+    <Setter Property="Fill" Value="#3A3A5E" />
+    <Setter Property="Stroke" Value="#3A3A5E" />
+  </Style>
+
+  <Style Selector="RadioButton:checked:disabled /template/ Ellipse#CheckGlyph">
+    <Setter Property="Fill" Value="#888888" />
+    <Setter Property="Stroke" Value="#888888" />
+  </Style>
+
+</Styles>

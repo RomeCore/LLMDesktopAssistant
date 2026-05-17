@@ -1,0 +1,80 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="20">
+        <TextBox>Left</TextBox>
+        <TextBox TextAlignment="Center">Center</TextBox>
+        <TextBox PlaceholderText="Placeholder"/>
+        <TextBox PlaceholderText="Floating Placeholder" UseFloatingPlaceholder="True"/>
+        <TextBox PasswordChar="*" Classes="revealPasswordButton">Password</TextBox>
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base TextBox style -->
+  <Style Selector="TextBox">
+    <Setter Property="Foreground" Value="#EAEAEA" />
+    <Setter Property="Background" Value="#141428" />
+    <Setter Property="CaretBrush" Value="#6C5CE7" />
+    <Setter Property="BorderBrush" Value="#3A3A5E" />
+    <Setter Property="SelectionBrush" Value="#6C5CE7" />
+    <Setter Property="PlaceholderForeground" Value="#666688" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="12 8" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.2" />
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- PointerOver (hover) -->
+  <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="#1A1A30" />
+    <Setter Property="BorderBrush" Value="#5A4CD7" />
+  </Style>
+
+  <Style Selector="TextBox:pointerover">
+    <Setter Property="BorderBrush" Value="#5A4CD7" />
+  </Style>
+
+  <!-- Focused -->
+  <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="#0E0E20" />
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+    <Setter Property="BorderThickness" Value="2" />
+    <Setter Property="Padding" Value="11 7" />
+  </Style>
+
+  <Style Selector="TextBox:focus">
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+    <Setter Property="BorderThickness" Value="2" />
+    <Setter Property="Padding" Value="11 7" />
+  </Style>
+
+  <!-- Disabled -->
+  <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="#0A0A18" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+  </Style>
+
+  <Style Selector="TextBox:disabled">
+    <Setter Property="Foreground" Value="#555555" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+  </Style>
+
+  <!-- Error state -->
+  <Style Selector="TextBox:error /template/ Border#PART_BorderElement">
+    <Setter Property="BorderBrush" Value="#FF4444" />
+  </Style>
+
+  <Style Selector="TextBox:error">
+    <Setter Property="BorderBrush" Value="#FF4444" />
+  </Style>
+
+</Styles>

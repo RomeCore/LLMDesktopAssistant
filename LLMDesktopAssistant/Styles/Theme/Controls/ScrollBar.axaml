@@ -1,0 +1,94 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Orientation="Horizontal" Spacing="20">
+        <ScrollBar Orientation="Vertical" Height="100" AllowAutoHide="False" />
+        <ScrollBar Orientation="Vertical" Height="100" AllowAutoHide="True" />
+        <ScrollBar Orientation="Horizontal" Width="100" AllowAutoHide="False" VerticalAlignment="Center"/>
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base ScrollBar style -->
+  <Style Selector="ScrollBar">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="#6C5CE7" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="MinWidth" Value="6" />
+    <Setter Property="MinHeight" Value="6" />
+  </Style>
+
+  <!-- Track rectangle (background track) -->
+  <Style Selector="ScrollBar /template/ Rectangle#TrackRect">
+    <Setter Property="Fill" Value="#1A1A2E" />
+    <Setter Property="Stroke" Value="#1A1A2E" />
+    <Setter Property="Opacity" Value="0" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.15" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Thumb (the draggable part) -->
+  <Style Selector="ScrollBar /template/ Thumb">
+    <Setter Property="Background" Value="#4A4A5E" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="MinWidth" Value="6" />
+    <Setter Property="MinHeight" Value="6" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.15" />
+        <CornerRadiusTransition Property="CornerRadius" Duration="0:0:0.1" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Thumb hover -->
+  <Style Selector="ScrollBar /template/ Thumb:pointerover /template/ Border">
+    <Setter Property="Background" Value="#6A6A8E" />
+  </Style>
+
+  <!-- Thumb pressed -->
+  <Style Selector="ScrollBar /template/ Thumb:pressed /template/ Border">
+    <Setter Property="Background" Value="#6C5CE7" />
+  </Style>
+
+  <!-- Thumb disabled -->
+  <Style Selector="ScrollBar /template/ Thumb:disabled /template/ Border">
+    <Setter Property="Background" Value="#2A2A3E" />
+  </Style>
+
+  <!-- Expanded state (hover on scrollbar area) -->
+  <Style Selector="ScrollBar[IsExpanded=true] /template/ Rectangle#TrackRect">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+
+  <Style Selector="ScrollBar[IsExpanded=true] /template/ Thumb">
+    <Setter Property="Background" Value="#5A5A7E" />
+    <Setter Property="RenderTransform" Value="none" />
+  </Style>
+
+  <Style Selector="ScrollBar[IsExpanded=true] /template/ RepeatButton">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+
+  <!-- Line buttons (arrows) -->
+  <Style Selector="ScrollBar /template/ RepeatButton">
+    <Setter Property="Opacity" Value="0" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Page buttons (track clicks) -->
+  <Style Selector="ScrollBar /template/ RepeatButton.largeIncrease">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Opacity" Value="0" />
+  </Style>
+
+</Styles>

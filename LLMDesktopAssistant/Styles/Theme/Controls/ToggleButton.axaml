@@ -1,0 +1,101 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="20">
+        <ToggleButton Content="Unchecked" />
+        <ToggleButton Content="Checked" IsChecked="True" />
+        <ToggleButton Content="Disabled" IsEnabled="False" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base ToggleButton style -->
+  <Style Selector="ToggleButton">
+    <Setter Property="Background" Value="#2A2A3E" />
+    <Setter Property="Foreground" Value="#EAEAEA" />
+    <Setter Property="BorderBrush" Value="#3A3A5E" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="16 8" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="RenderTransform" Value="none" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.2" />
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Hover (unchecked) -->
+  <Style Selector="ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#3A3A5E" />
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Pressed (unchecked) -->
+  <Style Selector="ToggleButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#1A1A2E" />
+    <Setter Property="BorderBrush" Value="#5A4CD7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Disabled (unchecked) -->
+  <Style Selector="ToggleButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#1A1A22" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+    <Setter Property="Foreground" Value="#666666" />
+  </Style>
+
+  <!-- Checked -->
+  <Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#6C5CE7" />
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Checked + hover -->
+  <Style Selector="ToggleButton:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#7C6CF7" />
+    <Setter Property="BorderBrush" Value="#7C6CF7" />
+  </Style>
+
+  <!-- Checked + pressed -->
+  <Style Selector="ToggleButton:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#5C4CD7" />
+    <Setter Property="BorderBrush" Value="#5C4CD7" />
+  </Style>
+
+  <!-- Checked + disabled -->
+  <Style Selector="ToggleButton:checked:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#3A3A5E" />
+    <Setter Property="BorderBrush" Value="#3A3A5E" />
+    <Setter Property="Foreground" Value="#999999" />
+  </Style>
+
+  <!-- Indeterminate -->
+  <Style Selector="ToggleButton:indeterminate /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#4A3CC7" />
+    <Setter Property="BorderBrush" Value="#4A3CC7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Indeterminate + hover -->
+  <Style Selector="ToggleButton:indeterminate:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#5A4CD7" />
+    <Setter Property="BorderBrush" Value="#5A4CD7" />
+  </Style>
+
+  <!-- Indeterminate + disabled -->
+  <Style Selector="ToggleButton:indeterminate:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#2A2A4E" />
+    <Setter Property="BorderBrush" Value="#2A2A4E" />
+    <Setter Property="Foreground" Value="#777777" />
+  </Style>
+
+</Styles>

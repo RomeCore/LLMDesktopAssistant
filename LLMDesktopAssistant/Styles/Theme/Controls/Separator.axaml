@@ -1,0 +1,20 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <StackPanel Width="200">
+      <TextBlock Text="Above" Foreground="#EAEAEA" />
+      <Separator />
+      <TextBlock Text="Below" Foreground="#EAEAEA" />
+    </StackPanel>
+  </Design.PreviewWith>
+
+  <!-- Base Separator style -->
+  <Style Selector="Separator">
+    <Setter Property="Background" Value="#2A2A3E" />
+    <Setter Property="Height" Value="1" />
+    <Setter Property="Margin" Value="0 8" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+  </Style>
+
+</Styles>

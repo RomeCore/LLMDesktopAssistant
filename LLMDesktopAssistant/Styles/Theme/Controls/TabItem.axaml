@@ -1,0 +1,90 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="20" Orientation="Horizontal">
+        <TabItem Header="Leaf" />
+        <TabItem Header="Arch" IsSelected="True" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base TabItem style -->
+  <Style Selector="TabItem">
+    <Setter Property="Foreground" Value="#888888" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="8 8 0 0" />
+    <Setter Property="Padding" Value="16 12" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="MinHeight" Value="48" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.2" />
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Selected pipe (bottom line indicator) -->
+  <Style Selector="TabItem /template/ Border#PART_SelectedPipe">
+    <Setter Property="Background" Value="#6C5CE7" />
+    <Setter Property="CornerRadius" Value="2" />
+    <Setter Property="IsVisible" Value="False" />
+    <Setter Property="Height" Value="3" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="VerticalAlignment" Value="Bottom" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Selected -->
+  <Style Selector="TabItem:selected">
+    <Setter Property="Background" Value="#1A1A2E" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
+    <Setter Property="IsVisible" Value="True" />
+  </Style>
+
+  <!-- Hover (unselected) -->
+  <Style Selector="TabItem:pointerover /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="#2A2A3E" />
+  </Style>
+
+  <Style Selector="TabItem:pointerover">
+    <Setter Property="Foreground" Value="#EAEAEA" />
+  </Style>
+
+  <!-- Selected + Hover -->
+  <Style Selector="TabItem:selected:pointerover /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="#2A2A3E" />
+  </Style>
+
+  <Style Selector="TabItem:selected:pointerover">
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Pressed -->
+  <Style Selector="TabItem:pressed">
+    <Setter Property="Foreground" Value="#6C5CE7" />
+  </Style>
+
+  <!-- Disabled -->
+  <Style Selector="TabItem:disabled /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <Style Selector="TabItem:disabled">
+    <Setter Property="Foreground" Value="#555555" />
+  </Style>
+
+</Styles>

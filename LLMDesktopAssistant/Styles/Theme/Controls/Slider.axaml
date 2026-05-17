@@ -1,0 +1,108 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Margin="20" Width="400">
+      <StackPanel Spacing="10">
+        <Slider Value="50" />
+        <Slider Value="50" TickPlacement="TopLeft" TickFrequency="10"/>
+        <Slider IsEnabled="False" Value="50" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base Slider style -->
+  <Style Selector="Slider">
+    <!-- Background = empty track, Foreground = filled track (passed to buttons via TemplateBinding) -->
+    <Setter Property="Background" Value="#2A2A3E" />
+    <Setter Property="Foreground" Value="#6C5CE7" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.2" />
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Container background -->
+  <Style Selector="Slider /template/ Grid#SliderContainer">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <!-- Thumb (draggable circle) -->
+  <Style Selector="Slider /template/ Thumb">
+    <Setter Property="Background" Value="#D0D0E0" />
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.15" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Thumb corner radius (inside FluentSliderThumbTheme template) -->
+  <Style Selector="Slider /template/ Thumb /template/ Border">
+    <Setter Property="CornerRadius" Value="10" />
+  </Style>
+
+  <!-- PointerOver -->
+  <Style Selector="Slider:pointerover /template/ Thumb">
+    <Setter Property="Background" Value="#E0E0F0" />
+  </Style>
+
+  <Style Selector="Slider:pointerover /template/ RepeatButton#PART_DecreaseButton">
+    <Setter Property="Background" Value="#7C6CF7" />
+  </Style>
+
+  <Style Selector="Slider:pointerover /template/ RepeatButton#PART_IncreaseButton">
+    <Setter Property="Background" Value="#3A3A5E" />
+  </Style>
+
+  <!-- Pressed -->
+  <Style Selector="Slider:pressed /template/ Thumb">
+    <Setter Property="Background" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="Slider:pressed /template/ RepeatButton#PART_DecreaseButton">
+    <Setter Property="Background" Value="#5C4CD7" />
+  </Style>
+
+  <Style Selector="Slider:pressed /template/ RepeatButton#PART_IncreaseButton">
+    <Setter Property="Background" Value="#2A2A4E" />
+  </Style>
+
+  <!-- Disabled -->
+  <Style Selector="Slider:disabled /template/ Thumb">
+    <Setter Property="Background" Value="#555555" />
+  </Style>
+
+  <Style Selector="Slider:disabled /template/ RepeatButton#PART_DecreaseButton">
+    <Setter Property="Background" Value="#3A3A5E" />
+  </Style>
+
+  <Style Selector="Slider:disabled /template/ RepeatButton#PART_IncreaseButton">
+    <Setter Property="Background" Value="#1A1A22" />
+  </Style>
+
+  <Style Selector="Slider:disabled">
+    <Setter Property="Foreground" Value="#3A3A5E" />
+    <Setter Property="Background" Value="#1A1A22" />
+  </Style>
+
+  <!-- Error -->
+  <Style Selector="Slider:error">
+    <Setter Property="Foreground" Value="#FF4444" />
+  </Style>
+
+  <Style Selector="Slider:error /template/ Thumb">
+    <Setter Property="Background" Value="#FF4444" />
+  </Style>
+
+  <!-- TickBar -->
+  <Style Selector="Slider /template/ TickBar">
+    <Setter Property="Fill" Value="#3A3A5E" />
+  </Style>
+
+</Styles>

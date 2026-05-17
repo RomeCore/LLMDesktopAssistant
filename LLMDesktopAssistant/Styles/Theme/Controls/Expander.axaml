@@ -1,0 +1,120 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="20" Width="350">
+        <Expander ExpandDirection="Down" Header="Expand Down">
+          <TextBlock Text="Expanded content" Foreground="#EAEAEA" />
+        </Expander>
+        <Expander ExpandDirection="Up" Header="Expand Up">
+          <TextBlock Text="Expanded content" Foreground="#EAEAEA" />
+        </Expander>
+        <Expander ExpandDirection="Down" Header="Disabled" IsEnabled="False">
+          <TextBlock Text="Expanded content" Foreground="#EAEAEA" />
+        </Expander>
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base Expander style -->
+  <Style Selector="Expander">
+    <Setter Property="Background" Value="#141428" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="16" />
+    <Setter Property="MinHeight" Value="48" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- ToggleButton (header) -->
+  <Style Selector="Expander /template/ ToggleButton#ExpanderHeader">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Foreground" Value="#EAEAEA" />
+    <Setter Property="Padding" Value="16 0 0 0" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.2" />
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Collapsed: header gets full Expander corner radius -->
+  <Style Selector="Expander:not(:expanded) /template/ ToggleButton#ExpanderHeader">
+    <Setter Property="CornerRadius" Value="{Binding $parent[Expander].CornerRadius}" />
+  </Style>
+
+  <!-- Expanded down: header top corners rounded -->
+  <Style Selector="Expander:expanded:down /template/ ToggleButton#ExpanderHeader">
+    <Setter Property="CornerRadius" Value="8 8 0 0" />
+  </Style>
+
+  <!-- Expanded up: header bottom corners rounded -->
+  <Style Selector="Expander:expanded:up /template/ ToggleButton#ExpanderHeader">
+    <Setter Property="CornerRadius" Value="0 0 8 8" />
+  </Style>
+
+  <!-- Chevron border -->
+  <Style Selector="Expander /template/ Border#ExpandCollapseChevronBorder">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Width" Value="32" />
+    <Setter Property="Height" Value="32" />
+    <Setter Property="Margin" Value="20 0 8 0" />
+  </Style>
+
+  <!-- Chevron path -->
+  <Style Selector="Expander /template/ Path#ExpandCollapseChevron">
+    <Setter Property="Stroke" Value="#888888" />
+    <Setter Property="StrokeThickness" Value="1.5" />
+    <Setter Property="Stretch" Value="None" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="RenderTransformOrigin" Value="50% 50%" />
+  </Style>
+
+  <!-- Header hover -->
+  <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:pointerover">
+    <Setter Property="Background" Value="#2A2A3E" />
+  </Style>
+
+  <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:pointerover /template/ Path#ExpandCollapseChevron">
+    <Setter Property="Stroke" Value="#EAEAEA" />
+  </Style>
+
+  <!-- Header pressed -->
+  <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:pressed">
+    <Setter Property="Background" Value="#3A3A5E" />
+  </Style>
+
+  <!-- Header disabled -->
+  <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:disabled">
+    <Setter Property="Foreground" Value="#555555" />
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:disabled /template/ Path#ExpandCollapseChevron">
+    <Setter Property="Stroke" Value="#3A3A4E" />
+  </Style>
+
+  <!-- Content area -->
+  <Style Selector="Expander /template/ Border#ExpanderContent">
+    <Setter Property="Background" Value="#141428" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+    <Setter Property="BorderThickness" Value="1 0 1 1" />
+    <Setter Property="CornerRadius" Value="0 0 8 8" />
+  </Style>
+
+</Styles>

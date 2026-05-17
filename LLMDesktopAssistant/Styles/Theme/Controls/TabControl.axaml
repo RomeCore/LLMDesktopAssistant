@@ -1,0 +1,30 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Width="400">
+      <TabControl>
+        <TabItem Header="Tab 1">
+          <Border Background="#1A1A2E" Height="100">
+            <TextBlock Text="Content" Foreground="#EAEAEA" FontSize="20"/>
+          </Border>
+        </TabItem>
+        <TabItem Header="Tab 2">
+          <Border Background="#1A1A2E" Height="100" />
+        </TabItem>
+        <TabItem Header="Disabled" IsEnabled="False" />
+      </TabControl>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base TabControl style -->
+  <Style Selector="TabControl">
+    <Setter Property="Background" Value="#0E0E20" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="16" />
+    <Setter Property="Margin" Value="0" />
+  </Style>
+
+</Styles>

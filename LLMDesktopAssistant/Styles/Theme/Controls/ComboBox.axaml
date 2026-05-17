@@ -1,0 +1,105 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="10">
+        <ComboBox PlaceholderText="Select an item">
+          <ComboBoxItem>Item 1</ComboBoxItem>
+          <ComboBoxItem>Item 2</ComboBoxItem>
+        </ComboBox>
+        <ComboBox SelectedIndex="1" IsEnabled="False" Width="200">
+          <ComboBoxItem>Item 1</ComboBoxItem>
+          <ComboBoxItem>Item 2</ComboBoxItem>
+        </ComboBox>
+        <ComboBox SelectedIndex="1" IsEditable="True">
+          <ComboBoxItem>Item A</ComboBoxItem>
+          <ComboBoxItem>Item B</ComboBoxItem>
+        </ComboBox>
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base ComboBox style -->
+  <Style Selector="ComboBox">
+    <Setter Property="Foreground" Value="#EAEAEA" />
+    <Setter Property="Background" Value="#141428" />
+    <Setter Property="BorderBrush" Value="#3A3A5E" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="12 5 0 7" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="PlaceholderForeground" Value="#666688" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.2" />
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- PointerOver -->
+  <Style Selector="ComboBox:pointerover /template/ Border#Background">
+    <Setter Property="Background" Value="#1A1A30" />
+    <Setter Property="BorderBrush" Value="#5A4CD7" />
+  </Style>
+
+  <!-- Pressed -->
+  <Style Selector="ComboBox:pressed /template/ Border#Background">
+    <Setter Property="Background" Value="#0E0E20" />
+    <Setter Property="BorderBrush" Value="#4A3CC7" />
+  </Style>
+
+  <!-- Focus-visible -->
+  <Style Selector="ComboBox:focus-visible /template/ Border#HighlightBackground">
+    <Setter Property="IsVisible" Value="True" />
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+  </Style>
+
+  <Style Selector="ComboBox:focus-visible /template/ ContentControl#ContentPresenter">
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="ComboBox:focus-visible /template/ PathIcon#DropDownGlyph">
+    <Setter Property="Foreground" Value="#6C5CE7" />
+  </Style>
+
+  <!-- Disabled -->
+  <Style Selector="ComboBox:disabled /template/ Border#Background">
+    <Setter Property="Background" Value="#0A0A18" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+  </Style>
+
+  <Style Selector="ComboBox:disabled /template/ ContentControl#ContentPresenter">
+    <Setter Property="Foreground" Value="#555555" />
+  </Style>
+
+  <Style Selector="ComboBox:disabled /template/ PathIcon#DropDownGlyph">
+    <Setter Property="Foreground" Value="#3A3A4E" />
+  </Style>
+
+  <Style Selector="ComboBox:disabled">
+    <Setter Property="Foreground" Value="#555555" />
+  </Style>
+
+  <!-- Error -->
+  <Style Selector="ComboBox:error /template/ Border#Background">
+    <Setter Property="BorderBrush" Value="#FF4444" />
+  </Style>
+
+  <!-- DropDown glyph -->
+  <Style Selector="ComboBox /template/ PathIcon#DropDownGlyph">
+    <Setter Property="Foreground" Value="#888888" />
+  </Style>
+
+  <!-- Popup border -->
+  <Style Selector="ComboBox /template/ Border#PopupBorder">
+    <Setter Property="Background" Value="#1A1A2E" />
+    <Setter Property="BorderBrush" Value="#3A3A5E" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="BoxShadow" Value="0 4 20 0 #00000066" />
+  </Style>
+
+</Styles>

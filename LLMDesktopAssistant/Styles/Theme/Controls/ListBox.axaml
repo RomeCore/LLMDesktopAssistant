@@ -1,0 +1,23 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <ListBox>
+        <ListBoxItem>Item 1</ListBoxItem>
+        <ListBoxItem>Item 2</ListBoxItem>
+        <ListBoxItem>Item 3</ListBoxItem>
+      </ListBox>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base ListBox style -->
+  <Style Selector="ListBox">
+    <Setter Property="Foreground" Value="#EAEAEA" />
+    <Setter Property="Background" Value="#141428" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+  </Style>
+
+</Styles>

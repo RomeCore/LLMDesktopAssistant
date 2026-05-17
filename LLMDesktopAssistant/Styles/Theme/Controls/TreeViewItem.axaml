@@ -1,0 +1,115 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20" MinWidth="300">
+      <TreeView>
+        <TreeViewItem Header="Level 1" IsExpanded="True">
+          <TreeViewItem Header="Level 2.1" IsSelected="True" IsExpanded="True">
+            <TreeViewItem Header="Level 3.1" />
+            <TreeViewItem Header="Level 3.2" IsSelected="True" />
+          </TreeViewItem>
+          <TreeViewItem Header="Level 2.2" IsEnabled="False" />
+        </TreeViewItem>
+      </TreeView>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base TreeViewItem style -->
+  <Style Selector="TreeViewItem">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="#EAEAEA" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.15" />
+        <BrushTransition Property="Foreground" Duration="0:0:0.15" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Layout root -->
+  <Style Selector="TreeViewItem /template/ Border#PART_LayoutRoot">
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.15" />
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Chevron (expand/collapse) -->
+  <Style Selector="TreeViewItem /template/ ToggleButton#PART_ExpandCollapseChevron /template/ Path#ChevronPath">
+    <Setter Property="Fill" Value="#888888" />
+  </Style>
+
+  <Style Selector="TreeViewItem:pointerover /template/ ToggleButton#PART_ExpandCollapseChevron /template/ Path#ChevronPath">
+    <Setter Property="Fill" Value="#EAEAEA" />
+  </Style>
+
+  <!-- Hover -->
+  <Style Selector="TreeViewItem /template/ Border#PART_LayoutRoot:pointerover">
+    <Setter Property="Background" Value="#2A2A3E" />
+  </Style>
+
+  <Style Selector="TreeViewItem:pointerover">
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Pressed -->
+  <Style Selector="TreeViewItem:pressed /template/ Border#PART_LayoutRoot:pointerover">
+    <Setter Property="Background" Value="#3A3A5E" />
+  </Style>
+
+  <Style Selector="TreeViewItem:pressed">
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Selected -->
+  <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="#3A3A7E" />
+  </Style>
+
+  <Style Selector="TreeViewItem:selected">
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Selected + hover -->
+  <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot:pointerover">
+    <Setter Property="Background" Value="#4A4A8E" />
+  </Style>
+
+  <!-- Selected + pressed -->
+  <Style Selector="TreeViewItem:pressed:selected /template/ Border#PART_LayoutRoot:pointerover">
+    <Setter Property="Background" Value="#5A5A9E" />
+  </Style>
+
+  <!-- Disabled -->
+  <Style Selector="TreeViewItem:disabled /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <Style Selector="TreeViewItem:disabled">
+    <Setter Property="Foreground" Value="#555555" />
+  </Style>
+
+  <!-- Disabled + selected -->
+  <Style Selector="TreeViewItem:disabled:selected /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="#2A2A4E" />
+  </Style>
+
+  <Style Selector="TreeViewItem:disabled:selected">
+    <Setter Property="Foreground" Value="#777777" />
+  </Style>
+
+  <!-- Empty items hide chevron -->
+  <Style Selector="TreeViewItem:empty /template/ ToggleButton#PART_ExpandCollapseChevron">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+</Styles>

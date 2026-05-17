@@ -9,12 +9,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <AvaloniaXaml Remove="Styles\Avalonia.Themes.Fluent\**" />
 	  <Compile Remove="Settings\Objects\**" />
+	  <Compile Remove="Styles\Avalonia.Themes.Fluent\**" />
 	  <EmbeddedResource Remove="Settings\Objects\**" />
+	  <EmbeddedResource Remove="Styles\Avalonia.Themes.Fluent\**" />
 	  <None Remove="Settings\Objects\**" />
+	  <None Remove="Styles\Avalonia.Themes.Fluent\**" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Remove="Assets\Fonts\Inter.ttf" />
+		<None Remove="Assets\Fonts\JetBrains Mono.ttf" />
+		<None Remove="Assets\Fonts\Segoe Fluent Icons.ttf" />
 		<None Remove="Assets\icon.ico" />
 		<None Remove="Prompting\Resources\components.llt" />
 		<None Remove="Prompting\Resources\foreign_assistant_prompt.llt" />
@@ -26,6 +33,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<AvaloniaResource Include="Assets\Fonts\Inter.ttf" />
+		<AvaloniaResource Include="Assets\Fonts\JetBrains Mono.ttf" />
+		<AvaloniaResource Include="Assets\Fonts\Segoe Fluent Icons.ttf" />
 		<AvaloniaResource Include="Assets\icon.ico" />
 		<EmbeddedResource Include="Prompting\Resources\foreign_assistant_prompt.llt" />
 		<EmbeddedResource Include="Prompting\Resources\image_describer.llt" />
@@ -285,10 +295,6 @@
 	  <None Update="Styles\Resources.axaml">
 		<SubType>Designer</SubType>
 	  </None>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Tools\Forms\" />
 	</ItemGroup>
 
 </Project>

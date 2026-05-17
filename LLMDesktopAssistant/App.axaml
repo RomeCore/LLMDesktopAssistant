@@ -5,13 +5,14 @@
 			 xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 RequestedThemeVariant="Dark">
-  
+	
 	<Application.Styles>
 		<FluentTheme />
+		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/Theme/Theme.axaml"/>
+
 		<materialIcons:MaterialIconStyles />
 		<dialogHostAvalonia:DialogHostStyles />
 		<StyleInclude Source="avares://LiveMarkdown.Avalonia/Styles.axaml"/>
-		
 		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/CommonStyles.axaml"/>
 		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/ButtonsIcons.axaml"/>
 		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/MarkdownStyles.axaml"/>

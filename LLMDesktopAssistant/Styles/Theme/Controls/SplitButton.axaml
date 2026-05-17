@@ -1,0 +1,119 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="60">
+      <StackPanel Spacing="20">
+        <SplitButton Content="SplitButton" />
+        <SplitButton IsEnabled="False">Disabled</SplitButton>
+        <ToggleSplitButton Content="ToggleSplitButton" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base SplitButton style -->
+  <Style Selector="SplitButton">
+    <Setter Property="Background" Value="#2A2A3E" />
+    <Setter Property="Foreground" Value="#EAEAEA" />
+    <Setter Property="BorderBrush" Value="#3A3A5E" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="16 8" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.2" />
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Primary button -->
+  <Style Selector="SplitButton /template/ Button#PART_PrimaryButton">
+    <Setter Property="CornerRadius" Value="8 0 0 8" />
+  </Style>
+
+  <!-- Secondary button (dropdown) -->
+  <Style Selector="SplitButton /template/ Button#PART_SecondaryButton">
+    <Setter Property="CornerRadius" Value="0 8 8 0" />
+  </Style>
+
+  <!-- Separator -->
+  <Style Selector="SplitButton /template/ Border#SeparatorBorder">
+    <Setter Property="Background" Value="#3A3A5E" />
+    <Setter Property="Width" Value="1" />
+  </Style>
+
+  <!-- Hover -->
+  <Style Selector="SplitButton:pointerover">
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="SplitButton:pointerover /template/ Border#SeparatorBorder">
+    <Setter Property="Background" Value="#6C5CE7" />
+  </Style>
+
+  <!-- Pressed -->
+  <Style Selector="SplitButton:pressed">
+    <Setter Property="BorderBrush" Value="#5A4CD7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Disabled -->
+  <Style Selector="SplitButton:disabled">
+    <Setter Property="Foreground" Value="#666666" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+  </Style>
+
+  <Style Selector="SplitButton:disabled /template/ Border#SeparatorBorder">
+    <Setter Property="Background" Value="#2A2A3E" />
+  </Style>
+
+  <!-- ToggleSplitButton -->
+  <Style Selector="ToggleSplitButton">
+    <Setter Property="Background" Value="#2A2A3E" />
+    <Setter Property="Foreground" Value="#EAEAEA" />
+    <Setter Property="BorderBrush" Value="#3A3A5E" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="16 8" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.2" />
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- ToggleSplitButton checked -->
+  <Style Selector="ToggleSplitButton:checked /template/ Button#PART_PrimaryButton /template/ ContentPresenter">
+    <Setter Property="Background" Value="#6C5CE7" />
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="ToggleSplitButton:checked">
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- DropDown glyph -->
+  <Style Selector="SplitButton /template/ PathIcon">
+    <Setter Property="Foreground" Value="#888888" />
+  </Style>
+
+  <Style Selector="SplitButton:pointerover /template/ PathIcon">
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Flyout open state -->
+  <Style Selector="SplitButton:flyout-open /template/ Button">
+    <Setter Property="Tag" Value="flyout-open" />
+  </Style>
+
+</Styles>

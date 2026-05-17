@@ -1,0 +1,115 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="20">
+        <Button Content="Click Me!" />
+        <Button Classes="accent" Content="Click Me!" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base button style -->
+  <Style Selector="Button">
+    <Setter Property="Background" Value="#2A2A3E" />
+    <Setter Property="Foreground" Value="#EAEAEA" />
+    <Setter Property="BorderBrush" Value="#3A3A5E" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="16 8" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.2" />
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Hover state -->
+  <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#3A3A5E" />
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="Button:pointerover">
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Pressed state -->
+  <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#1A1A2E" />
+    <Setter Property="BorderBrush" Value="#5A4CD7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="Button:pressed">
+    <Setter Property="BorderBrush" Value="#5A4CD7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Disabled state -->
+  <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#1A1A22" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+    <Setter Property="Foreground" Value="#666666" />
+  </Style>
+
+  <Style Selector="Button:disabled">
+    <Setter Property="Foreground" Value="#666666" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+  </Style>
+
+  <!-- Accent variant -->
+  <Style Selector="Button.accent /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#6C5CE7" />
+    <Setter Property="BorderBrush" Value="#7C6CF7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="Button.accent">
+    <Setter Property="Background" Value="#6C5CE7" />
+    <Setter Property="BorderBrush" Value="#7C6CF7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="Button.accent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#7C6CF7" />
+    <Setter Property="BorderBrush" Value="#8C7CFF" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="Button.accent:pointerover">
+    <Setter Property="Background" Value="#7C6CF7" />
+    <Setter Property="BorderBrush" Value="#8C7CFF" />
+  </Style>
+
+  <Style Selector="Button.accent:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#5C4CD7" />
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <Style Selector="Button.accent:pressed">
+    <Setter Property="Background" Value="#5C4CD7" />
+    <Setter Property="BorderBrush" Value="#6C5CE7" />
+  </Style>
+
+  <Style Selector="Button.accent:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#3A3A5E" />
+    <Setter Property="BorderBrush" Value="#4A4A7E" />
+    <Setter Property="Foreground" Value="#999999" />
+  </Style>
+
+  <Style Selector="Button.accent:disabled">
+    <Setter Property="Background" Value="#3A3A5E" />
+    <Setter Property="BorderBrush" Value="#4A4A7E" />
+    <Setter Property="Foreground" Value="#999999" />
+  </Style>
+
+</Styles>

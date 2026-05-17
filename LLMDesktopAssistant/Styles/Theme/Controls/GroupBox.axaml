@@ -1,0 +1,24 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <GroupBox Padding="10" Margin="10">
+      <TextBlock Text="Hello World" Foreground="#EAEAEA" />
+    </GroupBox>
+  </Design.PreviewWith>
+
+  <!-- Base GroupBox style -->
+  <Style Selector="GroupBox">
+    <Setter Property="Background" Value="#141428" />
+    <Setter Property="BorderBrush" Value="#2A2A3E" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="12" />
+  </Style>
+
+  <!-- Header -->
+  <Style Selector="GroupBox /template/ ContentPresenter#PART_HeaderPresenter">
+    <Setter Property="Foreground" Value="#888888" />
+  </Style>
+
+</Styles>

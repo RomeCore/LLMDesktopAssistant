@@ -1,0 +1,56 @@
+<Styles xmlns="https://github.com/avaloniaui"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="20">
+        <HyperlinkButton Content="Click Me!" />
+        <HyperlinkButton Content="Disabled" IsEnabled="False" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Base HyperlinkButton style -->
+  <Style Selector="HyperlinkButton">
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="#6C5CE7" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="8 4" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="RenderTransform" Value="none" />
+    <Setter Property="TextBlock.TextDecorations" Value="Underline" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Foreground" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <Style Selector="HyperlinkButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Foreground" Value="#7C6CF7" />
+    <Setter Property="Background" Value="#1A1A2E" />
+  </Style>
+
+  <Style Selector="HyperlinkButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Foreground" Value="#5C4CD7" />
+    <Setter Property="Background" Value="#2A2A3E" />
+  </Style>
+
+  <Style Selector="HyperlinkButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Foreground" Value="#555555" />
+  </Style>
+
+  <!-- Visited -->
+  <Style Selector="HyperlinkButton:visited /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Foreground" Value="#8B5CF6" />
+  </Style>
+
+  <Style Selector="HyperlinkButton:visited:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Foreground" Value="#9B6CF6" />
+  </Style>
+
+</Styles>

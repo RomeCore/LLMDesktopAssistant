@@ -106,7 +106,7 @@
 										   Value="{Binding Instance.Weight}"
 										   Minimum="0"
 										   Increment="0.1"
-										   Width="120"
+										   Width="150"
 										   VerticalAlignment="Center"
 											 IsVisible="{Binding #VMRoot.DataContext.AdaptiveStage.EnforceRouterSelection}"
 										   Margin="4,0"/>
