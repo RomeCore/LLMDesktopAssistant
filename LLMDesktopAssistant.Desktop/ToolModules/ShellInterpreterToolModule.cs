@@ -58,7 +58,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				resultBuilder.Append(result.StdOut);
 				if (!string.IsNullOrEmpty(result.StdErr))
 				{
-					resultBuilder.AppendLine().AppendLine("Errors:");
+					resultBuilder.AppendLine().AppendLine("STDERR:");
 					resultBuilder.Append(result.StdErr);
 				}
 
@@ -84,7 +84,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				resultBuilder.Append(result.StdOut);
 				if (!string.IsNullOrEmpty(result.StdErr))
 				{
-					resultBuilder.AppendLine().AppendLine("Errors:");
+					resultBuilder.AppendLine().AppendLine("STDERR:");
 					resultBuilder.Append(result.StdErr);
 				}
 
@@ -110,7 +110,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				resultBuilder.Append(result.StdOut);
 				if (!string.IsNullOrEmpty(result.StdErr))
 				{
-					resultBuilder.AppendLine().AppendLine("Errors:");
+					resultBuilder.AppendLine().AppendLine("STDERR:");
 					resultBuilder.Append(result.StdErr);
 				}
 

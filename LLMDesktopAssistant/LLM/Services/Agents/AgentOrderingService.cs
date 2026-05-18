@@ -13,9 +13,8 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 		public async Task<(Guid, Guid)?> GetNextAgentAsync(CancellationToken cancellationToken = default)
 		{
 			var stages = chat.Settings.Agents.ExecutionStages
-				.Where(s => s.Enabled)
 				.ToList();
-			if (stages.Count == 0)
+			if (!stages.Any(s => s.Enabled))
 				return null;
 
 			var (roundUserMessages, roundAssistantMessages) = CollectThisRoundMessages();
@@ -52,6 +51,8 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 			for (int i = targetStageIndex; i < stages.Count; i++)
 			{
 				var stage = stages[i];
+				if (!stage.Enabled)
+					continue;
 
 				var context = BuildContext(currentStageMessages, currentStageExecuted);
 				var nextAgentId = await stage.GetNextAgentAsync(context, cancellationToken);
