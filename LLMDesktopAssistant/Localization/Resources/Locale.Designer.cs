@@ -1339,6 +1339,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Read file/directory.
+        /// </summary>
+        public static string fs_explore {
+            get {
+                return ResourceManager.GetString("fs-explore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Get file info.
         /// </summary>
         public static string fs_get_file_info {

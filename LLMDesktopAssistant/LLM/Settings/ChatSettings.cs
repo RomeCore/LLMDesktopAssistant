@@ -61,6 +61,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _environmentSettings, value);
 		}
 
+		private ChatToolsSettings _toolsSettings = new();
+		/// <summary>
+		/// Settings for tools and plugins used in the chat.
+		/// </summary>
+		public ChatToolsSettings Tools
+		{
+			get => _toolsSettings;
+			set => SetProperty(ref _toolsSettings, value);
+		}
+
 		private ChatMcpSettings _mcpSettings = new();
 		/// <summary>
 		/// Settings for MCP (Model Context Protocol) servers.

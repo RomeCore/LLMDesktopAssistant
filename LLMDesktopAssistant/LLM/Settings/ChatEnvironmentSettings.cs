@@ -1,5 +1,6 @@
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Tools.Implementations;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -22,6 +23,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// Returns the working directory for the chatbot. If no working directory is specified, returns the default directory.
 		/// </summary>
 		public string GetWorkingDirectory() => WorkingDirectory ?? Path.GetFullPath(Directories.DefaultWorkingDirectory);
+
+		private bool _allowFSOutsideWorkDir = false;
+		/// <summary>
+		/// Whether the <see cref="FilesystemToolModule"/> is allowed to access files outside of the working directory.
+		/// </summary>
+		public bool AllowFSOutsideWorkDir
+		{
+			get => _allowFSOutsideWorkDir;
+			set => SetProperty(ref _allowFSOutsideWorkDir, value);
+		}
 
 		private string? _pythonVenvActivateScriptPath;
 		/// <summary>

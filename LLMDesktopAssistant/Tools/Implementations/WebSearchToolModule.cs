@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Description("Safe search level: none, moderate, strict")]
 			[Enum(["none", "moderate", "strict"])] string safeSearch = "none",
 			[Description("Search category.")]
-			[Enum(["general", "web", "images", "videos", "news", "science", "it", "files", "socialmedia", "music", "map", "repos", "packages"])] string category = "general",
+			[Enum(["all", "web", "images", "videos", "news", "science", "it", "files", "socialmedia", "music", "map", "repos", "packages"])] string category = "web",
 			[Description("The engines to use for the search. If null, all available engines are used.")] string[]? engines = null,
 			[Description("Maximum number of results (per engine) to return"), Range(1, 50)] int maxResults = 10,
 			CancellationToken ct = default)
@@ -243,7 +243,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			var searchCategory = category?.ToLowerInvariant() switch
 			{
-				"general" => SearchCategory.General,
+				"all" => SearchCategory.General,
 				"web" => SearchCategory.Web,
 				"images" => SearchCategory.Images,
 				"videos" => SearchCategory.Videos,

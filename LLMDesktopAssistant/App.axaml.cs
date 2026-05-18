@@ -36,7 +36,7 @@ namespace LLMDesktopAssistant
 
 				manager.RegisterEngines(
 				[
-					// General
+					// Web
 					SearXSharp.SearchEngines.Google(logger),
 					SearXSharp.SearchEngines.Bing(logger),
 					SearXSharp.SearchEngines.Brave(logger),

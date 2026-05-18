@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {
-	[ToolModule]
+	// [ToolModule]
 	public class PythonInterpreterToolModule : ToolModule
 	{
 		private readonly PythonService _python;

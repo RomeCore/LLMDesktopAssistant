@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {
-	[ToolModule]
+	// TODO: Make REPL stable
+	// [ToolModule]
 	public class PythonReplToolModule : ToolModule
 	{
 		private readonly PythonReplService _python;

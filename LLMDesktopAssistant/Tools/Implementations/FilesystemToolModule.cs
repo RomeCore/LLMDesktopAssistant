@@ -35,11 +35,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					AskForConfirmation = false
 				});
 
-			AddTool(ReadFile,
+			AddTool(Explore,
 				new ToolInitializationInfo
 				{
-					Name = "fs-read_file",
-					Description = "Reads text file content from the working directory.",
+					Name = "fs-explore",
+					Description = """
+						The universal tool for exploring the filesystem. It can list directories and read files line by line.
+						""",
 					Category = "filesystem",
 					AskForConfirmation = false
 				});
@@ -57,7 +59,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				new ToolInitializationInfo
 				{
 					Name = "fs-read_document_file",
-					Description = "Reads document file content by pages from the working directory. Supported extensions: .pdf, .docx, .pptx.",
+					Description = "Reads complex documents (DOCX, PPTX, PDF) by pages from the working directory. Supported extensions: .pdf, .docx, .pptx.",
 					Category = "filesystem",
 					AskForConfirmation = false
 				});
@@ -96,7 +98,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						2: inserted line <- insterted here
 						3: second line
 						4: third line
-						Note: Works best if you know line numbers when looking file with fs-read_file(showLineNumbers = true)
+						Note: Works best if you know line numbers when looking file with fs-explore(showLineNumbers = true)
 						""",
 					Category = "filesystem",
 					AskForConfirmation = true
@@ -112,15 +114,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						""",
 					Category = "filesystem",
 					AskForConfirmation = true
-				});
-
-			AddTool(ListDirectory,
-				new ToolInitializationInfo
-				{
-					Name = "fs-list_directory",
-					Description = "Lists files and directories inside working directory path.",
-					Category = "filesystem",
-					AskForConfirmation = false
 				});
 
 			AddTool(CreateDirectory,
@@ -249,63 +242,188 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ReactiveToolResult ReadFile(
+		public ReactiveToolResult Explore(
 			string path,
-			[Description("The 1-based index of the first line to read.")]
-			int startLine,
-			[Description("The 1-based index of the last line to read.")]
-			int endLine,
-			[Description("The maximum length of each line to read.")]
+			[Description("The 1-based index of the first line to read. Only for files.")]
+			int startLine = 0,
+			[Description("The 1-based index of the last line to read. Only for files.")]
+			int endLine = 0,
+			[Description("The maximum length of each line to read. Only for files.")]
 			int maxLineLength = 2000,
-			[Description("Whether to include line numbers before every line in format '   1: *line content*'.")]
-			bool showLineNumbers = false)
+			[Description("Whether to include line numbers before every line in format '   1: *line content*'. Only for files.")]
+			bool showLineNumbers = false,
+			[Description("The maximum depth of directories to include in the listing. 1 = current directory only. Only for directories.")]
+			int maxDepth = 2,
+			[Description("The number of entries to skip before starting the list. Only for directories.")]
+			int offset = 0,
+			[Description("The maximum number of filesystem entries to return. Only for directories.")]
+			int maxEntries = 500,
+			[Description("The list of directories to ignore. Each directory can be a pattern (e.g. '.*' to ignore all directories that starts with dot). Only for directories.")]
+			[DefaultValue(new string[]{ ".git" })]
+			string[]? ignoreDirectories = null)
 		{
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
+				var displayEntryName = Path.GetFileName(fullPath);
 
-				if (!File.Exists(fullPath))
-					return ReactiveToolResult.CreateError($"File '{path}' not found.");
+				bool fileExists = File.Exists(fullPath);
+				bool directoryExists = Directory.Exists(fullPath);
+				bool anyExists = fileExists || directoryExists;
 
-				if (endLine < startLine)
-					return ReactiveToolResult.CreateError($"Invalid line range (startLine: {startLine}, endLine: {endLine}).");
+				var result = new ReactiveToolResult();
 
-				var (lines, totalLines) = FileUtils.ReadLinesChunk(
-					fullPath,
-					startLine,
-					endLine - startLine + 1,
-					maxLineLength,
-					showLineNumbers);
-				var endShown = startLine + lines.Count - 1;
-
-				var result = new ReactiveToolResult
+				var sb = new StringBuilder();
+				if (fileExists)
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileCode,
-					StatusTitle = endShown == totalLines ?
-						(startLine == 1 ? $"**{fileName}**" : $"**{fileName}** *({startLine}~{endShown})*") :
-						$"**{fileName}** *({startLine}~{endShown} / {totalLines})*"
-				};
+					if (startLine == 0)
+						startLine = 1;
+					if (endLine < startLine)
+						endLine = startLine + 199;
 
-				if (lines.Count == 0)
-				{
-					result.ResultContent = "No content.";
-					return result.Complete(true);
-				}
+					var (lines, totalLines) = FileUtils.ReadLinesChunk(
+						fullPath,
+						startLine,
+						endLine - startLine + 1,
+						maxLineLength,
+						showLineNumbers);
+					var endShown = startLine + lines.Count - 1;
 
-				string nextReadTip = string.Empty;
-				if (endShown < totalLines)
-					nextReadTip = $" (Continue reading from line {endShown + 1}, e.g. {endShown + 1}-{Math.Min(endShown + 100, totalLines)})";
+					if (directoryExists)
+					{
+						result.StatusIcon = Material.Icons.MaterialIconKind.FileEye;
+						result.StatusTitle = $"**{displayEntryName}**";
+					}
+					else
+					{
+						result.StatusIcon = Material.Icons.MaterialIconKind.FileCode;
+						result.StatusTitle = endShown == totalLines ?
+							(startLine == 1 ? $"**{displayEntryName}**" : $"**{displayEntryName}** *({startLine}~{endShown})*") :
+							$"**{displayEntryName}** *({startLine}~{endShown} / {totalLines})*";
+					}
 
-				var output = $"""
+					if (lines.Count == 0)
+					{
+						lines.Add("No content.");
+					}
+
+					string nextReadTip = string.Empty;
+					if (endShown < totalLines)
+						nextReadTip = $" (Continue reading from line {endShown + 1}, e.g. {endShown + 1}-{Math.Min(endShown + 100, totalLines)})";
+
+					var output = $"""
+					[FILE READING]
 					File: {path}
 					Showing: {startLine}-{endShown}{nextReadTip}
 					Total lines: {totalLines}
-					Contents:
+					[CONTENT START]
 					{string.Join(Environment.NewLine, lines)}
+					[CONTENT END]
 					""";
+					sb.AppendLine(output);
+				}
+				if (directoryExists)
+				{
+					int totalCount = 0;
+					ignoreDirectories ??= [".git"];
 
-				result.ResultContent = output;
+					void Traverse(string currentPath, int depth, string indent)
+					{
+						if (depth > maxDepth)
+							return;
+
+						var entries = Directory.GetFileSystemEntries(currentPath)
+							.OrderBy(e => Directory.Exists(e) ? 0 : 1)
+							.ThenBy(e => e);
+
+						foreach (var entry in entries)
+						{
+							var name = Path.GetFileName(entry);
+							var isDir = Directory.Exists(entry);
+
+							if (isDir)
+							{
+								int count = 0;
+								try
+								{
+									count = Directory.GetFileSystemEntries(entry).Length;
+								}
+								catch { /* ignore */ }
+
+								if (offset <= totalCount && totalCount <= offset + maxEntries)
+								{
+									var edited = Directory.GetLastWriteTime(entry).ToString("yyyy-MM-dd HH:mm");
+									sb.AppendLine($"{indent}[DIR]  {name} ({count} items, {edited})");
+								}
+
+								totalCount++;
+
+								if (ignoreDirectories.Any(igdir => FileSystemName.MatchesSimpleExpression(igdir, name)))
+									sb.AppendLine($"{indent}  Directory ignored");
+								else
+									Traverse(entry, depth + 1, indent + "  ");
+							}
+							else
+							{
+								if (offset <= totalCount && totalCount <= offset + maxEntries)
+								{
+									var fileMetrics = FileUtils.GetFileMetrics(entry);
+									var sizeStr = FileUtils.BytesToDisplaySize(fileMetrics.Size);
+									var linesStr = fileMetrics.LineCount != null ? $"{fileMetrics.LineCount} lines" : "binary";
+									var edited = fileMetrics.Modified.ToString("yyyy-MM-dd HH:mm");
+
+									sb.AppendLine($"{indent}[FILE] {name} ({sizeStr}, {linesStr}, {edited})");
+								}
+
+								totalCount++;
+							}
+						}
+					}
+
+					sb.AppendLine($"[DIRECTORY LISTING]");
+					sb.AppendLine($"Path: {path}");
+					sb.AppendLine($"Max depth: {maxDepth}");
+					sb.AppendLine($"Offset: {offset}, Max entries: {maxEntries}");
+					if (ignoreDirectories.Length > 0)
+						sb.AppendLine($"Ignored directories: {string.Join(", ", ignoreDirectories)}");
+					else
+						sb.AppendLine("No ignored directories.");
+					sb.AppendLine();
+
+					Traverse(fullPath, 1, "");
+
+					if (offset > totalCount)
+					{
+						sb.AppendLine($"Offset is too large. (offset:{offset} > total count:{totalCount})");
+					}
+					else if (offset + maxEntries < totalCount)
+					{
+						sb.AppendLine();
+						sb.AppendLine($"... truncated ({totalCount - offset - maxEntries} entries more avalable)");
+					}
+
+					if (!fileExists)
+					{
+						result.StatusIcon = Material.Icons.MaterialIconKind.Folder;
+
+						int startEntry = offset;
+						int totalEntries = totalCount;
+						int endEntry = Math.Min(offset + maxEntries, totalEntries);
+						string boldDirName = string.IsNullOrWhiteSpace(displayEntryName) ? "" : $"**{displayEntryName}**";
+						result.StatusTitle = endEntry == totalEntries ?
+							(startEntry == 0 ? boldDirName : $"{boldDirName} *({startEntry}~{endEntry})*") :
+							$"{boldDirName} *({startEntry}~{endEntry} / {totalEntries})*";
+					}
+				}
+				if (!anyExists)
+				{
+					result.ResultContent = $"No such file or directory found: '{path}'.";
+					result.StatusIcon = Material.Icons.MaterialIconKind.FileDiscard;
+					result.StatusTitle = $"**{displayEntryName}**";
+					return result.Complete(false);
+				}
+
+				result.ResultContent = sb.ToString();
 				return result.Complete(true);
 			}
 			catch (Exception ex)
@@ -966,120 +1084,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				return text;
 
 			return text.Substring(0, maxLength - 3) + "...";
-		}
-
-		public ReactiveToolResult ListDirectory(
-			string path = "",
-			[Description("The maximum depth of directories to include in the listing. 1 = current directory only.")]
-			int maxDepth = 2,
-			[Description("The number of entries to skip before starting the list.")]
-			int offset = 0,
-			[Description("The maximum number of entries to return.")]
-			int maxEntries = 200,
-			[Description("The list of directories to ignore. Each directory can be a pattern (e.g. '.*' to ignore all directories that starts with dot)")]
-			[DefaultValue(new string[]{ ".git" })]
-			string[]? ignoreDirectories = null)
-		{
-			try
-			{
-				var fullPath = _fileAccess.AccessPath(path);
-				var dirName = path + "/";
-
-				if (!Directory.Exists(fullPath))
-					return ReactiveToolResult.CreateError("Directory not found.");
-
-				var sb = new StringBuilder();
-				int totalCount = 0;
-				ignoreDirectories ??= [".git"];
-
-				void Traverse(string currentPath, int depth, string indent)
-				{
-					if (depth > maxDepth)
-						return;
-
-					var entries = Directory.GetFileSystemEntries(currentPath)
-						.OrderBy(e => Directory.Exists(e) ? 0 : 1)
-						.ThenBy(e => e);
-
-					foreach (var entry in entries)
-					{
-						var name = Path.GetFileName(entry);
-						var isDir = Directory.Exists(entry);
-
-						if (isDir)
-						{
-							int count = 0;
-							try
-							{
-								count = Directory.GetFileSystemEntries(entry).Length;
-							}
-							catch { /* ignore */ }
-
-							if (offset <= totalCount && totalCount <= offset + maxEntries)
-							{
-								var edited = Directory.GetLastWriteTime(entry).ToString("yyyy-MM-dd HH:mm");
-								sb.AppendLine($"{indent}[DIR]  {name} ({count} items, {edited})");
-							}
-
-							totalCount++;
-
-							if (ignoreDirectories.Any(igdir => FileSystemName.MatchesSimpleExpression(igdir, name)))
-								sb.AppendLine($"{indent}  Directory contents not shown");
-							else
-								Traverse(entry, depth + 1, indent + "  ");
-						}
-						else
-						{
-							if (offset <= totalCount && totalCount <= offset + maxEntries)
-							{
-								var fileMetrics = FileUtils.GetFileMetrics(entry);
-								var sizeStr = FileUtils.BytesToDisplaySize(fileMetrics.Size);
-								var linesStr = fileMetrics.LineCount != null ? $"{fileMetrics.LineCount} lines" : "binary";
-								var edited = fileMetrics.Modified.ToString("yyyy-MM-dd HH:mm");
-
-								sb.AppendLine($"{indent}[FILE] {name} ({sizeStr}, {linesStr}, {edited})");
-							}
-
-							totalCount++;
-						}
-					}
-				}
-
-				sb.AppendLine($"[DIRECTORY LISTING]");
-				sb.AppendLine($"Path: {path}");
-				sb.AppendLine($"Max depth: {maxDepth}");
-				sb.AppendLine($"Offset: {offset}, Max entries: {maxEntries}");
-				if (ignoreDirectories.Length > 0)
-					sb.AppendLine($"Ignored directories: {string.Join(", ", ignoreDirectories)}");
-				else
-					sb.AppendLine("No ignored directories.");
-				sb.AppendLine();
-
-				Traverse(fullPath, 1, "");
-
-				if (offset > totalCount)
-				{
-					sb.AppendLine($"Offset is too large. (offset:{offset} > total count:{totalCount})");
-				}
-				else if (offset + maxEntries < totalCount)
-				{
-					sb.AppendLine();
-					sb.AppendLine($"... truncated ({totalCount - offset - maxEntries} entries more avalable)");
-				}
-
-				var result = new ReactiveToolResult
-				{
-					StatusIcon = Material.Icons.MaterialIconKind.Folder,
-					StatusTitle = $"**{dirName}** *({string.Format(LocalizationManager.LocalizeStatic("fs-entries"), totalCount)})*",
-					ResultContent = sb.ToString()
-				};
-
-				return result.Complete(true);
-			}
-			catch (Exception ex)
-			{
-				return ReactiveToolResult.CreateError($"Error listing directory: {ex.Message}");
-			}
 		}
 
 		public ReactiveToolResult CreateDirectory(string path)
