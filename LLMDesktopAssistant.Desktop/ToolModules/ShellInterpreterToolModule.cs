@@ -21,11 +21,16 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			_chat = chat;
 
+			var osName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" :
+						 RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Linux" :
+						 RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "macOS" :
+						 RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) ? "FreeBSD" : "Unknown";
+
 			AddTool(ExecuteShell,
 				new ToolInitializationInfo
 				{
 					Name = "execute-shell",
-					Description = "Executes shell command or script.",
+					Description = $"Executes {osName} shell command or script from the current working directory. Examples: `git status`, `python script.py`",
 					Category = "scripting",
 					AskForConfirmation = true
 				});
@@ -36,7 +41,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					new ToolInitializationInfo
 					{
 						Name = "execute-powershell",
-						Description = "Executes Windows powershell command or script.",
+						Description = "Executes Windows powershell command or script from the current working directory.",
 						Category = "scripting",
 						AskForConfirmation = true
 					});
