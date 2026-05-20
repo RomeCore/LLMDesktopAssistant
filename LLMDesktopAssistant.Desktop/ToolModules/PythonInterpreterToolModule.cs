@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
@@ -11,9 +12,8 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static Vanara.PInvoke.Kernel32;
 
-namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
+namespace LLMDesktopAssistant.Desktop.ToolModules
 {
 	/// <summary>
 	/// Terminal-based Python execution tool module.
@@ -21,13 +21,13 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 	/// Replaces PythonInterpreterToolModule with terminal UI support.
 	/// </summary>
 	[ToolModule]
-	public class TerminalPythonInterpreterToolModule : TerminalBasedToolModule
+	public class PythonInterpreterToolModule : TerminalBasedToolModule
 	{
 		private readonly PythonService _python;
 		private readonly Chat _chat;
 		private readonly FileAccessService _fileAccess;
 
-		public TerminalPythonInterpreterToolModule(Chat chat, FileAccessService fileAccess)
+		public PythonInterpreterToolModule(Chat chat, FileAccessService fileAccess)
 		{
 			_python = ServiceRegistry.Get<PythonService>();
 			_chat = chat;
@@ -86,7 +86,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 			else
 			{
 				// Write to a temporary file
-				pyFile = Path.GetFullPath(Path.Combine(Directories.TempScripts, $"{Guid.NewGuid()}.py"));
+				pyFile = Path.GetFullPath(Path.Combine(workDir, $"{Guid.NewGuid()}.py"));
 				File.WriteAllText(pyFile, python);
 				isTemporaryFile = true;
 			}
@@ -127,8 +127,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 		/// Executes a shell command in the Python virtual environment via terminal.
 		/// Useful for pip install, pip list, etc.
 		/// </summary>
-		public async Task<ReactiveToolResult> ExecuteVenvShell(
-			[Description("The shell command to run in the virtual environment.")] string shell,
+		public Task<ReactiveToolResult> ExecuteVenvShell(
+			[Description("The shell command to run in the Python's virtual environment.")] string shell,
 			[Description("Whether to run the output in an embedded terminal emulator. Use `true` for long-running scripts.")] bool runTerminal,
 			ToolExecutionContext context,
 			CancellationToken cancellationToken = default)
@@ -142,7 +142,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 			else
 				command = shell;
 
-			return await RunAsync(new TerminalRunParameters
+			return RunAsync(new TerminalRunParameters
 			{
 				RunTerminal = runTerminal,
 				Command = command,

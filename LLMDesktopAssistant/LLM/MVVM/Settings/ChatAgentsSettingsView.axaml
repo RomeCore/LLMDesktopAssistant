@@ -13,7 +13,7 @@
 	<DockPanel>
 		<!-- Toolbar -->
 		<Border DockPanel.Dock="Top"
-				BorderBrush="{DynamicResource SystemAccentColor}"
+				BorderBrush="{DynamicResource SecondaryAccentBrush}"
 				BorderThickness="0,0,0,1"
 				Padding="8,6">
 			<StackPanel Orientation="Horizontal" Spacing="4">
@@ -34,7 +34,7 @@
 				 Margin="8">
 			<ListBox.ItemTemplate>
 				<DataTemplate DataType="local:AgentOptionViewModel">
-					<Border Padding="6,4" BorderBrush="{DynamicResource SystemAccentColor}" BorderThickness="0,0,0,0.5">
+					<Border Padding="6,4" BorderBrush="{DynamicResource SecondaryAccentBrush}" BorderThickness="0,0,0,0.5">
 						<Grid ColumnDefinitions="*,Auto,Auto">
 
 							<!-- Name + Global badge -->
@@ -42,7 +42,7 @@
 								<TextBlock Text="{Binding Agent.Info.Name}" VerticalAlignment="Center"/>
 
 								<Border IsVisible="{Binding IsGlobal}"
-										Background="{DynamicResource SystemAccentColor}"
+										Background="{DynamicResource PrimaryAccentBrush}"
 										Opacity="0.6"
 										CornerRadius="4"
 										Padding="4,3"

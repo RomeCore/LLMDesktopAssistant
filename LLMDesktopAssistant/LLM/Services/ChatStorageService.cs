@@ -1,6 +1,8 @@
-﻿using LLMDesktopAssistant.Data;
+﻿using DocumentFormat.OpenXml.EMMA;
+using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.ContextTabs;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
@@ -23,34 +25,39 @@ namespace LLMDesktopAssistant.LLM.Services
 			ChatDatabase database
 		) : Disposable, IChatStorageService
 	{
-		readonly int conversationId = chat.ChatId;
+		readonly int chatId = chat.ChatId;
 		Action? _mainUnsubscriber;
 		readonly MultiValueDictionary<ChatMessage, Action> _unsubscribers = [];
 
 		public void Reload()
 		{
+			_mainUnsubscriber?.Invoke();
+			for (int i = 0; i < chat.Messages.Count; i++)
+				Unsubscribe(chat.Messages[i].Message);
+
 			var messages = new List<BranchedMessage>();
 
-			var conversation = database.Chats.FindById(conversationId);
-			if (conversation == null)
+			var chatModel = database.Chats.FindById(chatId);
+			if (chatModel == null)
 			{
-				conversation = new ChatModel
+				chatModel = new ChatModel
 				{
-					Id = conversationId,
+					Id = chatId,
+					Title = chat.Title,
 					LeafNodeId = -1,
 					RootNodeId = -1,
 					SettingsProfile = ChatSettings.DefaultId,
 					CreatedAt = DateTime.Now,
 					LastModifiedAt = DateTime.Now
 				};
-				database.Chats.Insert(conversation);
+				database.Chats.Insert(chatModel);
 			}
 
-			chat.Settings = SettingsManager.Get<ChatSettings>(conversation.SettingsProfile);
-			chat.IsTemporary = conversation.IsTemporary;
+			chat.Title = chatModel.Title;
+			chat.Settings = SettingsManager.Get<ChatSettings>(chatModel.SettingsProfile);
+			chat.IsTemporary = chatModel.IsTemporary;
 
-			var currentNodeId = conversation.RootNodeId;
-
+			var currentNodeId = chatModel.RootNodeId;
 			while (currentNodeId != -1)
 			{
 				var nodeModel = database.MessageNodes.FindById(currentNodeId);
@@ -61,24 +68,36 @@ namespace LLMDesktopAssistant.LLM.Services
 				currentNodeId = nodeModel.SelectedNodeId;
 			}
 
+			var contextTabViewModels = database.ChatContextTabViewModels
+				.Find(avm => avm.ChatId == chat.ChatId)
+				.OrderBy(avm => avm.Id);
+
+			foreach (var contextTabViewDataModel in contextTabViewModels)
+			{
+				SubscribeContextTabViewModel(contextTabViewDataModel.ViewModel, contextTabViewDataModel);
+				chat.ContextTabs.Add(contextTabViewDataModel.ViewModel);
+			}
+
 			_mainUnsubscriber?.Invoke();
+			_mainUnsubscriber = null;
 			void ChatPropertyChanged(object? s, PropertyChangedEventArgs e)
 			{
-				conversation = database.Chats.FindById(conversationId);
+				chatModel = database.Chats.FindById(chatId);
 
-				conversation.SettingsProfile = chat.Settings.Id;
-				conversation.IsTemporary = chat.IsTemporary;
+				chatModel.Title = chat.Title;
+				chatModel.SettingsProfile = chat.Settings.Id;
+				chatModel.IsTemporary = chat.IsTemporary;
 
-				database.Chats.Update(conversation);
+				database.Chats.Update(chatModel);
 			}
 			chat.PropertyChanged += ChatPropertyChanged;
-			_mainUnsubscriber = () =>
+			chat.ContextTabs.CollectionChanged += ChatContextTabsCollectionChanged;
+			_mainUnsubscriber += () =>
 			{
 				chat.PropertyChanged -= ChatPropertyChanged;
+				chat.ContextTabs.CollectionChanged -= ChatContextTabsCollectionChanged;
 			};
 
-			for (int i = 0; i < chat.Messages.Count; i++)
-				Unsubscribe(chat.Messages[i].Message);
 			chat.Messages.Reset(messages);
 		}
 
@@ -92,12 +111,68 @@ namespace LLMDesktopAssistant.LLM.Services
 			chat.Messages.Clear();
 		}
 
+		private void ChatContextTabsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.OldItems != null)
+				foreach (ChatContextTabViewModel oldVm in e.OldItems)
+					database.AdditionalMessageViewModels.DeleteMany(avm => avm.ViewModel.Guid == oldVm.Guid);
+
+			if (e.NewItems != null)
+				foreach (ChatContextTabViewModel newVm in e.NewItems)
+					CreateAndInsertContextTabViewModelAndSubscribe(newVm);
+		}
+
+		private ChatContextTabViewDataModel CreateAndInsertContextTabViewModel(ChatContextTabViewModel viewModel)
+		{
+			var contextTabViewDataModel = new ChatContextTabViewDataModel
+			{
+				ChatId = chat.ChatId,
+				ViewModel = viewModel
+			};
+			database.ChatContextTabViewModels.Insert(contextTabViewDataModel);
+			return contextTabViewDataModel;
+		}
+
+		private void SubscribeContextTabViewModel(ChatContextTabViewModel viewModel, ChatContextTabViewDataModel? model)
+		{
+			bool prevTemporary = viewModel.IsTemporary;
+			void OnContextTabViewModelPropertyChanged()
+			{
+				if (prevTemporary != viewModel.IsTemporary)
+				{
+					prevTemporary = viewModel.IsTemporary;
+
+					if (prevTemporary) // Became persistent
+					{
+						model = CreateAndInsertContextTabViewModel(viewModel);
+					}
+					else // Became temporary
+					{
+						database.ChatContextTabViewModels.DeleteMany(avm => avm.ViewModel.Guid == viewModel.Guid);
+					}
+				}
+				else if (model != null)
+					database.ChatContextTabViewModels.Update(model);
+			}
+			var changeTracker = new ChangeTracker(viewModel, OnContextTabViewModelPropertyChanged);
+			_mainUnsubscriber += changeTracker.Dispose;
+		}
+
+		private void CreateAndInsertContextTabViewModelAndSubscribe(ChatContextTabViewModel viewModel)
+		{
+			var contextTabViewDataModel = viewModel.IsTemporary
+				? null
+				: CreateAndInsertContextTabViewModel(viewModel);
+
+			SubscribeContextTabViewModel(viewModel, contextTabViewDataModel);
+		}
+
 		public void AppendMessage(ChatMessage chatMessage)
 		{
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
 
-			var conversation = database.Chats.FindById(conversationId);
+			var conversation = database.Chats.FindById(chatId);
 			int messageId = CreateAndInsertMessageModel(chatMessage).Id;
 			MessageNodeModel nodeModel;
 
@@ -107,7 +182,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				int nodeId = database.MessageNodes.Insert(nodeModel = new MessageNodeModel
 				{
 					IsRootNode = true,
-					ParentId = conversationId,
+					ParentId = chatId,
 					MessageId = messageId
 				});
 				conversation.RootNodeId = nodeId;
@@ -146,7 +221,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
 
-			var conversation = database.Chats.FindById(conversationId);
+			var conversation = database.Chats.FindById(chatId);
 			int currentNodeId = conversation.RootNodeId;
 			int currentIndex = 0;
 
@@ -215,7 +290,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
 
-			var conversation = database.Chats.FindById(conversationId);
+			var conversation = database.Chats.FindById(chatId);
 			int currentNodeId = conversation.RootNodeId;
 			int currentIndex = 0;
 
@@ -269,7 +344,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
 
-			var conversation = database.Chats.FindById(conversationId);
+			var conversation = database.Chats.FindById(chatId);
 			int newLeafNodeId = -1;
 			int currentNodeId = conversation.RootNodeId;
 			int currentIndex = 0;

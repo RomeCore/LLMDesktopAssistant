@@ -83,6 +83,61 @@ namespace LLMDesktopAssistant
 
 					// Maps
 					SearXSharp.SearchEngines.OpenStreetMap(logger),
+					SearXSharp.SearchEngines.Photon(logger),
+
+					// Science
+					SearXSharp.SearchEngines.GoogleScholar(logger),
+					SearXSharp.SearchEngines.Wikipedia(logger),
+					SearXSharp.SearchEngines.Arxiv(logger),
+					SearXSharp.SearchEngines.Pubmed(logger),
+					SearXSharp.SearchEngines.SemanticScholar(logger),
+					SearXSharp.SearchEngines.OpenAlex(logger),
+					SearXSharp.SearchEngines.WolframAlpha(logger),
+
+					// Music
+					SearXSharp.SearchEngines.Spotify(logger),
+					SearXSharp.SearchEngines.SoundCloud(logger),
+					SearXSharp.SearchEngines.Bandcamp(logger),
+					SearXSharp.SearchEngines.Deezer(logger),
+					SearXSharp.SearchEngines.Genius(logger),
+					SearXSharp.SearchEngines.Mixcloud(logger),
+					SearXSharp.SearchEngines.YandexMusic(logger),
+					SearXSharp.SearchEngines.PodcastIndex(logger),
+					SearXSharp.SearchEngines.Fyyd(logger),
+
+					// Packages / Repos
+					SearXSharp.SearchEngines.NuGet(logger),
+					SearXSharp.SearchEngines.Npm(logger),
+					SearXSharp.SearchEngines.Pypi(logger),
+					SearXSharp.SearchEngines.Crates(logger),
+					SearXSharp.SearchEngines.DockerHub(logger),
+					SearXSharp.SearchEngines.Hex(logger),
+					SearXSharp.SearchEngines.PkgGoDev(logger),
+					SearXSharp.SearchEngines.MetaCPAN(logger),
+					SearXSharp.SearchEngines.AlpineLinux(logger),
+					SearXSharp.SearchEngines.FDroid(logger),
+
+					// Social Media
+					SearXSharp.SearchEngines.Reddit(logger),
+					SearXSharp.SearchEngines.Mastodon(logger),
+					SearXSharp.SearchEngines.Lemmy(logger),
+					SearXSharp.SearchEngines.Discourse(logger),
+
+					// Shopping / Entertainment
+					SearXSharp.SearchEngines.Imdb(logger),
+					SearXSharp.SearchEngines.Ebay(logger),
+
+					// Books
+					SearXSharp.SearchEngines.Goodreads(logger),
+					SearXSharp.SearchEngines.OpenLibrary(logger),
+
+					// Files / Torrents
+					SearXSharp.SearchEngines.AnnasArchive(logger),
+					SearXSharp.SearchEngines.ZLibrary(logger),
+					SearXSharp.SearchEngines._1337x(logger),
+					SearXSharp.SearchEngines.PirateBay(logger),
+					SearXSharp.SearchEngines.Kickass(logger),
+					SearXSharp.SearchEngines.Nyaa(logger),
 				]);
 
 				return manager;

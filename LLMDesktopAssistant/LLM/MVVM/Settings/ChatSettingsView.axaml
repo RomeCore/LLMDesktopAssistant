@@ -42,11 +42,11 @@
 							<ico:MaterialIcon Kind="{Binding Icon}"
 																Width="18" Height="18"
 																VerticalAlignment="Center"
-																Foreground="{DynamicResource SystemAccentColor}"/>
+																Foreground="{DynamicResource PrimaryAccentBrush}"/>
 							<TextBlock Text="{Binding Info.Name}"
 												 FontWeight="Bold"
 												 VerticalAlignment="Center"
-												 Foreground="{DynamicResource SystemAccentColor}"/>
+												 Foreground="{DynamicResource PrimaryAccentBrush}"/>
 						</StackPanel>
 						
 						<StackPanel Orientation="Horizontal" Spacing="6" Margin="4,3"
@@ -89,7 +89,7 @@
 
 			<!-- Content title -->
 			<Border DockPanel.Dock="Top"
-					BorderBrush="{DynamicResource SystemAccentColor}"
+					BorderBrush="{DynamicResource SecondaryAccentBrush}"
 					BorderThickness="0,0,0,1"
 					Padding="8,6"
 					IsVisible="{Binding SelectedNode.DisplayName, Converter={StaticResource StringNonEmptyToBooleanConverter}}">

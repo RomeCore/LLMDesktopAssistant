@@ -42,7 +42,6 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Name = "metatools-list",
 					Description = "Lists all existing meta tools. Use it for understanding what tools you can tweak or modify.",
 					Category = "metatools",
-					Enabled = false,
 					AskForConfirmation = false
 				});
 
@@ -52,7 +51,6 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Name = "metatools-get_info",
 					Description = "Gets detailed information about a specific meta tool by its name. Use it for understanding the details of a particular tool.",
 					Category = "metatools",
-					Enabled = false,
 					AskForConfirmation = false
 				});
 

@@ -78,7 +78,15 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				sb.AppendLine();
 
 				var count = 0;
-				foreach (var result in resultList.Results.Take(maxResults * 3))
+
+				IEnumerable<SearchResult> results = resultList.Results;
+
+				if (searchQuery.Category != SearchCategory.General)
+					results = results.OrderBy(r => r.Category == searchQuery.Category ? 0 : 1);
+
+				results = results.Take(maxResults * 3);
+
+				foreach (var result in results)
 				{
 					count++;
 					sb.AppendLine($"**{count}. [{result.Title}]({result.Url})**");
@@ -198,7 +206,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					{
 						sb.AppendLine($"- **[{info.Title}]({info.Url})**");
 						if (!string.IsNullOrEmpty(info.Content))
-							sb.AppendLine($"  {info.Content.Truncate(200)}");
+							sb.AppendLine($"  {info.Content.Truncate(500)}");
 					}
 					sb.AppendLine();
 				}

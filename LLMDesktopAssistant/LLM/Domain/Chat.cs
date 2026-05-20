@@ -5,6 +5,7 @@ using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using Material.Icons;
+using LLMDesktopAssistant.LLM.MVVM.ContextTabs;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -31,6 +32,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 					throw new InvalidOperationException("ChatId cannot be changed once set.");
 				_chatId = value;
 			}
+		}
+
+		private string _title = string.Empty;
+		/// <summary>
+		/// Gets or sets the title of the chat session.
+		/// </summary>
+		public string Title
+		{
+			get => _title;
+			set => SetProperty(ref _title, value);
 		}
 
 		private bool _isTemporary = false;
@@ -89,6 +100,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _settings;
 			set => SetProperty(ref _settings, value);
+		}
+
+		private ChatContextTabViewModelCollection _contextTabs = [];
+		/// <summary>
+		/// Gets or sets the collection of context tabs associated with this chat session.
+		/// </summary>
+		public ChatContextTabViewModelCollection ContextTabs
+		{
+			get => _contextTabs;
+			set => _contextTabs.Reset(value);
 		}
 
 		/// <summary>

@@ -145,7 +145,7 @@
 									<TextBlock Text="{Binding DisplayName}"
 											   VerticalAlignment="Center"/>
 									<Border IsVisible="{Binding IsGlobal}"
-											Background="{DynamicResource SystemAccentColor}"
+											Background="{DynamicResource PrimaryAccentBrush}"
 											Opacity="0.4"
 											CornerRadius="4"
 											Padding="4,1"

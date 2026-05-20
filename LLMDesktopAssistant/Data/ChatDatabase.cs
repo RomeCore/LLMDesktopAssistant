@@ -26,6 +26,7 @@ namespace LLMDesktopAssistant.Data
 		public ILiteCollection<MessageModel> Messages { get; }
 		public ILiteCollection<AttachmentModel> Attachments { get; }
 		public ILiteCollection<ToolCallModel> ToolCalls { get; }
+		public ILiteCollection<ChatContextTabViewDataModel> ChatContextTabViewModels { get; }
 		public ILiteCollection<AdditionalMessageViewDataModel> AdditionalMessageViewModels { get; }
 
 		public ChatDatabase(string path)
@@ -39,6 +40,7 @@ namespace LLMDesktopAssistant.Data
 			Messages = Database.GetCollection<MessageModel>();
 			Attachments = Database.GetCollection<AttachmentModel>();
 			ToolCalls = Database.GetCollection<ToolCallModel>();
+			ChatContextTabViewModels = Database.GetCollection<ChatContextTabViewDataModel>();
 			AdditionalMessageViewModels = Database.GetCollection<AdditionalMessageViewDataModel>();
 
 			MessageNodes.EnsureIndex(x => x.ParentId);
@@ -46,6 +48,7 @@ namespace LLMDesktopAssistant.Data
 			Attachments.EnsureIndex(x => x.MessageId);
 			ToolCalls.EnsureIndex(x => x.MessageId);
 			ToolCalls.EnsureIndex(x => x.ToolCallId);
+			ChatContextTabViewModels.EnsureIndex(x => x.ChatId);
 			AdditionalMessageViewModels.EnsureIndex(x => x.MessageId);
 		}
 

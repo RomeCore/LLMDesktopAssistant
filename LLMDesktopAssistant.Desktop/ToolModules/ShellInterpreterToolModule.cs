@@ -1,15 +1,19 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+﻿using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Tools;
 using System;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {
 	[ToolModule]
-	public class ShellInterpreterToolModule : ToolModule
+	public class ShellInterpreterToolModule : TerminalBasedToolModule
 	{
 		private readonly Chat _chat;
 
@@ -17,110 +21,62 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			_chat = chat;
 
-			AddTool(ExecuteWindows,
+			AddTool(ExecuteShell,
 				new ToolInitializationInfo
 				{
 					Name = "execute-shell",
-					Description = "Executes Windows shell (.bat) script.",
+					Description = "Executes shell command or script.",
 					Category = "scripting",
 					AskForConfirmation = true
 				});
 
-			AddTool(ExecuteWindowsPS,
-				new ToolInitializationInfo
-				{
-					Name = "execute-powershell",
-					Description = "Executes Windows Powershell (.ps1) script.",
-					Category = "scripting",
-					AskForConfirmation = true
-				});
-
-			AddTool(ExecuteLinux,
-				new ToolInitializationInfo
-				{
-					Name = "execute-bash",
-					Description = "Executes Linux bash (.sh) script.",
-					Category = "scripting",
-					AskForConfirmation = true
-				});
-		}
-
-		public async Task<ToolResult> ExecuteWindows(string shell)
-		{
-			try
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				var workDir = _chat.Settings.Environment.GetWorkingDirectory();
-				var result = shell.Contains('\n') ?
-					await ShellExecutor.ExecuteWindowsScriptAsync(shell, workDir) :
-					await ShellExecutor.ExecuteWindowsAsync(shell, workDir);
-
-				var resultBuilder = new StringBuilder();
-				resultBuilder.Append(result.StdOut);
-				if (!string.IsNullOrEmpty(result.StdErr))
-				{
-					resultBuilder.AppendLine().AppendLine("STDERR:");
-					resultBuilder.Append(result.StdErr);
-				}
-
-				var status = result.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
-				return new ToolResult(status, resultBuilder.ToString());
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Got error while executing Windows shell: {ex.Message}");
+				AddTool(ExecutePowerShell,
+					new ToolInitializationInfo
+					{
+						Name = "execute-powershell",
+						Description = "Executes Windows powershell command or script.",
+						Category = "scripting",
+						AskForConfirmation = true
+					});
 			}
 		}
 
-		public async Task<ToolResult> ExecuteWindowsPS(string powershell)
+
+
+		public Task<ReactiveToolResult> ExecuteShell(
+			[Description("The shell command to run.")] string shell,
+			[Description("Whether to run the output in an embedded terminal emulator. Use `true` for long-running scripts.")] bool runTerminal,
+			ToolExecutionContext context,
+			CancellationToken cancellationToken = default)
 		{
-			try
-			{
-				var workDir = _chat.Settings.Environment.GetWorkingDirectory();
-				var result = powershell.Contains('\n') ?
-					await ShellExecutor.ExecuteWindowsPSScriptAsync(powershell, workDir) :
-					await ShellExecutor.ExecuteWindowsPSAsync(powershell, workDir);
+			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
+			string command = shell;
 
-				var resultBuilder = new StringBuilder();
-				resultBuilder.Append(result.StdOut);
-				if (!string.IsNullOrEmpty(result.StdErr))
-				{
-					resultBuilder.AppendLine().AppendLine("STDERR:");
-					resultBuilder.Append(result.StdErr);
-				}
-
-				var status = result.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
-				return new ToolResult(status, resultBuilder.ToString());
-			}
-			catch (Exception ex)
+			return RunAsync(new TerminalRunParameters
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Got error while executing Windows shell: {ex.Message}");
-			}
+				RunTerminal = runTerminal,
+				Command = command,
+				WorkingDirectory = workDir,
+			}, context, cancellationToken);
 		}
 
-		public async Task<ToolResult> ExecuteLinux(string bash)
+		public Task<ReactiveToolResult> ExecutePowerShell(
+			[Description("The powershell command to run.")] string powershell,
+			[Description("Whether to run the output in an embedded terminal emulator. Use `true` for long-running scripts.")] bool runTerminal,
+			ToolExecutionContext context,
+			CancellationToken cancellationToken = default)
 		{
-			try
-			{
-				var workDir = _chat.Settings.Environment.GetWorkingDirectory();
-				var result = bash.Contains('\n') ?
-					await ShellExecutor.ExecuteBashScriptAsync(bash, workDir) :
-					await ShellExecutor.ExecuteBashAsync(bash, workDir);
+			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
+			string command = $"powershell -Command \"{powershell}\"";
 
-				var resultBuilder = new StringBuilder();
-				resultBuilder.Append(result.StdOut);
-				if (!string.IsNullOrEmpty(result.StdErr))
-				{
-					resultBuilder.AppendLine().AppendLine("STDERR:");
-					resultBuilder.Append(result.StdErr);
-				}
-
-				var status = result.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
-				return new ToolResult(status, resultBuilder.ToString());
-			}
-			catch (Exception ex)
+			return RunAsync(new TerminalRunParameters
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Got error while executing Linux shell: {ex.Message}");
-			}
+				RunTerminal = runTerminal,
+				Command = command,
+				WorkingDirectory = workDir,
+			}, context, cancellationToken);
 		}
 	}
 }

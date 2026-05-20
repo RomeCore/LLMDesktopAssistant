@@ -1339,15 +1339,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Read file/directory.
-        /// </summary>
-        public static string fs_explore {
-            get {
-                return ResourceManager.GetString("fs-explore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Get file info.
         /// </summary>
         public static string fs_get_file_info {
@@ -1452,6 +1443,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string fs_read_document_file {
             get {
                 return ResourceManager.GetString("fs-read_document_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read file/directory.
+        /// </summary>
+        public static string fs_read_entry {
+            get {
+                return ResourceManager.GetString("fs-read_entry", resourceCulture);
             }
         }
         

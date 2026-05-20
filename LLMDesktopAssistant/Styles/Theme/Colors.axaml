@@ -1,0 +1,19 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<!-- Primary accent (replaces SystemAccentColor) -->
+	<Color x:Key="PrimaryAccent">#6C5CE7</Color>
+	<SolidColorBrush x:Key="PrimaryAccentBrush"
+									 Color="{StaticResource PrimaryAccent}" />
+
+	<!-- Secondary / hover accent -->
+	<Color x:Key="SecondaryAccent">#7C6CF7</Color>
+	<SolidColorBrush x:Key="SecondaryAccentBrush"
+									 Color="{StaticResource SecondaryAccent}" />
+
+	<!-- Error / danger -->
+	<Color x:Key="ErrorColor">#FF4444</Color>
+	<SolidColorBrush x:Key="ErrorBrush"
+									 Color="{StaticResource ErrorColor}" />
+
+</ResourceDictionary>

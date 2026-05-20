@@ -1392,7 +1392,7 @@
   <data name="settings_stage_adaptive_enforce_router_selection" xml:space="preserve">
     <value>Enforce selection</value>
   </data>
-  <data name="fs-explore" xml:space="preserve">
+  <data name="fs-read_entry" xml:space="preserve">
     <value>Read file/directory</value>
   </data>
 </root>

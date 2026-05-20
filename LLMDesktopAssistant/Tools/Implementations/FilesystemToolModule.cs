@@ -38,9 +38,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			AddTool(Explore,
 				new ToolInitializationInfo
 				{
-					Name = "fs-explore",
+					Name = "fs-read_entry",
 					Description = """
 						The universal tool for exploring the filesystem. It can list directories and read files line by line.
+						If directory exists under the specified path, it will list all files and directories in that directory.
+						If file exists, it will read the content of the file by lines (automatically selects 1-200 lines).
+						If both exists, it will do both actions.
 						""",
 					Category = "filesystem",
 					AskForConfirmation = false
@@ -243,6 +246,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		}
 
 		public ReactiveToolResult Explore(
+			[Description("The path of the entry to read. Leave empty to read the current working directory.")]
 			string path,
 			[Description("The 1-based index of the first line to read. Only for files.")]
 			int startLine = 0,
@@ -276,7 +280,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				var sb = new StringBuilder();
 				if (fileExists)
 				{
-					if (startLine == 0)
+					if (startLine < 1)
 						startLine = 1;
 					if (endLine < startLine)
 						endLine = startLine + 199;
@@ -324,6 +328,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}
 				if (directoryExists)
 				{
+					if (maxDepth < 1)
+						maxDepth = 1;
+
 					int totalCount = 0;
 					ignoreDirectories ??= [".git"];
 
@@ -339,21 +346,27 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						foreach (var entry in entries)
 						{
 							var name = Path.GetFileName(entry);
-							var isDir = Directory.Exists(entry);
 
-							if (isDir)
+							if (Directory.Exists(entry))
 							{
-								int count = 0;
+								string count = "?";
 								try
 								{
-									count = Directory.GetFileSystemEntries(entry).Length;
+									count = Directory.GetFileSystemEntries(entry).Length.ToString();
 								}
 								catch { /* ignore */ }
 
 								if (offset <= totalCount && totalCount <= offset + maxEntries)
 								{
-									var edited = Directory.GetLastWriteTime(entry).ToString("yyyy-MM-dd HH:mm");
-									sb.AppendLine($"{indent}[DIR]  {name} ({count} items, {edited})");
+									try
+									{
+										var edited = Directory.GetLastWriteTime(entry).ToString("yyyy-MM-dd HH:mm");
+										sb.AppendLine($"{indent}[DIR]  {name} ({count} items, {edited})");
+									}
+									catch
+									{
+										sb.AppendLine($"{indent}[DIR]  {name} ({count} items) [ERROR GETTING INFO]");
+									}
 								}
 
 								totalCount++;
@@ -363,16 +376,23 @@ namespace LLMDesktopAssistant.Tools.Implementations
 								else
 									Traverse(entry, depth + 1, indent + "  ");
 							}
-							else
+							if (File.Exists(entry))
 							{
 								if (offset <= totalCount && totalCount <= offset + maxEntries)
 								{
-									var fileMetrics = FileUtils.GetFileMetrics(entry);
-									var sizeStr = FileUtils.BytesToDisplaySize(fileMetrics.Size);
-									var linesStr = fileMetrics.LineCount != null ? $"{fileMetrics.LineCount} lines" : "binary";
-									var edited = fileMetrics.Modified.ToString("yyyy-MM-dd HH:mm");
+									try
+									{
+										var fileMetrics = FileUtils.GetFileMetrics(entry);
+										var sizeStr = FileUtils.BytesToDisplaySize(fileMetrics.Size);
+										var linesStr = fileMetrics.LineCount != null ? $"{fileMetrics.LineCount} lines" : "binary";
+										var edited = fileMetrics.Modified.ToString("yyyy-MM-dd HH:mm");
 
-									sb.AppendLine($"{indent}[FILE] {name} ({sizeStr}, {linesStr}, {edited})");
+										sb.AppendLine($"{indent}[FILE] {name} ({sizeStr}, {linesStr}, {edited})");
+									}
+									catch
+									{
+										sb.AppendLine($"{indent}[FILE] {name} [ERROR GETTING INFO]");
+									}
 								}
 
 								totalCount++;

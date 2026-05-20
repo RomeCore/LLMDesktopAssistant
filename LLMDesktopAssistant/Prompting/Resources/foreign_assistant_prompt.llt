@@ -4,7 +4,7 @@
 	{
 		lang: 'en-US'
 	}
-	[OTHER AGENT MESSAGE: '@agent_name']:
+	[OTHER AGENT MESSAGE FROM: '@agent_name']:
 	[MESSAGE SENT AT: @time_sent]
 	@if can_read_reasoning && reasoning_content
 	{

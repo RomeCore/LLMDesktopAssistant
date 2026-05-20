@@ -159,7 +159,7 @@
 
 							<!-- Separator -->
 							<Rectangle Grid.Row="1" Grid.RowSpan="2"
-												 Fill="{DynamicResource SystemAccentColor}"
+												 Fill="{DynamicResource PrimaryAccentBrush}"
 												 Height="1"
 												 VerticalAlignment="Top"/>
 

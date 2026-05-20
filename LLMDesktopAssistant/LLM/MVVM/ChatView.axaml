@@ -8,32 +8,42 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.ChatView"
 			 x:DataType="local:ChatViewModel">
 	
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="*"/>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
+	<Grid RowDefinitions="*,Auto" ColumnDefinitions="*,2,*">
+
+		<!-- Left Sidebar -->
+		<TabControl Grid.Row="0" Grid.Column="0"
+								ItemsSource="{Binding Chat.ContextTabs}">
+			
+			<TabControl.ItemTemplate>
+				<DataTemplate>
+					<TabItem Header="{Binding Title}"
+									 IsVisible="{Binding IsVisible}"
+									 Content="{Binding}"/>
+				</DataTemplate>
+			</TabControl.ItemTemplate>
+
+		</TabControl>
+
+		<!-- Splitter -->
+		<GridSplitter Grid.Row="0" Grid.Column="1"
+									ResizeDirection="Columns"/>
 
 		<!-- Messages Area -->
-		<ScrollViewer Grid.Row="0"
-					  VerticalScrollBarVisibility="Visible"
-					  beh:ScrollViewerBehavior.AutoScrollEnabled="True">
+		<ScrollViewer Grid.Row="0" Grid.Column="2"
+									VerticalScrollBarVisibility="Visible"
+									beh:ScrollViewerBehavior.AutoScrollEnabled="True">
 
 			<StackPanel>
 				<ContentControl Content="{Binding MessageSequence}"/>
-				<!-- Chat Status — фикс. высота, чтобы жопа Рикардо Милоса не тряслась -->
 				<ContentControl Content="{Binding ChatStatus}" />
-
-				
 			</StackPanel>
 		</ScrollViewer>
 
 		<!-- Input Area -->
-		<Border Grid.Row="1"
-				Padding="16,8"
-				Background="{DynamicResource MaterialDesignPaper}"
-				BorderBrush="{DynamicResource MaterialDesignDivider}"
-				BorderThickness="0,1,0,0">
+		<Border Grid.Row="1" Grid.ColumnSpan="3"
+						Padding="16,8"
+						BorderBrush="{DynamicResource PrimaryAccentBrush}"
+						BorderThickness="0,1,0,0">
 
 			<ContentControl Content="{Binding UserInput}"/>
 		</Border>

@@ -4,7 +4,7 @@
 	{
 		lang: 'en-US'
 	}
-	[USER MESSAGE: '@user_name']
+	[USER MESSAGE FROM: @user_name]
 	[MESSAGE SENT AT: @time_sent]
 	@if can_read_attachments && attachments
 	{
