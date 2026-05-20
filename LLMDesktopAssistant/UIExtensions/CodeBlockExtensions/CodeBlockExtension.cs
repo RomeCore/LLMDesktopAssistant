@@ -16,15 +16,25 @@ namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 		/// </summary>
 		public virtual int Order => 0;
 
+		private MaterialIconKind _icon;
 		/// <summary>
 		/// The icon for button associated with this extension.
 		/// </summary>
-		public abstract MaterialIconKind Icon { get; }
+		public MaterialIconKind Icon
+		{
+			get => _icon;
+			set => SetProperty(ref _icon, value);
+		}
 
+		private ICommand? _command;
 		/// <summary>
 		/// The command for button associated with this extension.
 		/// </summary>
-		public abstract ICommand Command { get; }
+		public ICommand? Command
+		{
+			get => _command;
+			set => SetProperty(ref _command, value);
+		}
 
 		private bool _isButtonVisible = true;
 		/// <summary>
@@ -33,7 +43,7 @@ namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 		public bool IsButtonVisible
 		{
 			get => _isButtonVisible;
-			protected set => SetProperty(ref _isButtonVisible, value);
+			set => SetProperty(ref _isButtonVisible, value);
 		}
 
 		private object? _additionalViewModel;
@@ -43,7 +53,7 @@ namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 		public object? AdditionalViewModel
 		{
 			get => _additionalViewModel;
-			protected set => SetProperty(ref _additionalViewModel, value);
+			set => SetProperty(ref _additionalViewModel, value);
 		}
 	}
 }

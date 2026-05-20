@@ -8,12 +8,10 @@ namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 	[CodeBlockExtension]
 	public class CopyCodeBlockExtension : CodeBlockExtension
 	{
-		public override MaterialIconKind Icon => MaterialIconKind.ContentCopy;
-
-		public override ICommand Command { get; }
-
 		public CopyCodeBlockExtension(CodeBlock codeBlock)
 		{
+			Icon = MaterialIconKind.ContentCopy;
+
 			Command = new RelayCommand(() =>
 			{
 				App.MainTopLevel.Clipboard!.SetTextAsync(codeBlock.Code);

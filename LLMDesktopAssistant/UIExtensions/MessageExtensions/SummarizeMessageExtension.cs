@@ -15,14 +15,12 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 	[MessageExtension(Targets = MessageExtensionTargets.Both)]
 	public class SummarizeMessageExtension : MessageExtension
 	{
-		public override MaterialIconKind Icon => MaterialIconKind.TextBoxSearchOutline;
-
-		public override ICommand Command { get; }
-
 		public override int Order => 51;
 
 		public SummarizeMessageExtension(MessageViewModelBase viewModel)
 		{
+			Icon = MaterialIconKind.TextBoxSearchOutline;
+
 			Command = new AsyncRelayCommand(async () =>
 			{
 				try

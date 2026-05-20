@@ -13,12 +13,10 @@ namespace LLMDesktopAssistant.Desktop.Execution
 	[CodeBlockExtension]
 	public class CodeBlockExecutionExtension : CodeBlockExtension
 	{
-		public override MaterialIconKind Icon => MaterialIconKind.Play;
-
-		public override ICommand Command { get; }
-
 		public CodeBlockExecutionExtension(CodeBlock codeBlock, Chat chat, LuaService lua, PythonService python)
 		{
+			Icon = MaterialIconKind.Play;
+
 			var command = new AsyncRelayCommand(async () =>
 			{
 				await Execute(codeBlock, chat, lua, python);

@@ -8,14 +8,12 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 	[MessageExtension]
 	public class SaveMessageExtension : MessageExtension
 	{
-		public override MaterialIconKind Icon => MaterialIconKind.ContentSave;
-
-		public override ICommand Command { get; }
-
 		public override int Order => 1;
 
 		public SaveMessageExtension(MessageViewModelBase viewModel)
 		{
+			Icon = MaterialIconKind.ContentSave;
+
 			Command = new AsyncRelayCommand(async () =>
 			{
 				var result = await App.MainTopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions

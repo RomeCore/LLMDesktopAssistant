@@ -12,10 +12,6 @@ namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 	[CodeBlockExtension]
 	public class SaveCodeBlockExtension : CodeBlockExtension
 	{
-		public override MaterialIconKind Icon => MaterialIconKind.ContentSave;
-
-		public override ICommand Command { get; }
-
 		// ЕЕЕ НЕЙРОНКИ ЖГУТ
 		private static FilePickerFileType GetFilePickerTypeFromLanguage(string language)
 		{
@@ -115,6 +111,8 @@ namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 
 		public SaveCodeBlockExtension(CodeBlock codeBlock)
 		{
+			Icon = MaterialIconKind.ContentSave;
+
 			Command = new AsyncRelayCommand(async () =>
 			{
 				var result = await App.MainTopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions

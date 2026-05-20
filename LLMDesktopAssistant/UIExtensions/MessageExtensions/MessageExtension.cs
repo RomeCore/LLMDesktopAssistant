@@ -15,24 +15,44 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		/// </summary>
 		public virtual int Order => 0;
 
+		private MaterialIconKind _icon;
 		/// <summary>
 		/// The icon for button associated with this extension.
 		/// </summary>
-		public abstract MaterialIconKind Icon { get; }
+		public MaterialIconKind Icon
+		{
+			get => _icon;
+			set => SetProperty(ref _icon, value);
+		}
 
+		private ICommand? _command;
 		/// <summary>
 		/// The command for button associated with this extension.
 		/// </summary>
-		public abstract ICommand Command { get; }
+		public ICommand? Command
+		{
+			get => _command;
+			set => SetProperty(ref _command, value);
+		}
 
-		private bool _isButtonVisible = true;
+		private bool _isVisible = true;
 		/// <summary>
 		/// The visibility of the extension. If false, the extension will not be displayed.
 		/// </summary>
-		public bool IsButtonVisible
+		public bool IsVisible
 		{
-			get => _isButtonVisible;
-			protected set => SetProperty(ref _isButtonVisible, value);
+			get => _isVisible;
+			set => SetProperty(ref _isVisible, value);
+		}
+
+		private object? _viewModel;
+		/// <summary>
+		/// The view model that will be shown instead of button if not null.
+		/// </summary>
+		public object? ViewModel
+		{
+			get => _viewModel;
+			set => SetProperty(ref _viewModel, value);
 		}
 	}
 }

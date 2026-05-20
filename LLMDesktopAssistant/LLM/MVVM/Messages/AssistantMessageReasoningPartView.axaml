@@ -11,22 +11,23 @@
 			 x:DataType="local:AssistantMessageReasoningPartViewModel">
 	
 	<Expander Padding="0"
-			  BorderThickness="0"
-			  Background="Transparent"
-			  IsExpanded="{Binding NotCompleted, Mode=OneWay}"
-			  ExpandDirection="Right">
+						BorderThickness="0"
+						Background="Transparent"
+						Margin="0,0,0,4"
+						IsExpanded="{Binding NotCompleted, Mode=OneWay}"
+						ExpandDirection="Right">
 
 		<Expander.Header>
 			<TextBlock Text="{loc:Loc reasoning}"
-					   VerticalAlignment="Top"
-					   FontSize="16"
-					   Margin="5"/>
+								 VerticalAlignment="Top"
+								 FontSize="16"
+								 Margin="5"/>
 		</Expander.Header>
 
 		<ctrl:MarkdownControl MarkdownText="{Binding ReasoningText}"
-							  VerticalAlignment="Center"
-							  Opacity="0.7"
-							  Margin="0,5"/>
+													VerticalAlignment="Center"
+													Opacity="0.7"
+													Margin="5"/>
 
 	</Expander>
 

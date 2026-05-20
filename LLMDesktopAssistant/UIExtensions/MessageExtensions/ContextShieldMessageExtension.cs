@@ -13,14 +13,12 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 	[MessageExtension(Targets = MessageExtensionTargets.Both)]
 	public class ContextShieldMessageExtension : MessageExtension
 	{
-		public override MaterialIconKind Icon => MaterialIconKind.ShieldOutline;
-
-		public override ICommand Command { get; }
-
 		public override int Order => 50;
 
 		public ContextShieldMessageExtension(MessageViewModelBase viewModel)
 		{
+			Icon = MaterialIconKind.ShieldOutline;
+
 			Command = new RelayCommand(() =>
 			{
 				var viewModels = viewModel.Message.AdditionalViewModels;

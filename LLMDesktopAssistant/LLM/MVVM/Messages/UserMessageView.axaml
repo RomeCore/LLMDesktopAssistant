@@ -124,22 +124,32 @@
 			</StackPanel>
 			
 			<ItemsControl ItemsSource="{Binding Extensions}">
+
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
 						<StackPanel Orientation="Horizontal" Spacing="4"/>
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
+
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						
-						<Button Command="{Binding Command}"
-								Classes="IconButton"
-								IsVisible="{Binding IsButtonVisible}">
-							<ico:MaterialIcon Kind="{Binding Icon}"/>
-						</Button>
 
+						<Panel IsVisible="{Binding IsVisible}">
+							
+							<ContentControl Content="{Binding ViewModel}"
+															IsVisible="{Binding ViewModel, Converter={StaticResource NotnullToBooleanConverter}}"/>
+							
+							<Button Command="{Binding Command}"
+											Classes="IconButton"
+											IsVisible="{Binding ViewModel, Converter={StaticResource NotnullToBooleanConverterInverted}}">
+								<ico:MaterialIcon Kind="{Binding Icon}"/>
+							</Button>
+
+						</Panel>
+						
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
+
 			</ItemsControl>
 
 		</StackPanel>

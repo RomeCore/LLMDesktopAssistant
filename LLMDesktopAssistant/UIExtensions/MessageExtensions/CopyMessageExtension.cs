@@ -8,14 +8,12 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 	[MessageExtension]
 	public class CopyMessageExtension : MessageExtension
 	{
-		public override MaterialIconKind Icon => MaterialIconKind.ContentCopy;
-
-		public override ICommand Command { get; }
-
 		public override int Order => 0;
 
 		public CopyMessageExtension(MessageViewModelBase viewModel)
 		{
+			Icon = MaterialIconKind.ContentCopy;
+			
 			Command = new AsyncRelayCommand(async () =>
 			{
 				await App.MainTopLevel.Clipboard!.SetTextAsync(viewModel.Message.Content);

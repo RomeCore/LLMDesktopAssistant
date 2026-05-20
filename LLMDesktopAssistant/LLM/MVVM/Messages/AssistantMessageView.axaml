@@ -11,8 +11,8 @@
 			 x:DataType="local:AssistantMessageViewModel">
 	
 	<StackPanel Orientation="Vertical"
-			VerticalAlignment="Top"
-			Margin="40,8">
+							VerticalAlignment="Top"
+							Margin="40,8">
 
 		<StackPanel Orientation="Horizontal" IsVisible="{Binding ShowAvatar}">
 			
@@ -22,7 +22,6 @@
 								Width="32" Height="32" CornerRadius="4" ClipToBounds="True" Margin="4">
 					<Image Source="{Binding SenderAvatar}" Width="32" Height="32"/>
 				</Border>
-				
 				
 				<ico:MaterialIcon Kind="Robot" Width="32" Height="32" Margin="4"
 													IsVisible="{Binding SenderAvatar, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
@@ -41,8 +40,8 @@
 		<ContentControl Content="{Binding TextPart}"/>
 		<ContentControl Content="{Binding ToolPart}"/>
 		<Label Content="{Binding Error}"
-				 Foreground="Red"
-				 IsVisible="{Binding Error, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+					 Foreground="Red"
+					 IsVisible="{Binding Error, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 
 		<ItemsControl ItemsSource="{Binding AssistantMessage.AdditionalViewModels}">
 			<ItemsControl.ItemsPanel>
@@ -58,46 +57,46 @@
 		</ItemsControl>
 
 		<StackPanel Orientation="Horizontal"
-					HorizontalAlignment="Left"
-					IsVisible="{Binding IsCompleted}"
-					Spacing="4">
+								HorizontalAlignment="Left"
+								IsVisible="{Binding IsCompleted}"
+								Spacing="4">
 
 			<Button Command="{Binding RegenerateCommand}"
-					Classes="IconButton"
-					ToolTip.Tip="{loc:Loc regenerate}">
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc regenerate}">
 				<ico:MaterialIcon Kind="Refresh"/>
 			</Button>
 
 			<Button Command="{Binding ResendCommand}"
-					Classes="IconButton"
-					IsVisible="{Binding ContainsToolCalls}"
-					ToolTip.Tip="{loc:Loc resend}">
+							Classes="IconButton"
+							IsVisible="{Binding ContainsToolCalls}"
+							ToolTip.Tip="{loc:Loc resend}">
 				<ico:MaterialIcon Kind="ArrowUDownLeft"/>
 			</Button>
 
 			<Button Command="{Binding ResendCommand}"
-					Classes="IconButton"
-					IsVisible="{Binding ContainsToolCalls, Converter={StaticResource InverseBooleanConverter}}"
-					ToolTip.Tip="{loc:Loc resend}">
+							Classes="IconButton"
+							IsVisible="{Binding ContainsToolCalls, Converter={StaticResource InverseBooleanConverter}}"
+							ToolTip.Tip="{loc:Loc resend}">
 				<ico:MaterialIcon Kind="ChevronDoubleDown"/>
 			</Button>
 
 			<StackPanel Orientation="Horizontal"
-						IsVisible="{Binding BranchSelectionAvailable}"
-						Spacing="4">
+									IsVisible="{Binding BranchSelectionAvailable}"
+									Spacing="4">
 
 				<Button Command="{Binding SwitchBranchCommand}"
-						Classes="IconButton"
-						CommandParameter="{Binding PreviousBranchIndex}">
+								Classes="IconButton"
+								CommandParameter="{Binding PreviousBranchIndex}">
 					<ico:MaterialIcon Kind="ChevronLeft"/>
 				</Button>
 
 				<ComboBox ItemsSource="{Binding BranchIndices}"
-							SelectedItem="{Binding SelectedBranchIndex}"/>
+									SelectedItem="{Binding SelectedBranchIndex}"/>
 
 				<Button Command="{Binding SwitchBranchCommand}"
-						Classes="IconButton"
-						CommandParameter="{Binding NextBranchIndex}">
+								Classes="IconButton"
+								CommandParameter="{Binding NextBranchIndex}">
 					<ico:MaterialIcon Kind="ChevronRight"/>
 				</Button>
 
@@ -112,12 +111,19 @@
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
 						
-						<Button Command="{Binding Command}"
-								Classes="IconButton"
-								IsVisible="{Binding IsButtonVisible}">
-							<ico:MaterialIcon Kind="{Binding Icon}"/>
-						</Button>
+						<Panel IsVisible="{Binding IsVisible}">
+							
+							<ContentControl Content="{Binding ViewModel}"
+															IsVisible="{Binding ViewModel, Converter={StaticResource NotnullToBooleanConverter}}"/>
+							
+							<Button Command="{Binding Command}"
+											Classes="IconButton"
+											IsVisible="{Binding ViewModel, Converter={StaticResource NotnullToBooleanConverterInverted}}">
+								<ico:MaterialIcon Kind="{Binding Icon}"/>
+							</Button>
 
+						</Panel>
+						
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
