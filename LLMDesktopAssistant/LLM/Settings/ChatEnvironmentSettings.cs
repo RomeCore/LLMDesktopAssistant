@@ -43,5 +43,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 			get => _pythonVenvActivateScriptPath;
 			set => SetProperty(ref _pythonVenvActivateScriptPath, value);
 		}
+
+		private string? _pythonMetaVenvActivateScriptPath;
+		/// <summary>
+		/// The path to the script that activates a python virtual environment.
+		/// Used for meta-tools. If null, the <see cref="PythonMetaVenvActivateScriptPath"/> will be used.
+		/// </summary>
+		public string? PythonMetaVenvActivateScriptPath
+		{
+			get => _pythonVenvActivateScriptPath;
+			set => SetProperty(ref _pythonVenvActivateScriptPath, value);
+		}
 	}
 }
