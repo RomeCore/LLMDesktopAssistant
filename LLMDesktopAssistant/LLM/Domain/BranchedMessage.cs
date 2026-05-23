@@ -6,12 +6,12 @@
 	public class BranchedMessage : Disposable
 	{
 		/// <summary>
-		/// Gets or sets the message content.
+		/// Gets the inner message that this <see cref="BranchedMessage"/> class wraps.
 		/// </summary>
 		public required ChatMessage Message { get; init; }
 
 		/// <summary>
-		/// Gets or sets the ID of the message in the database.
+		/// Gets the ID of the message in the database. Will be -1 if not yet saved to the database.
 		/// </summary>
 		public required int MessageId { get; init; }
 
@@ -36,6 +36,33 @@
 
 			if (disposing)
 				Message.Dispose();
+		}
+
+		/// <summary>
+		/// Tries to get the inner message as a <see cref="UserMessage"/>. Throws an exception if it's not possible to do so.
+		/// </summary>
+		/// <exception cref="InvalidOperationException"></exception>
+		public UserMessage AsUserMessage()
+		{
+			if (Message is UserMessage userMessage)
+				return userMessage;
+			throw new InvalidOperationException("The BranchedMessage does not contain a UserMessage.");
+		}
+
+		/// <summary>
+		/// Tries to get the inner message as an <see cref="AssistantMessage"/>. Throws an exception if it's not possible to do so.
+		/// </summary>
+		/// <exception cref="InvalidOperationException"></exception>
+		public AssistantMessage AsAssistantMessage()
+		{
+			if (Message is AssistantMessage assistantMessage)
+				return assistantMessage;
+			throw new InvalidOperationException("The BranchedMessage does not contain an AssistantMessage.");
+		}
+
+		public static implicit operator BranchedMessage(ChatMessage message)
+		{
+			return new BranchedMessage { Message = message, MessageId = -1, MessageIndex = -1 };
 		}
 	}
 }

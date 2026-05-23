@@ -4,6 +4,8 @@ using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Prompting.Hooks;
+using LLMDesktopAssistant.Prompting.Injectors;
 using LLMDesktopAssistant.WebUI;
 using LLTSharp;
 using LLTSharp.Locale;
@@ -31,7 +33,9 @@ namespace LLMDesktopAssistant.LLM.Services
 		Chat chat,
 		TemplateLibrary templates,
 		IAgentManagementService agentManager,
-		IUserManagementService userManager
+		IUserManagementService userManager,
+		IEnumerable<IPromptInjector> promptInjectors,
+		IEnumerable<IPromptBuildingHook> promptBuildingHooks
 		) : IPromptChatBuilder
 	{
 		private ToolResultStatus ConvertToolStatus(ToolStatus status)
@@ -95,16 +99,17 @@ namespace LLMDesktopAssistant.LLM.Services
 			return template!.Render(context);
 		}
 
-		private string BuildUserMessage(Domain.UserMessage message)
+		private string BuildUserMessage(BranchedMessage message)
 		{
+			var userMessage = message.AsUserMessage();
 			var language = GetCurrentLanguageMetadata();
 			var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
 			var context = new
 			{
-				user_name = userManager.FindByLogin(message.SenderLogin)?.GetAgentShownName() ?? message.SenderLogin,
-				time_sent = message.CreatedAt.ToString(),
-				content = message.Content,
-				attachments = message.Attachments,
+				user_name = userManager.FindByLogin(userMessage.SenderLogin)?.GetAgentShownName() ?? userMessage.SenderLogin,
+				time_sent = userMessage.CreatedAt.ToString(),
+				content = userMessage.Content,
+				attachments = userMessage.Attachments,
 
 				can_read_content = true,
 				can_read_attachments = true
@@ -113,16 +118,17 @@ namespace LLMDesktopAssistant.LLM.Services
 			return result;
 		}
 
-		private string BuildUserMessageForAgent(Domain.UserMessage message, Guid agentId, AgentReadSettings readSettings)
+		private string BuildUserMessageForAgent(BranchedMessage message, Guid agentId, AgentReadSettings readSettings)
 		{
+			var userMessage = message.AsUserMessage();
 			var language = GetCurrentLanguageMetadata();
 			var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
 			var context = new
 			{
-				user_name = userManager.FindByLogin(message.SenderLogin)?.GetAgentShownName() ?? message.SenderLogin,
-				time_sent = message.CreatedAt.ToString(),
-				content = message.Content,
-				attachments = message.Attachments,
+				user_name = userManager.FindByLogin(userMessage.SenderLogin)?.GetAgentShownName() ?? userMessage.SenderLogin,
+				time_sent = userMessage.CreatedAt.ToString(),
+				content = userMessage.Content,
+				attachments = userMessage.Attachments,
 
 				can_read_content = true,
 				can_read_attachments = readSettings.ReadPermissions.HasFlag(AgentReadPermissions.UserAttachments)
@@ -135,8 +141,9 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Checks whether the agent with given <paramref name="agentId"/> can see a user message,
 		/// based on visibility target and agent read permissions.
 		/// </summary>
-		private bool IsUserMessageVisibleToAgent(Domain.UserMessage userMessage, Guid agentId, AgentReadSettings readSettings)
+		private bool IsUserMessageVisibleToAgent(BranchedMessage message, Guid agentId, AgentReadSettings readSettings)
 		{
+			var userMessage = message.AsUserMessage();
 			var permissions = readSettings.ReadPermissions;
 
 			if (!permissions.HasFlag(AgentReadPermissions.UserMessages))
@@ -164,10 +171,11 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <summary>
 		/// Checks whether the agent with given <paramref name="agentId"/> can see an assistant message.
 		/// </summary>
-		private bool IsAssistantMessageVisibleToAgent(Domain.AssistantMessage message, Guid agentId, AgentReadSettings readSettings)
+		private bool IsAssistantMessageVisibleToAgent(BranchedMessage message, Guid agentId, AgentReadSettings readSettings)
 		{
-			var messageAgentId = message.SenderAgentId;
-			var agentDescriptor = agentManager.GetAgentDescriptor(message.SenderAgentId);
+			var assistantMessage = message.AsAssistantMessage();
+			var messageAgentId = assistantMessage.SenderAgentId;
+			var agentDescriptor = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
 			var exposure = agentDescriptor.Read.ExposureMode; // What sender agent exposes
 			var permissions = readSettings.ReadPermissions; // What current agent can see
 
@@ -185,7 +193,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				return false;
 
 			// Messages with tool calls
-			if (message.ToolCalls.Count > 0 && !(permissions.HasFlag(AgentReadPermissions.MessagesWithToolCalls)
+			if (assistantMessage.ToolCalls.Count > 0 && !(permissions.HasFlag(AgentReadPermissions.MessagesWithToolCalls)
 				&& exposure.HasFlag(AgentExposureMode.MessagesWithToolCalls)))
 				return false;
 
@@ -208,9 +216,10 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// so the current agent sees what the other agent said as a quoted user message.
 		/// Reasoning and tool calls are optionally stripped based on permissions.
 		/// </summary>
-		private string BuildForeignAgentMessageText(Domain.AssistantMessage message, AgentReadSettings readSettings)
+		private string BuildForeignAgentMessageText(BranchedMessage message, AgentReadSettings readSettings)
 		{
-			var senderDescriptor = agentManager.GetAgentDescriptor(message.SenderAgentId);
+			var assistantMessage = message.AsAssistantMessage();
+			var senderDescriptor = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
 			var agentName = senderDescriptor.Info.Name ?? senderDescriptor.Id.ToString()[..8];
 			var exposure = senderDescriptor.Read.ExposureMode; // What sender agent exposes
 			var permissions = readSettings.ReadPermissions; // What current agent can see
@@ -221,10 +230,10 @@ namespace LLMDesktopAssistant.LLM.Services
 				var template = templates.TryRetrieveBestWithFallback("user_message_prompt", language) as ITextTemplate;
 				var context = new
 				{
-					time_sent = message.CreatedAt.ToString(),
+					time_sent = assistantMessage.CreatedAt.ToString(),
 					user_name = agentName,
 					attachments = Array.Empty<Attachment>(),
-					content = message.Content,
+					content = assistantMessage.Content,
 
 					can_read_content =
 						permissions.HasFlag(AgentReadPermissions.OtherAgentContent) &&
@@ -241,11 +250,11 @@ namespace LLMDesktopAssistant.LLM.Services
 				var template = templates.TryRetrieveBestWithFallback("foreign_assistant_prompt", language) as ITextTemplate;
 				var context = new
 				{
-					time_sent = message.CreatedAt.ToString(),
+					time_sent = assistantMessage.CreatedAt.ToString(),
 					agent_name = agentName,
-					reasoning_content = message.ReasoningContent,
-					content = message.Content,
-					tool_calls = message.ToolCalls.Select(tc => new
+					reasoning_content = assistantMessage.ReasoningContent,
+					content = assistantMessage.Content,
+					tool_calls = assistantMessage.ToolCalls.Select(tc => new
 					{
 						name = tc.ToolName,
 						arguments = tc.Arguments.ToJsonString(),
@@ -267,21 +276,21 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		public IEnumerable<IMessage> ConvertMessageForAgent(ChatMessage message, Guid agentId)
+		public IEnumerable<IMessage> ConvertMessageForAgent(BranchedMessage message, Guid agentId)
 		{
 			var readSettings = agentManager.GetAgentDescriptor(agentId).Read;
 
-			if (message is Domain.UserMessage userMessage)
+			if (message.Message is Domain.UserMessage)
 			{
-				if (!IsUserMessageVisibleToAgent(userMessage, agentId, readSettings))
+				if (!IsUserMessageVisibleToAgent(message, agentId, readSettings))
 					return [];
 
 				return [new RCLargeLanguageModels.Messages.UserMessage(
-					BuildUserMessageForAgent(userMessage, agentId, readSettings))];
+					BuildUserMessageForAgent(message, agentId, readSettings))];
 			}
-			else if (message is Domain.AssistantMessage assistantMessage)
+			else if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
-				if (!IsAssistantMessageVisibleToAgent(assistantMessage, agentId, readSettings))
+				if (!IsAssistantMessageVisibleToAgent(message, agentId, readSettings))
 					return [];
 
 				// Own assistant message — full fidelity with tool calls
@@ -289,7 +298,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					return BuildOwnAssistantMessageAsMessages(assistantMessage);
 
 				// Foreign assistant message — merged as quoted user message
-				return BuildForeignAssistantMessageAsMessages(assistantMessage, agentId, readSettings);
+				return [new RCLargeLanguageModels.Messages.UserMessage(
+					BuildForeignAgentMessageText(message, readSettings))];
 			}
 			else
 			{
@@ -297,14 +307,14 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		public string RenderMessage(ChatMessage message)
+		public string RenderMessage(BranchedMessage message)
 		{
-			if (message is Domain.UserMessage userMessage)
+			if (message.Message is Domain.UserMessage userMessage)
 			{
 				return BuildUserMessage(userMessage);
 			}
 
-			if (message is Domain.AssistantMessage assistantMessage)
+			if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
 				return BuildForeignAgentMessageText(assistantMessage, new AgentReadSettings
 				{
@@ -332,7 +342,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				toolCalls.Add(new FunctionToolCall(toolCall.Id, toolCall.ToolName, toolCall.Arguments));
 				var status = ConvertToolStatus(toolCall.Status);
-				var toolResult = new ToolResult(status, toolCall.ResultContent ?? "Tool did returned no result.");
+				var toolResult = new ToolResult(status, toolCall.ResultContent ?? "Tool did not returned any result.");
 				messages.Add(new ToolMessage(toolResult, toolCall.Id, toolCall.ToolName));
 			}
 
@@ -353,13 +363,13 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Converts a message to LLM messages without applying agent-specific visibility filters.
 		/// Used for summarization and other background processes.
 		/// </summary>
-		public IEnumerable<IMessage> ConvertMessage(ChatMessage message)
+		public IEnumerable<IMessage> ConvertMessage(BranchedMessage message)
 		{
-			if (message is Domain.UserMessage userMessage)
+			if (message.Message is Domain.UserMessage userMessage)
 			{
 				return BuildUserMessageAsMessages(userMessage);
 			}
-			else if (message is Domain.AssistantMessage assistantMessage)
+			else if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
 				return BuildOwnAssistantMessageAsMessages(assistantMessage);
 			}
@@ -374,10 +384,16 @@ namespace LLMDesktopAssistant.LLM.Services
 			var readSettings = agentManager.GetAgentDescriptor(agentId).Read;
 			int maxRounds = readSettings.MaxVisibleRounds;
 
+			var injectors = promptInjectors.OrderBy(i => i.Order).ToList();
+			var hooks = promptBuildingHooks.OrderBy(h => h.Order).ToList();
+
 			var messagesToProcess = MessagesInterface
 				.GroupMessagesIntoRounds(chat.Messages, maxRounds)
 				.SelectMany(g => g)
 				.ToList();
+
+			foreach (var injector in injectors)
+				injector.Inject(messagesToProcess, agentId);
 
 			List<IMessage> result = [];
 
@@ -386,20 +402,30 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			for (int i = messagesToProcess.Count - 1; i >= 0; i--)
 			{
-				var message = messagesToProcess[i].Message;
+				var branchedMessage = messagesToProcess[i];
+
+				foreach (var hook in hooks)
+				{
+					branchedMessage = hook.Modify(branchedMessage, agentId);
+					if (branchedMessage == null)
+						break;
+				}
+				if (branchedMessage == null)
+					continue;
+				var message = branchedMessage.Message;
 
 				if (readSettings.AllowContextShields && message.AdditionalViewModels.Has<ContextShieldViewModel>())
 				{
 					break;
 				}
-				if (message is Domain.UserMessage userMsg)
+				if (message is Domain.UserMessage)
 				{
-					if (!IsUserMessageVisibleToAgent(userMsg, agentId, readSettings))
+					if (!IsUserMessageVisibleToAgent(branchedMessage, agentId, readSettings))
 						continue;
 				}
-				else if (message is Domain.AssistantMessage asstMsg)
+				else if (message is Domain.AssistantMessage)
 				{
-					if (!IsAssistantMessageVisibleToAgent(asstMsg, agentId, readSettings))
+					if (!IsAssistantMessageVisibleToAgent(branchedMessage, agentId, readSettings))
 						continue;
 				}
 
@@ -408,7 +434,14 @@ namespace LLMDesktopAssistant.LLM.Services
 					encounteredUserMessage = true;
 					if (summaryOfPrevMessages != null)
 					{
-						result.InsertRange(0, ConvertMessageForAgent(message, agentId));
+						var messages = ConvertMessageForAgent(branchedMessage, agentId);
+						foreach (var hook in hooks)
+						{
+							var editedMessages = hook.ModifyFinalContext(messages, branchedMessage, agentId);
+							if (editedMessages != null)
+								messages = editedMessages;
+						}
+						result.InsertRange(0, messages);
 						break;
 					}
 				}
@@ -424,7 +457,14 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				if (summaryOfPrevMessages == null)
 				{
-					result.InsertRange(0, ConvertMessageForAgent(message, agentId));
+					var messages = ConvertMessageForAgent(branchedMessage, agentId);
+					foreach (var hook in hooks)
+					{
+						var editedMessages = hook.ModifyFinalContext(messages, branchedMessage, agentId);
+						if (editedMessages != null)
+							messages = editedMessages;
+					}
+					result.InsertRange(0, messages);
 				}
 			}
 

@@ -25,6 +25,11 @@ namespace LLMDesktopAssistant.Utils
 		public static string Plugins { get; }
 
 		/// <summary>
+		/// The path where to store the additional templates for prompting, they are usually has .llt extension.
+		/// </summary>
+		public static string Templates { get; }
+
+		/// <summary>
 		/// The path where to store the settings files. These are usually configuration files that need to persist across sessions.
 		/// </summary>
 		public static string Settings { get; }
@@ -54,6 +59,7 @@ namespace LLMDesktopAssistant.Utils
 			LocalAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LLMDesktopAssistant");
 			TempScripts = Path.Combine(LocalAppData, "temp/scripts/");
 			Plugins = Path.Combine(LocalAppData, "plugins/");
+			Templates = Path.Combine(LocalAppData, "templates/");
 			Settings = Path.Combine(LocalAppData, "settings/");
 			Data = Path.Combine(LocalAppData, "data/");
 			Models = Path.Combine(LocalAppData, "models/");
@@ -66,6 +72,7 @@ namespace LLMDesktopAssistant.Utils
 			Directory.CreateDirectory(LocalAppData);
 			Directory.CreateDirectory(TempScripts);
 			Directory.CreateDirectory(Plugins);
+			Directory.CreateDirectory(Templates);
 			Directory.CreateDirectory(Settings);
 			Directory.CreateDirectory(Data);
 			Directory.CreateDirectory(Models);

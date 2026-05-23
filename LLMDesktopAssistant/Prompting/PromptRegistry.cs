@@ -75,6 +75,13 @@ namespace LLMDesktopAssistant.Prompting
 			if (errors.Count > 0)
 				throw new AggregateException("Failed to import templates from assemblies.", errors);
 
+			errors.AddRange(SharedLibrary.ImportFromFolder(Directories.Templates, recursive: true));
+
+			if (errors.Count > 0)
+				Log.Error("Errors occured when parsing additional templates: "
+					+ string.Join(", ", Enumerable.Range(0, errors.Count).Select(i => $"{{Error{i}}}")),
+					errors.Cast<object>().ToArray());
+
 			SharedLibrary.SetLanguageFallbackScheme(new HierarchicalLanguageFallbackScheme());
 
 			var allComponentsBuilder = ImmutableDictionary.CreateBuilder<(Guid, LanguageCode), PromptComponent>();
