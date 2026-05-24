@@ -781,11 +781,47 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на failure.
+        /// </summary>
+        public static string check_failure {
+            get {
+                return ResourceManager.GetString("check_failure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на success.
+        /// </summary>
+        public static string check_success {
+            get {
+                return ResourceManager.GetString("check_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Close.
         /// </summary>
         public static string close {
             get {
                 return ResourceManager.GetString("close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Heads.
+        /// </summary>
+        public static string coin_heads {
+            get {
+                return ResourceManager.GetString("coin_heads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tails.
+        /// </summary>
+        public static string coin_tails {
+            get {
+                return ResourceManager.GetString("coin_tails", resourceCulture);
             }
         }
         
@@ -2451,6 +2487,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string random {
             get {
                 return ResourceManager.GetString("random", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Check chance.
+        /// </summary>
+        public static string random_check_chance {
+            get {
+                return ResourceManager.GetString("random-check_chance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Flip a coin.
+        /// </summary>
+        public static string random_coin_flip {
+            get {
+                return ResourceManager.GetString("random-coin_flip", resourceCulture);
             }
         }
         

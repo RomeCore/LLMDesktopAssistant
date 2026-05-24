@@ -1395,4 +1395,22 @@
   <data name="fs-read_entry" xml:space="preserve">
     <value>Чтение файла/директории</value>
   </data>
+  <data name="coin_heads" xml:space="preserve">
+    <value>Орёл</value>
+  </data>
+  <data name="coin_tails" xml:space="preserve">
+    <value>Решка</value>
+  </data>
+  <data name="random-coin_flip" xml:space="preserve">
+    <value>Подкинуть монетку</value>
+  </data>
+  <data name="random-check_chance" xml:space="preserve">
+    <value>Проверка шанса</value>
+  </data>
+  <data name="check_success" xml:space="preserve">
+    <value>успех</value>
+  </data>
+  <data name="check_failure" xml:space="preserve">
+    <value>неудача</value>
+  </data>
 </root>

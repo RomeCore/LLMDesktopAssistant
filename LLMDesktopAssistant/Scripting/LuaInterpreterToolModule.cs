@@ -24,7 +24,14 @@ namespace LLMDesktopAssistant.Scripting
 				new ToolInitializationInfo
 				{
 					Name = "execute-lua",
-					Description = "Executes Lua and returns the script result along with messages printed by 'print' function.",
+					DescriptionGetter = () => $"""
+						Executes Lua and returns the script result along with messages printed by 'print' function.
+						
+						Lua has the API to interact with the application (called dASS) with these namespaces:
+						{string.Join("\n", lua.Namespaces.Select(ns => ns ?? "*global namespace*"))}
+						
+						Use the `manuals(...)` function to get the documentation for a specific namespace, `print(manuals())` or `print(manuals(dass.tools))` for example.
+						""",
 					Category = "scripting",
 					AskForConfirmation = true
 				});

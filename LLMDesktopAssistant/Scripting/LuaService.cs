@@ -3,24 +3,126 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Scripting.Lua;
 using LLMDesktopAssistant.Services;
 using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting
 {
-	[Service]
+	[ChatService]
 	public class LuaService
 	{
 		private readonly Script _lua;
+		private readonly List<string?> _namespaces;
 
 		/// <summary>
 		/// Gets the Lua interpreter instance.
 		/// </summary>
 		public Script Lua => _lua;
 
-		public LuaService()
+		/// <summary>
+		/// Gets the list of namespaces available in Lua.
+		/// </summary>
+		public IReadOnlyList<string?> Namespaces { get; }
+
+		public LuaService(IEnumerable<LuaApiBase> apis)
 		{
-			_lua = new Script(CoreModules.Preset_SoftSandbox);
+			_lua = new Script(CoreModules.Preset_SoftSandbox & ~(CoreModules.Dynamic | CoreModules.Json));
+			_namespaces = [ null ];
+			Namespaces = _namespaces.AsReadOnly();
+
+			_lua.Globals.Set("_ns_api", DynValue.NewBoolean(true));
+			_lua.Globals.Set("_ns_part", DynValue.NewString("_G"));
+			_lua.Globals.Set("_ns_path", DynValue.NewString("_G"));
+
+			foreach (var api in apis)
+				RegisterApi(api);
+		}
+
+		public void RegisterApi(LuaApiBase api)
+		{
+			var globals = _lua.Globals;
+			var ns = api.Namespace != null ? ResolveNamespace(api.Namespace) : globals;
+			api.Populate(globals, ns);
+
+			var manuals = ns.Get("_manuals");
+			if (manuals.Type != DataType.Table)
+			{
+				manuals = DynValue.NewTable(_lua);
+				ns.Set("_manuals", manuals);
+			}
+			var apiManuals = api.Manuals;
+			if (apiManuals != null)
+				manuals.Table.Append(DynValue.NewString(apiManuals));
+		}
+
+		/// <summary>
+		/// Resolves a Lua namespace to a table if it exists.
+		/// </summary>
+		/// <param name="namespaceName">The Lua namespace string to resolve.</param>
+		/// <returns>The resolved Lua table, or null if the namespace does not exist.</returns>
+		public Table? TryResolveNamespace(string namespaceName)
+		{
+			var parts = namespaceName.Split(['.'], StringSplitOptions.RemoveEmptyEntries);
+			var result = _lua.Globals;
+
+			foreach (var part in parts)
+			{
+				var next = result.Get(part);
+				if (next.Type != DataType.Table)
+					return null;
+				result = next.Table;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Resolves a Lua namespace to a table.
+		/// </summary>
+		/// <param name="namespaceName">The Lua namespace string to resolve.</param>
+		/// <returns>The resolved Lua table.</returns>
+		public Table ResolveNamespace(string namespaceName)
+		{
+			var parts = namespaceName.Split(['.'], StringSplitOptions.RemoveEmptyEntries);
+			var result = _lua.Globals;
+
+			var accumulatedPath = new StringBuilder();
+			foreach (var part in parts)
+			{
+				var next = result.Get(part);
+
+				if (accumulatedPath.Length > 0)
+					accumulatedPath.Append('.');
+				accumulatedPath.Append(part);
+
+				if (next.Type != DataType.Table)
+				{
+					next = DynValue.NewTable(_lua);
+
+					var table = next.Table;
+					_namespaces.Add(accumulatedPath.ToString());
+					table.Set("_ns_api", DynValue.NewBoolean(true));
+					table.Set("_ns_part", DynValue.NewString(part));
+					table.Set("_ns_path", DynValue.NewString(accumulatedPath.ToString()));
+
+					result.Set(part, next);
+				}
+				else if (!next.Table.Get("_ns_api").CastToBool())
+				{
+					var table = next.Table;
+					_namespaces.Add(accumulatedPath.ToString());
+					table.Set("_ns_api", DynValue.NewBoolean(true));
+					table.Set("_ns_part", DynValue.NewString(part));
+					table.Set("_ns_path", DynValue.NewString(accumulatedPath.ToString()));
+				}
+
+				result = next.Table;
+			}
+
+			return result;
 		}
 
 		/// <summary>

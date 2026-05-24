@@ -8,6 +8,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	[ToolModule]
 	public class RandomToolModule : ToolModule
 	{
+		private Random _random = Random.Shared;
+
 		public RandomToolModule()
 		{
 			AddTool(GenerateGUID,
@@ -31,6 +33,22 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "random-float",
 					Description = "Generates a random floating-point number.",
+					Category = "random"
+				});
+
+			AddTool(GenerateCoinFlip,
+				new ToolInitializationInfo
+				{
+					Name = "random-coin_flip",
+					Description = "Simulates flipping a coin. Returns 'Heads' or 'Tails'.",
+					Category = "random"
+				});
+
+			AddTool(GenerateCheckChance,
+				new ToolInitializationInfo
+				{
+					Name = "random-check_chance",
+					Description = "Simulates a chance check with a given probability. Returns 'Success' or 'Failure'.",
 					Category = "random"
 				});
 
@@ -70,10 +88,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}.CompleteWithSuccess();
 		}
 
-		private ReactiveToolResult GenerateRandomInteger([Description("The minimum inclusive value")] long minValue,
+		private ReactiveToolResult GenerateRandomInteger(
+			[Description("The minimum inclusive value")] long minValue,
 			[Description("The maximum inclusive value")] long maxValue)
 		{
-			var value = Random.Shared.NextInt64(minValue, maxValue + 1);
+			var value = _random.NextInt64(minValue, maxValue + 1);
 			return new ReactiveToolResult
 			{
 				ResultContent = value.ToString(),
@@ -82,16 +101,45 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}.CompleteWithSuccess();
 		}
 
-		private ReactiveToolResult GenerateRandomFloat([Description("The minimum inclusive value")] double minValue,
+		private ReactiveToolResult GenerateRandomFloat(
+			[Description("The minimum inclusive value")] double minValue,
 			[Description("The maximum inclusive value")] double maxValue)
 		{
 			var range = maxValue - minValue;
-			var value = Random.Shared.NextDouble() * range + minValue;
+			var value = _random.NextDouble() * range + minValue;
 			return new ReactiveToolResult
 			{
 				ResultContent = value.ToString(),
 				StatusIcon = MaterialIconKind.DiceMultipleOutline,
 				StatusTitle = value.ToString()
+			}.CompleteWithSuccess();
+		}
+
+		private ReactiveToolResult GenerateCoinFlip()
+		{
+			bool result = _random.NextDouble() < 0.5;
+			var value = result ? "Heads" : "Tails";
+
+			return new ReactiveToolResult
+			{
+				ResultContent = value,
+				StatusIcon = MaterialIconKind.Coins,
+				StatusTitle = result ? LocalizationManager.LocalizeStatic("coin_heads") : LocalizationManager.LocalizeStatic("coin_tails")
+			}.CompleteWithSuccess();
+		}
+
+		private ReactiveToolResult GenerateCheckChance(
+			[Description("The probability of success as a percentage from 0 to 100")] double chance)
+		{
+			var gained = _random.NextDouble() * 100;
+			var result = gained <= chance;
+			var value = $"{gained} < {chance}? " + (result ? "Success" : "Failure");
+
+			return new ReactiveToolResult
+			{
+				ResultContent = value,
+				StatusIcon = result ? MaterialIconKind.Check : MaterialIconKind.Close,
+				StatusTitle = $"{chance}%: " + (result ? LocalizationManager.LocalizeStatic("check_success") : LocalizationManager.LocalizeStatic("check_failure"))
 			}.CompleteWithSuccess();
 		}
 
@@ -102,7 +150,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			var rolls = new List<int>();
 			for (int i = 0; i < numberOfDice; i++)
 			{
-				rolls.Add(Random.Shared.Next(1, sides + 1));
+				rolls.Add(_random.Next(1, sides + 1));
 			}
 
 			var total = rolls.Sum();
@@ -127,9 +175,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private ReactiveToolResult GenerateRandomItemsFromList(
 			[Description("List of items")] string[] items,
-			[Description("Number of items to select")] int count)
+			[Description("Number of items to select")] int count = 1)
 		{
-			var values = Random.Shared.GetItems(items, count);
+			var values = _random.GetItems(items, count);
 			var value = string.Join(", ", values);
 
 			return new ReactiveToolResult
@@ -143,7 +191,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private ReactiveToolResult GenerateRandomShuffledList(
 			[Description("List of items to shuffle")] string[] items)
 		{
-			Random.Shared.Shuffle(items);
+			_random.Shuffle(items);
 			var value = string.Join(", ", items);
 
 			return new ReactiveToolResult

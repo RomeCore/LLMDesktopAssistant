@@ -1395,4 +1395,22 @@
   <data name="fs-read_entry" xml:space="preserve">
     <value>Read file/directory</value>
   </data>
+  <data name="coin_heads" xml:space="preserve">
+    <value>Heads</value>
+  </data>
+  <data name="coin_tails" xml:space="preserve">
+    <value>Tails</value>
+  </data>
+  <data name="random-coin_flip" xml:space="preserve">
+    <value>Flip a coin</value>
+  </data>
+  <data name="random-check_chance" xml:space="preserve">
+    <value>Check chance</value>
+  </data>
+  <data name="check_success" xml:space="preserve">
+    <value>success</value>
+  </data>
+  <data name="check_failure" xml:space="preserve">
+    <value>failure</value>
+  </data>
 </root>

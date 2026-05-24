@@ -31,6 +31,7 @@
 		<None Remove="Prompting\Resources\ru-RU\sliders.llt" />
 		<None Remove="Prompting\Resources\sliders.llt" />
 		<None Remove="Prompting\Resources\specializations.llt" />
+		<None Remove="Scripting\ut3jur2e.ix0~" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -2,6 +2,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Scripting.Lua;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
@@ -27,15 +28,22 @@ namespace LLMDesktopAssistant.LLM.Services
 			services.AddScoped<Chat>();
 			services.AddScoped<IAttachmentApplicationService, AttachmentApplicationService>();
 
-			foreach (var toolModule in ReflectionUtility.GetTypesWithAttribute<ToolModule, ToolModuleAttribute>())
-			{
-				services.AddScoped(typeof(ToolModule), toolModule.Type);
-			}
-
 			var chatServices = ReflectionUtility.GetTypesWithAttribute<ChatServiceAttribute>().ToList();
 			foreach (var service in chatServices)
 			{
 				services.AddScoped(service.Attribute.ServiceType ?? service.Type, service.Type);
+			}
+
+			var toolModules = ReflectionUtility.GetTypesWithAttribute<ToolModule, ToolModuleAttribute>().ToList();
+			foreach (var toolModule in toolModules)
+			{
+				services.AddScoped(typeof(ToolModule), toolModule.Type);
+			}
+
+			var luaApis = ReflectionUtility.GetTypesWithAttribute<LuaApiBase, LuaApiAttribute>().ToList();
+			foreach (var luaApi in luaApis)
+			{
+				services.AddScoped(typeof(LuaApiBase), luaApi.Type);
 			}
 		}
 	}
