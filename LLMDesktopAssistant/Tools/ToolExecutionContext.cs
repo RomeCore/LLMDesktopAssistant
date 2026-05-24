@@ -22,5 +22,10 @@ namespace LLMDesktopAssistant.Tools
 		/// The tool call that is being executed.
 		/// </summary>
 		public required ToolCall Call { get; init; }
+
+		/// <summary>
+		/// Information about the tool that is being executed.
+		/// </summary>
+		public required ToolInfo Info { get; init; }
 	}
 }

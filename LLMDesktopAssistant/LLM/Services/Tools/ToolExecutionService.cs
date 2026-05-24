@@ -52,8 +52,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			{
 				if (toolInfo.AskForConfirmation)
 				{
-					var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-					toolCall.UserAskCompletionSource = tcs;
+					var tcs = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
+					toolCall.UserConfirmationSource = tcs;
 					toolCall.Status = ToolStatus.WaitingForApproval;
 
 					using var ctr = cancellationToken.Register(() =>
@@ -61,10 +61,15 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						tcs.TrySetCanceled(cancellationToken);
 					});
 
-					bool approved = await tcs.Task;
-					if (!approved)
-						result = new ToolResult(ToolResultStatus.Cancelled, "User has cancelled the tool execution. " +
-							"Maybe it can be dangerous or unwanted to proceed. Please wait for user message for explanations.");
+					string? confirmation = await tcs.Task;
+					if (confirmation != null)
+					{
+						if (string.IsNullOrWhiteSpace(confirmation))
+							result = new ToolResult(ToolResultStatus.Cancelled, "User has cancelled the tool execution without a reason. " +
+								"Maybe it can be dangerous or unwanted to proceed. Please wait for user message for explanations.");
+						else
+							result = new ToolResult(ToolResultStatus.Cancelled, $"User has cancelled the tool execution with a reason: {confirmation}.");
+					}
 				}
 
 				if (result == null)
@@ -74,7 +79,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					{
 						Chat = chat,
 						Message = message,
-						Call = toolCall
+						Call = toolCall,
+						Info = toolInfo
 					};
 					var reactiveResult = await toolInfo.Executor.Invoke(toolCall.Arguments, toolExecutionContext, cancellationToken);
 

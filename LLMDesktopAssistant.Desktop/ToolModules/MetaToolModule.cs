@@ -138,7 +138,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					argumentSchemaJson = null;
 				}
 
-				_metaToolManager.CreateOrUpdateTool(name, description, title, category, askForConfirmation, argumentSchemaJson, pythonExecutionCode);
+				_metaToolManager.CreateOrUpdateTool(name, description, title, category, askForConfirmation, argumentSchemaJson, Scripting.ScriptLanguageType.Python, pythonExecutionCode);
 				return new ToolResult($"Tool '{name}' created or updated successfully");
 			}
 			catch (Exception ex)
@@ -171,8 +171,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					WriteIndented = true
 				}) ?? "{}");
 
-				result.AppendLine().AppendLine("Python execution code:");
-				result.AppendLine(tool.PythonExecutionCode);
+				result.AppendLine().AppendLine($"{tool.ScriptLanguage} execution code:");
+				result.AppendLine(tool.ExecutionCode);
 
 				return new ToolResult(result.ToString());
 			}

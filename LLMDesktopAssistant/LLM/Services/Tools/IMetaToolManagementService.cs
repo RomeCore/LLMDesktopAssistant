@@ -1,5 +1,6 @@
-﻿using LLMDesktopAssistant.Tools;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {
@@ -18,9 +19,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		/// <param name="category">The category of the tool.</param>
 		/// <param name="askForConfirmation">Whether to ask user for confirmation before executing the tool.</param>
 		/// <param name="argumentSchema">The JSON schema describing the arguments for the tool.</param>
-		/// <param name="pythonExecutionCode">The Python code to execute when the tool is called.</param>
+		/// <param name="language">The programming language in which the tool is written.</param>
+		/// <param name="executionCode">The code to execute when the tool is called.</param>
 		void CreateOrUpdateTool(string name, string? description, string? title, string? category,
-			bool? askForConfirmation, JsonObject? argumentSchema, string? pythonExecutionCode);
+			bool? askForConfirmation, JsonObject? argumentSchema, ScriptLanguageType? language, string? executionCode);
 
 		/// <summary>
 		/// Lists all tools that have been created by LLM.

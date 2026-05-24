@@ -74,22 +74,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				.Concat(chat.AdditionalTools ?? [])
 				.Concat(mcpManager.GetMCPTools())
 
-				.SelectMany(m => m.GetTools()
-					.Select(toolInfo =>
-					{
-						return new ToolInfo
-						{
-							Name = toolInfo.Name,
-							DescriptionGetter = toolInfo.DescriptionGetter,
-							ArgumentSchema = toolInfo.ArgumentSchema,
-							Executor = toolInfo.Executor,
-							Category = toolInfo.Category,
-							DisplayName = toolInfo.DisplayName,
-							Source = toolInfo.Source,
-							Enabled = m.Enabled && toolInfo.Enabled,
-							AskForConfirmation = toolInfo.AskForConfirmation
-						};
-					}))
+				.SelectMany(m => m.GetTools())
 
 				// Tools
 				.Concat(metatoolManager?.GetMetaTools() ?? [])

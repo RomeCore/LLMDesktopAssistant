@@ -22,12 +22,6 @@ namespace LLMDesktopAssistant.Tools
 		protected List<ToolInfo> Tools => _tools;
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the module is enabled. Default is true.
-		/// When this tool module is disabled, it will not be considered when retrieving tools for the LLM assistant.
-		/// </summary>
-		public bool Enabled { get; set; } = true;
-
-		/// <summary>
 		/// Adds a tool to this module.
 		/// </summary>
 		/// <param name="tool">The tool to add.</param>

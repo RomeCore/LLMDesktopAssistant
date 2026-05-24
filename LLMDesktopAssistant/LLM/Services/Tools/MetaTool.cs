@@ -1,56 +1,24 @@
 ﻿using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Scripting;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {
-	public class MetaTool : NotifyPropertyChanged
+	public class MetaTool
 	{
-		private string _name = string.Empty;
-		public string Name
-		{
-			get => _name;
-			set => SetProperty(ref _name, value);
-		}
+		public required string Name { get; init; }
 
-		private string _description = string.Empty;
-		public string Description
-		{
-			get => _description;
-			set => SetProperty(ref _description, value);
-		}
+		public required string Title { get; init; }
 
-		private string _title = string.Empty;
-		public string Title
-		{
-			get => _title;
-			set => SetProperty(ref _title, value);
-		}
+		public required string Description { get; init; }
 
-		private string _category = string.Empty;
-		public string Category
-		{
-			get => _category;
-			set => SetProperty(ref _category, value);
-		}
+		public required string Category { get; init; }
 
-		private bool _askForConfirmation = false;
-		public bool AskForConfirmation
-		{
-			get => _askForConfirmation;
-			set => SetProperty(ref _askForConfirmation, value);
-		}
+		public required bool AskForConfirmation { get; init; }
 
-		private JsonObject _argumentSchema = new();
-		public JsonObject ArgumentSchema
-		{
-			get => _argumentSchema;
-			set => SetProperty(ref _argumentSchema, value);
-		}
+		public required JsonObject? ArgumentSchema { get; init; }
 
-		private string _pythonExecutionCode = string.Empty;
-		public string PythonExecutionCode
-		{
-			get => _pythonExecutionCode;
-			set => SetProperty(ref _pythonExecutionCode, value);
-		}
+		public required ScriptLanguageType ScriptLanguage { get; init; }
+
+		public required string ExecutionCode { get; init; }
 	}
 }

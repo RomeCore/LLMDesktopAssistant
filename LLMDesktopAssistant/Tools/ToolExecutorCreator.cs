@@ -1,6 +1,8 @@
+using LLMDesktopAssistant.Services;
 using RCLargeLanguageModels.Json;
 using RCLargeLanguageModels.Json.Schema;
 using RCLargeLanguageModels.Tools;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -54,6 +56,8 @@ namespace LLMDesktopAssistant.Tools
 
 			int toolExecutionContextMapping = -1;
 			int cancellationTokenMapping = -1;
+			int preparedResultMapping = -1;
+			var serviceMappings = new Dictionary<int, Type>();
 
 			var requiredSchemaProperties = new JsonArray();
 			var schemaProperties = new JsonObject();
@@ -80,6 +84,16 @@ namespace LLMDesktopAssistant.Tools
 						throw new ArgumentException("CancellationToken can only be specified once.", nameof(method));
 					cancellationTokenMapping = paramIndex;
 				}
+				else if (parameter.ParameterType == typeof(ReactiveToolResult))
+				{
+					if (preparedResultMapping != -1)
+						throw new ArgumentException("ReactiveToolResult can only be specified once.", nameof(method));
+					preparedResultMapping = paramIndex;
+				}
+				else if (parameter.IsDefined(typeof(InjectAttribute)))
+				{
+					serviceMappings[paramIndex] = parameter.ParameterType;
+				}
 				else
 				{
 					var parameterAccessor = new JsonMemberAccessor(parameter);
@@ -95,19 +109,26 @@ namespace LLMDesktopAssistant.Tools
 				}
 			}
 
+			if (preparedResultMapping != -1 && !ret.IsAssignableTo(typeof(Task)))
+				throw new ArgumentException("When using prepared result, the return type expected to be Task.", nameof(method));
+
 			if (requiredSchemaProperties.Count > 0)
 				argumentSchema["required"] = requiredSchemaProperties;
 
 			async Task<ReactiveToolResult> Func(JsonNode args, ToolExecutionContext context, CancellationToken cancellationToken)
 			{
-				var inParams = new object[parameters.Length];
+				var inParams = new object?[parameters.Length];
 				var objArgs = args as JsonObject ?? [];
+				var preparedResult = preparedResultMapping != -1 ? new ReactiveToolResult() : null;
 
 				try
 				{
 					for (int i = 0; i < parameters.Length; i++)
 						if (parameters[i].HasDefaultValue)
 							inParams[i] = parameters[i].DefaultValue!;
+
+					foreach (var (i, serviceType) in serviceMappings)
+						inParams[i] = context.Chat.Services.GetService(serviceType);
 
 					foreach (var kvp in parameterMappings)
 					{
@@ -123,6 +144,8 @@ namespace LLMDesktopAssistant.Tools
 						inParams[toolExecutionContextMapping] = context;
 					if (cancellationTokenMapping != -1)
 						inParams[cancellationTokenMapping] = cancellationToken;
+					if (preparedResultMapping != -1)
+						inParams[preparedResultMapping] = preparedResult;
 				}
 				catch (Exception ex)
 				{
@@ -131,32 +154,53 @@ namespace LLMDesktopAssistant.Tools
 
 				var value = method.Invoke(target, inParams)!;
 
-				switch (value)
+				if (preparedResult != null)
 				{
-					case Task<ReactiveToolResult> _1:
-						return await _1;
+					_ = Task.Run(async () =>
+					{
+						var task = (Task)value;
+						try
+						{
+							await task;
+						}
+						catch (Exception ex)
+						{
+							if (string.IsNullOrEmpty(preparedResult.ResultContent))
+								preparedResult.ResultContent = "An error occurred during tool execution: " + ex.Message;
+							preparedResult.TryCompleteWithError();
+						}
+					}, CancellationToken.None);
+					return preparedResult;
+				}
+				else
+				{
+					switch (value)
+					{
+						case Task<ReactiveToolResult> _1:
+							return await _1;
 
-					case ReactiveToolResult _2:
-						return _2;
+						case ReactiveToolResult _2:
+							return _2;
 
-					case Task<ToolResult> _3:
-						return ReactiveToolResult.CreateFromResult(await _3);
+						case Task<ToolResult> _3:
+							return ReactiveToolResult.CreateFromResult(await _3);
 
-					case ToolResult _4:
-						return ReactiveToolResult.CreateFromResult(_4);
+						case ToolResult _4:
+							return ReactiveToolResult.CreateFromResult(_4);
 
-					case Task<string> _5:
-						return ReactiveToolResult.CreateSuccess(await _5);
+						case Task<string> _5:
+							return ReactiveToolResult.CreateSuccess(await _5);
 
-					case string _6:
-						return ReactiveToolResult.CreateSuccess(_6);
+						case string _6:
+							return ReactiveToolResult.CreateSuccess(_6);
 
-					case Task _7:
-						await _7;
-						return ReactiveToolResult.CreateSuccess("");
+						case Task _7:
+							await _7;
+							return ReactiveToolResult.CreateSuccess("");
 
-					default: // void or null
-						return ReactiveToolResult.CreateSuccess("");
+						default: // void or null
+							return ReactiveToolResult.CreateSuccess("");
+					}
 				}
 			}
 

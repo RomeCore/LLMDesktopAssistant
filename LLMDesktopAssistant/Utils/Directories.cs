@@ -30,6 +30,16 @@ namespace LLMDesktopAssistant.Utils
 		public static string Templates { get; }
 
 		/// <summary>
+		/// The path where to store the metatool scripts, they are usually has .py or .lua extensions.
+		/// </summary>
+		public static string Metatools { get; }
+
+		/// <summary>
+		/// The path where to store the skills usable for agentic tasks. Skills are stored in separate folders with SKILL.md inside root folder.
+		/// </summary>
+		public static string Skills { get; }
+
+		/// <summary>
 		/// The path where to store the settings files. These are usually configuration files that need to persist across sessions.
 		/// </summary>
 		public static string Settings { get; }
@@ -60,6 +70,8 @@ namespace LLMDesktopAssistant.Utils
 			TempScripts = Path.Combine(LocalAppData, "temp/scripts/");
 			Plugins = Path.Combine(LocalAppData, "plugins/");
 			Templates = Path.Combine(LocalAppData, "templates/");
+			Metatools = Path.Combine(LocalAppData, "metatools/");
+			Skills = Path.Combine(LocalAppData, "skills/");
 			Settings = Path.Combine(LocalAppData, "settings/");
 			Data = Path.Combine(LocalAppData, "data/");
 			Models = Path.Combine(LocalAppData, "models/");
@@ -73,6 +85,8 @@ namespace LLMDesktopAssistant.Utils
 			Directory.CreateDirectory(TempScripts);
 			Directory.CreateDirectory(Plugins);
 			Directory.CreateDirectory(Templates);
+			Directory.CreateDirectory(Metatools);
+			Directory.CreateDirectory(Skills);
 			Directory.CreateDirectory(Settings);
 			Directory.CreateDirectory(Data);
 			Directory.CreateDirectory(Models);

@@ -165,20 +165,50 @@ namespace LLMDesktopAssistant.LLM.Messages
 			{
 				ToolStatus.WaitingForApproval => true,
 				_ => false
-			};
+			} && !WritingReason;
+
+		private bool _writingReason = false;
+		public bool WritingReason
+		{
+			get => _writingReason;
+			set
+			{
+				if (SetProperty(ref _writingReason, value))
+				{
+					RaisePropertyChanged(nameof(UserAsked));
+				}
+			}
+		}
 
 
 
 		public ICommand ApproveCommand { get; }
 		public void Approve()
 		{
-			toolCall.UserAskCompletionSource?.TrySetResult(true);
+			toolCall.UserConfirmationSource?.TrySetResult(null);
 		}
 
 		public ICommand CancelCommand { get; }
 		public void Cancel()
 		{
-			toolCall.UserAskCompletionSource?.TrySetResult(false);
+			toolCall.UserConfirmationSource?.TrySetResult(string.Empty);
+		}
+
+		public ICommand CancelWithReasonBeginCommand { get; }
+		public ICommand CancelWithReasonEndCommand { get; }
+		public ICommand CancelWithReasonBackCommand { get; }
+		public void CancelWithReason()
+		{
+			WritingReason = true;
+		}
+		public void CancelWithReason(string? reason)
+		{
+			WritingReason = false;
+			toolCall.UserConfirmationSource?.TrySetResult(reason ?? string.Empty);
+		}
+		public void CancelWithReasonBack()
+		{
+			WritingReason = false;
 		}
 
 		public ICommand CopyArgumentsCommand { get; }
@@ -223,6 +253,9 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 			ApproveCommand = new RelayCommand(Approve);
 			CancelCommand = new RelayCommand(Cancel);
+			CancelWithReasonBeginCommand = new RelayCommand(CancelWithReason);
+			CancelWithReasonEndCommand = new RelayCommand<string?>(CancelWithReason);
+			CancelWithReasonBackCommand = new RelayCommand(CancelWithReasonBack);
 			CopyArgumentsCommand = new RelayCommand(CopyArguments);
 			CopyResultCommand = new RelayCommand(CopyResult);
 

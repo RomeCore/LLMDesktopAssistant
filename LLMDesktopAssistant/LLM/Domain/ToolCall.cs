@@ -70,14 +70,17 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _resultContent, value);
 		}
 
-		private TaskCompletionSource<bool>? _userAskCompletionSource;
+		private TaskCompletionSource<string?>? _userConfirmationSource;
 		/// <summary>
 		/// Gets or sets the task completion source for user interaction.
+		/// The result is null when user confirms this tool call, and this should be executed.
+		/// The result is empty when user cancels tool call without a reason.
+		/// The result is non-empty when user cancels tool call with a reason (and reason is provided as the result).
 		/// </summary>
-		public TaskCompletionSource<bool>? UserAskCompletionSource
+		public TaskCompletionSource<string?>? UserConfirmationSource
 		{
-			get => _userAskCompletionSource;
-			set => SetProperty(ref _userAskCompletionSource, value);
+			get => _userConfirmationSource;
+			set => SetProperty(ref _userConfirmationSource, value);
 		}
 
 		private ReactiveToolResult? _reactiveToolResult;

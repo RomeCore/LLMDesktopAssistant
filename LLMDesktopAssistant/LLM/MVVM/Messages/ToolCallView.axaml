@@ -103,22 +103,52 @@
 									</StackPanel>
 
 									<!-- Approval buttons in header -->
-									<StackPanel Orientation="Horizontal"
-															Grid.Column="2" 
-															Spacing="4"
-															IsVisible="{Binding UserAsked}">
+									<Panel>
 
-										<Button Classes="MidIconButton"
-														Command="{Binding ApproveCommand}">
-											<ico:MaterialIcon Kind="Check"/>
-										</Button>
+										<StackPanel Orientation="Horizontal"
+																Grid.Column="2" 
+																Spacing="4"
+																IsVisible="{Binding UserAsked}">
 
-										<Button Classes="MidIconButton"
-														Command="{Binding CancelCommand}">
-											<ico:MaterialIcon Kind="Close"/>
-										</Button>
+											<Button Classes="MidIconButton"
+															Command="{Binding ApproveCommand}">
+												<ico:MaterialIcon Kind="Check"/>
+											</Button>
 
-									</StackPanel>
+											<Button Classes="MidIconButton"
+															Command="{Binding CancelCommand}">
+												<ico:MaterialIcon Kind="Close"/>
+											</Button>
+
+											<Button Classes="MidIconButton"
+															Command="{Binding CancelWithReasonBeginCommand}">
+												<ico:MaterialIcon Kind="TextBoxRemoveOutline"/>
+											</Button>
+
+										</StackPanel>
+										
+										<StackPanel Orientation="Horizontal"
+																Grid.Column="2" 
+																Spacing="4"
+																IsVisible="{Binding WritingReason}">
+
+											<TextBox x:Name="ReasonTextBox1"
+															 KeyDown="ReasonTextBox_KeyDown"/>
+
+											<Button Classes="MidIconButton"
+															Command="{Binding CancelWithReasonEndCommand}"
+															CommandParameter="{Binding #ReasonTextBox1.Text}">
+												<ico:MaterialIcon Kind="Check"/>
+											</Button>
+
+											<Button Classes="MidIconButton"
+															Command="{Binding CancelWithReasonBackCommand}">
+												<ico:MaterialIcon Kind="Close"/>
+											</Button>
+
+										</StackPanel>
+										
+									</Panel>
 
 									<!-- Tool Call ID -->
 									<TextBlock Grid.Column="3"
@@ -287,22 +317,53 @@
 
 				<Panel>
 					
-					<StackPanel Orientation="Horizontal"
-											Spacing="4"
-											IsVisible="{Binding UserAsked}">
+					<Panel>
 
-						<Button Classes="MidIconButton"
-										Command="{Binding ApproveCommand}">
-							<ico:MaterialIcon Kind="Check"/>
-						</Button>
+						<StackPanel Orientation="Horizontal"
+												Grid.Column="2" 
+												Spacing="4"
+												IsVisible="{Binding UserAsked}">
 
-						<Button Classes="MidIconButton"
-										Command="{Binding CancelCommand}">
-							<ico:MaterialIcon Kind="Close"/>
-						</Button>
+							<Button Classes="MidIconButton"
+											Command="{Binding ApproveCommand}">
+								<ico:MaterialIcon Kind="Check"/>
+							</Button>
 
-					</StackPanel>
-				
+							<Button Classes="MidIconButton"
+											Command="{Binding CancelCommand}">
+								<ico:MaterialIcon Kind="Close"/>
+							</Button>
+
+							<Button Classes="MidIconButton"
+											Command="{Binding CancelWithReasonBeginCommand}">
+								<ico:MaterialIcon Kind="TextBoxRemoveOutline"/>
+							</Button>
+
+						</StackPanel>
+										
+						<StackPanel Orientation="Horizontal"
+												Grid.Column="2" 
+												Spacing="4"
+												IsVisible="{Binding WritingReason}">
+
+							<TextBox x:Name="ReasonTextBox2"
+											 KeyDown="ReasonTextBox_KeyDown"/>
+
+							<Button Classes="MidIconButton"
+											Command="{Binding CancelWithReasonEndCommand}"
+											CommandParameter="{Binding #ReasonTextBox2.Text}">
+								<ico:MaterialIcon Kind="Check"/>
+							</Button>
+
+							<Button Classes="MidIconButton"
+											Command="{Binding CancelWithReasonBackCommand}">
+								<ico:MaterialIcon Kind="Close"/>
+							</Button>
+
+						</StackPanel>
+										
+					</Panel>
+
 					<StackPanel Orientation="Horizontal"
 											Spacing="4"
 											IsVisible="{Binding StatusAvailable}">
