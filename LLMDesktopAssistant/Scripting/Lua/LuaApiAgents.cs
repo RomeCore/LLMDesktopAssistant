@@ -59,12 +59,17 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					  - tool_name: string
 					  - tool_call_id: string
 
-				- options: table (optional) — reserved for future use; pass {} for now.
+				- options: table (optional) — Additional options:
+				  - model: string (optional) — Name of the model to use.
+				    If omitted, the chat's "AgenticToolsModel" is used.
+				  - tools: table (optional) — Array of tool names (strings) to restrict which tools
+				    the agent can use. If omitted, all available tools are exposed.
+				    Example: { "web-search", "calculate" }
 
 			  Returns: table — array of response messages (same format as input messages).
 
 			  Throws an error if:
-				- the agentic model is not configured
+				- the agentic model is not configured or the specified model is not found
 				- the last message is not a "user" message
 				- any message has an unknown role
 
@@ -78,6 +83,18 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				{ role = "user", content = "Say hello!" }
 			  })
 			  print(r[1].content)
+
+			  -- With custom model and restricted tools
+			  local r = dass.agents.execute(
+				{
+				  { role = "system", content = "You can use tools." },
+				  { role = "user", content = "What is 2+2?" }
+				},
+				{
+				  model = "openrouter$google/gemini-3.5-flash",
+				  tools = { "calculate" }
+				}
+			  )
 
 			  -- Multi-turn with tools
 			  local r = dass.agents.execute({
@@ -109,10 +126,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  end
 
 			NOTES:
-			  - The agent uses the chat's "AgenticToolsModel" setting.
-				Make sure it is configured before calling this function.
-			  - All tools available in the current chat are exposed to the agent.
-			  - The call is synchronous (blocking) — it waits for the full LLM response.
+			  - By default, the agent uses the chat's "AgenticToolsModel" setting.
+			  - You can override the model by passing a "model" field in options.
+			  - You can restrict tools by passing a "tools" array in options.
+			  - All tools available in the current chat are exposed to the agent by default.
 			  - Returns the full conversation history produced by the agent,
 				including all intermediate tool calls and results.
 			""";
@@ -174,13 +191,41 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				Messages = messages.Take(messages.Count - 1).ToList(),
 			};
 
-			var model = _chat.Settings.Models.AgenticToolsModel.Current;
-			if (model is null)
-				throw new ScriptRuntimeException("dass.agents.execute(): agentic model is not available.");
+			// --- Parse options ---
+			var optionsTable = optionsArg.Table;
+
+			// Resolve model
+			LLModelDescriptor? model;
+			var modelName = optionsTable.Get("model")?.CastToString();
+			if (!string.IsNullOrEmpty(modelName))
+			{
+				var tracked = _modelList.Registry.GetModel(modelName);
+				model = tracked?.Current;
+				if (model is null)
+					throw new ScriptRuntimeException($"dass.agents.execute(): model '{modelName}' not found.");
+			}
+			else
+			{
+				model = _chat.Settings.Models.AgenticToolsModel.Current;
+				if (model is null)
+					throw new ScriptRuntimeException("dass.agents.execute(): agentic model is not available.");
+			}
+
+			// Resolve tool filter
+			HashSet<string>? toolFilter = null;
+			var toolsOption = optionsTable.Get("tools");
+			if (toolsOption.Type == DataType.Table)
+			{
+				toolFilter = new HashSet<string>();
+				foreach (var toolValue in toolsOption.Table.Values)
+				{
+					var toolName = toolValue.CastToString();
+					if (toolName != null)
+						toolFilter.Add(toolName);
+				}
+			}
 
 			var tools = new List<ITool>();
-			HashSet<string>? toolFilter = null;
-
 			foreach (var (_, tool) in _toolsetCache.AvailableTools)
 			{
 				if (toolFilter != null && !toolFilter.Contains(tool.Name))
@@ -223,7 +268,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				if (msg != userMessage)
 					reseivedMessages.Add(msg);
 			};
-			toolExecutor.GenerateResponseAsync(userMessage).Wait();
+			try
+			{
+				toolExecutor.GenerateResponseAsync(userMessage).Wait();
+			}
+			catch (Exception ex)
+			{
+				throw new ScriptRuntimeException("dass.agents.execute(): " + ex.Message);
+			}
 
 			var resultTable = new Table(script);
 

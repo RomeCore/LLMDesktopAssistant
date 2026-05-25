@@ -189,7 +189,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Description = """
 						Searches for pattern in files using regex.
 						Use this tool with care, as it can be slow and resource-intensive.
-						Use
 						""",
 					Category = "filesystem",
 					AskForConfirmation = false
