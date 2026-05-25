@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Nodes;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.Tools;
 using MoonSharp.Interpreter;
+using MoonSharp.Interpreter.Serialization.Json;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
@@ -10,15 +16,116 @@ using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	[ChatService(typeof(LuaApiBase))]
 	public class LuaApiAgents : LuaApiBase
 	{
 		public override string? Namespace => "dass.agents";
 
-		private readonly LLModelListService _modelList;
+		public override string? Manuals => """
+			--- dass.agents — agentic LLM execution API
 
-		public LuaApiAgents(LLModelListService modelList)
+			Provides the ability to execute LLM agents with tools directly from Lua scripts.
+			The agent uses the model configured as "AgenticToolsModel" in chat settings
+			and has access to all tools registered in the current chat.
+
+			FUNCTIONS:
+
+			--- dass.agents.execute(messages, [options])
+			  Executes an LLM agent with the given conversation and returns its response.
+
+			  Parameters:
+				- messages: table (required) — Array of message tables (see format below).
+				  The LAST message MUST be a "user" message.
+				  Multiple "system" messages are concatenated.
+
+				  Each message table has a "role" field:
+					role = "system":
+					  - content: string — system instruction
+
+					role = "user":
+					  - content: string — user message text
+
+					role = "assistant":
+					  - content: string — assistant response text
+					  - reasoning_content: string (optional) — reasoning/thinking text
+					  - tool_calls: table (optional) — array of tool call tables
+						  Each tool call:
+							- tool_name: string
+							- tool_call_id: string
+							- arguments: table — arguments matching the tool's schema
+
+					role = "tool":
+					  - content: string — tool result text
+					  - tool_name: string
+					  - tool_call_id: string
+
+				- options: table (optional) — reserved for future use; pass {} for now.
+
+			  Returns: table — array of response messages (same format as input messages).
+
+			  Throws an error if:
+				- the agentic model is not configured
+				- the last message is not a "user" message
+				- any message has an unknown role
+
+			  Use pcall() for safe error handling.
+
+			EXAMPLES:
+
+			  -- Simple greeting
+			  local r = dass.agents.execute({
+				{ role = "system", content = "You are a helpful assistant." },
+				{ role = "user", content = "Say hello!" }
+			  })
+			  print(r[1].content)
+
+			  -- Multi-turn with tools
+			  local r = dass.agents.execute({
+				{ role = "system", content = "You can use web-search." },
+				{ role = "user", content = "Search for latest news about AI" }
+			  })
+			  for _, msg in ipairs(r) do
+				if msg.role == "assistant" then
+				  print("AI:", msg.content)
+				  if msg.tool_calls then
+					for _, tc in ipairs(msg.tool_calls) do
+					  print("  -> tool:", tc.tool_name)
+					end
+				  end
+				elseif msg.role == "tool" then
+				  print("  result:", msg.content:sub(1, 100))
+				end
+			  end
+
+			  -- Safe execution with pcall
+			  local ok, result = pcall(dass.agents.execute, {
+				{ role = "system", content = "You are an expert." },
+				{ role = "user", content = "What is 2+2?" }
+			  })
+			  if ok then
+				print("Answer:", result[1].content)
+			  else
+				print("Failed:", result)
+			  end
+
+			NOTES:
+			  - The agent uses the chat's "AgenticToolsModel" setting.
+				Make sure it is configured before calling this function.
+			  - All tools available in the current chat are exposed to the agent.
+			  - The call is synchronous (blocking) — it waits for the full LLM response.
+			  - Returns the full conversation history produced by the agent,
+				including all intermediate tool calls and results.
+			""";
+
+		private readonly Chat _chat;
+		private readonly LLModelListService _modelList;
+		private readonly IToolsetCacheService _toolsetCache;
+
+		public LuaApiAgents(Chat chat, LLModelListService modelList, IToolsetCacheService toolsetCache)
 		{
+			_chat = chat;
 			_modelList = modelList;
+			_toolsetCache = toolsetCache;
 		}
 
 		public override void Populate(Table globals, Table ns)
@@ -28,14 +135,20 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		private DynValue Execute(ScriptExecutionContext ctx, CallbackArguments args)
 		{
-			if (args.Count < 2)
+			if (args.Count < 1)
 				throw new ScriptRuntimeException("dass.agents.execute(messages, [params]): at least 1 argument expected.");
 			var messagesArg = args[0];
 			if (messagesArg.Type != DataType.Table)
 				throw new ScriptRuntimeException("dass.agents.execute(): first argument must be a table.");
+			var optionsArg = args[1];
+			var script = ctx.GetScript();
+			if (args.Count < 2 || optionsArg.Type == DataType.Nil)
+				optionsArg = DynValue.NewTable(script);
+			if (args.Count > 1 && optionsArg.Type != DataType.Table)
+				throw new ScriptRuntimeException("dass.agents.execute(): second argument must be a table if provided.");
 
 			var messagesTable = messagesArg.Table;
-			var systemMessage = new StringBuilder();
+			var systemMessageBuilder = new StringBuilder();
 			var messages = new List<IMessage>();
 
 			for (int i = 1; i <= messagesTable.Length; i++)
@@ -44,16 +157,81 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				if (_messageTable.Type != DataType.Table)
 					throw new ScriptRuntimeException("dass.agents.execute(): each message must be a table.");
 				var messageTable = _messageTable.Table;
-
+				var message = ConvertMessageFromLua(messageTable);
+				if (message is ISystemMessage systemMessage)
+					systemMessageBuilder.AppendLine(systemMessage.Content);
+				else
+					messages.Add(message);
 			}
+
+			if (messages.Count == 0 || messages[^1] is not RCLargeLanguageModels.Messages.IUserMessage)
+				throw new ScriptRuntimeException("dass.agents.execute(): last message must be an user message.");
 
 			var memory = new SlidingChatMemory
 			{
-				ReturnLastNMessages = -1
+				ReturnLastNMessages = -1,
+				SystemInstructions = systemMessageBuilder.ToString().Trim(),
+				Messages = messages.Take(messages.Count - 1).ToList(),
 			};
 
+			var model = _chat.Settings.Models.AgenticToolsModel.Current;
+			if (model is null)
+				throw new ScriptRuntimeException("dass.agents.execute(): agentic model is not available.");
 
-			return DynValue.Nil;
+			var tools = new List<ITool>();
+			HashSet<string>? toolFilter = null;
+
+			foreach (var (_, tool) in _toolsetCache.AvailableTools)
+			{
+				if (toolFilter != null && !toolFilter.Contains(tool.Name))
+					continue;
+
+				var _tool = tool;
+				tools.Add(new FunctionTool(_tool.Name, _tool.DescriptionGetter(), _tool.ArgumentSchema, async (args, ct) =>
+				{
+					try
+					{
+						var dummyCtx = ToolExecutionContext.CreateDummy(_tool, args, _chat);
+						var result = await _tool.Executor(args, dummyCtx, ct);
+						var success = await result.Completion;
+						var content = result.ResultContent;
+						if (string.IsNullOrEmpty(content))
+							content = "Tool did not returned any result.";
+						return new ToolResult(success ? ToolResultStatus.Success : ToolResultStatus.Error, content);
+					}
+					catch (Exception ex)
+					{
+						return new ToolResult(ToolResultStatus.Error, $"Error occured while executing tool: " + ex.Message);
+					}
+				}));
+			}
+
+			var toolExecutor = new LLMToolExecutor
+			{
+				Memory = memory,
+				LLMProvider = new LLModel(model).WithTools(tools),
+				MaxParallelToolExecutions = -1,
+				MaxToolCycles = -1,
+				MaxToolCalls = -1
+			};
+
+			var userMessage = (RCLargeLanguageModels.Messages.IUserMessage)messages[^1];
+
+			var reseivedMessages = new List<IMessage>();
+			toolExecutor.MessageReceived += (_, msg) =>
+			{
+				if (msg != userMessage)
+					reseivedMessages.Add(msg);
+			};
+			toolExecutor.GenerateResponseAsync(userMessage).Wait();
+
+			var resultTable = new Table(script);
+
+			int im = 1;
+			foreach (var message in reseivedMessages)
+				resultTable.Set(im++, ConvertMessageToLua(message, script));
+
+			return DynValue.NewTable(resultTable);
 		}
 
 		private static IMessage ConvertMessageFromLua(Table messageTable)
@@ -64,20 +242,23 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			switch (role)
 			{
 				case "system":
-					return new SystemMessage(content);
+					return new RCLargeLanguageModels.Messages.SystemMessage(content);
 
 				case "user":
-					return new UserMessage(content);
+					return new RCLargeLanguageModels.Messages.UserMessage(content);
 
 				case "assistant":
 					var reasoningContent = messageTable.Get("reasoning_content").CastToString();
 					var toolCallsTable = messageTable.Get("tool_calls");
-					return new AssistantMessage(content, reasoningContent, toolCalls);
+					var toolCalls = new List<IToolCall>();
+					foreach (var toolCallTable in toolCallsTable.Table?.Values ?? [])
+						toolCalls.Add(ConvertToolCallFromLua(toolCallTable.Table));
+					return new RCLargeLanguageModels.Messages.AssistantMessage(content, reasoningContent, toolCalls);
 
 				case "tool":
-					var toolCallId = messageTable.Get("tool_call_id").CastToString();
 					var toolName = messageTable.Get("tool_name").CastToString();
-					return new ToolMessage(content, toolCallId, toolName);
+					var toolCallId = messageTable.Get("tool_call_id").CastToString();
+					return new RCLargeLanguageModels.Messages.ToolMessage(content, toolCallId, toolName);
 
 				default:
 					throw new ScriptRuntimeException($"dass.agents.execute(): unknown role '{role}'.");
@@ -86,7 +267,59 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		private static IToolCall ConvertToolCallFromLua(Table toolCallTable)
 		{
+			var toolName = toolCallTable.Get("tool_name").CastToString();
+			var toolCallId = toolCallTable.Get("tool_call_id").CastToString();
+			var arguments = JsonLuaConverter.DynValueToJsonNode(toolCallTable.Get("arguments")) ?? JsonValue.Create((string?)null)!;
+			return new FunctionToolCall(toolCallId, toolName, arguments);
+		}
 
+		private static DynValue ConvertMessageToLua(IMessage message, Script script)
+		{
+			switch (message)
+			{
+				case IUserMessage userMessage:
+					var userMessageTable = new Table(script);
+					userMessageTable["role"] = "user";
+					userMessageTable["content"] = userMessage.Content;
+					return DynValue.NewTable(userMessageTable);
+
+				case IAssistantMessage assistantMessage:
+					var assistantMessageTable = new Table(script);
+					assistantMessageTable["role"] = "assistant";
+					assistantMessageTable["reasoning_content"] = assistantMessage.ReasoningContent;
+					assistantMessageTable["content"] = assistantMessage.Content;
+
+					int i = 1;
+					var toolCallsTable = new Table(script);
+					foreach (var toolCall in assistantMessage.ToolCalls)
+						toolCallsTable.Set(i++, ConvertToolCallToLua(toolCall, script));
+					assistantMessageTable["tool_calls"] = toolCallsTable;
+
+					return DynValue.NewTable(assistantMessageTable);
+
+				case IToolMessage toolMessage:
+					var toolMessageTable = new Table(script);
+					toolMessageTable["role"] = "tool";
+					toolMessageTable["tool_name"] = toolMessage.ToolName;
+					toolMessageTable["tool_call_id"] = toolMessage.ToolCallId;
+					toolMessageTable["content"] = toolMessage.Content;
+					return DynValue.NewTable(toolMessageTable);
+
+				default:
+					throw new ScriptRuntimeException($"dass.agents.execute(): unknown message '{message}'.");
+			}
+		}
+
+		private static DynValue ConvertToolCallToLua(IToolCall toolCall, Script script)
+		{
+			if (toolCall is not FunctionToolCall functionCall)
+				throw new ScriptRuntimeException($"dass.agents.execute(): tool call is not function tool call: '{toolCall}'.");
+
+			var resultTable = new Table(script);
+			resultTable["tool_name"] = functionCall.ToolName;
+			resultTable["tool_call_id"] = functionCall.Id;
+			resultTable["arguments"] = JsonLuaConverter.JsonNodeToDynValue(script, functionCall.Args);
+			return DynValue.NewTable(resultTable);
 		}
 	}
 }

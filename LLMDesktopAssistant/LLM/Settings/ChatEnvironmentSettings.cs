@@ -51,8 +51,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// </summary>
 		public string? PythonMetaVenvActivateScriptPath
 		{
-			get => _pythonVenvActivateScriptPath;
-			set => SetProperty(ref _pythonVenvActivateScriptPath, value);
+			get => _pythonMetaVenvActivateScriptPath;
+			set => SetProperty(ref _pythonMetaVenvActivateScriptPath, value);
 		}
 	}
 }

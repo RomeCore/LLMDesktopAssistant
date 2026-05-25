@@ -2455,6 +2455,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Python Venv activation script for metatools.
+        /// </summary>
+        public static string python_meta_venv_activate_script_path_hint {
+            get {
+                return ResourceManager.GetString("python_meta_venv_activate_script_path_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Get Python REPL variable.
         /// </summary>
         public static string python_repl_get_var {
@@ -2712,6 +2721,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string select_model {
             get {
                 return ResourceManager.GetString("select_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select Python Venv activation script for metatools.
+        /// </summary>
+        public static string select_python_meta_venv_activate_script {
+            get {
+                return ResourceManager.GetString("select_python_meta_venv_activate_script", resourceCulture);
             }
         }
         

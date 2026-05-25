@@ -31,6 +31,28 @@ namespace LLMDesktopAssistant.Tools
 			(_, _) => throw new NotSupportedException("This function tool is not meant to be executed directly. Use Executor instead."));
 
 		/// <summary>
+		/// Gets a <see cref="FunctionTool"/> instance that represents this tool.
+		/// Can be executed also (instead of <see cref="Tool"/>), usable for RCLLM agentic API.
+		/// </summary>
+		public FunctionTool GetExecutableTool(ToolExecutionContext ctx) => new(Name, DescriptionGetter(), ArgumentSchema,
+			async (args, ct) =>
+			{
+				try
+				{
+					var result = await Executor.Invoke(args, ctx, ct);
+					var success = await result.Completion;
+					var content = result.ResultContent;
+					if (string.IsNullOrEmpty(content))
+						content = "Tool did not returned any result.";
+					return new ToolResult(success ? ToolResultStatus.Success : ToolResultStatus.Error, content);
+				}
+				catch (Exception ex)
+				{
+					return new ToolResult(ToolResultStatus.Error, $"Error occured while executing tool: " + ex.Message);
+				}
+			});
+
+		/// <summary>
 		/// Gets or sets the executor function for the tool. This function is responsible for executing the tool with the provided arguments and context.
 		/// </summary>
 		public required Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor { get; init; }

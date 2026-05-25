@@ -74,6 +74,36 @@
 					<ico:MaterialIcon Kind="OpenInNew" />
 				</Button>
 			</Grid>
+			
+			<!-- Python meta venv path -->
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBox Text="{Binding EnvironmentSettings.PythonMetaVenvActivateScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						 PlaceholderText="{loc:Loc python_meta_venv_activate_script_path_hint}"
+						 UseFloatingPlaceholder="True"
+						 VerticalContentAlignment="Center"/>
+
+				<Button Grid.Column="1"
+						Margin="8,0,0,0"
+						Classes="IconButton"
+						Command="{Binding SelectPythonMetaVenvActivateScriptPathCommand}">
+
+					<ico:MaterialIcon Kind="FolderOpen" />
+				</Button>
+
+				<Button Grid.Column="2"
+						Margin="8,0,0,0"
+						Classes="IconButton"
+						Command="{Binding OpenPythonMetaVenvActivateScriptPathCommand}">
+					
+					<ico:MaterialIcon Kind="OpenInNew" />
+				</Button>
+			</Grid>
 
 		</StackPanel>
 	</ScrollViewer>

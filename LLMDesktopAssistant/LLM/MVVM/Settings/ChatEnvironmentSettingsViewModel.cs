@@ -1,5 +1,6 @@
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
 using System.Diagnostics;
 using System.IO;
@@ -16,6 +17,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ICommand OpenWorkingDirectoryCommand { get; }
 		public ICommand SelectPythonVenvActivateScriptPathCommand { get; }
 		public ICommand OpenPythonVenvActivateScriptPathCommand { get; }
+		public ICommand SelectPythonMetaVenvActivateScriptPathCommand { get; }
+		public ICommand OpenPythonMetaVenvActivateScriptPathCommand { get; }
 
 		public ChatEnvironmentSettingsViewModel(ChatEnvironmentSettings settings)
 		{
@@ -25,13 +28,15 @@ namespace LLMDesktopAssistant.LLM.Settings
 			OpenWorkingDirectoryCommand = new RelayCommand(OpenWorkingDirectory);
 			SelectPythonVenvActivateScriptPathCommand = new AsyncRelayCommand(SelectPythonVenvActivateScriptPath);
 			OpenPythonVenvActivateScriptPathCommand = new RelayCommand(OpenPythonVenvActivateScriptPath);
+			SelectPythonMetaVenvActivateScriptPathCommand = new AsyncRelayCommand(SelectPythonMetaVenvActivateScriptPath);
+			OpenPythonMetaVenvActivateScriptPathCommand = new RelayCommand(OpenPythonMetaVenvActivateScriptPath);
 		}
 
 		private async Task SelectWorkingDirectory()
 		{
 			var result = await App.MainTopLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
 			{
-				Title = Locale.select_working_directory,
+				Title = LocalizationManager.LocalizeStatic("select_working_directory"),
 				AllowMultiple = false
 			});
 
@@ -58,7 +63,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		{
 			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = Locale.select_python_venv_activate_script,
+				Title = LocalizationManager.LocalizeStatic("select_python_venv_activate_script"),
 				FileTypeFilter = [
 					new FilePickerFileType("Batch files") { Patterns = ["*.bat"] },
 					new FilePickerFileType("All files") { Patterns = ["*"] }
@@ -81,6 +86,38 @@ namespace LLMDesktopAssistant.LLM.Settings
 				{
 					FileName = "explorer.exe",
 					Arguments = $"/select,\"{EnvironmentSettings.PythonVenvActivateScriptPath}\"",
+					UseShellExecute = true
+				});
+			}
+		}
+
+		private async Task SelectPythonMetaVenvActivateScriptPath()
+		{
+			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+			{
+				Title = LocalizationManager.LocalizeStatic("select_python_meta_venv_activate_script"),
+				FileTypeFilter = [
+					new FilePickerFileType("Batch files") { Patterns = ["*.bat"] },
+					new FilePickerFileType("All files") { Patterns = ["*"] }
+				],
+				AllowMultiple = false
+			});
+
+			if (result.Count > 0)
+			{
+				EnvironmentSettings.PythonMetaVenvActivateScriptPath = result[0].Path.LocalPath;
+			}
+		}
+
+		private void OpenPythonMetaVenvActivateScriptPath()
+		{
+			if (!string.IsNullOrWhiteSpace(EnvironmentSettings.PythonMetaVenvActivateScriptPath) &&
+				File.Exists(EnvironmentSettings.PythonMetaVenvActivateScriptPath))
+			{
+				Process.Start(new ProcessStartInfo
+				{
+					FileName = "explorer.exe",
+					Arguments = $"/select,\"{EnvironmentSettings.PythonMetaVenvActivateScriptPath}\"",
 					UseShellExecute = true
 				});
 			}

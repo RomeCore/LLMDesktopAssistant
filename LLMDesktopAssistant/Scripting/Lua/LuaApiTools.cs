@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.Tools;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 using RCLargeLanguageModels.Tasks;
@@ -84,42 +85,28 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		public override void Populate(Table globals, Table ns)
 		{
-			ns["call"] = new Func<string, Table, string>(Call);
+			ns["call"] = DynValue.NewCallback(Call);
 		}
 
-		public string Call(string function, Table args)
+		public DynValue Call(ScriptExecutionContext ctx, CallbackArguments args)
 		{
-			if (_toolsetCache.AvailableTools.TryGetValue(function, out var tool))
-			{
-				var arguments = JsonNode.Parse(args.TableToJson())!;
-				var chat = _services.GetRequiredService<Chat>();
-				var ct = new CompletionToken();
-				var toolCall = new ToolCall
-				{
-					ToolName = tool.Name,
-					Title = tool.DisplayName,
-					CompletionToken = ct,
-					Id = ToolCallId.Generate(),
-					Arguments = arguments
-				};
-				var message = new AssistantMessage
-				{
-					AgentStageId = Guid.Empty,
-					SenderAgentId = Guid.Empty,
-					CompletionToken = ct
-				};
-				message.ToolCalls.Add(toolCall);
+			var function = args[0].CastToString();
+			var arguments = args[1];
+			if (arguments.Type != DataType.Table)
+				arguments = DynValue.NewTable(ctx.GetScript());
 
-				var result = tool.Executor.Invoke(arguments, new Tools.ToolExecutionContext
-				{
-					Chat = chat,
-					Call = toolCall,
-					Message = message,
-					Info = tool
-				}, CancellationToken.None).Result;
-				return result.ResultContent;
+			if (!_toolsetCache.AvailableTools.TryGetValue(function, out var tool))
+				throw new ScriptRuntimeException($"Tool '{function}' not found.");
+
+			var jsonArgs = JsonLuaConverter.DynValueToJsonNode(arguments) ?? new JsonObject();
+			var context = ctx.TryGetToolExecutionContext();
+			if (context == null)
+			{
+				var chat = _services.GetRequiredService<Chat>();
+				context = ToolExecutionContext.CreateDummy(tool, jsonArgs, chat);
 			}
-			throw new ScriptRuntimeException($"Tool '{function}' not found.");
+			var result = tool.Executor.Invoke(jsonArgs, context, CancellationToken.None).Result;
+			return DynValue.NewString(result.ResultContent);
 		}
 	}
 }

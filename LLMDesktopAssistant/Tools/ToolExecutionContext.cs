@@ -1,4 +1,11 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+﻿using System.Text.Json.Nodes;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Scripting;
+using LLTSharp;
+using ModelContextProtocol.Protocol;
+using MoonSharp.Interpreter;
+using RCLargeLanguageModels.Tasks;
+using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Tools
 {
@@ -27,5 +34,36 @@ namespace LLMDesktopAssistant.Tools
 		/// Information about the tool that is being executed.
 		/// </summary>
 		public required ToolInfo Info { get; init; }
+
+		/// <summary>
+		/// Creates a dummy tool execution context. Useful when the original execution context is not available.
+		/// </summary>
+		public static ToolExecutionContext CreateDummy(ToolInfo tool, JsonNode? args, Chat? chat)
+		{
+			var ct = new CompletionToken();
+			var toolCall = new ToolCall
+			{
+				ToolName = tool.Name,
+				Title = tool.DisplayName,
+				CompletionToken = ct,
+				Id = ToolCallId.Generate(),
+				Arguments = args ?? new JsonObject()
+			};
+			var message = new AssistantMessage
+			{
+				AgentStageId = Guid.Empty,
+				SenderAgentId = Guid.Empty,
+				CompletionToken = ct
+			};
+			message.ToolCalls.Add(toolCall);
+
+			return new ToolExecutionContext
+			{
+				Chat = chat ?? new Chat(new ServiceCollection().BuildServiceProvider()),
+				Call = toolCall,
+				Message = message,
+				Info = tool
+			};
+		}
 	}
 }

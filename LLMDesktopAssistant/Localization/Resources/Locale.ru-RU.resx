@@ -1413,4 +1413,10 @@
   <data name="check_failure" xml:space="preserve">
     <value>неудача</value>
   </data>
+  <data name="select_python_meta_venv_activate_script" xml:space="preserve">
+    <value>Выберите скрипт активации виртуального окружения Python для мета-инструментов</value>
+  </data>
+  <data name="python_meta_venv_activate_script_path_hint" xml:space="preserve">
+    <value>Скрипт активации виртуального окружения Python для мета-инструментов</value>
+  </data>
 </root>

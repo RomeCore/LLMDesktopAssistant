@@ -77,10 +77,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Description("The question to ask")] string question,
 			[Description("A list of tool names that can be used to answer the question.")]
 			string[] allowedTools,
+			ToolExecutionContext ctx,
 			CancellationToken cancellationToken = default)
 		{
 			var systemPrompt = $"You are an agent designed to answer questions using tools.";
-			return CallAgentAsync(systemPrompt, question, allowedTools, cancellationToken);
+			return CallAgentAsync(systemPrompt, question, allowedTools, ctx, cancellationToken);
 		}
 
 		public async Task<ToolResult> CallAgentAsync(
@@ -88,6 +89,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Description("The user message to send to the agent")] string userMessage,
 			[Description("A list of tool names that can be used to answer the question.")]
 			string[] allowedTools,
+			ToolExecutionContext ctx,
 			CancellationToken cancellationToken = default)
 		{
 			if (_chat.Settings.Models.AgenticToolsModel.Current is not LLModelDescriptor modelDescriptor)
@@ -103,7 +105,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				if (toolMap.TryGetValue(allowedTool, out var toolInfo))
 				{
-					tools.Add(toolInfo.Tool);
+					tools.Add(toolInfo.GetExecutableTool(ctx));
 				}
 				else
 				{
@@ -123,7 +125,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				LLMProvider = llm,
 				Memory = new SlidingChatMemory
 				{
-					ReturnLastNMessages = 20,
 					SystemInstructions = systemPrompt
 				}
 			};

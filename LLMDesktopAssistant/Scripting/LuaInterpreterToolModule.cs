@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using LLMDesktopAssistant.Tools;
+using MoonSharp.Interpreter;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Scripting
@@ -31,13 +32,18 @@ namespace LLMDesktopAssistant.Scripting
 				});
 		}
 
-		public ToolResult ExecuteLua(string lua)
+		public ToolResult ExecuteLua(
+			string lua,
+			ToolExecutionContext context)
 		{
 			var printOutput = new List<string>();
 
 			try
 			{
-				var scriptResult = _lua.Execute(lua, printOutput);
+				var scriptResult = _lua.Execute(lua, printOutput, g =>
+				{
+					g["_dass_tec"] = UserData.Create(context);
+				});
 
 				var resultBuilder = new StringBuilder();
 				foreach (var message in printOutput)

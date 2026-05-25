@@ -129,10 +129,17 @@ namespace LLMDesktopAssistant.Scripting
 		/// Executes the provided Lua code.
 		/// </summary>
 		/// <param name="lua">The Lua code to execute.</param>
+		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public DynValue Execute(string lua)
+		public DynValue Execute(string lua, Action<Table>? modifyGlobals = null)
 		{
-			return _lua.DoString(lua);
+			var globals = _lua.Globals;
+			if (modifyGlobals != null)
+			{
+				globals = globals.ShallowClone();
+				modifyGlobals(globals);
+			}
+			return _lua.DoString(lua, globals);
 		}
 
 		/// <summary>
@@ -140,14 +147,21 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		/// <param name="lua">The Lua code to execute.</param>
 		/// <param name="printOutput">The list to capture output into.</param>
+		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public DynValue Execute(string lua, List<string> printOutput)
+		public DynValue Execute(string lua, List<string> printOutput, Action<Table>? modifyGlobals = null)
 		{
 			var prevPrint = _lua.Options.DebugPrint;
 			try
 			{
 				_lua.Options.DebugPrint = str => printOutput.Add(str);
-				return _lua.DoString(lua);
+				var globals = _lua.Globals;
+				if (modifyGlobals != null)
+				{
+					globals = globals.ShallowClone();
+					modifyGlobals(globals);
+				}
+				return _lua.DoString(lua, globals);
 			}
 			finally
 			{
@@ -160,8 +174,9 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		/// <param name="lua">The Lua code to execute.</param>
 		/// <param name="printOutput">The list to capture output into.</param>
+		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public DynValue Execute(string lua, out List<string> printOutput)
+		public DynValue Execute(string lua, out List<string> printOutput, Action<Table>? modifyGlobals = null)
 		{
 			var _printOutput = new List<string>();
 			printOutput = _printOutput;
@@ -170,7 +185,13 @@ namespace LLMDesktopAssistant.Scripting
 			try
 			{
 				_lua.Options.DebugPrint = str => _printOutput.Add(str);
-				return _lua.DoString(lua);
+				var globals = _lua.Globals;
+				if (modifyGlobals != null)
+				{
+					globals = globals.ShallowClone();
+					modifyGlobals(globals);
+				}
+				return _lua.DoString(lua, globals);
 			}
 			finally
 			{

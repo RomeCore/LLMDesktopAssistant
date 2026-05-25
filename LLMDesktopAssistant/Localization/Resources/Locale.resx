@@ -1413,4 +1413,10 @@
   <data name="check_failure" xml:space="preserve">
     <value>failure</value>
   </data>
+  <data name="select_python_meta_venv_activate_script" xml:space="preserve">
+    <value>Select Python Venv activation script for metatools</value>
+  </data>
+  <data name="python_meta_venv_activate_script_path_hint" xml:space="preserve">
+    <value>Python Venv activation script for metatools</value>
+  </data>
 </root>
