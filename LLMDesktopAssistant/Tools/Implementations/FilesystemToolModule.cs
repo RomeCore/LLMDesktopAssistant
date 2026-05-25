@@ -62,7 +62,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				new ToolInitializationInfo
 				{
 					Name = "fs-read_document_file",
-					Description = "Reads complex documents (DOCX, PPTX, PDF) by pages from the working directory. Supported extensions: .pdf, .docx, .pptx.",
+					Description = "Reads complex documents (DOCX, PPTX, PDF) by pages from the working directory. Supported extensions: .pdf, .docx, .pptx. This is not suitable for general text or code files, such as .txt, .py, .md, .cs, .js, etc.",
 					Category = "filesystem",
 					AskForConfirmation = false
 				});

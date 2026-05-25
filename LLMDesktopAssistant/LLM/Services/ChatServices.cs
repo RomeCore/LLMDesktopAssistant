@@ -1,12 +1,13 @@
-﻿using LLMDesktopAssistant.Data;
-using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.Utils;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LLMDesktopAssistant.Data;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Utils;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -29,6 +30,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			ServiceProvider = serviceBuilder.BuildServiceProvider();
 
 			ManagementService = ServiceProvider.GetRequiredService<IChatManagementService>();
+
+			Log.Information("ChatServices initialized with {Count} Chat services.", serviceBuilder.Count);
 		}
 	}
 }

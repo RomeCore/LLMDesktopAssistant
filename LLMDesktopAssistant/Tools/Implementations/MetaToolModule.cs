@@ -103,7 +103,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		public ToolResult CreateOrUpdateMetaTool(
 			[Description("The name of the tool. Example: 'get_weather'")]
 			string name,
-			[Description("The scripting language to use. Examples: 'Lua', 'Python'")]
+			[Description("The scripting language to use. Example: 'Lua'")]
 			string language,
 			[Description("A description of what the tool does. This can contain guides for LLM how to use that tool.")]
 			string? description = null,

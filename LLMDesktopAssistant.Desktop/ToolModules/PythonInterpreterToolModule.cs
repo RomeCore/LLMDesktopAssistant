@@ -86,7 +86,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			else
 			{
 				// Write to a temporary file
-				pyFile = Path.GetFullPath(Path.Combine(workDir, $"{Guid.NewGuid()}.py"));
+				pyFile = Path.GetFullPath(Path.Combine(workDir, $"_dass_temp_{Guid.NewGuid()}.py"));
 				File.WriteAllText(pyFile, python);
 				isTemporaryFile = true;
 			}

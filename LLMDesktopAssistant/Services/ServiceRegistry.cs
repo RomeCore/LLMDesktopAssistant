@@ -149,6 +149,8 @@ namespace LLMDesktopAssistant.Services
 
 			foreach (var tracker in _dynamicTrackers.Values)
 				tracker.Initialize();
+
+			Log.Information("ServiceRegistry initialized with {Count} App services.", collection.Count);
 		}
 
 		/// <summary>
