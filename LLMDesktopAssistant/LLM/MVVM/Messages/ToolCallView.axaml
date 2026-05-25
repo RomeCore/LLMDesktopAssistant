@@ -30,24 +30,24 @@
 			<Button.Flyout>
 			
 				<Flyout Placement="BottomEdgeAlignedLeft"
-						ShowMode="Standard">
+								ShowMode="Standard">
 
 					<Border Background="{DynamicResource CardBackground}"
-							BorderBrush="{DynamicResource CardBorderBrush}"
-							BorderThickness="1"
-							MinWidth="500"
-							MaxWidth="750"
-							MinHeight="300"
-							MaxHeight="650"
-							CornerRadius="8"
-							Padding="0">
+									BorderBrush="{DynamicResource CardBorderBrush}"
+									BorderThickness="1"
+									MinWidth="500"
+									MaxWidth="750"
+									MinHeight="300"
+									MaxHeight="650"
+									CornerRadius="8"
+									Padding="8">
 
-						<Grid RowDefinitions="Auto,*,Auto" Margin="0">
+						<Grid RowDefinitions="Auto,*,Auto">
 
 							<Border Grid.Row="0"
-									Background="{DynamicResource WindowBackground}"
-									CornerRadius="8,8,0,0"
-									Padding="16,12,8,12">
+											Background="{DynamicResource WindowBackground}"
+											CornerRadius="8,8,0,0"
+											Padding="16,12,8,12">
 
 								<Grid ColumnDefinitions="Auto,*,Auto,*,Auto,Auto">
 
@@ -76,10 +76,10 @@
 										</ico:MaterialIcon>
 
 										<ctrl:ProgressRing IsVisible="{Binding InProgress}"
-																				 Minimum="{Binding MinProgress}"
-																				 Maximum="{Binding MaxProgress}"
-																				 Value="{Binding Progress}"
-																				 IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
+																			 Minimum="{Binding MinProgress}"
+																			 Maximum="{Binding MaxProgress}"
+																			 Value="{Binding Progress}"
+																			 IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
 										
 										<ico:MaterialIcon Kind="{Binding ToolIcon}"
 																			Classes="MidIcon"
@@ -194,11 +194,10 @@
 												 VerticalAlignment="Top"/>
 
 							<ScrollViewer Grid.Row="1"
-											VerticalScrollBarVisibility="Auto"
-											HorizontalScrollBarVisibility="Auto"
-											Padding="16,16,16,8">
+														VerticalScrollBarVisibility="Auto"
+														HorizontalScrollBarVisibility="Auto">
 
-								<StackPanel Orientation="Vertical" Spacing="20">
+								<StackPanel Orientation="Vertical" Spacing="20" Margin="16,16,32,32">
 
 									<!-- Arguments Section -->
 									<StackPanel Orientation="Vertical"
@@ -213,17 +212,9 @@
 																 FontSize="18"
 																 FontWeight="Bold"/>
 										</Border>
-
-										<Border Background="{DynamicResource CodeBackground}"
-														BorderBrush="{DynamicResource CardBorderBrush}"
-														BorderThickness="1"
-														CornerRadius="6"
-														Padding="14">
-
-											<ctrl:MarkdownControl MarkdownText="{Binding Arguments}"
-																						Background="Transparent"/>
-
-										</Border>
+										
+										<ctrl:MarkdownControl MarkdownText="{Binding Arguments}"
+																					Background="Transparent"/>
 
 									</StackPanel>
 
@@ -240,18 +231,10 @@
 																 FontSize="18"
 																 FontWeight="Bold"/>
 										</Border>
-
-										<Border Background="{DynamicResource CardBackground}"
-														BorderBrush="{DynamicResource CardBorderBrush}"
-														BorderThickness="1"
-														CornerRadius="6"
-														Padding="14">
-
-											<ctrl:MarkdownControl MarkdownText="{Binding Result}"
-																						UsePlaintext="True"
-																						Background="Transparent"/>
-
-										</Border>
+										
+										<ctrl:MarkdownControl MarkdownText="{Binding Result}"
+																					UsePlaintext="True"
+																					Background="Transparent"/>
 
 									</StackPanel>
 

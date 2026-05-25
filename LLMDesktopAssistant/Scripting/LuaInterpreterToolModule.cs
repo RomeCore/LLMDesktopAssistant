@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MoonSharp.Interpreter;
-using LLMDesktopAssistant.Services;
+﻿using System.Text;
 using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Tools;
-using System.Collections.Concurrent;
 
 namespace LLMDesktopAssistant.Scripting
 {
@@ -28,9 +21,10 @@ namespace LLMDesktopAssistant.Scripting
 						Executes Lua and returns the script result along with messages printed by 'print' function.
 						
 						Lua has the API to interact with the application (called dASS) with these namespaces:
-						{string.Join("\n", lua.Namespaces.Select(ns => ns ?? "*global namespace*"))}
+						{string.Join(", ", lua.Namespaces.Select(ns => ns ?? "*global namespace*").Order())}
 						
 						Use the `manuals(...)` function to get the documentation for a specific namespace, `print(manuals())` or `print(manuals(dass.tools))` for example.
+						Its very recommended to see manuals before starting to use the API (do not use it blindly without reading the documentation!).
 						""",
 					Category = "scripting",
 					AskForConfirmation = true
@@ -39,9 +33,11 @@ namespace LLMDesktopAssistant.Scripting
 
 		public ToolResult ExecuteLua(string lua)
 		{
+			var printOutput = new List<string>();
+
 			try
 			{
-				var scriptResult = _lua.Execute(lua, out var printOutput);
+				var scriptResult = _lua.Execute(lua, printOutput);
 
 				var resultBuilder = new StringBuilder();
 				foreach (var message in printOutput)
