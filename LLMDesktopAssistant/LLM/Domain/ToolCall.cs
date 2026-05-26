@@ -70,6 +70,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _resultContent, value);
 		}
 
+		private JsonNode? _structuredResult = null;
+		/// <summary>
+		/// Gets or sets the optional structured result. Usable for external APIs that calls tools, like MCP, Lua API, dASS RPC API (that used by external processes like Python).
+		/// </summary>
+		public JsonNode? StructuredResult
+		{
+			get => _structuredResult;
+			set => SetProperty(ref _structuredResult, value);
+		}
+
 		private TaskCompletionSource<string?>? _userConfirmationSource;
 		/// <summary>
 		/// Gets or sets the task completion source for user interaction.

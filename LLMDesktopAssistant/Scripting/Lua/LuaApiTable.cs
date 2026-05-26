@@ -91,7 +91,13 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  Parameters:
 			    - t: table — source table
 			  Returns: table — copy
-
+			
+			--- table.deep_clone(t)
+			  Returns a deep copy of the table.
+			  Parameters:
+			    - t: table — source table
+			  Returns: table — copy
+			
 			--- table.is_empty(t)
 			  Returns true if the table has no elements (array part and hash part).
 			  Parameters:
@@ -143,6 +149,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			ns["values"] = DynValue.NewCallback(new CallbackFunction(Values));
 			ns["merge"] = DynValue.NewCallback(new CallbackFunction(Merge));
 			ns["clone"] = DynValue.NewCallback(new CallbackFunction(Clone));
+			ns["deep_clone"] = DynValue.NewCallback(new CallbackFunction(DeepClone));
 			ns["is_empty"] = DynValue.NewCallback(new CallbackFunction(IsEmpty));
 			ns["size"] = DynValue.NewCallback(new CallbackFunction(Size));
 			ns["first"] = DynValue.NewCallback(new CallbackFunction(First));
@@ -414,10 +421,18 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			if (t.Type != DataType.Table)
 				throw new ScriptRuntimeException("table.clone(): first argument must be a table.");
 
-			var result = new Table(ctx.OwnerScript);
-			foreach (var kv in t.Table.Pairs)
-				result.Set(kv.Key, kv.Value);
-			return DynValue.NewTable(result);
+			return DynValue.NewTable(t.Table.ShallowClone());
+		}
+
+		private static DynValue DeepClone(ScriptExecutionContext ctx, CallbackArguments args)
+		{
+			if (args.Count < 1)
+				throw new ScriptRuntimeException("table.deep_clone(t): at least 1 argument expected.");
+			var t = args[0];
+			if (t.Type != DataType.Table)
+				throw new ScriptRuntimeException("table.deep_clone(): first argument must be a table.");
+
+			return DynValue.NewTable(t.Table.DeepClone());
 		}
 
 		private static DynValue IsEmpty(ScriptExecutionContext ctx, CallbackArguments args)

@@ -36,7 +36,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			      If the tool requires no arguments, pass an empty table {}.
 
 			  Returns: table — structured result with the following fields:
-			    - content: string — the textual result produced by the tool
+			    - content: string - the textual result produced by the tool
+				- structured: table or nil - the optional structured result produced by the tool
 			    - success: boolean — whether the tool executed successfully
 			    - tool: table — the table containing info of the tool that was called (see dass.tools.list() for what that table contains)
 			    - status_title: string or nil — optional status title
@@ -121,14 +122,17 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 			var reactiveResult = tool.Executor.Invoke(jsonArgs, context, CancellationToken.None).Result;
 
+			var script = ctx.GetScript();
+
 			// Wait for completion to get success status
 			var success = reactiveResult.Completion.GetAwaiter().GetResult();
 			var content = reactiveResult.ResultContent;
+			var structured = JsonLuaConverter.JsonNodeToDynValue(script, reactiveResult.StructuredResult);
 
 			// Build structured result table
-			var script = ctx.GetScript();
 			var resultTable = new Table(script);
 			resultTable["content"] = content;
+			resultTable["structured"] = structured;
 			resultTable["success"] = DynValue.NewBoolean(success);
 			resultTable["tool"] = ToolToTable(tool, script);
 			if (reactiveResult.StatusTitle != null)

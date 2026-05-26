@@ -1,10 +1,12 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+﻿using System.Collections.Immutable;
+using System.ComponentModel;
+using System.Net.NetworkInformation;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
 using Microsoft.Extensions.DependencyInjection;
+using ModelContextProtocol.Protocol;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tools;
-using System.Collections.Immutable;
-using System.ComponentModel;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {
@@ -19,16 +21,14 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		public async Task ExecuteAsync(AssistantMessage message, ToolCall toolCall, LLMInfo llmInfo,
 			ImmutableDictionary<string, ToolInfo> tools, CancellationToken cancellationToken = default)
 		{
-			ToolResult? result = null;
-
 			if (hook != null)
 			{
-				result = await hook.OnBeforeExecuteAsync(toolCall, llmInfo, cancellationToken);
+				var hookedResult = await hook.OnBeforeExecuteAsync(toolCall, llmInfo, cancellationToken);
 
-				if (result != null)
+				if (hookedResult != null)
 				{
-					toolCall.ResultContent = result.Content;
-					toolCall.Status = result.Status switch
+					toolCall.ResultContent = hookedResult.Content;
+					toolCall.Status = hookedResult.Status switch
 					{
 						ToolResultStatus.Success => ToolStatus.Success,
 						ToolResultStatus.Error => ToolStatus.Error,
@@ -64,99 +64,104 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					string? confirmation = await tcs.Task;
 					if (confirmation != null)
 					{
+						toolCall.Status = ToolStatus.Cancelled;
 						if (string.IsNullOrWhiteSpace(confirmation))
-							result = new ToolResult(ToolResultStatus.Cancelled, "User has cancelled the tool execution without a reason. " +
-								"Maybe it can be dangerous or unwanted to proceed. Please wait for user message for explanations.");
+							toolCall.ResultContent = "User has cancelled the tool execution without a reason. " +
+								"Maybe it can be dangerous or unwanted to proceed. Please wait for user message for explanations.";
 						else
-							result = new ToolResult(ToolResultStatus.Cancelled, $"User has cancelled the tool execution with a reason: {confirmation}.");
+							toolCall.ResultContent = $"User has cancelled the tool execution with a reason: {confirmation}.";
+						return;
 					}
 				}
 
-				if (result == null)
+				toolCall.Status = ToolStatus.Executing;
+				var toolExecutionContext = new ToolExecutionContext
 				{
-					toolCall.Status = ToolStatus.Executing;
-					var toolExecutionContext = new ToolExecutionContext
-					{
-						Chat = chat,
-						Message = message,
-						Call = toolCall,
-						Info = toolInfo
-					};
-					var reactiveResult = await toolInfo.Executor.Invoke(toolCall.Arguments, toolExecutionContext, cancellationToken);
+					Chat = chat,
+					Message = message,
+					Call = toolCall,
+					Info = toolInfo
+				};
+				var reactiveResult = await toolInfo.Executor.Invoke(toolCall.Arguments, toolExecutionContext, cancellationToken);
 
-					toolCall.ReactiveToolResult = reactiveResult;
+				toolCall.ReactiveToolResult = reactiveResult;
+				toolCall.StatusIcon = reactiveResult.StatusIcon;
+				toolCall.StatusTitle = reactiveResult.StatusTitle;
+				toolCall.StructuredResult = reactiveResult.StructuredResult;
+				toolCall.ResultContent = reactiveResult.ResultContent;
+
+				void OnReactiveResultChanged(object? sender, object? e)
+				{
 					toolCall.StatusIcon = reactiveResult.StatusIcon;
 					toolCall.StatusTitle = reactiveResult.StatusTitle;
-					toolCall.ResultContent = reactiveResult.ResultContent;
-
-					void OnReactiveResultChanged(object? sender, object? e)
-					{
-						toolCall.StatusIcon = reactiveResult.StatusIcon;
-						toolCall.StatusTitle = reactiveResult.StatusTitle;
-					}
-					void OnReactiveResultContentChanged(object? sender, object? e)
-					{
-						toolCall.ResultContent = reactiveResult.ResultContent;
-					}
-					reactiveResult.PropertyChanged += OnReactiveResultChanged;
-					reactiveResult.ResultContentLines.CollectionChanged += OnReactiveResultContentChanged;
-
-					bool success;
-					try
-					{
-						success = await reactiveResult.Completion;
-					}
-					finally
-					{
-						toolCall.ReactiveToolResult = null;
-						reactiveResult.PropertyChanged -= OnReactiveResultChanged;
-						reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultContentChanged;
-					}
-
-					var content = reactiveResult.ResultContent;
-					ToolResultStatus status = cancellationToken.IsCancellationRequested ? ToolResultStatus.Cancelled :
-						(string.IsNullOrWhiteSpace(content) ? ToolResultStatus.NoResult :
-							(success ? ToolResultStatus.Success : ToolResultStatus.Error));
-
-					switch (status)
-					{
-						case ToolResultStatus.NoResult:
-							if (success)
-								content = "Tool successfully returned no result.";
-							else
-								content = "Tool failed with no result.";
-							break;
-						case ToolResultStatus.Cancelled:
-							content = "Tool execution was cancelled.";
-							break;
-					}
-
-					result = new ToolResult(status, content);
+					toolCall.StructuredResult = reactiveResult.StructuredResult;
 				}
+				void OnReactiveResultContentChanged(object? sender, object? e)
+				{
+					toolCall.ResultContent = reactiveResult.ResultContent;
+				}
+				reactiveResult.PropertyChanged += OnReactiveResultChanged;
+				reactiveResult.ResultContentLines.CollectionChanged += OnReactiveResultContentChanged;
+
+				bool success;
+				try
+				{
+					success = await reactiveResult.Completion;
+				}
+				finally
+				{
+					toolCall.ReactiveToolResult = null;
+					reactiveResult.PropertyChanged -= OnReactiveResultChanged;
+					reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultContentChanged;
+				}
+
+				toolCall.ResultContent = reactiveResult.ResultContent;
+				toolCall.Status = cancellationToken.IsCancellationRequested ? ToolStatus.Cancelled :
+					(success ? (string.IsNullOrWhiteSpace(toolCall.ResultContent) ? ToolStatus.NoResult : ToolStatus.Success) :
+						ToolStatus.Error);
+
+				if (string.IsNullOrEmpty(toolCall.ResultContent))
+				{
+					switch (toolCall.Status)
+					{
+						case ToolStatus.NoResult:
+							if (success)
+								toolCall.ResultContent = "Tool successfully returned no result.";
+							else
+								toolCall.ResultContent = "Tool failed with no result.";
+							break;
+						case ToolStatus.Cancelled:
+							toolCall.ResultContent = "Tool execution was cancelled.";
+							break;
+					}
+				}
+
+				return;
 			}
 			catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
 			{
-				result = new ToolResult(ToolResultStatus.Cancelled, "Tool execution was cancelled.");
+				toolCall.Status = ToolStatus.Cancelled;
+				if (string.IsNullOrEmpty(toolCall.ResultContent))
+					toolCall.ResultContent = "Tool execution was cancelled.";
+				else
+					toolCall.ResultContent += "\nTool execution was interrupted.";
 			}
-			catch (OperationCanceledException ocex)
+			catch (OperationCanceledException)
 			{
-				string content = string.IsNullOrEmpty(ocex.Message) ? "Tool execution was cancelled." : ocex.Message;
-				result = new ToolResult(ToolResultStatus.Cancelled, content);
+				toolCall.Status = ToolStatus.Cancelled;
+				if (string.IsNullOrEmpty(toolCall.ResultContent))
+					toolCall.ResultContent = "Tool execution was cancelled.";
+				else
+					toolCall.ResultContent += "\nTool execution was interrupted.";
 			}
 			catch (Exception ex)
 			{
-				result = new ToolResult(ToolResultStatus.Error, ex.Message);
+				toolCall.Status = ToolStatus.Error;
+				if (string.IsNullOrEmpty(toolCall.ResultContent))
+					toolCall.ResultContent = "Tool execution failed with error: " + ex.Message;
+				else
+					toolCall.ResultContent += "\nTool execution was interrupted with error: " + ex.Message;
 			}
-
-			toolCall.ResultContent = result.Content;
-			toolCall.Status = result.Status switch
-			{
-				ToolResultStatus.Success => ToolStatus.Success,
-				ToolResultStatus.Error => ToolStatus.Error,
-				ToolResultStatus.Cancelled => ToolStatus.Cancelled,
-				ToolResultStatus.NoResult => ToolStatus.NoResult,
-				_ => ToolStatus.NoResult
-			};
 		}
 	}
 }

@@ -125,33 +125,36 @@ namespace LLMDesktopAssistant.Scripting
 
 		public Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool)
 		{
-			return async (JsonNode args, ToolExecutionContext context, CancellationToken cancellationToken) =>
+			return (JsonNode args, ToolExecutionContext context, CancellationToken cancellationToken) =>
 			{
-				try
+				var reactiveResult = new ReactiveToolResult();
+
+				_ = Task.Run(() =>
 				{
-					// Build Lua code: inject tool_args, then user code
-					var luaCode = $"""
-						local tool_args = {SerializeNodeToLua(args)}
-						{tool.ExecutionCode}
-						""";
-
-					var scriptResult = _luaService.Execute(luaCode, out var printOutput);
-
-					var resultBuilder = new StringBuilder();
-					foreach (var message in printOutput)
-						resultBuilder.AppendLine(message);
-
-					if (scriptResult.Type != DataType.Nil)
+					try
 					{
-						resultBuilder.Append($"Script returned: {scriptResult.ToPrintString()}");
+						var scriptResult = _luaService.Execute(tool.ExecutionCode, print => reactiveResult.ResultContentLines.Add(print), g =>
+						{
+							g["tool_args"] = JsonLuaConverter.JsonNodeToDynValue(g.OwnerScript, args);
+							g["_dass_tool_ctx"] = UserData.Create(context);
+							g["_dass_tool_result"] = UserData.Create(reactiveResult);
+						});
+						if (reactiveResult.StructuredResult == null)
+							reactiveResult.StructuredResult = JsonLuaConverter.DynValueToJsonNode(scriptResult);
+						reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToPrintString());
+						reactiveResult.CompleteWithSuccess();
 					}
+					catch (Exception ex)
+					{
+						reactiveResult.ResultContentLines.Add("Caught error: " + ex.Message);
+						reactiveResult.CompleteWithError();
+					}
+					finally
+					{
+					}
+				}, CancellationToken.None);
 
-					return ReactiveToolResult.Create(resultBuilder.Length > 0, resultBuilder.ToString().TrimEnd());
-				}
-				catch (Exception ex)
-				{
-					return ReactiveToolResult.CreateError($"Lua execution error: {ex.Message}");
-				}
+				return Task.FromResult(reactiveResult);
 			};
 		}
 

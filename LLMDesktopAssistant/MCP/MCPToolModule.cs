@@ -3,6 +3,7 @@ using LLMDesktopAssistant.Utils;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
 using RCLargeLanguageModels.Tools;
+using Serilog;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -82,6 +83,7 @@ namespace LLMDesktopAssistant.MCP
 				Name = name,
 				DescriptionGetter = () => description,
 				ArgumentSchema = argSchema,
+				OutputSchema = mcpTool.ReturnJsonSchema?.ToNodeSafe() as JsonObject,
 				Executor = CreateExecutor(connection, mcpTool),
 				Source = ToolSource.MCP,
 				DisplayName = mcpTool.Title ?? mcpTool.Name,
@@ -95,37 +97,52 @@ namespace LLMDesktopAssistant.MCP
 		{
 			async Task<ReactiveToolResult> ExecuteFunction(JsonNode args, ToolExecutionContext context, CancellationToken cancellationToken)
 			{
-				try
+				var reactiveResult = new ReactiveToolResult
 				{
-					var dictArgs = args.Deserialize<Dictionary<string, object?>>();
-					var result = await mcpTool.CallAsync(dictArgs, cancellationToken: cancellationToken);
+				};
 
-					var contents = string.Join("\n\n", result.Content.Select(c =>
+				_ = Task.Run(async () =>
+				{
+					try
 					{
+						var dictArgs = args.Deserialize<Dictionary<string, object?>>();
+						var result = await mcpTool.CallAsync(dictArgs, cancellationToken: cancellationToken);
+
+						var contents = string.Join("\n\n", result.Content.Select(c =>
+							{
 						if (c is TextContentBlock textCb)
 							return textCb.Text;
-						else if (c is ToolResultContentBlock trCb)
-							return trCb.StructuredContent?.ToJsonString() ?? string.Empty;
+						Log.Warning("MCP Tool Executor: content type {Type} is not supported.", c.Type);
 						return "";
 					}));
 
-					if (result.IsError == true)
-					{
-						if (string.IsNullOrWhiteSpace(contents))
-							contents = "Tool executed with an error.";
-						return ReactiveToolResult.CreateError(contents);
+						reactiveResult.StructuredResult = result.StructuredContent?.ToNodeSafe();
+
+						if (result.IsError == true)
+						{
+							if (string.IsNullOrWhiteSpace(contents))
+								reactiveResult.ResultContent = "Tool executed with an error.";
+							else
+								reactiveResult.ResultContent = contents;
+							reactiveResult.CompleteWithError();
+						}
+						else
+						{
+							if (string.IsNullOrWhiteSpace(contents))
+								reactiveResult.ResultContent = "Tool executed successfully with no output.";
+							else
+								reactiveResult.ResultContent = contents;
+							reactiveResult.CompleteWithSuccess();
+						}
 					}
-					else
+					catch (Exception ex)
 					{
-						if (string.IsNullOrWhiteSpace(contents))
-							contents = "Tool executed successfully with no output.";
-						return ReactiveToolResult.CreateSuccess(contents);
+						reactiveResult.ResultContent = $"Error calling MCP '{connection.Info.Name}' tool: {ex.Message}";
+						reactiveResult.CompleteWithError();
 					}
-				}
-				catch (Exception ex)
-				{
-					return ReactiveToolResult.CreateError($"Error calling MCP '{connection.Info.Name}' tool: {ex.Message}");
-				}
+				}, CancellationToken.None);
+
+				return reactiveResult;
 			}
 
 			return ExecuteFunction;

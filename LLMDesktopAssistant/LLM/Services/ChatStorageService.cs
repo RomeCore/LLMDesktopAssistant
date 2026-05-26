@@ -401,7 +401,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				},
 				StatusIcon = toolCall.StatusIcon,
 				StatusTitle = toolCall.StatusTitle,
-				ResultContent = toolCall.ResultContent
+				ResultContent = toolCall.ResultContent,
+				StructuredResult = toolCall.StructuredResult?.ToJsonString()
 			};
 
 			database.ToolCalls.Insert(toolCallModel);
@@ -425,6 +426,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				model.StatusIcon = toolCall.StatusIcon;
 				model.StatusTitle = toolCall.StatusTitle;
 				model.ResultContent = toolCall.ResultContent;
+				model.StructuredResult = toolCall.StructuredResult?.ToJsonString();
 
 				database.ToolCalls.Update(model);
 			}
@@ -735,6 +737,8 @@ namespace LLMDesktopAssistant.LLM.Services
 						Title = toolCallModel.Title,
 						Arguments = JsonNode.Parse(toolCallModel.FunctionArguments)!,
 						ResultContent = toolCallModel.ResultContent,
+						StructuredResult = string.IsNullOrEmpty(toolCallModel.StructuredResult) ? null
+							: JsonNode.Parse(toolCallModel.StructuredResult),
 						Status = toolCallModel.Status switch
 						{
 							ToolStatusModel.NotExecuted => ToolStatus.None,

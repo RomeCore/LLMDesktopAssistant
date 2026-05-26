@@ -1,10 +1,11 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.Json.Nodes;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using RCLargeLanguageModels.Tools;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LLMDesktopAssistant.Tools
 {
@@ -112,6 +113,25 @@ namespace LLMDesktopAssistant.Tools
 				ResultContentLines.Clear();
 				ResultContentLines.Add(value);
 			}
+		}
+
+		private JsonNode? _structuredResult = null;
+		/// <summary>
+		/// Gets or sets the optional structured result. Usable for external APIs that calls tools, like MCP, Lua API, dASS RPC API (that used by external processes like Python).
+		/// </summary>
+		public JsonNode? StructuredResult
+		{
+			get => _structuredResult;
+			set
+			{
+				lock (_lock)
+					SetProperty(ref _structuredResult, value);
+			}
+		}
+
+		public ReactiveToolResult()
+		{
+			ResultContentLines.CollectionChanged += (s, e) => RaisePropertyChanged(nameof(ResultContent));
 		}
 
 		/// <summary>

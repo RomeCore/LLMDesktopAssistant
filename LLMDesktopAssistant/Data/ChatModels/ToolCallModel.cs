@@ -56,8 +56,13 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		public string? StatusTitle { get; set; } = null;
 
 		/// <summary>
-		/// Gets or sets the result content of the tool call, valid when tool call is executed.
+		/// Gets or sets the result content of the tool call.
 		/// </summary>
 		public string? ResultContent { get; set; }
+
+		/// <summary>
+		/// Gets or sets the result structured content of the tool call, this is a string converted from JSON.
+		/// </summary>
+		public string? StructuredResult { get; set; }
 	}
 }

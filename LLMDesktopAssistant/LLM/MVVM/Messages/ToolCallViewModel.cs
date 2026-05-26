@@ -266,11 +266,6 @@ namespace LLMDesktopAssistant.LLM.Messages
 				{
 					InvokeUI(() =>
 					{
-						Status = toolCall.Status;
-						StatusIcon = toolCall.StatusIcon;
-						StatusTitle = toolCall.StatusTitle;
-						Result = toolCall.ResultContent;
-
 						switch (e.PropertyName)
 						{
 							case nameof(ToolCall.Status): Status = toolCall.Status; break;

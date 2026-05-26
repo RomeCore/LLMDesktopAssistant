@@ -21,7 +21,13 @@ namespace LLMDesktopAssistant.Tools
 		/// <summary>
 		/// Gets or sets a JSON object that defines the schema of the arguments for the tool.
 		/// </summary>
-		public required JsonObject ArgumentSchema { get; init; } = new JsonObject();
+		public required JsonObject ArgumentSchema { get; init; }
+
+		/// <summary>
+		/// Gets or sets a JSON object that defines the schema of the structured output for the tool.
+		/// Can be null if tool does not produces structured output.
+		/// </summary>
+		public JsonObject? OutputSchema { get; init; }
 
 		/// <summary>
 		/// Gets a <see cref="FunctionTool"/> instance that represents this tool.

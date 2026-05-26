@@ -8,6 +8,7 @@ namespace LLMDesktopAssistant.Scripting
 	[ToolModule]
 	public class LuaInterpreterToolModule : ToolModule
 	{
+		private readonly SemaphoreSlim _semaphore = new(1, 1);
 		private readonly LuaService _lua;
 
 		public LuaInterpreterToolModule(LuaService lua)
@@ -22,7 +23,7 @@ namespace LLMDesktopAssistant.Scripting
 						Executes Lua and returns the script result along with messages printed by 'print' function.
 						
 						Lua has the API to interact with the application (called dASS) with these namespaces:
-						{string.Join(", ", lua.Namespaces.Select(ns => ns ?? "*global namespace*").Order())}
+						{string.Join(", ", lua.Namespaces.Select(ns => ns != null ? $"**{ns}**" : "*global namespace*").Order())}
 						
 						Use the `manuals(...)` function to get the documentation for a specific namespace, `print(manuals())` or `print(manuals(dass.tools))` for example.
 						Its very recommended to see manuals before starting to use the API (do not use it blindly without reading the documentation!).
@@ -32,30 +33,37 @@ namespace LLMDesktopAssistant.Scripting
 				});
 		}
 
-		public ToolResult ExecuteLua(
+		public ReactiveToolResult ExecuteLua(
 			string lua,
 			ToolExecutionContext context)
 		{
-			var printOutput = new List<string>();
+			var reactiveResult = new ReactiveToolResult();
 
-			try
+			_ = Task.Run(() =>
 			{
-				var scriptResult = _lua.Execute(lua, printOutput, g =>
+				_semaphore.Wait();
+				try
 				{
-					g["_dass_tec"] = UserData.Create(context);
-				});
+					var scriptResult = _lua.Execute(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
+					{
+						g["_dass_tool_ctx"] = UserData.Create(context);
+						g["_dass_tool_result"] = UserData.Create(reactiveResult);
+					});
+					reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToPrintString());
+					reactiveResult.CompleteWithSuccess();
+				}
+				catch (Exception ex)
+				{
+					reactiveResult.ResultContentLines.Add("Caught error: " + ex.Message);
+					reactiveResult.CompleteWithError();
+				}
+				finally
+				{
+					_semaphore.Release();
+				}
+			}, CancellationToken.None);
 
-				var resultBuilder = new StringBuilder();
-				foreach (var message in printOutput)
-					resultBuilder.AppendLine(message);
-				resultBuilder.Append($"Script successfully returned: {scriptResult}");
-
-				return new ToolResult(resultBuilder.ToString());
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult($"Got error while executing Lua: {ex.Message}");
-			}
+			return reactiveResult;
 		}
 	}
 }
