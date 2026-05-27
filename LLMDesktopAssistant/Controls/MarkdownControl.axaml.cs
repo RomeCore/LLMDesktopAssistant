@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Markup.Xaml;
 using LiveMarkdown.Avalonia;
+using LLMDesktopAssistant.Markdown;
 using UglyToad.PdfPig.Graphics.Operations.TextObjects;
 
 namespace LLMDesktopAssistant.Controls;

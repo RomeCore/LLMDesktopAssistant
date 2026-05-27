@@ -1,12 +1,14 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Net.NetworkInformation;
+using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using ModelContextProtocol.Protocol;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tools;
+using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {
@@ -82,7 +84,18 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					Call = toolCall,
 					Info = toolInfo
 				};
-				var reactiveResult = await toolInfo.Executor.Invoke(toolCall.Arguments, toolExecutionContext, cancellationToken);
+
+				JsonNode parsedArguments;
+				try
+				{
+					parsedArguments = JsonNode.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Error parsing tool arguments. Arguments: {Args}.", toolCall.Arguments);
+					throw;
+				}
+				var reactiveResult = await toolInfo.Executor.Invoke(parsedArguments, toolExecutionContext, cancellationToken);
 
 				toolCall.ReactiveToolResult = reactiveResult;
 				toolCall.StatusIcon = reactiveResult.StatusIcon;

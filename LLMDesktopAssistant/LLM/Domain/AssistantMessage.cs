@@ -43,16 +43,6 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _status, value);
 		}
 
-		private string? _pendingToolName;
-		/// <summary>
-		/// Gets or sets the name of the tool that is currently pending. If no tool call is pending, this property is null.
-		/// </summary>
-		public string? PendingToolName
-		{
-			get => _pendingToolName;
-			set => SetProperty(ref _pendingToolName, value);
-		}
-
 		private string? _error;
 		/// <summary>
 		/// Gets or sets the error message associated with the message. If no error occurred, this property is <see langword="null">.

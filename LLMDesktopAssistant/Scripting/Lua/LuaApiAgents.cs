@@ -322,7 +322,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var toolName = toolCallTable.Get("tool_name").CastToString();
 			var toolCallId = toolCallTable.Get("tool_call_id").CastToString();
 			var arguments = JsonLuaConverter.DynValueToJsonNode(toolCallTable.Get("arguments")) ?? JsonValue.Create((string?)null)!;
-			return new FunctionToolCall(toolCallId, toolName, arguments);
+			return new FunctionToolCall(toolCallId, toolName, arguments.ToJsonString());
 		}
 
 		private static DynValue ConvertMessageToLua(IMessage message, Script script)

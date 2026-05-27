@@ -389,7 +389,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				ToolCallId = toolCall.Id,
 				ToolName = toolCall.ToolName,
 				Title = toolCall.Title,
-				FunctionArguments = JsonSerializer.Serialize(toolCall.Arguments),
+				FunctionArguments = toolCall.Arguments,
 				Status = toolCall.Status switch
 				{
 					ToolStatus.None => ToolStatusModel.NotExecuted,
@@ -423,6 +423,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					ToolStatus.Cancelled => ToolStatusModel.Cancelled,
 					_ => ToolStatusModel.NotExecuted,
 				};
+				model.FunctionArguments = toolCall.Arguments;
 				model.StatusIcon = toolCall.StatusIcon;
 				model.StatusTitle = toolCall.StatusTitle;
 				model.ResultContent = toolCall.ResultContent;
@@ -735,7 +736,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						Id = toolCallModel.ToolCallId,
 						ToolName = toolCallModel.ToolName,
 						Title = toolCallModel.Title,
-						Arguments = JsonNode.Parse(toolCallModel.FunctionArguments)!,
+						Arguments = toolCallModel.FunctionArguments,
 						ResultContent = toolCallModel.ResultContent,
 						StructuredResult = string.IsNullOrEmpty(toolCallModel.StructuredResult) ? null
 							: JsonNode.Parse(toolCallModel.StructuredResult),

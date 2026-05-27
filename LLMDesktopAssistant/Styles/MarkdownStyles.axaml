@@ -2,6 +2,7 @@
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:md="using:LiveMarkdown.Avalonia"
 		xmlns:beh="using:LLMDesktopAssistant.Behaviours"
+		xmlns:nodes="using:LLMDesktopAssistant.Markdown.UINodes"
 		xmlns:ico="using:Material.Icons.Avalonia">
 	
 	<Design.PreviewWith>
@@ -120,6 +121,56 @@
 			</ControlTemplate>
 		</Setter>
 
+	</Style>
+
+	<!-- Quick Action Button -->
+	<Style Selector="Button.QuickAction">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<StackPanel Orientation="Horizontal"
+										Spacing="2">
+
+					<ico:MaterialIcon Kind="ArrowRightBottom"
+														Width="16"
+														Height="16"
+														Margin="0"/>
+
+					<md:MarkdownTextBlock Text="{TemplateBinding Content}"
+																Cursor="Hand"
+																Background="Transparent">
+						<TextBlock.TextDecorations>
+							<TextDecorationCollection>
+								<TextDecoration Location="Underline" StrokeThickness="1" StrokeDashArray="2,2" />
+							</TextDecorationCollection>
+						</TextBlock.TextDecorations>
+					</md:MarkdownTextBlock>
+
+				</StackPanel>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+	
+	<!-- Quick Explanation Button -->
+	<Style Selector="Button.QuickExplanation">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<md:MarkdownTextBlock Text="{TemplateBinding Content}"
+															Cursor="Help"
+															Background="Transparent">
+					<TextBlock.TextDecorations>
+						<TextDecorationCollection>
+							<TextDecoration Location="Underline" StrokeThickness="1" StrokeDashArray="2,2" />
+						</TextDecorationCollection>
+					</TextBlock.TextDecorations>
+				</md:MarkdownTextBlock>
+			</ControlTemplate>
+		</Setter>
+		<Setter Property="Flyout">
+			<Flyout>
+				<TextBlock Text="{Binding $parent[Button].(nodes:QuickExplanationUiNode.QuickExplanation)}"
+									 TextWrapping="Wrap"/>
+			</Flyout>
+		</Setter>
 	</Style>
 
 </Styles>

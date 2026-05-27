@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -39,6 +40,12 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			var storage = scope.ServiceProvider.GetRequiredService<IChatStorageService>();
 			storage.Reload();
+
+			// Activate all chat-specific services
+			var collection = scope.ServiceProvider.GetRequiredKeyedService<IServiceCollection>(ServiceRegistry.ChatServicesKey);
+			foreach (var service in collection)
+				if (!service.IsKeyedService && service.Lifetime != ServiceLifetime.Transient)
+					scope.ServiceProvider.GetServices(service.ServiceType);
 
 			return scope;
 		}

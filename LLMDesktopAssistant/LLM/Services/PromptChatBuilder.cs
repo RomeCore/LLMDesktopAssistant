@@ -257,7 +257,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					tool_calls = assistantMessage.ToolCalls.Select(tc => new
 					{
 						name = tc.ToolName,
-						arguments = tc.Arguments.ToJsonString(),
+						arguments = tc.Arguments,
 						result_content = tc.ResultContent,
 					}).ToArray(),
 
@@ -340,7 +340,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			foreach (var toolCall in assistantMessage.ToolCalls)
 			{
-				toolCalls.Add(new FunctionToolCall(toolCall.Id, toolCall.ToolName, toolCall.Arguments));
+				toolCalls.Add(new FunctionToolCall(toolCall.Id, toolCall.ToolName, toolCall.Arguments ?? string.Empty));
 				var status = ConvertToolStatus(toolCall.Status);
 				var toolResult = new ToolResult(status, toolCall.ResultContent ?? "Tool did not returned any result.");
 				messages.Add(new ToolMessage(toolResult, toolCall.Id, toolCall.ToolName));

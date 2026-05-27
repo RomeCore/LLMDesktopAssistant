@@ -1,3 +1,6 @@
+using System.Collections.Concurrent;
+using System.Collections.Immutable;
+using System.Net.NetworkInformation;
 using DocumentFormat.OpenXml.VariantTypes;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
@@ -12,8 +15,6 @@ using RCLargeLanguageModels.Metadata;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 using Serilog;
-using System.Collections.Concurrent;
-using System.Collections.Immutable;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -155,7 +156,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 					void ProcessToolCall(IToolCall toolCall)
 					{
-						if (toolCall is not FunctionToolCall funtionCall)
+						if (toolCall is not IFunctionToolCall funtionCall)
 							throw new InvalidOperationException($"Unsupported tool call type: {toolCall.GetType()}.");
 
 						if (!tools.TryGetValue(toolCall.ToolName, out var toolInfo))
@@ -173,19 +174,30 @@ namespace LLMDesktopAssistant.LLM.Services
 						};
 						domainResponseMessage.ToolCalls.Add(domainToolCall);
 
-						static async Task WrapToolExecutionTask(
-							IToolExecutionService toolExecutor,
-							Domain.AssistantMessage assistantMessage,
-							ToolCall domainToolCall,
-							ILLMBuildingService llmBuilder,
-							ImmutableDictionary<string, ToolInfo> tools,
-							LLMInfo llmInfo,
-							CompletionSource toolCallCompletionSource,
-							CancellationToken cancellationToken)
+						async Task WrapToolExecutionTask()
 						{
+							if (funtionCall is PartialFunctionToolCall partialFunctionCall)
+							{
+								domainToolCall.Status = ToolStatus.Pending;
+								void AddedPartialArg(object? sender, string deltaArg)
+								{
+									domainToolCall.Arguments = funtionCall.Args;
+								}
+
+								partialFunctionCall.ArgsPartAdded += AddedPartialArg;
+								try
+								{
+									await partialFunctionCall;
+								}
+								finally
+								{
+									partialFunctionCall.ArgsPartAdded -= AddedPartialArg;
+								}
+							}
+
 							try
 							{
-								await toolExecutor.ExecuteAsync(assistantMessage, domainToolCall, llmInfo, tools, cancellationToken);
+								await toolExecutor.ExecuteAsync(domainResponseMessage, domainToolCall, llmInfo, tools, cancellationToken);
 							}
 							finally
 							{
@@ -193,8 +205,7 @@ namespace LLMDesktopAssistant.LLM.Services
 							}
 						}
 
-						var toolExecTask = WrapToolExecutionTask(toolExecutor, domainResponseMessage, domainToolCall, llmBuilder,
-							tools, llmInfo, toolCallCompletionSource, cancellationToken);
+						var toolExecTask = WrapToolExecutionTask();
 						lock (lockObj)
 							toolExecutionTasks.Add(toolExecTask);
 					}
@@ -215,14 +226,9 @@ namespace LLMDesktopAssistant.LLM.Services
 							domainResponseMessage.ReasoningContent = prefixReasoningContent + responseMessage.ReasoningContent;
 						if (!string.IsNullOrEmpty(delta.DeltaContent))
 							domainResponseMessage.Content = prefixContent + responseMessage.Content;
-						if (delta.NewPartialMetadata?.OfType<ToolCallPendingMetadata>().FirstOrDefault() is ToolCallPendingMetadata toolCallPendingMetadata)
-							domainResponseMessage.PendingToolName = toolCallPendingMetadata.ToolName;
 
 						foreach (var toolCall in delta.NewToolCalls ?? [])
-						{
-							domainResponseMessage.PendingToolName = null;
 							ProcessToolCall(toolCall);
-						}
 					}
 
 					domainResponseMessage.ReasoningContent = prefixReasoningContent + responseMessage.ReasoningContent;
@@ -318,8 +324,8 @@ namespace LLMDesktopAssistant.LLM.Services
 						}
 						finally
 						{
-							domainResponseMessage.PendingToolName = null;
 							completionSource.Complete();
+							cancellationToken.ThrowIfCancellationRequested();
 						}
 					}
 

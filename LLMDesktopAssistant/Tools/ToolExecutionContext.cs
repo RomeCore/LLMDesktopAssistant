@@ -47,7 +47,7 @@ namespace LLMDesktopAssistant.Tools
 				Title = tool.DisplayName,
 				CompletionToken = ct,
 				Id = ToolCallId.Generate(),
-				Arguments = args ?? new JsonObject()
+				Arguments = args?.ToJsonString() ?? "{}"
 			};
 			var message = new AssistantMessage
 			{

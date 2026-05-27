@@ -142,31 +142,6 @@ namespace LLMDesktopAssistant.LLM.Messages
 								TextPart = new AssistantMessageTextPartViewModel(_assistantMessage);
 							}
 							break;
-
-						case nameof(AssistantMessage.PendingToolName):
-
-							ToolPart ??= new AssistantMessageToolPartViewModel();
-							if (ToolPart.ToolCalls.FirstOrDefault(t => t.Status == ToolStatus.Pending) is ToolCallViewModel pendingToolCall)
-								ToolPart.ToolCalls.Remove(pendingToolCall);
-
-							if (_assistantMessage.PendingToolName != null)
-							{
-								var toolsetCache = ChatViewModel.Chat.Services.GetRequiredService<IToolsetCacheService>();
-								var title = toolsetCache.AvailableTools.TryGetValue(_assistantMessage.PendingToolName, out var toolInfo) ?
-									toolInfo.DisplayName : _assistantMessage.PendingToolName;
-
-								ToolPart.ToolCalls.Add(new ToolCallViewModel(new ToolCall
-								{
-									ToolName = _assistantMessage.PendingToolName,
-									Title = title,
-									Arguments = new JsonObject(),
-									CompletionToken = RCLargeLanguageModels.Tasks.CompletionToken.Success,
-									Id = "",
-									Status = ToolStatus.Pending
-								}, ChatViewModel.Chat));
-							}
-
-							break;
 					}
 
 

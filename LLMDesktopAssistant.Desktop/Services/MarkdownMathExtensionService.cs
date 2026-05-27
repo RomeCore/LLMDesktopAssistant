@@ -6,6 +6,9 @@ using System.Text;
 
 namespace LLMDesktopAssistant.Desktop.Services
 {
+	/// <summary>
+	/// The dummy service that just adds Math nodes to the markdown renderer.
+	/// </summary>
 	[Service]
 	public class MarkdownMathExtensionService
 	{

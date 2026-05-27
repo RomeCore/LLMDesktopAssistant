@@ -25,10 +25,15 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// </summary>
 		public required string Id { get; init; }
 
+		private string _arguments = "{}";
 		/// <summary>
 		/// Gets or sets the arguments passed to the tool. These are typically in JSON format.
 		/// </summary>
-		public required JsonNode Arguments { get; init; }
+		public string Arguments
+		{
+			get => _arguments;
+			set => SetProperty(ref _arguments, value);
+		}
 
 		private ToolStatus _status;
 		/// <summary>

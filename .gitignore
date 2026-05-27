@@ -54,5 +54,7 @@ TestResult.xml
 nunit-*.xml
 
 .integrai/
+.llmassist/
+proj-references/
 .vs/
 /.vs/

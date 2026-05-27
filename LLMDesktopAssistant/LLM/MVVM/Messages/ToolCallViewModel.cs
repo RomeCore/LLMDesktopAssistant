@@ -7,6 +7,7 @@ using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
 using System.ComponentModel;
+using System.Text.Json.Nodes;
 using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.Messages
@@ -122,20 +123,19 @@ namespace LLMDesktopAssistant.LLM.Messages
 			set => SetProperty(ref _result, value);
 		}
 
-		public bool ShowResult => !string.IsNullOrEmpty(Result);
-		public bool ShowArguments => !string.IsNullOrEmpty(Arguments);
-
 
 
 		public MaterialIconKind ToolIcon =>
 			Status switch
 			{
+				ToolStatus.Pending => MaterialIconKind.Edit,
+				ToolStatus.Executing => MaterialIconKind.WrenchClock,
 				ToolStatus.WaitingForApproval => MaterialIconKind.QuestionMarkCircle,
 				ToolStatus.ExecutionInterrupted => MaterialIconKind.CancelCircle,
 				ToolStatus.Success => MaterialIconKind.CheckCircle,
 				ToolStatus.Cancelled => MaterialIconKind.CancelCircle,
 				ToolStatus.Error => MaterialIconKind.AlertCircle,
-				_ => MaterialIconKind.Hammer
+				_ => MaterialIconKind.Wrench
 			};
 
 		public bool IsPending =>
@@ -239,7 +239,15 @@ namespace LLMDesktopAssistant.LLM.Messages
 			ToolName = toolCall.ToolName;
 			ToolTitle = toolCall.Title ?? toolCall.ToolName;
 			ToolCallId = toolCall.Id;
-			Arguments = ToolCallArgumentFormatter.FormatToMarkdown(toolCall.Arguments);
+			try
+			{
+				var parsedArgs = JsonNode.Parse(toolCall.Arguments);
+				Arguments = ToolCallArgumentFormatter.FormatToMarkdown(parsedArgs);
+			}
+			catch
+			{
+				Arguments = "```json\n" + toolCall.Arguments + "\n```";
+			}
 
 			Status = toolCall.Status;
 			Progress = toolCall.ReactiveToolResult?.Progress;
@@ -268,6 +276,17 @@ namespace LLMDesktopAssistant.LLM.Messages
 					{
 						switch (e.PropertyName)
 						{
+							case nameof(ToolCall.Arguments):
+								try
+								{
+									var parsedArgs = JsonNode.Parse(toolCall.Arguments);
+									Arguments = ToolCallArgumentFormatter.FormatToMarkdown(parsedArgs);
+								}
+								catch
+								{
+									Arguments = "```json\n" + toolCall.Arguments + "\n```";
+								}
+								break;
 							case nameof(ToolCall.Status): Status = toolCall.Status; break;
 							case nameof(ToolCall.StatusIcon): StatusIcon = toolCall.StatusIcon; break;
 							case nameof(ToolCall.StatusTitle): StatusTitle = toolCall.StatusTitle; break;

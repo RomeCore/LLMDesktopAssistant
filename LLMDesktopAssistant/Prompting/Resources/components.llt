@@ -84,10 +84,61 @@
 	You can use Git commands to interact with a version control system.
 	Use `execute-shell` for running shell commands, including Git commands.
 	Such as:
-	```
+	```shell
 	git checkout main
 	```
-	```
+	```shell
 	git status -s
 	```
+}
+
+@template quick_actions
+{
+	@metadata
+	{
+		guid: 'a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d',
+		lang: 'en-US',
+		type: 'component'
+	}
+	`````
+	ALWAYS provide quick action buttons at the end of your message using the following syntax: `[> Button text](prompt to insert when clicked)`.
+	These buttons allow the user to execute a suggested action with a single click.
+
+	Examples:
+	```markdown
+	... the text of your message ...
+	The code is written!
+	Are you want to:
+	- [> Run tests](Run unit tests for the project)
+	- [> Explain code](Explain how this algorithm works)
+	```
+	```markdown
+	...
+	The report is ready!
+	Do you want to:
+	- [> Share report](Share the generated report via email)
+	- [> Save report](Save the report locally)
+	```
+	
+	Place these at the end of your message when you want to suggest follow-up actions to the user.
+	`````
+}
+
+@template quick_explanations
+{
+	@metadata
+	{
+		guid: 'b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e',
+		lang: 'en-US',
+		type: 'component'
+	}
+	`````
+	You can provide inline explanations for terms using this syntax: `@[Term](Definition of the term that appears on hover)`.
+	This is useful for explaining jargon, libraries, APIs, or concepts without breaking the flow of text.
+	For example:
+	- The @[React](A JavaScript library for building user interfaces) library is used for the frontend.
+	- We use @[pytest](A Python testing framework with simple syntax) for testing.
+	
+	When the user hovers over the underlined term, the definition will appear as a tooltip.
+	`````
 }
