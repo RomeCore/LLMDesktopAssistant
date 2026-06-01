@@ -1366,6 +1366,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit file.
+        /// </summary>
+        public static string fs_edit {
+            get {
+                return ResourceManager.GetString("fs-edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} change(s) ({1}).
+        /// </summary>
+        public static string fs_edit_changes_count {
+            get {
+                return ResourceManager.GetString("fs-edit_changes_count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на {0} entries.
         /// </summary>
         public static string fs_entries {
@@ -1380,6 +1398,51 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string fs_get_file_info {
             get {
                 return ResourceManager.GetString("fs-get_file_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Glob search.
+        /// </summary>
+        public static string fs_glob {
+            get {
+                return ResourceManager.GetString("fs-glob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Found {0} item(s)....
+        /// </summary>
+        public static string fs_glob_found_count {
+            get {
+                return ResourceManager.GetString("fs-glob_found_count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на No matches found.
+        /// </summary>
+        public static string fs_glob_no_matches {
+            get {
+                return ResourceManager.GetString("fs-glob_no_matches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} result(s).
+        /// </summary>
+        public static string fs_glob_results {
+            get {
+                return ResourceManager.GetString("fs-glob_results", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Searching for {0}....
+        /// </summary>
+        public static string fs_glob_searching {
+            get {
+                return ResourceManager.GetString("fs-glob_searching", resourceCulture);
             }
         }
         

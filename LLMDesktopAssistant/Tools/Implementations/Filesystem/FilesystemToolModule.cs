@@ -44,15 +44,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					AskForConfirmation = false
 				});
 
-			AddTool(WriteFile,
-				new ToolInitializationInfo
-				{
-					Name = "fs-write_file",
-					Description = "Writes text content to a file inside working directory.",
-					Category = "filesystem",
-					AskForConfirmation = true
-				});
-
 			AddTool(WriteBinaryFile,
 				new ToolInitializationInfo
 				{
@@ -280,53 +271,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			catch (Exception ex)
 			{
 				return ReactiveToolResult.CreateError($"Error reading document file: {ex.Message}");
-			}
-		}
-
-		public ReactiveToolResult WriteFile(
-			string path,
-			string content,
-			bool append = false)
-		{
-			try
-			{
-				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
-				var dir = Path.GetDirectoryName(fullPath);
-
-				if (!Directory.Exists(dir))
-					Directory.CreateDirectory(dir!);
-
-				var fileExisted = File.Exists(fullPath);
-
-				if (append)
-					File.AppendAllText(fullPath, content);
-				else
-					File.WriteAllText(fullPath, content);
-
-				var fileInfo = new FileInfo(fullPath);
-				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
-
-				var result = new ReactiveToolResult
-				{
-					StatusIcon = fileExisted ?
-						(append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck) :
-						Material.Icons.MaterialIconKind.FilePlus,
-					StatusTitle = $"**{fileName}**"
-				};
-
-				var output = $"""
-					File: {path}
-					Operation: {(append ? "Append" : "Write")}
-					New size: {fileInfo.Length} bytes ~ ({size})
-					""";
-
-				result.ResultContent = output;
-				return result.Complete(true);
-			}
-			catch (Exception ex)
-			{
-				return ReactiveToolResult.CreateError($"Error writing file: {ex.Message}");
 			}
 		}
 

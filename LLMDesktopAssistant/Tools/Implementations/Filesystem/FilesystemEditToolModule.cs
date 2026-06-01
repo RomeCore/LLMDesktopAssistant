@@ -142,6 +142,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			var normalizedMatch = NormalizeLineEndings(match);
 			var matchLines = normalizedMatch.Split('\n').ToList();
+			if (matchLines.Count > 0 && string.IsNullOrEmpty(matchLines[^1]))
+				matchLines.RemoveAt(matchLines.Count - 1); // Remove trailing empty line if present (LLMs loves to add them!)
 
 			if (ignoreWhitespace)
 			{
@@ -244,7 +246,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					return noChangeResult.Complete(true);
 				}
 
-				var newContent = regex.Replace(normalizedContent, text);
+				int count = 0;
+				var newContent = regex.Replace(normalizedContent, m => ++count == occurrence ? text : m.Value);
 				newContent = PreserveLineEndings(originalContent, newContent);
 
 				File.WriteAllText(fullPath, newContent);
@@ -399,12 +402,28 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			if (nonEmpty.Count == 0)
 				return lines;
 
-			int minIndent = nonEmpty.Min(l => l.Length - l.TrimStart().Length);
-			if (minIndent == 0)
+			// Find the longest common leading whitespace prefix across all non-empty lines.
+			// Supports both spaces and tabs, and mixed indentation.
+			int maxLookup = nonEmpty.Min(l => l.Length);
+			int commonLen = 0;
+			for (int i = 0; i < maxLookup; i++)
+			{
+				char c = nonEmpty[0][i];
+				if (c is not ' ' and not '\t')
+					break;
+
+				// All non-empty lines must have the same character at this position
+				if (!nonEmpty.All(l => l[i] == c))
+					break;
+
+				commonLen = i + 1;
+			}
+
+			if (commonLen == 0)
 				return lines;
 
-			var indent = new string(' ', minIndent);
-			return lines.Select(l => l.StartsWith(indent) ? l[minIndent..] : l).ToList();
+			var prefix = nonEmpty[0][..commonLen];
+			return lines.Select(l => l.StartsWith(prefix) ? l[commonLen..] : l).ToList();
 		}
 
 		private static List<int> FindSequenceIndices(
