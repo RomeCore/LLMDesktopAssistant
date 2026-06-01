@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization.Metadata;
 
 namespace LLMDesktopAssistant.LLM.Messages
 {
@@ -8,6 +9,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 	{
 		private static readonly JsonSerializerOptions _toolCallSerializerOptions = new JsonSerializerOptions
 		{
+			TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
 			Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
 			WriteIndented = true
 		};

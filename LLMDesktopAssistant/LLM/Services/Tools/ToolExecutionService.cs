@@ -4,6 +4,7 @@ using System.Net.NetworkInformation;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using ModelContextProtocol.Protocol;
 using RCLargeLanguageModels;
@@ -88,7 +89,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				JsonNode parsedArguments;
 				try
 				{
-					parsedArguments = JsonNode.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
+					parsedArguments = TolerantJsonParser.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
 				}
 				catch (Exception ex)
 				{

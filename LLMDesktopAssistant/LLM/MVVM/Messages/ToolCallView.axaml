@@ -8,6 +8,7 @@
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 xmlns:flui="using:FluentAvalonia.UI.Controls"
+			 xmlns:beh="clr-namespace:LLMDesktopAssistant.Behaviours"
 			 x:Class="LLMDesktopAssistant.LLM.Messages.ToolCallView"
 			 x:DataType="local:ToolCallViewModel">
 	
@@ -195,7 +196,8 @@
 
 							<ScrollViewer Grid.Row="1"
 														VerticalScrollBarVisibility="Auto"
-														HorizontalScrollBarVisibility="Auto">
+														HorizontalScrollBarVisibility="Auto"
+														beh:ScrollViewerBehavior.AutoScrollEnabled="True">
 
 								<StackPanel Orientation="Vertical" Spacing="20" Margin="16,16,32,32">
 

@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using System.ComponentModel;
 using System.Text.Json.Nodes;
@@ -241,7 +242,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 			ToolCallId = toolCall.Id;
 			try
 			{
-				var parsedArgs = JsonNode.Parse(toolCall.Arguments);
+				var parsedArgs = TolerantJsonParser.Parse(toolCall.Arguments);
 				Arguments = ToolCallArgumentFormatter.FormatToMarkdown(parsedArgs);
 			}
 			catch
@@ -279,7 +280,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 							case nameof(ToolCall.Arguments):
 								try
 								{
-									var parsedArgs = JsonNode.Parse(toolCall.Arguments);
+									var parsedArgs = TolerantJsonParser.Parse(toolCall.Arguments);
 									Arguments = ToolCallArgumentFormatter.FormatToMarkdown(parsedArgs);
 								}
 								catch
