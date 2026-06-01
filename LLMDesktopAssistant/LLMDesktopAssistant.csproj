@@ -63,6 +63,7 @@
 		<PackageReference Include="DialogHost.Avalonia" Version="0.12.2" />
 		<PackageReference Include="LiveMarkdown.Avalonia" Version="2.0.0" />
 		<PackageReference Include="Material.Icons.Avalonia" Version="3.0.2" />
+		<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.8" />
 	</ItemGroup>
 
 	<ItemGroup>

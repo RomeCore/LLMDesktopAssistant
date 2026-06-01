@@ -660,6 +660,22 @@
   <data name="fs-create_directory" xml:space="preserve">
     <value>Create directory</value>
   </data>
+  <data name="fs-glob" xml:space="preserve">
+    <value>Glob search</value>
+  </data>
+  <data name="fs-glob_results" xml:space="preserve">
+    <value>{0} result(s)</value>
+  </data>
+  <data name="fs-glob_searching" xml:space="preserve">
+    <value>Searching for {0}...</value>
+  </data>
+  <data name="fs-glob_found_count" xml:space="preserve">
+    <value>Found {0} item(s)...</value>
+  </data>
+  <data name="fs-glob_no_matches" xml:space="preserve">
+    <value>No matches found</value>
+  </data>
+
   <data name="settings-summarization_enabled" xml:space="preserve">
     <value>Enable chat auto-summarization</value>
   </data>

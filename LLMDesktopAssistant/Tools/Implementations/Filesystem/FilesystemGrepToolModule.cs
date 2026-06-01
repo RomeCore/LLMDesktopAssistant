@@ -11,11 +11,11 @@ using LLMDesktopAssistant.Utils.Files;
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
 	[ToolModule]
-	public class FilesystemGrepGlobToolModule : ToolModule
+	public class FilesystemGrepToolModule : ToolModule
 	{
 		private readonly FileAccessService _fileAccess;
 
-		public FilesystemGrepGlobToolModule(FileAccessService fileAccess)
+		public FilesystemGrepToolModule(FileAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 

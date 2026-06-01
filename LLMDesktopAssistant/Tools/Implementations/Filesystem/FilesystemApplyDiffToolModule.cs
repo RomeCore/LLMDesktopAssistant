@@ -45,9 +45,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			string path,
 			[Description("Range of lines to delete, e.g. '10-20' or '10'. If not specified, no lines will be deleted.")]
 			string? deleteLines = null,
-			[Description("The line number at which to insert text. Must be specified if 'insertText' is provided.")]
-			int? insertAtLine = null,
-			[Description("The text to insert at the specified line. Must be specified if 'insertAtLine' is provided.")]
+			[Description("The line number at which to insert text (specified in 'insertText' or 'deleteLines').")]
+			int? insertBeforeLine = null,
+			[Description("The text to insert at the specified line. Requires the 'insertBeforeLine' to be specified.")]
 			string? insertText = null)
 		{
 			try
@@ -88,23 +88,23 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						return ReactiveToolResult.CreateError($"End line {endLine} is out of range. File has {lines.Count} lines.");
 				}
 
-				if (insertAtLine != null && insertText != null)
+				if (insertBeforeLine != null && insertText != null)
 				{
-					if (insertAtLine < 1)
-						return ReactiveToolResult.CreateError($"Line number {insertAtLine} must be at least 1");
+					if (insertBeforeLine < 1)
+						return ReactiveToolResult.CreateError($"Line number {insertBeforeLine} must be at least 1");
 
-					if (insertAtLine > lines.Count + 1)
+					if (insertBeforeLine > lines.Count + 1)
 						return ReactiveToolResult.CreateError(
-							$"Line number {insertAtLine} is out of range. File has {lines.Count} lines. " +
+							$"Line number {insertBeforeLine} is out of range. File has {lines.Count} lines. " +
 							$"Max insert position is {lines.Count + 1}");
 				}
-				else if (insertAtLine != null && insertText == null)
+				else if (insertBeforeLine != null && insertText == null && deleteLines == null)
 				{
-					return ReactiveToolResult.CreateError("insertText parameter is required when insertAtLine is specified");
+					return ReactiveToolResult.CreateError("either insertText or deleteLines parameters are required when insertBeforeLine is specified");
 				}
-				else if (insertText != null && insertAtLine == null)
+				else if (insertText != null && insertBeforeLine == null)
 				{
-					return ReactiveToolResult.CreateError("insertAtLine parameter is required when insertText is specified");
+					return ReactiveToolResult.CreateError("insertBeforeLine parameter is required when insertText is specified");
 				}
 
 				if (!string.IsNullOrEmpty(deleteLines))
@@ -114,33 +114,34 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					deletedStartLine = startLine;
 					deletedEndLine = endLine;
 					deletedContent = lines.Skip(startLine - 1).Take(endLine - startLine + 1).ToList();
+					insertText ??= string.Join(Environment.NewLine, deletedContent);
 
 					int startIndex = startLine - 1;
 					int countToRemove = endLine - startLine + 1;
 					lines.RemoveRange(startIndex, countToRemove);
 
-					if (insertAtLine != null && insertAtLine > startLine)
+					if (insertBeforeLine != null && insertBeforeLine > startLine)
 					{
-						if (insertAtLine < startLine + countToRemove)
+						if (insertBeforeLine < startLine + countToRemove)
 						{
-							insertAtLine = startLine;
+							insertBeforeLine = startLine;
 						}
 						else
 						{
-							insertAtLine -= countToRemove;
+							insertBeforeLine -= countToRemove;
 						}
 					}
 				}
 
-				if (insertAtLine != null && insertText != null)
+				if (insertBeforeLine != null && insertText != null)
 				{
 					beforeInsertionLines = lines.ToList();
-					insertedStartLine = insertAtLine.Value;
+					insertedStartLine = insertBeforeLine.Value;
 					var insertLinesList = insertText.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
 					insertedContent = insertLinesList;
-					insertedEndLine = insertAtLine.Value + insertLinesList.Count - 1;
+					insertedEndLine = insertBeforeLine.Value + insertLinesList.Count - 1;
 
-					int insertPosition = insertAtLine.Value - 1;
+					int insertPosition = insertBeforeLine.Value - 1;
 					lines.InsertRange(insertPosition, insertLinesList);
 				}
 
@@ -226,12 +227,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				for (int i = 0; i < Math.Min(5, deletedContent.Count); i++)
 				{
-					report.AppendLine($"> {deletedStartLine + i,6}: {deletedContent[i]}");
+					report.AppendLine($"- {deletedStartLine + i,6}: {deletedContent[i]}");
 				}
 
 				if (deletedContent.Count > 10)
 				{
-					report.AppendLine("> ...");
+					report.AppendLine("- ...");
 				}
 
 				if (deletedContent.Count > 5)
@@ -239,7 +240,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					int startIdx = Math.Max(Math.Min(5, deletedContent.Count), deletedContent.Count - 5);
 					for (int i = startIdx; i < deletedContent.Count; i++)
 					{
-						report.AppendLine($"> {deletedStartLine + i,6}: {deletedContent[i]}");
+						report.AppendLine($"- {deletedStartLine + i,6}: {deletedContent[i]}");
 					}
 				}
 				report.AppendLine();
@@ -277,12 +278,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				for (int i = 0; i < Math.Min(5, insertedContent.Count); i++)
 				{
-					report.AppendLine($"> {insertedStartLine + i,6}: {insertedContent[i]}");
+					report.AppendLine($"+ {insertedStartLine + i,6}: {insertedContent[i]}");
 				}
 
 				if (insertedContent.Count > 10)
 				{
-					report.AppendLine("> ...");
+					report.AppendLine("+ ...");
 				}
 
 				if (insertedContent.Count > 5)
@@ -290,7 +291,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					int startIdx = Math.Max(Math.Min(5, insertedContent.Count), insertedContent.Count - 5);
 					for (int i = startIdx; i < insertedContent.Count; i++)
 					{
-						report.AppendLine($"> {insertedStartLine + i,6}: {insertedContent[i]}");
+						report.AppendLine($"+ {insertedStartLine + i,6}: {insertedContent[i]}");
 					}
 				}
 				report.AppendLine();

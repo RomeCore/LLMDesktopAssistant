@@ -660,6 +660,22 @@
   <data name="fs-create_directory" xml:space="preserve">
     <value>Создать директорию</value>
   </data>
+  <data name="fs-glob" xml:space="preserve">
+    <value>Поиск по маске</value>
+  </data>
+  <data name="fs-glob_results" xml:space="preserve">
+    <value>{0} результат(ов)</value>
+  </data>
+  <data name="fs-glob_searching" xml:space="preserve">
+    <value>Поиск {0}...</value>
+  </data>
+  <data name="fs-glob_found_count" xml:space="preserve">
+    <value>Найдено {0}...</value>
+  </data>
+  <data name="fs-glob_no_matches" xml:space="preserve">
+    <value>Совпадений не найдено</value>
+  </data>
+
   <data name="settings-summarization_enabled" xml:space="preserve">
     <value>Включить авто-суммаризацию чата</value>
   </data>
