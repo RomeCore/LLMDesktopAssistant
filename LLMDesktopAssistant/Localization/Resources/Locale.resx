@@ -660,6 +660,10 @@
   <data name="fs-create_directory" xml:space="preserve">
     <value>Create directory</value>
   </data>
+  <data name="fs-edit_changes_count" xml:space="preserve">
+    <value>{0} change(s) ({1})</value>
+  </data>
+
   <data name="fs-glob" xml:space="preserve">
     <value>Glob search</value>
   </data>

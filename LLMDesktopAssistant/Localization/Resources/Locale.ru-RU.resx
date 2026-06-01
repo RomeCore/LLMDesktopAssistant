@@ -660,6 +660,10 @@
   <data name="fs-create_directory" xml:space="preserve">
     <value>Создать директорию</value>
   </data>
+  <data name="fs-edit_changes_count" xml:space="preserve">
+    <value>{0} изменение(й) ({1})</value>
+  </data>
+
   <data name="fs-glob" xml:space="preserve">
     <value>Поиск по маске</value>
   </data>
