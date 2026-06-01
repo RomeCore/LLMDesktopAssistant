@@ -62,7 +62,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					AskForConfirmation = true
 				});
 
-			AddTool(DeleteFile,
+			AddTool(DeleteFile, PreviewDeleteFile,
 				new ToolInitializationInfo
 				{
 					Name = "fs-delete_file",
@@ -369,6 +369,18 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				return ReactiveToolResult.CreateError($"Error creating directory: {ex.Message}");
 			}
+		}
+
+		public PreviewToolExecutionResult PreviewDeleteFile(string path)
+		{
+			var fullPath = _fileAccess.TryAccessPath(path);
+			var fileName = Path.GetFileName(fullPath);
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = Material.Icons.MaterialIconKind.Delete,
+				StatusTitle = $"**{fileName}**"
+			};
 		}
 
 		public ReactiveToolResult DeleteFile(string path)

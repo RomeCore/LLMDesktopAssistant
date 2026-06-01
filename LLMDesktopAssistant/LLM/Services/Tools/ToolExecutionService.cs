@@ -53,8 +53,32 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 			try
 			{
+				JsonNode? parsedArgs = null;
+				var toolExecutionContext = new ToolExecutionContext
+				{
+					Chat = chat,
+					Message = message,
+					Call = toolCall,
+					Info = toolInfo
+				};
+
 				if (toolInfo.AskForConfirmation)
 				{
+					if (toolInfo.PreviewExecutor != null)
+					{
+						try
+						{
+							parsedArgs = TolerantJsonParser.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
+							toolCall.Status = ToolStatus.PreExecuting;
+							var preExecutionResult = await toolInfo.PreviewExecutor(parsedArgs, toolExecutionContext, cancellationToken);
+							toolCall.StatusTitle = preExecutionResult.StatusTitle;
+							toolCall.StatusIcon = preExecutionResult.StatusIcon;
+						}
+						catch
+						{
+						}
+					}
+
 					var tcs = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
 					toolCall.UserConfirmationSource = tcs;
 					toolCall.Status = ToolStatus.WaitingForApproval;
@@ -78,25 +102,18 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				}
 
 				toolCall.Status = ToolStatus.Executing;
-				var toolExecutionContext = new ToolExecutionContext
-				{
-					Chat = chat,
-					Message = message,
-					Call = toolCall,
-					Info = toolInfo
-				};
 
-				JsonNode parsedArguments;
 				try
 				{
-					parsedArguments = TolerantJsonParser.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
+					// Use the parser that can tolerate lots of errors and still produce a valid JSON object.
+					parsedArgs ??= TolerantJsonParser.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
 				}
 				catch (Exception ex)
 				{
 					Log.Error(ex, "Error parsing tool arguments. Arguments: {Args}.", toolCall.Arguments);
 					throw;
 				}
-				var reactiveResult = await toolInfo.Executor.Invoke(parsedArguments, toolExecutionContext, cancellationToken);
+				var reactiveResult = await toolInfo.Executor.Invoke(parsedArgs, toolExecutionContext, cancellationToken);
 
 				toolCall.ReactiveToolResult = reactiveResult;
 				toolCall.StatusIcon = reactiveResult.StatusIcon;

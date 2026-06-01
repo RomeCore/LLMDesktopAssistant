@@ -12,7 +12,6 @@ using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.Tools
 {
-
 	public static class ToolExecutorCreator
 	{
 		public static (

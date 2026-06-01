@@ -16,6 +16,11 @@
 		Pending,
 
 		/// <summary>
+		/// The tool is pre-executing.
+		/// </summary>
+		PreExecuting,
+
+		/// <summary>
 		/// The tool is currently waiting for user's approval before proceeding.
 		/// </summary>
 		WaitingForApproval,
