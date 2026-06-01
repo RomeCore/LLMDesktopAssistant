@@ -1672,7 +1672,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Context shield is active.
+        ///   Ищет локализованную строку, похожую на Context shield is active, the upper messages not visible to agents.
         /// </summary>
         public static string message_context_shield {
             get {

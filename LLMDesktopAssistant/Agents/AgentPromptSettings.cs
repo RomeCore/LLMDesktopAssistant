@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents

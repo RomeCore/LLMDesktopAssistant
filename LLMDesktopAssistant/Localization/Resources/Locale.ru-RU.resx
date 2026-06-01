@@ -1138,7 +1138,7 @@
     <value>Сводка</value>
   </data>
   <data name="message_context_shield" xml:space="preserve">
-    <value>Контекстный щит активирован</value>
+    <value>Контекстный щит активирован, сообщения выше не видны агентам</value>
   </data>
   <data name="settings-llm_max_tokens" xml:space="preserve">
     <value>Макс. токенов</value>

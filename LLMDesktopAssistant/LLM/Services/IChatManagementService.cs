@@ -29,11 +29,17 @@ namespace LLMDesktopAssistant.LLM.Services
 		IServiceScope OpenChatScope(int chatId);
 
 		/// <summary>
+		/// Opens a new service scope for a memory-based chat session. This is useful for scenarios where the chat history is stored in memory rather than persistently.
+		/// </summary>
+		/// <returns>A service scope containing a new memory-based chat session and any related dependencies.</returns>
+		IServiceScope OpenMemoryChat();
+
+		/// <summary>
 		/// Removes all chat sessions that do not contain any messages.
 		/// </summary>
 		/// <remarks>Use this method to clean up unused or placeholder chat sessions. This operation does not affect
 		/// chats that contain at least one message.</remarks>
-		void ClearEmptyAndTemporaryChats();
+		void ClearEmptyChats();
 
 		/// <summary>
 		/// Creates a new chat with the specified title.
@@ -41,5 +47,11 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <param name="title">The title of the chat to create. Cannot be null or empty.</param>
 		/// <returns>A <see cref="ChatInfo"/> object containing details of the newly created chat.</returns>
 		ChatInfo CreateChat(string title);
+
+		/// <summary>
+		/// Deletes a chat with the specified ID. If no chat exists with the given ID, this method does nothing.
+		/// </summary>
+		/// <param name="chatId">The ID of the chat to delete.</param>
+		void DeleteChat(int chatId);
 	}
 }

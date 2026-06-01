@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using RCLargeLanguageModels.Messages;
 
@@ -62,8 +63,8 @@ public interface IPromptBuildingHook
 	/// The <see cref="BranchedMessage"/> currently being processed.
 	/// Contains the original chat message and its branching metadata.
 	/// </param>
-	/// <param name="agentId">
-	/// The identifier of the target agent for which the context is being built.
+	/// <param name="agent">
+	/// The target agent for which the context is being built.
 	/// Useful for agent-specific filtering or transformation.
 	/// </param>
 	/// <returns>
@@ -71,7 +72,7 @@ public interface IPromptBuildingHook
 	/// to remove the message from the context entirely.
 	/// If no modification is needed, return <paramref name="message"/> unchanged.
 	/// </returns>
-	BranchedMessage? Modify(BranchedMessage message, Guid agentId) => message;
+	BranchedMessage? Modify(BranchedMessage message, AgentDescriptor agent) => message;
 
 	/// <summary>
 	/// Allows final modifications to the complete list of LLM-native messages
@@ -85,11 +86,11 @@ public interface IPromptBuildingHook
 	/// The <see cref="BranchedMessage"/> currently being processed,
 	/// which contains the original chat message and its branching metadata.
 	/// </param>
-	/// <param name="agentId">
-	/// The identifier of the target agent.
+	/// <param name="agent">
+	/// The target agent.
 	/// </param>
 	/// <returns>
 	/// A modified enumerable of messages, or <c>null</c> to keep the list unchanged.
 	/// </returns>
-	IEnumerable<IMessage>? ModifyFinalContext(IEnumerable<IMessage> messages, BranchedMessage message, Guid agentId) => null;
+	IEnumerable<IMessage>? ModifyFinalContext(IEnumerable<IMessage> messages, BranchedMessage message, AgentDescriptor agent) => null;
 }

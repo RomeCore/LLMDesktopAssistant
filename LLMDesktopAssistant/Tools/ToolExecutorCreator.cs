@@ -12,6 +12,7 @@ using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.Tools
 {
+
 	public static class ToolExecutorCreator
 	{
 		public static (
@@ -55,6 +56,7 @@ namespace LLMDesktopAssistant.Tools
 			var parameterMappings = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
 			int toolExecutionContextMapping = -1;
+			int originalArgsMapping = -1;
 			int cancellationTokenMapping = -1;
 			int preparedResultMapping = -1;
 			var serviceMappings = new Dictionary<int, Type>();
@@ -77,6 +79,12 @@ namespace LLMDesktopAssistant.Tools
 					if (toolExecutionContextMapping != -1)
 						throw new ArgumentException("ToolExecutionContext can only be specified once.", nameof(method));
 					toolExecutionContextMapping = paramIndex;
+				}
+				else if (parameter.ParameterType.IsAssignableTo(typeof(JsonNode)) && parameter.IsDefined(typeof(OriginalArgsAttribute)))
+				{
+					if (originalArgsMapping != -1)
+						throw new ArgumentException("[OriginalArgs] JsonNode can only be specified once.", nameof(method));
+					originalArgsMapping = paramIndex;
 				}
 				else if (parameter.ParameterType == typeof(CancellationToken))
 				{
@@ -142,6 +150,8 @@ namespace LLMDesktopAssistant.Tools
 
 					if (toolExecutionContextMapping != -1)
 						inParams[toolExecutionContextMapping] = context;
+					if (originalArgsMapping != -1)
+						inParams[originalArgsMapping] = args;
 					if (cancellationTokenMapping != -1)
 						inParams[cancellationTokenMapping] = cancellationToken;
 					if (preparedResultMapping != -1)

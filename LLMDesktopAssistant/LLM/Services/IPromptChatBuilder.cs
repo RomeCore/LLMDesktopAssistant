@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using RCLargeLanguageModels.Messages;
 
@@ -13,12 +14,12 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// respecting the read permissions of the target agent.
 		/// </summary>
 		/// <param name="message">The domain message to convert.</param>
-		/// <param name="agentId">The ID of the agent that will receive this message.</param>
+		/// <param name="agent">The agent that will receive this message.</param>
 		/// <returns>A list of messages for the LLM chat input.
 		/// For user message there will be single message.
 		/// For own assistant message there will be at least one message with tool messages appended.
 		/// For foreign assistant message it will be merged into a single user message.</returns>
-		IEnumerable<IMessage> ConvertMessageForAgent(BranchedMessage message, Guid agentId);
+		IEnumerable<IMessage> ConvertMessageForAgent(BranchedMessage message, AgentDescriptor agent);
 
 		/// <summary>
 		/// Converts a message to LLM messages without applying agent-specific visibility filters.
@@ -34,8 +35,8 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <summary>
 		/// Builds a list of messages for the LLM chat input.
 		/// </summary>
-		/// <param name="agentId">The ID of the agent to build the message list for.</param>
+		/// <param name="agent">The agent to build the message list for.</param>
 		/// <returns>A list of messages for the LLM chat input.</returns>
-		IEnumerable<IMessage> Build(Guid agentId);
+		IEnumerable<IMessage> Build(AgentDescriptor agent);
 	}
 }

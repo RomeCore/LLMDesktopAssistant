@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.Prompting.Injectors;
@@ -49,9 +50,9 @@ public interface IPromptInjector
 	/// <see cref="BranchedMessage"/> items from the chat history, plus any
 	/// <see cref="RawUserMessage"/> items injected by earlier injectors.
 	/// </param>
-	/// <param name="agentId">
-	/// The identifier of the agent that will receive this context.
+	/// <param name="agent">
+	/// The agent that will receive this context.
 	/// Can be used to filter or customize injected content per agent.
 	/// </param>
-	void Inject(List<BranchedMessage> messages, Guid agentId);
+	void Inject(List<BranchedMessage> messages, AgentDescriptor agent);
 }

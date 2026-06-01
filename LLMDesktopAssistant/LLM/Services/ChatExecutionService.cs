@@ -26,6 +26,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	public class ChatExecutionService(
 		Chat chat,
 		IAgentOrderingService agentOrderer,
+		IAgentManagementService agentManager,
 		IChatStorageService storage,
 		IPromptChatBuilder promptBuilder,
 		IToolExecutionService toolExecutor,
@@ -115,7 +116,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				chat.StatusIcon = MaterialIconKind.ChatProcessing;
 				chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
 
-				var inputMessages = promptBuilder.Build(agentId);
+				var agent = agentManager.GetAgentDescriptor(agentId);
+				var inputMessages = promptBuilder.Build(agent);
 				toolsetCache.Invalidate(agentId);
 				var tools = toolsetCache.ValidTools;
 				var toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
@@ -338,7 +340,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					chat.StatusIcon = MaterialIconKind.ChatProcessing;
 					chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
 
-					inputMessages = promptBuilder.Build(agentId);
+					inputMessages = promptBuilder.Build(agent);
 					toolsetCache.Invalidate(agentId);
 					tools = toolsetCache.ValidTools;
 					toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));

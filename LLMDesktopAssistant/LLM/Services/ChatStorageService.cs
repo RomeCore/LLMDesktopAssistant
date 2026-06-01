@@ -21,11 +21,11 @@ namespace LLMDesktopAssistant.LLM.Services
 {
 	[ChatService(typeof(IChatStorageService))]
 	public class ChatStorageService(
-			Chat chat,
-			ChatDatabase database
+			Chat chat
 		) : Disposable, IChatStorageService
 	{
 		readonly int chatId = chat.ChatId;
+		readonly ChatDatabase database = chat.ChatDatabase;
 		Action? _mainUnsubscriber;
 		readonly MultiValueDictionary<ChatMessage, Action> _unsubscribers = [];
 
@@ -55,7 +55,6 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			chat.Title = chatModel.Title;
 			chat.Settings = SettingsManager.Get<ChatSettings>(chatModel.SettingsProfile);
-			chat.IsTemporary = chatModel.IsTemporary;
 
 			var currentNodeId = chatModel.RootNodeId;
 			while (currentNodeId != -1)
@@ -86,7 +85,6 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				chatModel.Title = chat.Title;
 				chatModel.SettingsProfile = chat.Settings.Id;
-				chatModel.IsTemporary = chat.IsTemporary;
 
 				database.Chats.Update(chatModel);
 			}

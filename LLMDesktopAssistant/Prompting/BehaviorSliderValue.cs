@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Prompting
 {
 	/// <summary>
 	/// Represents a single slider value for an agent's behavior slider.

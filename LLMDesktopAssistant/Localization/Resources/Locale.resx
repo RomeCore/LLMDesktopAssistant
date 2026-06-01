@@ -1138,7 +1138,7 @@
     <value>Summary</value>
   </data>
   <data name="message_context_shield" xml:space="preserve">
-    <value>Context shield is active</value>
+    <value>Context shield is active, the upper messages not visible to agents</value>
   </data>
   <data name="settings-llm_max_tokens" xml:space="preserve">
     <value>Max tokens</value>

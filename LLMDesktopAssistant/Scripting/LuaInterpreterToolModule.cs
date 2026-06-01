@@ -8,7 +8,6 @@ namespace LLMDesktopAssistant.Scripting
 	[ToolModule]
 	public class LuaInterpreterToolModule : ToolModule
 	{
-		private readonly SemaphoreSlim _semaphore = new(1, 1);
 		private readonly LuaService _lua;
 
 		public LuaInterpreterToolModule(LuaService lua)
@@ -41,7 +40,6 @@ namespace LLMDesktopAssistant.Scripting
 
 			_ = Task.Run(() =>
 			{
-				_semaphore.Wait();
 				try
 				{
 					var scriptResult = _lua.Execute(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
@@ -59,7 +57,6 @@ namespace LLMDesktopAssistant.Scripting
 				}
 				finally
 				{
-					_semaphore.Release();
 				}
 			}, CancellationToken.None);
 

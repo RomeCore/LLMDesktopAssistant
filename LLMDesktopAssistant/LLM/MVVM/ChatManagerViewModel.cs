@@ -47,7 +47,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		private void Initialize()
 		{
-			ChatServices.ManagementService.ClearEmptyAndTemporaryChats();
+			ChatServices.ManagementService.ClearEmptyChats();
 			LoadConversations();
 			CreateConversation();
 		}

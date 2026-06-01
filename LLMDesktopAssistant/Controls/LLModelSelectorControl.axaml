@@ -17,7 +17,8 @@
 
 	</UserControl.Resources>
 
-	<StackPanel Orientation="Horizontal" Height="32" >
+	<StackPanel Orientation="Horizontal" Height="32"
+							x:Name="SelectorRoot">
 		<local:LLModelSelectorComboBox x:Name="Selector">
 
 			<local:LLModelSelectorComboBox.DataTemplates>

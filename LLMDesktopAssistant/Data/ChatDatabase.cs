@@ -29,9 +29,13 @@ namespace LLMDesktopAssistant.Data
 		public ILiteCollection<ChatContextTabViewDataModel> ChatContextTabViewModels { get; }
 		public ILiteCollection<AdditionalMessageViewDataModel> AdditionalMessageViewModels { get; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ChatDatabase"/> class.
+		/// </summary>
+		/// <param name="path">The path to the database file. Or the "Memory=true;" if you want to use in-memory database.</param>
 		public ChatDatabase(string path)
 		{
-			if (Path.GetDirectoryName(path) is string dir)
+			if (path != "Memory=true;" && Path.GetDirectoryName(path) is string dir)
 				Directory.CreateDirectory(dir);
 			Database = new LiteDatabase(path);
 

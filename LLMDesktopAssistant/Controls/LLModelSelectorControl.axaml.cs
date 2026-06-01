@@ -142,23 +142,30 @@ namespace LLMDesktopAssistant.Controls
 			var list = ServiceRegistry.Get<LLModelListService>();
 			var weakRef = new WeakReference(this);
 
-			void ListRefreshed(object? s, EventArgs e)
+			void ListRefreshBegan(object? s, EventArgs e)
 			{
 				var target = weakRef.Target as LLModelSelectorControl;
 				if (target == null)
-					list.Registry.RefreshCompleted -= ListRefreshed;
+					list.Registry.RefreshBegan -= ListRefreshBegan;
+				else
+					target.Registry_RefreshBegan(s, e);
+			}
+			void ListRefreshCompleted(object? s, EventArgs e)
+			{
+				var target = weakRef.Target as LLModelSelectorControl;
+				if (target == null)
+					list.Registry.RefreshCompleted -= ListRefreshCompleted;
 				else
 					target.Registry_RefreshCompleted(s, e);
 			}
-			list.Registry.RefreshCompleted += ListRefreshed;
+			list.Registry.RefreshCompleted += ListRefreshCompleted;
 
-			Rebuild();
-			IsRefreshButtonVisiblePropertyChanged(IsRefreshButtonVisible);
-
-			Selector.Items.Add(new ComboBoxFirstItemModel());
 			Selector.SelectionChanged += Selector_SelectionChanged;
 			Selector.DropDownOpened += Selector_DropDownOpened;
 			SelectedModelChanged += Private_SelectedModelChanged;
+
+			Rebuild();
+			IsRefreshButtonVisiblePropertyChanged(IsRefreshButtonVisible);
 		}
 
 		private void IsRefreshButtonVisiblePropertyChanged(bool newValue)
@@ -191,17 +198,26 @@ namespace LLMDesktopAssistant.Controls
 			if (model != null)
 			{
 				if (!Selector.Items.Contains(model))
-					Selector.Items.Insert(1, model);
+					Selector.Items.Insert(0, model);
 				Selector.SelectedItem = model;
 			}
 			else
 				Selector.SelectedIndex = 0;
 		}
 
+		private void Registry_RefreshBegan(object? sender, EventArgs e)
+		{
+			Dispatcher.Invoke(() =>
+			{
+				SelectorRoot.IsEnabled = false;
+			});
+		}
+
 		private void Registry_RefreshCompleted(object? sender, EventArgs e)
 		{
 			Dispatcher.Invoke(() =>
 			{
+				SelectorRoot.IsEnabled = true;
 				Rebuild();
 			});
 		}
@@ -246,7 +262,7 @@ namespace LLMDesktopAssistant.Controls
 
 			refreshFlag = true;
 			Selector.Items.Clear();
-			Selector.Items.Add(new ComboBoxFirstItemModel());
+			Selector.Items.Add(LLModelDescriptorTracked.Empty);
 			refreshFlag = false;
 
 			// Find the previous model

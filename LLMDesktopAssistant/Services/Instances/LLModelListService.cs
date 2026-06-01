@@ -22,23 +22,7 @@ namespace LLMDesktopAssistant.Services.Instances
 	[Service]
 	public class LLModelListService
 	{
-		private class ExtendedDeepSeekClient : DeepSeekClient
-		{
-			public ExtendedDeepSeekClient(string endpointUri, ITokenAccessor tokenAccessor, HttpClient? http = null) : base(endpointUri, tokenAccessor, http)
-			{
-			}
-
-			protected override Task<LLModelDescriptor[]> ListModelsOverrideAsync(CancellationToken cancellationToken = default)
-			{
-				var models = base.ListModelsOverrideAsync(cancellationToken).Result;
-
-				return Task.FromResult(models.Append(
-					new LLModelDescriptor(this, "deepseek-chat", "DeepSeek Chat")).Append(
-					new LLModelDescriptor(this, "deepseek-reasoner", "DeepSeek Reasoner")).ToArray());
-			}
-		}
-
-		static readonly ExtendedDeepSeekClient deepseek = new("https://api.deepseek.com/beta", new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
+		static readonly DeepSeekClient deepseek = new("https://api.deepseek.com/beta", new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
 		static readonly OpenRouterClient openrouter = new(new EnvironmentTokenAccessor("OPENROUTER_API_KEY"));
 		static readonly OllamaClient ollama = new();
 

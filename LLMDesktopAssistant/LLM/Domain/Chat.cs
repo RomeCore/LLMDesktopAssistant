@@ -6,6 +6,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using Material.Icons;
 using LLMDesktopAssistant.LLM.MVVM.ContextTabs;
+using LLMDesktopAssistant.Data;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -18,6 +19,21 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// Gets the service provider used to resolve dependencies.
 		/// </summary>
 		public IServiceProvider Services { get; } = services;
+
+		private ChatDatabase _database = null!;
+		/// <summary>
+		/// Gets the database used to store this chat session's data.
+		/// </summary>
+		public ChatDatabase ChatDatabase
+		{
+			get => _database;
+			set
+			{
+				if (_database != null)
+					throw new InvalidOperationException("ChatDatabase cannot be changed once set.");
+				_database = value;
+			}
+		}
 
 		private int _chatId = -1;
 		/// <summary>
@@ -42,17 +58,6 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _title;
 			set => SetProperty(ref _title, value);
-		}
-
-		private bool _isTemporary = false;
-		/// <summary>
-		/// Gets or sets a value indicating whether the chat session is temporary.
-		/// Temporary chats will be removed when user opens application again.
-		/// </summary>
-		public bool IsTemporary
-		{
-			get => _isTemporary;
-			set => SetProperty(ref _isTemporary, value);
 		}
 
 		/// <summary>

@@ -28,11 +28,12 @@ namespace LLMDesktopAssistant.LLM.Services
 			return database.Chats.FindAll().Select(CreateChatInfo).ToList();
 		}
 
-		public IServiceScope OpenChatScope(int chatId)
+		private IServiceScope OpenChatScope(ChatDatabase database, int chatId)
 		{
 			var scope = services.CreateScope();
 
 			var chat = scope.ServiceProvider.GetRequiredService<Chat>();
+			chat.ChatDatabase = database;
 			chat.ChatId = chatId;
 
 			// Ensure at least one default agent exists for this chat
@@ -50,9 +51,20 @@ namespace LLMDesktopAssistant.LLM.Services
 			return scope;
 		}
 
-		public void ClearEmptyAndTemporaryChats()
+		public IServiceScope OpenChatScope(int chatId)
 		{
-			database.Chats.DeleteMany(c => (c.LeafNodeId == -1 && c.RootNodeId == -1) || c.IsTemporary);
+			return OpenChatScope(database, chatId);
+		}
+
+		public IServiceScope OpenMemoryChat()
+		{
+			var memoryDatabase = new ChatDatabase("Memory=true;");
+			return OpenChatScope(memoryDatabase, 1);
+		}
+
+		public void ClearEmptyChats()
+		{
+			database.Chats.DeleteMany(c => c.LeafNodeId == -1 && c.RootNodeId == -1);
 		}
 
 		public ChatInfo CreateChat(string title)
@@ -69,6 +81,11 @@ namespace LLMDesktopAssistant.LLM.Services
 			database.Chats.Insert(model);
 
 			return CreateChatInfo(model);
+		}
+
+		public void DeleteChat(int chatId)
+		{
+
 		}
 	}
 }
