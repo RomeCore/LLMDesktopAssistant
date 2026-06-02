@@ -215,10 +215,9 @@ namespace LLMDesktopAssistant.LLM.Messages
 		public ICommand CopyArgumentsCommand { get; }
 		public void CopyArguments()
 		{
-			var json = ToolCallArgumentFormatter.FormatToJson(toolCall.Arguments);
-			if (!string.IsNullOrEmpty(json))
+			if (!string.IsNullOrEmpty(toolCall.Arguments))
 			{
-				App.MainTopLevel.Clipboard?.SetTextAsync(json);
+				App.MainTopLevel.Clipboard?.SetTextAsync(toolCall.Arguments);
 			}
 		}
 
@@ -288,6 +287,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 									Arguments = "```json\n" + toolCall.Arguments + "\n```";
 								}
 								break;
+
 							case nameof(ToolCall.Status): Status = toolCall.Status; break;
 							case nameof(ToolCall.StatusIcon): StatusIcon = toolCall.StatusIcon; break;
 							case nameof(ToolCall.StatusTitle): StatusTitle = toolCall.StatusTitle; break;

@@ -32,8 +32,6 @@ namespace LLMDesktopAssistant.Services
 		private static State _state;
 		private static IServiceProvider _serviceProvider = null!;
 		private static ImmutableUniqueTypeDictionary<object> _services = null!;
-		private static ImmutableDictionary<Type, ImmutableList<DynamicServiceTypeInfo>> _dynamicRegistry = null!;
-		private static ConcurrentDictionary<Type, DynamicServiceTracker> _dynamicTrackers = null!;
 
 		/// <summary>
 		/// Gets the service provider for the application. This is used to resolve services by their type.
@@ -100,7 +98,9 @@ namespace LLMDesktopAssistant.Services
 			{
 				collection.AddSingleton(service);
 			}
+
 			configureServices?.Invoke(collection);
+
 			foreach (var service in ReflectionUtility.GetTypesWithAttribute<object, ServiceAttribute>()
 				.OrderBy(t => t.Attribute.Order))
 			{
@@ -108,47 +108,22 @@ namespace LLMDesktopAssistant.Services
 				collection.AddSingleton(serviceType, service.Type);
 			}
 
-			_serviceProvider = collection.BuildServiceProvider();
+			foreach (var configurator in ReflectionUtility.GetTypesWithAttribute<ServiceConfigurator, ServiceConfiguratorAttribute>())
+			{
+				if (configurator.Attribute.Scope == ServiceScope.App)
+					configurator.Type.Instantiate<ServiceConfigurator>().Configure(collection);
+			}
 
-			_dynamicRegistry = ReflectionUtility.GetTypesWithAttribute<IDynamicService, DynamicServiceAttribute>()
-				.OrderBy(t => t.Attribute.Order)
-				.GroupBy(t => t.Attribute.CategoryType)
-				.ToImmutableDictionary(g => g.Key, g => g
-					.Select(t => new DynamicServiceTypeInfo(t.Attribute.Id, t.Type, t.Attribute.Order))
-					.ToImmutableList());
+			_serviceProvider = collection.BuildServiceProvider();
 
 			// Validate
 
-			var invalidDynModules = new List<string>();
-			foreach (var (categoryType, category) in _dynamicRegistry)
-			{
-				foreach (var typeInfo in category)
-				{
-					if (!categoryType.IsAssignableFrom(typeInfo.Type))
-						invalidDynModules.Add($"Dynamic module '{typeInfo.Type.Name}' with ID '{typeInfo.Id}' cannot be assigned to category '{categoryType.Name}'.");
-				}
-			}
-			if (invalidDynModules.Count > 0)
-				throw new Exception("Invalid dynamic modules found: " + string.Join(", ", invalidDynModules));
-
 			_state = State.Initialized;
 
-			_dynamicTrackers = new(
-				_dynamicRegistry.ToDictionary(t => t.Key,
-				t =>
-				{
-					var trackerType = typeof(DynamicServiceTracker<>).MakeGenericType(t.Key);
-					return (DynamicServiceTracker)ActivatorUtilities.CreateInstance(_serviceProvider, trackerType);
-				}));
-
-			var allServices = new List<(Type, object)>();
+			var allServices = new List<object?>();
 			foreach (var service in collection)
-				allServices.AddRange(_serviceProvider.GetServices(service.ServiceType).Select((s) => (service.ServiceType, s))!);
-			// _serviceTuples = new(allServices.DistinctBy(s => s.Item2).Where(s => s.Item2 != null));
-			_services = new(allServices.Select(s => s.Item2).Distinct());
-
-			foreach (var tracker in _dynamicTrackers.Values)
-				tracker.Initialize();
+				allServices.AddRange(_serviceProvider.GetServices(service.ServiceType));
+			_services = new(allServices.Where(s => s != null).Distinct()!);
 
 			Log.Information("ServiceRegistry initialized with {Count} App services.", collection.Count);
 		}
@@ -162,9 +137,6 @@ namespace LLMDesktopAssistant.Services
 				throw new InvalidOperationException("ModuleManager is not initialized or already shut down.");
 
 			_services = null!;
-
-			foreach (var tracker in _dynamicTrackers.Values)
-				tracker.NonGenericModule?.Shutdown();
 
 			_state = State.Shutdown;
 		}
@@ -199,50 +171,8 @@ namespace LLMDesktopAssistant.Services
 		/// <returns></returns>
 		public static IEnumerable<T> GetAll<T>()
 		{
-			if (_state == State.Initialized)
-				return _services.GetAll<T>();
-			return [];
-		}
-
-		/// <summary>
-		/// Gets a dynamic module of the specified category type. Throws an exception if no such category type is registered.
-		/// </summary>
-		/// <typeparam name="T">The category type of the dynamic module to retrieve.</typeparam>
-		/// <returns>The dynamic module.</returns>
-		/// <exception cref="ServiceNotFoundException">The specified category type is not registered.</exception>
-		public static T? TryGetDynamic<T>()
-			where T : IDynamicService
-		{
-			return GetDynamicTracker<T>().Module;
-		}
-
-		/// <summary>
-		/// Gets a dynamic module of the specified category type. Throws an exception if no such category type is registered.
-		/// </summary>
-		/// <typeparam name="T">The category type of the dynamic module to retrieve.</typeparam>
-		/// <returns>The dynamic module.</returns>
-		/// <exception cref="ServiceNotFoundException">The specified category type is not registered.</exception>
-		public static T GetDynamic<T>()
-			where T : IDynamicService
-		{
-			return GetDynamicTracker<T>().Module ?? throw new ServiceNotFoundException($"No module of category type '{typeof(T).FullName}' is present.");
-		}
-
-		/// <summary>
-		/// Gets a dynamic module tracker of the specified type. Throws an exception if no such category type is registered.
-		/// </summary>
-		/// <typeparam name="T">The category type of the dynamic module tracker to retrieve.</typeparam>
-		/// <returns>The dynamic module tracker.</returns>
-		/// <exception cref="ServiceNotFoundException">The specified category type is not registered.</exception>
-		public static DynamicServiceTracker<T> GetDynamicTracker<T>()
-			where T : IDynamicService
-		{
 			CheckInitialized();
-			return (DynamicServiceTracker<T>)_dynamicTrackers.GetOrAdd(typeof(T), static categoryType =>
-			{
-				var trackerType = typeof(DynamicServiceTracker<>).MakeGenericType(typeof(T));
-				return (DynamicServiceTracker<T>)ActivatorUtilities.CreateInstance(_serviceProvider, trackerType);
-			});
+			return _services.GetAll<T>();
 		}
 	}
 }

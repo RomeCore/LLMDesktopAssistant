@@ -73,6 +73,28 @@
 		<Setter Property="Width" Value="24"/>
 		<Setter Property="Height" Value="24"/>
 	</Style>
+	
+
+
+	<Style Selector="Button.BigIconButton">
+		<Setter Property="Width" Value="40"/>
+		<Setter Property="Height" Value="40"/>
+	</Style>
+	
+	<Style Selector="Button.BigIconButton > ico|MaterialIcon">
+		<Setter Property="Width" Value="32"/>
+		<Setter Property="Height" Value="32"/>
+	</Style>
+	
+	<Style Selector="ToggleButton.BigIconButton">
+		<Setter Property="Width" Value="40"/>
+		<Setter Property="Height" Value="40"/>
+	</Style>
+	
+	<Style Selector="ToggleButton.BigIconButton > ico|MaterialIcon">
+		<Setter Property="Width" Value="32"/>
+		<Setter Property="Height" Value="32"/>
+	</Style>
 
 
 	
@@ -89,6 +111,11 @@
 	<Style Selector="ico|MaterialIcon.SmallIcon">
 		<Setter Property="Width" Value="24"/>
 		<Setter Property="Height" Value="24"/>
+	</Style>
+	
+	<Style Selector="ico|MaterialIcon.BigIcon">
+		<Setter Property="Width" Value="40"/>
+		<Setter Property="Height" Value="40"/>
 	</Style>
 
 

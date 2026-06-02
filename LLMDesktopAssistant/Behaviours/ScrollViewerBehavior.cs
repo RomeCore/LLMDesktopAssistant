@@ -15,8 +15,8 @@ namespace LLMDesktopAssistant.Behaviours
 			obj.SetValue(AutoScrollEnabledProperty, value);
 		}
 
-		private static readonly AttachedProperty<bool> IsAutoScrollingProperty =
-			AvaloniaProperty.RegisterAttached<ScrollViewer, bool>("IsAutoScrolling",
+		private static readonly AttachedProperty<bool> IsAutoScrollingVerticalProperty =
+			AvaloniaProperty.RegisterAttached<ScrollViewer, bool>("IsAutoScrollingVertical",
 				typeof(ScrollViewerBehavior));
 
 		public static readonly AttachedProperty<bool> AutoScrollEnabledProperty =
@@ -44,9 +44,9 @@ namespace LLMDesktopAssistant.Behaviours
 
 			if (scrollViewer.Offset.Y >= scrollViewer.ScrollBarMaximum.Y - 1)
 			{
-				scrollViewer.SetValue(IsAutoScrollingProperty, scrollViewer.Offset.Y == scrollViewer.ScrollBarMaximum.Y);
-				if (scrollViewer.GetValue(IsAutoScrollingProperty))
-					scrollViewer.ScrollToEnd();
+				scrollViewer.SetValue(IsAutoScrollingVerticalProperty, scrollViewer.Offset.Y == scrollViewer.ScrollBarMaximum.Y);
+				if (scrollViewer.GetValue(IsAutoScrollingVerticalProperty))
+					scrollViewer.SetCurrentValue(ScrollViewer.OffsetProperty, new Vector(scrollViewer.Offset.X, double.PositiveInfinity));
 			}
 		}
 	}

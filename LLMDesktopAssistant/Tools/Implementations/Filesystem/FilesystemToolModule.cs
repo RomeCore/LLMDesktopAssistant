@@ -379,7 +379,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			return new PreviewToolExecutionResult
 			{
 				StatusIcon = Material.Icons.MaterialIconKind.Delete,
-				StatusTitle = $"**{fileName}**"
+				StatusTitle = $"**{fileName}**",
+				DangerLevel = ToolDangerLevel.Warning
 			};
 		}
 

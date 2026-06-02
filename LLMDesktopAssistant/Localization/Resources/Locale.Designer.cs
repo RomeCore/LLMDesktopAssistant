@@ -1555,15 +1555,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Read file.
-        /// </summary>
-        public static string fs_read_file {
-            get {
-                return ResourceManager.GetString("fs-read_file", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Rename file.
         /// </summary>
         public static string fs_rename_file {

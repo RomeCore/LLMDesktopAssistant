@@ -360,9 +360,6 @@
   <data name="settings" xml:space="preserve">
     <value>Настройки</value>
   </data>
-  <data name="fs-read_file" xml:space="preserve">
-    <value>Прочитать файл</value>
-  </data>
   <data name="fs-write_file" xml:space="preserve">
     <value>Записать в файл</value>
   </data>

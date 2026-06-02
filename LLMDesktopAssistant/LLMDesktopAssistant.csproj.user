@@ -5,5 +5,8 @@
     <EmbeddedResource Update="Localization\Resources\Locale.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Update="Localization\Resources\Locale.ru-RU.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

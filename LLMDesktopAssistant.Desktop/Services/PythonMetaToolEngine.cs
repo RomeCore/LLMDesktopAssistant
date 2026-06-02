@@ -23,7 +23,7 @@ namespace LLMDesktopAssistant.Desktop.Services
 	/// Requires Python runtime and optional virtual environment.
 	/// Only available on Desktop platform.
 	/// </summary>
-	[Service(ServiceType = typeof(IMetaToolEngine))]
+	[Service(typeof(IMetaToolEngine))]
 	public class PythonMetaToolEngine : IMetaToolEngine
 	{
 		private static readonly Parser _frontmatterParser;

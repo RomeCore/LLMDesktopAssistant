@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace LLMDesktopAssistant.WebUI
 {
-	[Service(ServiceType = typeof(IPasswordHashingService))]
+	[Service(typeof(IPasswordHashingService))]
 	public class PasswordHashingService : IPasswordHashingService
 	{
 		private const int SaltSize = 128 / 8; // 16 bytes

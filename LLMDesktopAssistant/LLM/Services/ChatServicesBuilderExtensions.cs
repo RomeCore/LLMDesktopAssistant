@@ -3,6 +3,7 @@ using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Scripting.Lua;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
@@ -44,6 +45,12 @@ namespace LLMDesktopAssistant.LLM.Services
 			foreach (var luaApi in luaApis)
 			{
 				services.AddScoped(typeof(LuaApiBase), luaApi.Type);
+			}
+
+			foreach (var configurator in ReflectionUtility.GetTypesWithAttribute<ServiceConfigurator, ServiceConfiguratorAttribute>())
+			{
+				if (configurator.Attribute.Scope == ServiceScope.Chat)
+					configurator.Type.Instantiate<ServiceConfigurator>().Configure(services);
 			}
 		}
 	}

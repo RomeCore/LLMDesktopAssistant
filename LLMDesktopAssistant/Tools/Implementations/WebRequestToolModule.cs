@@ -488,7 +488,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public void Dispose()
+		protected override void Dispose(bool disposing)
 		{
 			_httpClient?.Dispose();
 		}

@@ -5,7 +5,7 @@ namespace LLMDesktopAssistant.Speech
 	/// <summary>
 	/// Interface for speech player from text.
 	/// </summary>
-	public interface IAssistantSpeechPlayer : IDynamicService
+	public interface IAssistantSpeechPlayer
 	{
 		/// <summary>
 		/// Plays the provided text as speech.

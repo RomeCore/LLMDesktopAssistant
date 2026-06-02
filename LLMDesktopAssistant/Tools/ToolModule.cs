@@ -12,7 +12,7 @@ namespace LLMDesktopAssistant.Tools
 	/// <summary>
 	/// Base class for all tool modules. It provides a method to retrieve tools for the LLM assistant.
 	/// </summary>
-	public abstract class ToolModule
+	public abstract class ToolModule : Disposable
 	{
 		private readonly List<ToolInfo> _tools = [];
 

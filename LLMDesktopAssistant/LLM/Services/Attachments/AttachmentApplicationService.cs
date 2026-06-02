@@ -233,7 +233,7 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 
 			return $"""
 				The file content is already provided below.
-				DO NOT call fs-read_file unless more context is required.
+				DO NOT call fs-read_entry unless more context is required.
 				----- BEGIN CONTENT -----
 				{string.Join(Environment.NewLine, lines)}
 				-----  END CONTENT  -----

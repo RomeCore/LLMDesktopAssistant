@@ -5,6 +5,7 @@
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM.MVVM"
 			 xmlns:beh="clr-namespace:LLMDesktopAssistant.Behaviours"
+			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.ChatView"
 			 x:DataType="local:ChatViewModel">
 	
@@ -29,15 +30,29 @@
 									ResizeDirection="Columns"/>
 
 		<!-- Messages Area -->
-		<ScrollViewer Grid.Row="0" Grid.Column="2"
-									VerticalScrollBarVisibility="Visible"
-									beh:ScrollViewerBehavior.AutoScrollEnabled="True">
+		<Panel Grid.Row="0" Grid.Column="2">
+			
+			<ScrollViewer x:Name="MessagesScrollViewer"
+										ScrollChanged="MessagesScrollViewer_ScrollChanged"
+										VerticalScrollBarVisibility="Visible"
+										beh:ScrollViewerBehavior.AutoScrollEnabled="True">
 
-			<StackPanel>
-				<ContentControl Content="{Binding MessageSequence}"/>
-				<ContentControl Content="{Binding ChatStatus}" />
-			</StackPanel>
-		</ScrollViewer>
+				<StackPanel>
+					<ContentControl Content="{Binding MessageSequence}"/>
+					<ContentControl Content="{Binding ChatStatus}"/>
+				</StackPanel>
+			</ScrollViewer>
+
+			<Button x:Name="ScrollToBottomButton"
+							Classes="BigIconButton"
+							Click="ScrollToBottomButton_Click"
+							HorizontalAlignment="Right"
+							VerticalAlignment="Bottom"
+							Margin="32,16">
+				<ico:MaterialIcon Kind="ArrowDown"/>
+			</Button>
+
+		</Panel>
 
 		<!-- Input Area -->
 		<Border Grid.Row="1" Grid.ColumnSpan="3"

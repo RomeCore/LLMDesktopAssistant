@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Speech
 	/// <summary>
 	/// Interface for speech generation from text.
 	/// </summary>
-	public interface ISpeechGenerator : IDynamicService
+	public interface ISpeechGenerator
 	{
 		/// <summary>
 		/// Generates speech from the given text.

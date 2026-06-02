@@ -12,14 +12,17 @@ namespace LLMDesktopAssistant.Speech
 	/// <summary>
 	/// Class that manages a queue of strings for speech processing.
 	/// </summary>
-	public static class SpeechQueue
+	// [Service]
+	public class SpeechQueue
 	{
-		private static readonly ConcurrentQueue<string> _queue = new();
-		private static readonly SemaphoreSlim _signal = new(0);
-		private static CancellationTokenSource _speechCts = new();
+		private readonly ConcurrentQueue<string> _queue = new();
+		private readonly SemaphoreSlim _signal = new(0);
+		private CancellationTokenSource _speechCts = new();
+		private readonly IAssistantSpeechPlayer _player;
 
-		static SpeechQueue()
+		public SpeechQueue(IAssistantSpeechPlayer player)
 		{
+			_player = player;
 			_ = Task.Run(ProcessQueue);
 		}
 
@@ -27,7 +30,7 @@ namespace LLMDesktopAssistant.Speech
 		/// Adds a string to the queue for processing.
 		/// </summary>
 		/// <param name="speech">The string to add to the queue.</param>
-		public static void Enqueue(string speech)
+		public void Enqueue(string speech)
 		{
 			_queue.Enqueue(speech);
 			Console.WriteLine(speech);
@@ -37,7 +40,7 @@ namespace LLMDesktopAssistant.Speech
 		/// <summary>
 		/// Cancels the current speech processing task and resets the cancellation token source.
 		/// </summary>
-		public static void CancelCurrent()
+		public void CancelCurrent()
 		{
 			_speechCts.Cancel();
 			_speechCts = new CancellationTokenSource();
@@ -46,7 +49,7 @@ namespace LLMDesktopAssistant.Speech
 		/// <summary>
 		/// Clears all items from the queue, causing to prevent playing any further queued speech.
 		/// </summary>
-		public static void Clear()
+		public void Clear()
 		{
 			while (_queue.TryDequeue(out _)) { }
 		}
@@ -54,13 +57,13 @@ namespace LLMDesktopAssistant.Speech
 		/// <summary>
 		/// Cancels the current speech processing task and clears all items from the queue.
 		/// </summary>
-		public static void CancelAll()
+		public void CancelAll()
 		{
 			CancelCurrent();
 			Clear();
 		}
 
-		private static async Task ProcessQueue()
+		private async Task ProcessQueue()
 		{
 			while (true)
 			{
@@ -70,9 +73,7 @@ namespace LLMDesktopAssistant.Speech
 				{
 					try
 					{
-						var module = ServiceRegistry.GetDynamic<IAssistantSpeechPlayer>();
-
-						await module.SpeakAsync(
+						await _player.SpeakAsync(
 							speech,
 							_speechCts.Token);
 					}
