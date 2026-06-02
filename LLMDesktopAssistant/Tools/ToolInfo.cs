@@ -64,6 +64,11 @@ namespace LLMDesktopAssistant.Tools
 		public Func<JsonNode, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>>? PreviewExecutor { get; init; }
 
 		/// <summary>
+		/// Gets or sets the default danger level of the tool.
+		/// </summary>
+		public ToolDangerLevel DefaultDangerLevel { get; init; }
+
+		/// <summary>
 		/// Gets or sets the executor function for the tool. This function is responsible for executing the tool with the provided arguments and context.
 		/// </summary>
 		public required Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor { get; init; }
@@ -116,8 +121,10 @@ namespace LLMDesktopAssistant.Tools
 				Name = info.Name,
 				DescriptionGetter = info.DescriptionGetter,
 				ArgumentSchema = argSchema,
-				Executor = _executor,
+				OutputSchema = info.OutputSchema,
 				PreviewExecutor = _previewExecutor,
+				DefaultDangerLevel = info.DefaultDangerLevel,
+				Executor = _executor,
 				DisplayName = info.DisplayName,
 				Category = info.Category,
 				AskForConfirmation = info.AskForConfirmation,

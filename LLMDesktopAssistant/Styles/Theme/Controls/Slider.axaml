@@ -10,7 +10,7 @@
       </StackPanel>
     </Border>
   </Design.PreviewWith>
-
+  
   <!-- Base Slider style -->
   <Style Selector="Slider">
     <!-- Background = empty track, Foreground = filled track (passed to buttons via TemplateBinding) -->
@@ -24,12 +24,12 @@
       </Transitions>
     </Setter>
   </Style>
-
+  
   <!-- Container background -->
   <Style Selector="Slider /template/ Grid#SliderContainer">
     <Setter Property="Background" Value="Transparent" />
   </Style>
-
+  
   <!-- Thumb (draggable circle) -->
   <Style Selector="Slider /template/ Thumb">
     <Setter Property="Background" Value="#D0D0E0" />
@@ -46,7 +46,7 @@
   <Style Selector="Slider /template/ Thumb /template/ Border">
     <Setter Property="CornerRadius" Value="10" />
   </Style>
-
+  
   <!-- PointerOver -->
   <Style Selector="Slider:pointerover /template/ Thumb">
     <Setter Property="Background" Value="#E0E0F0" />
@@ -72,7 +72,7 @@
   <Style Selector="Slider:pressed /template/ RepeatButton#PART_IncreaseButton">
     <Setter Property="Background" Value="#2A2A4E" />
   </Style>
-
+  
   <!-- Disabled -->
   <Style Selector="Slider:disabled /template/ Thumb">
     <Setter Property="Background" Value="#555555" />
@@ -90,7 +90,7 @@
     <Setter Property="Foreground" Value="#3A3A5E" />
     <Setter Property="Background" Value="#1A1A22" />
   </Style>
-
+  
   <!-- Error -->
   <Style Selector="Slider:error">
     <Setter Property="Foreground" Value="#FF4444" />
@@ -99,7 +99,7 @@
   <Style Selector="Slider:error /template/ Thumb">
     <Setter Property="Background" Value="#FF4444" />
   </Style>
-
+  
   <!-- TickBar -->
   <Style Selector="Slider /template/ TickBar">
     <Setter Property="Fill" Value="#3A3A5E" />

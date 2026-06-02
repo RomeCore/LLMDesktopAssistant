@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input.Platform;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
@@ -57,6 +58,8 @@ namespace LLMDesktopAssistant.LLM.Messages
 				if (SetProperty(ref _status, value))
 				{
 					RaisePropertyChanged(nameof(ToolIcon));
+					RaisePropertyChanged(nameof(ToolIconBrush));
+					RaisePropertyChanged(nameof(DisplayMiniIcon));
 					RaisePropertyChanged(nameof(IsBlinking));
 					RaisePropertyChanged(nameof(InProgress));
 					RaisePropertyChanged(nameof(ToolIconVisible));
@@ -87,6 +90,13 @@ namespace LLMDesktopAssistant.LLM.Messages
 		}
 
 
+
+		private ToolDangerLevel _dangerLevel;
+		public ToolDangerLevel DangerLevel
+		{
+			get => _dangerLevel;
+			set => SetProperty(ref _dangerLevel, value);
+		}
 
 		private MaterialIconKind? _statusIcon;
 		public MaterialIconKind? StatusIcon
@@ -122,6 +132,13 @@ namespace LLMDesktopAssistant.LLM.Messages
 			Status switch
 			{
 				ToolStatus.Pending => MaterialIconKind.Edit,
+				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Safe
+					=> MaterialIconKind.CheckCircle,
+				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Warning
+					=> MaterialIconKind.WarningCircle,
+				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Dangerous
+					=> MaterialIconKind.AlertCircle,
+				ToolStatus.PreExecuting => MaterialIconKind.WrenchClock,
 				ToolStatus.Executing => MaterialIconKind.WrenchClock,
 				ToolStatus.WaitingForApproval => MaterialIconKind.QuestionMarkCircle,
 				ToolStatus.ExecutionInterrupted => MaterialIconKind.CancelCircle,
@@ -129,6 +146,33 @@ namespace LLMDesktopAssistant.LLM.Messages
 				ToolStatus.Cancelled => MaterialIconKind.CancelCircle,
 				ToolStatus.Error => MaterialIconKind.AlertCircle,
 				_ => MaterialIconKind.Wrench
+			};
+
+		public IBrush? ToolIconBrush =>
+			Status switch
+			{
+				ToolStatus.Pending => null,
+				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Safe
+					=> Brushes.DarkGreen,
+				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Warning
+					=> Brushes.Yellow,
+				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Dangerous
+					=> Brushes.DarkRed,
+				ToolStatus.PreExecuting => null,
+				ToolStatus.Executing => null,
+				ToolStatus.WaitingForApproval => null,
+				ToolStatus.ExecutionInterrupted => null,
+				ToolStatus.Success => null,
+				ToolStatus.Cancelled => null,
+				ToolStatus.Error => null,
+				_ => null
+			} ?? Brushes.White;
+
+		public bool DisplayMiniIcon =>
+			Status switch
+			{
+				ToolStatus.Success => false,
+				_ => true
 			};
 
 		public bool IsBlinking =>
@@ -248,6 +292,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 			StatusIcon = toolCall.StatusIcon;
 			StatusTitle = toolCall.StatusTitle;
+			DangerLevel = toolCall.DangerLevel;
 
 			Result = toolCall.ResultContent;
 			UseMarkdown = toolCall.UseMarkdown;
@@ -284,6 +329,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 							case nameof(ToolCall.Status): Status = toolCall.Status; break;
 							case nameof(ToolCall.StatusIcon): StatusIcon = toolCall.StatusIcon; break;
 							case nameof(ToolCall.StatusTitle): StatusTitle = toolCall.StatusTitle; break;
+							case nameof(ToolCall.DangerLevel): DangerLevel = toolCall.DangerLevel; break;
 							case nameof(ToolCall.ResultContent): Result = toolCall.ResultContent; break;
 							case nameof(ToolCall.UseMarkdown): UseMarkdown = toolCall.UseMarkdown; break;
 

@@ -18,6 +18,16 @@ namespace LLMDesktopAssistant.Tools
 		public string? StatusTitle { get; init; }
 
 		/// <summary>
+		/// Specifies whether the tool preview execution was successful or not. If specified, tool will not be executed and finished immediately.
+		/// </summary>
+		public bool? InterruptingSuccess { get; init; }
+
+		/// <summary>
+		/// Specifies the content to be put into result content of tool call. If specified, tool will not be executed and finished immediately.
+		/// </summary>
+		public string? InterruptingContent { get; init; }
+
+		/// <summary>
 		/// The level of danger associated with the pre-execution check.
 		/// </summary>
 		public ToolDangerLevel DangerLevel { get; init; }

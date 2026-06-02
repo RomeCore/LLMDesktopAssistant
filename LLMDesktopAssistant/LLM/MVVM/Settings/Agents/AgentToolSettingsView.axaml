@@ -18,6 +18,24 @@
 				  IsChecked="{Binding ToolSettings.EnableTools}"
 				  Content="{loc:Loc settings-use_tools}"/>
 
+
+		<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="0,6,0,6">
+			<TextBlock Text="{loc:Loc danger_level_auto_approve}"
+					   VerticalAlignment="Center"/>
+			<ComboBox MinWidth="140"
+					  SelectedItem="{Binding SelectedAutoApproveLevel, Mode=TwoWay}"
+					  ItemsSource="{Binding AutoApproveLevels}"
+					  VerticalAlignment="Center"
+					  IsEnabled="{Binding ToolSettings.EnableTools}">
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:ToolDangerLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+		</StackPanel>
+
+
 		<Grid DockPanel.Dock="Top">
 			
 			<Grid.ColumnDefinitions>

@@ -1440,4 +1440,20 @@
   <data name="image_describer_status" xml:space="preserve">
     <value>Описываем... *{0} токенов*</value>
   </data>
+  <data name="danger_level_auto_approve" xml:space="preserve">
+    <value>Уровень авто-подтверждения</value>
+  </data>
+  
+  <data name="danger_level_default" xml:space="preserve">
+    <value>По умолчанию (спрашивать для всех)</value>
+  </data>
+  <data name="danger_level_safe" xml:space="preserve">
+    <value>Безопасно</value>
+  </data>
+  <data name="danger_level_warning" xml:space="preserve">
+    <value>Предупреждение</value>
+  </data>
+  <data name="danger_level_dangerous" xml:space="preserve">
+    <value>Опасно</value>
+  </data>
 </root>

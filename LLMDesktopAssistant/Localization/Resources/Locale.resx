@@ -1440,4 +1440,20 @@
   <data name="image_describer_status" xml:space="preserve">
     <value>Describing... *{0} tokens*</value>
   </data>
+  <data name="danger_level_auto_approve" xml:space="preserve">
+    <value>Auto-approve level</value>
+  </data>
+  
+  <data name="danger_level_default" xml:space="preserve">
+    <value>Default (ask for all)</value>
+  </data>
+  <data name="danger_level_safe" xml:space="preserve">
+    <value>Safe</value>
+  </data>
+  <data name="danger_level_warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="danger_level_dangerous" xml:space="preserve">
+    <value>Dangerous</value>
+  </data>
 </root>

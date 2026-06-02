@@ -1,4 +1,5 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents
@@ -17,6 +18,16 @@ namespace LLMDesktopAssistant.Agents
 		{
 			get => _enableTools;
 			set => SetProperty(ref _enableTools, value);
+		}
+
+		private ToolDangerLevel _autoApproveLevel = ToolDangerLevel.Default;
+		/// <summary>
+		/// The maximum danger level of tools that can be automatically approved.
+		/// </summary>
+		public ToolDangerLevel AutoApproveLevel
+		{
+			get => _autoApproveLevel;
+			set => SetProperty(ref _autoApproveLevel, value);
 		}
 
 		private readonly RangeObservableCollection<ToolChange> _toolChanges = [];

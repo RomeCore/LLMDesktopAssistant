@@ -181,17 +181,18 @@
 														Classes="MidIcon"
 														HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 
-					<Border Margin="2"
-									Width="12" Height="12" CornerRadius="6"
+					<Border Width="16" Height="16" CornerRadius="6"
 									HorizontalAlignment="Right"
 									VerticalAlignment="Bottom"
+									IsVisible="{Binding DisplayMiniIcon}"
 									Background="#ac000000"
 									BoxShadow="0 0 3 0 #ac000000">
 							
 						<Panel>
 
 							<ico:MaterialIcon Kind="{Binding ToolIcon}"
-																Width="12" Height="12"
+																Foreground="{Binding ToolIconBrush}"
+																Width="16" Height="16"
 																IsVisible="{Binding IsBlinking}">
 				
 								<ico:MaterialIcon.Styles>
@@ -215,11 +216,13 @@
 							</ico:MaterialIcon>
 					
 							<ico:MaterialIcon Kind="{Binding ToolIcon}"
-																Width="12" Height="12"
+																Foreground="{Binding ToolIconBrush}"
+																Width="16" Height="16"
 																IsVisible="{Binding ToolIconVisible}"/>
 
 							<ctrl:ProgressRing IsVisible="{Binding InProgress}"
-																 Width="12" Height="12"
+																 Foreground="{Binding ToolIconBrush}"
+																 Width="16" Height="16"
 																 StrokeThickness="4"
 																 Minimum="{Binding MinProgress}" Maximum="{Binding MaxProgress}"
 																 Value="{Binding Progress}"
@@ -234,6 +237,7 @@
 				<Panel IsVisible="{Binding StatusIcon, Converter={StaticResource NotnullToBooleanConverterInverted}}">
 					
 					<ico:MaterialIcon Kind="{Binding ToolIcon}"
+														Foreground="{Binding ToolIconBrush}"
 														Width="28" Height="28"
 														IsVisible="{Binding IsBlinking}">
 				
@@ -258,14 +262,16 @@
 					</ico:MaterialIcon>
 					
 					<ico:MaterialIcon Kind="{Binding ToolIcon}"
+														Foreground="{Binding ToolIconBrush}"
 														Width="28" Height="28"
 														IsVisible="{Binding ToolIconVisible}"/>
 
 					<ctrl:ProgressRing IsVisible="{Binding InProgress}"
-															Width="28" Height="28"
-															Minimum="{Binding MinProgress}" Maximum="{Binding MaxProgress}"
-															Value="{Binding Progress}"
-															IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
+														 Foreground="{Binding ToolIconBrush}"
+														 Width="28" Height="28"
+														 Minimum="{Binding MinProgress}" Maximum="{Binding MaxProgress}"
+														 Value="{Binding Progress}"
+														 IsIndeterminate="{Binding Progress, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
 
 				</Panel>
 				

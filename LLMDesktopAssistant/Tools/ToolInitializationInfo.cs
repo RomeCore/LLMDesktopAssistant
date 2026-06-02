@@ -1,4 +1,6 @@
-﻿namespace LLMDesktopAssistant.Tools
+﻿using System.Text.Json.Nodes;
+
+namespace LLMDesktopAssistant.Tools
 {
 	/// <summary>
 	/// The class that provides initialization information for a <see cref="ToolInfo"/>.
@@ -26,6 +28,17 @@
 		/// This is useful for dynamic descriptions based on runtime conditions.
 		/// </summary>
 		public Func<string> DescriptionGetter { get; init; } = null!;
+
+		/// <summary>
+		/// Gets or sets the default danger level of the tool.
+		/// </summary>
+		public ToolDangerLevel DefaultDangerLevel { get; init; }
+
+		/// <summary>
+		/// Gets or sets a JSON object that defines the schema of the structured output for the tool.
+		/// Can be null if tool does not produces structured output.
+		/// </summary>
+		public JsonObject? OutputSchema { get; init; }
 
 		/// <summary>
 		/// Gets or sets the user-friendly display name of the tool. If not set, the tool's name will be used as the display name.

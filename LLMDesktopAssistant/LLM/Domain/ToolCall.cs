@@ -108,6 +108,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _userConfirmationSource, value);
 		}
 
+		private ToolDangerLevel _dangerLevel = ToolDangerLevel.Default;
+		/// <summary>
+		/// Gets or sets the danger level of the tool call.
+		/// </summary>
+		public ToolDangerLevel DangerLevel
+		{
+			get => _dangerLevel;
+			set => SetProperty(ref _dangerLevel, value);
+		}
+
 		private ReactiveToolResult? _reactiveToolResult;
 		/// <summary>
 		/// Gets or sets the reactive tool result. This is used for real-time updates and interactions.

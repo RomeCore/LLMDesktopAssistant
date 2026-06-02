@@ -13,7 +13,7 @@
 	<ItemsControl ItemsSource="{Binding ToolCalls}">
 		<ItemsControl.ItemsPanel>
 			<ItemsPanelTemplate>
-				<StackPanel Orientation="Vertical" Spacing="4"/>
+				<StackPanel Orientation="Vertical"/>
 			</ItemsPanelTemplate>
 		</ItemsControl.ItemsPanel>
 	</ItemsControl>

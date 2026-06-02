@@ -6,12 +6,22 @@ using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
+	public class ToolDangerLevelItem
+	{
+		public ToolDangerLevel Value { get; init; }
+		public string DisplayName { get; init; } = string.Empty;
+
+		public override bool Equals(object? obj) => obj is ToolDangerLevelItem other && Value == other.Value;
+		public override int GetHashCode() => Value.GetHashCode();
+	}
+
 	public class ToolItemViewModel : ViewModelBase
 	{
 		private readonly AgentToolSettings _settings;
@@ -213,6 +223,27 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		private readonly IToolsetBuildingService _toolsetBuildingService;
 		public AgentToolSettings ToolSettings { get; }
 
+		public List<ToolDangerLevelItem> AutoApproveLevels { get; } =
+		[
+			new() { Value = ToolDangerLevel.Default,   DisplayName = LocalizationManager.LocalizeStatic("danger_level_default") },
+			new() { Value = ToolDangerLevel.Safe,      DisplayName = LocalizationManager.LocalizeStatic("danger_level_safe") },
+			new() { Value = ToolDangerLevel.Warning,   DisplayName = LocalizationManager.LocalizeStatic("danger_level_warning") },
+			new() { Value = ToolDangerLevel.Dangerous, DisplayName = LocalizationManager.LocalizeStatic("danger_level_dangerous") },
+		];
+
+		private ToolDangerLevelItem? _selectedAutoApproveLevel;
+		public ToolDangerLevelItem? SelectedAutoApproveLevel
+		{
+			get => _selectedAutoApproveLevel;
+			set
+			{
+				if (SetProperty(ref _selectedAutoApproveLevel, value) && value != null)
+				{
+					ToolSettings.AutoApproveLevel = value.Value;
+				}
+			}
+		}
+
 		private RangeObservableCollection<ToolCategoryViewModel> _toolCategories = [];
 		public ICollection<ToolCategoryViewModel> ToolCategories
 		{
@@ -229,6 +260,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			_toolsetBuildingService = toolsetBuildingService;
 			ToolSettings = settings;
 			UpdateTools();
+
+			_selectedAutoApproveLevel = AutoApproveLevels.FirstOrDefault(r => r.Value == settings.AutoApproveLevel)
+				?? AutoApproveLevels[0];
 		}
 
 		public void UpdateTools()

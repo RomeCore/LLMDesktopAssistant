@@ -1,8 +1,9 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Net.NetworkInformation;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	[ChatService(typeof(IToolExecutionService))]
 	public class ToolExecutionService(
-		Chat chat
+		Chat chat,
+		IAgentManagementService agentManager
 	) : IToolExecutionService
 	{
 		public async Task ExecuteAsync(AssistantMessage message, ToolCall toolCall, LLMInfo llmInfo,
@@ -30,6 +32,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 			try
 			{
+				toolCall.DangerLevel = toolInfo.DefaultDangerLevel;
+
 				JsonNode? parsedArgs = null;
 				var toolExecutionContext = new ToolExecutionContext
 				{
@@ -39,23 +43,47 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					Info = toolInfo
 				};
 
-				if (toolInfo.AskForConfirmation)
+				if (toolInfo.PreviewExecutor != null)
 				{
-					if (toolInfo.PreviewExecutor != null)
+					try
 					{
-						try
+						parsedArgs = TolerantJsonParser.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
+						toolCall.Status = ToolStatus.PreExecuting;
+						var preExecutionResult = await toolInfo.PreviewExecutor(parsedArgs, toolExecutionContext, cancellationToken);
+						toolCall.StatusTitle = preExecutionResult.StatusTitle;
+						toolCall.StatusIcon = preExecutionResult.StatusIcon;
+						if (preExecutionResult.DangerLevel != ToolDangerLevel.Default)
+							toolCall.DangerLevel = preExecutionResult.DangerLevel;
+
+						if (preExecutionResult.InterruptingSuccess != null)
 						{
-							parsedArgs = TolerantJsonParser.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
-							toolCall.Status = ToolStatus.PreExecuting;
-							var preExecutionResult = await toolInfo.PreviewExecutor(parsedArgs, toolExecutionContext, cancellationToken);
-							toolCall.StatusTitle = preExecutionResult.StatusTitle;
-							toolCall.StatusIcon = preExecutionResult.StatusIcon;
-						}
-						catch
-						{
+							toolCall.Status = preExecutionResult.InterruptingSuccess.Value ? ToolStatus.Success : ToolStatus.Error;
+							if (!string.IsNullOrEmpty(preExecutionResult.InterruptingContent))
+								toolCall.ResultContent = preExecutionResult.InterruptingContent;
+							else
+							{
+								if (preExecutionResult.InterruptingSuccess.Value)
+									toolCall.ResultContent = "Tool successfully returned no result.";
+								else
+									toolCall.ResultContent = "Tool failed with no result.";
+							}
+							return;
 						}
 					}
+					catch
+					{
+					}
+				}
 
+				bool requireConfirmation = toolInfo.AskForConfirmation;
+				if (requireConfirmation)
+				{
+					var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
+					requireConfirmation = toolCall.DangerLevel == ToolDangerLevel.Default || toolCall.DangerLevel > senderAgent.Tools.AutoApproveLevel;
+				}
+
+				if (requireConfirmation)
+				{
 					var tcs = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
 					toolCall.UserConfirmationSource = tcs;
 					toolCall.Status = ToolStatus.WaitingForApproval;
