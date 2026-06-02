@@ -1437,4 +1437,7 @@
   <data name="fs-edit" xml:space="preserve">
     <value>Edit file</value>
   </data>
+  <data name="image_describer_status" xml:space="preserve">
+    <value>Describing... *{0} tokens*</value>
+  </data>
 </root>

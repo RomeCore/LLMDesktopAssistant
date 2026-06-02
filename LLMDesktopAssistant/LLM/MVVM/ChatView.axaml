@@ -9,7 +9,7 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.ChatView"
 			 x:DataType="local:ChatViewModel">
 	
-	<Grid RowDefinitions="*,Auto" ColumnDefinitions="0.1*,2,*">
+	<Grid RowDefinitions="*,Auto" ColumnDefinitions="0.0*,2,*">
 
 		<!-- Left Sidebar -->
 		<TabControl Grid.Row="0" Grid.Column="0"

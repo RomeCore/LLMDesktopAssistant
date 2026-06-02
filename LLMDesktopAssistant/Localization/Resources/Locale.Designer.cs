@@ -1627,6 +1627,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Describing... *{0} tokens*.
+        /// </summary>
+        public static string image_describer_status {
+            get {
+                return ResourceManager.GetString("image_describer_status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Input.
         /// </summary>
         public static string input {

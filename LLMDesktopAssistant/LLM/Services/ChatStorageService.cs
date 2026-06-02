@@ -400,6 +400,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				StatusIcon = toolCall.StatusIcon,
 				StatusTitle = toolCall.StatusTitle,
 				ResultContent = toolCall.ResultContent,
+				UseMarkdown = toolCall.UseMarkdown,
 				StructuredResult = toolCall.StructuredResult?.ToJsonString()
 			};
 
@@ -425,6 +426,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				model.StatusIcon = toolCall.StatusIcon;
 				model.StatusTitle = toolCall.StatusTitle;
 				model.ResultContent = toolCall.ResultContent;
+				model.UseMarkdown = toolCall.UseMarkdown;
 				model.StructuredResult = toolCall.StructuredResult?.ToJsonString();
 
 				database.ToolCalls.Update(model);
@@ -736,6 +738,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						Title = toolCallModel.Title,
 						Arguments = toolCallModel.FunctionArguments,
 						ResultContent = toolCallModel.ResultContent,
+						UseMarkdown = toolCallModel.UseMarkdown,
 						StructuredResult = string.IsNullOrEmpty(toolCallModel.StructuredResult) ? null
 							: JsonNode.Parse(toolCallModel.StructuredResult),
 						Status = toolCallModel.Status switch
@@ -745,7 +748,6 @@ namespace LLMDesktopAssistant.LLM.Services
 							ToolStatusModel.Success => ToolStatus.Success,
 							ToolStatusModel.Cancelled => ToolStatus.Cancelled,
 							ToolStatusModel.Error => ToolStatus.Error,
-							ToolStatusModel.NoResult => ToolStatus.NoResult,
 							_ => ToolStatus.None
 						},
 						StatusIcon = toolCallModel.StatusIcon,

@@ -48,11 +48,6 @@
 		/// <summary>
 		/// The tool was cancelled by the user.
 		/// </summary>
-		Cancelled,
-
-		/// <summary>
-		/// The tool did not produce any result.
-		/// </summary>
-		NoResult
+		Cancelled
 	}
 }

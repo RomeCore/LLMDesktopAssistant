@@ -56,7 +56,6 @@ namespace LLMDesktopAssistant.LLM.Services
 				ToolStatus.Success => ToolResultStatus.Success,
 				ToolStatus.Error => ToolResultStatus.Error,
 				ToolStatus.Cancelled => ToolResultStatus.Cancelled,
-				ToolStatus.NoResult => ToolResultStatus.NoResult,
 				_ => ToolResultStatus.NoResult
 			};
 		}

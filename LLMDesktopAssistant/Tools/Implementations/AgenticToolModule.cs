@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LLMDesktopAssistant.Attachments;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using LLTSharp;
@@ -167,14 +168,33 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					try
 					{
-						var response = await llm.ChatAsync(messages, cancellationToken: cancellationToken);
-						result.ResultContent = response.Content!;
+						var response = await llm.ChatStreamingAsync(messages, cancellationToken: cancellationToken);
+
+						result.UseMarkdown = true;
+						result.ResultContent = response.Content;
+						result.StatusIcon = Material.Icons.MaterialIconKind.Image;
+
+						int tokenCounter = 0;
+						void Message_PartAdded(object? sender, AssistantMessageDelta e)
+						{
+							result.ResultContent = response.Content;
+							tokenCounter++;
+
+							if (tokenCounter > 1)
+								result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("image_describer_status"), tokenCounter);
+						}
+						response.Message.PartAdded += Message_PartAdded;
+
+						await response;
+						response.Message.PartAdded -= Message_PartAdded;
+
+						result.StatusTitle = null;
 						result.CompleteWithSuccess();
 					}
 					catch (Exception ex)
 					{
-						result.ResultContent = $"Got error: {ex.Message}. " +
-							$"May be the model is not a vision model or API is down. Please try again later.";
+						result.ResultContentLines.Add($"Got error: {ex.Message}. " +
+							$"May be the model is not a vision model or API is down. Please try again later.");
 						result.CompleteWithError();
 					}
 				}, CancellationToken.None);

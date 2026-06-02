@@ -6,7 +6,6 @@
 		ExecutionBegin,
 		Success,
 		Cancelled,
-		Error,
-		NoResult
+		Error
 	}
 }

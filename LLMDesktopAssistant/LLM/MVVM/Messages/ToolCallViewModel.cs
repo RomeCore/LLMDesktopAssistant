@@ -57,7 +57,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 				if (SetProperty(ref _status, value))
 				{
 					RaisePropertyChanged(nameof(ToolIcon));
-					RaisePropertyChanged(nameof(IsPending));
+					RaisePropertyChanged(nameof(IsBlinking));
 					RaisePropertyChanged(nameof(InProgress));
 					RaisePropertyChanged(nameof(ToolIconVisible));
 					RaisePropertyChanged(nameof(UserAsked));
@@ -92,30 +92,15 @@ namespace LLMDesktopAssistant.LLM.Messages
 		public MaterialIconKind? StatusIcon
 		{
 			get => _statusIcon;
-			set
-			{
-				if (SetProperty(ref _statusIcon, value))
-				{
-					RaisePropertyChanged(nameof(StatusAvailable));
-				}
-			}
+			set => SetProperty(ref _statusIcon, value);
 		}
 
 		private string? _statusTitle;
 		public string? StatusTitle
 		{
 			get => _statusTitle;
-			set
-			{
-				if (SetProperty(ref _statusTitle, value))
-				{
-					RaisePropertyChanged(nameof(StatusAvailable));
-				}
-			}
+			set => SetProperty(ref _statusTitle, value);
 		}
-
-		public bool StatusAvailable => StatusIcon.HasValue || !string.IsNullOrEmpty(StatusTitle);
-
 
 		private string? _result = string.Empty;
 		public string? Result
@@ -124,6 +109,13 @@ namespace LLMDesktopAssistant.LLM.Messages
 			set => SetProperty(ref _result, value);
 		}
 
+		private bool _useMarkdown = false;
+		public bool UseMarkdown
+		{
+			get => _useMarkdown;
+			set => SetProperty(ref _useMarkdown, value);
+		}
+		
 
 
 		public MaterialIconKind ToolIcon =>
@@ -139,7 +131,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 				_ => MaterialIconKind.Wrench
 			};
 
-		public bool IsPending =>
+		public bool IsBlinking =>
 			Status switch
 			{
 				ToolStatus.Pending => true,
@@ -258,6 +250,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 			StatusTitle = toolCall.StatusTitle;
 
 			Result = toolCall.ResultContent;
+			UseMarkdown = toolCall.UseMarkdown;
 
 			ApproveCommand = new RelayCommand(Approve);
 			CancelCommand = new RelayCommand(Cancel);
@@ -292,6 +285,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 							case nameof(ToolCall.StatusIcon): StatusIcon = toolCall.StatusIcon; break;
 							case nameof(ToolCall.StatusTitle): StatusTitle = toolCall.StatusTitle; break;
 							case nameof(ToolCall.ResultContent): Result = toolCall.ResultContent; break;
+							case nameof(ToolCall.UseMarkdown): UseMarkdown = toolCall.UseMarkdown; break;
 
 							case nameof(ToolCall.ReactiveToolResult):
 								reactiveToolResult?.PropertyChanged -= OnReactiveToolResultPropertyChanged;

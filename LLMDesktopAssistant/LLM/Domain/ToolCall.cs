@@ -75,6 +75,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _resultContent, value);
 		}
 
+		private bool _useMarkdown = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether the result content should be displayed using Markdown formatting.
+		/// </summary>
+		public bool UseMarkdown
+		{
+			get => _useMarkdown;
+			set => SetProperty(ref _useMarkdown, value);
+		}
+
 		private JsonNode? _structuredResult = null;
 		/// <summary>
 		/// Gets or sets the optional structured result. Usable for external APIs that calls tools, like MCP, Lua API, dASS RPC API (that used by external processes like Python).

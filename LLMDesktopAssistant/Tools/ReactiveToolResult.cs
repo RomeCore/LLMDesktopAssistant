@@ -115,6 +115,16 @@ namespace LLMDesktopAssistant.Tools
 			}
 		}
 
+		private bool _useMarkdown = false;
+		/// <summary>
+		/// Whether the result content should be treated as Markdown. If true, the UI will render it accordingly.
+		/// </summary>
+		public bool UseMarkdown
+		{
+			get => _useMarkdown;
+			set => SetProperty(ref _useMarkdown, value);
+		}
+
 		private JsonNode? _structuredResult = null;
 		/// <summary>
 		/// Gets or sets the optional structured result. Usable for external APIs that calls tools, like MCP, Lua API, dASS RPC API (that used by external processes like Python).

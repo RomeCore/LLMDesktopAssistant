@@ -61,6 +61,11 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		public string? ResultContent { get; set; }
 
 		/// <summary>
+		/// Gets or sets whether to use markdown for rendering the result content.
+		/// </summary>
+		public bool UseMarkdown { get; set; }
+
+		/// <summary>
 		/// Gets or sets the result structured content of the tool call, this is a string converted from JSON.
 		/// </summary>
 		public string? StructuredResult { get; set; }

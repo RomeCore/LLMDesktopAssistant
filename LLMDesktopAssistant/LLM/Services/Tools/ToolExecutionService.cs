@@ -15,35 +15,12 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	[ChatService(typeof(IToolExecutionService))]
 	public class ToolExecutionService(
-		Chat chat,
-		IServiceProvider services
+		Chat chat
 	) : IToolExecutionService
 	{
-		readonly IToolExecutionHook? hook = services.GetService<IToolExecutionHook>();
-
 		public async Task ExecuteAsync(AssistantMessage message, ToolCall toolCall, LLMInfo llmInfo,
 			ImmutableDictionary<string, ToolInfo> tools, CancellationToken cancellationToken = default)
 		{
-			if (hook != null)
-			{
-				var hookedResult = await hook.OnBeforeExecuteAsync(toolCall, llmInfo, cancellationToken);
-
-				if (hookedResult != null)
-				{
-					toolCall.ResultContent = hookedResult.Content;
-					toolCall.Status = hookedResult.Status switch
-					{
-						ToolResultStatus.Success => ToolStatus.Success,
-						ToolResultStatus.Error => ToolStatus.Error,
-						ToolResultStatus.Cancelled => ToolStatus.Cancelled,
-						ToolResultStatus.NoResult => ToolStatus.NoResult,
-						_ => ToolStatus.NoResult
-					};
-
-					return;
-				}
-			}
-
 			if (!tools.TryGetValue(toolCall.ToolName, out var toolInfo))
 			{
 				toolCall.ResultContent = $"Error: Tool '{toolCall.ToolName}' not found.";
@@ -120,11 +97,13 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				toolCall.StatusTitle = reactiveResult.StatusTitle;
 				toolCall.StructuredResult = reactiveResult.StructuredResult;
 				toolCall.ResultContent = reactiveResult.ResultContent;
+				toolCall.UseMarkdown = reactiveResult.UseMarkdown;
 
 				void OnReactiveResultChanged(object? sender, object? e)
 				{
 					toolCall.StatusIcon = reactiveResult.StatusIcon;
 					toolCall.StatusTitle = reactiveResult.StatusTitle;
+					toolCall.UseMarkdown = reactiveResult.UseMarkdown;
 					toolCall.StructuredResult = reactiveResult.StructuredResult;
 				}
 				void OnReactiveResultContentChanged(object? sender, object? e)
@@ -148,14 +127,13 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 				toolCall.ResultContent = reactiveResult.ResultContent;
 				toolCall.Status = cancellationToken.IsCancellationRequested ? ToolStatus.Cancelled :
-					(success ? (string.IsNullOrWhiteSpace(toolCall.ResultContent) ? ToolStatus.NoResult : ToolStatus.Success) :
-						ToolStatus.Error);
+					(success ? ToolStatus.Success : ToolStatus.Error);
 
 				if (string.IsNullOrEmpty(toolCall.ResultContent))
 				{
 					switch (toolCall.Status)
 					{
-						case ToolStatus.NoResult:
+						default:
 							if (success)
 								toolCall.ResultContent = "Tool successfully returned no result.";
 							else

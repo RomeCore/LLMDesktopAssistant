@@ -7,9 +7,7 @@ namespace LLMDesktopAssistant.Converters
 	{
 		public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
-			if (value is string str)
-				return !string.IsNullOrEmpty(str);
-			return value;
+			return !string.IsNullOrEmpty(value as string);
 		}
 
 		public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
