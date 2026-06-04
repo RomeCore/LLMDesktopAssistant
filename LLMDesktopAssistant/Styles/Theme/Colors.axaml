@@ -10,6 +10,16 @@
 	<Color x:Key="SecondaryAccent">#7C6CF7</Color>
 	<SolidColorBrush x:Key="SecondaryAccentBrush"
 									 Color="{StaticResource SecondaryAccent}" />
+	
+	<!-- Success -->
+	<Color x:Key="SuccessColor">#2ECC71</Color>
+	<SolidColorBrush x:Key="SuccessBrush"
+									 Color="{StaticResource SuccessColor}" />
+
+	<!-- Warning -->
+	<Color x:Key="WarningColor">#D4A017</Color>
+	<SolidColorBrush x:Key="WarningBrush"
+									 Color="{StaticResource WarningColor}" />
 
 	<!-- Error / danger -->
 	<Color x:Key="ErrorColor">#FF4444</Color>

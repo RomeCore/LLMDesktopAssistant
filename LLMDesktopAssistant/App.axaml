@@ -16,6 +16,7 @@
 		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/CommonStyles.axaml"/>
 		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/ButtonsIcons.axaml"/>
 		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/MarkdownStyles.axaml"/>
+
 	</Application.Styles>
 
 	<Application.Resources>

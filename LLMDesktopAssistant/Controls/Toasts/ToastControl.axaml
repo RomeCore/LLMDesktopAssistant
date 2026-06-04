@@ -3,22 +3,106 @@
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 						 xmlns:local="using:LLMDesktopAssistant.Controls.Toasts"
-						 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-						 x:Class="LLMDesktopAssistant.Controls.Toasts.ToastControl">
-	
-	<ItemsControl x:Name="ToastList"
-								HorizontalAlignment="Right"
-								VerticalAlignment="Top">
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+						 xmlns:conv="using:LLMDesktopAssistant.Converters"
+						 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+						 x:Class="LLMDesktopAssistant.Controls.Toasts.ToastControl"
+						 Name="PART_Root">
+
+	<UserControl.Resources>
+		<conv:StringNonEmptyToBooleanConverter x:Key="StringNonEmptyToBoolean" />
+		<conv:InverseBooleanConverter x:Key="InverseBoolean" />
+	</UserControl.Resources>
+
+	<!-- ItemsControl — контейнер для списка тостов -->
+	<ItemsControl Name="PART_ToastList"
+								ItemsSource="{Binding #PART_Root.Toasts}">
 
 		<ItemsControl.ItemsPanel>
 			<ItemsPanelTemplate>
-				<ReversibleStackPanel ReverseOrder="False"/>
+				<ReversibleStackPanel ReverseOrder="False"
+															x:Name="PART_StackPanel" />
 			</ItemsPanelTemplate>
 		</ItemsControl.ItemsPanel>
-		
+
 		<ItemsControl.ItemTemplate>
 			<DataTemplate x:DataType="local:ToastItemViewModel">
-				
+
+				<!-- Карточка тоста -->
+				<Border MinWidth="280"
+								MaxWidth="420"
+								x:Name="PART_ToastCard"
+								MinHeight="48"
+								Margin="8,4"
+								Padding="0"
+								CornerRadius="8"
+								BoxShadow="0 2 12 #1c000000"
+								Background="{DynamicResource MessageBackground}">
+
+					<Grid ColumnDefinitions="48,*,Auto"
+								RowDefinitions="Auto,Auto"
+								Margin="0">
+
+						<!-- Иконка слева с цветным фоном -->
+						<Border Grid.Column="0"
+										Grid.RowSpan="2"
+										Name="PART_IconBorder"
+										Width="48"
+										HorizontalAlignment="Stretch"
+										VerticalAlignment="Stretch"
+										CornerRadius="8,0,0,8"
+										Background="{DynamicResource PrimaryAccentBrush}">
+
+							<ico:MaterialIcon Name="PART_ToastIcon"
+																Width="24"
+																Height="24"
+																Foreground="White"
+																Kind="InformationOutline"
+																HorizontalAlignment="Center"
+																VerticalAlignment="Center" />
+						</Border>
+
+						<!-- Заголовок (Markdown) -->
+						<ctrl:MarkdownControl Grid.Column="1"
+																	Grid.Row="0"
+																	Margin="12,8,8,4"
+																	MarkdownText="{Binding Title}"
+																	UsePlaintext="{Binding !UseMarkdown}"
+																	FontWeight="SemiBold"
+																	FontSize="14"/>
+
+						<!-- Описание (Markdown) -->
+						<ctrl:MarkdownControl Grid.Column="1"
+																	Grid.Row="1"
+																	Margin="12,0,8,8"
+																	IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBoolean}}"
+																	MarkdownText="{Binding Description}"
+																	UsePlaintext="{Binding !UseMarkdown}"
+																	FontSize="13"
+																	Opacity="0.85"/>
+
+						<!-- Кнопка Dismiss -->
+						<Button Grid.Column="2"
+										Grid.RowSpan="2"
+										Width="28"
+										Height="28"
+										Margin="0,6,6,0"
+										VerticalAlignment="Top"
+										HorizontalAlignment="Right"
+										Classes="SmallIconButton"
+										Command="{Binding DismissCommand}"
+										CommandParameter="{Binding Id}"
+										Background="Transparent"
+										Focusable="False">
+							<ico:MaterialIcon Kind="Close"
+																Width="16"
+																Height="16" />
+						</Button>
+
+					</Grid>
+				</Border>
+
 			</DataTemplate>
 		</ItemsControl.ItemTemplate>
 
