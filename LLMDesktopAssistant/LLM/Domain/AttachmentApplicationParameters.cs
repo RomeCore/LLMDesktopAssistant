@@ -5,46 +5,34 @@
 	/// </summary>
 	public class AttachmentApplicationParameters :  NotifyPropertyChanged
 	{
-		private AttachmentApplicationMode _mode = AttachmentApplicationMode.OnlyReference;
-		public AttachmentApplicationMode Mode
-		{
-			get => _mode;
-			set => SetProperty(ref _mode, value);
-		}
-
-		private Uri _sourceUri = new Uri("https://example.com");
+		private Uri _sourceUri = null!;
+		/// <summary>
+		/// Gets or sets the URI of the source attachment.
+		/// </summary>
 		public Uri SourceUri
 		{
 			get => _sourceUri;
 			set => SetProperty(ref _sourceUri, value);
 		}
 
-		private int _startLine = 1;
-		public int StartLine
+		private bool _copyToWorkingDirectory = true;
+		/// <summary>
+		/// Indicates whether the attachment should be copied to the working directory.
+		/// </summary>
+		public bool CopyToWorkingDirectory
 		{
-			get => _startLine;
-			set => SetProperty(ref _startLine, value);
+			get => _copyToWorkingDirectory;
+			set => SetProperty(ref _copyToWorkingDirectory, value);
 		}
 
-		private int _endLine = 100;
-		public int EndLine
+		private bool _applyNative = false;
+		/// <summary>
+		/// Determines whether to apply the native LLM attachment too.
+		/// </summary>
+		public bool ApplyNative
 		{
-			get => _endLine;
-			set => SetProperty(ref _endLine, value);
-		}
-
-		private int _startByte = 1;
-		public int StartByte
-		{
-			get => _startByte;
-			set => SetProperty(ref _startByte, value);
-		}
-
-		private int _endByte = 1024;
-		public int EndByte
-		{
-			get => _endByte;
-			set => SetProperty(ref _endByte, value);
+			get => _applyNative;
+			set => SetProperty(ref _applyNative, value);
 		}
 	}
 }

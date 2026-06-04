@@ -15,6 +15,7 @@ using LLTSharp.Locale;
 using LLTSharp.Metadata;
 using LLTSharp.Metadata.Types;
 using RCLargeLanguageModels.Messages;
+using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 using Serilog;
@@ -63,87 +64,6 @@ namespace LLMDesktopAssistant.LLM.Services
 		private LanguageMetadata GetCurrentLanguageMetadata()
 		{
 			return new LanguageMetadata(new LanguageCode(CultureInfo.CurrentCulture));
-		}
-
-		private string BuildSystemPrompt(string? summaryOfPrevMessages, AgentDescriptor agent)
-		{
-			var language = GetCurrentLanguageMetadata();
-			var template = templates.TryRetrieveBestAllWithFallback("system_prompt", language)?.LastOrDefault() as ITextTemplate;
-			var promptSettings = agent.Prompts;
-
-			var generalContext = new Dictionary<string, object?>();
-			foreach (var expander in promptSystemContextExpanders)
-				expander.ExpandPromptContext(generalContext);
-			var componentsContext = generalContext.ToDictionary(); // Clone
-
-			generalContext["prompt"] = promptSettings.SystemPrompt;
-			generalContext["components"] = promptSettings.PromptComponents
-				.Select(id => PromptRegistry.GetComponent(id)?.Template.Template.Render(componentsContext))
-				.Where(c => !string.IsNullOrWhiteSpace(c))
-				.ToArray();
-			generalContext["sliders"] = promptSettings.SliderValues.Select(s =>
-				{
-					var sliderTemplate = PromptRegistry.GetSlider(s.SliderId)?.Template.Template;
-					var sliderContext = new
-					{
-						sliderValue = s.Value
-					};
-					return sliderTemplate?.Render(sliderContext);
-				})
-				.Where(c => !string.IsNullOrWhiteSpace(c))
-				.ToArray();
-			generalContext["assistantNickname"] = promptSettings.Nickname;
-			generalContext["specialization"] = promptSettings.UseCustomSpecialization ?
-				promptSettings.CustomSpecialization :
-				(promptSettings.SpecializationId != null ? PromptRegistry.GetSpecialization(promptSettings.SpecializationId.Value)?.Template.Template.Render(componentsContext) : null);
-			generalContext["persona"] = promptSettings.UseCustomPersona ?
-				promptSettings.CustomPersona :
-				(promptSettings.PersonaId != null ? PromptRegistry.GetPersona(promptSettings.PersonaId.Value)?.Template.Template.Render(componentsContext) : null);
-			generalContext["summary"] = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages;
-
-			return template!.Render(generalContext, functions);
-		}
-
-		private string BuildUserMessage(BranchedMessage message)
-		{
-			var userMessage = message.AsUserMessage();
-			var language = GetCurrentLanguageMetadata();
-			var template = templates.TryRetrieveBestAllWithFallback("user_message_prompt", language)?.LastOrDefault() as ITextTemplate;
-
-			var context = new Dictionary<string, object?>();
-			foreach (var expander in promptMessageContextExpanders)
-				expander.ExpandPromptContext(message, null, context);
-
-			context["user_name"] = userManager.FindByLogin(userMessage.SenderLogin)?.GetAgentShownName() ?? userMessage.SenderLogin;
-			context["time_sent"] = userMessage.CreatedAt.ToString();
-			context["content"] = userMessage.Content;
-			context["attachments"] = userMessage.Attachments;
-			context["can_read_content"] = true;
-			context["can_read_attachments"] = true;
-
-			var result = template!.Render(context, functions);
-			return result;
-		}
-
-		private string BuildUserMessageForAgent(BranchedMessage message, AgentDescriptor agent)
-		{
-			var userMessage = message.AsUserMessage();
-			var language = GetCurrentLanguageMetadata();
-			var template = templates.TryRetrieveBestAllWithFallback("user_message_prompt", language)?.LastOrDefault() as ITextTemplate;
-
-			var context = new Dictionary<string, object?>();
-			foreach (var expander in promptMessageContextExpanders)
-				expander.ExpandPromptContext(message, agent, context);
-
-			context["user_name"] = userManager.FindByLogin(userMessage.SenderLogin)?.GetAgentShownName() ?? userMessage.SenderLogin;
-			context["time_sent"] = userMessage.CreatedAt.ToString();
-			context["content"] = userMessage.Content;
-			context["attachments"] = userMessage.Attachments;
-			context["can_read_content"] = true;
-			context["can_read_attachments"] = agent.Read.ReadPermissions.HasFlag(AgentReadPermissions.UserAttachments);
-
-			var result = template!.Render(context, functions);
-			return result;
 		}
 
 		private bool IsUserMessageVisibleToAgent(BranchedMessage message, AgentDescriptor agent)
@@ -213,7 +133,95 @@ namespace LLMDesktopAssistant.LLM.Services
 			return true;
 		}
 
-		private string BuildForeignAgentMessageText(BranchedMessage message, AgentDescriptor agent)
+		private string BuildSystemPrompt(string? summaryOfPrevMessages, AgentDescriptor agent)
+		{
+			var language = GetCurrentLanguageMetadata();
+			var template = templates.TryRetrieveBestAllWithFallback("system_prompt", language)?.LastOrDefault() as ITextTemplate;
+			var promptSettings = agent.Prompts;
+
+			var generalContext = new Dictionary<string, object?>();
+			foreach (var expander in promptSystemContextExpanders)
+				expander.ExpandPromptContext(generalContext);
+			var componentsContext = generalContext.ToDictionary(); // Clone
+
+			generalContext["prompt"] = promptSettings.SystemPrompt;
+			generalContext["components"] = promptSettings.PromptComponents
+				.Select(id => PromptRegistry.GetComponent(id)?.Template.Template.Render(componentsContext))
+				.Where(c => !string.IsNullOrWhiteSpace(c))
+				.ToArray();
+			generalContext["sliders"] = promptSettings.SliderValues.Select(s =>
+				{
+					var sliderTemplate = PromptRegistry.GetSlider(s.SliderId)?.Template.Template;
+					var sliderContext = new
+					{
+						sliderValue = s.Value
+					};
+					return sliderTemplate?.Render(sliderContext);
+				})
+				.Where(c => !string.IsNullOrWhiteSpace(c))
+				.ToArray();
+			generalContext["assistantNickname"] = promptSettings.Nickname;
+			generalContext["specialization"] = promptSettings.UseCustomSpecialization ?
+				promptSettings.CustomSpecialization :
+				(promptSettings.SpecializationId != null ? PromptRegistry.GetSpecialization(promptSettings.SpecializationId.Value)?.Template.Template.Render(componentsContext) : null);
+			generalContext["persona"] = promptSettings.UseCustomPersona ?
+				promptSettings.CustomPersona :
+				(promptSettings.PersonaId != null ? PromptRegistry.GetPersona(promptSettings.PersonaId.Value)?.Template.Template.Render(componentsContext) : null);
+			generalContext["summary"] = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages;
+
+			return template!.Render(generalContext, functions);
+		}
+
+		private RCLargeLanguageModels.Messages.UserMessage BuildUserMessage(BranchedMessage message)
+		{
+			var userMessage = message.AsUserMessage();
+			var language = GetCurrentLanguageMetadata();
+			var template = templates.TryRetrieveBestAllWithFallback("user_message_prompt", language)?.LastOrDefault() as ITextTemplate;
+
+			var context = new Dictionary<string, object?>();
+			foreach (var expander in promptMessageContextExpanders)
+				expander.ExpandPromptContext(message, null, context);
+
+			string userName = userManager.FindByLogin(userMessage.SenderLogin)?.GetAgentShownName() ?? userMessage.SenderLogin;
+			context["user_name"] = userName;
+			context["time_sent"] = userMessage.CreatedAt.ToString();
+			context["content"] = userMessage.Content;
+			context["attachments"] = userMessage.Attachments;
+			context["can_read_content"] = true;
+			context["can_read_attachments"] = true;
+
+			var result = template!.Render(context, functions);
+			var attachments = userMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!;
+			return new RCLargeLanguageModels.Messages.UserMessage(userName, result, attachments!);
+		}
+
+		private RCLargeLanguageModels.Messages.UserMessage BuildUserMessageForAgent(BranchedMessage message, AgentDescriptor agent)
+		{
+			var userMessage = message.AsUserMessage();
+			var language = GetCurrentLanguageMetadata();
+			var template = templates.TryRetrieveBestAllWithFallback("user_message_prompt", language)?.LastOrDefault() as ITextTemplate;
+
+			var context = new Dictionary<string, object?>();
+			foreach (var expander in promptMessageContextExpanders)
+				expander.ExpandPromptContext(message, agent, context);
+
+			string userName = userManager.FindByLogin(userMessage.SenderLogin)?.GetAgentShownName() ?? userMessage.SenderLogin;
+			context["user_name"] = userName;
+			context["time_sent"] = userMessage.CreatedAt.ToString();
+			context["content"] = userMessage.Content;
+			context["attachments"] = userMessage.Attachments;
+			context["can_read_content"] = true;
+			bool canReadAttachments = agent.Read.ReadPermissions.HasFlag(AgentReadPermissions.UserAttachments);
+			context["can_read_attachments"] = canReadAttachments;
+
+			var result = template!.Render(context, functions);
+			IEnumerable<IAttachment> attachments = [];
+			if (canReadAttachments)
+				attachments = userMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!;
+			return new RCLargeLanguageModels.Messages.UserMessage(userName, result, attachments);
+		}
+
+		private RCLargeLanguageModels.Messages.UserMessage BuildForeignAgentMessageText(BranchedMessage message, AgentDescriptor agent)
 		{
 			var assistantMessage = message.AsAssistantMessage();
 			var senderDescriptor = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
@@ -233,16 +241,20 @@ namespace LLMDesktopAssistant.LLM.Services
 				context["user_name"] = agentName;
 				context["time_sent"] = assistantMessage.CreatedAt.ToString();
 				context["content"] = assistantMessage.Content;
-				context["attachments"] = Array.Empty<Attachment>();
+				context["attachments"] = assistantMessage.Attachments;
 				context["can_read_content"] =
 					permissions.HasFlag(AgentReadPermissions.OtherAgentContent) &&
 					exposure.HasFlag(AgentExposureMode.Content);
-				context["can_read_attachments"] =
+				bool canReadAttachments =
 					permissions.HasFlag(AgentReadPermissions.OtherAgentAttachments) &&
 					exposure.HasFlag(AgentExposureMode.Attachments);
+				context["can_read_attachments"] = canReadAttachments;
 
 				var result = template!.Render(context, functions);
-				return result;
+				IEnumerable<IAttachment> attachments = [];
+				if (canReadAttachments)
+					attachments = assistantMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!;
+				return new RCLargeLanguageModels.Messages.UserMessage(agentName, result, attachments);
 			}
 			else
 			{
@@ -256,7 +268,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				context["time_sent"] = assistantMessage.CreatedAt.ToString();
 				context["reasoning_content"] = assistantMessage.ReasoningContent;
 				context["content"] = assistantMessage.Content;
-				context["attachments"] = Array.Empty<Attachment>();
+				context["attachments"] = assistantMessage.Attachments;
 				context["tool_calls"] = assistantMessage.ToolCalls.Select(tc => new
 					{
 						name = tc.ToolName,
@@ -270,15 +282,19 @@ namespace LLMDesktopAssistant.LLM.Services
 				context["can_read_content"] =
 					permissions.HasFlag(AgentReadPermissions.OtherAgentContent) &&
 					exposure.HasFlag(AgentExposureMode.Content);
-				context["can_read_attachments"] =
+				bool canReadAttachments =
 					permissions.HasFlag(AgentReadPermissions.OtherAgentAttachments) &&
 					exposure.HasFlag(AgentExposureMode.Attachments);
+				context["can_read_attachments"] = canReadAttachments;
 				context["can_read_tool_calls"] =
 					permissions.HasFlag(AgentReadPermissions.OtherAgentToolCalls) &&
 					exposure.HasFlag(AgentExposureMode.ToolCalls);
 
 				var result = template!.Render(context, functions);
-				return result;
+				IEnumerable<IAttachment> attachments = [];
+				if (canReadAttachments)
+					attachments = assistantMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!;
+				return new RCLargeLanguageModels.Messages.UserMessage(agentName, result, attachments);
 			}
 		}
 
@@ -289,8 +305,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				if (!IsUserMessageVisibleToAgent(message, agent))
 					return [];
 
-				return [new RCLargeLanguageModels.Messages.UserMessage(
-					BuildUserMessageForAgent(message, agent))];
+				return [BuildUserMessageForAgent(message, agent)];
 			}
 			else if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
@@ -302,8 +317,13 @@ namespace LLMDesktopAssistant.LLM.Services
 					return BuildOwnAssistantMessageAsMessages(assistantMessage);
 
 				// Foreign assistant message — merged as quoted user message
-				return [new RCLargeLanguageModels.Messages.UserMessage(
-					BuildForeignAgentMessageText(message, agent))];
+				return [BuildForeignAgentMessageText(message, agent)];
+			}
+			else if (message.Message is RawUserMessage rawUserMessage)
+			{
+				var attachments = rawUserMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null);
+				var userMessage = new RCLargeLanguageModels.Messages.UserMessage(Senders.User, rawUserMessage.Content, attachments!);
+				return [userMessage];
 			}
 			else
 			{
@@ -315,7 +335,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			if (message.Message is Domain.UserMessage userMessage)
 			{
-				return BuildUserMessage(userMessage);
+				return BuildUserMessage(userMessage).Content;
 			}
 
 			if (message.Message is Domain.AssistantMessage assistantMessage)
@@ -326,18 +346,10 @@ namespace LLMDesktopAssistant.LLM.Services
 					{
 						ReadPermissions = (AgentReadPermissions)0x7fffffff
 					}
-				});
+				}).Content;
 			}
 
 			throw new InvalidOperationException($"Unsupported message type: {message.GetType()}.");
-		}
-
-		private IEnumerable<IMessage> BuildUserMessageAsMessages(Domain.UserMessage userMessage)
-		{
-			var resultMessage = new RCLargeLanguageModels.Messages.UserMessage(
-				BuildUserMessage(userMessage)
-			);
-			return [resultMessage];
 		}
 
 		private IEnumerable<IMessage> BuildOwnAssistantMessageAsMessages(Domain.AssistantMessage assistantMessage)
@@ -349,12 +361,17 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				toolCalls.Add(new FunctionToolCall(toolCall.Id, toolCall.ToolName, toolCall.Arguments ?? string.Empty));
 				var status = ConvertToolStatus(toolCall.Status);
-				var toolResult = new ToolResult(status, toolCall.ResultContent ?? "Tool did not returned any result.");
+				var resultContent = toolCall.ResultContent ?? string.Empty;
+				var toolResult = new ToolResult(status, resultContent,
+					toolCall.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!);
 				messages.Add(new ToolMessage(toolResult, toolCall.Id, toolCall.ToolName));
 			}
 
-			var result = new RCLargeLanguageModels.Messages.AssistantMessage(assistantMessage.Content ?? "",
-				assistantMessage.ReasoningContent ?? "", toolCalls: toolCalls);
+			var result = new RCLargeLanguageModels.Messages.AssistantMessage(
+				assistantMessage.Content ?? "",
+				assistantMessage.ReasoningContent ?? "",
+				toolCalls: toolCalls,
+				attachments: assistantMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!);
 			messages.Insert(0, result);
 
 			return messages;
@@ -368,7 +385,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			if (message.Message is Domain.UserMessage userMessage)
 			{
-				return BuildUserMessageAsMessages(userMessage);
+				return [BuildUserMessage(userMessage)];
 			}
 			else if (message.Message is Domain.AssistantMessage assistantMessage)
 			{

@@ -13,10 +13,6 @@
 			[ATTACHMENT]
 			File: @attachment.LocalPath
 			Size: @attachment.DisplaySize
-			@if attachment.PreviewContent
-			{
-				@attachment.PreviewContent
-			}
 		}
 		[END OF ATTACHMENTS]
 		Note that attachments also can be accessed via various tools, like python, shell or filesystem.

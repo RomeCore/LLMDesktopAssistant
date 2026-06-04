@@ -20,20 +20,4 @@ namespace LLMDesktopAssistant.Prompting;
 /// </remarks>
 public sealed class RawUserMessage : ChatMessage
 {
-	/// <summary>
-	/// Initializes a new instance of the <see cref="RawUserMessage"/> class
-	/// with the specified textual content.
-	/// </summary>
-	/// <param name="content">The text content of this injected message.</param>
-	public RawUserMessage(string content)
-	{
-		Content = content;
-	}
-
-	/// <summary>
-	/// Gets or sets an optional category label for this raw message.
-	/// Categories can be used for sorting, filtering, or debugging purposes
-	/// (e.g., "reactions", "sender_info", "system_event").
-	/// </summary>
-	public string? Category { get; init; }
 }

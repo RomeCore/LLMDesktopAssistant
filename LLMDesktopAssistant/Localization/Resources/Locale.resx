@@ -450,6 +450,12 @@
   <data name="attachment-attach_files_hint" xml:space="preserve">
     <value>Attach files</value>
   </data>
+  <data name="attachment-copy_to_working_directory" xml:space="preserve">
+    <value>Copy to working directory</value>
+  </data>
+  <data name="attachment-apply_native" xml:space="preserve">
+    <value>Apply as native LLM attachment</value>
+  </data>
   <data name="metatools" xml:space="preserve">
     <value>Meta-tools</value>
   </data>

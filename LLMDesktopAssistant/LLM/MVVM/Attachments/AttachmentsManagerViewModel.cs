@@ -1,4 +1,4 @@
-﻿using Avalonia.Collections;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
@@ -11,123 +11,59 @@ using LLMDesktopAssistant.Utils;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using UglyToad.PdfPig.Logging;
 
 namespace LLMDesktopAssistant.LLM.Attachments
 {
-	public class AttachmentApplicationModeViewModel
-	{
-		public required string Title { get; init; }
-		public required AttachmentApplicationMode Mode { get; init; }
-		public bool HasLineSelections { get; init; } = false;
-		public bool HasByteSelections { get; init; } = false;
-	}
-
 	public class AttachmentDraftViewModel : ViewModelBase
 	{
-		private readonly IAttachmentApplicationService _service;
-
 		public AttachmentsManagerViewModel Manager { get; }
 		public Uri SourceUri { get; }
 		public string? Title { get; }
 		public AttachmentApplicationParameters Parameters { get; }
 
-		public ImmutableList<AttachmentApplicationModeViewModel> AvailableModes { get; } =
-			[
-				new AttachmentApplicationModeViewModel
-				{
-					Title = "application-only_reference",
-					Mode = AttachmentApplicationMode.OnlyReference
-				},
-				new AttachmentApplicationModeViewModel
-				{
-					Title = "application-full_contents",
-					Mode = AttachmentApplicationMode.FullContents
-				},
-				new AttachmentApplicationModeViewModel
-				{
-					Title = "application-partial_contents",
-					Mode = AttachmentApplicationMode.PartialContents,
-					HasLineSelections = true
-				},
-				new AttachmentApplicationModeViewModel
-				{
-					Title = "application-full_hexadecimal",
-					Mode = AttachmentApplicationMode.FullHexadecimal
-				},
-				new AttachmentApplicationModeViewModel
-				{
-					Title = "application-hexadecimal_partial",
-					Mode = AttachmentApplicationMode.HexadecimalPartial,
-					HasByteSelections = true
-				},
-				new AttachmentApplicationModeViewModel
-				{
-					Title = "application-description",
-					Mode = AttachmentApplicationMode.Description
-				}
-			];
-
-		public AttachmentApplicationModeViewModel SelectedMode
+		public bool CopyToWorkingDirectory
 		{
-			get => AvailableModes.FirstOrDefault(x => x.Mode == Parameters.Mode, AvailableModes[0]);
+			get => Parameters.CopyToWorkingDirectory;
 			set
 			{
-				if (value.Mode != Parameters.Mode)
-				{
-					Parameters.Mode = value.Mode;
-					RaisePropertyChanged(nameof(SelectedMode));
-				}
+				Parameters.CopyToWorkingDirectory = value;
+				RaisePropertyChanged();
 			}
 		}
 
-		private bool _isLoading;
-		public bool IsLoading
+		public bool ApplyNative
 		{
-			get => _isLoading;
-			set => SetProperty(ref _isLoading, value);
+			get => Parameters.ApplyNative;
+			set
+			{
+				Parameters.ApplyNative = value;
+				RaisePropertyChanged();
+			}
 		}
 
 		public ICommand ApplyCommand { get; }
 		public ICommand RemoveCommand { get; }
 
 		public AttachmentDraftViewModel(AttachmentsManagerViewModel parent,
-			Uri uri, IAttachmentApplicationService service)
+			Uri uri)
 		{
 			Manager = parent;
 			SourceUri = uri;
 			Title = Path.GetFileName(uri.LocalPath);
-			_service = service;
 			Parameters = new AttachmentApplicationParameters
 			{
-				SourceUri = uri
+				SourceUri = uri,
+				CopyToWorkingDirectory = true,
+				ApplyNative = false
 			};
 
 			ApplyCommand = new AsyncRelayCommand(ApplyAsync);
 			RemoveCommand = new RelayCommand(Remove);
 		}
 
-		public async Task InitializeAsync()
-		{
-			// Just return without recommended parameters.
-			if (!IsLoading)
-				return;
-
-			IsLoading = true;
-			try
-			{
-				var recommended = await _service.GetRecommendedParamatersAsync(SourceUri);
-				CopyFrom(recommended);
-			}
-			finally
-			{
-				IsLoading = false;
-			}
-		}
-
 		private async Task ApplyAsync()
 		{
-			var attachment = await Manager.ApplicationService.ApplicateAttachmentAsync(Parameters);
+			var attachment = await Manager.ApplicationService.ApplyAttachmentAsync(Parameters);
 			Manager.UserInput.Attachments.Add(new AttachmentViewModel(Manager.UserInput, attachment));
 			Manager.Drafts.Remove(this);
 		}
@@ -135,15 +71,6 @@ namespace LLMDesktopAssistant.LLM.Attachments
 		private void Remove()
 		{
 			Manager.Drafts.Remove(this);
-		}
-
-		private void CopyFrom(AttachmentApplicationParameters src)
-		{
-			Parameters.Mode = src.Mode;
-			Parameters.StartLine = src.StartLine;
-			Parameters.EndLine = src.EndLine;
-			Parameters.StartByte = src.StartByte;
-			Parameters.EndByte = src.EndByte;
 		}
 	}
 
@@ -199,9 +126,8 @@ namespace LLMDesktopAssistant.LLM.Attachments
 			if (string.IsNullOrEmpty(url))
 				return;
 
-			var draft = new AttachmentDraftViewModel(this, new Uri(url), ApplicationService);
+			var draft = new AttachmentDraftViewModel(this, new Uri(url));
 			_drafts.Add(draft);
-			_ = draft.InitializeAsync();
 
 			InputUrl = string.Empty;
 		}
@@ -221,9 +147,8 @@ namespace LLMDesktopAssistant.LLM.Attachments
 			{
 				foreach (var file in result)
 				{
-					var draft = new AttachmentDraftViewModel(this, file.Path, ApplicationService);
+					var draft = new AttachmentDraftViewModel(this, file.Path);
 					_drafts.Add(draft);
-					_ = draft.InitializeAsync();
 				}
 			}
 		}
@@ -234,18 +159,15 @@ namespace LLMDesktopAssistant.LLM.Attachments
 			{
 				foreach (var file in files)
 				{
-					var draft = new AttachmentDraftViewModel(this, file.Path, ApplicationService);
+					var draft = new AttachmentDraftViewModel(this, file.Path);
 					_drafts.Add(draft);
-
-					_ = draft.InitializeAsync(); // fire & forget
 				}
 			}
 
 			if (args.DataTransfer.TryGetText() is string text)
 			{
-				var draft = new AttachmentDraftViewModel(this, new Uri(text), ApplicationService);
+				var draft = new AttachmentDraftViewModel(this, new Uri(text));
 				_drafts.Add(draft);
-				_ = draft.InitializeAsync();
 			}
 		}
 	}

@@ -1,10 +1,21 @@
-﻿namespace LLMDesktopAssistant.LLM.Domain
+﻿using System.Text.Json.Serialization;
+using LiteDB;
+using LLMDesktopAssistant.Utils.Files;
+using RCLargeLanguageModels.Messages.Attachments;
+
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
-	/// Represents an attachment to the user message.
+	/// Represents an attachment to the message or tool call result.
 	/// </summary>
 	public class Attachment
 	{
+		/// <summary>
+		/// Gets or sets the GUID for this attachment, used for persistence, especially for removing it from the database.
+		/// Do not change this GUID by itself.
+		/// </summary>
+		public Guid Guid { get; set; } = Guid.NewGuid();
+
 		/// <summary>
 		/// Gets or sets the title of the attachment.
 		/// This is used for display purposes in UI components.
@@ -13,7 +24,7 @@
 
 		/// <summary>
 		/// Gets or sets the source URL of the attachment.
-		/// This can be a web URL, a local path or a reference to the MCP resource (example: mcp:server_name://some/resource/name.txt).
+		/// This can be a web URL, a local path or a reference to the MCP resource (example: mcp://server_name/some/resource/name.txt).
 		/// </summary>
 		public required string SourceUrl { get; init; }
 
@@ -32,45 +43,23 @@
 		/// Gets the display size of the attachment in a human-readable format.
 		/// Example: "50 KB", "35 MB", "12 GB".
 		/// </summary>
-		public string DisplaySize
-		{
-			get
-			{
-				var size = Size;
-				var result = $"{size} B";
-
-				if (size > 10240)
-				{
-					size /= 1024;
-					result = $"{size} KB";
-
-					if (size > 10240)
-					{
-						size /= 1024;
-						result = $"{size} MB";
-
-						if (size > 10240)
-						{
-							size /= 1024;
-							result = $"{size} GB";
-						}
-					}
-				}
-
-				return result;
-			}
-		}
+		[BsonIgnore]
+		[JsonIgnore]
+		public string DisplaySize => FileUtils.BytesToDisplaySize(Size);
 
 		/// <summary>
-		/// Gets or sets any additional information about the attachment to be sent to the LLM.
+		/// Gets or sets the number of lines in the attachment if it is a text file, otherwise null.
 		/// </summary>
-		public string? AdditionalInfo { get; init; } = null;
+		public required int? Lines { get; init; }
 
 		/// <summary>
-		/// Gets or sets the preview content of the attachment.
-		/// This will be shown to the LLM if available.
-		/// May contain entire file contents, first few lines, hex binary representation, image or sound description, etc.
+		/// Gets whether this attachment is binary (i.e., not a text file).
 		/// </summary>
-		public string? PreviewContent { get; init; } = null;
+		public bool IsBinary => Lines == null;
+
+		/// <summary>
+		/// Gets or sets the native attachment that can be sent directly to a large language model.
+		/// </summary>
+		public IAttachment? NativeAttachment { get; init; } = null;
 	}
 }

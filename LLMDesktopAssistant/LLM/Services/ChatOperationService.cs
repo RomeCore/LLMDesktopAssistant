@@ -57,7 +57,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					Content = userInput.Content,
 					SenderLogin = userInput.SenderLogin,
-					Attachments = userInput.Attachments,
+					Attachments = [..userInput.Attachments],
 					Visibility = userInput.Visibility,
 					VisibleTo = userInput.VisibleTo,
 					IsVisibleToWhiteList = false
@@ -84,7 +84,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					Content = userInput.Content,
 					SenderLogin = userInput.SenderLogin,
-					Attachments = userInput.Attachments,
+					Attachments = [.. userInput.Attachments],
 					Visibility = userInput.Visibility,
 					VisibleTo = userInput.VisibleTo,
 					IsVisibleToWhiteList = false

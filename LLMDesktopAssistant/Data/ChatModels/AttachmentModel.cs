@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
+using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.Data.ChatModels
 {
@@ -19,43 +20,18 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		public int Id { get; set; }
 
 		/// <summary>
-		/// Gets or sets the message ID that this attachment belongs to.
+		/// Gets or sets a value indicating whether this attachment is associated with a tool call.
 		/// </summary>
-		public int MessageId { get; set; }
+		public bool IsParentToolCall { get; set; }
 
 		/// <summary>
-		/// Gets or sets the title of the attachment.
-		/// This is used for display purposes in UI components.
+		/// Gets or sets the message or tool call ID that this attachment belongs to.
 		/// </summary>
-		public string Title { get; set; } = string.Empty;
+		public int ParentId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the source URL of the attachment.
-		/// This can be a web URL, a local path or a reference to the MCP resource (example: mcp:server_name://some/resource/name.txt).
+		/// Gets or sets the attachment data.
 		/// </summary>
-		public string SourceUrl { get; set; } = string.Empty;
-
-		/// <summary>
-		/// Gets or sets the local path relative to the working folder (see <c>Chat.Settings.WorkingFolder</c>).
-		/// This is where attachment file is copied and can be used for tools like Python, Filesystem, Shell interpreters, etc.
-		/// </summary>
-		public string LocalPath { get; set; } = string.Empty;
-
-		/// <summary>
-		/// Gets or sets the size of the attachment in bytes.
-		/// </summary>
-		public long Size { get; set; } = 0;
-
-		/// <summary>
-		/// Gets or sets any additional information about the attachment to be sent to the LLM.
-		/// </summary>
-		public string? AdditionalInfo { get; set; }
-
-		/// <summary>
-		/// Gets or sets the preview content of the attachment.
-		/// This will be shown to the LLM if available.
-		/// May contain entire file contents, first few lines, hex binary representation, image or sound description, etc.
-		/// </summary>
-		public string? PreviewContent { get; set; } = null;
+		public Attachment Attachment { get; set; } = null!;
 	}
 }

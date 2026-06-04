@@ -74,42 +74,13 @@
 									   FontWeight="Bold"
 									   TextTrimming="CharacterEllipsis"/>
 
-							<ComboBox ItemsSource="{Binding AvailableModes}"
-									  SelectedItem="{Binding SelectedMode}"
-									  PlaceholderText="{loc:Loc application-mode_hint}">
+							<CheckBox IsChecked="{Binding CopyToWorkingDirectory}"
+									  Content="{loc:Loc attachment-copy_to_working_directory}"
+									  Margin="0,5,0,0"/>
 
-								<ComboBox.ItemTemplate>
-									<DataTemplate>
-										<TextBlock Text="{loc:Loc {Binding Title}}"
-												   Margin="3"/>
-									</DataTemplate>
-								</ComboBox.ItemTemplate>
-								
-							</ComboBox>
-
-							<StackPanel Orientation="Vertical"
-										IsVisible="{Binding SelectedMode.HasLineSelections}">
-								<TextBox Width="100" HorizontalAlignment="Left" Margin="5"
-										 Text="{Binding Parameters.StartLine}"
-										 PlaceholderText="{loc:Loc application-start_line}"
-										 UseFloatingPlaceholder="True"/>
-								<TextBox Width="100" HorizontalAlignment="Left" Margin="5"
-										 Text="{Binding Parameters.EndLine}"
-										 PlaceholderText="{loc:Loc application-end_line}"
-										 UseFloatingPlaceholder="True"/>
-							</StackPanel>
-
-							<StackPanel Orientation="Vertical"
-										IsVisible="{Binding SelectedMode.HasByteSelections}">
-								<TextBox Width="100" HorizontalAlignment="Left" Margin="5"
-										 Text="{Binding Parameters.StartByte}"
-										 PlaceholderText="{loc:Loc application-start_byte}"
-										 UseFloatingPlaceholder="True"/>
-								<TextBox Width="100" HorizontalAlignment="Left" Margin="5"
-										 Text="{Binding Parameters.EndByte}"
-										 PlaceholderText="{loc:Loc application-end_byte}"
-										 UseFloatingPlaceholder="True"/>
-							</StackPanel>
+							<CheckBox IsChecked="{Binding ApplyNative}"
+									  Content="{loc:Loc attachment-apply_native}"
+									  Margin="0,3,0,0"/>
 
 							<Button Content="{loc:Loc application-applicate_hint}"
 									Command="{Binding ApplyCommand}"

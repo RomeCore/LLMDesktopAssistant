@@ -154,7 +154,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				var llm = new LLModel(modelDescriptor);
 				path = ResolvePath(path);
-				var attachment = new ImageAttachment(path);
+				var attachment = new SerializableImageAttachment(path);
 				var result = new ReactiveToolResult();
 
 				var messages = new List<IMessage>

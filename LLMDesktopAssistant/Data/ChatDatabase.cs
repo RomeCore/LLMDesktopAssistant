@@ -49,7 +49,7 @@ namespace LLMDesktopAssistant.Data
 
 			MessageNodes.EnsureIndex(x => x.ParentId);
 			MessageNodes.EnsureIndex(x => x.SelectedNodeId);
-			Attachments.EnsureIndex(x => x.MessageId);
+			Attachments.EnsureIndex(x => x.ParentId);
 			ToolCalls.EnsureIndex(x => x.MessageId);
 			ToolCalls.EnsureIndex(x => x.ToolCallId);
 			ChatContextTabViewModels.EnsureIndex(x => x.ChatId);

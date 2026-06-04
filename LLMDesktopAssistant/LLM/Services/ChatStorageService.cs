@@ -1,4 +1,11 @@
-﻿using DocumentFormat.OpenXml.EMMA;
+﻿using System.Collections.Concurrent;
+using System.Collections.Immutable;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Windows;
+using DocumentFormat.OpenXml.EMMA;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
@@ -9,13 +16,6 @@ using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
-using System.Collections.Concurrent;
-using System.Collections.Immutable;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Windows;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -406,6 +406,17 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			database.ToolCalls.Insert(toolCallModel);
 
+			foreach (var attachment in toolCall.Attachments)
+			{
+				var attachmentModel = new AttachmentModel
+				{
+					IsParentToolCall = true,
+					ParentId = toolCallModel.Id,
+					Attachment = attachment
+				};
+				database.Attachments.Insert(attachmentModel);
+			}
+
 			return toolCallModel;
 		}
 
@@ -433,9 +444,30 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 			toolCall.PropertyChanged += OnToolCallPropertyChanged;
 
+			void AttachmentsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+			{
+				if (e.OldItems != null)
+					foreach (Attachment oldAttachment in e.OldItems)
+						database.Attachments.DeleteMany(avm => avm.Attachment.Guid == oldAttachment.Guid);
+
+				if (e.NewItems != null)
+					foreach (Attachment newAttachment in e.NewItems)
+					{
+						var attachmentModel = new AttachmentModel
+						{
+							IsParentToolCall = true,
+							ParentId = model.Id,
+							Attachment = newAttachment
+						};
+						database.Attachments.Insert(attachmentModel);
+					}
+			}
+			toolCall.Attachments.CollectionChanged += AttachmentsCollectionChanged;
+
 			_unsubscribers.Add(assistantMessage, () =>
 			{
 				toolCall.PropertyChanged -= OnToolCallPropertyChanged;
+				toolCall.Attachments.CollectionChanged -= AttachmentsCollectionChanged;
 			});
 		}
 
@@ -550,6 +582,26 @@ namespace LLMDesktopAssistant.LLM.Services
 				throw new ArgumentOutOfRangeException(nameof(message), "Invalid message type");
 			}
 
+			void AttachmentsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+			{
+				if (e.OldItems != null)
+					foreach (Attachment oldAttachment in e.OldItems)
+						database.Attachments.DeleteMany(avm => avm.Attachment.Guid == oldAttachment.Guid);
+
+				if (e.NewItems != null)
+					foreach (Attachment newAttachment in e.NewItems)
+					{
+						var attachmentModel = new AttachmentModel
+						{
+							IsParentToolCall = false,
+							ParentId = model.Id,
+							Attachment = newAttachment
+						};
+						database.Attachments.Insert(attachmentModel);
+					}
+			}
+			message.Attachments.CollectionChanged += AttachmentsCollectionChanged;
+
 			void AdditionalViewModelsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 			{
 				if (e.OldItems != null)
@@ -564,6 +616,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			_unsubscribers.Add(message, () =>
 			{
+				message.Attachments.CollectionChanged -= AttachmentsCollectionChanged;
 				message.AdditionalViewModels.CollectionChanged -= AdditionalViewModelsCollectionChanged;
 			});
 		}
@@ -593,27 +646,21 @@ namespace LLMDesktopAssistant.LLM.Services
 				};
 
 				database.Messages.Insert(model);
-				int messageId = model.Id;
 
-				foreach (var attachment in userMessage.Attachments)
+				foreach (var attachment in message.Attachments)
 				{
 					var attachmentModel = new AttachmentModel
 					{
-						MessageId = messageId,
-						Title = attachment.Title,
-						SourceUrl = attachment.SourceUrl,
-						LocalPath = attachment.LocalPath,
-						Size = attachment.Size,
-						AdditionalInfo = attachment.AdditionalInfo,
-						PreviewContent = attachment.PreviewContent
+						IsParentToolCall = false,
+						ParentId = model.Id,
+						Attachment = attachment
 					};
 					database.Attachments.Insert(attachmentModel);
 				}
 
 				foreach (var additionalViewModel in message.AdditionalViewModels)
 				{
-					if (!additionalViewModel.IsTemporary)
-						CreateAndInsertAdditionalViewModelAndSubscribe(additionalViewModel, message, model);
+					CreateAndInsertAdditionalViewModelAndSubscribe(additionalViewModel, message, model);
 				}
 
 				SubscribeMessage(message, model);
@@ -648,10 +695,20 @@ namespace LLMDesktopAssistant.LLM.Services
 					CreateAndInsertToolCallModelAndSubscribe(toolCall, assistantMessage, model);
 				}
 
+				foreach (var attachment in message.Attachments)
+				{
+					var attachmentModel = new AttachmentModel
+					{
+						IsParentToolCall = false,
+						ParentId = model.Id,
+						Attachment = attachment
+					};
+					database.Attachments.Insert(attachmentModel);
+				}
+
 				foreach (var additionalViewModel in message.AdditionalViewModels)
 				{
-					if (!additionalViewModel.IsTemporary)
-						CreateAndInsertAdditionalViewModelAndSubscribe(additionalViewModel, message, model);
+					CreateAndInsertAdditionalViewModelAndSubscribe(additionalViewModel, message, model);
 				}
 
 				SubscribeMessage(message, model);
@@ -668,16 +725,8 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			if (messageModel.Role == RoleModel.User)
 			{
-				var attachments = database.Attachments.Find(a => a.MessageId == messageModel.Id)
-					.Select(am => new Attachment
-					{
-						Title = am.Title,
-						SourceUrl = am.SourceUrl,
-						LocalPath = am.LocalPath,
-						Size = am.Size,
-						AdditionalInfo = am.AdditionalInfo,
-						PreviewContent = am.PreviewContent
-					});
+				var attachments = database.Attachments.Find(a => !a.IsParentToolCall && a.ParentId == messageModel.Id)
+					.Select(am => am.Attachment);
 
 				var additionalViewModels = database.AdditionalMessageViewModels
 					.Find(avm => avm.MessageId == messageModel.Id)
@@ -687,11 +736,11 @@ namespace LLMDesktopAssistant.LLM.Services
 				{
 					CreatedAt = messageModel.CreatedAt,
 					Content = messageModel.Content,
+					Attachments = [.. attachments],
 					SenderLogin = messageModel.Sender,
 					Visibility = messageModel.Visibility,
 					VisibleTo = messageModel.VisibleTo,
-					IsVisibleToWhiteList = messageModel.IsVisibleToWhiteList,
-					Attachments = attachments.ToImmutableList()
+					IsVisibleToWhiteList = messageModel.IsVisibleToWhiteList
 				};
 
 				foreach (var additionalViewDataModel in additionalViewModels)
@@ -708,6 +757,9 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				var toolCallModels = database.ToolCalls.Find(t => t.MessageId == messageModel.Id).ToList();
 
+				var attachments = database.Attachments.Find(a => !a.IsParentToolCall && a.ParentId == messageModel.Id)
+					.Select(am => am.Attachment);
+
 				var additionalViewModels = database.AdditionalMessageViewModels
 					.Find(avm => avm.MessageId == messageModel.Id)
 					.OrderBy(avm => avm.Id);
@@ -719,6 +771,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					AgentStageId = messageModel.AgentStageId,
 					ReasoningContent = messageModel.ReasoningContent,
 					Content = messageModel.Content,
+					Attachments = [.. attachments],
 					CompletionToken = CompletionToken.Success,
 					Error = messageModel.Error
 				};
@@ -731,6 +784,9 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				foreach (var toolCallModel in toolCallModels)
 				{
+					var toolAttachments = database.Attachments.Find(a => a.IsParentToolCall && a.ParentId == toolCallModel.Id)
+						.Select(am => am.Attachment);
+
 					var toolCall = new ToolCall
 					{
 						Id = toolCallModel.ToolCallId,
@@ -738,6 +794,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						Title = toolCallModel.Title,
 						Arguments = toolCallModel.FunctionArguments,
 						ResultContent = toolCallModel.ResultContent,
+						Attachments = [.. toolAttachments],
 						UseMarkdown = toolCallModel.UseMarkdown,
 						StructuredResult = string.IsNullOrEmpty(toolCallModel.StructuredResult) ? null
 							: JsonNode.Parse(toolCallModel.StructuredResult),

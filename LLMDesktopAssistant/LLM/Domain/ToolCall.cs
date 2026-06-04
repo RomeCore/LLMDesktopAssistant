@@ -1,7 +1,8 @@
-﻿using LLMDesktopAssistant.Tools;
+﻿using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using RCLargeLanguageModels.Tasks;
-using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -93,6 +94,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _structuredResult;
 			set => SetProperty(ref _structuredResult, value);
+		}
+
+		private RangeObservableCollection<Attachment> _attachments = [];
+		/// <summary>
+		/// Gets or sets the attachments associated with the tool call result.
+		/// </summary>
+		public RangeObservableCollection<Attachment> Attachments
+		{
+			get => _attachments;
+			set => _attachments.Reset(value);
 		}
 
 		private TaskCompletionSource<string?>? _userConfirmationSource;

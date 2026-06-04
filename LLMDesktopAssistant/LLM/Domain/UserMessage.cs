@@ -9,11 +9,6 @@ namespace LLMDesktopAssistant.LLM.Domain
 	public class UserMessage : ChatMessage
 	{
 		/// <summary>
-		/// The collection of attachments associated with the user message. These can include images or files.
-		/// </summary>
-		public required ImmutableList<Attachment> Attachments { get; init; }
-
-		/// <summary>
 		/// The login name of the sender of the message. This is used to identify the user within the system.
 		/// </summary>
 		public required string SenderLogin { get; init; }
