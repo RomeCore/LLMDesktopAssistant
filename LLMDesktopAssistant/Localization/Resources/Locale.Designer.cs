@@ -619,6 +619,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Cannot rename chat.
+        /// </summary>
+        public static string chat_manager_no_messages_to_rename {
+            get {
+                return ResourceManager.GetString("chat_manager_no_messages_to_rename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Chat has no messages.
+        /// </summary>
+        public static string chat_manager_no_messages_to_rename_desc {
+            get {
+                return ResourceManager.GetString("chat_manager_no_messages_to_rename_desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Send message.
         /// </summary>
         public static string chat_send_button_hint {
@@ -2946,6 +2964,33 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string remove {
             get {
                 return ResourceManager.GetString("remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancel.
+        /// </summary>
+        public static string rename_chat_cancel {
+            get {
+                return ResourceManager.GetString("rename_chat_cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Save.
+        /// </summary>
+        public static string rename_chat_save {
+            get {
+                return ResourceManager.GetString("rename_chat_save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Rename with AI.
+        /// </summary>
+        public static string rename_with_ai {
+            get {
+                return ResourceManager.GetString("rename_with_ai", resourceCulture);
             }
         }
         

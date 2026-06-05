@@ -35,6 +35,7 @@
 
 				</StackPanel>
 
+				<!-- Sidebar: list of all available chats (no edit controls) -->
 				<ListBox ItemsSource="{Binding AvailableChats}"
 								 SelectedItem="{Binding SelectedChat.SelectedAvailable}"
 								 Margin="8">
@@ -58,8 +59,7 @@
 												DockPanel.Dock="Left"
 												ToolTip.Tip="{Binding Topic}"/>
 								
-								<StackPanel DockPanel.Dock="Right"
-														VerticalAlignment="Center">
+								<StackPanel VerticalAlignment="Center">
 									
 									<TextBlock Text="{Binding Title}"
 														 FontSize="14"
@@ -68,7 +68,6 @@
 								
 									<TextBlock Text="{Binding Topic}"
 														 IsVisible="{Binding Topic, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-														 DockPanel.Dock="Right"
 														 Foreground="{Binding TopicColorHex}"
 														 FontSize="11"
 														 Opacity="0.8"
@@ -78,7 +77,6 @@
 								
 									<TextBlock Text="{loc:Loc no_topic}"
 														 IsVisible="{Binding Topic, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"
-														 DockPanel.Dock="Right"
 														 Foreground="{Binding TopicColorHex}"
 														 FontSize="11"
 														 Opacity="0.8"
@@ -105,7 +103,7 @@
 				<RowDefinition/>
 			</Grid.RowDefinitions>
 
-			<!-- TOP BAR -->
+			<!-- TOP BAR with tabs & buttons -->
 			<DockPanel Background="{DynamicResource TopBarBackground}">
 
 				<StackPanel DockPanel.Dock="Right"
@@ -126,6 +124,7 @@
 
 				</StackPanel>
 
+				<!-- Opened chats tabs with inline rename & AI rename -->
 				<ListBox ItemsSource="{Binding OpenedChats}"
 								 SelectedItem="{Binding SelectedChat}"
 								 DockPanel.Dock="Left">
@@ -137,14 +136,68 @@
 					</ListBox.ItemsPanel>
 
 					<ListBox.ItemTemplate>
-						<DataTemplate>
+						<DataTemplate x:DataType="local:OpenedChatViewModel">
 							
-							<TextBlock Text="{Binding CurrentChat.Chat.Title}"
-												 Foreground="{DynamicResource DefaultForeground}"
-												 VerticalAlignment="Center"
-												 Margin="16,5,5,5"
-												 FontSize="16"/>
+							<Border Margin="2,0"
+											Padding="8,4"
+											CornerRadius="6">
+							
+								<StackPanel Orientation="Horizontal"
+														VerticalAlignment="Center"
+														Spacing="4">
+									
+									<!-- Title display mode -->
+									<StackPanel Orientation="Horizontal" Spacing="4"
+															IsVisible="{Binding !IsEditingTitle}">
+										
+										<TextBlock Text="{Binding CurrentChat.Chat.Title}"
+															 FontSize="14"
+															 VerticalAlignment="Center"
+															 PointerPressed="TabTitleTextBlock_PointerPressed"
+															 Cursor="Hand"/>
+										
+										<Button Command="{Binding RenameWithAICommand}"
+														Classes="SmallIconButton"
+														ToolTip.Tip="{loc:Loc rename_with_ai}">
+											<ico:MaterialIcon Kind="AutoFix"/>
+										</Button>
+										
+										<Button Command="{Binding CloseChatCommand}"
+														Classes="SmallIconButton"
+														ToolTip.Tip="{loc:Loc close}">
+											<ico:MaterialIcon Kind="Close"/>
+										</Button>
 
+									</StackPanel>
+									
+									<!-- Title editing mode -->
+									<StackPanel Orientation="Horizontal" Spacing="4"
+															IsVisible="{Binding IsEditingTitle}">
+										
+										<TextBox Text="{Binding EditTitleText, Mode=TwoWay}"
+														 FontSize="14"
+														 MinWidth="80"
+														 MaxWidth="200"
+														 AcceptsReturn="False"
+														 KeyDown="TabTitleTextBox_KeyDown"/>
+										
+										<Button Command="{Binding CommitEditTitleCommand}"
+														Classes="SmallIconButton"
+														ToolTip.Tip="{loc:Loc rename_chat_save}">
+											<ico:MaterialIcon Kind="Check"/>
+										</Button>
+										
+										<Button Command="{Binding CancelEditTitleCommand}"
+														Classes="SmallIconButton"
+														ToolTip.Tip="{loc:Loc rename_chat_cancel}">
+											<ico:MaterialIcon Kind="Close"/>
+										</Button>
+									</StackPanel>
+									
+								</StackPanel>
+								
+							</Border>
+							
 						</DataTemplate>
 					</ListBox.ItemTemplate>
 

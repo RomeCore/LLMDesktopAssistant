@@ -1,13 +1,14 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using DocumentFormat.OpenXml.Spreadsheet;
 using LiveMarkdown.Avalonia;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
+using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.WebUI;
 using Serilog;
 
@@ -28,7 +29,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public string Topic
 		{
 			get => _topic;
-			set => SetProperty(ref _topic, value);
+			set
+			{
+				if (SetProperty(ref _topic, value))
+					RaisePropertyChanged(nameof(TopicColorHex));
+			}
 		}
 
 		private DateTime _lastModifiedAt = DateTime.Now;
@@ -47,11 +52,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 
 
-		/// <summary>
-		/// Generates a deterministic pastel hex color from the topic string for UI display.
-		/// Topic color is computed from hash, so any topic can be used without predefined list.
-		/// Returns a hex color string like "#AABBCC" that can be used directly in XAML backgrounds.
-		/// </summary>
 		public string TopicColorHex => GenerateColorHexFromHash(Topic);
 
 		private static string GenerateColorHexFromHash(string topic)
@@ -149,6 +149,76 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			}
 		}
 
+		private bool _isEditingTitle = false;
+		public bool IsEditingTitle
+		{
+			get => _isEditingTitle;
+			set => SetProperty(ref _isEditingTitle, value);
+		}
+
+		private string _editTitleText = string.Empty;
+		public string EditTitleText
+		{
+			get => _editTitleText;
+			set => SetProperty(ref _editTitleText, value);
+		}
+
+		public ICommand StartEditTitleCommand { get; }
+		public ICommand CommitEditTitleCommand { get; }
+		public ICommand CancelEditTitleCommand { get; }
+		public ICommand RenameWithAICommand { get; }
+		public required ICommand CloseChatCommand { get; init; }
+
+		public OpenedChatViewModel()
+		{
+			StartEditTitleCommand = new RelayCommand(() =>
+			{
+				if (CurrentChat?.Chat != null)
+				{
+					EditTitleText = CurrentChat.Chat.Title;
+					IsEditingTitle = true;
+				}
+			});
+
+			CommitEditTitleCommand = new RelayCommand(() =>
+			{
+				if (CurrentChat?.Chat != null && !string.IsNullOrWhiteSpace(EditTitleText))
+					CurrentChat.Chat.Title = EditTitleText.Trim();
+				IsEditingTitle = false;
+			});
+
+			CancelEditTitleCommand = new RelayCommand(() =>
+			{
+				IsEditingTitle = false;
+			});
+
+			RenameWithAICommand = new AsyncRelayCommand(async () =>
+			{
+				if (CurrentChat?.Chat != null)
+				{
+					try
+					{
+						if (CurrentChat.Chat.Messages.Count == 0)
+						{
+							var toastService = CurrentChat.Chat.Services.GetService<IToastService>();
+							if (toastService != null)
+								toastService.ShowWarning(LocalizationManager.LocalizeStatic("chat_manager_no_messages_to_rename"),
+									LocalizationManager.LocalizeStatic("chat_manager_no_messages_to_rename_desc"));
+							return;
+						}
+
+						var namingService = CurrentChat.Chat.Services.GetService<IChatNamingService>();
+						if (namingService != null)
+							await namingService.NameChatAsync();
+					}
+					catch (Exception ex)
+					{
+						Log.Error(ex, "Failed to rename chat with AI: {Error}", ex.Message);
+					}
+				}
+			});
+		}
+
 		private void UnlockAvailableChat(AvailableChatViewModel available, Chat chat)
 		{
 			available.IsSelected = false;
@@ -187,9 +257,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 			if (disposing)
 			{
-				CurrentChat = null;
 				_selectedAvailable?.IsSelected = false;
 				SelectedAvailable = null;
+				CurrentChat = null;
 				_currentChatScope?.Dispose();
 				_currentChatScope = null;
 			}
@@ -267,9 +337,18 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			var newAvailableChat = AvailableChatViewModel.CreateFromInfo(newChat);
 			AvailableChats.Insert(0, newAvailableChat);
 
-			var newOpenedChat = new OpenedChatViewModel
+			OpenedChatViewModel newOpenedChat = null!;
+			newOpenedChat = new OpenedChatViewModel
 			{
-				SelectedAvailable = newAvailableChat
+				SelectedAvailable = newAvailableChat,
+				CloseChatCommand = new RelayCommand(() =>
+				{
+					OpenedChats.Remove(newOpenedChat);
+					newOpenedChat.Dispose();
+
+					if (OpenedChats.Count == 0)
+						CreateConversation();
+				})
 			};
 			OpenedChats.Add(newOpenedChat);
 			SelectedChat = newOpenedChat;

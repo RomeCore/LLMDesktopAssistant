@@ -1509,4 +1509,19 @@
   <data name="no_topic" xml:space="preserve">
     <value>без темы</value>
   </data>
+  <data name="rename_with_ai" xml:space="preserve">
+    <value>Переименовать через ИИ</value>
+  </data>
+  <data name="rename_chat_save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="rename_chat_cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="chat_manager_no_messages_to_rename" xml:space="preserve">
+    <value>Невозможно переименовать чат</value>
+  </data>
+  <data name="chat_manager_no_messages_to_rename_desc" xml:space="preserve">
+    <value>В чате отсутствуют сообщения</value>
+  </data>
 </root>
