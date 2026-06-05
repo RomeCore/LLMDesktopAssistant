@@ -9,25 +9,153 @@
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.Messages.AssistantMessageReasoningPartView"
 			 x:DataType="local:AssistantMessageReasoningPartViewModel">
+
+	<UserControl.Resources>
+
+		<ControlTheme x:Key="ReasoningExpanderToggleTheme" TargetType="ToggleButton">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<StackPanel Orientation="Horizontal">
+
+						<ico:MaterialIcon Name="Chevron"
+															Kind="ChevronRight"
+															Width="16" Height="16"
+															HorizontalAlignment="Center"
+															VerticalAlignment="Center">
+							<ico:MaterialIcon.RenderTransform>
+								<RotateTransform />
+							</ico:MaterialIcon.RenderTransform>
+						</ico:MaterialIcon>
+
+						<ContentPresenter Content="{TemplateBinding Content}"
+															ContentTemplate="{TemplateBinding ContentTemplate}"
+															HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+															VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+															Foreground="{TemplateBinding Foreground}"/>
+					</StackPanel>
+				</ControlTemplate>
+			</Setter>
+
+			<Setter Property="Margin" Value="0"/>
+			<Setter Property="Padding" Value="0"/>
+
+			<Style Selector="^ /template/ ico|MaterialIcon#Chevron">
+				<Setter Property="Transitions">
+					<Transitions>
+						<TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+					</Transitions>
+				</Setter>
+			</Style>
+			
+			<Style Selector="^[Tag=collapsed] /template/ ico|MaterialIcon#Chevron">
+				<Setter Property="RenderTransform" Value="rotate(0deg)"/>
+			</Style>
+			
+			<Style Selector="^[Tag=expanded] /template/ ico|MaterialIcon#Chevron">
+				<Setter Property="RenderTransform" Value="rotate(90deg)"/>
+			</Style>
+			
+		</ControlTheme>
 	
-	<Expander Padding="0"
-						BorderThickness="0"
-						Background="Transparent"
-						Margin="0,0,0,4"
-						IsExpanded="{Binding NotCompleted, Mode=OneWay}"
-						ExpandDirection="Right">
+		<ControlTheme x:Key="ReasoningExpanderTheme" TargetType="Expander">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<StackPanel MinWidth="{TemplateBinding MinWidth}"
+											MaxWidth="{TemplateBinding MaxWidth}"
+											Spacing="0">
+
+						<ToggleButton Name="PART_ToggleButton"
+													IsEnabled="{TemplateBinding IsEnabled}"
+													Content="{TemplateBinding Header}"
+													ContentTemplate="{TemplateBinding HeaderTemplate}"
+													IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
+													Theme="{StaticResource ReasoningExpanderToggleTheme}"
+													MinHeight="{TemplateBinding MinHeight}"
+													Background="Transparent"
+													Cursor="Hand">
+						</ToggleButton>
+
+						<ContentPresenter Name="PART_ContentPresenter"
+															Content="{TemplateBinding Content}"
+															ContentTemplate="{TemplateBinding ContentTemplate}"
+															Foreground="{TemplateBinding Foreground}"
+															IsVisible="{TemplateBinding IsExpanded}"
+															HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+															VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+						</ContentPresenter>
+
+					</StackPanel>
+				</ControlTemplate>
+			</Setter>
+			
+			<Setter Property="Margin" Value="0"/>
+			<Setter Property="Padding" Value="0"/>
+
+			<Style Selector="^[IsExpanded=False] /template/ ToggleButton#PART_ToggleButton">
+				<Setter Property="Tag" Value="collapsed"/>
+			</Style>
+			
+			<Style Selector="^[IsExpanded=True] /template/ ToggleButton#PART_ToggleButton">
+				<Setter Property="Tag" Value="expanded"/>
+			</Style>
+			
+		</ControlTheme>
+
+	</UserControl.Resources>
+
+	<Expander Theme="{StaticResource ReasoningExpanderTheme}"
+						HorizontalAlignment="Stretch" VerticalAlignment="Top"
+						IsExpanded="{Binding !Completed, Mode=OneWay}">
 
 		<Expander.Header>
-			<TextBlock Text="{loc:Loc reasoning}"
-								 VerticalAlignment="Top"
-								 FontSize="16"
-								 Margin="5"/>
+			<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="16">
+				
+				<!-- Reasoning icon -->
+				<ico:MaterialIcon Kind="Bulb"
+													Width="16" Height="16"
+													Margin="0,0,2,0"
+													HorizontalAlignment="Center"
+													VerticalAlignment="Center"/>
+
+				<TextBlock Text="{loc:Loc reasoning}"
+									 VerticalAlignment="Center"
+									 FontSize="16"
+									 FontWeight="SemiBold"/>
+				
+				<!-- Animated dots while streaming -->
+				<TextBlock VerticalAlignment="Center"
+									 FontSize="16"
+									 FontWeight="Bold"
+									 IsVisible="{Binding !Completed}">
+					<TextBlock.Styles>
+						<Style Selector="TextBlock">
+							<Style.Animations>
+								<Animation Duration="0:0:1.2" IterationCount="Infinite">
+									<KeyFrame Cue="0%">
+										<Setter Property="Text" Value=""/>
+									</KeyFrame>
+									<KeyFrame Cue="33%">
+										<Setter Property="Text" Value="."/>
+									</KeyFrame>
+									<KeyFrame Cue="67%">
+										<Setter Property="Text" Value=".."/>
+									</KeyFrame>
+									<KeyFrame Cue="100%">
+										<Setter Property="Text" Value="..."/>
+									</KeyFrame>
+								</Animation>
+							</Style.Animations>
+						</Style>
+					</TextBlock.Styles>
+				</TextBlock>
+
+			</StackPanel>
 		</Expander.Header>
 
+		<!-- Content -->
 		<ctrl:MarkdownControl MarkdownText="{Binding ReasoningText}"
-													VerticalAlignment="Center"
-													Opacity="0.7"
-													Margin="5"/>
+													Opacity="0.6"
+													Margin="0,0,0,8"/>
 
 	</Expander>
 

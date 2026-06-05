@@ -1,5 +1,7 @@
+using Avalonia.Animation;
 using CommunityToolkit.Mvvm.Input;
 using LiteDB;
+using LLMDesktopAssistant.Converters;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Localization;
 

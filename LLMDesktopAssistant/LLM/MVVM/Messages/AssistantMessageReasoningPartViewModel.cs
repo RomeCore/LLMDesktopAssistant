@@ -1,4 +1,4 @@
-﻿using Avalonia.Threading;
+using Avalonia.Threading;
 using LLMDesktopAssistant.LLM.Domain;
 using System.ComponentModel;
 
@@ -22,7 +22,6 @@ namespace LLMDesktopAssistant.LLM.Messages
 			get => _completed;
 			set => SetProperty(ref _completed, value);
 		}
-		public bool NotCompleted => !_completed;
 
 		public AssistantMessageReasoningPartViewModel()
 		{
@@ -37,9 +36,13 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 			void PropertyChangedHandler(object? s, PropertyChangedEventArgs e)
 			{
+				Completed = e.PropertyName != nameof(message.ReasoningContent);
+				if (Completed)
+					return;
+
+				_currentUpdateOperation?.Abort();
 				_currentUpdateOperation = InvokeUIAsync(() =>
 				{
-					_currentUpdateOperation?.Abort();
 					ReasoningText = message.ReasoningContent ?? string.Empty;
 				});
 			}
@@ -52,7 +55,6 @@ namespace LLMDesktopAssistant.LLM.Messages
 					_currentUpdateOperation?.Abort();
 					_currentUpdateOperation = null;
 					Completed = true;
-					RaisePropertyChanged(nameof(NotCompleted));
 				});
 
 				message.PropertyChanged -= PropertyChangedHandler;
