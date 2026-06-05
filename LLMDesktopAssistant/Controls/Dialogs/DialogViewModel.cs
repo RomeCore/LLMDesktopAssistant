@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LLMDesktopAssistant.Dialogs
+namespace LLMDesktopAssistant.Controls.Dialogs
 {
 	public class DialogViewModel : ViewModelBase
 	{

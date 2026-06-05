@@ -51,7 +51,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[Description("The maximum number of filesystem entries to return. Only for directories.")]
 			int maxEntries = 500,
 			[Description("The list of directories to ignore. Each directory can be a pattern (e.g. '.*' to ignore all directories that starts with dot). Only for directories.")]
-			[DefaultValue(new string[]{ ".git" })]
+			[DefaultValue(new string[]{ ".git", ".llmassist" })]
 			string[]? ignoreDirectories = null)
 		{
 			try
@@ -120,7 +120,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						maxDepth = 1;
 
 					int totalCount = 0;
-					ignoreDirectories ??= [".git"];
+					ignoreDirectories ??= [".git", ".llmassist"];
 
 					void Traverse(string currentPath, int depth, string indent)
 					{

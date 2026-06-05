@@ -54,6 +54,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 
 			chat.Title = chatModel.Title;
+			chat.Topic = chatModel.Topic;
 			chat.Settings = SettingsManager.Get<ChatSettings>(chatModel.SettingsProfile);
 
 			var currentNodeId = chatModel.RootNodeId;
@@ -84,6 +85,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				chatModel = database.Chats.FindById(chatId);
 
 				chatModel.Title = chat.Title;
+				chatModel.Topic = chat.Topic;
 				chatModel.SettingsProfile = chat.Settings.Id;
 
 				database.Chats.Update(chatModel);

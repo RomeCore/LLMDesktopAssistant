@@ -80,7 +80,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					try
 					{
 						result.StatusIcon = Material.Icons.MaterialIconKind.FolderSearch;
-						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-glob_searching"), pattern);
+						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-glob_searching"), pattern.Replace("*", "\\*"));
 
 						var matcher = new Matcher();
 						matcher.AddInclude(pattern);
@@ -208,12 +208,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						{
 							sb.AppendLine(LocalizationManager.LocalizeStatic("fs-glob_no_matches"));
 							result.StatusIcon = Material.Icons.MaterialIconKind.FolderOpen;
-							result.StatusTitle = $"**{pattern}** *{string.Format(LocalizationManager.LocalizeStatic("fs-glob_results"), 0)}*";
+							result.StatusTitle = $"**{pattern.Replace("*", "\\*")}** *{string.Format(LocalizationManager.LocalizeStatic("fs-glob_results"), 0)}*";
 						}
 						else
 						{
 							result.StatusIcon = Material.Icons.MaterialIconKind.FolderMultiple;
-							result.StatusTitle = $"**{pattern}** *({string.Format(LocalizationManager.LocalizeStatic("fs-glob_results"), total)})*";
+							result.StatusTitle = $"**{pattern.Replace("*", "\\*")}** *({string.Format(LocalizationManager.LocalizeStatic("fs-glob_results"), total)})*";
 						}
 
 						result.ResultContent = sb.ToString();

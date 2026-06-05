@@ -1506,4 +1506,7 @@
   <data name="chat_toast_operation_cancelled_desc" xml:space="preserve">
     <value>Генерация ответа была отменена.</value>
   </data>
+  <data name="no_topic" xml:space="preserve">
+    <value>без темы</value>
+  </data>
 </root>

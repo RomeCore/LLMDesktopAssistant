@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
@@ -48,6 +48,18 @@ namespace LLMDesktopAssistant.LLM.Domain
 					throw new InvalidOperationException("ChatId cannot be changed once set.");
 				_chatId = value;
 			}
+		}
+
+		private string _topic = string.Empty;
+		/// <summary>
+		/// Gets or sets the topic/category of the chat session.
+		/// This is a human-readable category like "coding", "roleplay", "dnd", etc.
+		/// The color for this topic is generated from its hash for consistent UI display.
+		/// </summary>
+		public string Topic
+		{
+			get => _topic;
+			set => SetProperty(ref _topic, value);
 		}
 
 		private string _title = string.Empty;

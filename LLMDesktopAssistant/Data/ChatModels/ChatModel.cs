@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +28,12 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		/// Gets or sets the title that should be displayed to the user.
 		/// </summary>
 		public string Title { get; set; } = string.Empty;
+
+		/// <summary>
+		/// Gets or sets the topic/category of the conversation.
+		/// Human-readable category like "coding", "roleplay", "dnd", etc.
+		/// </summary>
+		public string Topic { get; set; } = string.Empty;
 
 		/// <summary>
 		/// Get or sets the settings profile ID that is currently used by this conversation.

@@ -18,6 +18,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				Id = model.Id,
 				Title = model.Title,
+				Topic = model.Topic,
 				CreatedAt = model.CreatedAt,
 				LastModifiedAt = model.LastModifiedAt
 			};

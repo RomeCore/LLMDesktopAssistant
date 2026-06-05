@@ -12,6 +12,7 @@ using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using Material.Icons.Avalonia;
+using Serilog;
 
 namespace LLMDesktopAssistant.Controls.Toasts;
 

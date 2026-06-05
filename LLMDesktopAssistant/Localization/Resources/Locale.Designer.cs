@@ -2059,6 +2059,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на no topic.
+        /// </summary>
+        public static string no_topic {
+            get {
+                return ResourceManager.GetString("no_topic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Ok.
         /// </summary>
         public static string ok {

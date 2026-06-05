@@ -1,7 +1,6 @@
 using Avalonia.Collections;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.Dialogs;
 using LLMDesktopAssistant.LLM.Attachments;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.MCP;
@@ -11,6 +10,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using Serilog;
 using LLMDesktopAssistant.WebUI;
+using LLMDesktopAssistant.Controls.Dialogs;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {

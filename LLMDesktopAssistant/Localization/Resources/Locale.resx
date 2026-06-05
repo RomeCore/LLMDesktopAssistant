@@ -1506,4 +1506,7 @@
   <data name="chat_toast_operation_cancelled_desc" xml:space="preserve">
     <value>Response generation was cancelled.</value>
   </data>
+  <data name="no_topic" xml:space="preserve">
+    <value>no topic</value>
+  </data>
 </root>

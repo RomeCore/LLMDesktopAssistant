@@ -6,6 +6,7 @@
 	<conv:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
 	<conv:AssistantMessageStateToBooleanConverter x:Key="AssistantMessageStateToBooleanConverter"/>
 	<conv:StringNonEmptyToBooleanConverter x:Key="StringNonEmptyToBooleanConverter"/>
+	<conv:StringNonEmptyToBooleanConverter Invert="True" x:Key="StringNonEmptyToBooleanConverterInverted"/>
 	<conv:NotnullToBooleanConverter x:Key="NotnullToBooleanConverter"/>
 	<conv:NotnullToBooleanConverter Invert="True" x:Key="NotnullToBooleanConverterInverted"/>
 	<conv:StringEqualsConverter x:Key="StringEqualsConverter"/>

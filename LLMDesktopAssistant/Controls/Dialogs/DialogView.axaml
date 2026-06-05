@@ -2,12 +2,11 @@
 						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-						 xmlns:local="using:LLMDesktopAssistant.Dialogs"
+						 xmlns:local="using:LLMDesktopAssistant.Controls.Dialogs"
 						 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-						 x:Class="LLMDesktopAssistant.Dialogs.DialogView"
+						 x:Class="LLMDesktopAssistant.Controls.Dialogs.DialogView"
 						 x:DataType="local:DialogViewModel">
 	
-	<ContentControl Content="{Binding Content}"
-					Classes=""/>
+	<ContentControl Content="{Binding Content}"/>
 
 </UserControl>

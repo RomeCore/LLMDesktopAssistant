@@ -34,6 +34,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IToolExecutionService toolExecutor,
 		ILLMPropertiesBuilder propertiesBuilder,
 		IChatSummarizationService summarizer,
+		IChatNamingService namingService,
 		ILLMBuildingService llmBuilder,
 		IToolsetCacheService toolsetCache,
 		IMCPManagementService mcpManager,
@@ -325,6 +326,9 @@ namespace LLMDesktopAssistant.LLM.Services
 								}
 
 								await summarizer.TrySummarizeChatAsync(usageMetadata, cancellationToken);
+
+							// Auto-name the chat if it still has a default title
+							_ = namingService.TryNameChatAsync(cancellationToken);
 							}
 							else
 							{

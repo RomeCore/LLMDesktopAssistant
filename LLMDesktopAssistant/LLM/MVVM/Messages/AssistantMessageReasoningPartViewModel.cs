@@ -1,5 +1,6 @@
 using Avalonia.Threading;
 using LLMDesktopAssistant.LLM.Domain;
+using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace LLMDesktopAssistant.LLM.Messages
@@ -34,6 +35,10 @@ namespace LLMDesktopAssistant.LLM.Messages
 			Completed = message.IsCompleted;
 			if (message.IsCompleted) return;
 
+			void ToolCallsChanged(object? s, NotifyCollectionChangedEventArgs e)
+			{
+				Completed = true;
+			}
 			void PropertyChangedHandler(object? s, PropertyChangedEventArgs e)
 			{
 				Completed = e.PropertyName != nameof(message.ReasoningContent);
@@ -47,6 +52,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 				});
 			}
 
+			message.ToolCalls.CollectionChanged += ToolCallsChanged;
 			message.PropertyChanged += PropertyChangedHandler;
 			message.CompletionToken.OnCompleted(() =>
 			{
@@ -57,6 +63,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 					Completed = true;
 				});
 
+				message.ToolCalls.CollectionChanged -= ToolCallsChanged;
 				message.PropertyChanged -= PropertyChangedHandler;
 			});
 		}

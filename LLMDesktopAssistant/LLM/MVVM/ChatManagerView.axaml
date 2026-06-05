@@ -16,15 +16,16 @@
 	<SplitView x:Name="ChatSplitView"
 			   PanePlacement="Right"
 			   CompactPaneLength="0"
-			   OpenPaneLength="300">
+			   OpenPaneLength="470">
 	
 		<SplitView.Pane>
 			
-			<DockPanel Width="320">
+			<DockPanel>
 
 				<StackPanel Orientation="Horizontal"
 							Margin="8"
 							DockPanel.Dock="Top">
+
 					<TextBlock Text="{loc:Loc chats}"
 							   Foreground="{DynamicResource DefaultForeground}"
 							   FontSize="18"
@@ -40,14 +41,51 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							
-							<DockPanel>
+							<DockPanel Margin="0,4">
 
 								<Label Content="{Binding LastModifiedAt}"
-									   Opacity="0.5"
-									   DockPanel.Dock="Right"/>
+											 DockPanel.Dock="Right"
+											 Opacity="0.5"
+											 FontSize="11"/>
 
-								<Label Content="{Binding Title}"/>
-
+								<Border Width="8" Height="8"
+												CornerRadius="4"
+												Background="{Binding TopicColorHex}"
+												VerticalAlignment="Center"
+												Margin="0,0,6,0"
+												DockPanel.Dock="Left"
+												ToolTip.Tip="{Binding Topic}"/>
+								
+								<StackPanel DockPanel.Dock="Right"
+														VerticalAlignment="Center">
+									
+									<TextBlock Text="{Binding Title}"
+														 FontSize="14"
+														 TextWrapping="NoWrap"
+														 TextTrimming="CharacterEllipsis"/>
+								
+									<TextBlock Text="{Binding Topic}"
+														 IsVisible="{Binding Topic, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+														 DockPanel.Dock="Right"
+														 Foreground="{Binding TopicColorHex}"
+														 FontSize="11"
+														 Opacity="0.8"
+														 VerticalAlignment="Center"
+														 TextWrapping="NoWrap"
+														 TextTrimming="CharacterEllipsis"/>
+								
+									<TextBlock Text="{loc:Loc no_topic}"
+														 IsVisible="{Binding Topic, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"
+														 DockPanel.Dock="Right"
+														 Foreground="{Binding TopicColorHex}"
+														 FontSize="11"
+														 Opacity="0.8"
+														 VerticalAlignment="Center"
+														 TextWrapping="NoWrap"
+														 TextTrimming="CharacterEllipsis"/>
+								
+								</StackPanel>
+								
 							</DockPanel>
 							
 						</DataTemplate>
@@ -85,6 +123,8 @@
 					</ToggleButton>
 
 				</StackPanel>
+
+
 
 				<TextBlock Text="{Binding SelectedChat.Title}"
 						   Foreground="{DynamicResource DefaultForeground}"

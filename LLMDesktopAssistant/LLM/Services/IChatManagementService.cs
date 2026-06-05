@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;

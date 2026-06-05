@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace LLMDesktopAssistant.Dialogs;
+namespace LLMDesktopAssistant.Controls.Dialogs;
 
 public partial class DialogView : UserControl
 {
