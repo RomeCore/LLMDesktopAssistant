@@ -5,6 +5,7 @@
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:beh="using:LLMDesktopAssistant.Behaviours"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.ChatManagerView"
 			 x:DataType="local:ChatManagerViewModel">
@@ -14,34 +15,35 @@
 	</Design.DataContext>
 
 	<SplitView x:Name="ChatSplitView"
-			   PanePlacement="Right"
-			   CompactPaneLength="0"
-			   OpenPaneLength="470">
+						 PanePlacement="Right"
+						 CompactPaneLength="0"
+						 OpenPaneLength="470">
 	
 		<SplitView.Pane>
 			
 			<DockPanel>
 
 				<StackPanel Orientation="Horizontal"
-							Margin="8"
-							DockPanel.Dock="Top">
+										Margin="8"
+										DockPanel.Dock="Top">
 
 					<TextBlock Text="{loc:Loc chats}"
-							   Foreground="{DynamicResource DefaultForeground}"
-							   FontSize="18"
-							   VerticalAlignment="Center"
-							   Margin="8"/>
+										 Foreground="{DynamicResource DefaultForeground}"
+										 FontSize="18"
+										 VerticalAlignment="Center"
+										 Margin="8"/>
 
 				</StackPanel>
 
-				<ListBox ItemsSource="{Binding Chats}"
-						 SelectedItem="{Binding SelectedChat}"
-						 Margin="8">
+				<ListBox ItemsSource="{Binding AvailableChats}"
+								 SelectedItem="{Binding SelectedChat.SelectedAvailable}"
+								 Margin="8">
 
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							
-							<DockPanel Margin="0,4">
+							<DockPanel Margin="0,4"
+												 beh:ListBoxItemBehaviour.IsParentListBoxItemEnabled="{Binding !IsSelected}">
 
 								<Label Content="{Binding LastModifiedAt}"
 											 DockPanel.Dock="Right"
@@ -107,37 +109,52 @@
 			<DockPanel Background="{DynamicResource TopBarBackground}">
 
 				<StackPanel DockPanel.Dock="Right"
-							HorizontalAlignment="Right"
-							Orientation="Horizontal"
-							Margin="10" Spacing="5">
+										HorizontalAlignment="Right"
+										Orientation="Horizontal"
+										Margin="10" Spacing="5">
 
 					<Button Command="{Binding CreateConversationCommand}"
-							Classes="IconButton"
-							ToolTip.Tip="{loc:Loc new_chat}">
-						<ico:MaterialIcon Kind="Plus"/>
+									Classes="IconButton"
+									ToolTip.Tip="{loc:Loc new_chat}">
+						<ico:MaterialIcon Kind="ChatPlus"/>
 					</Button>
 					
 					<ToggleButton IsChecked="{Binding #ChatSplitView.IsPaneOpen}"
-								  Classes="IconButton">
-						<ico:MaterialIcon Kind="Menu"/>
+											  Classes="IconButton">
+						<ico:MaterialIcon Kind="Forum"/>
 					</ToggleButton>
 
 				</StackPanel>
 
+				<ListBox ItemsSource="{Binding OpenedChats}"
+								 SelectedItem="{Binding SelectedChat}"
+								 DockPanel.Dock="Left">
+					
+					<ListBox.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal"/>
+						</ItemsPanelTemplate>
+					</ListBox.ItemsPanel>
 
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							
+							<TextBlock Text="{Binding CurrentChat.Chat.Title}"
+												 Foreground="{DynamicResource DefaultForeground}"
+												 VerticalAlignment="Center"
+												 Margin="16,5,5,5"
+												 FontSize="16"/>
 
-				<TextBlock Text="{Binding SelectedChat.Title}"
-						   Foreground="{DynamicResource DefaultForeground}"
-						   VerticalAlignment="Center"
-						   DockPanel.Dock="Left"
-						   Margin="16,5,5,5"
-						   FontSize="16"/>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
 
+				</ListBox>
+				
 			</DockPanel>
 
 			<!-- CHAT -->
 			<ContentControl Grid.Row="1"
-							Content="{Binding CurrentChat}"/>
+											Content="{Binding SelectedChat.CurrentChat}"/>
 		</Grid>
 
 	</SplitView>

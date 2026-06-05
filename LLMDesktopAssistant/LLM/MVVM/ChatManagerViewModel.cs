@@ -1,17 +1,128 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Reflection;
+using CommunityToolkit.Mvvm.Input;
+using DocumentFormat.OpenXml.Spreadsheet;
 using LiveMarkdown.Avalonia;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.WebUI;
 using Serilog;
-using System.Collections.ObjectModel;
-using System.Reflection;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
-	[ViewModelFor(typeof(ChatManagerView))]
-	public class ChatManagerViewModel : ViewModelBase
+	public class AvailableChatViewModel : NotifyPropertyChanged, IEquatable<AvailableChatViewModel>
+	{
+		public required int Id { get; init; }
+
+		private string _title = string.Empty;
+		public string Title
+		{
+			get => _title;
+			set => SetProperty(ref _title, value);
+		}
+
+		private string _topic = string.Empty;
+		public string Topic
+		{
+			get => _topic;
+			set => SetProperty(ref _topic, value);
+		}
+
+		private DateTime _lastModifiedAt = DateTime.Now;
+		public DateTime LastModifiedAt
+		{
+			get => _lastModifiedAt;
+			set => SetProperty(ref _lastModifiedAt, value);
+		}
+
+		private bool _isSelected = false;
+		public bool IsSelected
+		{
+			get => _isSelected;
+			set => SetProperty(ref _isSelected, value);
+		}
+
+
+
+		/// <summary>
+		/// Generates a deterministic pastel hex color from the topic string for UI display.
+		/// Topic color is computed from hash, so any topic can be used without predefined list.
+		/// Returns a hex color string like "#AABBCC" that can be used directly in XAML backgrounds.
+		/// </summary>
+		public string TopicColorHex => GenerateColorHexFromHash(Topic);
+
+		private static string GenerateColorHexFromHash(string topic)
+		{
+			if (string.IsNullOrEmpty(topic))
+				return "#808080";
+
+			var hash = GetDeterministicHashCode(topic);
+
+			const double min = 0.35;
+			const double range = 0.65;
+
+			double rh = (hash * 397 % 255) / 255.0;
+			byte r2 = (byte)(min * 255 + rh * range * 255);
+			double rg = (hash * 137 * 397 % 255) / 255.0;
+			byte g2 = (byte)(min * 255 + rg * range * 255);
+			double rb = (hash * 37 * 397 % 255) / 255.0;
+			byte b2 = (byte)(min * 255 + rb * range * 255);
+
+			return $"#{r2:X2}{g2:X2}{b2:X2}";
+		}
+
+		private static int GetDeterministicHashCode(string str)
+		{
+			unchecked
+			{
+				int hash1 = (5381 << 16) + 5381;
+				int hash2 = hash1;
+
+				for (int i = 0; i < str.Length; i += 2)
+				{
+					hash1 = ((hash1 << 5) + hash1) ^ str[i];
+					if (i + 1 < str.Length)
+						hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+				}
+
+				return hash1 + hash2 * 1566083941;
+			}
+		}
+
+
+
+		public static AvailableChatViewModel CreateFromInfo(ChatInfo info)
+		{
+			return new AvailableChatViewModel
+			{
+				Id = info.Id,
+				Title = info.Title,
+				Topic = info.Topic,
+				LastModifiedAt = info.LastModifiedAt
+			};
+		}
+
+		public override int GetHashCode()
+		{
+			return Id.GetHashCode();
+		}
+
+		public override bool Equals(object? obj)
+		{
+			return obj is ChatInfo chatInfo && Equals(chatInfo);
+		}
+
+		public bool Equals(AvailableChatViewModel? other)
+		{
+			return other != null && Id == other.Id;
+		}
+
+	}
+
+	public class OpenedChatViewModel : NotifyPropertyChanged
 	{
 		private IServiceScope? _currentChatScope;
 		private ChatViewModel? _currentChat;
@@ -21,19 +132,110 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			private set => SetProperty(ref _currentChat, value);
 		}
 
-		public ObservableCollection<ChatInfo> Chats { get; } = [];
-
-		private ChatInfo? _selectedChat;
-		public ChatInfo? SelectedChat
+		private AvailableChatViewModel? _selectedAvailable;
+		public AvailableChatViewModel? SelectedAvailable
 		{
-			get => _selectedChat;
+			get => _selectedAvailable;
 			set
 			{
-				if (SetProperty(ref _selectedChat, value) && value != null)
+				if (_selectedAvailable != value)
 				{
-					OpenConversation(value.Id);
+					if (_selectedAvailable != null)
+						UnlockAvailableChat(_selectedAvailable, _currentChat!.Chat);
+
+					if (SetProperty(ref _selectedAvailable, value) && value != null)
+						OpenConversation(_selectedAvailable!);
 				}
 			}
+		}
+
+		private void UnlockAvailableChat(AvailableChatViewModel available, Chat chat)
+		{
+			available.IsSelected = false;
+			chat.PropertyChanged -= OnChatPropertyChanged;
+		}
+
+		private void LockAvailableChat(AvailableChatViewModel available, Chat chat)
+		{
+			available.IsSelected = true;
+			chat.PropertyChanged += OnChatPropertyChanged;
+		}
+
+		private void OnChatPropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			var chat = (Chat)sender!;
+			_selectedAvailable!.Title = chat.Title;
+			_selectedAvailable!.Topic = chat.Topic;
+		}
+
+		private void OpenConversation(AvailableChatViewModel available)
+		{
+			_currentChatScope?.Dispose();
+			CurrentChat?.Dispose();
+			ChatCleanup();
+
+			_currentChatScope = ChatServices.ManagementService.OpenChatScope(available.Id);
+			var chatServices = _currentChatScope.ServiceProvider;
+			var chat = chatServices.GetRequiredService<Chat>();
+			CurrentChat = new ChatViewModel(chat);
+			LockAvailableChat(_selectedAvailable!, chat);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				CurrentChat = null;
+				_selectedAvailable?.IsSelected = false;
+				SelectedAvailable = null;
+				_currentChatScope?.Dispose();
+				_currentChatScope = null;
+			}
+		}
+
+		// TODO: Удалить это говно внизу когда автор LiveMarkdown.Avalonia соизволит рассмотреть мой Pull Request
+		// Утечки памяти вызваны Link.TagToLinkMap, который нихуя не чистится, я его там заменил на ConcurrentDict<WeakReference>
+		// Ждем
+
+		private static Dictionary<string, Link>? _tagToLinkMap;
+
+		static OpenedChatViewModel()
+		{
+			try
+			{
+				var linkType = typeof(Link);
+				var tagToLinkMapField = linkType.GetField("TagToLinkMap", BindingFlags.NonPublic | BindingFlags.Static);
+				_tagToLinkMap = tagToLinkMapField?.GetValue(null) as Dictionary<string, Link>;
+
+				if (_tagToLinkMap == null)
+					Log.Error("Failed to get LiveMarkdown.Avalonia.Link.TagToLinkMap field.");
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Failed to get LiveMarkdown.Avalonia.Link.TagToLinkMap field: {Error}", ex.Message);
+			}
+		}
+
+		private void ChatCleanup()
+		{
+			_tagToLinkMap?.Clear();
+		}
+	}
+
+	[ViewModelFor(typeof(ChatManagerView))]
+	public class ChatManagerViewModel : ViewModelBase
+	{
+		public ObservableCollection<AvailableChatViewModel> AvailableChats { get; } = [];
+
+		public ObservableCollection<OpenedChatViewModel> OpenedChats { get; } = [];
+
+		private OpenedChatViewModel? _selectedChat;
+		public OpenedChatViewModel? SelectedChat
+		{
+			get => _selectedChat;
+			set => SetProperty(ref _selectedChat, value);
 		}
 
 		public ICommand CreateConversationCommand { get; }
@@ -54,56 +256,23 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		private void LoadConversations()
 		{
-			Chats.Clear();
+			AvailableChats.Clear();
 			foreach (var chat in ChatServices.ManagementService.GetChats().OrderByDescending(c => c.LastModifiedAt))
-				Chats.Add(chat);
-		}
-
-		private void OpenConversation(int id)
-		{
-			_currentChatScope?.Dispose();
-			CurrentChat?.Dispose();
-			ChatCleanup();
-
-			_currentChatScope = ChatServices.ManagementService.OpenChatScope(id);
-			var chatServices = _currentChatScope.ServiceProvider;
-			var chat = chatServices.GetRequiredService<Chat>();
-			CurrentChat = new ChatViewModel(chat);
+				AvailableChats.Add(AvailableChatViewModel.CreateFromInfo(chat));
 		}
 
 		private void CreateConversation()
 		{
-			var newChat = ChatServices.ManagementService.CreateChat(Locale.new_chat);
-			Chats.Insert(0, newChat);
-			SelectedChat = newChat;
-		}
+			var newChat = ChatServices.ManagementService.CreateChat(LocalizationManager.LocalizeStatic("new_chat"));
+			var newAvailableChat = AvailableChatViewModel.CreateFromInfo(newChat);
+			AvailableChats.Insert(0, newAvailableChat);
 
-		// TODO: Удалить это говно внизу когда автор LiveMarkdown.Avalonia соизволит рассмотреть мой Pull Request
-		// Утечки памяти вызваны Link.TagToLinkMap, который нихуя не чистится, я его там заменил на ConcurrentDict<WeakReference>
-		// Ждем
-
-		private static Dictionary<string, Link>? _tagToLinkMap;
-
-		static ChatManagerViewModel()
-		{
-			try
+			var newOpenedChat = new OpenedChatViewModel
 			{
-				var linkType = typeof(Link);
-				var tagToLinkMapField = linkType.GetField("TagToLinkMap", BindingFlags.NonPublic | BindingFlags.Static);
-				_tagToLinkMap = tagToLinkMapField?.GetValue(null) as Dictionary<string, Link>;
-
-				if (_tagToLinkMap == null)
-					Log.Error("Failed to get LiveMarkdown.Avalonia.Link.TagToLinkMap field.");
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex, "Failed to get LiveMarkdown.Avalonia.Link.TagToLinkMap field: {Error}", ex.Message);
-			}
-		}
-
-		private void ChatCleanup()
-		{
-			_tagToLinkMap?.Clear();
+				SelectedAvailable = newAvailableChat
+			};
+			OpenedChats.Add(newOpenedChat);
+			SelectedChat = newOpenedChat;
 		}
 	}
 }
