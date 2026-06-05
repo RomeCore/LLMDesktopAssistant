@@ -340,11 +340,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Apply as native LLM attachment.
+        /// </summary>
+        public static string attachment_apply_native {
+            get {
+                return ResourceManager.GetString("attachment-apply_native", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Attach files.
         /// </summary>
         public static string attachment_attach_files_hint {
             get {
                 return ResourceManager.GetString("attachment-attach_files_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy to working directory.
+        /// </summary>
+        public static string attachment_copy_to_working_directory {
+            get {
+                return ResourceManager.GetString("attachment-copy_to_working_directory", resourceCulture);
             }
         }
         
@@ -772,6 +790,78 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent selection failed.
+        /// </summary>
+        public static string chat_toast_agent_selection_failed {
+            get {
+                return ResourceManager.GetString("chat_toast_agent_selection_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Failed to select an agent for response generation..
+        /// </summary>
+        public static string chat_toast_agent_selection_failed_desc {
+            get {
+                return ResourceManager.GetString("chat_toast_agent_selection_failed_desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Generation failed.
+        /// </summary>
+        public static string chat_toast_generation_failed {
+            get {
+                return ResourceManager.GetString("chat_toast_generation_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на An error occurred while generating the response: {0}.
+        /// </summary>
+        public static string chat_toast_generation_failed_desc {
+            get {
+                return ResourceManager.GetString("chat_toast_generation_failed_desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на LLM not configured.
+        /// </summary>
+        public static string chat_toast_llm_not_configured {
+            get {
+                return ResourceManager.GetString("chat_toast_llm_not_configured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Chat LLM is not configured. Please configure it in the chat settings..
+        /// </summary>
+        public static string chat_toast_llm_not_configured_desc {
+            get {
+                return ResourceManager.GetString("chat_toast_llm_not_configured_desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Operation cancelled.
+        /// </summary>
+        public static string chat_toast_operation_cancelled {
+            get {
+                return ResourceManager.GetString("chat_toast_operation_cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Response generation was cancelled..
+        /// </summary>
+        public static string chat_toast_operation_cancelled_desc {
+            get {
+                return ResourceManager.GetString("chat_toast_operation_cancelled_desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Chats.
         /// </summary>
         public static string chats {
@@ -858,6 +948,51 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string copy_result {
             get {
                 return ResourceManager.GetString("copy-result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Auto-approve level.
+        /// </summary>
+        public static string danger_level_auto_approve {
+            get {
+                return ResourceManager.GetString("danger_level_auto_approve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Dangerous.
+        /// </summary>
+        public static string danger_level_dangerous {
+            get {
+                return ResourceManager.GetString("danger_level_dangerous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Default (ask for all).
+        /// </summary>
+        public static string danger_level_default {
+            get {
+                return ResourceManager.GetString("danger_level_default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Safe.
+        /// </summary>
+        public static string danger_level_safe {
+            get {
+                return ResourceManager.GetString("danger_level_safe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Warning.
+        /// </summary>
+        public static string danger_level_warning {
+            get {
+                return ResourceManager.GetString("danger_level_warning", resourceCulture);
             }
         }
         
@@ -1749,6 +1884,69 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string message_summary {
             get {
                 return ResourceManager.GetString("message_summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Cache hit.
+        /// </summary>
+        public static string message_token_cost_cache_hit {
+            get {
+                return ResourceManager.GetString("message_token_cost_cache_hit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Cache miss.
+        /// </summary>
+        public static string message_token_cost_cache_miss {
+            get {
+                return ResourceManager.GetString("message_token_cost_cache_miss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Gen. time.
+        /// </summary>
+        public static string message_token_cost_generation_time {
+            get {
+                return ResourceManager.GetString("message_token_cost_generation_time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Input.
+        /// </summary>
+        public static string message_token_cost_input {
+            get {
+                return ResourceManager.GetString("message_token_cost_input", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Model.
+        /// </summary>
+        public static string message_token_cost_model {
+            get {
+                return ResourceManager.GetString("message_token_cost_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Output.
+        /// </summary>
+        public static string message_token_cost_output {
+            get {
+                return ResourceManager.GetString("message_token_cost_output", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на TTFT.
+        /// </summary>
+        public static string message_token_cost_ttft {
+            get {
+                return ResourceManager.GetString("message_token_cost_ttft", resourceCulture);
             }
         }
         

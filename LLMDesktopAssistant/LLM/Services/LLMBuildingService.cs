@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				? settings.Model
 				: chat.Settings.Models.ChatModel;
 
-			var model = descriptor.Current;
+			var model = descriptor?.Current;
 			if (model is null)
 				return null;
 
@@ -40,7 +40,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public LLMInfo? BuildSummarizationLLM()
 		{
-			var model = chat.Settings.Summarization.SummarizerModel.Current;
+			var model = chat.Settings.Summarization.SummarizerModel?.Current;
 			if (model is null)
 				return null;
 

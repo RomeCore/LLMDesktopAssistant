@@ -24,6 +24,18 @@ namespace LLMDesktopAssistant.Localization
 		}
 
 		/// <summary>
+		/// Localizes a given key using the current localization manager.
+		/// </summary>
+		/// <param name="formatKey">The key to localize, after localization it will be used as a format string.</param>
+		/// <param name="formatArgs">Arguments to be formatted into the localized string.</param>
+		/// <returns>The localized string, or the original key if not found.</returns>
+		public static string LocalizeStaticFormat(string formatKey, params object?[] formatArgs)
+		{
+			var format = ServiceRegistry.TryGet<LocalizationManager>()?.Localize(formatKey) ?? formatKey;
+			return string.Format(format, formatArgs);
+		}
+
+		/// <summary>
 		/// Event that is raised when the language changes.
 		/// </summary>
 		public event EventHandler<string>? LanguageChanged;

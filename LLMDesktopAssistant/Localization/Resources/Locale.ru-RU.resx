@@ -1449,7 +1449,6 @@
   <data name="danger_level_auto_approve" xml:space="preserve">
     <value>Уровень авто-подтверждения</value>
   </data>
-  
   <data name="danger_level_default" xml:space="preserve">
     <value>По умолчанию (спрашивать для всех)</value>
   </data>
@@ -1461,5 +1460,50 @@
   </data>
   <data name="danger_level_dangerous" xml:space="preserve">
     <value>Опасно</value>
+  </data>
+  <data name="chat_toast_llm_not_configured" xml:space="preserve">
+    <value>LLM не настроена</value>
+  </data>
+  <data name="chat_toast_llm_not_configured_desc" xml:space="preserve">
+    <value>LLM для чата не настроена. Пожалуйста, настройте её в настройках чата.</value>
+  </data>
+  <data name="chat_toast_generation_failed" xml:space="preserve">
+    <value>Ошибка генерации</value>
+  </data>
+  <data name="chat_toast_generation_failed_desc" xml:space="preserve">
+    <value>Произошла ошибка при генерации ответа: {0}</value>
+  </data>
+  <data name="chat_toast_agent_selection_failed" xml:space="preserve">
+    <value>Не удалось выбрать агента</value>
+  </data>
+  <data name="chat_toast_agent_selection_failed_desc" xml:space="preserve">
+    <value>Не удалось выбрать агента для генерации ответа.</value>
+  </data>
+  <data name="chat_toast_operation_cancelled" xml:space="preserve">
+    <value>Операция отменена</value>
+  </data>
+  <data name="message_token_cost_model" xml:space="preserve">
+    <value>Модель</value>
+  </data>
+  <data name="message_token_cost_input" xml:space="preserve">
+    <value>Вход</value>
+  </data>
+  <data name="message_token_cost_cache_hit" xml:space="preserve">
+    <value>Попадание в кеш</value>
+  </data>
+  <data name="message_token_cost_cache_miss" xml:space="preserve">
+    <value>Промах кеша</value>
+  </data>
+  <data name="message_token_cost_output" xml:space="preserve">
+    <value>Выход</value>
+  </data>
+  <data name="message_token_cost_ttft" xml:space="preserve">
+    <value>Первый токен</value>
+  </data>
+  <data name="message_token_cost_generation_time" xml:space="preserve">
+    <value>Время генерации</value>
+  </data>
+  <data name="chat_toast_operation_cancelled_desc" xml:space="preserve">
+    <value>Генерация ответа была отменена.</value>
   </data>
 </root>

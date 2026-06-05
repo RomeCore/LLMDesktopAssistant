@@ -3,11 +3,14 @@ using System.Collections.Immutable;
 using System.Net.NetworkInformation;
 using DocumentFormat.OpenXml.VariantTypes;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Controls.Toasts;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional;
+using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
 using RCLargeLanguageModels.Messages;
@@ -18,7 +21,6 @@ using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
-
 	/// <summary>
 	/// The default implementation of the <see cref="IChatExecutionService"/>.
 	/// </summary>
@@ -35,7 +37,8 @@ namespace LLMDesktopAssistant.LLM.Services
 		ILLMBuildingService llmBuilder,
 		IToolsetCacheService toolsetCache,
 		IMCPManagementService mcpManager,
-		IUsageStatsCollector usageStatsCollector
+		IUsageStatsCollector usageStatsCollector,
+		IToastService toastService
 	) : IChatExecutionService
 	{
 		private CancellationTokenSource? _cts = null;
@@ -44,6 +47,8 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			try
 			{
+				int cycles = 0;
+
 				while (true)
 				{
 					cancellationToken.ThrowIfCancellationRequested();
@@ -67,15 +72,32 @@ namespace LLMDesktopAssistant.LLM.Services
 					}
 
 					if (nextAgentId == null || agentStageId == null)
+					{
+						if (cycles == 0)
+							toastService.ShowWarning(LocalizationManager.LocalizeStatic("chat_toast_agent_selection_failed"),
+								LocalizationManager.LocalizeStatic("chat_toast_agent_selection_failed_desc"));
 						return;
+					}
 
 					cancellationToken.ThrowIfCancellationRequested();
 					await GenerateResponseWithAgentAsync(nextAgentId.Value, agentStageId.Value, cancellationToken);
+					cycles++;
 				}
+			}
+			catch (OperationCanceledException)
+			{
+				throw;
+			}
+			catch (ToastedException tex)
+			{
+				Log.Error(tex, "An error occurred while generating the response using default agent: {ErrorMessage}", tex.Message);
+				throw;
 			}
 			catch (Exception ex)
 			{
 				Log.Error(ex, "An error occurred while generating the response using default agent: {ErrorMessage}", ex.Message);
+				toastService.ShowError(LocalizationManager.LocalizeStatic("chat_toast_generation_failed"),
+					LocalizationManager.LocalizeStaticFormat("chat_toast_generation_failed_desc", ex.Message));
 				throw;
 			}
 			finally
@@ -98,7 +120,12 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				var llmInfo = llmBuilder.BuildChatLLM(agentId);
 				if (llmInfo == null)
-					throw new InvalidOperationException("Chat LLM is not configured. Please configure it first.");
+				{
+					var toastTitle = LocalizationManager.LocalizeStatic("chat_toast_llm_not_configured");
+					var toastDesc = LocalizationManager.LocalizeStatic("chat_toast_llm_not_configured_desc");
+					toastService.ShowError(toastTitle, toastDesc);
+					throw new ToastedException(toastTitle, toastDesc);
+				}
 				var llm = llmInfo.LLM;
 				llm = llm.WithProperties(propertiesBuilder.BuildProperties(agentId));
 
@@ -247,8 +274,6 @@ namespace LLMDesktopAssistant.LLM.Services
 
 							timeFirstToken ??= DateTime.Now;
 							var timeReponseFinished = DateTime.Now;
-							Log.Information("Response generated successfully! Time to first token: {TimeToFirstToken} s, generation time: {GenerationTime} s",
-								(timeFirstToken!.Value - timeRequested).TotalSeconds, (timeReponseFinished - timeFirstToken.Value).TotalSeconds);
 
 							prefixReasoningContent = string.Empty;
 							prefixContent = string.Empty;
@@ -258,8 +283,16 @@ namespace LLMDesktopAssistant.LLM.Services
 							{
 								if (usageMetadata is IUsageCacheMetadata usageCacheMetadata)
 								{
-									Log.Information("Input cache hit tokens: {InputCacheHitTokens}, Input cache miss tokens: {InputCacheMissTokens}, Output tokens: {OutputTokens}",
-										usageCacheMetadata.InputCacheHitTokens, usageCacheMetadata.InputCacheMissTokens, usageCacheMetadata.OutputTokens);
+									domainResponseMessage.AdditionalViewModels.Add(new TokenCostViewModel
+									{
+										ModelName = llmInfo.LLM.Descriptor.FullName,
+										InputTokens = usageMetadata.InputTokens,
+										InputCacheHitTokens = usageCacheMetadata.InputCacheHitTokens,
+										InputCacheMissTokens = usageCacheMetadata.InputCacheMissTokens,
+										OutputTokens = usageMetadata.OutputTokens,
+										TTFT = (timeFirstToken!.Value - timeRequested).TotalSeconds,
+										GenerationTime = (timeReponseFinished - timeFirstToken.Value).TotalSeconds,
+									});
 
 									usageStatsCollector.RecordUsage(
 										model: llmInfo.LLM.Descriptor.FullName,
@@ -272,8 +305,16 @@ namespace LLMDesktopAssistant.LLM.Services
 								}
 								else
 								{
-									Log.Information("Input tokens: {InputTokens}, Output tokens: {OutputTokens}",
-										usageMetadata.InputTokens, usageMetadata.OutputTokens);
+									domainResponseMessage.AdditionalViewModels.Add(new TokenCostViewModel
+									{
+										ModelName = llmInfo.LLM.Descriptor.FullName,
+										InputTokens = usageMetadata.InputTokens,
+										InputCacheHitTokens = null,
+										InputCacheMissTokens = null,
+										OutputTokens = usageMetadata.OutputTokens,
+										TTFT = (timeFirstToken!.Value - timeRequested).TotalSeconds,
+										GenerationTime = (timeReponseFinished - timeFirstToken.Value).TotalSeconds,
+									});
 
 									usageStatsCollector.RecordUsage(
 										model: llmInfo.LLM.Descriptor.FullName,
@@ -284,6 +325,19 @@ namespace LLMDesktopAssistant.LLM.Services
 								}
 
 								await summarizer.TrySummarizeChatAsync(usageMetadata, cancellationToken);
+							}
+							else
+							{
+								domainResponseMessage.AdditionalViewModels.Add(new TokenCostViewModel
+								{
+									ModelName = llmInfo.LLM.Descriptor.FullName,
+									InputTokens = null,
+									InputCacheHitTokens = null,
+									InputCacheMissTokens = null,
+									OutputTokens = null,
+									TTFT = (timeFirstToken!.Value - timeRequested).TotalSeconds,
+									GenerationTime = (timeReponseFinished - timeFirstToken.Value).TotalSeconds,
+								});
 							}
 
 							domainResponseMessage.Status = cancellationToken.IsCancellationRequested ?
@@ -311,8 +365,6 @@ namespace LLMDesktopAssistant.LLM.Services
 						finally
 						{
 							responseMessage.PartAdded -= PartHandler;
-							Log.Information("Generation finished with status: {Status}, error: {Error}, tool call count: {ToolCallCount}, model: {Model}",
-								domainResponseMessage.Status, domainResponseMessage.Error, domainResponseMessage.ToolCalls.Count, llm.Descriptor.FullName);
 						}
 					}
 					finally
@@ -357,6 +409,10 @@ namespace LLMDesktopAssistant.LLM.Services
 					};
 					storage.AppendMessage(domainResponseMessage);
 				}
+			}
+			catch (OperationCanceledException)
+			{
+				throw;
 			}
 			catch (Exception ex)
 			{

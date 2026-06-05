@@ -23,7 +23,7 @@
 		</dialogHost:DialogHost>
 
 		<toasts:ToastControl x:Name="ToastControl"
-												 Direction="FromTopToBottom"
+												 Direction="FromBottomToTop"
 												 Placement="BottomRight"/>
 
 	</Panel>

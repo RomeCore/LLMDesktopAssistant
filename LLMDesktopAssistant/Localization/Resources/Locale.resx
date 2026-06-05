@@ -1449,7 +1449,6 @@
   <data name="danger_level_auto_approve" xml:space="preserve">
     <value>Auto-approve level</value>
   </data>
-  
   <data name="danger_level_default" xml:space="preserve">
     <value>Default (ask for all)</value>
   </data>
@@ -1461,5 +1460,50 @@
   </data>
   <data name="danger_level_dangerous" xml:space="preserve">
     <value>Dangerous</value>
+  </data>
+  <data name="chat_toast_llm_not_configured" xml:space="preserve">
+    <value>LLM not configured</value>
+  </data>
+  <data name="chat_toast_llm_not_configured_desc" xml:space="preserve">
+    <value>Chat LLM is not configured. Please configure it in the chat settings.</value>
+  </data>
+  <data name="chat_toast_generation_failed" xml:space="preserve">
+    <value>Generation failed</value>
+  </data>
+  <data name="chat_toast_generation_failed_desc" xml:space="preserve">
+    <value>An error occurred while generating the response: {0}</value>
+  </data>
+  <data name="chat_toast_agent_selection_failed" xml:space="preserve">
+    <value>Agent selection failed</value>
+  </data>
+  <data name="chat_toast_agent_selection_failed_desc" xml:space="preserve">
+    <value>Failed to select an agent for response generation.</value>
+  </data>
+  <data name="chat_toast_operation_cancelled" xml:space="preserve">
+    <value>Operation cancelled</value>
+  </data>
+  <data name="message_token_cost_model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="message_token_cost_input" xml:space="preserve">
+    <value>Input</value>
+  </data>
+  <data name="message_token_cost_cache_hit" xml:space="preserve">
+    <value>Cache hit</value>
+  </data>
+  <data name="message_token_cost_cache_miss" xml:space="preserve">
+    <value>Cache miss</value>
+  </data>
+  <data name="message_token_cost_output" xml:space="preserve">
+    <value>Output</value>
+  </data>
+  <data name="message_token_cost_ttft" xml:space="preserve">
+    <value>TTFT</value>
+  </data>
+  <data name="message_token_cost_generation_time" xml:space="preserve">
+    <value>Gen. time</value>
+  </data>
+  <data name="chat_toast_operation_cancelled_desc" xml:space="preserve">
+    <value>Response generation was cancelled.</value>
   </data>
 </root>

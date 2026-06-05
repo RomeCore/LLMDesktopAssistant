@@ -23,7 +23,6 @@
 		<None Remove="Assets\Fonts\JetBrains Mono.ttf" />
 		<None Remove="Assets\Fonts\Segoe Fluent Icons.ttf" />
 		<None Remove="Assets\icon.ico" />
-		<None Remove="LLM\Domain\Chat.cs~RF4e9244e.TMP" />
 		<None Remove="Prompting\Resources\components.llt" />
 		<None Remove="Prompting\Resources\foreign_assistant_prompt.llt" />
 		<None Remove="Prompting\Resources\personas.llt" />

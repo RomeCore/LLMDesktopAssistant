@@ -10,19 +10,13 @@
 						 x:Class="LLMDesktopAssistant.Controls.Toasts.ToastControl"
 						 Name="PART_Root">
 
-	<UserControl.Resources>
-		<conv:StringNonEmptyToBooleanConverter x:Key="StringNonEmptyToBoolean" />
-		<conv:InverseBooleanConverter x:Key="InverseBoolean" />
-	</UserControl.Resources>
-
 	<!-- ItemsControl — контейнер для списка тостов -->
 	<ItemsControl Name="PART_ToastList"
 								ItemsSource="{Binding #PART_Root.Toasts}">
 
 		<ItemsControl.ItemsPanel>
 			<ItemsPanelTemplate>
-				<ReversibleStackPanel ReverseOrder="False"
-															x:Name="PART_StackPanel" />
+				<ReversibleStackPanel ReverseOrder="True" />
 			</ItemsPanelTemplate>
 		</ItemsControl.ItemsPanel>
 
@@ -38,6 +32,7 @@
 								Padding="0"
 								CornerRadius="8"
 								BoxShadow="0 2 12 #1c000000"
+								HorizontalAlignment="{Binding #PART_ToastList.HorizontalAlignment}"
 								Background="{DynamicResource MessageBackground}">
 
 					<Grid ColumnDefinitions="48,*,Auto"
@@ -76,7 +71,7 @@
 						<ctrl:MarkdownControl Grid.Column="1"
 																	Grid.Row="1"
 																	Margin="12,0,8,8"
-																	IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBoolean}}"
+																	IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
 																	MarkdownText="{Binding Description}"
 																	UsePlaintext="{Binding !UseMarkdown}"
 																	FontSize="13"

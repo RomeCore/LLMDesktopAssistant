@@ -8,8 +8,8 @@ namespace LLMDesktopAssistant.Services.Instances;
 /// Global service for showing toast notifications from anywhere in the application.
 /// Connects to the <see cref="ToastControl"/> instance hosted in <see cref="MVVM.MainView"/>.
 /// </summary>
-[Service]
-public class ToastService
+[Service(typeof(IToastService))]
+public class ToastService : IToastService
 {
 	private ToastControl? _toastControl;
 
@@ -36,65 +36,40 @@ public class ToastService
 		}
 	}
 
-	// ── Show Methods ─────────────────────────────────────────────────────
-
-	/// <summary>
-	/// Shows an info toast.
-	/// </summary>
 	public void ShowInfo(string title, string? description = null, double durationSeconds = 5.0)
 	{
 		ExecuteOnControl(tc => tc.ShowInfo(title, description, durationSeconds));
 	}
 
-	/// <summary>
-	/// Shows a warning toast.
-	/// </summary>
 	public void ShowWarning(string title, string? description = null, double durationSeconds = 6.0)
 	{
 		ExecuteOnControl(tc => tc.ShowWarning(title, description, durationSeconds));
 	}
 
-	/// <summary>
-	/// Shows an error toast.
-	/// </summary>
 	public void ShowError(string title, string? description = null, double durationSeconds = 8.0)
 	{
 		ExecuteOnControl(tc => tc.ShowError(title, description, durationSeconds));
 	}
 
-	/// <summary>
-	/// Shows a success toast.
-	/// </summary>
 	public void ShowSuccess(string title, string? description = null, double durationSeconds = 5.0)
 	{
 		ExecuteOnControl(tc => tc.ShowSuccess(title, description, durationSeconds));
 	}
 
-	/// <summary>
-	/// Shows a custom toast.
-	/// </summary>
 	public void Show(ToastItemViewModel toast)
 	{
 		ExecuteOnControl(tc => tc.Show(toast));
 	}
 
-	/// <summary>
-	/// Dismisses a specific toast by its ID.
-	/// </summary>
 	public void Dismiss(long toastId)
 	{
 		ExecuteOnControl(tc => tc.Dismiss(toastId));
 	}
 
-	/// <summary>
-	/// Dismisses all currently visible toasts.
-	/// </summary>
 	public void DismissAll()
 	{
 		ExecuteOnControl(tc => tc.DismissAll());
 	}
-
-	// ── Private Helpers ──────────────────────────────────────────────────
 
 	private void ExecuteOnControl(Action<ToastControl> action)
 	{
