@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO.Enumeration;
@@ -6,6 +6,7 @@ using System.Text;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -51,7 +52,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[Description("The maximum number of filesystem entries to return. Only for directories.")]
 			int maxEntries = 500,
 			[Description("The list of directories to ignore. Each directory can be a pattern (e.g. '.*' to ignore all directories that starts with dot). Only for directories.")]
-			[DefaultValue(new string[]{ ".git", ".llmassist" })]
+			[DefaultValue(new string[]{ ".git", Directories.WorkingHome })]
 			string[]? ignoreDirectories = null)
 		{
 			try
@@ -120,7 +121,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						maxDepth = 1;
 
 					int totalCount = 0;
-					ignoreDirectories ??= [".git", ".llmassist"];
+					ignoreDirectories ??= [".git", Directories.WorkingHome];
 
 					void Traverse(string currentPath, int depth, string indent)
 					{

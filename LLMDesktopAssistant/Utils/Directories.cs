@@ -10,6 +10,11 @@ namespace LLMDesktopAssistant.Utils
 	public static class Directories
 	{
 		/// <summary>
+		/// The general home directory used for files inside the working directory. Used for copied attachments and other files.
+		/// </summary>
+		public const string WorkingHome = ".llmassist";
+
+		/// <summary>
 		/// The root directory of the application data, typically located at %LOCALAPPDATA%\LLMDesktopAssistant.
 		/// </summary>
 		public static string LocalAppData { get; }

@@ -180,8 +180,12 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 
 			if (disposing)
 			{
-				_cts?.Cancel();
-				_cts?.Dispose();
+				try
+				{
+					_cts?.Cancel();
+					_cts?.Dispose();
+				}
+				catch { }
 			}
 		}
 	}

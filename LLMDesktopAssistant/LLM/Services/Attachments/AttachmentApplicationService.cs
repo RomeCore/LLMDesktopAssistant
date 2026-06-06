@@ -1,5 +1,6 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Utils.Files;
+using LLMDesktopAssistant.Utils;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -94,7 +95,7 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 			var sourceUri = parameters.SourceUri;
 
 			var workingDir = chat.Settings.Environment.GetWorkingDirectory();
-			var attachmentsDir = Path.Combine(workingDir, ".llmassist", "attachments");
+			var attachmentsDir = Path.Combine(workingDir, Directories.WorkingHome, "attachments");
 			Directory.CreateDirectory(attachmentsDir);
 
 			var destPath = GetDestinationPath(sourceUri, attachmentsDir);
