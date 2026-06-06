@@ -86,7 +86,59 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public void DeleteChat(int chatId)
 		{
+			var nodesToDelete = new List<int>();
+			var nodesToCheck = database.MessageNodes
+				.Find(m => m.IsRootNode && m.ParentId == chatId)
+				.Select(m => m.Id)
+				.ToList();
 
+			while (nodesToCheck.Count > 0)
+			{
+				var lastElement = nodesToCheck[nodesToCheck.Count - 1];
+				var childNodes = database.MessageNodes
+					.Find(m => !m.IsRootNode && m.ParentId == lastElement)
+					.Select(m => m.Id)
+					.ToList();
+
+				nodesToDelete.Add(lastElement);
+				nodesToCheck.RemoveAt(nodesToCheck.Count - 1);
+				nodesToCheck.AddRange(childNodes);
+			}
+
+			database.ChatContextTabViewModels.DeleteMany(c => c.ChatId == chatId);
+
+			for (int i = 0; i < nodesToDelete.Count; i++)
+			{
+				DeleteNode(nodesToDelete[i]);
+			}
+
+			database.Chats.Delete(chatId);
+		}
+
+		private void DeleteNode(int nodeId)
+		{
+			var node = database.MessageNodes.FindById(nodeId);
+			if (node == null) return;
+
+			var message = database.Messages.FindById(node.MessageId);
+			if (message == null)
+			{
+				database.MessageNodes.Delete(nodeId);
+				return;
+			}
+
+			database.AdditionalMessageViewModels.DeleteMany(v => v.MessageId == message.Id);
+			database.Attachments.DeleteMany(v => !v.IsParentToolCall && v.ParentId == message.Id);
+
+			var toolCalls = database.ToolCalls.Find(m => m.MessageId == message.Id).ToList();
+			foreach (var toolCall in toolCalls)
+			{
+				database.Attachments.DeleteMany(v => v.IsParentToolCall && v.ParentId == toolCall.Id);
+			}
+			database.ToolCalls.DeleteMany(m => m.MessageId == message.Id);
+
+			database.Messages.Delete(message.Id);
+			database.MessageNodes.Delete(nodeId);
 		}
 	}
 }

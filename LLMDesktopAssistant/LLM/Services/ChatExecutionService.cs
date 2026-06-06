@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Net.NetworkInformation;
+using System.Text.Json.Nodes;
 using DocumentFormat.OpenXml.VariantTypes;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Controls.Toasts;
@@ -12,6 +13,7 @@ using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Metadata;
@@ -209,9 +211,44 @@ namespace LLMDesktopAssistant.LLM.Services
 							if (funtionCall is PartialFunctionToolCall partialFunctionCall)
 							{
 								domainToolCall.Status = ToolStatus.Pending;
+								Func<JsonNode, ToolExecutionContext, StreamingToolArgumentsAnalysisResult>?
+									streamingArgumentsAnalyser = null;
+
+								if (tools.TryGetValue(funtionCall.ToolName, out var toolInfo))
+								{
+									streamingArgumentsAnalyser = toolInfo.StreamingArgumentsAnalyser;
+								}
+
 								void AddedPartialArg(object? sender, string deltaArg)
 								{
 									domainToolCall.Arguments = funtionCall.Args;
+
+									if (streamingArgumentsAnalyser != null)
+									{
+										var context = new ToolExecutionContext
+										{
+											Call = domainToolCall,
+											Chat = chat,
+											Info = toolInfo!,
+											Message = domainResponseMessage
+										};
+										try
+										{
+											// TolerantJsonParser can parse partial (unfinished) JSON too!
+											var args = TolerantJsonParser.Parse(domainToolCall.Arguments);
+											var analysisResult = streamingArgumentsAnalyser.Invoke(args ?? new JsonObject(), context);
+
+											if (analysisResult.StopAnalysis)
+												streamingArgumentsAnalyser = null;
+
+											domainToolCall.StatusIcon = analysisResult.StatusIcon;
+											domainToolCall.StatusTitle = analysisResult.StatusTitle;
+										}
+										catch (Exception ex)
+										{
+											Log.Debug(ex, "Error analyzing arguments: {ErrorMessage}", ex.Message);
+										}
+									}
 								}
 
 								partialFunctionCall.ArgsPartAdded += AddedPartialArg;

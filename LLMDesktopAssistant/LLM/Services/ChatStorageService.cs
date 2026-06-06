@@ -1,11 +1,6 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Immutable;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Windows;
-using DocumentFormat.OpenXml.EMMA;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
@@ -13,7 +8,6 @@ using LLMDesktopAssistant.LLM.MVVM.ContextTabs;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
-using LLTSharp;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
 
@@ -21,8 +15,8 @@ namespace LLMDesktopAssistant.LLM.Services
 {
 	[ChatService(typeof(IChatStorageService))]
 	public class ChatStorageService(
-			Chat chat
-		) : Disposable, IChatStorageService
+		Chat chat
+	) : Disposable, IChatStorageService
 	{
 		readonly int chatId = chat.ChatId;
 		readonly ChatDatabase database = chat.ChatDatabase;

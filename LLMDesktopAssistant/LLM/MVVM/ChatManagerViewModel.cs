@@ -14,7 +14,7 @@ using Serilog;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
-	public class AvailableChatViewModel : NotifyPropertyChanged, IEquatable<AvailableChatViewModel>
+	public class AvailableChatViewModel : NotifyPropertyChanged
 	{
 		public required int Id { get; init; }
 
@@ -104,22 +104,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				LastModifiedAt = info.LastModifiedAt
 			};
 		}
-
-		public override int GetHashCode()
-		{
-			return Id.GetHashCode();
-		}
-
-		public override bool Equals(object? obj)
-		{
-			return obj is ChatInfo chatInfo && Equals(chatInfo);
-		}
-
-		public bool Equals(AvailableChatViewModel? other)
-		{
-			return other != null && Id == other.Id;
-		}
-
 	}
 
 	public class OpenedChatViewModel : NotifyPropertyChanged

@@ -10,21 +10,18 @@ namespace LLMDesktopAssistant.Tools
 	/// <summary>
 	/// Creates pre-execution functions from delegates, similar to <see cref="ToolExecutorCreator"/>
 	/// but without argument schema generation.
-	/// Supports the following return types:
-	/// - <see cref="PreviewToolExecutionResult"/>
-	/// - <see cref="Task{ToolPreExecutionResult}"/>
 	/// </summary>
-	public static class ToolPreviewExecutorCreator
+	public static class PreviewToolExecutorCreator
 	{
 		/// <summary>
 		/// Creates a pre-executor function from the specified delegate.
 		/// </summary>
 		/// <param name="preExecutor">The delegate to create a pre-executor from. Can be null.</param>
 		/// <returns>A function that takes JSON arguments, context, and cancellation token, and returns a pre-execution result. Null if the input delegate is null.</returns>
-		public static Func<JsonNode, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>>? Create(Delegate? preExecutor)
+		public static Func<JsonNode, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>> Create(Delegate preExecutor)
 		{
 			if (preExecutor == null)
-				return null;
+				throw new ArgumentNullException(nameof(preExecutor));
 
 			return Create(preExecutor.Target, preExecutor.Method);
 		}
@@ -35,7 +32,7 @@ namespace LLMDesktopAssistant.Tools
 		/// <param name="target">The target object on which the method is invoked. Null for static methods.</param>
 		/// <param name="method">The method to invoke.</param>
 		/// <returns>A function that takes JSON arguments, context, and cancellation token, and returns a pre-execution result.</returns>
-		public static Func<JsonNode, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>>? Create(object? target, MethodInfo method)
+		public static Func<JsonNode, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>> Create(object? target, MethodInfo method)
 		{
 			if (method == null)
 				throw new ArgumentNullException(nameof(method));

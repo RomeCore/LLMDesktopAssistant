@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		MessagesInterface messagesInterface
 		) : IChatNamingService
 	{
-		private SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+		private readonly SemaphoreSlim _semaphore = new(1, 1);
 
 		public async Task TryNameChatAsync(CancellationToken cancellationToken = default)
 		{
@@ -49,7 +49,9 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public async Task<bool> NameChatAsync(CancellationToken cancellationToken = default)
 		{
+			if (_semaphore.CurrentCount == 0) return false; // Already renaming, skip this call
 			await _semaphore.WaitAsync(cancellationToken);
+			
 			try
 			{
 				var namingLLM = llmBuilder.BuildSummarizationLLM();

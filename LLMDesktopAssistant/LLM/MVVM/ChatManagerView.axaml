@@ -154,6 +154,7 @@
 															 FontSize="14"
 															 VerticalAlignment="Center"
 															 PointerPressed="TabTitleTextBlock_PointerPressed"
+															 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
 															 Cursor="Hand"/>
 										
 										<Button Command="{Binding RenameWithAICommand}"

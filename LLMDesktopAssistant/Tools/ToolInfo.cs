@@ -59,6 +59,11 @@ namespace LLMDesktopAssistant.Tools
 			});
 
 		/// <summary>
+		/// Gets or sets a streaming arguments analyser function for the tool. This function is executed every update for streaming tool arguments.
+		/// </summary>
+		public Func<JsonNode, ToolExecutionContext, StreamingToolArgumentsAnalysisResult>? StreamingArgumentsAnalyser { get; init; }
+
+		/// <summary>
 		/// Gets or sets a pre-execution function for the tool. This function is responsible for performing any necessary checks or preparations before executing the tool.
 		/// </summary>
 		public Func<JsonNode, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>>? PreviewExecutor { get; init; }
@@ -102,11 +107,12 @@ namespace LLMDesktopAssistant.Tools
 		/// Creates a new instance of the <see cref="ToolInfo"/> class with the specified executor and initialization information.
 		/// </summary>
 		/// <param name="executor">The delegate representing the executor function for the tool.</param>
+		/// <param name="streamingAnalyzer">The delegate representing the streaming arguments analyser function for the tool. This can be null if no streaming analysis is required.</param>
 		/// <param name="previewExecutor">The delegate representing the pre-execution function for the tool. This can be null if no pre-execution is required.</param>
 		/// <param name="info">The initialization information for the tool. This includes various properties such as name, description, and category.</param>
 		/// <returns>The newly created <see cref="ToolInfo"/> instance.</returns>
 		/// <exception cref="InvalidOperationException">Thrown when the description getter is not provided in the initialization information.</exception>
-		public static ToolInfo Create(Delegate executor, Delegate? previewExecutor, ToolInitializationInfo info)
+		public static ToolInfo Create(Delegate executor, Delegate? streamingAnalyzer, Delegate? previewExecutor, ToolInitializationInfo info)
 		{
 			ToolName.EnsureValid(info.Name);
 
@@ -114,7 +120,10 @@ namespace LLMDesktopAssistant.Tools
 				throw new InvalidOperationException($"Description of the {nameof(ToolInitializationInfo)} must be set before tool creation.");
 
 			var (argSchema, _executor) = ToolExecutorCreator.Create(executor);
-			var _previewExecutor = ToolPreviewExecutorCreator.Create(previewExecutor);
+			var _streamingAnalyzer = streamingAnalyzer != null ?
+				StreamingToolArgumentAnalyzerCreator.Create(streamingAnalyzer) : null;
+			var _previewExecutor = previewExecutor != null ?
+				PreviewToolExecutorCreator.Create(previewExecutor) : null;
 
 			return new ToolInfo
 			{
@@ -122,8 +131,9 @@ namespace LLMDesktopAssistant.Tools
 				DescriptionGetter = info.DescriptionGetter,
 				ArgumentSchema = argSchema,
 				OutputSchema = info.OutputSchema,
-				PreviewExecutor = _previewExecutor,
+				StreamingArgumentsAnalyser = _streamingAnalyzer,
 				DefaultDangerLevel = info.DefaultDangerLevel,
+				PreviewExecutor = _previewExecutor,
 				Executor = _executor,
 				DisplayName = info.DisplayName,
 				Category = info.Category,

@@ -62,7 +62,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					AskForConfirmation = true
 				});
 
-			AddTool(DeleteFile, PreviewDeleteFile,
+			AddTool(DeleteFile, null, PreviewDeleteFile,
 				new ToolInitializationInfo
 				{
 					Name = "fs-delete_file",
