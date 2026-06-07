@@ -363,9 +363,6 @@ namespace LLMDesktopAssistant.LLM.Services
 								}
 
 								await summarizer.TrySummarizeChatAsync(usageMetadata, cancellationToken);
-
-							// Auto-name the chat if it still has a default title
-							_ = namingService.TryNameChatAsync(cancellationToken);
 							}
 							else
 							{
@@ -419,6 +416,10 @@ namespace LLMDesktopAssistant.LLM.Services
 						}
 						finally
 						{
+							// Auto-name the chat if it still has a default title
+							if (toolExecutionTasks.Count == 0)
+								_ = namingService.TryNameChatAsync(cancellationToken);
+
 							completionSource.Complete();
 							cancellationToken.ThrowIfCancellationRequested();
 						}

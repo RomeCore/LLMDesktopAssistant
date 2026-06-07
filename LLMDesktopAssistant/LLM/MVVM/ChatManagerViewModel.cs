@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	public class AvailableChatViewModel : NotifyPropertyChanged
 	{
 		public required int Id { get; init; }
+		public required ICommand DeleteCommand { get; init; }
 
 		private string _title = string.Empty;
 		public string Title
@@ -94,11 +95,12 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 
 
-		public static AvailableChatViewModel CreateFromInfo(ChatInfo info)
+		public static AvailableChatViewModel CreateFromInfo(ChatInfo info, ICommand deleteCommand)
 		{
 			return new AvailableChatViewModel
 			{
 				Id = info.Id,
+				DeleteCommand = deleteCommand,
 				Title = info.Title,
 				Topic = info.Topic,
 				LastModifiedAt = info.LastModifiedAt
@@ -108,6 +110,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 	public class OpenedChatViewModel : NotifyPropertyChanged
 	{
+		public required IChatManagementService ChatManager { get; init; }
+
 		private IServiceScope? _currentChatScope;
 		private ChatViewModel? _currentChat;
 		public ChatViewModel? CurrentChat
@@ -133,11 +137,17 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			}
 		}
 
+		public bool IsEditing => IsEditingTitle || IsEditingTopic;
+
 		private bool _isEditingTitle = false;
 		public bool IsEditingTitle
 		{
 			get => _isEditingTitle;
-			set => SetProperty(ref _isEditingTitle, value);
+			set
+			{
+				if (SetProperty(ref _isEditingTitle, value))
+					RaisePropertyChanged(nameof(IsEditing));
+			}
 		}
 
 		private string _editTitleText = string.Empty;
@@ -147,9 +157,32 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _editTitleText, value);
 		}
 
+		private bool _isEditingTopic = false;
+		public bool IsEditingTopic
+		{
+			get => _isEditingTopic;
+			set
+			{
+				if (SetProperty(ref _isEditingTopic, value))
+					RaisePropertyChanged(nameof(IsEditing));
+			}
+		}
+
+		private string _editTopicText = string.Empty;
+		public string EditTopicText
+		{
+			get => _editTopicText;
+			set => SetProperty(ref _editTopicText, value);
+		}
+
 		public ICommand StartEditTitleCommand { get; }
 		public ICommand CommitEditTitleCommand { get; }
 		public ICommand CancelEditTitleCommand { get; }
+
+		public ICommand StartEditTopicCommand { get; }
+		public ICommand CommitEditTopicCommand { get; }
+		public ICommand CancelEditTopicCommand { get; }
+
 		public ICommand RenameWithAICommand { get; }
 		public required ICommand CloseChatCommand { get; init; }
 
@@ -174,6 +207,27 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			CancelEditTitleCommand = new RelayCommand(() =>
 			{
 				IsEditingTitle = false;
+			});
+
+			StartEditTopicCommand = new RelayCommand(() =>
+			{
+				if (CurrentChat?.Chat != null)
+				{
+					EditTopicText = CurrentChat.Chat.Topic;
+					IsEditingTopic = true;
+				}
+			});
+
+			CommitEditTopicCommand = new RelayCommand(() =>
+			{
+				if (CurrentChat?.Chat != null)
+					CurrentChat.Chat.Topic = EditTopicText.Trim();
+				IsEditingTopic = false;
+			});
+
+			CancelEditTopicCommand = new RelayCommand(() =>
+			{
+				IsEditingTopic = false;
 			});
 
 			RenameWithAICommand = new AsyncRelayCommand(async () =>
@@ -228,7 +282,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			CurrentChat?.Dispose();
 			ChatCleanup();
 
-			_currentChatScope = ChatServices.ManagementService.OpenChatScope(available.Id);
+			_currentChatScope = ChatManager.OpenChatScope(available.Id);
 			var chatServices = _currentChatScope.ServiceProvider;
 			var chat = chatServices.GetRequiredService<Chat>();
 			CurrentChat = new ChatViewModel(chat);
@@ -281,6 +335,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	[ViewModelFor(typeof(ChatManagerView))]
 	public class ChatManagerViewModel : ViewModelBase
 	{
+		public IChatManagementService ChatManager { get; }
+
 		public ObservableCollection<AvailableChatViewModel> AvailableChats { get; } = [];
 
 		public ObservableCollection<OpenedChatViewModel> OpenedChats { get; } = [];
@@ -294,8 +350,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		public ICommand CreateConversationCommand { get; }
 
-		public ChatManagerViewModel()
+		public ChatManagerViewModel(IChatManagementService chatManager)
 		{
+			ChatManager = chatManager;
 			CreateConversationCommand = new RelayCommand(CreateConversation);
 
 			Initialize();
@@ -303,27 +360,49 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		private void Initialize()
 		{
-			ChatServices.ManagementService.ClearEmptyChats();
+			ChatManager.ClearEmptyChats();
 			LoadConversations();
 			CreateConversation();
+		}
+
+		private AvailableChatViewModel CreateAvailableChatViewModel(ChatInfo info)
+		{
+			AvailableChatViewModel newAvailableChatViewModel = null!;
+			var deleteCommand = new RelayCommand(() =>
+			{
+				var openedChats = OpenedChats.Where(o => o.SelectedAvailable?.Id == info.Id).ToList();
+				foreach (var openedChat in openedChats)
+				{
+					OpenedChats.Remove(openedChat);
+					openedChat.Dispose();
+				}
+				ChatManager.DeleteChat(info.Id);
+				AvailableChats.Remove(newAvailableChatViewModel);
+
+				if (OpenedChats.Count == 0)
+					CreateConversation();
+			});
+			newAvailableChatViewModel = AvailableChatViewModel.CreateFromInfo(info, deleteCommand);
+			return newAvailableChatViewModel;
 		}
 
 		private void LoadConversations()
 		{
 			AvailableChats.Clear();
-			foreach (var chat in ChatServices.ManagementService.GetChats().OrderByDescending(c => c.LastModifiedAt))
-				AvailableChats.Add(AvailableChatViewModel.CreateFromInfo(chat));
+			foreach (var chat in ChatManager.GetChats().OrderByDescending(c => c.LastModifiedAt))
+				AvailableChats.Add(CreateAvailableChatViewModel(chat));
 		}
 
 		private void CreateConversation()
 		{
-			var newChat = ChatServices.ManagementService.CreateChat(LocalizationManager.LocalizeStatic("new_chat"));
-			var newAvailableChat = AvailableChatViewModel.CreateFromInfo(newChat);
+			var newChat = ChatManager.CreateChat(LocalizationManager.LocalizeStatic("new_chat"));
+			var newAvailableChat = CreateAvailableChatViewModel(newChat);
 			AvailableChats.Insert(0, newAvailableChat);
 
 			OpenedChatViewModel newOpenedChat = null!;
 			newOpenedChat = new OpenedChatViewModel
 			{
+				ChatManager = ChatManager,
 				SelectedAvailable = newAvailableChat,
 				CloseChatCommand = new RelayCommand(() =>
 				{

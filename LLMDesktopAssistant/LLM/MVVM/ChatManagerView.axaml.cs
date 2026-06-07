@@ -36,4 +36,29 @@ public partial class ChatManagerView : UserControl
 			}
 		}
 	}
+
+	private void TabTopicTextBlock_PointerPressed(object? sender, PointerPressedEventArgs e)
+	{
+		if (sender is TextBlock textBlock && textBlock.DataContext is OpenedChatViewModel vm)
+		{
+			vm.StartEditTopicCommand.Execute(null);
+		}
+	}
+
+	private void TabTopicTextBox_KeyDown(object? sender, KeyEventArgs e)
+	{
+		if (sender is TextBox textBox && textBox.DataContext is OpenedChatViewModel vm)
+		{
+			if (e.Key == Key.Enter)
+			{
+				vm.CommitEditTopicCommand.Execute(null);
+				e.Handled = true;
+			}
+			else if (e.Key == Key.Escape)
+			{
+				vm.CancelEditTopicCommand.Execute(null);
+				e.Handled = true;
+			}
+		}
+	}
 }

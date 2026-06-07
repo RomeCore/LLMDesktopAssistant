@@ -11,11 +11,13 @@ namespace LLMDesktopAssistant.Markdown
 	[ChatService]
 	public class QuickActionService : Disposable
 	{
+		private readonly Chat _chat;
 		private readonly IChatOperationService _chatOperator;
 		private readonly IUserManagementService _userManager;
 
-		public QuickActionService(IChatOperationService chatOperator, IUserManagementService userManager)
+		public QuickActionService(Chat chat, IChatOperationService chatOperator, IUserManagementService userManager)
 		{
+			_chat = chat;
 			_chatOperator = chatOperator;
 			_userManager = userManager;
 
@@ -30,8 +32,11 @@ namespace LLMDesktopAssistant.Markdown
 				QuickActionUiNode.OnActionClicked -= OnActionClicked;
 		}
 
-		private void OnActionClicked(string action)
+		private void OnActionClicked(string action, Chat chat)
 		{
+			if (_chat != chat)
+				return;
+
 			_ = _chatOperator.SendUserInputAsync(new UserInput
 			{
 				Content = action,

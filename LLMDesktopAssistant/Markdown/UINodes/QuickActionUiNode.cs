@@ -2,8 +2,13 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
+using Avalonia.VisualTree;
 using LiveMarkdown.Avalonia;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.Markdown.Nodes;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Markdown.UINodes;
 
@@ -22,7 +27,7 @@ public class QuickActionUiNode : InlineNode<QuickAction>
 	/// Callback to invoke when a quick action button is clicked.
 	/// Receives the prompt text to insert.
 	/// </summary>
-	public static Action<string>? OnActionClicked { get; set; }
+	public static Action<string, Chat>? OnActionClicked { get; set; }
 
 	/// <summary>
 	/// Attached property to store the QuickAction data on the Button.
@@ -57,7 +62,11 @@ public class QuickActionUiNode : InlineNode<QuickAction>
 			var action = GetQuickAction(btn);
 			if (action != null && !string.IsNullOrEmpty(action.Prompt))
 			{
-				OnActionClicked?.Invoke(action.Prompt);
+				var chatView = btn.FindParent<ChatView>();
+				if (chatView != null && chatView.DataContext is ChatViewModel chatViewModel)
+				{
+					OnActionClicked?.Invoke(action.Prompt, chatViewModel.Chat);
+				}
 			}
 		}
 	}

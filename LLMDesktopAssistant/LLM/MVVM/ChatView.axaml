@@ -35,6 +35,8 @@
 			<ScrollViewer x:Name="MessagesScrollViewer"
 										ScrollChanged="MessagesScrollViewer_ScrollChanged"
 										VerticalScrollBarVisibility="Visible"
+										AllowAutoHide="False"
+										BringIntoViewOnFocusChange="False"
 										beh:ScrollViewerBehavior.AutoScrollEnabled="True">
 
 				<StackPanel>

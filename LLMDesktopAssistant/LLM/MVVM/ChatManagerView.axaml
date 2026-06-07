@@ -43,13 +43,27 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							
-							<DockPanel Margin="0,4"
-												 beh:ListBoxItemBehaviour.IsParentListBoxItemEnabled="{Binding !IsSelected}">
+							<DockPanel beh:ListBoxItemBehaviour.IsParentListBoxItemEnabled="{Binding !IsSelected}">
 
-								<Label Content="{Binding LastModifiedAt}"
-											 DockPanel.Dock="Right"
-											 Opacity="0.5"
-											 FontSize="11"/>
+								<StackPanel VerticalAlignment="Center"
+														DockPanel.Dock="Right">
+									
+									<Label Content="{Binding LastModifiedAt}"
+												 Opacity="0.5"
+												 FontSize="11"/>
+
+									<StackPanel Orientation="Horizontal"
+															HorizontalAlignment="Right">
+										
+										<Button Command="{Binding DeleteCommand}"
+														Classes="SmallIconButton"
+														ToolTip.Tip="{loc:Loc delete}">
+											<ico:MaterialIcon Kind="Delete"/>
+										</Button>
+										
+									</StackPanel>
+
+								</StackPanel>
 
 								<Border Width="8" Height="8"
 												CornerRadius="4"
@@ -138,25 +152,43 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate x:DataType="local:OpenedChatViewModel">
 							
-							<Border Margin="2,0"
-											Padding="8,4"
-											CornerRadius="6">
+							<Border Margin="2,0">
 							
 								<StackPanel Orientation="Horizontal"
 														VerticalAlignment="Center"
 														Spacing="4">
 									
-									<!-- Title display mode -->
+									<!-- Display mode -->
 									<StackPanel Orientation="Horizontal" Spacing="4"
-															IsVisible="{Binding !IsEditingTitle}">
+															IsVisible="{Binding !IsEditing}">
 										
-										<TextBlock Text="{Binding CurrentChat.Chat.Title}"
-															 FontSize="14"
-															 VerticalAlignment="Center"
-															 PointerPressed="TabTitleTextBlock_PointerPressed"
-															 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
-															 Cursor="Hand"/>
-										
+										<StackPanel Orientation="Vertical"
+																VerticalAlignment="Center">
+											
+											<TextBlock Text="{Binding CurrentChat.Chat.Title}"
+																 FontSize="14"
+																 PointerPressed="TabTitleTextBlock_PointerPressed"
+																 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
+																 Cursor="Hand"/>
+											
+											<TextBlock Text="{Binding CurrentChat.Chat.Topic}"
+																 IsVisible="{Binding CurrentChat.Chat.Topic, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+																 Foreground="{Binding SelectedAvailable.TopicColorHex}"
+																 FontSize="11"
+																 PointerPressed="TabTopicTextBlock_PointerPressed"
+																 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
+																 Cursor="Hand"/>
+											
+											<TextBlock Text="{loc:Loc no_topic}"
+																 IsVisible="{Binding CurrentChat.Chat.Topic, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"
+																 Foreground="{Binding SelectedAvailable.TopicColorHex}"
+																 FontSize="11"
+																 PointerPressed="TabTopicTextBlock_PointerPressed"
+																 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
+																 Cursor="Hand"/>
+											
+										</StackPanel>
+
 										<Button Command="{Binding RenameWithAICommand}"
 														Classes="SmallIconButton"
 														ToolTip.Tip="{loc:Loc rename_with_ai}">
@@ -171,7 +203,7 @@
 
 									</StackPanel>
 									
-									<!-- Title editing mode -->
+									<!-- Title edit mode -->
 									<StackPanel Orientation="Horizontal" Spacing="4"
 															IsVisible="{Binding IsEditingTitle}">
 										
@@ -195,6 +227,30 @@
 										</Button>
 									</StackPanel>
 									
+									<!-- Topic editing mode -->
+									<StackPanel Orientation="Horizontal" Spacing="4"
+															IsVisible="{Binding IsEditingTopic}">
+										
+										<TextBox Text="{Binding EditTopicText, Mode=TwoWay}"
+														 FontSize="14"
+														 MinWidth="80"
+														 MaxWidth="200"
+														 AcceptsReturn="False"
+														 KeyDown="TabTopicTextBox_KeyDown"/>
+										
+										<Button Command="{Binding CommitEditTopicCommand}"
+														Classes="SmallIconButton"
+														ToolTip.Tip="{loc:Loc rename_chat_save}">
+											<ico:MaterialIcon Kind="Check"/>
+										</Button>
+										
+										<Button Command="{Binding CancelEditTopicCommand}"
+														Classes="SmallIconButton"
+														ToolTip.Tip="{loc:Loc rename_chat_cancel}">
+											<ico:MaterialIcon Kind="Close"/>
+										</Button>
+									</StackPanel>
+
 								</StackPanel>
 								
 							</Border>
