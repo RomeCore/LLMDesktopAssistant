@@ -185,6 +185,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 		public bool InProgress =>
 			Status switch
 			{
+				ToolStatus.PreExecuting => true,
 				ToolStatus.Executing => true,
 				_ => false
 			};
@@ -192,7 +193,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 		public bool ToolIconVisible =>
 			Status switch
 			{
-				ToolStatus.Pending => false,
+				ToolStatus.PreExecuting => false,
 				ToolStatus.Executing => false,
 				_ => true
 			};

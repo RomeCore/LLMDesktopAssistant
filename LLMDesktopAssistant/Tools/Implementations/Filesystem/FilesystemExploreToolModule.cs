@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO.Enumeration;
 using System.Text;
 using LLMDesktopAssistant.LLM.Services.Attachments;
@@ -11,6 +12,7 @@ using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
 using ModelContextProtocol.Protocol;
+using Serilog;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -23,7 +25,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(Explore,
+			AddTool(Explore, null, ExplorePreview,
 				new ToolInitializationInfo
 				{
 					Name = "fs-read_entry",
@@ -38,7 +40,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				});
 		}
 
-		public PreviewToolExecutionResult? ExplorePreview(string path, [Inject] DetectSecretsSharp.Core.Scanner scanner)
+		public PreviewToolExecutionResult? ExplorePreview(string path,
+			int startLine = 0, int endLine = 0, int maxLineLength = 2000,
+			[Inject] DetectSecretsSharp.Core.Scanner scanner = default!)
 		{
 			try
 			{
@@ -50,7 +54,27 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				if (fileExists)
 				{
-					var secrets = scanner.ScanFile(fullPath);
+					if (startLine < 1)
+						startLine = 1;
+					if (endLine < startLine)
+						endLine = startLine + 199;
+
+					var (lines, totalLines) = FileUtils.ReadLinesChunk(
+						fullPath,
+						startLine,
+						endLine - startLine + 1,
+						maxLineLength,
+						withLineNumbers: false);
+
+					var secrets = scanner.ScanLines(lines, filename: displayEntryName, verify: false);
+					/*
+					var sw = new Stopwatch();
+					sw.Start();
+					var secrets = scanner.ScanLines(lines, filename: displayEntryName, verify: false);
+					var elapsedTime = sw.Elapsed.TotalMilliseconds;
+					var timePerLine = elapsedTime / lines.Count;
+					Log.Information("Scanned {Lines} lines in {TotalTime:0.00} ms, time per line: {TimePerLine:0.00} ms, detectors count: {DetectorCount}", lines.Count, elapsedTime, timePerLine, scanner.Detectors.Count);
+					*/
 					if (secrets.HasSecrets)
 					{
 						return new PreviewToolExecutionResult

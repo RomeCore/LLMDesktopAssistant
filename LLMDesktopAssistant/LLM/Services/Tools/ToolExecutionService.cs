@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
@@ -70,8 +71,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							return;
 						}
 					}
-					catch
+					catch (Exception ex)
 					{
+						Log.Debug(ex, "Error during preview execution of tool '{ToolName}': {ExceptionMessage}", toolCall.ToolName, ex.Message);
 					}
 				}
 
