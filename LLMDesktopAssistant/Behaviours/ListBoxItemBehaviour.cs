@@ -30,19 +30,43 @@ namespace LLMDesktopAssistant.Behaviours
 			return element.GetValue(IsParentListBoxItemEnabledProperty);
 		}
 
+		public static readonly AttachedProperty<Dock> ParentListBoxItemDockProperty =
+			AvaloniaProperty.RegisterAttached<Control, Dock>(
+				"ParentListBoxItemDock",
+				typeof(ListBoxItemBehaviour),
+				Dock.Top);
+
+		public static void SetParentListBoxItemDock(Control element, Dock value)
+		{
+			element.SetValue(ParentListBoxItemDockProperty, value);
+		}
+
+		public static Dock GetParentListBoxItemDock(Control element)
+		{
+			return element.GetValue(ParentListBoxItemDockProperty);
+		}
+
 		static ListBoxItemBehaviour()
 		{
 			IsParentListBoxItemEnabledProperty.Changed.AddClassHandler<Control, bool>(
-				(o, e) => IsExtendedChanged(o, e.GetNewValue<bool>()));
+				(o, e) =>
+				{
+					ParentListBoxItemPropertyChanged(o, (l, v) => l.IsEnabled = v, e.GetNewValue<bool>());
+				});
+			ParentListBoxItemDockProperty.Changed.AddClassHandler<Control, Dock>(
+				(o, e) =>
+				{
+					ParentListBoxItemPropertyChanged(o, (l, v) => DockPanel.SetDock(l, v), e.GetNewValue<Dock>());
+				});
 		}
 
-		private static void IsExtendedChanged(Control element, bool isEnabled)
+		private static void ParentListBoxItemPropertyChanged<T>(Control element, Action<ListBoxItem, T> setter, T newValue)
 		{
 			if (element.IsLoaded)
 			{
 				var parentListBoxItem = element.GetLogicalParent<ListBoxItem>();
 				if (parentListBoxItem != null)
-					parentListBoxItem.IsEnabled = isEnabled;
+					setter(parentListBoxItem, newValue);
 			}
 			else
 			{
@@ -51,7 +75,7 @@ namespace LLMDesktopAssistant.Behaviours
 					element.Loaded -= Element_Loaded;
 					var parentListBoxItem = element.GetLogicalParent<ListBoxItem>();
 					if (parentListBoxItem != null)
-						parentListBoxItem.IsEnabled = isEnabled;
+						setter(parentListBoxItem, newValue);
 				}
 				element.Loaded += Element_Loaded;
 			}

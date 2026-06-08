@@ -278,9 +278,16 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		private void OpenConversation(AvailableChatViewModel available)
 		{
-			_currentChatScope?.Dispose();
-			CurrentChat?.Dispose();
-			ChatCleanup();
+			try
+			{
+				_currentChatScope?.Dispose();
+				CurrentChat?.Dispose();
+				ChatCleanup();
+			}
+			catch (Exception ex)
+			{
+				Log.Debug(ex, "Failed to cleanup old chat scope: {Error}", ex.Message);
+			}
 
 			_currentChatScope = ChatManager.OpenChatScope(available.Id);
 			var chatServices = _currentChatScope.ServiceProvider;
@@ -295,11 +302,19 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 			if (disposing)
 			{
-				_selectedAvailable?.IsSelected = false;
-				SelectedAvailable = null;
-				CurrentChat = null;
-				_currentChatScope?.Dispose();
-				_currentChatScope = null;
+				try
+				{
+					_selectedAvailable?.IsSelected = false;
+					SelectedAvailable = null;
+					CurrentChat?.Dispose();
+					ChatCleanup();
+					_currentChatScope?.Dispose();
+					_currentChatScope = null;
+				}
+				catch (Exception ex)
+				{
+					Log.Debug(ex, "Failed to dispose OpenedChatViewModel: {Error}", ex.Message);
+				}
 			}
 		}
 

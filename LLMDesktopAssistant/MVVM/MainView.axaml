@@ -4,6 +4,9 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:LLMDesktopAssistant.MVVM"
 			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 xmlns:beh="using:LLMDesktopAssistant.Behaviours"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
 			 xmlns:toasts="using:LLMDesktopAssistant.Controls.Toasts"
 			 xmlns:dialogHost="using:DialogHostAvalonia"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -18,7 +21,49 @@
 
 		<dialogHost:DialogHost CloseOnClickAway="True">
 
-			<ContentControl Content="{Binding ChatManager}"/>
+			<SplitView x:Name="MainSplitView"
+								 DisplayMode="CompactInline"
+								 CompactPaneLength="48"
+								 OpenPaneLength="380">
+				
+				<SplitView.Pane>
+
+					<StackPanel>
+
+						<ToggleButton Classes="BigIconButton"
+													IsChecked="{Binding #MainSplitView.IsPaneOpen, Mode=TwoWay}"
+													Margin="4">
+							<ico:MaterialIcon Kind="Menu"/>
+						</ToggleButton>
+						
+						<ListBox ItemsSource="{Binding SidebarItems}" SelectedItem="{Binding SelectedSidebarItem}">
+
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+
+									<StackPanel Orientation="Horizontal">
+									
+										<ico:MaterialIcon Kind="{Binding Icon}"
+																			Width="24" Height="24"/>
+
+										<TextBlock Text="{loc:Loc {Binding Title}}"
+															 IsVisible="{Binding #MainSplitView.IsPaneOpen}"
+															 FontSize="16" Margin="2"/>
+
+									</StackPanel>
+
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+
+						</ListBox>
+
+					</StackPanel>
+
+				</SplitView.Pane>
+				
+				<ContentControl Content="{Binding SelectedSidebarItem.Content}"/>
+
+			</SplitView>
 
 		</dialogHost:DialogHost>
 
