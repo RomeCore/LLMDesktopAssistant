@@ -1530,4 +1530,7 @@
   <data name="delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="file_contains_secrets" xml:space="preserve">
+    <value>{0} (contains secrets)</value>
+  </data>
 </root>

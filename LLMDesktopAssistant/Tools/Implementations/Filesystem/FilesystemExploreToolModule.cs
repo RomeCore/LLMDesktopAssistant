@@ -4,9 +4,13 @@ using System.ComponentModel;
 using System.IO.Enumeration;
 using System.Text;
 using LLMDesktopAssistant.LLM.Services.Attachments;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Utils.Files;
 using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Utils.Files;
+using Material.Icons;
+using ModelContextProtocol.Protocol;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -32,6 +36,66 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Category = "filesystem",
 					AskForConfirmation = false
 				});
+		}
+
+		public PreviewToolExecutionResult? ExplorePreview(string path, [Inject] DetectSecretsSharp.Core.Scanner scanner)
+		{
+			try
+			{
+				var fullPath = _fileAccess.AccessPath(path);
+				var displayEntryName = Path.GetFileName(fullPath);
+
+				bool fileExists = File.Exists(fullPath);
+				bool directoryExists = Directory.Exists(fullPath);
+
+				if (fileExists)
+				{
+					var secrets = scanner.ScanFile(fullPath);
+					if (secrets.HasSecrets)
+					{
+						return new PreviewToolExecutionResult
+						{
+							StatusIcon = directoryExists ? MaterialIconKind.FileEye : MaterialIconKind.FileCode,
+							StatusTitle = LocalizationManager.LocalizeStaticFormat("file_contains_secrets", $"**{displayEntryName}**"),
+							DangerLevel = ToolDangerLevel.Dangerous
+						};
+					}
+
+					return new PreviewToolExecutionResult
+					{
+						StatusIcon = directoryExists ? MaterialIconKind.FileEye : MaterialIconKind.FileCode,
+						StatusTitle = $"**{displayEntryName}**",
+						DangerLevel = ToolDangerLevel.Safe
+					};
+				}
+
+				if (directoryExists)
+				{
+					return new PreviewToolExecutionResult
+					{
+						StatusIcon = MaterialIconKind.Folder,
+						StatusTitle = $"**{displayEntryName}**",
+						DangerLevel = ToolDangerLevel.Safe
+					};
+				}
+
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.FileDiscard,
+					StatusTitle = $"**{displayEntryName}**",
+					InterruptingContent = $"No such file or directory found: '{path}'.",
+					InterruptingSuccess = false,
+					DangerLevel = ToolDangerLevel.Safe
+				};
+			}
+			catch (Exception ex)
+			{
+				return new PreviewToolExecutionResult
+				{
+					InterruptingContent = $"Error reading file: {ex.Message}",
+					InterruptingSuccess = false
+				};
+			}
 		}
 
 		public ReactiveToolResult Explore(

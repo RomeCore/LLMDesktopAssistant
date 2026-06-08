@@ -1249,6 +1249,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} (contains secrets).
+        /// </summary>
+        public static string file_contains_secrets {
+            get {
+                return ResourceManager.GetString("file_contains_secrets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на File system.
         /// </summary>
         public static string filesystem {
