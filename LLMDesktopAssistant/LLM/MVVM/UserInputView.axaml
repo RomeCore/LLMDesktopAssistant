@@ -52,22 +52,6 @@
 					<ico:MaterialIcon Kind="Cog"/>
 				</Button>
 
-				<!-- MCP -->
-				<Button Classes="IconButton"
-						Command="{Binding OpenMCPManagerCommand}"
-						ToolTip.Tip="{loc:Loc mcp_manager_hint}">
-
-					<ico:MaterialIcon Kind="Connection"/>
-				</Button>
-
-				<!-- Prompt Manager -->
-				<Button Classes="IconButton"
-						Command="{Binding OpenPromptManagerCommand}"
-						ToolTip.Tip="{loc:Loc prompt_manager_hint}">
-
-					<ico:MaterialIcon Kind="Text"/>
-				</Button>
-
 				<!-- Attach -->
 				<Button Classes="IconButton"
 						Command="{Binding OpenAttachmentsManagerCommand}"
@@ -75,6 +59,7 @@
 
 					<ico:MaterialIcon Kind="Paperclip"/>
 				</Button>
+
 				<!-- Blazor Web UI Host -->
 				<Button Classes="IconButton"
 						Command="{Binding OpenBlazorWebUICommand}"
@@ -82,8 +67,6 @@
 
 					<ico:MaterialIcon Kind="Web"/>
 				</Button>
-
-
 
 			</StackPanel>
 

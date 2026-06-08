@@ -1015,6 +1015,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete.
+        /// </summary>
+        public static string delete {
+            get {
+                return ResourceManager.GetString("delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Rolled.
         /// </summary>
         public static string dice_rolled {
@@ -2091,6 +2100,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string ok {
             get {
                 return ResourceManager.GetString("ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Open in new tab.
+        /// </summary>
+        public static string open_in_new_tab {
+            get {
+                return ResourceManager.GetString("open_in_new_tab", resourceCulture);
             }
         }
         

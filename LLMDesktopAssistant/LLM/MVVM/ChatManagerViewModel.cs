@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	public class AvailableChatViewModel : NotifyPropertyChanged
 	{
 		public required int Id { get; init; }
+		public required ICommand OpenInNewTabCommand { get; init; }
 		public required ICommand DeleteCommand { get; init; }
 
 		private string _title = string.Empty;
@@ -91,20 +92,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 				return hash1 + hash2 * 1566083941;
 			}
-		}
-
-
-
-		public static AvailableChatViewModel CreateFromInfo(ChatInfo info, ICommand deleteCommand)
-		{
-			return new AvailableChatViewModel
-			{
-				Id = info.Id,
-				DeleteCommand = deleteCommand,
-				Title = info.Title,
-				Topic = info.Topic,
-				LastModifiedAt = info.LastModifiedAt
-			};
 		}
 	}
 
@@ -368,7 +355,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public ChatManagerViewModel(IChatManagementService chatManager)
 		{
 			ChatManager = chatManager;
-			CreateConversationCommand = new RelayCommand(CreateConversation);
+			CreateConversationCommand = new RelayCommand(CreateChat);
 
 			Initialize();
 		}
@@ -376,13 +363,17 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		private void Initialize()
 		{
 			ChatManager.ClearEmptyChats();
-			LoadConversations();
-			CreateConversation();
+			LoadChats();
+			CreateChat();
 		}
 
 		private AvailableChatViewModel CreateAvailableChatViewModel(ChatInfo info)
 		{
 			AvailableChatViewModel newAvailableChatViewModel = null!;
+			var openInNewTabCommand = new RelayCommand(() =>
+			{
+				OpenChat(newAvailableChatViewModel);
+			});
 			var deleteCommand = new RelayCommand(() =>
 			{
 				var openedChats = OpenedChats.Where(o => o.SelectedAvailable?.Id == info.Id).ToList();
@@ -395,41 +386,53 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				AvailableChats.Remove(newAvailableChatViewModel);
 
 				if (OpenedChats.Count == 0)
-					CreateConversation();
+					CreateChat();
 			});
-			newAvailableChatViewModel = AvailableChatViewModel.CreateFromInfo(info, deleteCommand);
+			newAvailableChatViewModel = new AvailableChatViewModel
+			{
+				Id = info.Id,
+				OpenInNewTabCommand = openInNewTabCommand,
+				DeleteCommand = deleteCommand,
+				Title = info.Title,
+				Topic = info.Topic,
+				LastModifiedAt = info.LastModifiedAt
+			};
 			return newAvailableChatViewModel;
 		}
 
-		private void LoadConversations()
+		private void LoadChats()
 		{
 			AvailableChats.Clear();
 			foreach (var chat in ChatManager.GetChats().OrderByDescending(c => c.LastModifiedAt))
 				AvailableChats.Add(CreateAvailableChatViewModel(chat));
 		}
 
-		private void CreateConversation()
+		private void OpenChat(AvailableChatViewModel chat)
 		{
-			var newChat = ChatManager.CreateChat(LocalizationManager.LocalizeStatic("new_chat"));
-			var newAvailableChat = CreateAvailableChatViewModel(newChat);
-			AvailableChats.Insert(0, newAvailableChat);
-
 			OpenedChatViewModel newOpenedChat = null!;
 			newOpenedChat = new OpenedChatViewModel
 			{
 				ChatManager = ChatManager,
-				SelectedAvailable = newAvailableChat,
+				SelectedAvailable = chat,
 				CloseChatCommand = new RelayCommand(() =>
 				{
 					OpenedChats.Remove(newOpenedChat);
 					newOpenedChat.Dispose();
 
 					if (OpenedChats.Count == 0)
-						CreateConversation();
+						CreateChat();
 				})
 			};
 			OpenedChats.Add(newOpenedChat);
 			SelectedChat = newOpenedChat;
+		}
+
+		private void CreateChat()
+		{
+			var newChat = ChatManager.CreateChat(LocalizationManager.LocalizeStatic("new_chat"));
+			var newAvailableChat = CreateAvailableChatViewModel(newChat);
+			AvailableChats.Insert(0, newAvailableChat);
+			OpenChat(newAvailableChat);
 		}
 	}
 }

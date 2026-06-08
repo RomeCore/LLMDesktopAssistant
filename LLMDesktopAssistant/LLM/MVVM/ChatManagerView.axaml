@@ -53,7 +53,14 @@
 												 FontSize="11"/>
 
 									<StackPanel Orientation="Horizontal"
-															HorizontalAlignment="Right">
+															HorizontalAlignment="Right"
+															Spacing="4">
+										
+										<Button Command="{Binding OpenInNewTabCommand}"
+														Classes="SmallIconButton"
+														ToolTip.Tip="{loc:Loc open_in_new_tab}">
+											<ico:MaterialIcon Kind="TabPlus"/>
+										</Button>
 										
 										<Button Command="{Binding DeleteCommand}"
 														Classes="SmallIconButton"
@@ -128,7 +135,7 @@
 					<Button Command="{Binding CreateConversationCommand}"
 									Classes="IconButton"
 									ToolTip.Tip="{loc:Loc new_chat}">
-						<ico:MaterialIcon Kind="ChatPlus"/>
+						<ico:MaterialIcon Kind="MessagePlus"/>
 					</Button>
 					
 					<ToggleButton IsChecked="{Binding #ChatSplitView.IsPaneOpen}"

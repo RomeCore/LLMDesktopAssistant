@@ -1524,4 +1524,10 @@
   <data name="chat_manager_no_messages_to_rename_desc" xml:space="preserve">
     <value>Chat has no messages</value>
   </data>
+  <data name="open_in_new_tab" xml:space="preserve">
+    <value>Open in new tab</value>
+  </data>
+  <data name="delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
 </root>

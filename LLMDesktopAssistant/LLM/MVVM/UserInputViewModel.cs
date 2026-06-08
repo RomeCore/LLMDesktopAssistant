@@ -148,15 +148,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public ICommand OpenSettingsCommand { get; }
 
 		/// <summary>
-		/// Command to open MCP manager.
-		/// </summary>
-		public ICommand OpenMCPManagerCommand { get; }
-		/// <summary>
-		/// Command to open prompt manager.
-		/// </summary>
-		public ICommand OpenPromptManagerCommand { get; }
-
-		/// <summary>
 		/// Command to open attachments manager.
 		/// </summary>
 		public ICommand OpenAttachmentsManagerCommand { get; }
@@ -265,18 +256,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				var viewModel = new SettingsCategoryViewModel<ChatSettings>(cs => new ChatSettingsViewModel(cs, Chat),
 					newSettings => Chat.Settings = newSettings, Chat.Settings.Id);
-				await DialogManager.ShowDialogAsync(viewModel);
-			});
-
-			OpenMCPManagerCommand = new AsyncRelayCommand(async () =>
-			{
-				var viewModel = new MCPManagerViewModel();
-				await DialogManager.ShowDialogAsync(viewModel);
-			});
-
-			OpenPromptManagerCommand = new AsyncRelayCommand(async () =>
-			{
-				var viewModel = new PromptManagerViewModel();
 				await DialogManager.ShowDialogAsync(viewModel);
 			});
 
