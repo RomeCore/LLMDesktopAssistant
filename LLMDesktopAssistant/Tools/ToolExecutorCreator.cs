@@ -144,7 +144,7 @@ namespace LLMDesktopAssistant.Tools
 							continue;
 
 						var type = parameters[kvp.Value].ParameterType;
-						inParams[kvp.Value] = JsonSerializer.Deserialize(arg, type)!;
+						inParams[kvp.Value] = ToolArgsJsonNodeConverter.Convert(arg, type)!;
 					}
 
 					if (toolExecutionContextMapping != -1)

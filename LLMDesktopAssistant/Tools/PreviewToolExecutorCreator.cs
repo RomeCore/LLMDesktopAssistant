@@ -111,7 +111,7 @@ namespace LLMDesktopAssistant.Tools
 							continue;
 
 						var type = parameters[paramIndex].ParameterType;
-						inParams[paramIndex] = JsonSerializer.Deserialize(arg, type);
+						inParams[paramIndex] = ToolArgsJsonNodeConverter.Convert(arg, type);
 					}
 
 					if (toolExecutionContextMapping != -1)
