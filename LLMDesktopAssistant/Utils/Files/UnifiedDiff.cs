@@ -10,10 +10,13 @@ namespace LLMDesktopAssistant.Utils.Files
 	/// </summary>
 	public static class UnifiedDiff
 	{
-		public static string? Compute(string oldText, string newText, int contextLines = 3)
+		public static HunkGroups Compute(string oldText, string newText, int contextLines = 3)
 		{
 			if (oldText == newText)
-				return null;
+				return new HunkGroups { Groups = [] };
+
+			var result = new HunkGroups { Groups = [] };
+			HunkGroup currentGroup = default;
 
 			var oldLines = SplitLines(oldText);
 			var newLines = SplitLines(newText);
@@ -59,9 +62,6 @@ namespace LLMDesktopAssistant.Utils.Files
 
 			ops.Reverse();
 
-			// Group into hunks with context
-			var sb = new StringBuilder();
-
 			int lastOld = -1, lastNew = -1;
 			int hunkStart = 0;
 			var hunkLines = new List<(char kind, string text)>();
@@ -83,12 +83,22 @@ namespace LLMDesktopAssistant.Utils.Files
 					else { oldCount++; newCount++; }
 				}
 
-				sb.AppendLine($"@@ -{oldStart},{oldCount} +{newStart},{newCount} @@");
+				currentGroup = new HunkGroup
+				{
+					Lines = [],
+					OldStart = oldStart,
+					OldCount = oldCount,
+					NewStart = newStart,
+					NewCount = newCount
+				};
+				result.Groups.Add(currentGroup);
 
 				foreach (var (kind, text) in hunkLines)
-					sb.AppendLine($"{kind}{text}");
-
-				sb.AppendLine();
+					currentGroup.Lines.Add(new HunkLine
+					{
+						Kind = kind,
+						Content = text
+					});
 			}
 
 			foreach (var (oldLine, newLine, kind, text) in ops)
@@ -148,7 +158,7 @@ namespace LLMDesktopAssistant.Utils.Files
 			if (hunkLines.Count > 0)
 				FlushHunk();
 
-			return sb.Length > 0 ? sb.ToString().TrimEnd() : null;
+			return result;
 		}
 
 		private static string[] SplitLines(string text)
