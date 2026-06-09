@@ -1,7 +1,4 @@
-using System.ComponentModel;
 using System.Text;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
@@ -22,14 +19,84 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(WriteFile,
+			AddTool(WriteFile, WriteFileStream, WriteFilePreview,
 				new ToolInitializationInfo
 				{
 					Name = "fs-write_file",
 					Description = "Writes text content to a file inside working directory.",
 					Category = "filesystem",
-					AskForConfirmation = true
+					AskForConfirmation = true,
+					DefaultDangerLevel = ToolDangerLevel.Safe
 				});
+		}
+
+		public StreamingToolArgumentsAnalysisResult WriteFileStream(
+			string? path,
+			string? content,
+			bool append = false)
+		{
+			var fileName = Path.GetFileName(path) ?? string.Empty;
+			int lines = 0;
+			foreach (var line in (content ?? string.Empty).EnumerateLines())
+				lines++;
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-write_file_streaming_status", $"**{fileName}**", lines)
+			};
+		}
+
+		public PreviewToolExecutionResult? WriteFilePreview(
+			string path,
+			string content,
+			bool append = false)
+		{
+			try
+			{
+				var fullPath = _fileAccess.AccessPath(path);
+				var fileName = Path.GetFileName(fullPath);
+				var fileExisted = File.Exists(fullPath);
+
+				if (fileExisted)
+				{
+					try
+					{
+						var oldContent = File.ReadAllText(fullPath);
+						var diff = UnifiedDiff.Compute(oldContent, content, contextLines: 0);
+						int removed = 0, added = 0;
+						foreach (var group in diff)
+						{
+							if (group.OldCount != -1)
+								removed += group.OldCount;
+							if (group.NewCount != -1)
+								added += group.NewCount;
+						}
+						return new PreviewToolExecutionResult
+						{
+							StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
+							StatusTitle = $"**{fileName}** *(-{removed} +{added})*",
+							DangerLevel = ToolDangerLevel.Warning
+						};
+					}
+					catch
+					{
+						return null;
+					}
+				}
+
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
+					StatusTitle = $"**{fileName}**"
+				};
+			}
+			catch (Exception ex)
+			{
+				return new PreviewToolExecutionResult
+				{
+					InterruptingContent = $"Error writing file: {ex.Message}",
+					InterruptingSuccess = false
+				};
+			}
 		}
 
 		public ReactiveToolResult WriteFile(

@@ -1780,6 +1780,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} ({1} lines...).
+        /// </summary>
+        public static string fs_write_file_streaming_status {
+            get {
+                return ResourceManager.GetString("fs-write_file_streaming_status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на General.
         /// </summary>
         public static string general {

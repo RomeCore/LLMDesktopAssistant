@@ -1533,4 +1533,7 @@
   <data name="file_contains_secrets" xml:space="preserve">
     <value>{0} (contains secrets)</value>
   </data>
+  <data name="fs-write_file_streaming_status" xml:space="preserve">
+    <value>{0} ({1} lines...)</value>
+  </data>
 </root>

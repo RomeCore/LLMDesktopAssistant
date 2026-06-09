@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>A ReactiveToolResult with the process exit code.</returns>
 		protected Task<ReactiveToolResult> RunAsync(
-			TerminalRunParameters parameters,
+			TerminalToolRunParameters parameters,
 			ToolExecutionContext context,
 			CancellationToken cancellationToken = default)
 		{
@@ -39,7 +39,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 		}
 
 		private async Task<ReactiveToolResult> RunNonTerminalAsync(
-			TerminalRunParameters parameters,
+			TerminalToolRunParameters parameters,
 			ToolExecutionContext context,
 			CancellationToken cancellationToken = default)
 		{
@@ -75,61 +75,89 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 				args = [];
 			}
 
-			var result = await ShellExecutor.ExecuteProcessAsync(process, string.Join(" ", args), workDir, cancellationToken);
-
-			var resultBuilder = new StringBuilder();
-			resultBuilder.Append(result.StdOut);
-			if (!string.IsNullOrEmpty(result.StdErr))
+			var result = new ReactiveToolResult
 			{
-				resultBuilder.AppendLine().AppendLine("STDERR:");
-				resultBuilder.Append(result.StdErr);
-			}
+				StatusIcon = parameters.StatusIcon,
+				StatusTitle = parameters.StatusTitle
+			};
 
-			return ReactiveToolResult.Create(result.Success, resultBuilder.ToString());
+			_ = Task.Run(async () =>
+			{
+				var executionResult = await ShellExecutor.ExecuteProcessAsync(process, string.Join(" ", args), workDir, cancellationToken);
+
+				var resultBuilder = new StringBuilder();
+				resultBuilder.Append(executionResult.StdOut);
+				if (!string.IsNullOrEmpty(executionResult.StdErr))
+				{
+					resultBuilder.AppendLine().AppendLine("STDERR:");
+					resultBuilder.Append(executionResult.StdErr);
+				}
+
+				result.ResultContent = resultBuilder.ToString();
+				result.CompleteWithSuccess();
+			}, cancellationToken);
+
+			return result;
 		}
 
 		private async Task<ReactiveToolResult> RunInTerminalAsync(
-			TerminalRunParameters parameters,
+			TerminalToolRunParameters parameters,
 			ToolExecutionContext context,
 			CancellationToken cancellationToken = default)
 		{
 			var message = context.Message;
 
-			// Create the terminal view model
-			var viewModel = new TerminalAdditionalViewModel
+			var result = new ReactiveToolResult
 			{
-				ProcessName = parameters.ProcessName ?? string.Empty,
-				Arguments = parameters.Arguments ?? [],
-				Command = parameters.Command ?? string.Empty,
-				WorkingDirectory = parameters.WorkingDirectory,
+				StatusIcon = parameters.StatusIcon,
+				StatusTitle = parameters.StatusTitle
 			};
 
-			// Add it to the message so it renders in the UI
-			message.AdditionalViewModels.Add(viewModel);
+			_ = Task.Run(async () =>
+			{
+				var viewModel = new TerminalAdditionalViewModel
+				{
+					ProcessName = parameters.ProcessName ?? string.Empty,
+					Arguments = parameters.Arguments ?? [],
+					Command = parameters.Command ?? string.Empty,
+					WorkingDirectory = parameters.WorkingDirectory,
+				};
 
-			int exitCode;
-			try
-			{
-				// Wait for the process to complete
-				exitCode = await viewModel.ExitCodeTask.WaitAsync(cancellationToken);
-			}
-			catch (OperationCanceledException)
-			{
-				// User cancelled or token was cancelled
-				viewModel.Cancel();
-				return ReactiveToolResult.CreateError(viewModel.Output ?? string.Empty);
-			}
+				message.AdditionalViewModels.Add(viewModel);
 
-			// Return result based on exit code
-			if (exitCode == 0)
-			{
-				return ReactiveToolResult.CreateSuccess(viewModel.Output ?? string.Empty);
-			}
-			else
-			{
-				return ReactiveToolResult.CreateError(viewModel.Output +
-					$"\nProcess exited with code {exitCode}. Check terminal output above for details.");
-			}
+				int exitCode;
+				try
+				{
+					// Wait for the process to complete
+					exitCode = await viewModel.ExitCodeTask.WaitAsync(cancellationToken);
+				}
+				catch (OperationCanceledException)
+				{
+					// User cancelled or token was cancelled
+					viewModel.Cancel();
+					result.ResultContent = viewModel.Output ?? string.Empty;
+					result.CompleteWithError();
+					return;
+				}
+
+				// Return result based on exit code
+				if (exitCode == 0)
+				{
+					result.ResultContent = viewModel.Output ?? string.Empty;
+					result.CompleteWithSuccess();
+					return;
+				}
+				else
+				{
+					result.ResultContent = viewModel.Output +
+						$"\nProcess exited with code {exitCode}. Check terminal output above for details.";
+					result.CompleteWithSuccess();
+					return;
+				}
+			}, cancellationToken);
+
+			return result;
+
 		}
 	}
 }

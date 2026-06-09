@@ -1,10 +1,23 @@
+using Material.Icons;
+using LLMDesktopAssistant.Tools;
+
 namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 {
 	/// <summary>
 	/// Parameters for running a process in a terminal.
 	/// </summary>
-	public class TerminalRunParameters
+	public class TerminalToolRunParameters
 	{
+		/// <summary>
+		/// The status icon to set into <see cref="ReactiveToolResult"/>.
+		/// </summary>
+		public MaterialIconKind? StatusIcon { get; init; }
+
+		/// <summary>
+		/// The status title to set into <see cref="ReactiveToolResult"/>.
+		/// </summary>
+		public string? StatusTitle { get; init; }
+
 		/// <summary>
 		/// Whether to run the terminal with interactive UI or just run an external process.
 		/// If true, a full interactive shell is launched. If false, just runs the command.

@@ -3,7 +3,6 @@ using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.Utils.Files
 {
-
 	/// <summary>
 	/// Unified diff generator using LCS (Longest Common Subsequence).
 	/// Produces output similar to `git diff --no-color` — no external dependencies.
@@ -16,7 +15,7 @@ namespace LLMDesktopAssistant.Utils.Files
 				return new HunkGroups { Groups = [] };
 
 			var result = new HunkGroups { Groups = [] };
-			HunkGroup currentGroup = default;
+			HunkGroup currentGroup;
 
 			var oldLines = SplitLines(oldText);
 			var newLines = SplitLines(newText);

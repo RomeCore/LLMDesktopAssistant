@@ -101,7 +101,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					command = $"python \"{pyFile}\"";
 
 				// Run in terminal
-				return await RunAsync(new TerminalRunParameters
+				return await RunAsync(new TerminalToolRunParameters
 				{
 					RunTerminal = runTerminal,
 					Command = command,
@@ -142,7 +142,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			else
 				command = shell;
 
-			return RunAsync(new TerminalRunParameters
+			return RunAsync(new TerminalToolRunParameters
 			{
 				RunTerminal = runTerminal,
 				Command = command,
