@@ -67,6 +67,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						withLineNumbers: false);
 
 					var secrets = scanner.ScanLines(lines, filename: displayEntryName, verify: false);
+
 					/*
 					var sw = new Stopwatch();
 					sw.Start();
@@ -75,6 +76,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					var timePerLine = elapsedTime / lines.Count;
 					Log.Information("Scanned {Lines} lines in {TotalTime:0.00} ms, time per line: {TimePerLine:0.00} ms, detectors count: {DetectorCount}", lines.Count, elapsedTime, timePerLine, scanner.Detectors.Count);
 					*/
+
 					if (secrets.HasSecrets)
 					{
 						return new PreviewToolExecutionResult
