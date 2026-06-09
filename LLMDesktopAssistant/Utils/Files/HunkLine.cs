@@ -1,5 +1,8 @@
 ﻿namespace LLMDesktopAssistant.Utils.Files
 {
+	/// <summary>
+	/// Represents the hunk diff line, computed by <see cref="UnifiedDiff"/>.
+	/// </summary>
 	public readonly struct HunkLine
 	{
 		/// <summary>
@@ -14,6 +17,16 @@
 
 		/// <summary>
 		/// Returns a string representation of the line, suitable for use in a unified diff.
+		/// The output format (unified diff):
+		/// <code>
+		/// {Kind}{Content}
+		/// </code>
+		/// Examples:
+		/// <code>
+		///  Context line
+		/// -Removed line
+		/// +Added line
+		/// </code>
 		/// </summary>
 		public readonly override string ToString() => $"{Kind}{Content}";
 	}

@@ -3,9 +3,14 @@ using System.Text;
 
 namespace LLMDesktopAssistant.Utils.Files
 {
+	/// <summary>
+	/// Represents the diff hunk groups collection, computed by <see cref="UnifiedDiff"/>.
+	/// </summary>
 	public readonly struct HunkGroups : IEnumerable<HunkGroup>
 	{
 		public required readonly List<HunkGroup> Groups { get; init; }
+
+		public readonly bool HasGroups => Groups?.Count > 0;
 
 		public IEnumerator<HunkGroup> GetEnumerator()
 		{
@@ -17,6 +22,20 @@ namespace LLMDesktopAssistant.Utils.Files
 			return ((IEnumerable)Groups).GetEnumerator();
 		}
 
+		/// <summary>
+		/// Returns the concatenated strings of <see cref="Groups"/>, delimited by double newlines. <br/>
+		/// The output format (unified diff):
+		/// <code>
+		/// @@ -1,2 +3,4 @@
+		///  Some line before change...
+		/// -Removed line
+		/// +Added line
+		///  Some context line after change...
+		/// 
+		/// @@ -5,6 +7,8 @@
+		///  The next group goes here...
+		/// </code>
+		/// </summary>
 		public override string ToString()
 		{
 			if (Groups is null || Groups.Count == 0)

@@ -1,8 +1,10 @@
 ﻿using System.Text;
-using DocumentFormat.OpenXml.InkML;
 
 namespace LLMDesktopAssistant.Utils.Files
 {
+	/// <summary>
+	/// Represents the diff hunk group of lines, computed by <see cref="UnifiedDiff"/>.
+	/// </summary>
 	public readonly struct HunkGroup
 	{
 		public required readonly int OldStart { get; init; }
@@ -15,6 +17,17 @@ namespace LLMDesktopAssistant.Utils.Files
 
 		public required readonly List<HunkLine> Lines { get; init; }
 
+		/// <summary>
+		/// Returns the unified diff for this group, including header (@@ ... @@). <br/>
+		/// The output format (unified diff):
+		/// <code>
+		/// @@ -1,2 +3,4 @@
+		///  Some line before change...
+		/// -Removed line
+		/// +Added line
+		///  Some context line after change...
+		/// </code>
+		/// </summary>
 		public override string ToString()
 		{
 			if (Lines is null || Lines.Count == 0)
@@ -26,9 +39,9 @@ namespace LLMDesktopAssistant.Utils.Files
 			{
 				var line = Lines[i];
 				if (i == Lines.Count - 1)
-					sb.Append($"{line.Kind}{line.Content}");
+					sb.Append(line.ToString());
 				else
-					sb.AppendLine($"{line.Kind}{line.Content}");
+					sb.AppendLine(line.ToString());
 			}
 			return sb.ToString();
 		}

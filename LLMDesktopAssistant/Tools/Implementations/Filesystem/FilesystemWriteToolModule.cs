@@ -73,11 +73,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				if (!append && fileExisted && oldContent != null)
 				{
 					var diff = UnifiedDiff.Compute(oldContent, content);
-					if (diff != null)
+					if (diff.HasGroups)
 					{
 						output.AppendLine();
 						output.AppendLine("Changes:");
-						output.AppendLine(diff);
+						output.AppendLine(diff.ToString());
 					}
 				}
 
