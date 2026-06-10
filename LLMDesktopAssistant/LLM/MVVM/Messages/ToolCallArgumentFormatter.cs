@@ -111,7 +111,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 						"python" => "python",
 						"shell" => "bash",
 						"lua" => "lua",
-						_ => ""
+						_ => key ?? string.Empty
 					};
 
 					return "\n" + Indent($"```{lang}\n{raw}\n```");

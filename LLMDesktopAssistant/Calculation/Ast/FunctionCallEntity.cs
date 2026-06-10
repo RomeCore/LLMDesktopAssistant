@@ -43,6 +43,7 @@ namespace LLMDesktopAssistant.Calculation.Ast
 					"acosh" or "arcosh" or "arch" => Math.Acosh(args[0].Real),
 
 					"tan" => Complex.Tan(args[0]),
+					"cot" or "ctg" => 1 / Complex.Tan(args[0]),
 					"tanh" or "th" => Complex.Tanh(args[0]),
 					"atan" or "arctan" => Complex.Atan(args[0]),
 					"atanh" or "artanh" or "arth" => Math.Atanh(args[0].Real),
@@ -50,6 +51,7 @@ namespace LLMDesktopAssistant.Calculation.Ast
 					"sind" => Complex.Sin(args[0] * (Math.PI / 180.0)),
 					"cosd" => Complex.Cos(args[0] * (Math.PI / 180.0)),
 					"tand" => Complex.Tan(args[0] * (Math.PI / 180.0)),
+					"cotd" => 1 / Complex.Tan(args[0] * (Math.PI / 180.0)),
 					"asind" => Complex.Asin(args[0]) * (180.0 / Math.PI),
 					"acosd" => Complex.Acos(args[0]) * (180.0 / Math.PI),
 					"atand" => Complex.Atan(args[0]) * (180.0 / Math.PI),
@@ -58,6 +60,7 @@ namespace LLMDesktopAssistant.Calculation.Ast
 					"log" when args.Length >= 2 => Complex.Log(args[1], args[0].Real),
 					"log" => Complex.Log10(args[0]),
 					"log2" => Complex.Log(args[0], 2),
+					"log10" => Complex.Log(args[0], 10),
 					"logb" => Complex.Log(args[1], args[0].Real),
 
 					"exp" => Complex.Exp(args[0]),
@@ -65,7 +68,7 @@ namespace LLMDesktopAssistant.Calculation.Ast
 					"pow" => Complex.Pow(args[0], args[1]),
 
 					"abs" => Complex.Abs(args[0]),
-					"mag" => args[0].Magnitude,
+					"mag" or "magnitude" => args[0].Magnitude,
 					"conj" or "conjugate" => Complex.Conjugate(args[0]),
 
 					"sign" or "signum" or "sgn" => new Complex(Math.Sign(args[0].Real), 0),
@@ -89,15 +92,8 @@ namespace LLMDesktopAssistant.Calculation.Ast
 					"compgamma" => ComputeComplexGamma(args[0]),
 					"factorial" => new Complex(ComputeFactorial((int)args[0].Real), 0),
 
-					_ => new Complex(double.NaN, double.NaN)
+					_ => throw new MathEvaluationException($"Unknown function '{Name}'.")
 				};
-
-				if (double.IsNaN(complexResult.Real) && double.IsNaN(complexResult.Imaginary)
-					&& lowerName is not ("mag" or "sign" or "ceil" or "floor" or "round" or "trunc"
-										or "cbrt" or "atan2" or "mod" or "min" or "max" or "gamma" or "factorial"))
-				{
-					throw new MathEvaluationException($"Unknown function '{Name}'.");
-				}
 
 				return new ConstantEntity(complexResult);
 			}
@@ -124,7 +120,7 @@ namespace LLMDesktopAssistant.Calculation.Ast
 			{
 				double a = Arguments[2].Evaluate(ctx).ToComplexOrThrow().Real;
 				double b = Arguments[3].Evaluate(ctx).ToComplexOrThrow().Real;
-				double value = SimpsonIntegral(Arguments[0], variable, a, b, ctx);
+				double value = NumericalIntegration.Simpson(Arguments[0], variable, a, b, ctx);
 				return new ConstantEntity(new Complex(value, 0));
 			}
 
@@ -148,41 +144,8 @@ namespace LLMDesktopAssistant.Calculation.Ast
 			else
 				return this; // symbolic
 
-			const double h = 1e-8;
-			double fp = EvaluateAt(Arguments[0], variable, x0 + h, ctx);
-			double fm = EvaluateAt(Arguments[0], variable, x0 - h, ctx);
-			return new ConstantEntity(new Complex((fp - fm) / (2 * h), 0));
-		}
-
-		private static double SimpsonIntegral(MathEntity f, string var, double a, double b, MathEvaluationContext ctx)
-		{
-			const int steps = 1000;
-			double step = (b - a) / steps;
-			double sum = 0;
-			for (int i = 0; i < steps; i++)
-			{
-				double x0 = a + i * step;
-				double x1 = x0 + step;
-				double xm = (x0 + x1) / 2;
-				double f0 = EvaluateAt(f, var, x0, ctx);
-				double fm = EvaluateAt(f, var, xm, ctx);
-				double f1 = EvaluateAt(f, var, x1, ctx);
-				sum += step / 6 * (f0 + 4 * fm + f1);
-			}
-			return sum;
-		}
-
-		private static double EvaluateAt(MathEntity expr, string var, double val, MathEvaluationContext ctx)
-		{
-			ctx.PushScope(new Dictionary<string, MathEntity> { { var, new ConstantEntity(new Complex(val, 0)) } });
-			try
-			{
-				return expr.Evaluate(ctx).ToComplexOrThrow().Real;
-			}
-			finally
-			{
-				ctx.PopScope();
-			}
+			return new ConstantEntity(new Complex(
+				NumericalDifferentiation.CentralDifference(Arguments[0], variable, x0, ctx), 0));
 		}
 
 		private static double ComputeGamma(double x)
