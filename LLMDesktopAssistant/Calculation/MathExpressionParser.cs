@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -151,11 +151,17 @@ namespace LLMDesktopAssistant.Calculation
 				});
 
 			builder.CreateRule("op_mul")
-				.OneOrMoreSeparated(b => b.Rule("op_pre"), b => b.LiteralChoice("*", "/"), includeSeparatorsInResult: true)
+				.OneOrMoreSeparated(b => b.Rule("op_pre"), b => b.LiteralChoice("*", "/", "%"), includeSeparatorsInResult: true)
 
 				.TransformFoldLeft<MathEntity, string, MathEntity>((l, op, r) =>
 				{
-					return op == "*" ? new BinaryOpEntity(BinaryOpKind.Multiply, l, r) : new BinaryOpEntity(BinaryOpKind.Divide, l, r);
+					return op switch
+					{
+						"*" => new BinaryOpEntity(BinaryOpKind.Multiply, l, r),
+						"/" => new BinaryOpEntity(BinaryOpKind.Divide, l, r),
+						"%" => new BinaryOpEntity(BinaryOpKind.Mod, l, r),
+						_ => throw new InvalidOperationException($"Unknown operator: {op}")
+					};
 				});
 
 			builder.CreateRule("op_add")

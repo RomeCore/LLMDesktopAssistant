@@ -2,14 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Spreadsheet;
+using LLMDesktopAssistant.Calculation;
+using LLMDesktopAssistant.Calculation.Ast;
 using LLMDesktopAssistant.Services;
 using RCLargeLanguageModels.Tools;
 using RCParsing;
-using LLMDesktopAssistant.Calculation;
-using LLMDesktopAssistant.Calculation.Ast;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -81,7 +83,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			try
 			{
-				var result = MathExpressionParser.Parse(expression).ToComplexOrThrow();
+				var expressionEntity = MathExpressionParser.Parse(expression);
+				var evalContext = new MathEvaluationContext();
+				var resultEntity = expressionEntity.Evaluate(evalContext);
+				var result = resultEntity.ToComplexOrThrow();
 				var formatted = string.Empty;
 
 				if (result.Imaginary != 0)
@@ -103,17 +108,27 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				return new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.Abacus,
-					StatusTitle = $"`{expression}`",
+					StatusTitle = $"`{expression}` = `{formatted}`",
 					ResultContent = formatted
 				}.CompleteWithSuccess();
 			}
 			catch (MathEvaluationException mex)
 			{
-				return ReactiveToolResult.CreateError("Error evaluating expression: " + mex.Message);
+				return new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Abacus,
+					StatusTitle = $"`{expression}`",
+					ResultContent = "Error evaluating expression: " + mex.Message
+				}.CompleteWithError();
 			}
 			catch (ParsingException pex)
 			{
-				return ReactiveToolResult.CreateError("Error parsing expression: " + pex.Message);
+				return new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Abacus,
+					StatusTitle = $"`{expression}`",
+					ResultContent = "Error parsing expression: " + pex.Message
+				}.CompleteWithError();
 			}
 		}
 
@@ -139,7 +154,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 				if (roots.Length == 0)
 				{
-					return ReactiveToolResult.CreateError("No roots found in the specified range.");
+					return new ReactiveToolResult
+					{
+						StatusIcon = Material.Icons.MaterialIconKind.Abacus,
+						StatusTitle = $"`{equation}`",
+						ResultContent = "No roots found in the specified range."
+					}.CompleteWithError();
 				}
 
 				var formatted = string.Join(", ", roots.Select(r => r.ToString("G")));
@@ -152,11 +172,21 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 			catch (MathEvaluationException mex)
 			{
-				return ReactiveToolResult.CreateError("Error evaluating expression: " + mex.Message);
+				return new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Abacus,
+					StatusTitle = $"`{equation}`",
+					ResultContent = "Error evaluating equation: " + mex.Message
+				}.CompleteWithError();
 			}
 			catch (ParsingException pex)
 			{
-				return ReactiveToolResult.CreateError("Error parsing expression: " + pex.Message);
+				return new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Abacus,
+					StatusTitle = $"`{equation}`",
+					ResultContent = "Error parsing equation: " + pex.Message
+				}.CompleteWithError();
 			}
 		}
 	}
