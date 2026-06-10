@@ -169,8 +169,8 @@
 			</Flyout>
 		</Button.Flyout>
 
-		<StackPanel Orientation="Horizontal"
-								Spacing="4">
+		<WrapPanel Orientation="Horizontal"
+							 ItemSpacing="4">
 				
 			<Panel Width="28" Height="28">
 					
@@ -347,7 +347,7 @@
 
 			</StackPanel>
 				
-		</StackPanel>
+		</WrapPanel>
 
 	</Button>
 

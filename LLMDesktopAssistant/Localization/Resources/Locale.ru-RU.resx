@@ -1545,4 +1545,19 @@
   <data name="new_temporary_chat" xml:space="preserve">
     <value>Новый временный чат</value>
   </data>
+  <data name="math_solve_status_no_roots" xml:space="preserve">
+    <value>{0} *(без корней)*</value>
+  </data>
+  <data name="math_solve_status" xml:space="preserve">
+    <value>{0} *({1} корней)*</value>
+  </data>
+  <data name="fs-edit_changes_applied_none" xml:space="preserve">
+    <value>{0} (без изменений)</value>
+  </data>
+  <data name="fs-edit_changes_applied" xml:space="preserve">
+    <value>{0} ({1} изменений)</value>
+  </data>
+  <data name="math-solve_complex" xml:space="preserve">
+    <value>Решить комплексное уравнение</value>
+  </data>
 </root>

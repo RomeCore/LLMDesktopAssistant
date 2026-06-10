@@ -159,6 +159,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				File.WriteAllText(fullPath, newContent);
 
+				var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 10);
+
 				var changeReport = BuildChangeReport(
 					beforeDeletionLines,
 					beforeInsertionLines,

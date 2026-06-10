@@ -1545,4 +1545,19 @@
   <data name="new_temporary_chat" xml:space="preserve">
     <value>New temporary chat</value>
   </data>
+  <data name="math_solve_status_no_roots" xml:space="preserve">
+    <value>{0} *(no roots)*</value>
+  </data>
+  <data name="math_solve_status" xml:space="preserve">
+    <value>{0} *({1} roots)*</value>
+  </data>
+  <data name="fs-edit_changes_applied_none" xml:space="preserve">
+    <value>{0} *(no changes)*</value>
+  </data>
+  <data name="fs-edit_changes_applied" xml:space="preserve">
+    <value>{0} ({1} changes)</value>
+  </data>
+  <data name="math-solve_complex" xml:space="preserve">
+    <value>Solve complex equation</value>
+  </data>
 </root>

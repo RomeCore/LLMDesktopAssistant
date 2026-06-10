@@ -1546,6 +1546,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} ({1} changes).
+        /// </summary>
+        public static string fs_edit_changes_applied {
+            get {
+                return ResourceManager.GetString("fs-edit_changes_applied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} *(no changes)*.
+        /// </summary>
+        public static string fs_edit_changes_applied_none {
+            get {
+                return ResourceManager.GetString("fs-edit_changes_applied_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на {0} change(s) ({1}).
         /// </summary>
         public static string fs_edit_changes_count {
@@ -1884,6 +1902,33 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string math_solve {
             get {
                 return ResourceManager.GetString("math-solve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Solve complex equation.
+        /// </summary>
+        public static string math_solve_complex {
+            get {
+                return ResourceManager.GetString("math-solve_complex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} *({1} roots)*.
+        /// </summary>
+        public static string math_solve_status {
+            get {
+                return ResourceManager.GetString("math_solve_status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} *(no roots)*.
+        /// </summary>
+        public static string math_solve_status_no_roots {
+            get {
+                return ResourceManager.GetString("math_solve_status_no_roots", resourceCulture);
             }
         }
         

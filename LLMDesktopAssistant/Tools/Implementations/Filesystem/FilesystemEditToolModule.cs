@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml.Bibliography;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
@@ -104,14 +105,32 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var normalizedContent = NormalizeLineEndings(originalContent);
 				var fileLines = normalizedContent.Split('\n').ToList();
 
+				string? newContent, errorMessage;
+				int countOfChanges;
 				if (useRegex)
-				{
-					return EditWithRegex(fullPath, fileName, path, match, text, operation, occurrence, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
-				}
+					(newContent, errorMessage, countOfChanges) = EditWithRegex(fullPath, fileName, path, match, text, operation, occurrence, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
 				else
+					(newContent, errorMessage, countOfChanges) = EditWithString(fullPath, fileName, path, match, text, operation, occurrence, ignoreWhitespace, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
+
+				if (newContent == null)
 				{
-					return EditWithString(fullPath, fileName, path, match, text, operation, occurrence, ignoreWhitespace, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
+					return new ReactiveToolResult
+					{
+						StatusIcon = Material.Icons.MaterialIconKind.FileDocumentError,
+						StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{fileName}**"),
+						ResultContent = errorMessage ?? "No changes were made to the file. The specified match was not found."
+					}.CompleteWithSuccess();
 				}
+
+				File.WriteAllText(fullPath, newContent);
+				var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 10);
+
+				return new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
+					StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied", $"**{fileName}**", countOfChanges),
+					ResultContent = diff.ToString()
+				}.CompleteWithSuccess();
 			}
 			catch (OperationCanceledException)
 			{
@@ -125,7 +144,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 		#region Plain-Text Mode
 
-		private ReactiveToolResult EditWithString(
+		private (string?, string?, int) EditWithString(
 			string fullPath,
 			string fileName,
 			string path,
@@ -155,34 +174,21 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
-			// Find all occurrences of matchLines in fileLines
 			var foundIndices = FindSequenceIndices(fileLines, matchLines, ignoreWhitespace, comparison, cancellationToken);
 
 			if (foundIndices.Count == 0)
-			{
-				var noChangeResult = new ReactiveToolResult
-				{
-					StatusIcon = Material.Icons.MaterialIconKind.Information,
-					StatusTitle = $"**{fileName}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
-					ResultContent = $"No occurrences of the specified context were found."
-				};
-				return noChangeResult.Complete(true);
-			}
+				return (null, "No occurrences of the specified context were found.", 0);
 
-			// Filter by occurrence
 			var targetIndices = FilterOccurrences(foundIndices, occurrence);
 			if (targetIndices == null)
-			{
-				return ReactiveToolResult.CreateError(
-					$"Occurrence {occurrence} not found. Only {foundIndices.Count} occurrence(s) exist.");
-			}
+				return (null, $"Occurrence {occurrence} not found. Only {foundIndices.Count} occurrence(s) exist.", 0);
 
 			// Apply operations
 			var operationLines = string.IsNullOrEmpty(text)
 				? new List<string>()
 				: NormalizeLineEndings(text).Split('\n').ToList();
 
-			var (totalInsertions, totalDeletions, _) = ApplyLineOperations(fileLines, targetIndices, matchLines.Count, operationLines, operation);
+			var (totalInsertions, totalDeletions) = ApplyLineOperations(fileLines, targetIndices, matchLines.Count, operationLines, operation);
 
 			var newContent = string.Join("\n", fileLines);
 
@@ -190,28 +196,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			newContent = PreserveLineEndings(originalContent, newContent);
 
 			if (newContent == originalContent)
-			{
-				var noChangeResult = new ReactiveToolResult
-				{
-					StatusIcon = Material.Icons.MaterialIconKind.Information,
-					StatusTitle = $"**{fileName}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
-					ResultContent = "No changes were made (content is identical)."
-				};
-				return noChangeResult.Complete(true);
-			}
+				return (null, "No changes were made (content is identical).", 0);
 
-			File.WriteAllText(fullPath, newContent);
-
-			return BuildSuccessResult(fileName, path, operation, foundIndices.Count, targetIndices.Count,
-				matchLines.Count, operationLines.Count, totalDeletions, totalInsertions,
-				originalContent.Length, newContent.Length, match);
+			return (newContent, null, Math.Max(totalInsertions, totalDeletions));
 		}
 
 		#endregion
 
 		#region Regex Mode
 
-		private ReactiveToolResult EditWithRegex(
+		private (string?, string?, int) EditWithRegex(
 			string fullPath,
 			string fileName,
 			string path,
@@ -236,91 +230,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var totalReplacements = matches.Count;
 
 				if (totalReplacements == 0)
-				{
-					var noChangeResult = new ReactiveToolResult
-					{
-						StatusIcon = Material.Icons.MaterialIconKind.Information,
-						StatusTitle = $"**{fileName}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
-						ResultContent = $"No matches for pattern '{pattern}' found."
-					};
-					return noChangeResult.Complete(true);
-				}
+					return (null, "No matches found.", 0);
 
 				int count = 0;
 				var newContent = regex.Replace(normalizedContent, m => ++count == occurrence ? text : m.Value);
 				newContent = PreserveLineEndings(originalContent, newContent);
 
-				File.WriteAllText(fullPath, newContent);
-
-				var report = new StringBuilder();
-				report.AppendLine($"Regex replacement in '{fileName}':");
-				report.AppendLine($"  Pattern: '{pattern}'");
-				report.AppendLine($"  Replacement: '{text}'");
-				report.AppendLine($"  Total replacements: {totalReplacements}");
-				report.AppendLine($"  File size before: {originalContent.Length} bytes");
-				report.AppendLine($"  File size after: {newContent.Length} bytes");
-
-				if (totalReplacements <= 10)
-				{
-					report.AppendLine();
-					report.AppendLine("Replacement details:");
-					for (int i = 0; i < matches.Count; i++)
-					{
-						var match = matches[i];
-						var contextStart = Math.Max(0, match.Index - 20);
-						var contextEnd = Math.Min(normalizedContent.Length, match.Index + match.Length + 20);
-						var context = normalizedContent.Substring(contextStart, contextEnd - contextStart);
-
-						report.AppendLine($"  Match {i + 1}:");
-						report.AppendLine($"    Position: {match.Index}");
-						report.AppendLine($"    Context: ...{Truncate(context, 80)}...");
-						report.AppendLine();
-					}
-				}
-				else
-				{
-					report.AppendLine();
-					report.AppendLine($"First 5 replacements:");
-					for (int i = 0; i < Math.Min(5, totalReplacements); i++)
-					{
-						var match = matches[i];
-						var contextStart = Math.Max(0, match.Index - 20);
-						var contextEnd = Math.Min(normalizedContent.Length, match.Index + match.Length + 20);
-						var context = normalizedContent.Substring(contextStart, contextEnd - contextStart);
-
-						report.AppendLine($"  Match {i + 1} (position {match.Index}): ...{Truncate(context, 60)}...");
-					}
-
-					if (totalReplacements > 10)
-						report.AppendLine($"   ... and {totalReplacements - 10} more replacements");
-
-					if (totalReplacements > 5)
-					{
-						report.AppendLine("Last 5 replacements:");
-						for (int i = Math.Max(5, totalReplacements - 5); i < totalReplacements; i++)
-						{
-							var match = matches[i];
-							var contextStart = Math.Max(0, match.Index - 20);
-							var contextEnd = Math.Min(normalizedContent.Length, match.Index + match.Length + 20);
-							var context = normalizedContent.Substring(contextStart, contextEnd - contextStart);
-
-							report.AppendLine($"  Match {i + 1} (position {match.Index}): ...{Truncate(context, 60)}...");
-						}
-					}
-				}
-
-				var changeDescription = string.Format(
-					LocalizationManager.LocalizeStatic("fs-changes_text_replaced"),
-					totalReplacements);
-
-				var result = new ReactiveToolResult
-				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
-					StatusTitle = $"**{fileName}** *({changeDescription})*",
-					ResultContent = report.ToString()
-				};
-
-				return result.Complete(true);
+				return (newContent, null, totalReplacements);
 			}
 			else
 			{
@@ -336,49 +252,26 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				}
 
 				if (matchedLineIndices.Count == 0)
-				{
-					var noChangeResult = new ReactiveToolResult
-					{
-						StatusIcon = Material.Icons.MaterialIconKind.Information,
-						StatusTitle = $"**{fileName}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
-						ResultContent = $"No lines matched pattern '{pattern}'."
-					};
-					return noChangeResult.Complete(true);
-				}
+					return (null, $"No lines matched pattern '{pattern}'.", 0);
 
 				var targetIndices = FilterOccurrences(matchedLineIndices, occurrence);
 				if (targetIndices == null)
-				{
-					return ReactiveToolResult.CreateError(
-						$"Occurrence {occurrence} not found. Only {matchedLineIndices.Count} occurrence(s) exist.");
-				}
+					return (null, $"Occurrence {occurrence} not found. Only {matchedLineIndices.Count} occurrence(s) exist.", 0);
 
 				var operationLines = string.IsNullOrEmpty(text)
 					? new List<string>()
 					: NormalizeLineEndings(text).Split('\n').ToList();
 
 				// For line-based operations, match length is 1 (single line)
-				var (totalInsertions, totalDeletions, _) = ApplyLineOperations(fileLines, targetIndices, 1, operationLines, operation);
+				var (totalInsertions, totalDeletions) = ApplyLineOperations(fileLines, targetIndices, 1, operationLines, operation);
 
 				var newContent = string.Join("\n", fileLines);
 				newContent = PreserveLineEndings(originalContent, newContent);
 
 				if (newContent == originalContent)
-				{
-					var noChangeResult = new ReactiveToolResult
-					{
-						StatusIcon = Material.Icons.MaterialIconKind.Information,
-						StatusTitle = $"**{fileName}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
-						ResultContent = "No changes were made."
-					};
-					return noChangeResult.Complete(true);
-				}
+					return (null, "No changes were made (content is identical).", 0);
 
-				File.WriteAllText(fullPath, newContent);
-
-				return BuildSuccessResult(fileName, path, $"{operation} (regex, line-based)", matchedLineIndices.Count, targetIndices.Count,
-					1, operationLines.Count, totalDeletions, totalInsertions,
-					originalContent.Length, newContent.Length, pattern);
+				return (newContent, null, Math.Max(totalInsertions, totalDeletions));
 			}
 		}
 
@@ -474,7 +367,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			return found;
 		}
 
-		private static (int totalInsertions, int totalDeletions, List<string> finalLines) ApplyLineOperations(
+		private static (int totalInsertions, int totalDeletions) ApplyLineOperations(
 			List<string> fileLines,
 			List<int> targetIndices,
 			int matchLength,
@@ -513,59 +406,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				}
 			}
 
-			return (totalInsertions, totalDeletions, fileLines);
-		}
-
-		private static ReactiveToolResult BuildSuccessResult(
-			string fileName,
-			string path,
-			string operation,
-			int totalFound,
-			int totalAffected,
-			int matchLineCount,
-			int operationLineCount,
-			int totalDeletions,
-			int totalInsertions,
-			int originalSize,
-			int newSize,
-			string pattern)
-		{
-			var report = new StringBuilder();
-			report.AppendLine($"Applied '{operation}' on '{fileName}':");
-			report.AppendLine($"  Occurrences affected: {totalAffected} (out of {totalFound} found)");
-			if (totalDeletions > 0)
-				report.AppendLine($"  Lines removed: {totalDeletions}");
-			if (totalInsertions > 0 && operation != "replace")
-				report.AppendLine($"  Lines inserted: {totalInsertions}");
-			if (operation == "replace")
-				report.AppendLine($"  Lines replaced: {matchLineCount} → {operationLineCount} (per occurrence)");
-			report.AppendLine($"  File size before: {originalSize} bytes");
-			report.AppendLine($"  File size after: {newSize} bytes");
-
-			report.AppendLine();
-			report.AppendLine("Change preview:");
-			var displayPattern = pattern.Length > 80 ? pattern[..77] + "..." : pattern;
-			report.AppendLine($"  Match: '{displayPattern}'");
-
-			var changeDescription = string.Format(
-				LocalizationManager.LocalizeStatic("fs-edit_changes_count"),
-				totalAffected, operation);
-
-			var result = new ReactiveToolResult
-			{
-				StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
-				StatusTitle = $"**{fileName}** *({changeDescription})*",
-				ResultContent = report.ToString()
-			};
-
-			return result.Complete(true);
-		}
-
-		private string Truncate(string text, int maxLength)
-		{
-			if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
-				return text;
-			return text.Substring(0, maxLength - 3) + "...";
+			return (totalInsertions, totalDeletions);
 		}
 
 		#endregion
