@@ -77,7 +77,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			CancellationToken cancellationToken = default)
 		{
 			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
-			string command = shell;
+			string command = $"chcp 65001 && {shell}";
 
 			return RunAsync(new TerminalToolRunParameters
 			{
@@ -114,7 +114,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			CancellationToken cancellationToken = default)
 		{
 			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
-			string command = $"powershell -Command \"{powershell}\"";
+			string command = $"chcp 65001 && powershell -Command \"{powershell}\"";
 
 			return RunAsync(new TerminalToolRunParameters
 			{

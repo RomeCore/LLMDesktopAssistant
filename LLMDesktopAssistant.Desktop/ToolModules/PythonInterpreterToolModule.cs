@@ -1,17 +1,21 @@
-using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Scripting;
-using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Utils;
-using RCLargeLanguageModels.Tools;
 using System;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Utils;
+using Material.Icons;
+using RCLargeLanguageModels.Tools;
+using UglyToad.PdfPig.Graphics.Operations.PathPainting;
+using XTerm.Common;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {
@@ -23,31 +27,31 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	[ToolModule]
 	public class PythonInterpreterToolModule : TerminalBasedToolModule
 	{
-		private readonly PythonService _python;
 		private readonly Chat _chat;
 		private readonly FileAccessService _fileAccess;
 
 		public PythonInterpreterToolModule(Chat chat, FileAccessService fileAccess)
 		{
-			_python = ServiceRegistry.Get<PythonService>();
 			_chat = chat;
 			_fileAccess = fileAccess;
 
-			AddTool(Execute,
+			AddTool(Execute, ExecuteStreaming, ExecutePreview,
 				new ToolInitializationInfo
 				{
 					Name = "execute-python",
 					Description = "Executes Python in isolated virtual environment (global variables are not accessible between scripts) from the working directory. It returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!'). Displays live output in a terminal.",
 					Category = "Python",
+					DefaultDangerLevel = ToolDangerLevel.Dangerous,
 					AskForConfirmation = true
 				});
 
-			AddTool(ExecuteVenvShell,
+			AddTool(ExecuteVenvShell, ExecuteVenvShellStreaming, ExecuteVenvShellPreview,
 				new ToolInitializationInfo
 				{
 					Name = "execute-python_venv_shell",
 					Description = "Executes shell script in a Python's virtual environment from the working directory. Useful for installing packages via 'pip'. Displays live output in a terminal.",
 					Category = "Python",
+					DefaultDangerLevel = ToolDangerLevel.Dangerous,
 					AskForConfirmation = true
 				});
 
@@ -57,8 +61,32 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Name = "python-get_installed_packages_list",
 					Description = "Returns the list of installed packages in the current Python's virtual environment.",
 					Category = "Python",
+					DefaultDangerLevel = ToolDangerLevel.Safe,
 					AskForConfirmation = false
 				});
+		}
+
+		public StreamingToolArgumentsAnalysisResult ExecuteStreaming(string? python)
+		{
+			int lines = 0;
+			if (python != null)
+				foreach (var line in python.EnumerateLines())
+					lines++;
+
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.LanguagePython,
+				StatusTitle = LocalizationManager.LocalizeStaticFormat("lines_count", lines)
+			};
+		}
+
+		public PreviewToolExecutionResult ExecutePreview(string python)
+		{
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.LanguagePython,
+				StatusTitle = null
+			};
 		}
 
 		/// <summary>
@@ -81,10 +109,31 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			{
 				// Treat as a file path
 				pyFile = _fileAccess.AccessPath(python);
-				isTemporaryFile = false;
+				python = File.ReadAllText(pyFile);
+
+				// Ensure the script is UTF-8 encoded
+				python = $"""
+				import sys
+				sys.stdout.reconfigure(encoding="utf-8")
+				sys.stderr.reconfigure(encoding="utf-8")
+				{python}
+				""";
+
+				// Write to a temporary file
+				pyFile = Path.GetFullPath(Path.Combine(workDir, $"_dass_temp_{Guid.NewGuid()}.py"));
+				File.WriteAllText(pyFile, python);
+				isTemporaryFile = true;
 			}
 			else
 			{
+				// Ensure the script is UTF-8 encoded
+				python = $"""
+				import sys
+				sys.stdout.reconfigure(encoding="utf-8")
+				sys.stderr.reconfigure(encoding="utf-8")
+				{python}
+				""";
+
 				// Write to a temporary file
 				pyFile = Path.GetFullPath(Path.Combine(workDir, $"_dass_temp_{Guid.NewGuid()}.py"));
 				File.WriteAllText(pyFile, python);
@@ -96,13 +145,15 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				// Build command: activate venv if available, then run python
 				string command;
 				if (!string.IsNullOrWhiteSpace(venvPath))
-					command = $"call \"{venvPath}\" && python \"{pyFile}\"";
+					command = $"chcp 65001 && call \"{venvPath}\" && python \"{pyFile}\"";
 				else
-					command = $"python \"{pyFile}\"";
+					command = $"chcp 65001 && python \"{pyFile}\"";
 
 				// Run in terminal
 				return await RunAsync(new TerminalToolRunParameters
 				{
+					StatusIcon = MaterialIconKind.LanguagePython,
+					StatusTitle = null,
 					RunTerminal = runTerminal,
 					Command = command,
 					WorkingDirectory = workDir,
@@ -113,14 +164,37 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				// Clean up temp file after process completes
 				try
 				{
-					if (isTemporaryFile && File.Exists(pyFile))
-						File.Delete(pyFile);
+					_ = Task.Run(async () =>
+					{
+						// Костыль ёбаный, но работает
+						await Task.Delay(1000);
+						if (isTemporaryFile && File.Exists(pyFile))
+							File.Delete(pyFile);
+					});
 				}
 				catch
 				{
 					// Ignore cleanup errors
 				}
 			}
+		}
+
+		public StreamingToolArgumentsAnalysisResult ExecuteVenvShellStreaming(string shell)
+		{
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.LanguagePython,
+				StatusTitle = $"`{shell}`"
+			};
+		}
+
+		public PreviewToolExecutionResult ExecuteVenvShellPreview(string shell)
+		{
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.LanguagePython,
+				StatusTitle = $"`{shell}`"
+			};
 		}
 
 		/// <summary>
@@ -138,12 +212,14 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 
 			string command;
 			if (!string.IsNullOrWhiteSpace(venvPath))
-				command = $"call \"{venvPath}\" && {shell}";
+				command = $"chcp 65001 && call \"{venvPath}\" && {shell}";
 			else
-				command = shell;
+				command = $"chcp 65001 && {shell}";
 
 			return RunAsync(new TerminalToolRunParameters
 			{
+				StatusIcon = MaterialIconKind.LanguagePython,
+				StatusTitle = null,
 				RunTerminal = runTerminal,
 				Command = command,
 				WorkingDirectory = workDir,
@@ -154,31 +230,26 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		/// Gets the list of installed packages in the current Python virtual environment.
 		/// Still returns a simple ToolResult since it's a quick query, not a long-running process.
 		/// </summary>
-		public async Task<ToolResult> GetInstalledPackagesList(CancellationToken cancellationToken = default)
+		public Task<ReactiveToolResult> GetInstalledPackagesList(
+			ToolExecutionContext context, CancellationToken cancellationToken = default)
 		{
-			try
-			{
-				var result = await _python.RunVenv("pip list",
-					_chat.Settings.Environment.GetWorkingDirectory(),
-					_chat.Settings.Environment.PythonVenvActivateScriptPath,
-					cancellationToken);
+			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
+			var venvPath = _chat.Settings.Environment.PythonVenvActivateScriptPath;
 
-				var resultBuilder = new StringBuilder();
-				resultBuilder.Append(result.StdOut);
-				if (!string.IsNullOrEmpty(result.StdErr))
-				{
-					resultBuilder.AppendLine().AppendLine("Errors:");
-					resultBuilder.Append(result.StdErr);
-				}
+			string command;
+			if (!string.IsNullOrWhiteSpace(venvPath))
+				command = $"chcp 65001 && call \"{venvPath}\" && pip list";
+			else
+				command = $"chcp 65001 && pip list";
 
-				var status = result.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
-				return new ToolResult(status, resultBuilder.ToString());
-			}
-			catch (Exception ex)
+			return RunAsync(new TerminalToolRunParameters
 			{
-				return new ToolResult(ToolResultStatus.Error,
-					$"Got error while executing Python shell script in a virtual environment: {ex.Message}");
-			}
+				StatusIcon = MaterialIconKind.LanguagePython,
+				StatusTitle = null,
+				RunTerminal = false,
+				Command = command,
+				WorkingDirectory = workDir,
+			}, context, cancellationToken);
 		}
 	}
 }

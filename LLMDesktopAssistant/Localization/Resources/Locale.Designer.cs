@@ -1879,6 +1879,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} lines.
+        /// </summary>
+        public static string lines_count {
+            get {
+                return ResourceManager.GetString("lines_count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Shuffled list of {0} items.
         /// </summary>
         public static string list_shuffled {

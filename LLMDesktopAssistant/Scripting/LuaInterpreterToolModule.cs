@@ -1,5 +1,7 @@
 ﻿using System.Text;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
+using Material.Icons;
 using MoonSharp.Interpreter;
 using RCLargeLanguageModels.Tools;
 
@@ -14,7 +16,7 @@ namespace LLMDesktopAssistant.Scripting
 		{
 			_lua = lua;
 
-			AddTool(ExecuteLua,
+			AddTool(Execute, ExecuteStreaming, ExecutePreview,
 				new ToolInitializationInfo
 				{
 					Name = "execute-lua",
@@ -24,19 +26,47 @@ namespace LLMDesktopAssistant.Scripting
 						Lua has the API to interact with the application (called dASS) with these namespaces:
 						{string.Join(", ", lua.Namespaces.Select(ns => ns != null ? $"**{ns}**" : "*global namespace*").Order())}
 						
-						Use the `manuals(...)` function to get the documentation for a specific namespace, `print(manuals())` or `print(manuals(dass.tools))` for example.
+						Use the `manuals(...)` function to get the documentation for a specific namespace, `print(manuals())`, `print(manuals(dass.tools))` or `print(manuals(fs))` for example.
 						Its very recommended to see manuals before starting to use the API (do not use it blindly without reading the documentation!).
 						""",
 					Category = "scripting",
+					DefaultDangerLevel = ToolDangerLevel.Dangerous,
 					AskForConfirmation = true
 				});
 		}
 
-		public ReactiveToolResult ExecuteLua(
+		public StreamingToolArgumentsAnalysisResult ExecuteStreaming(string? lua)
+		{
+			int lines = 0;
+			if (lua != null)
+				foreach (var line in lua.EnumerateLines())
+					lines++;
+
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.LanguageLua,
+				StatusTitle = LocalizationManager.LocalizeStaticFormat("lines_count", lines)
+			};
+		}
+
+		public PreviewToolExecutionResult ExecutePreview(string lua)
+		{
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.LanguageLua,
+				StatusTitle = null
+			};
+		}
+
+		public ReactiveToolResult Execute(
 			string lua,
 			ToolExecutionContext context)
 		{
-			var reactiveResult = new ReactiveToolResult();
+			var reactiveResult = new ReactiveToolResult
+			{
+				StatusIcon = MaterialIconKind.LanguageLua,
+				StatusTitle = null
+			};
 
 			_ = Task.Run(() =>
 			{

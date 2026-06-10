@@ -1560,4 +1560,7 @@
   <data name="math-solve_complex" xml:space="preserve">
     <value>Solve complex equation</value>
   </data>
+  <data name="lines_count" xml:space="preserve">
+    <value>{0} lines</value>
+  </data>
 </root>
