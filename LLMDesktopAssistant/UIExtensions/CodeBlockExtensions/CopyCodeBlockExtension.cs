@@ -12,6 +12,8 @@ namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 		{
 			Icon = MaterialIconKind.ContentCopy;
 
+			Tooltip = "copy";
+
 			Command = new RelayCommand(() =>
 			{
 				App.MainTopLevel.Clipboard!.SetTextAsync(codeBlock.Code);

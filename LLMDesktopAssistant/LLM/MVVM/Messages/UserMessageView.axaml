@@ -88,36 +88,38 @@
 				Spacing="4">
 
 			<Button Command="{Binding ResendCommand}"
-					Classes="IconButton">
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc resend}">
 
 				<ico:MaterialIcon Kind="ArrowUDownLeft"/>
 			</Button>
 
 			<Button Command="{Binding EditCommand}"
-					Classes="IconButton">
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc edit}">
 
 				<ico:MaterialIcon Kind="Edit"/>
 			</Button>
-
+			
 			<StackPanel Orientation="Horizontal"
-						IsVisible="{Binding BranchSelectionAvailable}"
-						Spacing="4">
+									IsVisible="{Binding BranchSelectionAvailable}"
+									Spacing="4">
 
 				<Button Command="{Binding SwitchBranchCommand}"
-						Classes="IconButton"
-						CommandParameter="{Binding PreviousBranchIndex}">
-
+								Classes="IconButton"
+								CommandParameter="{Binding PreviousBranchIndex}"
+								ToolTip.Tip="{loc:Loc previous_branch}">
 					<ico:MaterialIcon Kind="ChevronLeft"/>
 				</Button>
 
 				<ComboBox ItemsSource="{Binding BranchIndices}"
-							SelectedItem="{Binding SelectedBranchIndex}"
-							Foreground="{DynamicResource MaterialDesignBody}"/>
+									SelectedItem="{Binding SelectedBranchIndex}"
+									Foreground="{DynamicResource MaterialDesignBody}"/>
 
 				<Button Command="{Binding SwitchBranchCommand}"
-						Classes="IconButton"
-						CommandParameter="{Binding NextBranchIndex}">
-
+								Classes="IconButton"
+								CommandParameter="{Binding NextBranchIndex}"
+								ToolTip.Tip="{loc:Loc next_branch}">
 					<ico:MaterialIcon Kind="ChevronRight"/>
 				</Button>
 
@@ -141,7 +143,8 @@
 							
 							<Button Command="{Binding Command}"
 											Classes="IconButton"
-											IsVisible="{Binding ViewModel, Converter={StaticResource NotnullToBooleanConverterInverted}}">
+											IsVisible="{Binding ViewModel, Converter={StaticResource NotnullToBooleanConverterInverted}}"
+											ToolTip.Tip="{loc:Loc {Binding Tooltip}}">
 								<ico:MaterialIcon Kind="{Binding Icon}"/>
 							</Button>
 

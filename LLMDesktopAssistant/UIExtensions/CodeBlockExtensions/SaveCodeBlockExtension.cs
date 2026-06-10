@@ -113,6 +113,8 @@ namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 		{
 			Icon = MaterialIconKind.ContentSave;
 
+			Tooltip = "save";
+
 			Command = new AsyncRelayCommand(async () =>
 			{
 				var result = await App.MainTopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions

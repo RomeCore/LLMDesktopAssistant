@@ -25,6 +25,16 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 			set => SetProperty(ref _icon, value);
 		}
 
+		private string? _tooltip;
+		/// <summary>
+		/// The tooltip for button associated with this extension.
+		/// </summary>
+		public string? Tooltip
+		{
+			get => _tooltip;
+			set => SetProperty(ref _tooltip, value);
+		}
+
 		private ICommand? _command;
 		/// <summary>
 		/// The command for button associated with this extension.

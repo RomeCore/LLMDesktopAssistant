@@ -17,6 +17,8 @@ namespace LLMDesktopAssistant.Desktop.Execution
 		{
 			Icon = MaterialIconKind.Play;
 
+			Tooltip = "execute";
+
 			var command = new AsyncRelayCommand(async () =>
 			{
 				await Execute(codeBlock, chat, lua, python);

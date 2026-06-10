@@ -19,6 +19,8 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		{
 			Icon = MaterialIconKind.ShieldOutline;
 
+			Tooltip = "toggle_context_shield";
+
 			Command = new RelayCommand(() =>
 			{
 				var viewModels = viewModel.Message.AdditionalViewModels;

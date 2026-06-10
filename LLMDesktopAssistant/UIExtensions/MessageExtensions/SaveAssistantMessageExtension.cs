@@ -5,14 +5,16 @@ using Material.Icons;
 
 namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 {
-	[MessageExtension]
-	public class SaveMessageExtension : MessageExtension
+	[MessageExtension(Targets = MessageExtensionTargets.Assistant)]
+	public class SaveAssistantMessageExtension : MessageExtension
 	{
 		public override int Order => 1;
 
-		public SaveMessageExtension(MessageViewModelBase viewModel)
+		public SaveAssistantMessageExtension(MessageViewModelBase viewModel)
 		{
 			Icon = MaterialIconKind.ContentSave;
+
+			Tooltip = "save_markdown";
 
 			Command = new AsyncRelayCommand(async () =>
 			{

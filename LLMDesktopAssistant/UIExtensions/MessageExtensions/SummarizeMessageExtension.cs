@@ -21,6 +21,8 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		{
 			Icon = MaterialIconKind.TextBoxSearchOutline;
 
+			Tooltip = "summarize_message";
+
 			Command = new AsyncRelayCommand(async () =>
 			{
 				try

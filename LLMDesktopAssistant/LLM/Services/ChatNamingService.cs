@@ -186,11 +186,15 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		private static bool IsDefaultTitle(string title)
 		{
-			if (string.IsNullOrEmpty(title))
+			if (string.IsNullOrWhiteSpace(title))
 				return true;
 
 			var defaultTitle = LocalizationManager.LocalizeStatic("new_chat");
 			if (string.Equals(title, defaultTitle, StringComparison.OrdinalIgnoreCase))
+				return true;
+
+			var defaultTemporaryTitle = LocalizationManager.LocalizeStatic("new_temporary_chat");
+			if (string.Equals(title, defaultTemporaryTitle, StringComparison.OrdinalIgnoreCase))
 				return true;
 
 			return false;

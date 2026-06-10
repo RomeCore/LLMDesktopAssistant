@@ -961,6 +961,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy Markdown.
+        /// </summary>
+        public static string copy_markdown {
+            get {
+                return ResourceManager.GetString("copy_markdown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy result.
         /// </summary>
         public static string copy_result {
@@ -1042,6 +1051,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit.
+        /// </summary>
+        public static string edit {
+            get {
+                return ResourceManager.GetString("edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Empty.
         /// </summary>
         public static string empty_model {
@@ -1065,6 +1083,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string error_model {
             get {
                 return ResourceManager.GetString("error_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute.
+        /// </summary>
+        public static string execute {
+            get {
+                return ResourceManager.GetString("execute", resourceCulture);
             }
         }
         
@@ -1128,6 +1155,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string execute_shell {
             get {
                 return ResourceManager.GetString("execute-shell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute using REPL.
+        /// </summary>
+        public static string execute_using_repl {
+            get {
+                return ResourceManager.GetString("execute_using_repl", resourceCulture);
             }
         }
         
@@ -2185,6 +2221,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Next branch.
+        /// </summary>
+        public static string next_branch {
+            get {
+                return ResourceManager.GetString("next_branch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на no topic.
         /// </summary>
         public static string no_topic {
@@ -2406,6 +2451,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string personality_hint {
             get {
                 return ResourceManager.GetString("personality_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Previous branch.
+        /// </summary>
+        public static string previous_branch {
+            get {
+                return ResourceManager.GetString("previous_branch", resourceCulture);
             }
         }
         
@@ -2842,6 +2896,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Quick actions.
+        /// </summary>
+        public static string promptcomponent_quick_actions {
+            get {
+                return ResourceManager.GetString("promptcomponent-quick_actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Quick explanations.
+        /// </summary>
+        public static string promptcomponent_quick_explanations {
+            get {
+                return ResourceManager.GetString("promptcomponent-quick_explanations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Uncensored.
         /// </summary>
         public static string promptcomponent_uncensored {
@@ -3135,6 +3207,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string sample {
             get {
                 return ResourceManager.GetString("sample", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Save.
+        /// </summary>
+        public static string save {
+            get {
+                return ResourceManager.GetString("save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Save Markdown.
+        /// </summary>
+        public static string save_markdown {
+            get {
+                return ResourceManager.GetString("save_markdown", resourceCulture);
             }
         }
         
@@ -4039,6 +4129,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Summarize this message and previous messages for context compression.
+        /// </summary>
+        public static string summarize_message {
+            get {
+                return ResourceManager.GetString("summarize_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на System instructions.
         /// </summary>
         public static string system_instructions_hint {
@@ -4107,6 +4206,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string title {
             get {
                 return ResourceManager.GetString("title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Toggle context shield.
+        /// </summary>
+        public static string toggle_context_shield {
+            get {
+                return ResourceManager.GetString("toggle_context_shield", resourceCulture);
             }
         }
         

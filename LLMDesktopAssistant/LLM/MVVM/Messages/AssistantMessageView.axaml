@@ -87,7 +87,8 @@
 
 				<Button Command="{Binding SwitchBranchCommand}"
 								Classes="IconButton"
-								CommandParameter="{Binding PreviousBranchIndex}">
+								CommandParameter="{Binding PreviousBranchIndex}"
+								ToolTip.Tip="{loc:Loc previous_branch}">
 					<ico:MaterialIcon Kind="ChevronLeft"/>
 				</Button>
 
@@ -96,7 +97,8 @@
 
 				<Button Command="{Binding SwitchBranchCommand}"
 								Classes="IconButton"
-								CommandParameter="{Binding NextBranchIndex}">
+								CommandParameter="{Binding NextBranchIndex}"
+								ToolTip.Tip="{loc:Loc next_branch}">
 					<ico:MaterialIcon Kind="ChevronRight"/>
 				</Button>
 
@@ -118,7 +120,8 @@
 							
 							<Button Command="{Binding Command}"
 											Classes="IconButton"
-											IsVisible="{Binding ViewModel, Converter={StaticResource NotnullToBooleanConverterInverted}}">
+											IsVisible="{Binding ViewModel, Converter={StaticResource NotnullToBooleanConverterInverted}}"
+											ToolTip.Tip="{loc:Loc {Binding Tooltip}}">
 								<ico:MaterialIcon Kind="{Binding Icon}"/>
 							</Button>
 

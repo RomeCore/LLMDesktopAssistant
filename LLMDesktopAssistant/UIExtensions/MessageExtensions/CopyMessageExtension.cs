@@ -13,7 +13,9 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		public CopyMessageExtension(MessageViewModelBase viewModel)
 		{
 			Icon = MaterialIconKind.ContentCopy;
-			
+
+			Tooltip = "copy_markdown";
+
 			Command = new AsyncRelayCommand(async () =>
 			{
 				await App.MainTopLevel.Clipboard!.SetTextAsync(viewModel.Message.Content);

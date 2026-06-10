@@ -1144,10 +1144,10 @@
     <value>Отменить инструмент</value>
   </data>
   <data name="copy-arguments" xml:space="preserve">
-    <value>Копировать аргументы</value>
+    <value>Скопировать аргументы</value>
   </data>
   <data name="copy-result" xml:space="preserve">
-    <value>Копировать результат</value>
+    <value>Скопировать результат</value>
   </data>
   <data name="close" xml:space="preserve">
     <value>Закрыть</value>
@@ -1565,5 +1565,41 @@
   </data>
   <data name="temporary_chat" xml:space="preserve">
     <value>временный</value>
+  </data>
+  <data name="previous_branch" xml:space="preserve">
+    <value>Предыдущая ветка</value>
+  </data>
+  <data name="next_branch" xml:space="preserve">
+    <value>Следующая ветка</value>
+  </data>
+  <data name="edit" xml:space="preserve">
+    <value>Редактировать</value>
+  </data>
+  <data name="save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="copy_markdown" xml:space="preserve">
+    <value>Скопировать Markdown</value>
+  </data>
+  <data name="toggle_context_shield" xml:space="preserve">
+    <value>Переключить щит контекста</value>
+  </data>
+  <data name="save_markdown" xml:space="preserve">
+    <value>Сохранить Markdown</value>
+  </data>
+  <data name="summarize_message" xml:space="preserve">
+    <value>Суммаризировать это сообщение и предыдущие для сжатия контекста</value>
+  </data>
+  <data name="execute" xml:space="preserve">
+    <value>Выполнить</value>
+  </data>
+  <data name="execute_using_repl" xml:space="preserve">
+    <value>Выполнить при помощи REPL</value>
+  </data>
+  <data name="promptcomponent-quick_actions" xml:space="preserve">
+    <value>Быстрые действия</value>
+  </data>
+  <data name="promptcomponent-quick_explanations" xml:space="preserve">
+    <value>Быстрые определения</value>
   </data>
 </root>
