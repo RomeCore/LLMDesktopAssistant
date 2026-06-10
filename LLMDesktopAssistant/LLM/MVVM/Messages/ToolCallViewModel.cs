@@ -153,11 +153,11 @@ namespace LLMDesktopAssistant.LLM.Messages
 			{
 				ToolStatus.Pending => null,
 				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Safe
-					=> Brushes.DarkGreen,
+					=> Brushes.Green,
 				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Warning
 					=> Brushes.Yellow,
 				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Dangerous
-					=> Brushes.DarkRed,
+					=> Brushes.Red,
 				ToolStatus.PreExecuting => null,
 				ToolStatus.Executing => null,
 				ToolStatus.WaitingForApproval => null,

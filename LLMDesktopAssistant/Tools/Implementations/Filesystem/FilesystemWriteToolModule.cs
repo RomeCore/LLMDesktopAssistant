@@ -30,18 +30,22 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				});
 		}
 
-		public StreamingToolArgumentsAnalysisResult WriteFileStream(
+		public StreamingToolArgumentsAnalysisResult? WriteFileStream(
 			string? path,
 			string? content,
 			bool append = false)
 		{
-			var fileName = Path.GetFileName(path) ?? string.Empty;
+			var fileName = Path.GetFileName(path);
 			int lines = 0;
-			foreach (var line in (content ?? string.Empty).EnumerateLines())
-				lines++;
+			if (content != null)
+				foreach (var line in content.EnumerateLines())
+					lines++;
+
 			return new StreamingToolArgumentsAnalysisResult
 			{
-				StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-write_file_streaming_status", $"**{fileName}**", lines)
+				StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-write_file_streaming_status",
+					path != null ? $"**{fileName}**" : string.Empty,
+					lines)
 			};
 		}
 

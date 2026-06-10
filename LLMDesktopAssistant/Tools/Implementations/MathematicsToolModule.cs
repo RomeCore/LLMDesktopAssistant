@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -9,6 +9,7 @@ using LLMDesktopAssistant.Services;
 using RCLargeLanguageModels.Tools;
 using RCParsing;
 using LLMDesktopAssistant.Calculation;
+using LLMDesktopAssistant.Calculation.Ast;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -20,7 +21,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			AddTool(Calculate,
 				new ToolInitializationInfo
 				{
-					Name = "calculate",
+					Name = "math-calculate",
 					Description = """
 						Evaluate a mathematical expression. Examples:
 
@@ -35,12 +36,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						NaN, pi, inf, eps, phi, tau, g, e, c, gamma
 
 						All supported functions:
-			
+
 						Normal:
-			
+
 						asinh, acosh, tan, atanh, atan2, cbrt, sign, floor, ceil, round, trunc, mod,
 						gamma, factorial, integral, derivative
-			
+
 						Complex:
 
 						mag, conjugate, minmag, maxmag, compgamma
@@ -54,13 +55,33 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						""",
 					Category = "mathematics"
 				});
+
+			AddTool(Solve,
+				new ToolInitializationInfo
+				{
+					Name = "math-solve",
+					Description = """
+						Solve an equation numerically for a given variable using the bisection method.
+						Finds roots of f(x) = 0 within a search range.
+
+						Examples:
+
+						solve(x^2 - 4 = 0, x)
+						solve(sin(x) - 0.5, x, -10, 10)
+						solve(x^3 - 2*x - 5 = 0, x)
+
+						The equation can be written as 'expression = 0' or just 'expression'.
+						If no range is specified, it scans from -100 to 100 by default.
+						""",
+					Category = "mathematics"
+				});
 		}
 
-		private ToolResult Calculate([Description("Expression to evaluate")] string expression)
+		private ReactiveToolResult Calculate([Description("Expression to evaluate")] string expression)
 		{
 			try
 			{
-				var result = Calculator.ParseValue(expression);
+				var result = MathExpressionParser.Parse(expression).ToComplexOrThrow();
 				var formatted = string.Empty;
 
 				if (result.Imaginary != 0)
@@ -79,11 +100,63 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					formatted = result.Real.ToString();
 				}
 
-				return new ToolResult(formatted);
+				return new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Abacus,
+					StatusTitle = $"`{expression}`",
+					ResultContent = formatted
+				}.CompleteWithSuccess();
+			}
+			catch (MathEvaluationException mex)
+			{
+				return ReactiveToolResult.CreateError("Error evaluating expression: " + mex.Message);
 			}
 			catch (ParsingException pex)
 			{
-				return new ToolResult(ToolResultStatus.Error, pex.Message);
+				return ReactiveToolResult.CreateError("Error parsing expression: " + pex.Message);
+			}
+		}
+
+		private ReactiveToolResult Solve(
+			[Description("Equation to solve. Examples: 'x^2 - 4 = 0', 'sin(x) - 0.5', 'x^3 - 2*x - 5 = 0'")] string equation,
+			[Description("Variable to solve for. Default: 'x'")] string variable = "x",
+			[Description("Left bound of the search range. Default: -100")] double rangeStart = -100.0,
+			[Description("Right bound of the search range. Default: 100")] double rangeEnd = 100.0,
+			[Description("Step size for scanning. Smaller values find more roots but are slower. Default: 0.1")] double scanStep = 0.1)
+		{
+			try
+			{
+				// Parse the equation: support "expr = 0" or just "expr"
+				string expressionStr = equation;
+				if (equation.Contains('='))
+				{
+					var parts = equation.Split('=', 2);
+					expressionStr = $"({parts[0].Trim()}) - ({parts[1].Trim()})";
+				}
+
+				var expression = MathExpressionParser.Parse(expressionStr);
+				var roots = MathEquationSolver.FindRoots(expression, variable, rangeStart, rangeEnd, scanStep);
+
+				if (roots.Length == 0)
+				{
+					return ReactiveToolResult.CreateError("No roots found in the specified range.");
+				}
+
+				var formatted = string.Join(", ", roots.Select(r => r.ToString("G")));
+				return new ReactiveToolResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Abacus,
+					StatusTitle = $"`{equation}`",
+					ResultContent = $"Roots found for '{variable}': {formatted}"
+				}.CompleteWithSuccess();
+			}
+			catch (MathEvaluationException mex)
+			{
+				return ReactiveToolResult.CreateError("Error evaluating expression: " + mex.Message);
+			}
+			catch (ParsingException pex)
+			{
+				return ReactiveToolResult.CreateError("Error parsing expression: " + pex.Message);
 			}
 		}
 	}

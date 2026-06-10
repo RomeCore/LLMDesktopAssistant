@@ -15,7 +15,6 @@ namespace LLMDesktopAssistant.Utils.Files
 				return new HunkGroups { Groups = [] };
 
 			var result = new HunkGroups { Groups = [] };
-			HunkGroup currentGroup;
 
 			var oldLines = SplitLines(oldText);
 			var newLines = SplitLines(newText);
@@ -82,7 +81,7 @@ namespace LLMDesktopAssistant.Utils.Files
 					else { oldCount++; newCount++; }
 				}
 
-				currentGroup = new HunkGroup
+				var currentGroup = new HunkGroup
 				{
 					Lines = [],
 					OldStart = oldStart,

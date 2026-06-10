@@ -1870,6 +1870,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Calculate.
+        /// </summary>
+        public static string math_calculate {
+            get {
+                return ResourceManager.GetString("math-calculate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Solve math equation.
+        /// </summary>
+        public static string math_solve {
+            get {
+                return ResourceManager.GetString("math-solve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Mathematics.
         /// </summary>
         public static string mathematics {

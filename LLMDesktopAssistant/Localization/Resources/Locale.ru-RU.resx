@@ -1536,4 +1536,10 @@
   <data name="fs-write_file_streaming_status" xml:space="preserve">
     <value>{0} ({1} строк...)</value>
   </data>
+  <data name="math-calculate" xml:space="preserve">
+    <value>Вычислить</value>
+  </data>
+  <data name="math-solve" xml:space="preserve">
+    <value>Решить математическое уравнение</value>
+  </data>
 </root>
