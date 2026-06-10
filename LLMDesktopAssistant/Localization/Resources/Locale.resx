@@ -1542,4 +1542,7 @@
   <data name="math-solve" xml:space="preserve">
     <value>Solve math equation</value>
   </data>
+  <data name="new_temporary_chat" xml:space="preserve">
+    <value>New temporary chat</value>
+  </data>
 </root>

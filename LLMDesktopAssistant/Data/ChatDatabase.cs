@@ -35,7 +35,7 @@ namespace LLMDesktopAssistant.Data
 		/// <param name="path">The path to the database file. Or the "Memory=true;" if you want to use in-memory database.</param>
 		public ChatDatabase(string path)
 		{
-			if (path != "Memory=true;" && Path.GetDirectoryName(path) is string dir)
+			if (path != "Filename=:memory:" && Path.GetDirectoryName(path) is string dir)
 				Directory.CreateDirectory(dir);
 			Database = new LiteDatabase(path);
 

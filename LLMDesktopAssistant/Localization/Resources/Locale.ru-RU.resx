@@ -1542,4 +1542,7 @@
   <data name="math-solve" xml:space="preserve">
     <value>Решить математическое уравнение</value>
   </data>
+  <data name="new_temporary_chat" xml:space="preserve">
+    <value>Новый временный чат</value>
+  </data>
 </root>

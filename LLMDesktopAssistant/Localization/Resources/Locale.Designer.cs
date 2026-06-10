@@ -2122,6 +2122,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на New temporary chat.
+        /// </summary>
+        public static string new_temporary_chat {
+            get {
+                return ResourceManager.GetString("new_temporary_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на no topic.
         /// </summary>
         public static string no_topic {

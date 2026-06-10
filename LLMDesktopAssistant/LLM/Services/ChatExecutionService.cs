@@ -190,8 +190,13 @@ namespace LLMDesktopAssistant.LLM.Services
 						if (toolCall is not IFunctionToolCall funtionCall)
 							throw new InvalidOperationException($"Unsupported tool call type: {toolCall.GetType()}.");
 
-						if (!toolsetCache.ValidAliasedTools.TryGetValue(toolCall.ToolName, out var toolInfo))
-							toolInfo = null;
+						if (toolsetCache.ValidAliasedTools.TryGetValue(toolCall.ToolName, out var toolInfo))
+						{
+							if (toolInfo.Name != toolCall.ToolName)
+							{
+								Log.Information($"Tool call '{toolCall.ToolName}' is aliased as '{toolInfo.Name}'. Using the alias.");
+							}
+						}
 
 						var toolCallCompletionSource = new CompletionSource();
 						var domainToolCall = new Domain.ToolCall

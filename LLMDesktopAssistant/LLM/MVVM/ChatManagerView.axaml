@@ -57,12 +57,14 @@
 															Spacing="4">
 										
 										<Button Command="{Binding OpenInNewTabCommand}"
+														IsEnabled="{Binding !IsTemporary}"
 														Classes="SmallIconButton"
 														ToolTip.Tip="{loc:Loc open_in_new_tab}">
 											<ico:MaterialIcon Kind="TabPlus"/>
 										</Button>
 										
 										<Button Command="{Binding DeleteCommand}"
+														IsEnabled="{Binding !IsTemporary}"
 														Classes="SmallIconButton"
 														ToolTip.Tip="{loc:Loc delete}">
 											<ico:MaterialIcon Kind="Delete"/>
@@ -131,11 +133,17 @@
 										HorizontalAlignment="Right"
 										Orientation="Horizontal"
 										Margin="10" Spacing="5">
-
-					<Button Command="{Binding CreateConversationCommand}"
+					
+					<Button Command="{Binding CreateChatCommand}"
 									Classes="IconButton"
 									ToolTip.Tip="{loc:Loc new_chat}">
 						<ico:MaterialIcon Kind="MessagePlus"/>
+					</Button>
+					
+					<Button Command="{Binding CreateTemporaryChatCommand}"
+									Classes="IconButton"
+									ToolTip.Tip="{loc:Loc new_temporary_chat}">
+						<ico:MaterialIcon Kind="MessageFlash"/>
 					</Button>
 					
 					<ToggleButton IsChecked="{Binding #ChatSplitView.IsPaneOpen}"

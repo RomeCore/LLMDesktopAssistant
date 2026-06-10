@@ -57,10 +57,23 @@ namespace LLMDesktopAssistant.LLM.Services
 			return OpenChatScope(database, chatId);
 		}
 
-		public IServiceScope OpenMemoryChat()
+		public IServiceScope OpenMemoryChat(string title)
 		{
-			var memoryDatabase = new ChatDatabase("Memory=true;");
-			return OpenChatScope(memoryDatabase, 1);
+			const int memoryChatId = 1;
+			var memoryDatabase = new ChatDatabase("Filename=:memory:");
+
+			var model = new ChatModel
+			{
+				Id = memoryChatId,
+				Title = title,
+				CreatedAt = DateTime.Now,
+				LastModifiedAt = DateTime.Now,
+				RootNodeId = -1,
+				LeafNodeId = -1
+			};
+
+			memoryDatabase.Chats.Insert(model);
+			return OpenChatScope(memoryDatabase, memoryChatId);
 		}
 
 		public void ClearEmptyChats()

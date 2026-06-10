@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Opens a new service scope for a memory-based chat session. This is useful for scenarios where the chat history is stored in memory rather than persistently.
 		/// </summary>
 		/// <returns>A service scope containing a new memory-based chat session and any related dependencies.</returns>
-		IServiceScope OpenMemoryChat();
+		IServiceScope OpenMemoryChat(string title);
 
 		/// <summary>
 		/// Removes all chat sessions that do not contain any messages.

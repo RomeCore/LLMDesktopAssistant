@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using DocumentFormat.OpenXml.EMMA;
 using LiveMarkdown.Avalonia;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
@@ -17,18 +18,20 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	public class AvailableChatViewModel : NotifyPropertyChanged
 	{
 		public required int Id { get; init; }
+		public bool IsTemporary => TemporaryScope != null;
+		public IServiceScope? TemporaryScope { get; init; }
 		public required ICommand OpenInNewTabCommand { get; init; }
 		public required ICommand DeleteCommand { get; init; }
 
-		private string _title = string.Empty;
-		public string Title
+		private string? _title = string.Empty;
+		public string? Title
 		{
 			get => _title;
 			set => SetProperty(ref _title, value);
 		}
 
-		private string _topic = string.Empty;
-		public string Topic
+		private string? _topic = string.Empty;
+		public string? Topic
 		{
 			get => _topic;
 			set
@@ -56,7 +59,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		public string TopicColorHex => GenerateColorHexFromHash(Topic);
 
-		private static string GenerateColorHexFromHash(string topic)
+		private static string GenerateColorHexFromHash(string? topic)
 		{
 			if (string.IsNullOrEmpty(topic))
 				return "#808080";
@@ -276,7 +279,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				Log.Debug(ex, "Failed to cleanup old chat scope: {Error}", ex.Message);
 			}
 
-			_currentChatScope = ChatManager.OpenChatScope(available.Id);
+			_currentChatScope = available.TemporaryScope ?? ChatManager.OpenChatScope(available.Id);
 			var chatServices = _currentChatScope.ServiceProvider;
 			var chat = chatServices.GetRequiredService<Chat>();
 			CurrentChat = new ChatViewModel(chat);
@@ -309,7 +312,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		// Утечки памяти вызваны Link.TagToLinkMap, который нихуя не чистится, я его там заменил на ConcurrentDict<WeakReference>
 		// Ждем
 
-		private static Dictionary<string, Link>? _tagToLinkMap;
+		private static readonly Dictionary<string, Link>? _tagToLinkMap;
 
 		static OpenedChatViewModel()
 		{
@@ -350,12 +353,15 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _selectedChat, value);
 		}
 
-		public ICommand CreateConversationCommand { get; }
+		public ICommand CreateChatCommand { get; }
+
+		public ICommand CreateTemporaryChatCommand { get; }
 
 		public ChatManagerViewModel(IChatManagementService chatManager)
 		{
 			ChatManager = chatManager;
-			CreateConversationCommand = new RelayCommand(CreateChat);
+			CreateChatCommand = new RelayCommand(CreateChat);
+			CreateTemporaryChatCommand = new RelayCommand(CreateTemporaryChat);
 
 			Initialize();
 		}
@@ -432,6 +438,23 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			var newChat = ChatManager.CreateChat(LocalizationManager.LocalizeStatic("new_chat"));
 			var newAvailableChat = CreateAvailableChatViewModel(newChat);
 			AvailableChats.Insert(0, newAvailableChat);
+			OpenChat(newAvailableChat);
+		}
+
+		private void CreateTemporaryChat()
+		{
+			var chatScope = ChatManager.OpenMemoryChat(LocalizationManager.LocalizeStatic("new_temporary_chat"));
+			var chat = chatScope.ServiceProvider.GetRequiredService<Chat>();
+			var newAvailableChat = new AvailableChatViewModel
+			{
+				Id = chat.ChatId,
+				TemporaryScope = chatScope,
+				OpenInNewTabCommand = new RelayCommand(() => { }, () => false),
+				DeleteCommand = new RelayCommand(() => { }, () => false),
+				Title = chat.Title,
+				Topic = string.Empty,
+				LastModifiedAt = DateTime.Now
+			};
 			OpenChat(newAvailableChat);
 		}
 	}
