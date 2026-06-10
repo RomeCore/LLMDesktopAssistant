@@ -3274,6 +3274,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Send &quot;{0}&quot;.
+        /// </summary>
+        public static string send_quick_action {
+            get {
+                return ResourceManager.GetString("send_quick_action", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Settings.
         /// </summary>
         public static string settings {

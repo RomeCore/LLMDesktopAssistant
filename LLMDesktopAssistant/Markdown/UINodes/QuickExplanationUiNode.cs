@@ -50,6 +50,7 @@ public class QuickExplanationUiNode : InlineNode<QuickExplanation>
 	{
 		_button.Content = explanation.Term;
 		SetQuickExplanation(_button, explanation.Definition);
+		ToolTip.SetTip(_button, explanation.Definition);
 		return true;
 	}
 }

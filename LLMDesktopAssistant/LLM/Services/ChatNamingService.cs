@@ -57,11 +57,9 @@ namespace LLMDesktopAssistant.LLM.Services
 				var namingLLM = llmBuilder.BuildSummarizationLLM();
 				if (namingLLM == null)
 				{
-					Log.Warning("Cannot name chat: no naming LLM available (using summarization model fallback).");
+					Log.Warning("Cannot name chat: no naming LLM available.");
 					return false;
 				}
-
-				Log.Information("Started chat naming process for chat {ChatId}.", chat.ChatId);
 
 				var namingTemplate = (ITextTemplate)templates.Retrieve("naming_prompt")!;
 				var namingPrompt = namingTemplate.Render();
@@ -121,9 +119,6 @@ namespace LLMDesktopAssistant.LLM.Services
 						durationMs: (long)(timeFinished - timeRequested).TotalMilliseconds,
 						success: true);
 				}
-
-				Log.Information("Chat named successfully. Title: {Title}, Topic: {Topic}",
-					chat.Title, chat.Topic);
 
 				return true;
 			}

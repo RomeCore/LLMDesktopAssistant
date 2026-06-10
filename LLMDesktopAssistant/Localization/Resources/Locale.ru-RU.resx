@@ -1602,4 +1602,7 @@
   <data name="promptcomponent-quick_explanations" xml:space="preserve">
     <value>Быстрые определения</value>
   </data>
+  <data name="send_quick_action" xml:space="preserve">
+    <value>Отправить "{0}"</value>
+  </data>
 </root>

@@ -7,6 +7,7 @@ using Avalonia.VisualTree;
 using LiveMarkdown.Avalonia;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Markdown.Nodes;
 using LLMDesktopAssistant.Utils;
 
@@ -79,6 +80,7 @@ public class QuickActionUiNode : InlineNode<QuickAction>
 	{
 		_button.Content = quickAction.ButtonText;
 		SetQuickAction(_button, quickAction);
+		ToolTip.SetTip(_button, LocalizationManager.LocalizeStaticFormat("send_quick_action", quickAction.Prompt));
 		return true;
 	}
 }
