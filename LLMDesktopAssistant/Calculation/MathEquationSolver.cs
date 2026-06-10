@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.Calculation
         /// <param name="a">Left bound of the search interval.</param>
         /// <param name="b">Right bound of the search interval.</param>
         /// <param name="tolerance">The desired precision. Default is 1e-12.</param>
-        /// <param name="maxIterations">Maximum number of iterations. Default is 1000.</param>
+        /// <param name="maxIterations">Maximum number of iterations. Default is 200.</param>
         /// <returns>The approximate root.</returns>
         public static double SolveBisection(
             MathEntity expression,
@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.Calculation
             double a,
             double b,
             double tolerance = 1e-12,
-            int maxIterations = 1000)
+            int maxIterations = 200)
         {
             double fa = EvaluateAt(expression, variable, a);
 
@@ -154,14 +154,14 @@ namespace LLMDesktopAssistant.Calculation
         /// <param name="variable">The name of the variable to solve for.</param>
         /// <param name="initialGuess">Starting point on the complex plane.</param>
         /// <param name="tolerance">Desired precision. Default is 1e-12.</param>
-        /// <param name="maxIterations">Maximum iterations. Default is 100.</param>
+        /// <param name="maxIterations">Maximum iterations. Default is 50.</param>
         /// <returns>A complex root near the initial guess.</returns>
         public static Complex SolveNewtonComplex(
             MathEntity expression,
             string variable,
             Complex initialGuess,
             double tolerance = 1e-12,
-            int maxIterations = 100)
+            int maxIterations = 50)
         {
             const double h = 1e-8;
             Complex z = initialGuess;
@@ -209,7 +209,7 @@ namespace LLMDesktopAssistant.Calculation
             double reRange = 10.0,
             double imRange = 10.0,
             double gridStep = 0.5,
-            double tolerance = 1e-10)
+            double tolerance = 1e-12)
         {
             var candidates = new List<Complex>();
 

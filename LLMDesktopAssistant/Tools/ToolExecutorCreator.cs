@@ -137,14 +137,14 @@ namespace LLMDesktopAssistant.Tools
 					foreach (var (i, serviceType) in serviceMappings)
 						inParams[i] = context.Chat.Services.GetService(serviceType);
 
-					foreach (var kvp in parameterMappings)
+					foreach (var (name, paramIndex) in parameterMappings)
 					{
-						var arg = objArgs[kvp.Key];
+						var arg = objArgs[name];
 						if (arg == null)
 							continue;
 
-						var type = parameters[kvp.Value].ParameterType;
-						inParams[kvp.Value] = ToolArgsJsonNodeConverter.Convert(arg, type)!;
+						var type = parameters[paramIndex].ParameterType;
+						inParams[paramIndex] = ToolArgsJsonNodeConverter.Convert(arg, type, name)!;
 					}
 
 					if (toolExecutionContextMapping != -1)

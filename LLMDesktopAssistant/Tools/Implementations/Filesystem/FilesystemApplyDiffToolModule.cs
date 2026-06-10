@@ -46,7 +46,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[Description("Range of lines to delete, e.g. '10-20' or '10'. If not specified, no lines will be deleted.")]
 			string? deleteLines = null,
 			[Description("The line number at which to insert text (specified in 'insertText' or 'deleteLines').")]
-			int? insertBeforeLine = null,
+			string? insertBeforeLine = null,
 			[Description("The text to insert at the specified line. Requires the 'insertBeforeLine' to be specified.")]
 			string? insertText = null)
 		{
@@ -61,6 +61,15 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				if (FileUtils.IsBinaryFile(fullPath))
 					return ReactiveToolResult.CreateError("Cannot apply diff to binary files.");
 
+				int? _insertBeforeLine = null;
+				if (insertBeforeLine != null)
+				{
+					if (int.TryParse(insertBeforeLine, out var ibl))
+						_insertBeforeLine = ibl;
+					else
+						return ReactiveToolResult.CreateError($"Invalid line number for insertion: {insertBeforeLine}.");
+				}
+
 				var originalContent = File.ReadAllText(fullPath);
 				var lines = originalContent.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
 				var beforeDeletionLines = lines.ToList();
@@ -68,11 +77,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				int deletedStartLine = -1;
 				int deletedEndLine = -1;
-				List<string> deletedContent = new();
+				List<string> deletedContent = [];
 
 				int insertedStartLine = -1;
 				int insertedEndLine = -1;
-				List<string> insertedContent = new();
+				List<string> insertedContent = [];
 
 				if (!string.IsNullOrEmpty(deleteLines))
 				{
@@ -90,10 +99,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				if (insertBeforeLine != null && insertText != null)
 				{
-					if (insertBeforeLine < 1)
+					if (_insertBeforeLine < 1)
 						return ReactiveToolResult.CreateError($"Line number {insertBeforeLine} must be at least 1");
 
-					if (insertBeforeLine > lines.Count + 1)
+					if (_insertBeforeLine > lines.Count + 1)
 						return ReactiveToolResult.CreateError(
 							$"Line number {insertBeforeLine} is out of range. File has {lines.Count} lines. " +
 							$"Max insert position is {lines.Count + 1}");
@@ -120,28 +129,28 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					int countToRemove = endLine - startLine + 1;
 					lines.RemoveRange(startIndex, countToRemove);
 
-					if (insertBeforeLine != null && insertBeforeLine > startLine)
+					if (_insertBeforeLine != null && _insertBeforeLine > startLine)
 					{
-						if (insertBeforeLine < startLine + countToRemove)
+						if (_insertBeforeLine < startLine + countToRemove)
 						{
-							insertBeforeLine = startLine;
+							_insertBeforeLine = startLine;
 						}
 						else
 						{
-							insertBeforeLine -= countToRemove;
+							_insertBeforeLine -= countToRemove;
 						}
 					}
 				}
 
-				if (insertBeforeLine != null && insertText != null)
+				if (_insertBeforeLine != null && insertText != null)
 				{
 					beforeInsertionLines = lines.ToList();
-					insertedStartLine = insertBeforeLine.Value;
+					insertedStartLine = _insertBeforeLine.Value;
 					var insertLinesList = insertText.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
 					insertedContent = insertLinesList;
-					insertedEndLine = insertBeforeLine.Value + insertLinesList.Count - 1;
+					insertedEndLine = _insertBeforeLine.Value + insertLinesList.Count - 1;
 
-					int insertPosition = insertBeforeLine.Value - 1;
+					int insertPosition = _insertBeforeLine.Value - 1;
 					lines.InsertRange(insertPosition, insertLinesList);
 				}
 

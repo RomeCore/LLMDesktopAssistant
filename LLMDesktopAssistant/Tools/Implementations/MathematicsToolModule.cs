@@ -49,7 +49,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 						sin, sinh, asin, cos, cosh, acos, tanh, atan,
 						sind, cosd, tand, asind, acosd, atand,
-						ln, log, log2, logb, exp, pow, sqrt,
+						ln, log, log2, log10, logb, exp, pow, sqrt,
 						abs, min, max
 						""",
 					Category = "mathematics"

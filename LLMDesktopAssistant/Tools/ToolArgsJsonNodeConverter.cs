@@ -12,12 +12,20 @@ namespace LLMDesktopAssistant.Tools
 		private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
 		{
 			NumberHandling = JsonNumberHandling.AllowReadingFromString,
+			Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),
 			PropertyNameCaseInsensitive = true,
 		};
 
-		public static object? Convert(JsonNode? node, Type targetType)
+		public static object? Convert(JsonNode? node, Type targetType, string? argName)
 		{
-			return node.Deserialize(targetType, _jsonSerializerOptions);
+			try
+			{
+				return node.Deserialize(targetType, _jsonSerializerOptions);
+			}
+			catch (Exception ex)
+			{
+				throw new ArgumentException($"Failed to convert argument '{node?.ToJsonString(_jsonSerializerOptions) ?? "null"}' (name '{argName ?? "unknown"}') to type {targetType.FullName}: {ex.Message}", argName, ex);
+			}
 		}
 	}
 }
