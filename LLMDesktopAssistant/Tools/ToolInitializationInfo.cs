@@ -13,6 +13,11 @@ namespace LLMDesktopAssistant.Tools
 		public required string Name { get; init; }
 
 		/// <summary>
+		/// Gets or sets the aliases for the tool. These are alternative names that can be used to invoke the tool.
+		/// </summary>
+		public ImmutableList<string> Aliases { get; init; } = [];
+
+		/// <summary>
 		/// Gets or sets the description of the tool.
 		/// </summary>
 		public string Description

@@ -38,6 +38,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						result.Add(new ToolInfo
 						{
 							Name = toolInfo.Name,
+							Aliases = toolInfo.Aliases,
 							DescriptionGetter = toolInfo.DescriptionGetter,
 							ArgumentSchema = toolInfo.ArgumentSchema,
 							OutputSchema = toolInfo.OutputSchema,

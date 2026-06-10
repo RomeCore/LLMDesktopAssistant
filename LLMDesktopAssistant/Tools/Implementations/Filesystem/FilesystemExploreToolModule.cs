@@ -29,6 +29,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				new ToolInitializationInfo
 				{
 					Name = "fs-read_entry",
+					Aliases = ["fs-read_file", "read_file", "fs-read_directory", "read_directory"],
 					Description = """
 						The universal tool for exploring the filesystem. It can list directories and read files line by line.
 						If directory exists under the specified path, it will list all files and directories in that directory.

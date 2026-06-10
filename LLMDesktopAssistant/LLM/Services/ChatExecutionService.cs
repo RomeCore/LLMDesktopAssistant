@@ -149,8 +149,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				var agent = agentManager.GetAgentDescriptor(agentId);
 				var inputMessages = promptBuilder.Build(agent);
 				toolsetCache.Invalidate(agentId);
-				var tools = toolsetCache.ValidTools;
-				var toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
+				var toolset = new ImmutableToolSet(toolsetCache.ValidTools.Values.Select(t => t.Tool));
 				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				var responseMessage = response.Message;
 
@@ -191,7 +190,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						if (toolCall is not IFunctionToolCall funtionCall)
 							throw new InvalidOperationException($"Unsupported tool call type: {toolCall.GetType()}.");
 
-						if (!tools.TryGetValue(toolCall.ToolName, out var toolInfo))
+						if (!toolsetCache.ValidAliasedTools.TryGetValue(toolCall.ToolName, out var toolInfo))
 							toolInfo = null;
 
 						var toolCallCompletionSource = new CompletionSource();
@@ -199,7 +198,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						{
 							Status = ToolStatus.None,
 							Id = toolCall.Id,
-							ToolName = toolCall.ToolName,
+							ToolName = toolInfo?.Name ?? toolCall.ToolName,
 							Title = toolInfo?.DisplayName ?? toolCall.ToolName,
 							Arguments = funtionCall.Args,
 							CompletionToken = toolCallCompletionSource.Token
@@ -212,12 +211,7 @@ namespace LLMDesktopAssistant.LLM.Services
 							{
 								domainToolCall.Status = ToolStatus.Pending;
 								Func<JsonNode, ToolExecutionContext, StreamingToolArgumentsAnalysisResult>?
-									streamingArgumentsAnalyser = null;
-
-								if (tools.TryGetValue(funtionCall.ToolName, out var toolInfo))
-								{
-									streamingArgumentsAnalyser = toolInfo.StreamingArgumentsAnalyser;
-								}
+									streamingArgumentsAnalyser = toolInfo?.StreamingArgumentsAnalyser;
 
 								void AddedPartialArg(object? sender, string deltaArg)
 								{
@@ -264,7 +258,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 							try
 							{
-								await toolExecutor.ExecuteAsync(domainResponseMessage, domainToolCall, llmInfo, tools, cancellationToken);
+								await toolExecutor.ExecuteAsync(domainResponseMessage, domainToolCall, llmInfo, toolsetCache.ValidAliasedTools, cancellationToken);
 							}
 							finally
 							{
@@ -436,8 +430,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 					inputMessages = promptBuilder.Build(agent);
 					toolsetCache.Invalidate(agentId);
-					tools = toolsetCache.ValidTools;
-					toolset = new ImmutableToolSet(tools.Values.Select(t => t.Tool));
+					toolset = new ImmutableToolSet(toolsetCache.ValidTools.Values.Select(t => t.Tool));
 					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 					responseMessage = response.Message;
 

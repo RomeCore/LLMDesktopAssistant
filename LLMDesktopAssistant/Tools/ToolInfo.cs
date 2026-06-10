@@ -14,6 +14,11 @@ namespace LLMDesktopAssistant.Tools
 		public required string Name { get; init; }
 
 		/// <summary>
+		/// Gets or sets the aliases for the tool. These are alternative names that can be used to invoke the tool.
+		/// </summary>
+		public ImmutableList<string> Aliases { get; init; } = [];
+
+		/// <summary>
 		/// Gets or sets a function that returns the description of the tool. This is useful for dynamic descriptions based on runtime conditions.
 		/// </summary>
 		public required Func<string> DescriptionGetter { get; init; } = () => "";
@@ -128,6 +133,7 @@ namespace LLMDesktopAssistant.Tools
 			return new ToolInfo
 			{
 				Name = info.Name,
+				Aliases = info.Aliases,
 				DescriptionGetter = info.DescriptionGetter,
 				ArgumentSchema = argSchema,
 				OutputSchema = info.OutputSchema,

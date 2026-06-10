@@ -188,36 +188,40 @@
 									BoxShadow="0 0 3 0 #ac000000">
 							
 						<Panel>
-
-							<ico:MaterialIcon Kind="{Binding ToolIcon}"
-																Foreground="{Binding ToolIconBrush}"
-																Width="16" Height="16"
-																IsVisible="{Binding IsBlinking}">
+							
+							<Panel IsVisible="{Binding ToolIconVisible}">
+						
+								<ico:MaterialIcon Kind="{Binding ToolIcon}"
+																	Foreground="{Binding ToolIconBrush}"
+																	Width="16" Height="16"
+																	IsVisible="{Binding IsBlinking}">
 				
-								<ico:MaterialIcon.Styles>
-									<Style Selector="ico|MaterialIcon">
-										<Style.Animations>
-											<Animation Duration="0:0:1"
-																	IterationCount="INFINITE"
-																	PlaybackDirection="Alternate"
-																	Easing="SineEaseInOut">
-												<KeyFrame Cue="0%">
-													<Setter Property="Opacity" Value="1.0"/>
-												</KeyFrame>
-												<KeyFrame Cue="100%">
-													<Setter Property="Opacity" Value="0.3"/>
-												</KeyFrame>
-											</Animation>
-										</Style.Animations>
-									</Style>
-								</ico:MaterialIcon.Styles>
+									<ico:MaterialIcon.Styles>
+										<Style Selector="ico|MaterialIcon">
+											<Style.Animations>
+												<Animation Duration="0:0:1"
+																		IterationCount="INFINITE"
+																		PlaybackDirection="Alternate"
+																		Easing="SineEaseInOut">
+													<KeyFrame Cue="0%">
+														<Setter Property="Opacity" Value="1.0"/>
+													</KeyFrame>
+													<KeyFrame Cue="100%">
+														<Setter Property="Opacity" Value="0.3"/>
+													</KeyFrame>
+												</Animation>
+											</Style.Animations>
+										</Style>
+									</ico:MaterialIcon.Styles>
 				
-							</ico:MaterialIcon>
+								</ico:MaterialIcon>
 					
-							<ico:MaterialIcon Kind="{Binding ToolIcon}"
-																Foreground="{Binding ToolIconBrush}"
-																Width="16" Height="16"
-																IsVisible="{Binding ToolIconVisible}"/>
+								<ico:MaterialIcon Kind="{Binding ToolIcon}"
+																	Foreground="{Binding ToolIconBrush}"
+																	Width="16" Height="16"
+																	IsVisible="{Binding !IsBlinking}"/>
+
+							</Panel>
 
 							<ctrl:ProgressRing IsVisible="{Binding InProgress}"
 																 Foreground="{Binding ToolIconBrush}"
@@ -235,35 +239,39 @@
 					
 				<Panel IsVisible="{Binding StatusIcon, Converter={StaticResource NotnullToBooleanConverterInverted}}">
 					
-					<ico:MaterialIcon Kind="{Binding ToolIcon}"
-														Foreground="{Binding ToolIconBrush}"
-														Width="28" Height="28"
-														IsVisible="{Binding IsBlinking}">
+					<Panel IsVisible="{Binding ToolIconVisible}">
+						
+						<ico:MaterialIcon Kind="{Binding ToolIcon}"
+															Foreground="{Binding ToolIconBrush}"
+															Width="28" Height="28"
+															IsVisible="{Binding IsBlinking}">
 				
-						<ico:MaterialIcon.Styles>
-							<Style Selector="ico|MaterialIcon">
-								<Style.Animations>
-									<Animation Duration="0:0:1"
-															IterationCount="INFINITE"
-															PlaybackDirection="Alternate"
-															Easing="SineEaseInOut">
-										<KeyFrame Cue="0%">
-											<Setter Property="Opacity" Value="1.0"/>
-										</KeyFrame>
-										<KeyFrame Cue="100%">
-											<Setter Property="Opacity" Value="0.3"/>
-										</KeyFrame>
-									</Animation>
-								</Style.Animations>
-							</Style>
-						</ico:MaterialIcon.Styles>
+							<ico:MaterialIcon.Styles>
+								<Style Selector="ico|MaterialIcon">
+									<Style.Animations>
+										<Animation Duration="0:0:1"
+																IterationCount="INFINITE"
+																PlaybackDirection="Alternate"
+																Easing="SineEaseInOut">
+											<KeyFrame Cue="0%">
+												<Setter Property="Opacity" Value="1.0"/>
+											</KeyFrame>
+											<KeyFrame Cue="100%">
+												<Setter Property="Opacity" Value="0.3"/>
+											</KeyFrame>
+										</Animation>
+									</Style.Animations>
+								</Style>
+							</ico:MaterialIcon.Styles>
 				
-					</ico:MaterialIcon>
+						</ico:MaterialIcon>
 					
-					<ico:MaterialIcon Kind="{Binding ToolIcon}"
-														Foreground="{Binding ToolIconBrush}"
-														Width="28" Height="28"
-														IsVisible="{Binding ToolIconVisible}"/>
+						<ico:MaterialIcon Kind="{Binding ToolIcon}"
+															Foreground="{Binding ToolIconBrush}"
+															Width="28" Height="28"
+															IsVisible="{Binding !IsBlinking}"/>
+
+					</Panel>
 
 					<ctrl:ProgressRing IsVisible="{Binding InProgress}"
 														 Foreground="{Binding ToolIconBrush}"
