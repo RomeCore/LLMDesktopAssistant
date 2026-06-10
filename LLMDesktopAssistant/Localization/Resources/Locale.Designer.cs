@@ -4048,6 +4048,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на temporary.
+        /// </summary>
+        public static string temporary_chat {
+            get {
+                return ResourceManager.GetString("temporary_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Time.
         /// </summary>
         public static string time {

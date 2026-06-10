@@ -30,6 +30,22 @@ namespace LLMDesktopAssistant.Behaviours
 			return element.GetValue(IsParentListBoxItemEnabledProperty);
 		}
 
+		public static readonly AttachedProperty<bool> IsParentListBoxItemVisibleProperty =
+			AvaloniaProperty.RegisterAttached<Control, bool>(
+				"IsParentListBoxItemVisible",
+				typeof(ListBoxItemBehaviour),
+				true);
+
+		public static void SetIsParentListBoxItemVisible(Control element, bool value)
+		{
+			element.SetValue(IsParentListBoxItemVisibleProperty, value);
+		}
+
+		public static bool GetIsParentListBoxItemVisible(Control element)
+		{
+			return element.GetValue(IsParentListBoxItemVisibleProperty);
+		}
+
 		public static readonly AttachedProperty<Dock> ParentListBoxItemDockProperty =
 			AvaloniaProperty.RegisterAttached<Control, Dock>(
 				"ParentListBoxItemDock",
@@ -52,6 +68,11 @@ namespace LLMDesktopAssistant.Behaviours
 				(o, e) =>
 				{
 					ParentListBoxItemPropertyChanged(o, (l, v) => l.IsEnabled = v, e.GetNewValue<bool>());
+				});
+			IsParentListBoxItemVisibleProperty.Changed.AddClassHandler<Control, bool>(
+				(o, e) =>
+				{
+					ParentListBoxItemPropertyChanged(o, (l, v) => l.IsVisible = v, e.GetNewValue<bool>());
 				});
 			ParentListBoxItemDockProperty.Changed.AddClassHandler<Control, Dock>(
 				(o, e) =>

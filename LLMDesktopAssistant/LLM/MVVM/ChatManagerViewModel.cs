@@ -452,9 +452,10 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				OpenInNewTabCommand = new RelayCommand(() => { }, () => false),
 				DeleteCommand = new RelayCommand(() => { }, () => false),
 				Title = chat.Title,
-				Topic = string.Empty,
+				Topic = chat.Topic,
 				LastModifiedAt = DateTime.Now
 			};
+			AvailableChats.Insert(0, newAvailableChat);
 			OpenChat(newAvailableChat);
 		}
 	}

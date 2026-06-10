@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.Scripting
 				new ToolInitializationInfo
 				{
 					Name = "execute-lua",
-					DescriptionGetter = () => $"""
+					Description = $"""
 						Executes Lua and returns the script result along with messages printed by 'print' function.
 						
 						Lua has the API to interact with the application (called dASS) with these namespaces:

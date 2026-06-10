@@ -43,7 +43,8 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							
-							<DockPanel beh:ListBoxItemBehaviour.IsParentListBoxItemEnabled="{Binding !IsSelected}">
+							<DockPanel beh:ListBoxItemBehaviour.IsParentListBoxItemEnabled="{Binding !IsSelected}"
+												 beh:ListBoxItemBehaviour.IsParentListBoxItemVisible="{Binding !IsTemporary}">
 
 								<StackPanel VerticalAlignment="Center"
 														DockPanel.Dock="Right">
@@ -88,24 +89,24 @@
 														 FontSize="14"
 														 TextWrapping="NoWrap"
 														 TextTrimming="CharacterEllipsis"/>
-								
+									
 									<TextBlock Text="{Binding Topic}"
-														 IsVisible="{Binding Topic, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-														 Foreground="{Binding TopicColorHex}"
-														 FontSize="11"
-														 Opacity="0.8"
-														 VerticalAlignment="Center"
-														 TextWrapping="NoWrap"
-														 TextTrimming="CharacterEllipsis"/>
+															IsVisible="{Binding Topic, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+															Foreground="{Binding TopicColorHex}"
+															FontSize="11"
+															Opacity="0.8"
+															VerticalAlignment="Center"
+															TextWrapping="NoWrap"
+															TextTrimming="CharacterEllipsis"/>
 								
 									<TextBlock Text="{loc:Loc no_topic}"
-														 IsVisible="{Binding Topic, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"
-														 Foreground="{Binding TopicColorHex}"
-														 FontSize="11"
-														 Opacity="0.8"
-														 VerticalAlignment="Center"
-														 TextWrapping="NoWrap"
-														 TextTrimming="CharacterEllipsis"/>
+															IsVisible="{Binding Topic, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"
+															Foreground="{Binding TopicColorHex}"
+															FontSize="11"
+															Opacity="0.8"
+															VerticalAlignment="Center"
+															TextWrapping="NoWrap"
+															TextTrimming="CharacterEllipsis"/>
 								
 								</StackPanel>
 								
@@ -180,28 +181,38 @@
 										<StackPanel Orientation="Vertical"
 																VerticalAlignment="Center">
 											
-											<TextBlock Text="{Binding CurrentChat.Chat.Title}"
+											<TextBlock Text="{Binding SelectedAvailable.Title}"
 																 FontSize="14"
 																 PointerPressed="TabTitleTextBlock_PointerPressed"
 																 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
 																 Cursor="Hand"/>
 											
-											<TextBlock Text="{Binding CurrentChat.Chat.Topic}"
-																 IsVisible="{Binding CurrentChat.Chat.Topic, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-																 Foreground="{Binding SelectedAvailable.TopicColorHex}"
-																 FontSize="11"
-																 PointerPressed="TabTopicTextBlock_PointerPressed"
-																 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
-																 Cursor="Hand"/>
+											<StackPanel Orientation="Horizontal" Spacing="4">
+												
+												<TextBlock Text="{Binding SelectedAvailable.Topic}"
+																	 IsVisible="{Binding SelectedAvailable.Topic, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+																	 Foreground="{Binding SelectedAvailable.TopicColorHex}"
+																	 FontSize="11"
+																	 PointerPressed="TabTopicTextBlock_PointerPressed"
+																	 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
+																	 Cursor="Hand"/>
 											
-											<TextBlock Text="{loc:Loc no_topic}"
-																 IsVisible="{Binding CurrentChat.Chat.Topic, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"
-																 Foreground="{Binding SelectedAvailable.TopicColorHex}"
-																 FontSize="11"
-																 PointerPressed="TabTopicTextBlock_PointerPressed"
-																 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
-																 Cursor="Hand"/>
+												<TextBlock Text="{loc:Loc no_topic}"
+																	 IsVisible="{Binding SelectedAvailable.Topic, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"
+																	 Foreground="{Binding SelectedAvailable.TopicColorHex}"
+																	 FontSize="11"
+																	 PointerPressed="TabTopicTextBlock_PointerPressed"
+																	 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
+																	 Cursor="Hand"/>
 											
+												<TextBlock Text="{loc:Loc temporary_chat}"
+																	 IsVisible="{Binding SelectedAvailable.IsTemporary}"
+																	 FontStyle="Italic"
+																	 Foreground="#AA888888"
+																	 FontSize="11"/>
+											
+											</StackPanel>
+
 										</StackPanel>
 
 										<Button Command="{Binding RenameWithAICommand}"

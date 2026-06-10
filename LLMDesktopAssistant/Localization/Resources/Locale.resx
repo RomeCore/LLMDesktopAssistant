@@ -1563,4 +1563,7 @@
   <data name="lines_count" xml:space="preserve">
     <value>{0} lines</value>
   </data>
+  <data name="temporary_chat" xml:space="preserve">
+    <value>temporary</value>
+  </data>
 </root>
