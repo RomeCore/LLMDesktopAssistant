@@ -53,7 +53,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -160,7 +159,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					var noChangeResult = new ReactiveToolResult
 					{
 						StatusIcon = Material.Icons.MaterialIconKind.Information,
-						StatusTitle = $"**{fileName}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
+						StatusTitle = $"**{path}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
 						ResultContent = "No changes applied to the file."
 					};
 					return noChangeResult.Complete(true);
@@ -193,7 +192,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var result = new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
-					StatusTitle = $"**{fileName}** *({changeDescription}{deletedLinesInfo}{insertedLinesInfo})*",
+					StatusTitle = $"**{path}** *({changeDescription}{deletedLinesInfo}{insertedLinesInfo})*",
 					ResultContent = changeReport
 				};
 

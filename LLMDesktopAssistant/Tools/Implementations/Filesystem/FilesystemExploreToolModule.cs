@@ -48,7 +48,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var displayEntryName = Path.GetFileName(fullPath);
+				var entryName = Path.GetFileName(fullPath);
 
 				bool fileExists = File.Exists(fullPath);
 				bool directoryExists = Directory.Exists(fullPath);
@@ -67,7 +67,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						maxLineLength,
 						withLineNumbers: false);
 
-					var secrets = scanner.ScanLines(lines, filename: displayEntryName, verify: false);
+					var secrets = scanner.ScanLines(lines, filename: entryName, verify: false);
 
 					/*
 					var sw = new Stopwatch();
@@ -83,7 +83,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						return new PreviewToolExecutionResult
 						{
 							StatusIcon = directoryExists ? MaterialIconKind.FileEye : MaterialIconKind.FileCode,
-							StatusTitle = LocalizationManager.LocalizeStaticFormat("file_contains_secrets", $"**{displayEntryName}**"),
+							StatusTitle = LocalizationManager.LocalizeStaticFormat("file_contains_secrets", $"**{path}**"),
 							DangerLevel = ToolDangerLevel.Dangerous
 						};
 					}
@@ -91,7 +91,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					return new PreviewToolExecutionResult
 					{
 						StatusIcon = directoryExists ? MaterialIconKind.FileEye : MaterialIconKind.FileCode,
-						StatusTitle = $"**{displayEntryName}**",
+						StatusTitle = $"**{path}**",
 						DangerLevel = ToolDangerLevel.Safe
 					};
 				}
@@ -101,7 +101,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					return new PreviewToolExecutionResult
 					{
 						StatusIcon = MaterialIconKind.Folder,
-						StatusTitle = $"**{displayEntryName}**",
+						StatusTitle = $"**{path}**",
 						DangerLevel = ToolDangerLevel.Safe
 					};
 				}
@@ -109,7 +109,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				return new PreviewToolExecutionResult
 				{
 					StatusIcon = MaterialIconKind.FileDiscard,
-					StatusTitle = $"**{displayEntryName}**",
+					StatusTitle = $"**{path}**",
 					InterruptingContent = $"No such file or directory found: '{path}'.",
 					InterruptingSuccess = false,
 					DangerLevel = ToolDangerLevel.Safe
@@ -149,7 +149,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var displayEntryName = Path.GetFileName(fullPath);
+				var entryName = Path.GetFileName(fullPath);
 
 				bool fileExists = File.Exists(fullPath);
 				bool directoryExists = Directory.Exists(fullPath);
@@ -176,14 +176,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					if (directoryExists)
 					{
 						result.StatusIcon = Material.Icons.MaterialIconKind.FileEye;
-						result.StatusTitle = $"**{displayEntryName}**";
+						result.StatusTitle = $"**{path}**";
 					}
 					else
 					{
 						result.StatusIcon = Material.Icons.MaterialIconKind.FileCode;
 						result.StatusTitle = endShown == totalLines ?
-							(startLine == 1 ? $"**{displayEntryName}**" : $"**{displayEntryName}** *({startLine}~{endShown})*") :
-							$"**{displayEntryName}** *({startLine}~{endShown} / {totalLines})*";
+							(startLine == 1 ? $"**{path}**" : $"**{path}** *({startLine}~{endShown})*") :
+							$"**{path}** *({startLine}~{endShown} / {totalLines})*";
 					}
 
 					if (lines.Count == 0)
@@ -304,12 +304,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 					if (!fileExists)
 					{
-						result.StatusIcon = Material.Icons.MaterialIconKind.Folder;
+						result.StatusIcon = MaterialIconKind.Folder;
 
 						int startEntry = offset;
 						int totalEntries = totalCount;
 						int endEntry = Math.Min(offset + maxEntries, totalEntries);
-						string boldDirName = string.IsNullOrWhiteSpace(displayEntryName) ? "" : $"**{displayEntryName}**";
+						string boldDirName = string.IsNullOrWhiteSpace(path) ? "" : $"**{path}**";
 						result.StatusTitle = endEntry == totalEntries ?
 							(startEntry == 0 ? boldDirName : $"{boldDirName} *({startEntry}~{endEntry})*") :
 							$"{boldDirName} *({startEntry}~{endEntry} / {totalEntries})*";
@@ -318,8 +318,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				if (!anyExists)
 				{
 					result.ResultContent = $"No such file or directory found: '{path}'.";
-					result.StatusIcon = Material.Icons.MaterialIconKind.FileDiscard;
-					result.StatusTitle = $"**{displayEntryName}**";
+					result.StatusIcon = MaterialIconKind.FileDiscard;
+					result.StatusTitle = $"**{path}**";
 					return result.Complete(false);
 				}
 

@@ -1,8 +1,5 @@
 using System.ComponentModel;
-using System.Text;
 using System.Text.RegularExpressions;
-using DocumentFormat.OpenXml.Bibliography;
-using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
@@ -68,14 +65,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		public ReactiveToolResult Edit(
 			[Description("The path to the file to edit.")]
 			string path,
-			[Description("The text or regex pattern to search for. Can include multiple lines in plain text mode.")]
-			string match,
 			[Description("The operation: 'replace', 'insert_before', 'insert_after', or 'delete'.")]
 			string operation,
+			[Description("If true, 'match' is treated as a .NET regular expression instead of plain text.")]
+			bool useRegex,
+			[Description("The text or regex pattern to search for. Can include multiple lines in plain text mode.")]
+			string match,
 			[Description("The replacement text (for 'replace'/'insert_before'/'insert_after') or empty for 'delete'.")]
 			string text = "",
-			[Description("If true, 'match' is treated as a .NET regular expression instead of plain text.")]
-			bool useRegex = false,
 			[Description("Which occurrence to act on: 0 = all, 1 = first, 2 = second, etc.")]
 			int occurrence = 0,
 			[Description("If true (plain text mode only), leading/trailing whitespace and line endings are ignored. Dedent is applied.")]
@@ -87,7 +84,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -106,29 +102,37 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var fileLines = normalizedContent.Split('\n').ToList();
 
 				string? newContent, errorMessage;
-				int countOfChanges;
 				if (useRegex)
-					(newContent, errorMessage, countOfChanges) = EditWithRegex(fullPath, fileName, path, match, text, operation, occurrence, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
+					(newContent, errorMessage) = EditWithRegex(match, text, operation, occurrence, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
 				else
-					(newContent, errorMessage, countOfChanges) = EditWithString(fullPath, fileName, path, match, text, operation, occurrence, ignoreWhitespace, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
+					(newContent, errorMessage) = EditWithString(match, text, operation, occurrence, ignoreWhitespace, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
 
 				if (newContent == null)
 				{
 					return new ReactiveToolResult
 					{
 						StatusIcon = Material.Icons.MaterialIconKind.FileDocumentError,
-						StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{fileName}**"),
+						StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
 						ResultContent = errorMessage ?? "No changes were made to the file. The specified match was not found."
 					}.CompleteWithSuccess();
 				}
 
 				File.WriteAllText(fullPath, newContent);
+
 				var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 10);
+				int removed = 0, added = 0;
+				foreach (var group in diff)
+				{
+					if (group.OldCount != -1)
+						removed += group.OldCount;
+					if (group.NewCount != -1)
+						added += group.NewCount;
+				}
 
 				return new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
-					StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied", $"**{fileName}**", countOfChanges),
+					StatusTitle = $"**{path}** *(-{removed} +{added})*",
 					ResultContent = diff.ToString()
 				}.CompleteWithSuccess();
 			}
@@ -144,10 +148,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 		#region Plain-Text Mode
 
-		private (string?, string?, int) EditWithString(
-			string fullPath,
-			string fileName,
-			string path,
+		private (string?, string?) EditWithString(
 			string match,
 			string text,
 			string operation,
@@ -177,11 +178,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			var foundIndices = FindSequenceIndices(fileLines, matchLines, ignoreWhitespace, comparison, cancellationToken);
 
 			if (foundIndices.Count == 0)
-				return (null, "No occurrences of the specified context were found.", 0);
+				return (null, "No occurrences of the specified context were found.");
 
 			var targetIndices = FilterOccurrences(foundIndices, occurrence);
 			if (targetIndices == null)
-				return (null, $"Occurrence {occurrence} not found. Only {foundIndices.Count} occurrence(s) exist.", 0);
+				return (null, $"Occurrence {occurrence} not found. Only {foundIndices.Count} occurrence(s) exist.");
 
 			// Apply operations
 			var operationLines = string.IsNullOrEmpty(text)
@@ -196,19 +197,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			newContent = PreserveLineEndings(originalContent, newContent);
 
 			if (newContent == originalContent)
-				return (null, "No changes were made (content is identical).", 0);
+				return (null, "No changes were made (content is identical).");
 
-			return (newContent, null, Math.Max(totalInsertions, totalDeletions));
+			return (newContent, null);
 		}
 
 		#endregion
 
 		#region Regex Mode
 
-		private (string?, string?, int) EditWithRegex(
-			string fullPath,
-			string fileName,
-			string path,
+		private (string?, string?) EditWithRegex(
 			string pattern,
 			string text,
 			string operation,
@@ -230,13 +228,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var totalReplacements = matches.Count;
 
 				if (totalReplacements == 0)
-					return (null, "No matches found.", 0);
+					return (null, "No matches found.");
 
 				int count = 0;
 				var newContent = regex.Replace(normalizedContent, m => ++count == occurrence ? text : m.Value);
 				newContent = PreserveLineEndings(originalContent, newContent);
 
-				return (newContent, null, totalReplacements);
+				return (newContent, null);
 			}
 			else
 			{
@@ -252,11 +250,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				}
 
 				if (matchedLineIndices.Count == 0)
-					return (null, $"No lines matched pattern '{pattern}'.", 0);
+					return (null, $"No lines matched pattern '{pattern}'.");
 
 				var targetIndices = FilterOccurrences(matchedLineIndices, occurrence);
 				if (targetIndices == null)
-					return (null, $"Occurrence {occurrence} not found. Only {matchedLineIndices.Count} occurrence(s) exist.", 0);
+					return (null, $"Occurrence {occurrence} not found. Only {matchedLineIndices.Count} occurrence(s) exist.");
 
 				var operationLines = string.IsNullOrEmpty(text)
 					? new List<string>()
@@ -269,9 +267,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				newContent = PreserveLineEndings(originalContent, newContent);
 
 				if (newContent == originalContent)
-					return (null, "No changes were made (content is identical).", 0);
+					return (null, "No changes were made (content is identical).");
 
-				return (newContent, null, Math.Max(totalInsertions, totalDeletions));
+				return (newContent, null);
 			}
 		}
 

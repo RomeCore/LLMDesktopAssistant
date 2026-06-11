@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
+using UglyToad.PdfPig.Graphics.Operations.PathPainting;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -123,7 +124,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				var fullPath = _fileAccess.AccessPath(path);
 				var metrics = FileUtils.GetFileMetrics(fullPath);
-				var fileName = Path.GetFileName(fullPath);
 
 				var result = new ReactiveToolResult
 				{
@@ -140,7 +140,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						FileType.Document => Material.Icons.MaterialIconKind.FileDocument,
 						_ => Material.Icons.MaterialIconKind.FileQuestion
 					},
-					StatusTitle = $"**{fileName}** *({FileUtils.BytesToDisplaySize(metrics.Size)})*"
+					StatusTitle = $"**{path}** *({FileUtils.BytesToDisplaySize(metrics.Size)})*"
 				};
 
 				var additional = metrics.LineCount != null
@@ -175,7 +175,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -196,8 +195,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FileCode,
 					StatusTitle = endShown == totalBytes ?
-						(startByte == 1 ? $"**{fileName}**" : $"**{fileName}** *({startByte}~{endShown})*") :
-						$"**{fileName}** *({startByte}~{endShown} / {totalBytes})*"
+						(startByte == 1 ? $"**{path}**" : $"**{path}** *({startByte}~{endShown})*") :
+						$"**{path}** *({startByte}~{endShown} / {totalBytes})*"
 				};
 
 				if (read == 0)
@@ -233,7 +232,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -249,7 +247,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var result = new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FileDocument,
-					StatusTitle = $"**{fileName}** *({startPage}~{endPage})*"
+					StatusTitle = $"**{path}** *({startPage}~{endPage})*"
 				};
 
 				if (string.IsNullOrWhiteSpace(text))
@@ -283,7 +281,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
 				var dir = Path.GetDirectoryName(fullPath);
 
 				if (!Directory.Exists(dir))
@@ -325,7 +322,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					StatusIcon = fileExisted ?
 						(append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck) :
 						Material.Icons.MaterialIconKind.FilePlus,
-					StatusTitle = $"**{fileName}**"
+					StatusTitle = $"**{path}**"
 				};
 
 				var output = $"""
@@ -349,7 +346,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var dirName = path + "/";
 
 				if (Directory.Exists(fullPath))
 					return ReactiveToolResult.CreateError("Directory already exists.");
@@ -359,7 +355,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var result = new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FolderPlus,
-					StatusTitle = $"**{dirName}**",
+					StatusTitle = $"**{path}**",
 					ResultContent = $"Directory '{path}' created successfully."
 				};
 
@@ -389,7 +385,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -402,7 +397,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var result = new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.Delete,
-					StatusTitle = $"**{fileName}**",
+					StatusTitle = $"**{path}**",
 					ResultContent = $"File '{path}' deleted successfully."
 				};
 
@@ -423,7 +418,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					return ReactiveToolResult.CreateError("Cannot delete the root working directory.");
 
 				var fullPath = _fileAccess.AccessPath(path);
-				var dirName = path + "/";
 
 				if (!Directory.Exists(fullPath))
 					return ReactiveToolResult.CreateError("Directory not found.");
@@ -435,7 +429,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var result = new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FolderRemove,
-					StatusTitle = $"**{dirName}**",
+					StatusTitle = $"**{path}**",
 					ResultContent = $"Directory '{path}' deleted successfully."
 				};
 
@@ -457,9 +451,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var fullOldPath = _fileAccess.AccessPath(oldPath);
 				var fullNewPath = _fileAccess.AccessPath(newPath);
 
-				var oldFileName = Path.GetFileName(fullOldPath);
-				var newFileName = Path.GetFileName(fullNewPath);
-
 				if (!File.Exists(fullOldPath))
 					return ReactiveToolResult.CreateError("Source file not found.");
 
@@ -474,7 +465,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var result = new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.Pencil,
-					StatusTitle = $"**{oldFileName}** → **{newFileName}**",
+					StatusTitle = $"**{oldPath}** → **{newPath}**",
 					ResultContent = $"File renamed from '{oldPath}' to '{newPath}'."
 				};
 
@@ -487,30 +478,29 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		}
 
 		public ReactiveToolResult MoveDirectory(
-			string sourcePath,
-			string destinationPath,
+			string oldPath,
+			string newPath,
 			bool overwrite = false)
 		{
 			try
 			{
-				var fullSourcePath = _fileAccess.AccessPath(sourcePath);
-				var fullDestPath = _fileAccess.AccessPath(destinationPath);
-				var dirName = Path.GetFileName(fullSourcePath);
+				var fullOldPath = _fileAccess.AccessPath(oldPath);
+				var fullNewPath = _fileAccess.AccessPath(newPath);
 
-				if (!Directory.Exists(fullSourcePath))
+				if (!Directory.Exists(fullOldPath))
 					return ReactiveToolResult.CreateError("Source directory not found.");
 
-				if (Directory.Exists(fullDestPath) && !overwrite)
+				if (Directory.Exists(fullNewPath) && !overwrite)
 					return ReactiveToolResult.CreateError("Destination directory already exists.");
 
-				Directory.CreateDirectory(Path.GetDirectoryName(fullDestPath)!);
-				Directory.Move(fullSourcePath, fullDestPath);
+				Directory.CreateDirectory(Path.GetDirectoryName(fullNewPath)!);
+				Directory.Move(fullOldPath, fullNewPath);
 
 				var result = new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.Folder,
-					StatusTitle = $"**{dirName}**",
-					ResultContent = $"Directory moved from '{sourcePath}' to '{destinationPath}'."
+					StatusTitle = $"**{oldPath}** → **{newPath}**",
+					ResultContent = $"Directory moved from '{oldPath}' to '{newPath}'."
 				};
 
 				return result.Complete(true);
@@ -531,9 +521,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var fullOldPath = _fileAccess.AccessPath(oldPath);
 				var fullNewPath = _fileAccess.AccessPath(newPath);
 
-				var oldFileName = Path.GetFileName(fullOldPath);
-				var newFileName = Path.GetFileName(fullNewPath);
-
 				if (!File.Exists(fullOldPath))
 					return ReactiveToolResult.CreateError("Source file not found.");
 
@@ -548,7 +535,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var result = new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
-					StatusTitle = $"**{oldFileName}** → **{newFileName}**",
+					StatusTitle = $"**{oldPath}** → **{newPath}**",
 					ResultContent = $"File copied from '{oldPath}' to '{newPath}'."
 				};
 
@@ -561,28 +548,27 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		}
 
 		public ReactiveToolResult CopyDirectory(
-			string sourcePath,
-			string destinationPath,
+			string oldPath,
+			string newPath,
 			bool overwrite = false)
 		{
 			try
 			{
-				var fullSourcePath = _fileAccess.AccessPath(sourcePath);
-				var fullDestPath = _fileAccess.AccessPath(destinationPath);
-				var dirName = Path.GetFileName(fullSourcePath);
+				var fullOldPath = _fileAccess.AccessPath(oldPath);
+				var fullNewPath = _fileAccess.AccessPath(newPath);
 
-				if (!Directory.Exists(fullSourcePath))
+				if (!Directory.Exists(fullOldPath))
 					return ReactiveToolResult.CreateError("Source directory not found.");
 
-				if (Directory.Exists(fullDestPath) && !overwrite)
+				if (Directory.Exists(fullNewPath) && !overwrite)
 					return ReactiveToolResult.CreateError("Destination directory already exists.");
 
-				Directory.CreateDirectory(fullDestPath);
+				Directory.CreateDirectory(fullNewPath);
 
-				foreach (var file in Directory.GetFiles(fullSourcePath, "*", SearchOption.AllDirectories))
+				foreach (var file in Directory.GetFiles(fullOldPath, "*", SearchOption.AllDirectories))
 				{
-					var relativePath = Path.GetRelativePath(fullSourcePath, file);
-					var destFile = Path.Combine(fullDestPath, relativePath);
+					var relativePath = Path.GetRelativePath(fullOldPath, file);
+					var destFile = Path.Combine(fullNewPath, relativePath);
 					Directory.CreateDirectory(Path.GetDirectoryName(destFile)!);
 					File.Copy(file, destFile, overwrite);
 				}
@@ -590,8 +576,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var result = new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
-					StatusTitle = $"**{dirName}**",
-					ResultContent = $"Directory copied from '{sourcePath}' to '{destinationPath}'."
+					StatusTitle = $"**{oldPath}** → **{newPath}**",
+					ResultContent = $"Directory copied from '{oldPath}' to '{newPath}'."
 				};
 
 				return result.Complete(true);

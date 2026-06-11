@@ -35,7 +35,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			string? content,
 			bool append = false)
 		{
-			var fileName = Path.GetFileName(path);
 			int lines = 0;
 			if (content != null)
 				foreach (var line in content.EnumerateLines())
@@ -44,7 +43,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			return new StreamingToolArgumentsAnalysisResult
 			{
 				StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-write_file_streaming_status",
-					path != null ? $"**{fileName}**" : string.Empty,
+					path != null ? $"**{path}**" : string.Empty,
 					lines)
 			};
 		}
@@ -57,7 +56,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
 				var fileExisted = File.Exists(fullPath);
 
 				if (fileExisted)
@@ -77,7 +75,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						return new PreviewToolExecutionResult
 						{
 							StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
-							StatusTitle = $"**{fileName}** *(-{removed} +{added})*",
+							StatusTitle = $"**{path}** *(-{removed} +{added})*",
 							DangerLevel = ToolDangerLevel.Warning
 						};
 					}
@@ -90,7 +88,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				return new PreviewToolExecutionResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
-					StatusTitle = $"**{fileName}**"
+					StatusTitle = $"**{path}**"
 				};
 			}
 			catch (Exception ex)
@@ -111,7 +109,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
 				var dir = Path.GetDirectoryName(fullPath);
 
 				if (!Directory.Exists(dir))
@@ -141,6 +138,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				output.AppendLine($"New size: {fileInfo.Length} bytes ~ ({size})");
 
 				// Compute and show diff for overwritten files
+				string changesTitlePostfix = string.Empty;
 				if (!append && fileExisted && oldContent != null)
 				{
 					var diff = UnifiedDiff.Compute(oldContent, content);
@@ -149,6 +147,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						output.AppendLine();
 						output.AppendLine("Changes:");
 						output.AppendLine(diff.ToString());
+
+						int removed = 0, added = 0;
+						foreach (var group in diff)
+						{
+							if (group.OldCount != -1)
+								removed += group.OldCount;
+							if (group.NewCount != -1)
+								added += group.NewCount;
+						}
+						changesTitlePostfix = $" *(-{removed} +{added})*";
 					}
 				}
 
@@ -157,7 +165,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					StatusIcon = fileExisted ?
 						(append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck) :
 						Material.Icons.MaterialIconKind.FilePlus,
-					StatusTitle = $"**{fileName}**",
+					StatusTitle = $"**{path}**{changesTitlePostfix}",
 					ResultContent = output.ToString()
 				};
 
