@@ -11,8 +11,11 @@ using AngleSharp;
 using Ganss.Xss;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Utils.Files;
+using Material.Icons;
 using RCLargeLanguageModels.Json.Schema;
 using RCLargeLanguageModels.Security;
 using RCLargeLanguageModels.Tools;
@@ -30,21 +33,16 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			WriteIndented = true
 		};
 
-		private readonly HttpClient _httpClient;
-		private readonly Chat _chat;
+		private readonly HttpClient _httpClient, _httpInfiniteTimeoutClient;
+		private readonly FileAccessService _fileAccess;
 
-		public WebRequestToolModule(Chat chat)
+		public WebRequestToolModule(FileAccessService fileAccess)
 		{
-			_httpClient = new HttpClient();
-			_httpClient.DefaultRequestHeaders.Add("User-Agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-			_httpClient.DefaultRequestHeaders.Add("Accept",
-				"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-			_httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.5");
-			_httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
-			_httpClient.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
+			_httpClient = CreateClient();
+			_httpInfiniteTimeoutClient = CreateClient();
+			_httpInfiniteTimeoutClient.Timeout = Timeout.InfiniteTimeSpan;
 
-			_chat = chat;
+			_fileAccess = fileAccess;
 
 			AddTool(WebRequest,
 				new ToolInitializationInfo
@@ -54,12 +52,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Category = "web"
 				});
 
-			AddTool(DownloadFile,
+			AddTool(DownloadFile, DownloadFileStream, null,
 				new ToolInitializationInfo
 				{
 					Name = "web-download",
 					Description = "Download a file from a specified URL into the working directory.",
-					Category = "web"
+					Category = "web",
+					AskForConfirmation = true
 				});
 
 			AddTool(CheckWebsiteStatus,
@@ -85,20 +84,25 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Description = "Fetch HTML content and parse specific elements by tag or class.",
 					Category = "web"
 				});
+		}
 
-			/*AddTool(Search_SearXNG,
-				new ToolInitializationInfo
-				{
-					Name = "web-search",
-					Description = "Search through the web using query.",
-					Category = "web"
-				});*/
+		private static HttpClient CreateClient()
+		{
+			var httpClient = new HttpClient();
+			httpClient.DefaultRequestHeaders.Add("User-Agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+			httpClient.DefaultRequestHeaders.Add("Accept",
+				"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+			httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.5");
+			httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
+			httpClient.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
+			return httpClient;
 		}
 
 		private async Task<ToolResult> WebRequest(
 			[Description("Method of the request"), Enum(["GET", "POST", "PUT", "DELETE"])] string method,
 			[Description("URL to send request to")] string url,
-			[Description("Optional: Additional headers as JSON string (e.g., {\"Authorization\": \"Bearer token\"})")] string headersJson = "",
+			[Description("Optional: Additional headers as JSON")] JsonObject? headersJson = null,
 			[Description("Optional: Request content")] string content = "",
 			[Description("Content type (default: application/json)")] string contentType = "application/json")
 		{
@@ -118,12 +122,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				if (!string.IsNullOrEmpty(content))
 					request.Content = new StringContent(content, Encoding.UTF8, contentType);
 
-				if (!string.IsNullOrEmpty(headersJson))
+				if (headersJson != null)
 				{
-					var headers = JsonSerializer.Deserialize<Dictionary<string, string>>(headersJson);
-					foreach (var header in headers!)
+					foreach (var header in headersJson)
 					{
-						request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+						request.Headers.TryAddWithoutValidation(header.Key, header.Value?.GetValue<string>());
 					}
 				}
 
@@ -153,57 +156,116 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		private async Task<ToolResult> DownloadFile(
+		private StreamingToolArgumentsAnalysisResult DownloadFileStream(
+			string? url, string? savePath)
+		{
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.Download,
+				StatusTitle = $"`{url}` → `{savePath}`"
+			};
+		}
+
+		private async Task<ReactiveToolResult> DownloadFile(
 			[Description("URL of the file to download")] string url,
 			[Description("Local working directory path to save the file")] string savePath,
-			[Description("Optional: Additional headers as JSON string")] string headersJson = "")
+			[Description("Optional: Additional headers as JSON")] JsonObject? headersJson = null,
+			CancellationToken cancellationToken = default)
 		{
-			try
+			var result = new ReactiveToolResult
 			{
-				using var request = new HttpRequestMessage(HttpMethod.Get, url);
+				StatusIcon = MaterialIconKind.Download,
+				StatusTitle = $"`{url}` → `{savePath}`"
+			};
 
-				if (!string.IsNullOrEmpty(headersJson))
+			_ = Task.Run(async () =>
+			{
+				long downloadedBytes = 0;
+				long? totalBytes = null;
+				try
 				{
-					var headers = JsonSerializer.Deserialize<Dictionary<string, string>>(headersJson);
-					foreach (var header in headers!)
+					var fullSavePath = _fileAccess.AccessPath(savePath);
+					using var fileStream = File.Create(fullSavePath);
+					using var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+					if (headersJson != null)
 					{
-						request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+						foreach (var header in headersJson)
+						{
+							request.Headers.TryAddWithoutValidation(header.Key, header.Value?.GetValue<string>());
+						}
 					}
+
+					var response = await _httpInfiniteTimeoutClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+					if (response.IsSuccessStatusCode)
+					{
+						using var downloadStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+						totalBytes = response.Content.Headers.ContentLength;
+						if (!totalBytes.HasValue)
+							try
+							{
+								totalBytes = downloadStream.Length;
+							}
+							catch { }
+
+						int bytesRead;
+						byte[] buffer = new byte[16384];
+
+						while ((bytesRead = await downloadStream.ReadAsync(buffer, cancellationToken)) > 0)
+						{
+							fileStream.Write(buffer, 0, bytesRead);
+							await fileStream.FlushAsync();
+							downloadedBytes += bytesRead;
+
+							if (totalBytes.HasValue)
+							{
+								double progress = (double)downloadedBytes / totalBytes.Value;
+								result.StatusTitle = $"`{url}` → `{savePath}` " +
+									$"({FileUtils.BytesToDisplaySize(downloadedBytes)} / " +
+									$"{FileUtils.BytesToDisplaySize(totalBytes.Value)}, {progress:P2})";
+								result.Progress = progress;
+							}
+							else
+							{
+								result.StatusTitle = $"`{url}` → `{savePath}` " +
+									$"({FileUtils.BytesToDisplaySize(downloadedBytes)})";
+								result.Progress = null;
+							}
+						}
+					}
+
+					result.ResultContent = $"""
+						Status code: {(int)response.StatusCode}
+						Status description: {response.StatusCode.ToString()}
+						Downloaded: {downloadedBytes} ({FileUtils.BytesToDisplaySize(downloadedBytes)})
+						Total size: {totalBytes ?? -1} {(totalBytes.HasValue ? FileUtils.BytesToDisplaySize(totalBytes.Value) : "unknown")}.
+						""";
+					result.CompleteWithSuccess();
 				}
-
-				var response = await _httpClient.SendAsync(request);
-				response.EnsureSuccessStatusCode();
-
-				var fileBytes = await response.Content.ReadAsByteArrayAsync();
-				savePath = Path.Combine(_chat.Settings.Environment.GetWorkingDirectory(), savePath);
-				await File.WriteAllBytesAsync(savePath, fileBytes);
-
-				var result = $"""
-					Status code: {(int)response.StatusCode}
-					Status description: {response.StatusCode.ToString()}
-					FileSize: {fileBytes.Length}
-					Content type: {response.Content.Headers.ContentType?.ToString()}
-					Content length: {fileBytes.Length}
-					""";
-
-				return new ToolResult(result);
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error downloading file: {ex.Message}");
-			}
+				catch (Exception ex)
+				{
+					result.StatusIcon = MaterialIconKind.DownloadOff;
+					result.ResultContent = $"Error downloading file: {ex.Message}; " +
+						$"downloaded ({FileUtils.BytesToDisplaySize(downloadedBytes)}) " +
+						$"of {totalBytes ?? -1} ({(totalBytes.HasValue ? FileUtils.BytesToDisplaySize(totalBytes.Value) : "unknown")}).";
+					result.CompleteWithError();
+				}
+			});
+			return result;
 		}
 
 		private async Task<ToolResult> CheckWebsiteStatus(
 			[Description("URL to check")] string url,
-			[Description("Timeout in seconds (default: 30)")] int timeoutSeconds = 30)
+			[Description("Timeout in seconds (default: 30)")] int timeoutSeconds = 30,
+			CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
+				using var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
+				using var cts2 = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts1.Token);
 				var startTime = DateTime.UtcNow;
 
-				var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+				var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cts2.Token);
 				var endTime = DateTime.UtcNow;
 
 				var result = $"""
@@ -237,6 +299,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				GithubFlavored = true,
 				Base64Images = ReverseMarkdown.Config.Base64ImageHandling.Skip
 			});
+
 		private readonly AsyncCache<(string, string), string> _fetchContentCache = new(
 			async ((string url, string contentType) args) =>
 			{
@@ -308,13 +371,14 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		
 		private async Task<ToolResult> ParseHtml(
 			[Description("URL to fetch HTML from")] string url,
-			[Description("The query selector to select values with")] string selector)
+			[Description("The query selector to select values with")] string selector,
+			CancellationToken cancellationToken = default)
 		{
 			try
 			{
 				var config = Configuration.Default.WithDefaultLoader();
 				var context = BrowsingContext.New(config);
-				var document = await context.OpenAsync(url);
+				var document = await context.OpenAsync(url, cancellationToken);
 				var elements = document.QuerySelectorAll(selector);
 				var contents = elements.Select(m => m.TextContent);
 
@@ -333,158 +397,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			catch (Exception ex)
 			{
 				return new ToolResult(ToolResultStatus.Error, $"Error parsing HTML: {ex.Message}");
-			}
-		}
-		
-		private async Task<ToolResult> Search_LangSearch(
-			[Description("The query to search by")] string query,
-			[Description("The maximum number of results to return")] int maxResults = 10,
-			[Description("Whether to show long text summaries for results")] bool provideSummary = false)
-		{
-			try
-			{
-				var request = new HttpRequestMessage(HttpMethod.Post, "https://api.langsearch.com/v1/web-search");
-
-				var apiKey = new EnvironmentTokenAccessor("LANGSEARCH_API_KEY").GetToken();
-				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-
-				var body = new JsonObject
-				{
-					["query"] = query,
-					["freshness"] = "noLimit",
-					["summary"] = provideSummary,
-					["count"] = maxResults,
-				};
-				request.Content = JsonContent.Create(body);
-				var response = await _httpClient.SendAsync(request);
-				response.EnsureSuccessStatusCode();
-				var responseContent = await response.ParseContentAsync<JsonObject>();
-
-				var pageData = responseContent?["data"]?["webPages"]?["value"]!;
-
-				var sb = new StringBuilder();
-
-				foreach (var item in (JsonArray)pageData)
-				{
-					var name = item?["name"]?.ToString() ?? "Unknown";
-					var url = item?["url"]?.ToString() ?? "Unknown";
-					var snippet = item?["snippet"]?.ToString();
-					var summary = item?["summary"]?.ToString();
-
-					sb.AppendLine($"**{name}**: [{url}]");
-					if (summary == null)
-						sb.AppendLine(snippet);
-					else
-						sb.AppendLine(summary);
-					sb.AppendLine();
-				}
-
-				return new ToolResult(sb.ToString().Trim());
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error using search: {ex.Message}");
-			}
-		}
-
-		private async Task<ToolResult> Search_Jina(
-			[Description("The query to search by")] string query,
-			[Description("The page number to return results for")] int page = 1)
-		{
-			try
-			{
-				var encodedQuery = Uri.EscapeDataString(query);
-				var request = new HttpRequestMessage(
-					HttpMethod.Get,
-					$"https://s.jina.ai/?q={encodedQuery}&page={page}");
-				request.Headers.Add("X-Respond-With", "no-content");
-
-				var apiKey = new EnvironmentTokenAccessor("JINA_API_KEY").GetToken();
-				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-
-				var response = await _httpClient.SendAsync(request);
-				response.EnsureSuccessStatusCode();
-				var responseContent = await response.Content.ReadAsStringAsync();
-
-				// Jina AI returns plain markdown text that suitable for LLM, so we can just return it directly.
-				return new ToolResult(responseContent);
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error using search: {ex.Message}");
-			}
-		}
-
-		private async Task<ToolResult> Search_SearXNG(
-			[Description("The query to search by")] string query,
-			[Description("The page number to return results for"), Range(1, 10)] int page = 1,
-			[Enum(["general", "images", "videos",
-				// There are some garbage categories that LLM likes to use, filter them out.
-				// "news", "map", "music", "it", "science", "files", "social media"
-				])] string category = "general",
-			[Description("Language code (auto, en, ru, etc.)")] string language = "auto",
-			[Enum(["day", "week", "month", "year"])] string timeRange = "",
-			[Enum(["none", "moderate", "strict"])] string safeSearch = "none")
-		{
-			try
-			{
-				var searxngUrl = new EnvironmentTokenAccessor("SEARXNG_URL").GetToken() ?? "http://localhost:8080";
-
-				int safeSearchIndex = safeSearch switch
-				{
-					"none" => 0,
-					"moderate" => 1,
-					"strict" => 2,
-					_ => throw new ArgumentException("Invalid safe search option", nameof(safeSearch))
-				};
-				var parameters = new Dictionary<string, string>
-				{
-					["q"] = query,
-					["pageno"] = page.ToString(),
-					["format"] = "json",
-					["categories"] = category,
-					["language"] = language,
-					["safesearch"] = safeSearchIndex.ToString()
-				};
-
-				if (!string.IsNullOrEmpty(timeRange))
-				{
-					parameters["time_range"] = timeRange;
-				}
-
-				var queryString = string.Join("&", parameters.Select(p => $"{Uri.EscapeDataString(p.Key)}={Uri.EscapeDataString(p.Value)}"));
-				var requestUrl = $"{searxngUrl}/search?{queryString}";
-
-				using var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
-
-				request.Headers.Add("Accept", "application/json");
-
-				var response = await _httpClient.SendAsync(request);
-				response.EnsureSuccessStatusCode();
-				var responseContent = await response.ParseContentAsync<JsonObject>();
-
-				var results = responseContent?["results"]!;
-				var sb = new StringBuilder();
-
-				foreach (var item in ((JsonArray)results).Take(50))
-				{
-					var title = item?["title"]?.ToString() ?? "Unknown";
-					var url = item?["url"]?.ToString() ?? "Unknown";
-					var content = item?["content"]?.ToString();
-					var imgSrc = item?["img_src"]?.ToString();
-
-					sb.AppendLine($"[{title}]({url}):");
-					if (!string.IsNullOrEmpty(imgSrc))
-						sb.AppendLine($"![Image]({imgSrc})");
-					sb.AppendLine(content);
-					sb.AppendLine();
-				}
-
-				return new ToolResult(sb.ToString().Trim());
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error using SearXNG search: {ex.Message}");
 			}
 		}
 

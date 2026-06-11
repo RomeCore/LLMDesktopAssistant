@@ -1582,15 +1582,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на {0} ({1} changes).
-        /// </summary>
-        public static string fs_edit_changes_applied {
-            get {
-                return ResourceManager.GetString("fs-edit_changes_applied", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на {0} *(no changes)*.
         /// </summary>
         public static string fs_edit_changes_applied_none {
