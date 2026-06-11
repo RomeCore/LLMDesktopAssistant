@@ -1,12 +1,10 @@
+using System.Text;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using RCLargeLanguageModels.Messages;
-using RCLargeLanguageModels.Statistics;
 using Serilog;
-using System.Text;
 
 namespace LLMDesktopAssistant.LLM.Services
 {

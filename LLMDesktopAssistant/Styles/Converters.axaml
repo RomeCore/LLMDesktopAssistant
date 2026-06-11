@@ -7,9 +7,10 @@
 	<conv:AssistantMessageStateToBooleanConverter x:Key="AssistantMessageStateToBooleanConverter"/>
 	<conv:StringNonEmptyToBooleanConverter x:Key="StringNonEmptyToBooleanConverter"/>
 	<conv:StringNonEmptyToBooleanConverter Invert="True" x:Key="StringNonEmptyToBooleanConverterInverted"/>
+	<conv:StringToNullIfEmptyConverter x:Key="StringToNullIfEmptyConverter"/>
+	<conv:StringToNullIfWhiteSpaceConverter x:Key="StringToNullIfWhiteSpaceConverter"/>
 	<conv:NotnullToBooleanConverter x:Key="NotnullToBooleanConverter"/>
 	<conv:NotnullToBooleanConverter Invert="True" x:Key="NotnullToBooleanConverterInverted"/>
 	<conv:StringEqualsConverter x:Key="StringEqualsConverter"/>
-
 
 </ResourceDictionary>

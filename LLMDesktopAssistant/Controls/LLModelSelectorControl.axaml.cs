@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Interactivity;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
@@ -11,44 +12,29 @@ using Serilog;
 
 namespace LLMDesktopAssistant.Controls
 {
-	public class ComboBoxFirstItemModel
+	public class LLModelWrapperItemModel
 	{
-		public string Title { get; set; }
+		public static LLModelWrapperItemModel Empty { get; } = new LLModelWrapperItemModel { Model = LLModelDescriptorTracked.Empty };
 
-		public ComboBoxFirstItemModel()
-		{
-			Title = Locale.select_model;
-		}
+		public required LLModelDescriptorTracked Model { get; init; }
+		public bool IsEmpty => LLModelDescriptorTracked.Empty == Model;
+		public string FallbackName => Model.FullName.ToNullIfEmpty() ?? LocalizationManager.LocalizeStatic("empty_model");
 	}
 
 	public class ComboBoxHeaderItemModel
 	{
-		public string Title { get; set; }
-
-		public ComboBoxHeaderItemModel(string title)
-		{
-			Title = title;
-		}
+		public required string Title { get; init; }
 	}
 
 	public class ComboBoxEmptyItemModel
 	{
-		public string Title { get; set; }
-
-		public ComboBoxEmptyItemModel()
-		{
-			Title = Locale.empty_model;
-		}
+		public string Title { get; init; } = LocalizationManager.LocalizeStatic("empty_model");
 	}
 
 	public class ComboBoxErrorItemModel
 	{
-		public string Title { get; set; }
-
-		public ComboBoxErrorItemModel(string errorMessage)
-		{
-			Title = string.Format(Locale.error_model, errorMessage);
-		}
+		public string Title => LocalizationManager.LocalizeStaticFormat("empty_model", ErrorMessage);
+		public required string ErrorMessage { get; init; }
 	}
 
 	public class LLModelSelectorComboBox : ComboBox
@@ -62,7 +48,7 @@ namespace LLMDesktopAssistant.Controls
 			// Туда его блять ( -_•)▄︻テحكـ━一💥
 			if (element is ComboBoxItem comboBoxItem)
 			{
-				if (item is not LLModelDescriptorTracked)
+				if (item is not LLModelWrapperItemModel)
 				{
 					comboBoxItem.IsHitTestVisible = false;
 					comboBoxItem.Focusable = false;
@@ -185,8 +171,8 @@ namespace LLMDesktopAssistant.Controls
 			if (refreshFlag)
 				return;
 
-			if (Selector.SelectedItem is LLModelDescriptorTracked model)
-				SelectedModel = model;
+			if (Selector.SelectedItem is LLModelWrapperItemModel modelWrapper)
+				SelectedModel = modelWrapper.Model;
 			else
 				SelectedModel = LLModelDescriptorTracked.Empty;
 		}
@@ -197,9 +183,14 @@ namespace LLMDesktopAssistant.Controls
 
 			if (model != null)
 			{
-				if (!Selector.Items.Contains(model))
-					Selector.Items.Insert(0, model);
-				Selector.SelectedItem = model;
+				var existingItem = Selector.Items.FirstOrDefault(m =>
+					m is LLModelWrapperItemModel modelWrapper && modelWrapper.Model == model);
+				if (existingItem == null)
+				{
+					existingItem = new LLModelWrapperItemModel { Model = model };
+					Selector.Items.Insert(0, existingItem);
+				}
+				Selector.SelectedItem = existingItem;
 			}
 			else
 				Selector.SelectedIndex = 0;
@@ -262,7 +253,7 @@ namespace LLMDesktopAssistant.Controls
 
 			refreshFlag = true;
 			Selector.Items.Clear();
-			Selector.Items.Add(LLModelDescriptorTracked.Empty);
+			Selector.Items.Add(LLModelWrapperItemModel.Empty);
 			refreshFlag = false;
 
 			// Find the previous model
@@ -274,22 +265,24 @@ namespace LLMDesktopAssistant.Controls
 
 			if (!found && prevSelected != null && prevSelected != LLModelDescriptorTracked.Empty)
 			{
-				Selector.Items.Add(prevSelected);
-				Selector.SelectedItem = prevSelected;
+				var prevSelectedItem = new LLModelWrapperItemModel { Model = prevSelected };
+				Selector.Items.Add(prevSelectedItem);
+				Selector.SelectedItem = prevSelectedItem;
 			}
 
 			refreshFlag = true;
 			foreach (var clientTuple in grouped)
 			{
-				Selector.Items.Add(new ComboBoxHeaderItemModel(clientTuple.Key.DisplayName));
+				Selector.Items.Add(new ComboBoxHeaderItemModel { Title = clientTuple.Key.DisplayName });
 
 				int count = 0;
 
 				foreach (var model in clientTuple.Value)
 				{
-					Selector.Items.Add(model);
+					var modelWrapper = new LLModelWrapperItemModel { Model = model };
+					Selector.Items.Add(modelWrapper);
 					if (model == prevSelected)
-						Selector.SelectedItem = prevSelected;
+						Selector.SelectedItem = modelWrapper;
 					count++;
 				}
 

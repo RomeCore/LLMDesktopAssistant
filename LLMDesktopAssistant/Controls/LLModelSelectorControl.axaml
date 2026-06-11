@@ -11,10 +11,8 @@
 			 x:Class="LLMDesktopAssistant.Controls.LLModelSelectorControl">
 	
 	<UserControl.Resources>
-
-		<conv:BooleanToBrushConverter x:Key="btbConv" True="White" False="DarkRed"/>
+		<conv:BooleanToBrushConverter x:Key="btbConv" True="White" False="Red"/>
 		<conv:FallbackMultiConverter x:Key="fallbackConv"/>
-
 	</UserControl.Resources>
 
 	<StackPanel Orientation="Horizontal" Height="32"
@@ -23,15 +21,15 @@
 
 			<local:LLModelSelectorComboBox.DataTemplates>
 				
-				<DataTemplate DataType="modelc:LLModelDescriptorTracked">
+				<DataTemplate DataType="local:LLModelWrapperItemModel">
 					<StackPanel Orientation="Horizontal">
 
-						<TextBlock Foreground="{Binding Available, Converter={StaticResource btbConv}}" Margin="0,0,3,0">
-
+						<TextBlock Foreground="{Binding Model.Available, Converter={StaticResource btbConv}}" Margin="0,0,3,0">
+							
 							<TextBlock.Text>
 								<MultiBinding Converter="{StaticResource fallbackConv}">
-									<Binding Path="Current.DisplayName" FallbackValue="{x:Null}" />
-									<Binding Path="FullName" />
+									<Binding Path="Model.Current.DisplayName" FallbackValue="{x:Null}" />
+									<Binding Path="FallbackName"/>
 								</MultiBinding>
 							</TextBlock.Text>
 
@@ -46,10 +44,6 @@
 										Data="{DynamicResource DatabaseExport}" VerticalAlignment="Stretch" Margin="1,0" Width="12" Height="12"/>
 						-->
 					</StackPanel>
-				</DataTemplate>
-
-				<DataTemplate DataType="local:ComboBoxFirstItemModel">
-					<TextBlock Text="{Binding Title}"/>
 				</DataTemplate>
 
 				<DataTemplate DataType="local:ComboBoxHeaderItemModel">

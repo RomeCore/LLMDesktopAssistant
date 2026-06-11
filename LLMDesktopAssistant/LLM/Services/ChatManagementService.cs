@@ -2,8 +2,6 @@ using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.Tools;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.LLM.Services
 {

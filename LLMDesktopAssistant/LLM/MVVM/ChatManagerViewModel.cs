@@ -118,6 +118,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				if (_selectedAvailable != value)
 				{
+					if (value != null && value.IsSelected)
+						return; // Avoid setting the same chat twice if it's already selected
+
 					if (_selectedAvailable != null)
 						UnlockAvailableChat(_selectedAvailable, _currentChat!.Chat);
 
