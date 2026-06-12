@@ -9,19 +9,13 @@ using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Tools;
+using System.Collections.ObjectModel;
+using System.Text;
+
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
-	public class ToolDangerLevelItem
-	{
-		public ToolDangerLevel Value { get; init; }
-		public string DisplayName { get; init; } = string.Empty;
-
-		public override bool Equals(object? obj) => obj is ToolDangerLevelItem other && Value == other.Value;
-		public override int GetHashCode() => Value.GetHashCode();
-	}
-
 	public class ToolItemViewModel : ViewModelBase
 	{
 		private readonly AgentToolSettings _settings;
@@ -86,7 +80,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				_settings.ToolChanges.Remove(_change);
 				_change = null;
 				RaisePropertyChanged(nameof(Enabled));
-				RaisePropertyChanged(nameof(AskForConfirmation));
+				RaisePropertyChanged(nameof(ApprovalLevel));
 			}
 		}
 
@@ -98,7 +92,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				{
 					ToolName = Name,
 					Enabled = null,
-					AskForConfirmation = null
+					ApprovalLevel = null
 				};
 				_settings.ToolChanges.Add(_change);
 			}
@@ -118,15 +112,17 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 		}
 
-		public bool? AskForConfirmation
+		public ImmutableList<ToolApprovalLevelItem> ApprovalLevelList { get; } = ToolApprovalLevelItem.All;
+
+		public ToolApprovalLevelItem? ApprovalLevel
 		{
-			get => _change?.AskForConfirmation ?? _toolInfo.AskForConfirmation;
+			get => ApprovalLevelList.FirstOrDefault(i => i.Value == (_change?.ApprovalLevel ?? _toolInfo.ApprovalLevel));
 			set
 			{
-				if (AskForConfirmation != value)
+				if (ApprovalLevel != value)
 				{
-					EnsureChange().AskForConfirmation = value;
-					RaisePropertyChanged(nameof(AskForConfirmation));
+					EnsureChange().ApprovalLevel = value?.Value;
+					RaisePropertyChanged(nameof(ApprovalLevel));
 				}
 			}
 		}
@@ -142,6 +138,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public string? TitleSuffix { get; }
 
 		public int ToolCount => Tools.Count;
+
+		/// <summary>
+		/// Gets the list of approval levels from the first tool (all tools share the same static list).
+		/// </summary>
+		public IList<ToolApprovalLevelItem>? ApprovalLevelList => Tools.Count > 0 ? Tools[0].ApprovalLevelList : null;
 
 		public ImmutableList<ToolItemViewModel> Tools { get; }
 		public ICommand ResetCommand { get; }
@@ -190,7 +191,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		private void Tool_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == nameof(Enabled) || e.PropertyName == nameof(AskForConfirmation))
+			if (e.PropertyName == nameof(Enabled) || e.PropertyName == nameof(ApprovalLevel))
 				RaisePropertyChanged(e.PropertyName);
 		}
 
@@ -205,14 +206,14 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 		}
 
-		public bool? AskForConfirmation
+		public ToolApprovalLevelItem? ApprovalLevel
 		{
-			get => Tools.All(t => t.AskForConfirmation == true) ? true : Tools.All(t => t.AskForConfirmation == false) ? false : null;
+			get => Tools.All(t => t.ApprovalLevel == Tools[0].ApprovalLevel) ? Tools[0].ApprovalLevel : null;
 			set
 			{
-				if (AskForConfirmation != value)
+				if (ApprovalLevel != value && value != null)
 					foreach (var tool in Tools)
-						tool.AskForConfirmation = value;
+						tool.ApprovalLevel = value;
 			}
 		}
 	}
@@ -223,23 +224,29 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		private readonly IToolsetBuildingService _toolsetBuildingService;
 		public AgentToolSettings ToolSettings { get; }
 
-		public List<ToolDangerLevelItem> AutoApproveLevels { get; } =
-		[
-			new() { Value = ToolDangerLevel.Default,   DisplayName = LocalizationManager.LocalizeStatic("danger_level_default") },
-			new() { Value = ToolDangerLevel.Safe,      DisplayName = LocalizationManager.LocalizeStatic("danger_level_safe") },
-			new() { Value = ToolDangerLevel.Warning,   DisplayName = LocalizationManager.LocalizeStatic("danger_level_warning") },
-			new() { Value = ToolDangerLevel.Dangerous, DisplayName = LocalizationManager.LocalizeStatic("danger_level_dangerous") },
-		];
 
-		private ToolDangerLevelItem? _selectedAutoApproveLevel;
-		public ToolDangerLevelItem? SelectedAutoApproveLevel
+		/// <summary>
+		/// List of ToolBehaviour flags for Auto-Approve configuration.
+		/// </summary>
+		public ObservableCollection<ToolBehaviourItem> AutoApproveBehaviourItems { get; } = [];
+
+		/// <summary>
+		/// List of ToolBehaviour flags for Disallowed configuration.
+		/// </summary>
+		public ObservableCollection<ToolBehaviourItem> DisallowedBehaviourItems { get; } = [];
+
+		/// <summary>
+		/// Whether to override the global tool policy for this agent.
+		/// </summary>
+		public bool EnablePolicyOverride
 		{
-			get => _selectedAutoApproveLevel;
+			get => ToolSettings.EnablePolicyOverride;
 			set
 			{
-				if (SetProperty(ref _selectedAutoApproveLevel, value) && value != null)
+				if (ToolSettings.EnablePolicyOverride != value)
 				{
-					ToolSettings.AutoApproveLevel = value.Value;
+					ToolSettings.EnablePolicyOverride = value;
+					RaisePropertyChanged();
 				}
 			}
 		}
@@ -259,11 +266,67 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		{
 			_toolsetBuildingService = toolsetBuildingService;
 			ToolSettings = settings;
+			InitializeBehaviourItems();
 			UpdateTools();
-
-			_selectedAutoApproveLevel = AutoApproveLevels.FirstOrDefault(r => r.Value == settings.AutoApproveLevel)
-				?? AutoApproveLevels[0];
 		}
+
+		private void InitializeBehaviourItems()
+		{
+			AutoApproveBehaviourItems.Clear();
+			DisallowedBehaviourItems.Clear();
+
+			foreach (var flag in GetBehaviourFlags())
+			{
+				var key = $"tool_behaviour_{flag.ToString().ToLower()}";
+				var displayName = LocalizationManager.LocalizeStatic(key);
+				var description = LocalizationManager.LocalizeStatic($"{key}_hint");
+
+				// Fallback to CamelCase split if localization is missing
+				if (displayName == key || string.IsNullOrEmpty(displayName))
+					displayName = SplitCamelCase(flag.ToString());
+				if (description == $"{key}_hint" || string.IsNullOrEmpty(description))
+					description = string.Empty;
+
+				AutoApproveBehaviourItems.Add(new ToolBehaviourItem(
+					() => ToolSettings.AutoApproveBehaviours,
+					v => ToolSettings.AutoApproveBehaviours = v,
+					flag,
+					displayName,
+					description));
+
+				DisallowedBehaviourItems.Add(new ToolBehaviourItem(
+					() => ToolSettings.DisallowedBehaviours,
+					v => ToolSettings.DisallowedBehaviours = v,
+					flag,
+					displayName,
+					description));
+			}
+		}
+
+		private static IEnumerable<ToolBehaviour> GetBehaviourFlags()
+		{
+			return Enum.GetValues<ToolBehaviour>()
+				.Where(v => v != ToolBehaviour.None);
+		}
+
+		private static string SplitCamelCase(string input)
+		{
+			if (string.IsNullOrEmpty(input))
+				return input;
+
+			var result = new StringBuilder();
+			for (int i = 0; i < input.Length; i++)
+			{
+				if (i > 0 && char.IsUpper(input[i]))
+				{
+					if (!char.IsUpper(input[i - 1]) || (i + 1 < input.Length && char.IsLower(input[i + 1])))
+						result.Append(' ');
+				}
+				result.Append(input[i]);
+			}
+			return result.ToString();
+		}
+
 
 		public void UpdateTools()
 		{

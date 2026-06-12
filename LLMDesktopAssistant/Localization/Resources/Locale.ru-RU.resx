@@ -1611,4 +1611,142 @@
   <data name="clipboard-read" xml:space="preserve">
     <value>Чтение из буфера обмена</value>
   </data>
+  <data name="approval_level" xml:space="preserve">
+    <value>Уровень подтверждения</value>
+  </data>
+  <data name="approval_level_autoapprove" xml:space="preserve">
+    <value>Авто-одобрение</value>
+  </data>
+  <data name="approval_level_policybased" xml:space="preserve">
+    <value>По политике</value>
+  </data>
+  <data name="approval_level_alwaysask" xml:space="preserve">
+    <value>Всегда спрашивать</value>
+  </data>
+  <data name="approval_level_alwaysdisallow" xml:space="preserve">
+    <value>Всегда запрещать</value>
+  </data>
+  <data name="enable_policy_override" xml:space="preserve">
+    <value>Переопределить глобальную политику инструментов для этого агента</value>
+  </data>
+  <data name="tools_auto_approve_behaviours" xml:space="preserve">
+    <value>Авто-одобряемые поведения</value>
+  </data>
+  <data name="tools_disallowed_behaviours" xml:space="preserve">
+    <value>Запрещённые поведения</value>
+  </data>
+  <data name="tool_behaviour_none" xml:space="preserve">
+    <value>Безопасно (нет специфического поведения)</value>
+  </data>
+  <data name="tool_behaviour_none_hint" xml:space="preserve">
+    <value>Вычислительные или информационные задачи (математика, случайные числа, время).</value>
+  </data>
+  <data name="tool_behaviour_filedirectorycreate" xml:space="preserve">
+    <value>Создание файлов и директорий</value>
+  </data>
+  <data name="tool_behaviour_filedirectorycreate_hint" xml:space="preserve">
+    <value>Инструмент создаёт новые файлы или директории в файловой системе.</value>
+  </data>
+  <data name="tool_behaviour_fileread" xml:space="preserve">
+    <value>Чтение файлов</value>
+  </data>
+  <data name="tool_behaviour_fileread_hint" xml:space="preserve">
+    <value>Инструмент читает содержимое файлов или директорий.</value>
+  </data>
+  <data name="tool_behaviour_fileedit" xml:space="preserve">
+    <value>Редактирование файлов</value>
+  </data>
+  <data name="tool_behaviour_fileedit_hint" xml:space="preserve">
+    <value>Инструмент изменяет содержимое или метаданные файлов без удаления.</value>
+  </data>
+  <data name="tool_behaviour_filedelete" xml:space="preserve">
+    <value>Удаление файлов</value>
+  </data>
+  <data name="tool_behaviour_filedelete_hint" xml:space="preserve">
+    <value>Инструмент навсегда удаляет файлы из файловой системы.</value>
+  </data>
+  <data name="tool_behaviour_directoryread" xml:space="preserve">
+    <value>Чтение директорий</value>
+  </data>
+  <data name="tool_behaviour_directoryread_hint" xml:space="preserve">
+    <value>Инструмент перечисляет содержимое директорий.</value>
+  </data>
+  <data name="tool_behaviour_directoryedit" xml:space="preserve">
+    <value>Редактирование директорий</value>
+  </data>
+  <data name="tool_behaviour_directoryedit_hint" xml:space="preserve">
+    <value>Инструмент изменяет структуру директорий (перемещение, переименование, копирование).</value>
+  </data>
+  <data name="tool_behaviour_directorydelete" xml:space="preserve">
+    <value>Удаление директорий</value>
+  </data>
+  <data name="tool_behaviour_directorydelete_hint" xml:space="preserve">
+    <value>Инструмент удаляет целые деревья директорий вместе с содержимым.</value>
+  </data>
+  <data name="tool_behaviour_readsecrets" xml:space="preserve">
+    <value>Чтение секретов и конфиденциальных данных</value>
+  </data>
+  <data name="tool_behaviour_readsecrets_hint" xml:space="preserve">
+    <value>Инструмент может раскрыть пароли, API-ключи или токены.</value>
+  </data>
+  <data name="tool_behaviour_accessoutsideworkdir" xml:space="preserve">
+    <value>Доступ за пределы рабочей директории</value>
+  </data>
+  <data name="tool_behaviour_accessoutsideworkdir_hint" xml:space="preserve">
+    <value>Инструмент обращается к путям вне настроенной рабочей директории.</value>
+  </data>
+  <data name="tool_behaviour_clipboardaccess" xml:space="preserve">
+    <value>Доступ к буферу обмена</value>
+  </data>
+  <data name="tool_behaviour_clipboardaccess_hint" xml:space="preserve">
+    <value>Инструмент читает или записывает данные в буфер обмена.</value>
+  </data>
+  <data name="tool_behaviour_internetaccess" xml:space="preserve">
+    <value>Доступ в интернет</value>
+  </data>
+  <data name="tool_behaviour_internetaccess_hint" xml:space="preserve">
+    <value>Инструмент выполняет сетевые запросы к внешним сервисам или API.</value>
+  </data>
+  <data name="tool_behaviour_longrunningtask" xml:space="preserve">
+    <value>Долгая задача</value>
+  </data>
+  <data name="tool_behaviour_longrunningtask_hint" xml:space="preserve">
+    <value>Инструмент может выполняться долго из-за сложных вычислений или сетевых задержек.</value>
+  </data>
+  <data name="tool_behaviour_executeexternalprocess" xml:space="preserve">
+    <value>Запуск внешнего процесса</value>
+  </data>
+  <data name="tool_behaviour_executeexternalprocess_hint" xml:space="preserve">
+    <value>Инструмент запускает внешний процесс операционной системы.</value>
+  </data>
+  <data name="tool_behaviour_possiblyunexpected" xml:space="preserve">
+    <value>Потенциально неожиданные действия</value>
+  </data>
+  <data name="tool_behaviour_possiblyunexpected_hint" xml:space="preserve">
+    <value>Инструмент может выполнять неожиданные или неконтролируемые действия.</value>
+  </data>
+  <data name="tool_behaviour_runterminal" xml:space="preserve">
+    <value>Запуск в терминале</value>
+  </data>
+  <data name="tool_behaviour_runterminal_hint" xml:space="preserve">
+    <value>Инструмент запускает команды во встроенном терминале с интерактивным вводом/выводом.</value>
+  </data>
+  <data name="tool_behaviour_userinteraction" xml:space="preserve">
+    <value>Взаимодействие с пользователем</value>
+  </data>
+  <data name="tool_behaviour_userinteraction_hint" xml:space="preserve">
+    <value>Инструмент требует ввода от пользователя через формы, подтверждения, выбор файлов и т.д.</value>
+  </data>
+  <data name="tool_behaviour_agentexecution" xml:space="preserve">
+    <value>Выполнение агентов</value>
+  </data>
+  <data name="tool_behaviour_agentexecution_hint" xml:space="preserve">
+    <value>Инструмент вызывает, управляет или координирует других AI-агентов.</value>
+  </data>
+  <data name="tool_behaviour_toolaccess" xml:space="preserve">
+    <value>Доступ к инструментам (мета-инструменты)</value>
+  </data>
+  <data name="tool_behaviour_toolaccess_hint" xml:space="preserve">
+    <value>Инструмент создаёт, изменяет или удаляет другие инструменты во время выполнения.</value>
+  </data>
 </root>

@@ -89,13 +89,43 @@ namespace LLMDesktopAssistant.LLM.Messages
 			set => SetProperty(ref _maxProgress, value);
 		}
 
-
-
-		private ToolDangerLevel _dangerLevel;
-		public ToolDangerLevel DangerLevel
+		private ToolBehaviour? _expectedBehaviour = ToolBehaviour.None;
+		public ToolBehaviour? ExpectedBehaviour
 		{
-			get => _dangerLevel;
-			set => SetProperty(ref _dangerLevel, value);
+			get => _expectedBehaviour;
+			set
+			{
+				if (SetProperty(ref _expectedBehaviour, value))
+				{
+					RaisePropertyChanged(nameof(BehaviourFlags));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the list of behaviour flags with icons and colors for display.
+		/// </summary>
+		public IReadOnlyList<ToolBehaviourFlagInfo> BehaviourFlags
+		{
+			get
+			{
+				if (_expectedBehaviour == null)
+					return [];
+
+				var flags = new List<ToolBehaviourFlagInfo>();
+				foreach (var flag in Enum.GetValues<ToolBehaviour>())
+				{
+					if (flag != ToolBehaviour.None && _expectedBehaviour.Value.HasFlag(flag))
+					{
+						flags.Add(ToolBehaviourFlagInfo.Create(flag));
+					}
+				}
+				if (flags.Count == 0 && _expectedBehaviour == ToolBehaviour.None)
+				{
+					flags.Add(ToolBehaviourFlagInfo.Create(ToolBehaviour.None));
+				}
+				return flags;
+			}
 		}
 
 		private MaterialIconKind? _statusIcon;
@@ -132,12 +162,6 @@ namespace LLMDesktopAssistant.LLM.Messages
 			Status switch
 			{
 				ToolStatus.Pending => MaterialIconKind.Edit,
-				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Safe
-					=> MaterialIconKind.CheckCircle,
-				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Warning
-					=> MaterialIconKind.WarningCircle,
-				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Dangerous
-					=> MaterialIconKind.AlertCircle,
 				ToolStatus.PreExecuting => MaterialIconKind.WrenchClock,
 				ToolStatus.Executing => MaterialIconKind.WrenchClock,
 				ToolStatus.WaitingForApproval => MaterialIconKind.QuestionMarkCircle,
@@ -151,21 +175,15 @@ namespace LLMDesktopAssistant.LLM.Messages
 		public IBrush? ToolIconBrush =>
 			Status switch
 			{
-				ToolStatus.Pending => null,
-				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Safe
-					=> Brushes.Green,
-				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Warning
-					=> Brushes.Yellow,
-				ToolStatus.PreExecuting or ToolStatus.WaitingForApproval when DangerLevel is ToolDangerLevel.Dangerous
-					=> Brushes.Red,
-				ToolStatus.PreExecuting => null,
-				ToolStatus.Executing => null,
-				ToolStatus.WaitingForApproval => null,
-				ToolStatus.ExecutionInterrupted => null,
-				ToolStatus.Success => null,
-				ToolStatus.Cancelled => null,
-				ToolStatus.Error => null,
-				_ => null
+				ToolStatus.Pending => (IBrush?)null,
+				ToolStatus.PreExecuting => (IBrush?)null,
+				ToolStatus.Executing => (IBrush?)null,
+				ToolStatus.WaitingForApproval => (IBrush?)null,
+				ToolStatus.ExecutionInterrupted => (IBrush?)null,
+				ToolStatus.Success => (IBrush?)null,
+				ToolStatus.Cancelled => (IBrush?)null,
+				ToolStatus.Error => (IBrush?)null,
+				_ => (IBrush?)null
 			} ?? Brushes.White;
 
 		public bool DisplayMiniIcon =>
@@ -293,7 +311,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 			StatusIcon = toolCall.StatusIcon;
 			StatusTitle = toolCall.StatusTitle;
-			DangerLevel = toolCall.DangerLevel;
+			ExpectedBehaviour = toolCall.ExpectedBehaviour;
 
 			Result = toolCall.ResultContent;
 			UseMarkdown = toolCall.UseMarkdown;
@@ -330,7 +348,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 							case nameof(ToolCall.Status): Status = toolCall.Status; break;
 							case nameof(ToolCall.StatusIcon): StatusIcon = toolCall.StatusIcon; break;
 							case nameof(ToolCall.StatusTitle): StatusTitle = toolCall.StatusTitle; break;
-							case nameof(ToolCall.DangerLevel): DangerLevel = toolCall.DangerLevel; break;
+							case nameof(ToolCall.ExpectedBehaviour): ExpectedBehaviour = toolCall.ExpectedBehaviour; break;
 							case nameof(ToolCall.ResultContent): Result = toolCall.ResultContent; break;
 							case nameof(ToolCall.UseMarkdown): UseMarkdown = toolCall.UseMarkdown; break;
 

@@ -52,5 +52,26 @@ namespace LLMDesktopAssistant.Utils.Files
 			}
 			return sb.ToString();
 		}
+
+		/// <summary>
+		/// Returns the total number of lines that have been removed and added across all hunk groups.
+		/// </summary>
+		public (int Removed, int Added) GetChangeCounts()
+		{
+			int removed = 0, added = 0;
+
+			foreach (var group in Groups)
+			{
+				foreach (var line in group.Lines)
+				{
+					if (line.Kind == '-')
+						removed++;
+					else if (line.Kind == '+')
+						added++;
+				}
+			}
+
+			return (removed, added);
+		}
 	}
 }

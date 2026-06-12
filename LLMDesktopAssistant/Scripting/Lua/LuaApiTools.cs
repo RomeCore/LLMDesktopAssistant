@@ -167,7 +167,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			if (tool.DisplayName != null)
 				result["display_name"] = tool.DisplayName;
 			result["enabled"] = DynValue.NewBoolean(tool.Enabled);
-			result["ask_for_confirmation"] = DynValue.NewBoolean(tool.AskForConfirmation);
+			result["approval_level"] = DynValue.NewString(tool.ApprovalLevel.ToString());
 			result["source"] = tool.Source.ToString().ToLower();
 			result["arguments"] = JsonLuaConverter.JsonNodeToDynValue(script, tool.ArgumentSchema);
 			return result;

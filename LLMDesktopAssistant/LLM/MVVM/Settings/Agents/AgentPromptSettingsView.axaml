@@ -9,305 +9,303 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentPromptSettingsView"
 			 x:DataType="local:AgentPromptSettingsViewModel">
 
-	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Margin="10" Spacing="8">
-
-			<!-- System Prompt -->
-			<TextBlock Text="{loc:Loc prompt_system_prompt}"
-					   FontWeight="Bold"
-					   FontSize="{DynamicResource FontSizeL}"
-					   Margin="0,5,0,0"/>
-
-			<TextBlock Text="{loc:Loc prompt_system_prompt_hint}"
-					   Opacity="0.6"
-					   TextWrapping="Wrap"/>
-
-			<TextBox Text="{Binding PromptSettings.SystemPrompt, Mode=TwoWay}"
-					 AcceptsReturn="True"
-					 TextWrapping="Wrap"
-					 MinHeight="80"
-					 MaxHeight="200"
-					 ScrollViewer.VerticalScrollBarVisibility="Auto"
-					 PlaceholderText="{loc:Loc prompt_system_prompt_placeholder}"/>
-
-			<!-- Separator -->
-			<Rectangle Height="1"
-					   Fill="{DynamicResource DefaultForeground}"
-					   Opacity="0.2"
-					   Margin="0,5"/>
-
-			<TextBlock Text="{loc:Loc prompt_assistant_nickname_hint}"
-								 Opacity="0.6"/>
-
-			<TextBox Text="{Binding PromptSettings.Nickname, Mode=TwoWay}"
-							 TextWrapping="NoWrap"
-							 PlaceholderText="{loc:Loc prompt_user_nickname_placeholder}"/>
-
-			<!-- Separator -->
-			<Rectangle Height="1"
-					   Fill="{DynamicResource DefaultForeground}"
-					   Opacity="0.2"
-					   Margin="0,5"/>
-
-			<TextBlock Text="{loc:Loc prompt_persona}"
-					   FontWeight="Bold"
-					   FontSize="{DynamicResource FontSizeL}"
-					   Margin="0,5,0,0"/>
-
-			<CheckBox IsChecked="{Binding PromptSettings.UseCustomPersona, Mode=TwoWay}"
-					  Content="{loc:Loc prompt_use_custom_persona}"/>
-
-			<!-- Custom Persona -->
-			<StackPanel IsVisible="{Binding PromptSettings.UseCustomPersona}"
-						Spacing="4"
-						Margin="20,0,0,0">
-
-				<TextBlock Text="{loc:Loc prompt_custom_persona_hint}"
-						   Opacity="0.6"
-						   TextWrapping="Wrap"/>
-
-				<TextBox Text="{Binding PromptSettings.CustomPersona, Mode=TwoWay}"
-						 AcceptsReturn="True"
-						 TextWrapping="Wrap"
-						 MinHeight="100"
-						 MaxHeight="200"
-						 ScrollViewer.VerticalScrollBarVisibility="Auto"
-						 PlaceholderText="{loc:Loc prompt_custom_persona_placeholder}"/>
-
-			</StackPanel>
-
-			<!-- Preset Persona -->
-			<StackPanel IsVisible="{Binding PromptSettings.UseCustomPersona, Converter={StaticResource InverseBooleanConverter}}"
-						Spacing="4"
-						Margin="20,0,0,0">
-
-				<StackPanel Orientation="Horizontal"
-							Spacing="5">
-
-					<ComboBox SelectedItem="{Binding SelectedPersona, Mode=TwoWay}"
-							  ItemsSource="{Binding AvailablePersonas}"
-							  PlaceholderText="{loc:Loc prompt_select_persona}"
-							  MinWidth="200">
-
-						<ComboBox.ItemTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Persona.Name}"/>
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
-
-					</ComboBox>
-
-					<Button Classes="IconButton"
-							Command="{Binding ClearPersonaCommand}"
-							ToolTip.Tip="{loc:Loc persona_clear}">
-
-						<ico:MaterialIcon Kind="Remove"/>
-
-					</Button>
-
-				</StackPanel>
-
-				<TextBlock Text="{loc:Loc prompt_selected_persona_hint}"
-						   Opacity="0.6"
-						   FontSize="12"/>
-
-			</StackPanel>
-
-			<!-- Separator -->
-			<Rectangle Height="1"
-					   Fill="{DynamicResource DefaultForeground}"
-					   Opacity="0.2"
-					   Margin="0,5"/>
-
-			<!-- Specialization -->
-			<TextBlock Text="{loc:Loc prompt_specialization}"
-					   FontWeight="Bold"
-					   FontSize="{DynamicResource FontSizeL}"
-					   Margin="0,5,0,0"/>
-
-			<TextBlock Text="{loc:Loc prompt_specialization_hint}"
-					   Opacity="0.6"
-					   TextWrapping="Wrap"/>
-
-			<CheckBox IsChecked="{Binding PromptSettings.UseCustomSpecialization, Mode=TwoWay}"
-					  Content="{loc:Loc prompt_use_custom_specialization}"/>
-
-			<!-- Custom Specialization -->
-			<StackPanel IsVisible="{Binding PromptSettings.UseCustomSpecialization}"
-						Spacing="4"
-						Margin="20,0,0,0">
-
-				<TextBlock Text="{loc:Loc prompt_custom_specialization_hint}"
-						   Opacity="0.6"
-						   TextWrapping="Wrap"/>
-
-				<TextBox Text="{Binding PromptSettings.CustomSpecialization, Mode=TwoWay}"
-						 AcceptsReturn="True"
-						 TextWrapping="Wrap"
-						 MinHeight="100"
-						 MaxHeight="200"
-						 ScrollViewer.VerticalScrollBarVisibility="Auto"
-						 PlaceholderText="{loc:Loc prompt_custom_specialization_placeholder}"/>
-
-			</StackPanel>
-
-			<!-- Preset Specialization -->
-			<StackPanel IsVisible="{Binding PromptSettings.UseCustomSpecialization, Converter={StaticResource InverseBooleanConverter}}"
-						Spacing="4"
-						Margin="20,0,0,0">
-
-				<StackPanel Orientation="Horizontal"
-							Spacing="5">
-
-					<ComboBox SelectedItem="{Binding SelectedSpecialization, Mode=TwoWay}"
-							  ItemsSource="{Binding AvailableSpecializations}"
-							  PlaceholderText="{loc:Loc prompt_select_specialization}"
-							  MinWidth="200">
-
-						<ComboBox.ItemTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Specialization.Name}"/>
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
-
-					</ComboBox>
-
-					<Button Classes="IconButton"
-							Command="{Binding ClearSpecializationCommand}"
-							ToolTip.Tip="{loc:Loc specialization_clear}">
-
-						<ico:MaterialIcon Kind="Remove"/>
-
-					</Button>
-
-				</StackPanel>
-
-				<TextBlock Text="{loc:Loc prompt_selected_specialization_hint}"
-						   Opacity="0.6"
-						   FontSize="12"/>
-
-			</StackPanel>
-
-			<!-- Separator -->
-			<Rectangle Height="1"
-					   Fill="{DynamicResource DefaultForeground}"
-					   Opacity="0.2"
-					   Margin="0,5"/>
-
-			<!-- Behavior Sliders -->
-			<TextBlock Text="{loc:Loc prompt_behavior_sliders}"
-					   FontWeight="Bold"
-					   FontSize="{DynamicResource FontSizeL}"
-					   Margin="0,5,0,0"/>
-
-			<TextBlock Text="{loc:Loc prompt_behavior_sliders_hint}"
-					   Opacity="0.6"
-					   TextWrapping="Wrap"/>
-
-			<ItemsControl ItemsSource="{Binding SliderItems}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
-						<StackPanel Margin="0,6">
-
-							<TextBlock Text="{Binding DisplayName}"
-												 FontWeight="Medium"
-												 FontSize="{DynamicResource FontSizeM}"
-												 Margin="0,0,0,4"/>
-							
-							<ItemsControl x:Name="HintItemsControl"
-														SizeChanged="HintItemsControl_SizeChanged"
-														Margin="10,0"
-														ItemsSource="{Binding Hints}">
-								
-								<ItemsControl.ItemsPanel>
-									<ItemsPanelTemplate>
-										<UniformGrid Columns="{Binding Range}"/>
-									</ItemsPanelTemplate>
-								</ItemsControl.ItemsPanel>
-
-								<ItemsControl.ItemTemplate>
-									<DataTemplate x:DataType="local:BehaviorSliderHintViewModel">
-										<TextBlock Text="{Binding Label}"
-															 Opacity="0.6"
-															 TextAlignment="Center"
-															 VerticalAlignment="Bottom"
-															 HorizontalAlignment="Center"
-															 Grid.Column="{Binding Column}"/>
-									</DataTemplate>
-								</ItemsControl.ItemTemplate>
-
-							</ItemsControl>
-							
-							<!-- Slider -->
-							<Slider x:Name="BehaviorSlider"
-											Value="{Binding Value, Mode=TwoWay}"
-											Minimum="{Binding MinValue}"
-											Maximum="{Binding MaxValue}"
-											TickFrequency="1"
-											IsSnapToTickEnabled="True"
-											TickPlacement="TopLeft"/>
-
-						</StackPanel>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-
-			<!-- Separator -->
-			<Rectangle Height="1"
-								 Fill="{DynamicResource DefaultForeground}"
-							   Opacity="0.2"
-							   Margin="0,5"/>
-
-			<!-- Components -->
-			<TextBlock Text="{loc:Loc prompt_components}"
-					   FontWeight="Bold"
-					   FontSize="{DynamicResource FontSizeL}"
-					   Margin="0,5,0,0"/>
-
-			<TextBlock Text="{loc:Loc prompt_components_hint}"
-					   Opacity="0.6"
-					   TextWrapping="Wrap"/>
-
-			<Border BorderBrush="{DynamicResource DefaultForeground}"
-					BorderThickness="1"
-					CornerRadius="4"
-					Padding="4"
-					Opacity="0.7">
-
-				<ScrollViewer MaxHeight="250"
-							  VerticalScrollBarVisibility="Auto">
-
-					<TreeView ItemsSource="{Binding ComponentCategories}"
-							  BorderThickness="0">
-
-						<TreeView.DataTemplates>
-
-							<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
-											  ItemsSource="{Binding Components}">
-
-								<TextBlock Text="{Binding CategoryName}"
-										   FontWeight="Bold"
-										   Margin="0,2"/>
-
-							</TreeDataTemplate>
-
-							<DataTemplate DataType="local:ComponentItemViewModel">
-
-								<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-										  Content="{Binding Component.Name}"
-										  Margin="16,1,0,1"/>
-
-							</DataTemplate>
-
-						</TreeView.DataTemplates>
-
-					</TreeView>
-
-				</ScrollViewer>
-
-			</Border>
+	<StackPanel Margin="10" Spacing="8">
+
+		<!-- System Prompt -->
+		<TextBlock Text="{loc:Loc prompt_system_prompt}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,0"/>
+
+		<TextBlock Text="{loc:Loc prompt_system_prompt_hint}"
+					  Opacity="0.6"
+					  TextWrapping="Wrap"/>
+
+		<TextBox Text="{Binding PromptSettings.SystemPrompt, Mode=TwoWay}"
+					AcceptsReturn="True"
+					TextWrapping="Wrap"
+					MinHeight="80"
+					MaxHeight="200"
+					ScrollViewer.VerticalScrollBarVisibility="Auto"
+					PlaceholderText="{loc:Loc prompt_system_prompt_placeholder}"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,5"/>
+
+		<TextBlock Text="{loc:Loc prompt_assistant_nickname_hint}"
+								Opacity="0.6"/>
+
+		<TextBox Text="{Binding PromptSettings.Nickname, Mode=TwoWay}"
+							TextWrapping="NoWrap"
+							PlaceholderText="{loc:Loc prompt_user_nickname_placeholder}"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,5"/>
+
+		<TextBlock Text="{loc:Loc prompt_persona}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,0"/>
+
+		<CheckBox IsChecked="{Binding PromptSettings.UseCustomPersona, Mode=TwoWay}"
+					Content="{loc:Loc prompt_use_custom_persona}"/>
+
+		<!-- Custom Persona -->
+		<StackPanel IsVisible="{Binding PromptSettings.UseCustomPersona}"
+					Spacing="4"
+					Margin="20,0,0,0">
+
+			<TextBlock Text="{loc:Loc prompt_custom_persona_hint}"
+						  Opacity="0.6"
+						  TextWrapping="Wrap"/>
+
+			<TextBox Text="{Binding PromptSettings.CustomPersona, Mode=TwoWay}"
+						AcceptsReturn="True"
+						TextWrapping="Wrap"
+						MinHeight="100"
+						MaxHeight="200"
+						ScrollViewer.VerticalScrollBarVisibility="Auto"
+						PlaceholderText="{loc:Loc prompt_custom_persona_placeholder}"/>
 
 		</StackPanel>
-	</ScrollViewer>
+
+		<!-- Preset Persona -->
+		<StackPanel IsVisible="{Binding PromptSettings.UseCustomPersona, Converter={StaticResource InverseBooleanConverter}}"
+					Spacing="4"
+					Margin="20,0,0,0">
+
+			<StackPanel Orientation="Horizontal"
+						Spacing="5">
+
+				<ComboBox SelectedItem="{Binding SelectedPersona, Mode=TwoWay}"
+							ItemsSource="{Binding AvailablePersonas}"
+							PlaceholderText="{loc:Loc prompt_select_persona}"
+							MinWidth="200">
+
+					<ComboBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Persona.Name}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+
+				</ComboBox>
+
+				<Button Classes="IconButton"
+						Command="{Binding ClearPersonaCommand}"
+						ToolTip.Tip="{loc:Loc persona_clear}">
+
+					<ico:MaterialIcon Kind="Remove"/>
+
+				</Button>
+
+			</StackPanel>
+
+			<TextBlock Text="{loc:Loc prompt_selected_persona_hint}"
+						  Opacity="0.6"
+						  FontSize="12"/>
+
+		</StackPanel>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,5"/>
+
+		<!-- Specialization -->
+		<TextBlock Text="{loc:Loc prompt_specialization}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,0"/>
+
+		<TextBlock Text="{loc:Loc prompt_specialization_hint}"
+					  Opacity="0.6"
+					  TextWrapping="Wrap"/>
+
+		<CheckBox IsChecked="{Binding PromptSettings.UseCustomSpecialization, Mode=TwoWay}"
+					Content="{loc:Loc prompt_use_custom_specialization}"/>
+
+		<!-- Custom Specialization -->
+		<StackPanel IsVisible="{Binding PromptSettings.UseCustomSpecialization}"
+					Spacing="4"
+					Margin="20,0,0,0">
+
+			<TextBlock Text="{loc:Loc prompt_custom_specialization_hint}"
+						  Opacity="0.6"
+						  TextWrapping="Wrap"/>
+
+			<TextBox Text="{Binding PromptSettings.CustomSpecialization, Mode=TwoWay}"
+						AcceptsReturn="True"
+						TextWrapping="Wrap"
+						MinHeight="100"
+						MaxHeight="200"
+						ScrollViewer.VerticalScrollBarVisibility="Auto"
+						PlaceholderText="{loc:Loc prompt_custom_specialization_placeholder}"/>
+
+		</StackPanel>
+
+		<!-- Preset Specialization -->
+		<StackPanel IsVisible="{Binding PromptSettings.UseCustomSpecialization, Converter={StaticResource InverseBooleanConverter}}"
+					Spacing="4"
+					Margin="20,0,0,0">
+
+			<StackPanel Orientation="Horizontal"
+						Spacing="5">
+
+				<ComboBox SelectedItem="{Binding SelectedSpecialization, Mode=TwoWay}"
+							ItemsSource="{Binding AvailableSpecializations}"
+							PlaceholderText="{loc:Loc prompt_select_specialization}"
+							MinWidth="200">
+
+					<ComboBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Specialization.Name}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+
+				</ComboBox>
+
+				<Button Classes="IconButton"
+						Command="{Binding ClearSpecializationCommand}"
+						ToolTip.Tip="{loc:Loc specialization_clear}">
+
+					<ico:MaterialIcon Kind="Remove"/>
+
+				</Button>
+
+			</StackPanel>
+
+			<TextBlock Text="{loc:Loc prompt_selected_specialization_hint}"
+						  Opacity="0.6"
+						  FontSize="12"/>
+
+		</StackPanel>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,5"/>
+
+		<!-- Behavior Sliders -->
+		<TextBlock Text="{loc:Loc prompt_behavior_sliders}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,0"/>
+
+		<TextBlock Text="{loc:Loc prompt_behavior_sliders_hint}"
+					  Opacity="0.6"
+					  TextWrapping="Wrap"/>
+
+		<ItemsControl ItemsSource="{Binding SliderItems}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<StackPanel Margin="0,6">
+
+						<TextBlock Text="{Binding DisplayName}"
+												FontWeight="Medium"
+												FontSize="{DynamicResource FontSizeM}"
+												Margin="0,0,0,4"/>
+							
+						<ItemsControl x:Name="HintItemsControl"
+													SizeChanged="HintItemsControl_SizeChanged"
+													Margin="10,0"
+													ItemsSource="{Binding Hints}">
+								
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<UniformGrid Columns="{Binding Range}"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="local:BehaviorSliderHintViewModel">
+									<TextBlock Text="{Binding Label}"
+															Opacity="0.6"
+															TextAlignment="Center"
+															VerticalAlignment="Bottom"
+															HorizontalAlignment="Center"
+															Grid.Column="{Binding Column}"/>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+
+						</ItemsControl>
+							
+						<!-- Slider -->
+						<Slider x:Name="BehaviorSlider"
+										Value="{Binding Value, Mode=TwoWay}"
+										Minimum="{Binding MinValue}"
+										Maximum="{Binding MaxValue}"
+										TickFrequency="1"
+										IsSnapToTickEnabled="True"
+										TickPlacement="TopLeft"/>
+
+					</StackPanel>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+								Fill="{DynamicResource DefaultForeground}"
+							  Opacity="0.2"
+							  Margin="0,5"/>
+
+		<!-- Components -->
+		<TextBlock Text="{loc:Loc prompt_components}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,0"/>
+
+		<TextBlock Text="{loc:Loc prompt_components_hint}"
+					  Opacity="0.6"
+					  TextWrapping="Wrap"/>
+
+		<Border BorderBrush="{DynamicResource DefaultForeground}"
+				BorderThickness="1"
+				CornerRadius="4"
+				Padding="4"
+				Opacity="0.7">
+
+			<ScrollViewer MaxHeight="250"
+							VerticalScrollBarVisibility="Auto">
+
+				<TreeView ItemsSource="{Binding ComponentCategories}"
+							BorderThickness="0">
+
+					<TreeView.DataTemplates>
+
+						<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
+											ItemsSource="{Binding Components}">
+
+							<TextBlock Text="{Binding CategoryName}"
+										  FontWeight="Bold"
+										  Margin="0,2"/>
+
+						</TreeDataTemplate>
+
+						<DataTemplate DataType="local:ComponentItemViewModel">
+
+							<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+										Content="{Binding Component.Name}"
+										Margin="16,1,0,1"/>
+
+						</DataTemplate>
+
+					</TreeView.DataTemplates>
+
+				</TreeView>
+
+			</ScrollViewer>
+
+		</Border>
+
+	</StackPanel>
 
 </UserControl>

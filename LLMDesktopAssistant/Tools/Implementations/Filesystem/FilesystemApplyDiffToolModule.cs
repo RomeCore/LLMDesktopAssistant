@@ -168,32 +168,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				File.WriteAllText(fullPath, newContent);
 
 				var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 10);
-
-				var changeReport = BuildChangeReport(
-					beforeDeletionLines,
-					beforeInsertionLines,
-					lines,
-					deletedStartLine, deletedEndLine, deletedContent,
-					insertedStartLine, insertedEndLine, insertedContent,
-					path);
-
-				var totalChanges = (deletedContent.Count > 0 ? 1 : 0) + (insertedContent.Count > 0 ? 1 : 0);
-				var changeDescription = totalChanges switch
-				{
-					2 => LocalizationManager.LocalizeStatic("fs-changes_modified"),
-					1 when deletedContent.Count > 0 => LocalizationManager.LocalizeStatic("fs-changes_deleted"),
-					1 when insertedContent.Count > 0 => LocalizationManager.LocalizeStatic("fs-changes_inserted"),
-					_ => LocalizationManager.LocalizeStatic("fs-changes_updated")
-				};
-
-				string deletedLinesInfo = deletedContent.Count > 0 ? $" -{deletedContent.Count}" : string.Empty;
-				string insertedLinesInfo = insertedContent.Count > 0 ? $" +{insertedContent.Count}" : string.Empty;
+				var (removed, added) = diff.GetChangeCounts();
 
 				var result = new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
-					StatusTitle = $"**{path}** *({changeDescription}{deletedLinesInfo}{insertedLinesInfo})*",
-					ResultContent = changeReport
+					StatusTitle = $"**{path}** *(-{removed} +{added})*",
+					ResultContent = diff.ToString()
 				};
 
 				return result.Complete(true);
@@ -204,124 +185,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		private string BuildChangeReport(
-			List<string> beforeDeletionLines,
-			List<string> beforeInsertionLines,
-			List<string> newLines,
-			int deletedStartLine, int deletedEndLine, List<string> deletedContent,
-			int insertedStartLine, int insertedEndLine, List<string> insertedContent,
-			string filePath)
-		{
-			// TODO: FIX REPORTING
-
-			var report = new StringBuilder();
-
-			report.AppendLine($"File modified: {filePath}");
-			report.AppendLine();
-
-			if (deletedContent.Any())
-			{
-				report.AppendLine($"DELETED lines {deletedStartLine}-{deletedEndLine} ({deletedContent.Count} lines)");
-				report.AppendLine();
-
-				int beforeStart = Math.Max(0, deletedStartLine - 6);
-				int beforeEnd = Math.Max(0, deletedStartLine - 1);
-				if (beforeStart < beforeEnd)
-				{
-					for (int i = beforeStart; i < beforeEnd; i++)
-					{
-						report.AppendLine($"{i + 1,6}: {beforeDeletionLines[i]}");
-					}
-					report.AppendLine();
-				}
-
-				for (int i = 0; i < Math.Min(5, deletedContent.Count); i++)
-				{
-					report.AppendLine($"- {deletedStartLine + i,6}: {deletedContent[i]}");
-				}
-
-				if (deletedContent.Count > 10)
-				{
-					report.AppendLine("- ...");
-				}
-
-				if (deletedContent.Count > 5)
-				{
-					int startIdx = Math.Max(Math.Min(5, deletedContent.Count), deletedContent.Count - 5);
-					for (int i = startIdx; i < deletedContent.Count; i++)
-					{
-						report.AppendLine($"- {deletedStartLine + i,6}: {deletedContent[i]}");
-					}
-				}
-				report.AppendLine();
-
-				int afterStart = Math.Min(beforeInsertionLines.Count - 1, deletedStartLine - 1);
-				int afterEnd = Math.Min(beforeInsertionLines.Count, deletedStartLine + 4);
-				if (afterStart < afterEnd)
-				{
-					for (int i = afterStart; i < afterEnd; i++)
-					{
-						report.AppendLine($"{i + 1,6}: {beforeInsertionLines[i]}");
-					}
-					report.AppendLine();
-				}
-			}
-
-			if (insertedContent.Any())
-			{
-				report.AppendLine($"INSERTED {insertedContent.Count} lines at position {insertedStartLine} (lines {insertedStartLine}-{insertedEndLine})");
-				report.AppendLine();
-
-				int beforeStart = Math.Max(0, insertedStartLine - 6);
-				int beforeEnd = Math.Max(0, insertedStartLine - 1);
-				if (beforeStart < beforeEnd)
-				{
-					for (int i = beforeStart; i < beforeEnd; i++)
-					{
-						if (i < beforeInsertionLines.Count)
-						{
-							report.AppendLine($"{i + 1,6}: {beforeInsertionLines[i]}");
-						}
-					}
-					report.AppendLine();
-				}
-
-				for (int i = 0; i < Math.Min(5, insertedContent.Count); i++)
-				{
-					report.AppendLine($"+ {insertedStartLine + i,6}: {insertedContent[i]}");
-				}
-
-				if (insertedContent.Count > 10)
-				{
-					report.AppendLine("+ ...");
-				}
-
-				if (insertedContent.Count > 5)
-				{
-					int startIdx = Math.Max(Math.Min(5, insertedContent.Count), insertedContent.Count - 5);
-					for (int i = startIdx; i < insertedContent.Count; i++)
-					{
-						report.AppendLine($"+ {insertedStartLine + i,6}: {insertedContent[i]}");
-					}
-				}
-				report.AppendLine();
-
-				int afterStart = Math.Min(newLines.Count - 1, insertedEndLine);
-				int afterEnd = Math.Min(newLines.Count, insertedEndLine + 5);
-				if (afterStart < afterEnd)
-				{
-					for (int i = afterStart; i < afterEnd; i++)
-					{
-						report.AppendLine($"{i + 1,6}: {newLines[i]}");
-					}
-					report.AppendLine();
-				}
-			}
-
-			return report.ToString();
-		}
-
-		private (int startLine, int endLine) ParseLineRange(string lineRange)
+		private static (int startLine, int endLine) ParseLineRange(string lineRange)
 		{
 			if (string.IsNullOrEmpty(lineRange))
 				throw new ArgumentException("Line range cannot be empty");

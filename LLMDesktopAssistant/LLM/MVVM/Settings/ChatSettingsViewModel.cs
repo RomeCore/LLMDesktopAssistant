@@ -1,4 +1,3 @@
-using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Settings;
@@ -7,11 +6,8 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
-using Serilog;
-using System.Collections.ObjectModel;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -85,6 +81,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ChatModelSettingsViewModel ModelSettings { get; }
 		public ChatEnvironmentSettingsViewModel EnvironmentSettings { get; }
 		public ChatMCPSettingsViewModel McpSettings { get; }
+		public ChatToolsSettingsViewModel ToolsSettings { get; }
 		public ChatSummarizationSettingsViewModel SummarizationSettings { get; }
 		public ChatAgentsSettingsViewModel AgentsSettings { get; }
 		public ChatUserSettingsViewModel UserSettings { get; }
@@ -116,6 +113,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			EnvironmentSettings = new ChatEnvironmentSettingsViewModel(settings.Environment);
 			McpSettings = new ChatMCPSettingsViewModel(settings.Mcp, chat.Services.GetRequiredService<IMCPManagementService>());
+
+			ToolsSettings = new ChatToolsSettingsViewModel(settings.Tools);
 
 			AgentsSettings.AgentsChanged += OnAgentsChanged;
 
@@ -159,7 +158,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 				MaterialIconKind.Connection,
 				McpSettings));
 
-			_generalSettingsCount = 7; // General nodes (agents, users, models, summarization, etc.)
+			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_tools"),
+				MaterialIconKind.Wrench,
+				ToolsSettings));
+
+			_generalSettingsCount = 8;
 
 			RebuildAgents();
 		}
@@ -171,7 +175,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			var managementService = Chat.Services.GetRequiredService<IAgentManagementService>();
 
-			// ========== Agent-specific settings ==========
 			var allAgents = managementService.ListAgents();
 			foreach (var (descriptor, isGlobal) in allAgents)
 			{
@@ -201,8 +204,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 							Chat.Services.GetRequiredService<IToolsetBuildingService>())),
 				};
 
-				// Simple: just append at the end before general settings?
-				// Actually, we remove all agent nodes on rebuild, so just add
 				SettingsTree.Add(new SettingsAgentParentNode(descriptor.Info, isGlobal, agentChildren));
 			}
 		}

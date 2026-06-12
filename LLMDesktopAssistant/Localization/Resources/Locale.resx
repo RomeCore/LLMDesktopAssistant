@@ -1611,4 +1611,142 @@
   <data name="clipboard-read" xml:space="preserve">
     <value>Read from clipboard</value>
   </data>
+  <data name="approval_level" xml:space="preserve">
+    <value>Approval Level</value>
+  </data>
+  <data name="approval_level_autoapprove" xml:space="preserve">
+    <value>Auto-Approve</value>
+  </data>
+  <data name="approval_level_policybased" xml:space="preserve">
+    <value>Policy Based</value>
+  </data>
+  <data name="approval_level_alwaysask" xml:space="preserve">
+    <value>Always Ask</value>
+  </data>
+  <data name="approval_level_alwaysdisallow" xml:space="preserve">
+    <value>Always Disallow</value>
+  </data>
+  <data name="enable_policy_override" xml:space="preserve">
+    <value>Override global tool policy for this agent</value>
+  </data>
+  <data name="tools_auto_approve_behaviours" xml:space="preserve">
+    <value>Auto-approve behaviours</value>
+  </data>
+  <data name="tools_disallowed_behaviours" xml:space="preserve">
+    <value>Disallowed behaviours</value>
+  </data>
+  <data name="tool_behaviour_none" xml:space="preserve">
+    <value>Safe (no specific behaviour)</value>
+  </data>
+  <data name="tool_behaviour_none_hint" xml:space="preserve">
+    <value>Purely computational or informational tasks (math, random, time).</value>
+  </data>
+  <data name="tool_behaviour_filedirectorycreate" xml:space="preserve">
+    <value>Create files and directories</value>
+  </data>
+  <data name="tool_behaviour_filedirectorycreate_hint" xml:space="preserve">
+    <value>The tool creates new files or directories on the filesystem.</value>
+  </data>
+  <data name="tool_behaviour_fileread" xml:space="preserve">
+    <value>Read files</value>
+  </data>
+  <data name="tool_behaviour_fileread_hint" xml:space="preserve">
+    <value>The tool reads the contents of files or directories.</value>
+  </data>
+  <data name="tool_behaviour_fileedit" xml:space="preserve">
+    <value>Edit files</value>
+  </data>
+  <data name="tool_behaviour_fileedit_hint" xml:space="preserve">
+    <value>The tool modifies existing file content or metadata without deleting it.</value>
+  </data>
+  <data name="tool_behaviour_filedelete" xml:space="preserve">
+    <value>Delete files</value>
+  </data>
+  <data name="tool_behaviour_filedelete_hint" xml:space="preserve">
+    <value>The tool permanently removes files from the filesystem.</value>
+  </data>
+  <data name="tool_behaviour_directoryread" xml:space="preserve">
+    <value>Read directories</value>
+  </data>
+  <data name="tool_behaviour_directoryread_hint" xml:space="preserve">
+    <value>The tool enumerates or lists the contents of directories.</value>
+  </data>
+  <data name="tool_behaviour_directoryedit" xml:space="preserve">
+    <value>Edit directories (move, rename, copy)</value>
+  </data>
+  <data name="tool_behaviour_directoryedit_hint" xml:space="preserve">
+    <value>The tool modifies the directory structure (move, rename, copy).</value>
+  </data>
+  <data name="tool_behaviour_directorydelete" xml:space="preserve">
+    <value>Delete directories</value>
+  </data>
+  <data name="tool_behaviour_directorydelete_hint" xml:space="preserve">
+    <value>The tool removes entire directory trees including their contents.</value>
+  </data>
+  <data name="tool_behaviour_readsecrets" xml:space="preserve">
+    <value>Read secrets and sensitive data</value>
+  </data>
+  <data name="tool_behaviour_readsecrets_hint" xml:space="preserve">
+    <value>The tool may expose sensitive information such as passwords, API keys or tokens.</value>
+  </data>
+  <data name="tool_behaviour_accessoutsideworkdir" xml:space="preserve">
+    <value>Access outside working directory</value>
+  </data>
+  <data name="tool_behaviour_accessoutsideworkdir_hint" xml:space="preserve">
+    <value>The tool accesses locations outside the configured working directory.</value>
+  </data>
+  <data name="tool_behaviour_clipboardaccess" xml:space="preserve">
+    <value>Clipboard access</value>
+  </data>
+  <data name="tool_behaviour_clipboardaccess_hint" xml:space="preserve">
+    <value>The tool accesses the clipboard for reading or writing text data.</value>
+  </data>
+  <data name="tool_behaviour_internetaccess" xml:space="preserve">
+    <value>Internet access</value>
+  </data>
+  <data name="tool_behaviour_internetaccess_hint" xml:space="preserve">
+    <value>The tool performs network requests to external services or APIs.</value>
+  </data>
+  <data name="tool_behaviour_longrunningtask" xml:space="preserve">
+    <value>Long-running task</value>
+  </data>
+  <data name="tool_behaviour_longrunningtask_hint" xml:space="preserve">
+    <value>The tool may run for an extended period due to heavy computation or network latency.</value>
+  </data>
+  <data name="tool_behaviour_executeexternalprocess" xml:space="preserve">
+    <value>Execute external process</value>
+  </data>
+  <data name="tool_behaviour_executeexternalprocess_hint" xml:space="preserve">
+    <value>The tool spawns or executes an external operating system process.</value>
+  </data>
+  <data name="tool_behaviour_possiblyunexpected" xml:space="preserve">
+    <value>Potentially unexpected actions</value>
+  </data>
+  <data name="tool_behaviour_possiblyunexpected_hint" xml:space="preserve">
+    <value>The tool may perform unexpected or uncontrollable actions.</value>
+  </data>
+  <data name="tool_behaviour_runterminal" xml:space="preserve">
+    <value>Run in terminal</value>
+  </data>
+  <data name="tool_behaviour_runterminal_hint" xml:space="preserve">
+    <value>The tool runs commands in an embedded terminal emulator with interactive I/O.</value>
+  </data>
+  <data name="tool_behaviour_userinteraction" xml:space="preserve">
+    <value>User interaction (forms, confirmations)</value>
+  </data>
+  <data name="tool_behaviour_userinteraction_hint" xml:space="preserve">
+    <value>The tool requires user input via forms, confirmations, file pickers, etc.</value>
+  </data>
+  <data name="tool_behaviour_agentexecution" xml:space="preserve">
+    <value>Agent execution</value>
+  </data>
+  <data name="tool_behaviour_agentexecution_hint" xml:space="preserve">
+    <value>The tool invokes, manages, or coordinates other AI agents.</value>
+  </data>
+  <data name="tool_behaviour_toolaccess" xml:space="preserve">
+    <value>Tool access (meta-tools)</value>
+  </data>
+  <data name="tool_behaviour_toolaccess_hint" xml:space="preserve">
+    <value>The tool creates, modifies, or deletes other tools at runtime.</value>
+  </data>
 </root>

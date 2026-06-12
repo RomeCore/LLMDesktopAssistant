@@ -8,34 +8,32 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentExecutionConditionsSettingsView"
 			 x:DataType="local:AgentExecutionConditionsSettingsViewModel">
 
-	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Orientation="Vertical"
-					Margin="10"
-					Spacing="10">
+	<StackPanel Orientation="Vertical"
+				Margin="10"
+				Spacing="10">
 
-			<!-- Can be mentioned -->
-			<CheckBox IsChecked="{Binding ExecutionConditionsSettings.CanBeMentioned, Mode=TwoWay}"
-					  Content="{loc:Loc settings_can_be_mentioned}"/>
+		<!-- Can be mentioned -->
+		<CheckBox IsChecked="{Binding ExecutionConditionsSettings.CanBeMentioned, Mode=TwoWay}"
+					Content="{loc:Loc settings_can_be_mentioned}"/>
 
-			<TextBlock Text="{loc:Loc settings_can_be_mentioned_hint}"
-					   Opacity="0.6"
-					   TextWrapping="Wrap"/>
+		<TextBlock Text="{loc:Loc settings_can_be_mentioned_hint}"
+					  Opacity="0.6"
+					  TextWrapping="Wrap"/>
 
-			<!-- Separator -->
-			<Rectangle Height="1"
-					   Fill="{DynamicResource DefaultForeground}"
-					   Opacity="0.2"
-					   Margin="0,10"/>
+		<!-- Separator -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,10"/>
 
-			<!-- Can mention others -->
-			<CheckBox IsChecked="{Binding ExecutionConditionsSettings.CanMentionOthers, Mode=TwoWay}"
-					  Content="{loc:Loc settings_can_mention_others}"/>
+		<!-- Can mention others -->
+		<CheckBox IsChecked="{Binding ExecutionConditionsSettings.CanMentionOthers, Mode=TwoWay}"
+					Content="{loc:Loc settings_can_mention_others}"/>
 
-			<TextBlock Text="{loc:Loc settings_can_mention_others_hint}"
-					   Opacity="0.6"
-					   TextWrapping="Wrap"/>
+		<TextBlock Text="{loc:Loc settings_can_mention_others_hint}"
+					  Opacity="0.6"
+					  TextWrapping="Wrap"/>
 
-		</StackPanel>
-	</ScrollViewer>
+	</StackPanel>
 
 </UserControl>

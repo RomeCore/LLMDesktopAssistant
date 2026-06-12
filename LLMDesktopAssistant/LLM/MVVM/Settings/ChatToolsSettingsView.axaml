@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ChatToolsSettingsView"
+			 x:DataType="local:ChatToolsSettingsViewModel">
+
+	<StackPanel Margin="10">
+
+		<!-- Enable tools checkbox -->
+		<CheckBox IsChecked="{Binding ToolSettings.EnableTools}"
+							Content="{loc:Loc settings-use_tools}"/>
+
+		<!-- Auto-Approve Behaviours section -->
+		<Expander DockPanel.Dock="Top"
+							Header="{loc:Loc tools_auto_approve_behaviours}"
+							IsExpanded="True"
+							Margin="0,4,0,4">
+			<ItemsControl ItemsSource="{Binding AutoApproveBehaviourItems}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<WrapPanel MaxWidth="600"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="local:ToolBehaviourItem">
+						<CheckBox IsChecked="{Binding IsEnabled}"
+											Content="{Binding DisplayName}"
+											ToolTip.Tip="{Binding Description}"
+											Margin="4,2"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</Expander>
+
+		<!-- Disallowed Behaviours section -->
+		<Expander Header="{loc:Loc tools_disallowed_behaviours}"
+							IsExpanded="False"
+							Margin="0,4,0,4">
+			<ItemsControl ItemsSource="{Binding DisallowedBehaviourItems}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<WrapPanel MaxWidth="600"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="local:ToolBehaviourItem">
+						<CheckBox IsChecked="{Binding IsEnabled}"
+											Content="{Binding DisplayName}"
+											ToolTip.Tip="{Binding Description}"
+											Margin="4,2"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</Expander>
+
+	</StackPanel>
+
+</UserControl>

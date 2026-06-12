@@ -119,11 +119,11 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _userConfirmationSource, value);
 		}
 
-		private ToolBehaviour _expectedBehaviour = ToolBehaviour.None;
+		private ToolBehaviour? _expectedBehaviour;
 		/// <summary>
 		/// Gets or sets the expected behaviour of the tool call.
 		/// </summary>
-		public ToolBehaviour ExpectedBehaviour
+		public ToolBehaviour? ExpectedBehaviour
 		{
 			get => _expectedBehaviour;
 			set => SetProperty(ref _expectedBehaviour, value);

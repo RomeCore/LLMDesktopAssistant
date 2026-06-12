@@ -258,6 +258,8 @@ namespace LLMDesktopAssistant.LLM.Services
 								finally
 								{
 									partialFunctionCall.ArgsPartAdded -= AddedPartialArg;
+									domainToolCall.StatusIcon = null;
+									domainToolCall.StatusTitle = null;
 								}
 							}
 

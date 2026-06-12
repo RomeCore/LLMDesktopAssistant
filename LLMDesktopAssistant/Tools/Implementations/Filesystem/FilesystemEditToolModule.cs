@@ -122,14 +122,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 
 			var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 10);
-			int removed = 0, added = 0;
-			foreach (var group in diff)
-			{
-				if (group.OldCount != -1)
-					removed += group.OldCount;
-				if (group.NewCount != -1)
-					added += group.NewCount;
-			}
+			var (removed, added) = diff.GetChangeCounts();
 
 			return new PreviewToolExecutionResult
 			{
@@ -208,14 +201,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				File.WriteAllText(fullPath, newContent);
 
 				var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 10);
-				int removed = 0, added = 0;
-				foreach (var group in diff)
-				{
-					if (group.OldCount != -1)
-						removed += group.OldCount;
-					if (group.NewCount != -1)
-						added += group.NewCount;
-				}
+				var (removed, added) = diff.GetChangeCounts();
 
 				return new ReactiveToolResult
 				{

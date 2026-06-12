@@ -159,14 +159,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						output.AppendLine("Changes:");
 						output.AppendLine(diff.ToString());
 
-						int removed = 0, added = 0;
-						foreach (var group in diff)
-						{
-							if (group.OldCount != -1)
-								removed += group.OldCount;
-							if (group.NewCount != -1)
-								added += group.NewCount;
-						}
+						var (removed, added) = diff.GetChangeCounts();
 						changesTitlePostfix = $" *(-{removed} +{added})*";
 					}
 				}

@@ -89,6 +89,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						requireConfirmation = true;
 						break;
 
+					case ToolApprovalLevel.AlwaysDisallow:
+						toolCall.Status = ToolStatus.Error;
+						toolCall.ResultContent = $"The tool execution is disallowed by the agent's settings policy.";
+						return;
+
 					default:
 						throw new InvalidOperationException($"Invalid approval level for a tool: {approvalLevel}");
 
@@ -150,11 +155,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					}
 				}
 
+				toolCall.ExpectedBehaviour = null;
 				toolCall.Status = ToolStatus.Executing;
 
 				try
 				{
-					// Use the parser that can tolerate lots of errors and still produce a valid JSON object.
 					parsedArgs ??= TolerantJsonParser.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
 				}
 				catch (Exception ex)
@@ -162,6 +167,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					Log.Error(ex, "Error parsing tool arguments. Arguments: {Args}.", toolCall.Arguments);
 					throw;
 				}
+
+				toolCall.StatusIcon = null;
+				toolCall.StatusTitle = null;
 				var reactiveResult = await toolInfo.Executor.Invoke(parsedArgs, toolExecutionContext, cancellationToken);
 
 				toolCall.ReactiveToolResult = reactiveResult;

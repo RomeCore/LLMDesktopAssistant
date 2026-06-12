@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using LLMDesktopAssistant.Tools;
@@ -11,6 +11,17 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// </summary>
 	public class ChatToolsSettings : NotifyPropertyChanged
 	{
+		private bool _enableTools = true;
+		/// <summary>
+		/// Whether to use tools in the chat.
+		/// </summary>
+		public bool EnableTools
+		{
+			get => _enableTools;
+			set => SetProperty(ref _enableTools, value);
+		}
+
+
 		private ToolBehaviour _autoApproveBehaviours = ToolBehaviour.None;
 		/// <summary>
 		/// The behaviour of tools that will be automatically approved.

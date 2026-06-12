@@ -12,225 +12,223 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentGenerationSettingsView"
 			 x:DataType="local:AgentGenerationSettingsViewModel">
 
-	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Orientation="Vertical" Margin="10" Spacing="8">
+	<StackPanel Orientation="Vertical" Margin="10" Spacing="8">
 			
-			<!-- Custom Model -->
-			<TextBlock Text="{loc:Loc settings-llm_custom_model}"
-					   FontWeight="Bold"
-					   FontSize="{DynamicResource FontSizeL}"
-					   Margin="0,5,0,5"/>
+		<!-- Custom Model -->
+		<TextBlock Text="{loc:Loc settings-llm_custom_model}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,5"/>
 
-			<CheckBox Content="{loc:Loc settings-llm_enable_custom_model}"
-					  IsChecked="{Binding GenerationSettings.EnableCustomModel, Mode=TwoWay}"/>
+		<CheckBox Content="{loc:Loc settings-llm_enable_custom_model}"
+					IsChecked="{Binding GenerationSettings.EnableCustomModel, Mode=TwoWay}"/>
 
-			<StackPanel Orientation="Vertical"
-						Spacing="4"
-						Margin="20,0,0,0"
-						IsEnabled="{Binding GenerationSettings.EnableCustomModel}">
+		<StackPanel Orientation="Vertical"
+					Spacing="4"
+					Margin="20,0,0,0"
+					IsEnabled="{Binding GenerationSettings.EnableCustomModel}">
 
-				<ctrl:LLModelSelectorControl SelectedModel="{Binding GenerationSettings.Model, Mode=TwoWay}"/>
+			<ctrl:LLModelSelectorControl SelectedModel="{Binding GenerationSettings.Model, Mode=TwoWay}"/>
 
-			</StackPanel>
+		</StackPanel>
 
-			<!-- Separator -->
-			<Rectangle Height="1"
-					   Fill="{DynamicResource DefaultForeground}"
-					   Opacity="0.2"
-					   Margin="0,10"/>
+		<!-- Separator -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,10"/>
 
-			<TextBlock Text="{loc:Loc settings-llm_reasoning}"
-					   FontWeight="Bold"
-					   FontSize="{DynamicResource FontSizeL}"
-					   Margin="0,5,0,5"/>
+		<TextBlock Text="{loc:Loc settings-llm_reasoning}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,5"/>
 
-			<CheckBox Content="{loc:Loc settings-llm_enable_reasoning}"
-					  IsChecked="{Binding GenerationSettings.EnableReasoningSettings, Mode=TwoWay}"/>
+		<CheckBox Content="{loc:Loc settings-llm_enable_reasoning}"
+					IsChecked="{Binding GenerationSettings.EnableReasoningSettings, Mode=TwoWay}"/>
 
-			<StackPanel Orientation="Horizontal"
-						Spacing="8"
-						Margin="20,0,0,0"
-						IsEnabled="{Binding GenerationSettings.EnableReasoningSettings}">
+		<StackPanel Orientation="Horizontal"
+					Spacing="8"
+					Margin="20,0,0,0"
+					IsEnabled="{Binding GenerationSettings.EnableReasoningSettings}">
 
-				<TextBlock Text="{loc:Loc settings-llm_reasoning_level}"
-						   VerticalAlignment="Center"/>
+			<TextBlock Text="{loc:Loc settings-llm_reasoning_level}"
+						  VerticalAlignment="Center"/>
 
-				<ComboBox MinWidth="160"
-						  SelectedItem="{Binding SelectedReasoningLevel, Mode=TwoWay}"
-						  ItemsSource="{Binding ReasoningLevels}"
-						  VerticalAlignment="Center">
+			<ComboBox MinWidth="160"
+						SelectedItem="{Binding SelectedReasoningLevel, Mode=TwoWay}"
+						ItemsSource="{Binding ReasoningLevels}"
+						VerticalAlignment="Center">
 
-					<ComboBox.ItemTemplate>
-						<DataTemplate x:DataType="local:ReasoningLevelItem">
-							<TextBlock Text="{Binding DisplayName}"/>
-						</DataTemplate>
-					</ComboBox.ItemTemplate>
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:ReasoningLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
 
-				</ComboBox>
+			</ComboBox>
 
-			</StackPanel>
+		</StackPanel>
 
-			<!-- Separator -->
-			<Rectangle Height="1"
-					   Fill="{DynamicResource DefaultForeground}"
-					   Opacity="0.2"
-					   Margin="0,10"/>
+		<!-- Separator -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,10"/>
 
-			<TextBlock Text="{loc:Loc settings-llm_temperature}"
-					   FontWeight="Bold"
-					   FontSize="{DynamicResource FontSizeL}"
-					   Margin="0,5,0,5"/>
+		<TextBlock Text="{loc:Loc settings-llm_temperature}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,5"/>
 
-			<CheckBox Content="{loc:Loc settings-llm_enable_temperature}"
-					  IsChecked="{Binding GenerationSettings.EnableTemperature, Mode=TwoWay}"/>
+		<CheckBox Content="{loc:Loc settings-llm_enable_temperature}"
+					IsChecked="{Binding GenerationSettings.EnableTemperature, Mode=TwoWay}"/>
 
-			<StackPanel Orientation="Vertical"
-						Spacing="4"
-						Margin="20,0,0,0"
-						IsEnabled="{Binding GenerationSettings.EnableTemperature}">
+		<StackPanel Orientation="Vertical"
+					Spacing="4"
+					Margin="20,0,0,0"
+					IsEnabled="{Binding GenerationSettings.EnableTemperature}">
 
-				<Grid ColumnDefinitions="Auto,*,50"
-					  ColumnSpacing="8">
+			<Grid ColumnDefinitions="Auto,*,50"
+					ColumnSpacing="8">
 
-					<TextBlock Text="{loc:Loc settings-llm_temperature_value}"
-							   VerticalAlignment="Center"/>
+				<TextBlock Text="{loc:Loc settings-llm_temperature_value}"
+							  VerticalAlignment="Center"/>
 
-					<Slider Grid.Column="1"
-							Value="{Binding GenerationSettings.Temperature, Mode=TwoWay}"
-							Minimum="0.0"
-							Maximum="2.0"
-							TickFrequency="0.1"
-							TickPlacement="Outside"
-							IsSnapToTickEnabled="True"
-							VerticalAlignment="Center"/>
+				<Slider Grid.Column="1"
+						Value="{Binding GenerationSettings.Temperature, Mode=TwoWay}"
+						Minimum="0.0"
+						Maximum="2.0"
+						TickFrequency="0.1"
+						TickPlacement="Outside"
+						IsSnapToTickEnabled="True"
+						VerticalAlignment="Center"/>
 
-					<TextBlock Grid.Column="2"
-							Text="{Binding GenerationSettings.Temperature, StringFormat=F2}"
-							Margin="4"
-							VerticalAlignment="Center"
-							HorizontalAlignment="Right"/>
-
-				</Grid>
-
-			</StackPanel>
-
-			<!-- Max Tokens -->
-			<Rectangle Height="1"
-					   Fill="{DynamicResource DefaultForeground}"
-					   Opacity="0.2"
-					   Margin="0,10"/>
-
-			<TextBlock Text="{loc:Loc settings-llm_max_tokens}"
-					   FontWeight="Bold"
-					   FontSize="{DynamicResource FontSizeL}"
-					   Margin="0,5,0,5"/>
-
-			<CheckBox Content="{loc:Loc settings-llm_enable_max_tokens}"
-					  IsChecked="{Binding GenerationSettings.EnableMaxTokens, Mode=TwoWay}"/>
-
-			<StackPanel Orientation="Horizontal"
-						Spacing="8"
-						Margin="20,0,0,0"
-						IsEnabled="{Binding GenerationSettings.EnableMaxTokens}">
-
-				<TextBlock Text="{loc:Loc settings-llm_max_tokens_value}"
-						   VerticalAlignment="Center"/>
-
-				<NumericUpDown MinWidth="120"
-							   Minimum="1"
-							   Maximum="1048576"
-								 AllowSpin="True"
-								 Increment="1024"
-							   Value="{Binding GenerationSettings.MaxTokens, Mode=TwoWay}"
-							   VerticalAlignment="Center"/>
-
-			</StackPanel>
-
-			<!-- Separator -->
-			<Rectangle Height="1"
-					   Fill="{DynamicResource DefaultForeground}"
-					   Opacity="0.2"
-					   Margin="0,10"/>
-
-			<!-- Additional Parameters -->
-			<Grid ColumnDefinitions="*,Auto"
-				  Margin="0,5,0,0">
-
-				<TextBlock Text="{loc:Loc settings-llm_additional_parameters}"
-						   FontWeight="Bold"
-						   FontSize="{DynamicResource FontSizeL}"
-						   VerticalAlignment="Center"/>
-
-				<Button Grid.Column="1"
-						Command="{Binding AddParameterCommand}"
-						Classes="IconButton"
-						ToolTip.Tip="{loc:Loc add}">
-
-					<ico:MaterialIcon Kind="Plus"/>
-
-				</Button>
+				<TextBlock Grid.Column="2"
+						Text="{Binding GenerationSettings.Temperature, StringFormat=F2}"
+						Margin="4"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Right"/>
 
 			</Grid>
 
-			<TextBlock Text="{loc:Loc settings-llm_additional_parameters_hint}"
-					   Opacity="0.6"
-					   TextWrapping="Wrap"
-					   Margin="0,0,0,5"/>
-			
-			<Border BorderBrush="{DynamicResource DefaultForeground}"
-					BorderThickness="1"
-					CornerRadius="4"
-					Padding="6"
-					IsVisible="{Binding GenerationSettings.AdditionalParameters.Any}">
-				
-				<ItemsControl ItemsSource="{Binding GenerationSettings.AdditionalParameters}">
+		</StackPanel>
 
-					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="sett:AdditionalParameter">
-							<Grid ColumnDefinitions="Auto,*,Auto,*,Auto,Auto"
-									RowDefinitions="Auto"
-									ColumnSpacing="6"
-									Margin="0,2">
+		<!-- Max Tokens -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,10"/>
 
-								<CheckBox Grid.Column="0"
-											IsChecked="{Binding Enabled, Mode=TwoWay}"
-											VerticalAlignment="Center"/>
+		<TextBlock Text="{loc:Loc settings-llm_max_tokens}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,5"/>
 
-								<TextBox Grid.Column="1"
-											PlaceholderText="{loc:Loc settings-llm_param_name}"
-											Text="{Binding ParameterName, Mode=TwoWay}"
-											MinWidth="100"/>
+		<CheckBox Content="{loc:Loc settings-llm_enable_max_tokens}"
+					IsChecked="{Binding GenerationSettings.EnableMaxTokens, Mode=TwoWay}"/>
 
-								<TextBlock Grid.Column="2"
-												Text="="
-												VerticalAlignment="Center"
-												FontWeight="Bold"/>
+		<StackPanel Orientation="Horizontal"
+					Spacing="8"
+					Margin="20,0,0,0"
+					IsEnabled="{Binding GenerationSettings.EnableMaxTokens}">
 
-								<TextBox Grid.Column="3"
-											PlaceholderText="{loc:Loc settings-llm_param_value}"
-											Text="{Binding ParameterValue, Mode=TwoWay}"
-											MinWidth="100"/>
+			<TextBlock Text="{loc:Loc settings-llm_max_tokens_value}"
+						  VerticalAlignment="Center"/>
 
-								<!-- Delete button -->
-								<Button Grid.Column="5"
-										Command="{Binding #ThisControl.DataContext.RemoveParameterCommand}"
-										CommandParameter="{Binding}"
-										Classes="IconButton"
-										ToolTip.Tip="{loc:Loc remove}">
-
-									<ico:MaterialIcon Kind="Close"/>
-
-								</Button>
-
-							</Grid>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-
-				</ItemsControl>
-
-			</Border>
+			<NumericUpDown MinWidth="120"
+							  Minimum="1"
+							  Maximum="1048576"
+								AllowSpin="True"
+								Increment="1024"
+							  Value="{Binding GenerationSettings.MaxTokens, Mode=TwoWay}"
+							  VerticalAlignment="Center"/>
 
 		</StackPanel>
-	</ScrollViewer>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,10"/>
+
+		<!-- Additional Parameters -->
+		<Grid ColumnDefinitions="*,Auto"
+				Margin="0,5,0,0">
+
+			<TextBlock Text="{loc:Loc settings-llm_additional_parameters}"
+						  FontWeight="Bold"
+						  FontSize="{DynamicResource FontSizeL}"
+						  VerticalAlignment="Center"/>
+
+			<Button Grid.Column="1"
+					Command="{Binding AddParameterCommand}"
+					Classes="IconButton"
+					ToolTip.Tip="{loc:Loc add}">
+
+				<ico:MaterialIcon Kind="Plus"/>
+
+			</Button>
+
+		</Grid>
+
+		<TextBlock Text="{loc:Loc settings-llm_additional_parameters_hint}"
+					  Opacity="0.6"
+					  TextWrapping="Wrap"
+					  Margin="0,0,0,5"/>
+			
+		<Border BorderBrush="{DynamicResource DefaultForeground}"
+				BorderThickness="1"
+				CornerRadius="4"
+				Padding="6"
+				IsVisible="{Binding GenerationSettings.AdditionalParameters.Any}">
+				
+			<ItemsControl ItemsSource="{Binding GenerationSettings.AdditionalParameters}">
+
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="sett:AdditionalParameter">
+						<Grid ColumnDefinitions="Auto,*,Auto,*,Auto,Auto"
+								RowDefinitions="Auto"
+								ColumnSpacing="6"
+								Margin="0,2">
+
+							<CheckBox Grid.Column="0"
+										IsChecked="{Binding Enabled, Mode=TwoWay}"
+										VerticalAlignment="Center"/>
+
+							<TextBox Grid.Column="1"
+										PlaceholderText="{loc:Loc settings-llm_param_name}"
+										Text="{Binding ParameterName, Mode=TwoWay}"
+										MinWidth="100"/>
+
+							<TextBlock Grid.Column="2"
+											Text="="
+											VerticalAlignment="Center"
+											FontWeight="Bold"/>
+
+							<TextBox Grid.Column="3"
+										PlaceholderText="{loc:Loc settings-llm_param_value}"
+										Text="{Binding ParameterValue, Mode=TwoWay}"
+										MinWidth="100"/>
+
+							<!-- Delete button -->
+							<Button Grid.Column="5"
+									Command="{Binding #ThisControl.DataContext.RemoveParameterCommand}"
+									CommandParameter="{Binding}"
+									Classes="IconButton"
+									ToolTip.Tip="{loc:Loc remove}">
+
+								<ico:MaterialIcon Kind="Close"/>
+
+							</Button>
+
+						</Grid>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+
+			</ItemsControl>
+
+		</Border>
+
+	</StackPanel>
 
 </UserControl>

@@ -36,8 +36,6 @@ public sealed class StageTypeOption
 		Name = "stage_type_adaptive",
 		StageType = typeof(AdaptiveAgentExecutionStage)
 	};
-
-
 }
 
 /// <summary>

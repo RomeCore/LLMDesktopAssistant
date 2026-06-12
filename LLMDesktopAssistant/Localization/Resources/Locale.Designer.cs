@@ -304,6 +304,51 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Approval Level.
+        /// </summary>
+        public static string approval_level {
+            get {
+                return ResourceManager.GetString("approval_level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Always Ask.
+        /// </summary>
+        public static string approval_level_alwaysask {
+            get {
+                return ResourceManager.GetString("approval_level_alwaysask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Always Disallow.
+        /// </summary>
+        public static string approval_level_alwaysdisallow {
+            get {
+                return ResourceManager.GetString("approval_level_alwaysdisallow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Auto-Approve.
+        /// </summary>
+        public static string approval_level_autoapprove {
+            get {
+                return ResourceManager.GetString("approval_level_autoapprove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Policy Based.
+        /// </summary>
+        public static string approval_level_policybased {
+            get {
+                return ResourceManager.GetString("approval_level_policybased", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Approve.
         /// </summary>
         public static string approve {
@@ -1092,6 +1137,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string enable {
             get {
                 return ResourceManager.GetString("enable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Override global tool policy for this agent.
+        /// </summary>
+        public static string enable_policy_override {
+            get {
+                return ResourceManager.GetString("enable_policy_override", resourceCulture);
             }
         }
         
@@ -4246,6 +4300,177 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Access outside working directory.
+        /// </summary>
+        public static string tool_behaviour_accessoutsideworkdir {
+            get {
+                return ResourceManager.GetString("tool_behaviour_accessoutsideworkdir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent execution.
+        /// </summary>
+        public static string tool_behaviour_agentexecution {
+            get {
+                return ResourceManager.GetString("tool_behaviour_agentexecution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Clipboard access.
+        /// </summary>
+        public static string tool_behaviour_clipboardaccess {
+            get {
+                return ResourceManager.GetString("tool_behaviour_clipboardaccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete directories.
+        /// </summary>
+        public static string tool_behaviour_directorydelete {
+            get {
+                return ResourceManager.GetString("tool_behaviour_directorydelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit directories (move, rename, copy).
+        /// </summary>
+        public static string tool_behaviour_directoryedit {
+            get {
+                return ResourceManager.GetString("tool_behaviour_directoryedit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read directories.
+        /// </summary>
+        public static string tool_behaviour_directoryread {
+            get {
+                return ResourceManager.GetString("tool_behaviour_directoryread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute external process.
+        /// </summary>
+        public static string tool_behaviour_executeexternalprocess {
+            get {
+                return ResourceManager.GetString("tool_behaviour_executeexternalprocess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete files.
+        /// </summary>
+        public static string tool_behaviour_filedelete {
+            get {
+                return ResourceManager.GetString("tool_behaviour_filedelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Create files and directories.
+        /// </summary>
+        public static string tool_behaviour_filedirectorycreate {
+            get {
+                return ResourceManager.GetString("tool_behaviour_filedirectorycreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit files.
+        /// </summary>
+        public static string tool_behaviour_fileedit {
+            get {
+                return ResourceManager.GetString("tool_behaviour_fileedit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read files.
+        /// </summary>
+        public static string tool_behaviour_fileread {
+            get {
+                return ResourceManager.GetString("tool_behaviour_fileread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Internet access.
+        /// </summary>
+        public static string tool_behaviour_internetaccess {
+            get {
+                return ResourceManager.GetString("tool_behaviour_internetaccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Long-running task.
+        /// </summary>
+        public static string tool_behaviour_longrunningtask {
+            get {
+                return ResourceManager.GetString("tool_behaviour_longrunningtask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Safe (no specific behaviour).
+        /// </summary>
+        public static string tool_behaviour_none {
+            get {
+                return ResourceManager.GetString("tool_behaviour_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Potentially unexpected actions.
+        /// </summary>
+        public static string tool_behaviour_possiblyunexpected {
+            get {
+                return ResourceManager.GetString("tool_behaviour_possiblyunexpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read secrets and sensitive data.
+        /// </summary>
+        public static string tool_behaviour_readsecrets {
+            get {
+                return ResourceManager.GetString("tool_behaviour_readsecrets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Run in terminal.
+        /// </summary>
+        public static string tool_behaviour_runterminal {
+            get {
+                return ResourceManager.GetString("tool_behaviour_runterminal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tool access (meta-tools).
+        /// </summary>
+        public static string tool_behaviour_toolaccess {
+            get {
+                return ResourceManager.GetString("tool_behaviour_toolaccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User interaction (forms, confirmations).
+        /// </summary>
+        public static string tool_behaviour_userinteraction {
+            get {
+                return ResourceManager.GetString("tool_behaviour_userinteraction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Executing....
         /// </summary>
         public static string tool_executing {
@@ -4296,6 +4521,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string tool_source_meta {
             get {
                 return ResourceManager.GetString("tool-source_meta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Auto-approve behaviours.
+        /// </summary>
+        public static string tools_auto_approve_behaviours {
+            get {
+                return ResourceManager.GetString("tools_auto_approve_behaviours", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Disallowed behaviours.
+        /// </summary>
+        public static string tools_disallowed_behaviours {
+            get {
+                return ResourceManager.GetString("tools_disallowed_behaviours", resourceCulture);
             }
         }
         

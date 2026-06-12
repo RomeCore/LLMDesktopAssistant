@@ -170,7 +170,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						DisplayName = tool.Title,
 						Category = tool.Category,
 						Source = ToolSource.Meta,
-						AskForConfirmation = tool.AskForConfirmation,
+						ApprovalLevel = tool.AskForConfirmation ? ToolApprovalLevel.AlwaysAsk : ToolApprovalLevel.PolicyBased,
 						Enabled = true
 					});
 				}

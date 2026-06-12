@@ -63,6 +63,24 @@
 															FontSize="13"
 															Opacity="0.45"
 															HorizontalAlignment="Left"/>
+									
+									<ItemsControl ItemsSource="{Binding BehaviourFlags}"
+												  Margin="0,4,0,0">
+										<ItemsControl.ItemsPanel>
+											<ItemsPanelTemplate>
+												<WrapPanel ItemSpacing="4"/>
+											</ItemsPanelTemplate>
+										</ItemsControl.ItemsPanel>
+										<ItemsControl.ItemTemplate>
+											<DataTemplate x:DataType="local:ToolBehaviourFlagInfo">
+												<Panel ToolTip.Tip="{Binding DisplayName}">
+													<ico:MaterialIcon Kind="{Binding Icon}"
+																	  Foreground="{Binding Color}"
+																	  Width="14" Height="14"/>
+												</Panel>
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+									</ItemsControl>
 
 								</StackPanel>
 
@@ -284,12 +302,33 @@
 				
 			</Panel>
 
-			<TextBlock Text="{loc:Loc {Binding ToolTitle}}"
-									FontSize="{DynamicResource FontSizeM}"
-									FontWeight="Medium"
-									VerticalAlignment="Bottom"
-									Margin="0,2"/>
+			<StackPanel Orientation="Vertical"
+									VerticalAlignment="Center">
 				
+				<TextBlock Text="{loc:Loc {Binding ToolTitle}}"
+									 FontSize="{DynamicResource FontSizeM}"
+									 FontWeight="Medium"/>
+				
+				<ItemsControl ItemsSource="{Binding BehaviourFlags}"
+											IsVisible="{Binding ExpectedBehaviour, Converter={StaticResource NotnullToBooleanConverter}}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Spacing="2" Orientation="Horizontal"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="local:ToolBehaviourFlagInfo">
+							<Panel ToolTip.Tip="{Binding DisplayName}">
+								<ico:MaterialIcon Kind="{Binding Icon}"
+																	Foreground="{Binding Color}"
+																	Width="12" Height="12"/>
+							</Panel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+			</StackPanel>
+
 			<StackPanel IsVisible="{Binding StatusTitle, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
 									Orientation="Horizontal"
 									Spacing="4">
