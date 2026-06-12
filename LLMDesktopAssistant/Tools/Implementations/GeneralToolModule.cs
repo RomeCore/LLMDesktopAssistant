@@ -1,4 +1,4 @@
-﻿using Avalonia.Input.Platform;
+using Avalonia.Input.Platform;
 using LLMDesktopAssistant.Services;
 using RCLargeLanguageModels.Tools;
 using System.ComponentModel;
@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "clipboard-copy",
 					Description = "Copies a piece of text to the clipboard, use when neccessary.",
 					Category = "general",
-					DefaultExpectedBehaviour = ToolBehaviour.ClipboardAccess
+					DefaultExpectedBehaviour = ToolBehaviour.ClipboardWrite
 				});
 
 			AddTool(ClipboardRead,
@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "clipboard-read",
 					Description = "Reads the current content of the clipboard.",
 					Category = "general",
-					DefaultExpectedBehaviour = ToolBehaviour.ClipboardAccess
+					DefaultExpectedBehaviour = ToolBehaviour.ClipboardRead
 				});
 		}
 

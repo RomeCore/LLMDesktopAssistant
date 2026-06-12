@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(Edit, null, EditPreview,
+			AddTool(Edit, EditStreaming, EditPreview,
 				new ToolInitializationInfo
 				{
 					Name = "fs-edit",
@@ -78,6 +78,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				return "'operation' must be one of: 'replace', 'insert_before', 'insert_after', 'delete'.";
 
 			return null;
+		}
+
+		public StreamingToolArgumentsAnalysisResult EditStreaming(
+			string? path)
+		{
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.FileDocumentEdit,
+				StatusTitle = $"**{path}**"
+			};
 		}
 
 		public PreviewToolExecutionResult EditPreview(

@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(Explore, null, ExplorePreview,
+			AddTool(Explore, ExploreStreaming, ExplorePreview,
 				new ToolInitializationInfo
 				{
 					Name = "fs-read_entry",
@@ -39,6 +39,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Category = "filesystem",
 					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.DirectoryRead
 				});
+		}
+
+		public StreamingToolArgumentsAnalysisResult ExploreStreaming(
+			string? path)
+		{
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.File,
+				StatusTitle = $"**{path}**"
+			};
 		}
 
 		public PreviewToolExecutionResult? ExplorePreview(string path,

@@ -80,10 +80,17 @@ public enum ToolBehaviour
 	AccessOutsideWorkdir = 1 << 8,
 
 	/// <summary>
-	/// The tool accesses the clipboard for reading or writing text data.
-	/// This may involve reading sensitive data from the clipboard.
+	/// The tool writes text data to the clipboard.
+	/// Examples: <c>clipboard-copy</c>.
 	/// </summary>
-	ClipboardAccess = 1 << 9,
+	ClipboardWrite = 1 << 9,
+
+	/// <summary>
+	/// The tool reads text data from the clipboard.
+	/// This may involve reading sensitive data (passwords, tokens, etc.).
+	/// Examples: <c>clipboard-read</c>.
+	/// </summary>
+	ClipboardRead = 1 << 10,
 
 	// ────────────────────────────── Network ─────────────────────────────────
 
@@ -92,7 +99,7 @@ public enum ToolBehaviour
 	/// Includes HTTP requests, web searches, file downloads, and webhook calls.
 	/// Examples: <c>web-fetch</c>, <c>web-search</c>, <c>web-download</c>.
 	/// </summary>
-	InternetAccess = 1 << 10,
+	InternetAccess = 1 << 11,
 
 	// ────────────────────────────── Performance ─────────────────────────────
 
@@ -102,7 +109,7 @@ public enum ToolBehaviour
 	/// or network latency. Examples: <c>fs-grep</c> on large codebase,
 	/// large file downloads, AI model inference (image description).
 	/// </summary>
-	LongRunningTask = 1 << 11,
+	LongRunningTask = 1 << 12,
 
 	// ────────────────────────────── Execution ───────────────────────────────
 
@@ -111,13 +118,13 @@ public enum ToolBehaviour
 	/// This includes running shell commands, scripts, or binaries.
 	/// Examples: <c>execute-shell</c>, <c>execute-python</c>.
 	/// </summary>
-	ExecuteExternalProcess = 1 << 12,
+	ExecuteExternalProcess = 1 << 13,
 
 	/// <summary>
 	/// The tool may perform actions that are potentially unexpected or uncontrollable,
 	/// such as executing scripts that is not analyzed yet.
 	/// </summary>
-	PossiblyUnexpected = 1 << 13,
+	PossiblyUnexpected = 1 << 14,
 
 	/// <summary>
 	/// The tool runs commands in an embedded terminal emulator with
@@ -125,7 +132,7 @@ public enum ToolBehaviour
 	/// and potential for arbitrary command execution.
 	/// Examples: <c>execute-shell</c> with <c>runTerminal: true</c>.
 	/// </summary>
-	RunTerminal = 1 << 14,
+	RunTerminal = 1 << 15,
 
 	// ────────────────────────────── User Interaction ────────────────────────
 
@@ -133,7 +140,7 @@ public enum ToolBehaviour
 	/// The tool requires special user input, such as prompts for confirmation, various forms,
 	/// file uploads, or custom UI elements. Examples: <c>forms-input</c>, <c>forms-submit</c>.
 	/// </summary>
-	UserInteraction = 1 << 15,
+	UserInteraction = 1 << 16,
 
 	// ────────────────────────────── Agents ──────────────────────────────────
 
@@ -143,7 +150,25 @@ public enum ToolBehaviour
 	/// carefully monitored to prevent runaway agent loops.
 	/// Examples: <c>agent-describe_image</c>, agent delegation calls.
 	/// </summary>
-	AgentExecution = 1 << 16,
+	AgentExecution = 1 << 17,
+
+	// ────────────────────────────── Source ─────────────────────────────────
+
+	/// <summary>
+	/// The tool originates from an external MCP (Model Context Protocol) server.
+	/// These tools are provided by external MCP servers and may have
+	/// unpredictable behaviour. Treat MCP tools with caution as they
+	/// may access external systems or resources outside this application's control.
+	/// </summary>
+	MCP = 1 << 18,
+
+	/// <summary>
+	/// The tool is a meta-tool created at runtime by the LLM itself
+	/// (via Lua/Python scripting). Such tools can have arbitrary behaviour
+	/// defined by the LLM and should be carefully monitored.
+	/// </summary>
+	Meta = 1 << 19,
+
 
 	// ────────────────────────────── Meta ────────────────────────────────────
 
@@ -154,5 +179,5 @@ public enum ToolBehaviour
 	/// it can alter the assistant's capabilities on the fly.
 	/// Examples: <c>metatools-create_or_update</c>, <c>metatools-delete</c>.
 	/// </summary>
-	ToolAccess = 1 << 17,
+	ToolAccess = 1 << 20,
 }

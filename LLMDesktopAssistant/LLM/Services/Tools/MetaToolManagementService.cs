@@ -167,6 +167,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						DescriptionGetter = () => desc,
 						ArgumentSchema = tool.ArgumentSchema ?? new JsonObject(),
 						Executor = engine.CreateExecutor(tool),
+						DefaultExpectedBehaviour = ToolBehaviour.Meta,
 						DisplayName = tool.Title,
 						Category = tool.Category,
 						Source = ToolSource.Meta,

@@ -1749,4 +1749,28 @@
   <data name="tool_behaviour_toolaccess_hint" xml:space="preserve">
     <value>The tool creates, modifies, or deletes other tools at runtime.</value>
   </data>
+  <data name="tool_behaviour_clipboardwrite" xml:space="preserve">
+    <value>Clipboard write</value>
+  </data>
+  <data name="tool_behaviour_clipboardwrite_hint" xml:space="preserve">
+    <value>The tool writes text data to the clipboard.</value>
+  </data>
+  <data name="tool_behaviour_clipboardread" xml:space="preserve">
+    <value>Clipboard read</value>
+  </data>
+  <data name="tool_behaviour_clipboardread_hint" xml:space="preserve">
+    <value>The tool reads text data from the clipboard.</value>
+  </data>
+  <data name="tool_behaviour_mcp" xml:space="preserve">
+    <value>MCP (external server)</value>
+  </data>
+  <data name="tool_behaviour_mcp_hint" xml:space="preserve">
+    <value>The tool originates from an external MCP server and may have unpredictable behaviour.</value>
+  </data>
+  <data name="tool_behaviour_meta" xml:space="preserve">
+    <value>Meta-tool (LLM-created)</value>
+  </data>
+  <data name="tool_behaviour_meta_hint" xml:space="preserve">
+    <value>The tool is a meta-tool created at runtime by the LLM via Lua/Python scripting.</value>
+  </data>
 </root>

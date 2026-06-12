@@ -93,7 +93,10 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.DirectoryDelete => MaterialIconKind.FolderRemove,
 		ToolBehaviour.ReadSecrets => MaterialIconKind.Key,
 		ToolBehaviour.AccessOutsideWorkdir => MaterialIconKind.ExitRun,
-		ToolBehaviour.ClipboardAccess => MaterialIconKind.Clipboard,
+		ToolBehaviour.ClipboardWrite => MaterialIconKind.ClipboardPlus,
+		ToolBehaviour.ClipboardRead => MaterialIconKind.ClipboardText,
+		ToolBehaviour.MCP => MaterialIconKind.Server,
+		ToolBehaviour.Meta => MaterialIconKind.AutoFix,
 		ToolBehaviour.InternetAccess => MaterialIconKind.Web,
 		ToolBehaviour.LongRunningTask => MaterialIconKind.TimerSand,
 		ToolBehaviour.ExecuteExternalProcess => MaterialIconKind.Console,
@@ -130,9 +133,14 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.FileRead => Brushes.DodgerBlue,
 		ToolBehaviour.DirectoryRead => Brushes.DodgerBlue,
 		ToolBehaviour.FileDirectoryCreate => Brushes.DodgerBlue,
-		ToolBehaviour.ClipboardAccess => Brushes.DodgerBlue,
+		ToolBehaviour.ClipboardRead => Brushes.DodgerBlue,
+		ToolBehaviour.ClipboardWrite => Brushes.DodgerBlue,
 		ToolBehaviour.LongRunningTask => Brushes.DodgerBlue,
 		ToolBehaviour.UserInteraction => Brushes.DodgerBlue,
+
+		// External (purple)
+		ToolBehaviour.MCP => Brushes.MediumPurple,
+		ToolBehaviour.Meta => Brushes.MediumPurple,
 
 		// Safe (green)
 		ToolBehaviour.None => Brushes.LimeGreen,

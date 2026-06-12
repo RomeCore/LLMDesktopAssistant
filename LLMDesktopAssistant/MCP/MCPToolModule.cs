@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
@@ -86,6 +86,7 @@ namespace LLMDesktopAssistant.MCP
 				OutputSchema = mcpTool.ReturnJsonSchema?.ToNodeSafe() as JsonObject,
 				Executor = CreateExecutor(connection, mcpTool),
 				Source = ToolSource.MCP,
+				DefaultExpectedBehaviour = ToolBehaviour.MCP,
 				DisplayName = mcpTool.Title ?? mcpTool.Name,
 				Category = connection.Info.Name
 			};

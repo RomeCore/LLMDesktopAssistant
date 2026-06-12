@@ -1749,4 +1749,28 @@
   <data name="tool_behaviour_toolaccess_hint" xml:space="preserve">
     <value>Инструмент создаёт, изменяет или удаляет другие инструменты во время выполнения.</value>
   </data>
+  <data name="tool_behaviour_clipboardwrite" xml:space="preserve">
+    <value>Запись в буфер обмена</value>
+  </data>
+  <data name="tool_behaviour_clipboardwrite_hint" xml:space="preserve">
+    <value>Инструмент записывает текстовые данные в буфер обмена.</value>
+  </data>
+  <data name="tool_behaviour_clipboardread" xml:space="preserve">
+    <value>Чтение буфера обмена</value>
+  </data>
+  <data name="tool_behaviour_clipboardread_hint" xml:space="preserve">
+    <value>Инструмент читает текстовые данные из буфера обмена.</value>
+  </data>
+  <data name="tool_behaviour_mcp" xml:space="preserve">
+    <value>MCP (внешний сервер)</value>
+  </data>
+  <data name="tool_behaviour_mcp_hint" xml:space="preserve">
+    <value>Инструмент получен с внешнего MCP-сервера и может иметь непредсказуемое поведение.</value>
+  </data>
+  <data name="tool_behaviour_meta" xml:space="preserve">
+    <value>Мета-инструмент (создан LLM)</value>
+  </data>
+  <data name="tool_behaviour_meta_hint" xml:space="preserve">
+    <value>Инструмент создан во время выполнения LLM через Lua/Python скриптинг.</value>
+  </data>
 </root>
