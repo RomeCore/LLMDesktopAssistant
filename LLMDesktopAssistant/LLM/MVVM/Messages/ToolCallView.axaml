@@ -311,20 +311,24 @@
 				
 				<ItemsControl ItemsSource="{Binding BehaviourFlags}"
 											IsVisible="{Binding ExpectedBehaviour, Converter={StaticResource NotnullToBooleanConverter}}">
+
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
 							<StackPanel Spacing="2" Orientation="Horizontal"/>
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
+
 					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="local:ToolBehaviourFlagInfo">
+						<DataTemplate>
 							<Panel ToolTip.Tip="{Binding DisplayName}">
 								<ico:MaterialIcon Kind="{Binding Icon}"
 																	Foreground="{Binding Color}"
+																	Background="Transparent"
 																	Width="12" Height="12"/>
 							</Panel>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
+
 				</ItemsControl>
 
 			</StackPanel>

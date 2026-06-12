@@ -105,26 +105,14 @@ namespace LLMDesktopAssistant.LLM.Messages
 		/// <summary>
 		/// Gets the list of behaviour flags with icons and colors for display.
 		/// </summary>
-		public IReadOnlyList<ToolBehaviourFlagInfo> BehaviourFlags
+		public ImmutableList<ToolBehaviourFlagInfo> BehaviourFlags
 		{
 			get
 			{
 				if (_expectedBehaviour == null)
 					return [];
 
-				var flags = new List<ToolBehaviourFlagInfo>();
-				foreach (var flag in Enum.GetValues<ToolBehaviour>())
-				{
-					if (flag != ToolBehaviour.None && _expectedBehaviour.Value.HasFlag(flag))
-					{
-						flags.Add(ToolBehaviourFlagInfo.Create(flag));
-					}
-				}
-				if (flags.Count == 0 && _expectedBehaviour == ToolBehaviour.None)
-				{
-					flags.Add(ToolBehaviourFlagInfo.Create(ToolBehaviour.None));
-				}
-				return flags;
+				return ToolBehaviourFlagInfo.CreateForFlags(_expectedBehaviour.Value);
 			}
 		}
 

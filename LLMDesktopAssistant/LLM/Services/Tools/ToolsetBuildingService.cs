@@ -22,6 +22,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	{
 		public IEnumerable<ToolInfo> BuildTools(Guid agentId)
 		{
+			if (!chat.Settings.Tools.EnableTools)
+				return [];
+
 			var settings = agentSettings.GetAgentDescriptor(agentId).Tools;
 			if (!settings.EnableTools)
 				return [];

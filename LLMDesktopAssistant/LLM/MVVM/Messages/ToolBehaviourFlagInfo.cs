@@ -61,6 +61,23 @@ public class ToolBehaviourFlagInfo
 		return new ToolBehaviourFlagInfo(flag, displayName, description, GetIcon(flag), GetColor(flag));
 	}
 
+	public static ImmutableList<ToolBehaviourFlagInfo> CreateForFlags(ToolBehaviour flags)
+	{
+		var result = ImmutableList.CreateBuilder<ToolBehaviourFlagInfo>();
+		foreach (var flag in Enum.GetValues<ToolBehaviour>())
+		{
+			if (flag != ToolBehaviour.None && flags.HasFlag(flag))
+			{
+				result.Add(Create(flag));
+			}
+		}
+		if (result.Count == 0 && flags == ToolBehaviour.None)
+		{
+			result.Add(Create(ToolBehaviour.None));
+		}
+		return result.ToImmutableList();
+	}
+
 	/// <summary>
 	/// Determines the icon for a behaviour flag.
 	/// </summary>

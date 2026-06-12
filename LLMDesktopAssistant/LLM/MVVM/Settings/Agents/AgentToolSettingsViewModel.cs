@@ -1,17 +1,17 @@
+using System.Collections.ObjectModel;
+using System.Text;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Tools;
-using System.Collections.ObjectModel;
-using System.Text;
-
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
@@ -36,10 +36,16 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public string Category { get; }
 		public ICommand ResetCommand { get; }
 
+		/// <summary>
+		/// Gets the list of behaviour flags with icons and colors for display.
+		/// </summary>
+		public IReadOnlyList<ToolBehaviourFlagInfo> BehaviourFlags { get; }
+
 		public ToolItemViewModel(ToolInfo tool, AgentToolSettings settings)
 		{
 			_settings = settings;
 			_toolInfo = tool;
+			BehaviourFlags = ToolBehaviourFlagInfo.CreateForFlags(tool.DefaultExpectedBehaviour);
 
 			switch (tool.Source)
 			{
