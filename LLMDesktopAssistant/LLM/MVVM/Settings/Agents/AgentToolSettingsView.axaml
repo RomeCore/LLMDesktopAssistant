@@ -223,11 +223,9 @@
 													 Opacity="0.7"/>
 
 								<TextBlock Text="{loc:Loc {Binding Title}}"
-												   FontWeight="Bold"/>
-
-								<TextBlock Text="{Binding TitleSuffix}"
-													 IsVisible="{Binding TitleSuffix, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-													 Opacity="0.7"/>
+												   FontWeight="Bold"
+													 TextTrimming="CharacterEllipsis"
+													 ToolTip.Tip="{loc:Loc {Binding Title}}"/>
 
 							</StackPanel>
 
@@ -256,26 +254,37 @@
 
 						</Grid>
 						
-						<ItemsControl ItemsSource="{Binding BehaviourFlags}">
+						<StackPanel Orientation="Horizontal"
+												Spacing="4">
+							
+							<TextBlock Text="{Binding Name}"
+												 FontSize="11"
+												 Opacity="0.4"
+												 VerticalAlignment="Center"/>
+							
+							<ItemsControl ItemsSource="{Binding BehaviourFlags}"
+														VerticalAlignment="Center">
 
-							<ItemsControl.ItemsPanel>
-								<ItemsPanelTemplate>
-									<StackPanel Spacing="2" Orientation="Horizontal"/>
-								</ItemsPanelTemplate>
-							</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Spacing="2" Orientation="Horizontal"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
 
-							<ItemsControl.ItemTemplate>
-								<DataTemplate>
-									<Panel ToolTip.Tip="{Binding DisplayName}">
-										<ico:MaterialIcon Kind="{Binding Icon}"
-																			Foreground="{Binding Color}"
-																			Background="Transparent"
-																			Width="16" Height="16"/>
-									</Panel>
-								</DataTemplate>
-							</ItemsControl.ItemTemplate>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Panel ToolTip.Tip="{Binding DisplayName}">
+											<ico:MaterialIcon Kind="{Binding Icon}"
+																				Foreground="{Binding Color}"
+																				Background="Transparent"
+																				Width="16" Height="16"/>
+										</Panel>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
 
-						</ItemsControl>
+							</ItemsControl>
+
+						</StackPanel>
 
 						<TextBlock Text="{Binding Description}"
 								   Margin="0,2,0,8"

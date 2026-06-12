@@ -27,7 +27,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public IBrush? TitlePrefixForeground { get; }
 		public string? TitlePrefix { get; }
 		public string Title { get; }
-		public string? TitleSuffix { get; }
 
 		public ToolInfo Info => _toolInfo;
 		public string Name { get; }
