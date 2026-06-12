@@ -25,8 +25,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-write_file",
 					Description = "Writes text content to a file inside working directory.",
 					Category = "filesystem",
-					AskForConfirmation = true,
-					DefaultDangerLevel = ToolDangerLevel.Safe
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate
 				});
 		}
 
@@ -63,6 +62,18 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					try
 					{
 						var oldContent = File.ReadAllText(fullPath);
+						if (oldContent == content)
+						{
+							return new PreviewToolExecutionResult
+							{
+								StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
+								StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
+								InterruptingSuccess = true,
+								InterruptingContent = $"File **{path}** already contains the same content.",
+								ExpectedBehaviour = ToolBehaviour.None
+							};
+						}
+
 						var diff = UnifiedDiff.Compute(oldContent, content, contextLines: 0);
 						int removed = 0, added = 0;
 						foreach (var group in diff)
@@ -76,7 +87,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						{
 							StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
 							StatusTitle = $"**{path}** *(-{removed} +{added})*",
-							DangerLevel = ToolDangerLevel.Warning
+							ExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate
 						};
 					}
 					catch

@@ -34,8 +34,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Name = "execute-shell",
 					Description = $"Executes `{osName}` shell command or script from the current working directory. Examples: `git status`, `python script.py`",
 					Category = "scripting",
-					AskForConfirmation = true,
-					DefaultDangerLevel = ToolDangerLevel.Dangerous
+					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
 				});
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -46,8 +45,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 						Name = "execute-powershell",
 						Description = "Executes Windows powershell command or script from the current working directory.",
 						Category = "scripting",
-						AskForConfirmation = true,
-						DefaultDangerLevel = ToolDangerLevel.Dangerous
+						DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
 					});
 			}
 		}
@@ -61,12 +59,14 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			};
 		}
 
-		public PreviewToolExecutionResult ExecuteShellPreview(string shell)
+		public PreviewToolExecutionResult ExecuteShellPreview(string shell, bool runTerminal)
 		{
 			return new PreviewToolExecutionResult
 			{
 				StatusIcon = MaterialIconKind.Console,
-				StatusTitle = $"`{shell}`"
+				StatusTitle = $"`{shell}`",
+				ExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected |
+					(runTerminal ? ToolBehaviour.RunTerminal : 0)
 			};
 		}
 
@@ -77,7 +77,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			CancellationToken cancellationToken = default)
 		{
 			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
-			string command = $"chcp 65001 && {shell}";
+			string command = $"{shell}";
 
 			return RunAsync(new TerminalToolRunParameters
 			{
@@ -98,12 +98,14 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			};
 		}
 
-		public PreviewToolExecutionResult ExecutePowerShellPreview(string powershell)
+		public PreviewToolExecutionResult ExecutePowerShellPreview(string powershell, bool runTerminal)
 		{
 			return new PreviewToolExecutionResult
 			{
 				StatusIcon = MaterialIconKind.Powershell,
-				StatusTitle = $"`{powershell}`"
+				StatusTitle = $"`{powershell}`",
+				ExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected |
+					(runTerminal ? ToolBehaviour.RunTerminal : 0)
 			};
 		}
 
@@ -114,7 +116,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			CancellationToken cancellationToken = default)
 		{
 			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
-			string command = $"chcp 65001 && powershell -Command \"{powershell}\"";
+			string command = $"powershell -Command \"{powershell}\"";
 
 			return RunAsync(new TerminalToolRunParameters
 			{

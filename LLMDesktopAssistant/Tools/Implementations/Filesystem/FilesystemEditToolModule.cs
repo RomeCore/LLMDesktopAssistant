@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -58,8 +59,84 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						  fs-edit(path: "file.cs", match: "Console\.WriteLine", operation: "delete", useRegex: true)
 						""",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit
 				});
+		}
+
+		private string? CheckArgs(string path, string? fullPath, string operation, bool useRegex, string match, string text)
+		{
+			if (fullPath == null)
+				return $"Access outside working directory is not allowed: {path}";
+
+			if (!File.Exists(fullPath))
+				return $"File not found: {path}";
+
+			if (string.IsNullOrWhiteSpace(match))
+				return "'match' parameter cannot be empty.";
+
+			if (operation is not ("replace" or "insert_before" or "insert_after" or "delete"))
+				return "'operation' must be one of: 'replace', 'insert_before', 'insert_after', 'delete'.";
+
+			return null;
+		}
+
+		public PreviewToolExecutionResult EditPreview(
+			string path, string operation, bool useRegex, string match, string text = "",
+			int occurrence = 0, bool ignoreWhitespace = true, bool ignoreCase = false,
+			CancellationToken cancellationToken = default)
+		{
+			var fullPath = _fileAccess.TryAccessPath(path);
+			var error = CheckArgs(path, fullPath, operation, useRegex, match, text);
+			if (error != null)
+			{
+				return new PreviewToolExecutionResult
+				{
+					InterruptingSuccess = false,
+					InterruptingContent = error,
+					StatusIcon = MaterialIconKind.FileAlert,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = ToolBehaviour.None
+				};
+			}
+
+			var originalContent = File.ReadAllText(fullPath!);
+			var normalizedContent = NormalizeLineEndings(originalContent);
+			var fileLines = normalizedContent.Split('\n').ToList();
+
+			string? newContent, errorMessage;
+			if (useRegex)
+				(newContent, errorMessage) = EditWithRegex(match, text, operation, occurrence, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
+			else
+				(newContent, errorMessage) = EditWithString(match, text, operation, occurrence, ignoreWhitespace, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
+
+			if (newContent == null || newContent == originalContent)
+			{
+				return new PreviewToolExecutionResult
+				{
+					InterruptingSuccess = true,
+					InterruptingContent = errorMessage ?? "No changes were made to the file. The specified match was not found.",
+					StatusIcon = MaterialIconKind.FileQuestion,
+					StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
+					ExpectedBehaviour = ToolBehaviour.None
+				};
+			}
+
+			var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 10);
+			int removed = 0, added = 0;
+			foreach (var group in diff)
+			{
+				if (group.OldCount != -1)
+					removed += group.OldCount;
+				if (group.NewCount != -1)
+					added += group.NewCount;
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.FileDocumentEdit,
+				StatusTitle = $"**{path}** *(-{removed} +{added})*",
+				ExpectedBehaviour = ToolBehaviour.FileEdit
+			};
 		}
 
 		public ReactiveToolResult Edit(
@@ -83,7 +160,18 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
+				var fullPath = _fileAccess.TryAccessPath(path);
+				var error = CheckArgs(path, fullPath, operation, useRegex, match, text);
+
+				if (error != null)
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FileAlert,
+						StatusTitle = $"**{path}**",
+						ResultContent = error
+					}.CompleteWithError();
+				}
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -107,11 +195,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				else
 					(newContent, errorMessage) = EditWithString(match, text, operation, occurrence, ignoreWhitespace, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
 
-				if (newContent == null)
+				if (newContent == null || newContent == originalContent)
 				{
 					return new ReactiveToolResult
 					{
-						StatusIcon = Material.Icons.MaterialIconKind.FileDocumentError,
+						StatusIcon = MaterialIconKind.FileQuestion,
 						StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
 						ResultContent = errorMessage ?? "No changes were made to the file. The specified match was not found."
 					}.CompleteWithSuccess();
@@ -131,7 +219,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				return new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
+					StatusIcon = MaterialIconKind.FileDocumentEdit,
 					StatusTitle = $"**{path}** *(-{removed} +{added})*",
 					ResultContent = diff.ToString()
 				}.CompleteWithSuccess();

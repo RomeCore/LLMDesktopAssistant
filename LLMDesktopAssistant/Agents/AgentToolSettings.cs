@@ -1,6 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.LLM.Settings;
 
 namespace LLMDesktopAssistant.Agents
 {
@@ -20,14 +21,36 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _enableTools, value);
 		}
 
-		private ToolDangerLevel _autoApproveLevel = ToolDangerLevel.Default;
+		private bool _enablePolicyOverride = false;
 		/// <summary>
-		/// The maximum danger level of tools that can be automatically approved.
+		/// Whether to override the approval policy for tools.
+		/// When true, the <see cref="AutoApproveBehaviours"/> and <see cref="DisallowedBehaviours"/> 
+		/// will be used instead of policy specified in <see cref="ChatToolsSettings"/>.
 		/// </summary>
-		public ToolDangerLevel AutoApproveLevel
+		public bool EnablePolicyOverride
 		{
-			get => _autoApproveLevel;
-			set => SetProperty(ref _autoApproveLevel, value);
+			get => _enablePolicyOverride;
+			set => SetProperty(ref _enablePolicyOverride, value);
+		}
+
+		private ToolBehaviour _autoApproveBehaviours = ToolBehaviour.None;
+		/// <summary>
+		/// The behaviour of tools that will be automatically approved.
+		/// </summary>
+		public ToolBehaviour AutoApproveBehaviours
+		{
+			get => _autoApproveBehaviours;
+			set => SetProperty(ref _autoApproveBehaviours, value);
+		}
+
+		private ToolBehaviour _disallowedBehaviours = ToolBehaviour.None;
+		/// <summary>
+		/// The behaviour of tools that will be disallowed.
+		/// </summary>
+		public ToolBehaviour DisallowedBehaviours
+		{
+			get => _disallowedBehaviours;
+			set => SetProperty(ref _disallowedBehaviours, value);
 		}
 
 		private readonly RangeObservableCollection<ToolChange> _toolChanges = [];

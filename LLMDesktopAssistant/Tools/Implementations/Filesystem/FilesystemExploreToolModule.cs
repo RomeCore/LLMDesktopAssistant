@@ -37,7 +37,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						If both exists, it will do both actions.
 						""",
 					Category = "filesystem",
-					AskForConfirmation = false
+					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.DirectoryRead
 				});
 		}
 
@@ -84,7 +84,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						{
 							StatusIcon = directoryExists ? MaterialIconKind.FileEye : MaterialIconKind.FileCode,
 							StatusTitle = LocalizationManager.LocalizeStaticFormat("file_contains_secrets", $"**{path}**"),
-							DangerLevel = ToolDangerLevel.Dangerous
+							ExpectedBehaviour = ToolBehaviour.ReadSecrets | ToolBehaviour.FileRead |
+								(directoryExists ? ToolBehaviour.DirectoryRead : 0)
 						};
 					}
 
@@ -92,7 +93,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					{
 						StatusIcon = directoryExists ? MaterialIconKind.FileEye : MaterialIconKind.FileCode,
 						StatusTitle = $"**{path}**",
-						DangerLevel = ToolDangerLevel.Safe
+						ExpectedBehaviour = ToolBehaviour.FileRead | (directoryExists ? ToolBehaviour.DirectoryRead : 0)
 					};
 				}
 
@@ -102,7 +103,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					{
 						StatusIcon = MaterialIconKind.Folder,
 						StatusTitle = $"**{path}**",
-						DangerLevel = ToolDangerLevel.Safe
+						ExpectedBehaviour = ToolBehaviour.DirectoryRead
 					};
 				}
 
@@ -112,7 +113,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					StatusTitle = $"**{path}**",
 					InterruptingContent = $"No such file or directory found: '{path}'.",
 					InterruptingSuccess = false,
-					DangerLevel = ToolDangerLevel.Safe
+					ExpectedBehaviour = ToolBehaviour.None // Will do nothing
 				};
 			}
 			catch (Exception ex)

@@ -49,7 +49,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "web-request",
 					Description = "Perform a request to a specified URL and method.",
-					Category = "web"
+					Category = "web",
+					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 
 			AddTool(DownloadFile, DownloadFileStream, null,
@@ -58,7 +59,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "web-download",
 					Description = "Download a file from a specified URL into the working directory.",
 					Category = "web",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.InternetAccess
 				});
 
 			AddTool(CheckWebsiteStatus,
@@ -66,7 +67,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "web-status",
 					Description = "Check if a website is accessible and return status code.",
-					Category = "web"
+					Category = "web",
+					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 
 			AddTool(Fetch,
@@ -74,7 +76,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "web-fetch",
 					Description = "Fetch webcite content from a specified URL.",
-					Category = "web"
+					Category = "web",
+					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 
 			AddTool(ParseHtml,
@@ -82,7 +85,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "web-parse",
 					Description = "Fetch HTML content and parse specific elements by tag or class.",
-					Category = "web"
+					Category = "web",
+					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 		}
 

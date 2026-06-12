@@ -1602,4 +1602,13 @@
   <data name="send_quick_action" xml:space="preserve">
     <value>Send "{0}"</value>
   </data>
+  <data name="web_search_results" xml:space="preserve">
+    <value>{0} *({1} results)*</value>
+  </data>
+  <data name="clipboard-copy" xml:space="preserve">
+    <value>Copy to clipboard</value>
+  </data>
+  <data name="clipboard-read" xml:space="preserve">
+    <value>Read from clipboard</value>
+  </data>
 </root>

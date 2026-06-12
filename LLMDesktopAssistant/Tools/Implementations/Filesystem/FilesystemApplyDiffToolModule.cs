@@ -37,7 +37,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						Note: Works best if you know line numbers when looking file with fs-explore(showLineNumbers = true)
 						""",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit
 				});
 		}
 

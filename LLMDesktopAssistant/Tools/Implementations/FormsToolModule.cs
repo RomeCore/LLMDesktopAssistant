@@ -23,7 +23,7 @@ public class FormsToolModule : ToolModule
 					"Shows a message with 'Confirm' and 'Cancel' buttons. " +
 					"Use this tool when you need to ask the user for permission before performing an important or dangerous action.",
 				Category = "forms",
-				AskForConfirmation = false
+				DefaultExpectedBehaviour = ToolBehaviour.UserInteraction
 			});
 
 		AddTool(FormsChoice,
@@ -34,7 +34,7 @@ public class FormsToolModule : ToolModule
 					"Can allow custom input (allowCustom). " +
 					"Use when the user needs to make a selection from the provided options.",
 				Category = "forms",
-				AskForConfirmation = false
+				DefaultExpectedBehaviour = ToolBehaviour.UserInteraction
 			});
 
 		AddTool(FormsInput,
@@ -45,7 +45,7 @@ public class FormsToolModule : ToolModule
 					"Supports field types: text, number, password, multiline. " +
 					"Use when you need structured data from the user.",
 				Category = "forms",
-				AskForConfirmation = false
+				DefaultExpectedBehaviour = ToolBehaviour.UserInteraction
 			});
 
 		AddTool(FormsFilePicker,
@@ -56,7 +56,7 @@ public class FormsToolModule : ToolModule
 					"Can filter by extensions and allow multiple file selection. " +
 					"Use when the user needs to specify a file path on their system.",
 				Category = "forms",
-				AskForConfirmation = false
+				DefaultExpectedBehaviour = ToolBehaviour.UserInteraction | ToolBehaviour.DirectoryRead
 			});
 	}
 

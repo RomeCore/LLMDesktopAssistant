@@ -29,7 +29,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "metatools-create_or_update",
 					Description = BuildCreateOrUpdateDescription(),
 					Category = "metatools",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.ToolAccess
 				});
 
 			AddTool(ListMetaTools,
@@ -37,8 +37,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "metatools-list",
 					Description = "Lists all existing meta tools. Use it for understanding what tools you can tweak or modify.",
-					Category = "metatools",
-					AskForConfirmation = false
+					Category = "metatools"
 				});
 
 			AddTool(GetToolInfo,
@@ -46,8 +45,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "metatools-get_info",
 					Description = "Gets detailed information about a specific meta tool by its name. Use it for understanding the details of a particular tool.",
-					Category = "metatools",
-					AskForConfirmation = false
+					Category = "metatools"
 				});
 
 			AddTool(RenameMetaTool,
@@ -56,7 +54,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "metatools-rename",
 					Description = "Renames an existing meta tool to a new name. The original tool must exist and the new name must not conflict with any other tools.",
 					Category = "metatools",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.ToolAccess
 				});
 
 			AddTool(DeleteMetaTool,
@@ -65,7 +63,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "metatools-delete",
 					Description = "Removes an existing meta tool. The tool must exist and cannot be a default tool.",
 					Category = "metatools",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.ToolAccess
 				});
 		}
 

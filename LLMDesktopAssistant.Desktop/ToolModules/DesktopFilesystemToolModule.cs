@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Name = "fs-open_file",
 					Description = "Opens a file from the working directory with its default application.",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.FileRead
 				});
 		}
 

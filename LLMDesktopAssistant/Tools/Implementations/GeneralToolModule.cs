@@ -10,19 +10,35 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	{
 		public GeneralToolModule()
 		{
-			AddTool(Copy,
+			AddTool(ClipboardCopy,
 				new ToolInitializationInfo
 				{
-					Name = "copy",
+					Name = "clipboard-copy",
 					Description = "Copies a piece of text to the clipboard, use when neccessary.",
-					Category = "general"
+					Category = "general",
+					DefaultExpectedBehaviour = ToolBehaviour.ClipboardAccess
+				});
+
+			AddTool(ClipboardRead,
+				new ToolInitializationInfo
+				{
+					Name = "clipboard-read",
+					Description = "Reads the current content of the clipboard.",
+					Category = "general",
+					DefaultExpectedBehaviour = ToolBehaviour.ClipboardAccess
 				});
 		}
 
-		private ToolResult Copy([Description("Text to copy")] string text)
+		private ToolResult ClipboardCopy([Description("Text to copy")] string text)
 		{
 			_ = App.MainTopLevel.Clipboard!.SetTextAsync(text);
 			return new ToolResult("Text copied to clipboard.");
+		}
+
+		private async Task<ToolResult> ClipboardRead()
+		{
+			var content = await App.MainTopLevel.Clipboard!.TryGetTextAsync();
+			return new ToolResult(content ?? "<Clipboard is empty>");
 		}
 	}
 }

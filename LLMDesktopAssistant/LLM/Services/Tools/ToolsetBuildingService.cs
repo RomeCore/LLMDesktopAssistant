@@ -43,14 +43,14 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							ArgumentSchema = toolInfo.ArgumentSchema,
 							OutputSchema = toolInfo.OutputSchema,
 							StreamingArgumentsAnalyser = toolInfo.StreamingArgumentsAnalyser,
-							DefaultDangerLevel = toolInfo.DefaultDangerLevel,
+							DefaultExpectedBehaviour = toolInfo.DefaultExpectedBehaviour,
 							PreviewExecutor = toolInfo.PreviewExecutor,
 							Executor = toolInfo.Executor,
 							Category = toolInfo.Category,
 							DisplayName = toolInfo.DisplayName,
 							Source = toolInfo.Source,
 							Enabled = true,
-							AskForConfirmation = change.AskForConfirmation ?? toolInfo.AskForConfirmation
+							ApprovalLevel = change.ApprovalLevel ?? toolInfo.ApprovalLevel
 						});
 				}
 				else

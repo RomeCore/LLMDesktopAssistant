@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						Use this tool with care, as it can be slow and resource-intensive.
 						""",
 					Category = "filesystem",
-					AskForConfirmation = false
+					DefaultExpectedBehaviour = ToolBehaviour.DirectoryRead | ToolBehaviour.FileRead
 				});
 		}
 

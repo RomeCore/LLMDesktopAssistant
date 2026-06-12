@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Name = "execute-python_repl",
 					Description = "Execute Python code in the persistent REPL. Context is preserved between calls! It returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!').",
 					Category = "Python",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected
 				});
 
 			AddTool(GetPythonVariable,
@@ -33,7 +33,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "python-repl_get_var",
 					Description = "Get a Python variable value from the persistent REPL.",
-					Category = "Python"
+					Category = "Python",
+					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess
 				});
 
 			AddTool(ResetPythonRepl,
@@ -41,7 +42,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "python-repl_reset",
 					Description = "Reset/clear the Python REPL context.",
-					Category = "Python"
+					Category = "Python",
+					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess
 				});
 		}
 

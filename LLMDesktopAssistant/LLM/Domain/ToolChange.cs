@@ -1,4 +1,6 @@
-﻿namespace LLMDesktopAssistant.LLM.Domain
+﻿using LLMDesktopAssistant.Tools;
+
+namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents a change to a tool, including enabled state and confirmation requirements.
@@ -25,15 +27,15 @@
 			set => SetProperty(ref _enabled, value);
 		}
 
-		private bool? _askForConfirmation;
+		private ToolApprovalLevel? _approvalLevel;
 		/// <summary>
 		/// Gets or sets a value indicating whether to ask for confirmation before executing a tool.
 		/// Null indicates that the setting has not been changed yet.
 		/// </summary>
-		public bool? AskForConfirmation
+		public ToolApprovalLevel? ApprovalLevel
 		{
-			get => _askForConfirmation;
-			set => SetProperty(ref _askForConfirmation, value);
+			get => _approvalLevel;
+			set => SetProperty(ref _approvalLevel, value);
 		}
 	}
 }

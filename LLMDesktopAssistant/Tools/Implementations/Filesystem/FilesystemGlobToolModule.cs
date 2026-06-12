@@ -47,7 +47,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						- `{include,src}/**/*.h`  - header files in 'include' or 'src' directories
 						""",
 					Category = "filesystem",
-					AskForConfirmation = false
+					DefaultExpectedBehaviour = ToolBehaviour.DirectoryRead
 				});
 		}
 

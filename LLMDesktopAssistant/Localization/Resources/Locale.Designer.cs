@@ -907,6 +907,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy to clipboard.
+        /// </summary>
+        public static string clipboard_copy {
+            get {
+                return ResourceManager.GetString("clipboard-copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read from clipboard.
+        /// </summary>
+        public static string clipboard_read {
+            get {
+                return ResourceManager.GetString("clipboard-read", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Close.
         /// </summary>
         public static string close {
@@ -4494,6 +4512,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string web_search {
             get {
                 return ResourceManager.GetString("web-search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} *({1} results)*.
+        /// </summary>
+        public static string web_search_results {
+            get {
+                return ResourceManager.GetString("web_search_results", resourceCulture);
             }
         }
         

@@ -30,8 +30,7 @@ namespace LLMDesktopAssistant.Scripting
 						Its very recommended to see manuals before starting to use the API (do not use it blindly without reading the documentation!).
 						""",
 					Category = "scripting",
-					DefaultDangerLevel = ToolDangerLevel.Dangerous,
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
 				});
 		}
 

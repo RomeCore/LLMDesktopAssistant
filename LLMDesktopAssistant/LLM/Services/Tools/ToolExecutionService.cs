@@ -33,7 +33,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 			try
 			{
-				toolCall.DangerLevel = toolInfo.DefaultDangerLevel;
+				toolCall.ExpectedBehaviour = toolInfo.DefaultExpectedBehaviour;
 
 				JsonNode? parsedArgs = null;
 				var toolExecutionContext = new ToolExecutionContext
@@ -53,8 +53,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						var preExecutionResult = await toolInfo.PreviewExecutor(parsedArgs, toolExecutionContext, cancellationToken);
 						toolCall.StatusTitle = preExecutionResult.StatusTitle;
 						toolCall.StatusIcon = preExecutionResult.StatusIcon;
-						if (preExecutionResult.DangerLevel != ToolDangerLevel.Default)
-							toolCall.DangerLevel = preExecutionResult.DangerLevel;
+						if (preExecutionResult.ExpectedBehaviour.HasValue)
+							toolCall.ExpectedBehaviour = preExecutionResult.ExpectedBehaviour.Value;
 
 						if (preExecutionResult.InterruptingSuccess != null)
 						{
@@ -77,11 +77,53 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					}
 				}
 
-				bool requireConfirmation = toolInfo.AskForConfirmation;
-				if (requireConfirmation)
+				var approvalLevel = toolInfo.ApprovalLevel;
+				bool requireConfirmation;
+				switch (approvalLevel)
 				{
-					var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
-					requireConfirmation = toolCall.DangerLevel == ToolDangerLevel.Default || toolCall.DangerLevel > senderAgent.Tools.AutoApproveLevel;
+					case ToolApprovalLevel.AutoApprove:
+						requireConfirmation = false;
+						break;
+
+					case ToolApprovalLevel.AlwaysAsk:
+						requireConfirmation = true;
+						break;
+
+					default:
+						throw new InvalidOperationException($"Invalid approval level for a tool: {approvalLevel}");
+
+					case ToolApprovalLevel.PolicyBased:
+
+						var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
+						var agentToolSettings = senderAgent.Tools;
+
+						ToolBehaviour autoApproveBehaviours, disallowedBehaviours;
+
+						if (agentToolSettings.EnablePolicyOverride)
+						{
+							autoApproveBehaviours = agentToolSettings.AutoApproveBehaviours;
+							disallowedBehaviours = agentToolSettings.DisallowedBehaviours;
+						}
+						else
+						{
+							autoApproveBehaviours = chat.Settings.Tools.AutoApproveBehaviours;
+							disallowedBehaviours = chat.Settings.Tools.DisallowedBehaviours;
+						}
+
+						bool disallow = (disallowedBehaviours & toolCall.ExpectedBehaviour) != 0;
+						bool autoApprove = (autoApproveBehaviours & toolCall.ExpectedBehaviour) == toolCall.ExpectedBehaviour;
+
+						if (disallow)
+						{
+							toolCall.Status = ToolStatus.Error;
+							toolCall.ResultContent = $"The tool execution is disallowed by the agent's settings policy. " +
+								$"Policy disallows: {disallowedBehaviours}; the tool expected behaviour: {toolCall.ExpectedBehaviour}.";
+							return;
+						}
+
+						requireConfirmation = !autoApprove;
+
+						break;
 				}
 
 				if (requireConfirmation)

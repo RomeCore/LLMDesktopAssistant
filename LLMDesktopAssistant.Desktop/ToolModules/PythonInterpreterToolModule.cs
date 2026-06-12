@@ -41,8 +41,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Name = "execute-python",
 					Description = "Executes Python in isolated virtual environment (global variables are not accessible between scripts) from the working directory. It returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!'). Displays live output in a terminal.",
 					Category = "Python",
-					DefaultDangerLevel = ToolDangerLevel.Dangerous,
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
 				});
 
 			AddTool(ExecuteVenvShell, ExecuteVenvShellStreaming, ExecuteVenvShellPreview,
@@ -51,8 +50,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Name = "execute-python_venv_shell",
 					Description = "Executes shell script in a Python's virtual environment from the working directory. Useful for installing packages via 'pip'. Displays live output in a terminal.",
 					Category = "Python",
-					DefaultDangerLevel = ToolDangerLevel.Dangerous,
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
 				});
 
 			AddTool(GetInstalledPackagesList,
@@ -61,8 +59,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Name = "python-get_installed_packages_list",
 					Description = "Returns the list of installed packages in the current Python's virtual environment.",
 					Category = "Python",
-					DefaultDangerLevel = ToolDangerLevel.Safe,
-					AskForConfirmation = false
+					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess
 				});
 		}
 
@@ -80,12 +77,14 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			};
 		}
 
-		public PreviewToolExecutionResult ExecutePreview(string python)
+		public PreviewToolExecutionResult ExecutePreview(string python, bool runTerminal)
 		{
 			return new PreviewToolExecutionResult
 			{
 				StatusIcon = MaterialIconKind.LanguagePython,
-				StatusTitle = null
+				StatusTitle = null,
+				ExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected |
+					(runTerminal ? ToolBehaviour.RunTerminal : 0)
 			};
 		}
 
@@ -145,9 +144,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				// Build command: activate venv if available, then run python
 				string command;
 				if (!string.IsNullOrWhiteSpace(venvPath))
-					command = $"chcp 65001 && call \"{venvPath}\" && python \"{pyFile}\"";
+					command = $"call \"{venvPath}\" && python \"{pyFile}\"";
 				else
-					command = $"chcp 65001 && python \"{pyFile}\"";
+					command = $"python \"{pyFile}\"";
 
 				// Run in terminal
 				return await RunAsync(new TerminalToolRunParameters
@@ -188,12 +187,14 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			};
 		}
 
-		public PreviewToolExecutionResult ExecuteVenvShellPreview(string shell)
+		public PreviewToolExecutionResult ExecuteVenvShellPreview(string shell, bool runTerminal)
 		{
 			return new PreviewToolExecutionResult
 			{
 				StatusIcon = MaterialIconKind.LanguagePython,
-				StatusTitle = $"`{shell}`"
+				StatusTitle = $"`{shell}`",
+				ExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected |
+					(runTerminal ? ToolBehaviour.RunTerminal : 0)
 			};
 		}
 
@@ -212,9 +213,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 
 			string command;
 			if (!string.IsNullOrWhiteSpace(venvPath))
-				command = $"chcp 65001 && call \"{venvPath}\" && {shell}";
+				command = $"call \"{venvPath}\" && {shell}";
 			else
-				command = $"chcp 65001 && {shell}";
+				command = $"{shell}";
 
 			return RunAsync(new TerminalToolRunParameters
 			{
@@ -238,9 +239,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 
 			string command;
 			if (!string.IsNullOrWhiteSpace(venvPath))
-				command = $"chcp 65001 && call \"{venvPath}\" && pip list";
+				command = $"call \"{venvPath}\" && pip list";
 			else
-				command = $"chcp 65001 && pip list";
+				command = $"pip list";
 
 			return RunAsync(new TerminalToolRunParameters
 			{

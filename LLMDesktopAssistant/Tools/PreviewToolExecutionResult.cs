@@ -28,8 +28,8 @@ namespace LLMDesktopAssistant.Tools
 		public string? InterruptingContent { get; init; }
 
 		/// <summary>
-		/// The level of danger associated with the pre-execution check.
+		/// The expected behaviour of the tool during execution.
 		/// </summary>
-		public ToolDangerLevel DangerLevel { get; init; }
+		public ToolBehaviour? ExpectedBehaviour { get; init; }
 	}
 }

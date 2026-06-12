@@ -35,9 +35,9 @@ namespace LLMDesktopAssistant.Tools
 		public Func<string> DescriptionGetter { get; init; } = null!;
 
 		/// <summary>
-		/// Gets or sets the default danger level of the tool.
+		/// Gets or sets the default expected behaviour of the tool.
 		/// </summary>
-		public ToolDangerLevel DefaultDangerLevel { get; init; }
+		public ToolBehaviour DefaultExpectedBehaviour { get; init; }
 
 		/// <summary>
 		/// Gets or sets a JSON object that defines the schema of the structured output for the tool.
@@ -68,6 +68,6 @@ namespace LLMDesktopAssistant.Tools
 		/// <summary>
 		/// Gets or sets a value indicating whether the tool requires user confirmation before execution.
 		/// </summary>
-		public bool AskForConfirmation { get; set; } = false;
+		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.PolicyBased;
 	}
 }

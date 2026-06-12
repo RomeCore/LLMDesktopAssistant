@@ -119,14 +119,14 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _userConfirmationSource, value);
 		}
 
-		private ToolDangerLevel _dangerLevel = ToolDangerLevel.Default;
+		private ToolBehaviour _expectedBehaviour = ToolBehaviour.None;
 		/// <summary>
-		/// Gets or sets the danger level of the tool call.
+		/// Gets or sets the expected behaviour of the tool call.
 		/// </summary>
-		public ToolDangerLevel DangerLevel
+		public ToolBehaviour ExpectedBehaviour
 		{
-			get => _dangerLevel;
-			set => SetProperty(ref _dangerLevel, value);
+			get => _expectedBehaviour;
+			set => SetProperty(ref _expectedBehaviour, value);
 		}
 
 		private ReactiveToolResult? _reactiveToolResult;

@@ -27,7 +27,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "time-wait",
 					Description = "Waits for a specified duration with real-time progress updates.",
-					Category = "time"
+					Category = "time",
+					DefaultExpectedBehaviour = ToolBehaviour.LongRunningTask
 				});
 		}
 

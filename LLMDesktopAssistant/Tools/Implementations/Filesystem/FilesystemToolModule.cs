@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-get_file_info",
 					Description = "Returns file information including type classification.",
 					Category = "filesystem",
-					AskForConfirmation = false
+					DefaultExpectedBehaviour = ToolBehaviour.FileRead
 				});
 
 			AddTool(ReadBinaryFile,
@@ -33,7 +33,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-read_binary_file",
 					Description = "Reads binary file content as hex dump from the working directory.",
 					Category = "filesystem",
-					AskForConfirmation = false
+					DefaultExpectedBehaviour = ToolBehaviour.FileRead
 				});
 
 			AddTool(ReadDocumentFile,
@@ -42,7 +42,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-read_document_file",
 					Description = "Reads complex documents (DOCX, PPTX, PDF) by pages from the working directory. Supported extensions: .pdf, .docx, .pptx. This is not suitable for general text or code files, such as .txt, .py, .md, .cs, .js, etc.",
 					Category = "filesystem",
-					AskForConfirmation = false
+					DefaultExpectedBehaviour = ToolBehaviour.FileRead
 				});
 
 			AddTool(WriteBinaryFile,
@@ -51,7 +51,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-write_binary_file",
 					Description = "Writes binary content to a file inside working directory.",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit
 				});
 
 			AddTool(CreateDirectory,
@@ -60,7 +60,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-create_directory",
 					Description = "Creates a new directory inside working directory path.",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate
 				});
 
 			AddTool(DeleteFile, null, PreviewDeleteFile,
@@ -69,7 +69,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-delete_file",
 					Description = "Deletes a file inside working directory.",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.FileDelete
 				});
 
 			AddTool(DeleteDirectory,
@@ -78,7 +78,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-delete_directory",
 					Description = "Deletes a directory (empty or with contents) from the working directory.",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete
 				});
 
 			AddTool(CopyFile,
@@ -87,7 +87,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-copy_file",
 					Description = "Copies a file within the working directory.",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate
 				});
 
 			AddTool(CopyDirectory,
@@ -96,7 +96,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-copy_directory",
 					Description = "Copies a directory and all its contents to a new location within the working directory.",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate
 				});
 
 			AddTool(RenameFile,
@@ -105,7 +105,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-rename_file",
 					Description = "Renames or moves a file within the working directory.",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit
 				});
 
 			AddTool(MoveDirectory,
@@ -114,7 +114,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-move_directory",
 					Description = "Moves a directory and all its contents to a new location within the working directory.",
 					Category = "filesystem",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.DirectoryEdit
 				});
 		}
 
@@ -370,13 +370,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		public PreviewToolExecutionResult PreviewDeleteFile(string path)
 		{
 			var fullPath = _fileAccess.TryAccessPath(path);
-			var fileName = Path.GetFileName(fullPath);
 
 			return new PreviewToolExecutionResult
 			{
 				StatusIcon = Material.Icons.MaterialIconKind.Delete,
-				StatusTitle = $"**{fileName}**",
-				DangerLevel = ToolDangerLevel.Warning
+				StatusTitle = $"**{path}**",
+				ExpectedBehaviour = File.Exists(fullPath) ? ToolBehaviour.FileDelete : ToolBehaviour.None
 			};
 		}
 

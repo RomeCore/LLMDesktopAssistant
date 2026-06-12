@@ -74,9 +74,9 @@ namespace LLMDesktopAssistant.Tools
 		public Func<JsonNode, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>>? PreviewExecutor { get; init; }
 
 		/// <summary>
-		/// Gets or sets the default danger level of the tool.
+		/// Gets or sets the default expected behaviour of the tool.
 		/// </summary>
-		public ToolDangerLevel DefaultDangerLevel { get; init; }
+		public ToolBehaviour DefaultExpectedBehaviour { get; init; }
 
 		/// <summary>
 		/// Gets or sets the executor function for the tool. This function is responsible for executing the tool with the provided arguments and context.
@@ -106,7 +106,7 @@ namespace LLMDesktopAssistant.Tools
 		/// <summary>
 		/// Gets or sets a value indicating whether the tool requires user confirmation before execution.
 		/// </summary>
-		public bool AskForConfirmation { get; init; } = false;
+		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.AutoApprove;
 
 		/// <summary>
 		/// Creates a new instance of the <see cref="ToolInfo"/> class with the specified executor and initialization information.
@@ -138,12 +138,12 @@ namespace LLMDesktopAssistant.Tools
 				ArgumentSchema = argSchema,
 				OutputSchema = info.OutputSchema,
 				StreamingArgumentsAnalyser = _streamingAnalyzer,
-				DefaultDangerLevel = info.DefaultDangerLevel,
+				DefaultExpectedBehaviour = info.DefaultExpectedBehaviour,
 				PreviewExecutor = _previewExecutor,
 				Executor = _executor,
 				DisplayName = info.DisplayName,
 				Category = info.Category,
-				AskForConfirmation = info.AskForConfirmation,
+				ApprovalLevel = info.ApprovalLevel,
 				Enabled = info.Enabled,
 				Source = info.Source
 			};

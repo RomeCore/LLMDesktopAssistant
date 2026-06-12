@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "agent-ask_question",
 					Description = "Asks a question using another LLM agent. This tool is useful in general chats between LLM and user, to prevent storing excessive tool calls and token consumption in main user chat.",
 					Category = "agents",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution
 				});
 
 			AddTool(CallAgentAsync,
@@ -47,7 +47,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "agent-call",
 					Description = "Calls another LLM agent with provided system message and user message with set of allowed tools.",
 					Category = "agents",
-					AskForConfirmation = true
+					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution
 				});
 
 			AddTool(DescribeImageAsync,
@@ -56,7 +56,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "agent-describe_image",
 					Description = "Describes an image using another LLM agent.",
 					Category = "agents",
-					AskForConfirmation = false
+					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.FileRead
 				});
 		}
 
