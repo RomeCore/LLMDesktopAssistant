@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(Edit,
+			AddTool(Edit, null, EditPreview,
 				new ToolInitializationInfo
 				{
 					Name = "fs-edit",

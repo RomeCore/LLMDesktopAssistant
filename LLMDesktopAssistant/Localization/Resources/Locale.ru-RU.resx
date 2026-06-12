@@ -1708,7 +1708,7 @@
     <value>Инструмент выполняет сетевые запросы к внешним сервисам или API.</value>
   </data>
   <data name="tool_behaviour_longrunningtask" xml:space="preserve">
-    <value>Долгая задача</value>
+    <value>Длительное выполнение</value>
   </data>
   <data name="tool_behaviour_longrunningtask_hint" xml:space="preserve">
     <value>Инструмент может выполняться долго из-за сложных вычислений или сетевых задержек.</value>

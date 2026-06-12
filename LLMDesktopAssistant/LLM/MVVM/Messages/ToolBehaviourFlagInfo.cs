@@ -99,7 +99,7 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.ExecuteExternalProcess => MaterialIconKind.Console,
 		ToolBehaviour.PossiblyUnexpected => MaterialIconKind.AlertCircle,
 		ToolBehaviour.RunTerminal => MaterialIconKind.Terminal,
-		ToolBehaviour.UserInteraction => MaterialIconKind.Gesture,
+		ToolBehaviour.UserInteraction => MaterialIconKind.Account,
 		ToolBehaviour.AgentExecution => MaterialIconKind.Robot,
 		ToolBehaviour.ToolAccess => MaterialIconKind.Tools,
 		_ => MaterialIconKind.HelpCircle

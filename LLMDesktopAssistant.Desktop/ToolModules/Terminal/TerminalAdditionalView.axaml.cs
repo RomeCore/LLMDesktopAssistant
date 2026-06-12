@@ -185,7 +185,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 				}
 				catch
 				{
-					// Ignore errors during cleanup
+					
 				}
 			}
 		}

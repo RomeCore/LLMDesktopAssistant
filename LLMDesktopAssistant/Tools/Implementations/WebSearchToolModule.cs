@@ -30,7 +30,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			_searchManager = searchManager;
 
-			AddTool(SearchAsync,
+			AddTool(Search, SearchStreaming, null,
 				new ToolInitializationInfo
 				{
 					Name = "web-search",
@@ -43,11 +43,20 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				});
 		}
 
+		public StreamingToolArgumentsAnalysisResult SearchStreaming(string? query)
+		{
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.Search,
+				StatusTitle = query
+			};
+		}
+
 		/// <summary>
 		/// Performs a search across all available search engines with the specified category.
 		/// Returns ALL non-default fields from SearchResult for rich metadata.
 		/// </summary>
-		public async Task<ReactiveToolResult> SearchAsync(
+		public async Task<ReactiveToolResult> Search(
 			[Description("The query to search by")] string query,
 			[Description("The page number to return results for (1-based)"), Range(1, 10)] int page = 1,
 			[Description("Language code (auto, en, ru, etc.)")] string language = "auto",

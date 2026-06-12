@@ -4309,11 +4309,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool accesses locations outside the configured working directory..
+        /// </summary>
+        public static string tool_behaviour_accessoutsideworkdir_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_accessoutsideworkdir_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Agent execution.
         /// </summary>
         public static string tool_behaviour_agentexecution {
             get {
                 return ResourceManager.GetString("tool_behaviour_agentexecution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool invokes, manages, or coordinates other AI agents..
+        /// </summary>
+        public static string tool_behaviour_agentexecution_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_agentexecution_hint", resourceCulture);
             }
         }
         
@@ -4327,11 +4345,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool accesses the clipboard for reading or writing text data..
+        /// </summary>
+        public static string tool_behaviour_clipboardaccess_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_clipboardaccess_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Delete directories.
         /// </summary>
         public static string tool_behaviour_directorydelete {
             get {
                 return ResourceManager.GetString("tool_behaviour_directorydelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool removes entire directory trees including their contents..
+        /// </summary>
+        public static string tool_behaviour_directorydelete_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_directorydelete_hint", resourceCulture);
             }
         }
         
@@ -4345,11 +4381,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool modifies the directory structure (move, rename, copy)..
+        /// </summary>
+        public static string tool_behaviour_directoryedit_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_directoryedit_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Read directories.
         /// </summary>
         public static string tool_behaviour_directoryread {
             get {
                 return ResourceManager.GetString("tool_behaviour_directoryread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool enumerates or lists the contents of directories..
+        /// </summary>
+        public static string tool_behaviour_directoryread_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_directoryread_hint", resourceCulture);
             }
         }
         
@@ -4363,11 +4417,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool spawns or executes an external operating system process..
+        /// </summary>
+        public static string tool_behaviour_executeexternalprocess_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_executeexternalprocess_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Delete files.
         /// </summary>
         public static string tool_behaviour_filedelete {
             get {
                 return ResourceManager.GetString("tool_behaviour_filedelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool permanently removes files from the filesystem..
+        /// </summary>
+        public static string tool_behaviour_filedelete_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_filedelete_hint", resourceCulture);
             }
         }
         
@@ -4381,11 +4453,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool creates new files or directories on the filesystem..
+        /// </summary>
+        public static string tool_behaviour_filedirectorycreate_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_filedirectorycreate_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Edit files.
         /// </summary>
         public static string tool_behaviour_fileedit {
             get {
                 return ResourceManager.GetString("tool_behaviour_fileedit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool modifies existing file content or metadata without deleting it..
+        /// </summary>
+        public static string tool_behaviour_fileedit_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_fileedit_hint", resourceCulture);
             }
         }
         
@@ -4399,11 +4489,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool reads the contents of files or directories..
+        /// </summary>
+        public static string tool_behaviour_fileread_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_fileread_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Internet access.
         /// </summary>
         public static string tool_behaviour_internetaccess {
             get {
                 return ResourceManager.GetString("tool_behaviour_internetaccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool performs network requests to external services or APIs..
+        /// </summary>
+        public static string tool_behaviour_internetaccess_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_internetaccess_hint", resourceCulture);
             }
         }
         
@@ -4417,11 +4525,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool may run for an extended period due to heavy computation or network latency..
+        /// </summary>
+        public static string tool_behaviour_longrunningtask_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_longrunningtask_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Safe (no specific behaviour).
         /// </summary>
         public static string tool_behaviour_none {
             get {
                 return ResourceManager.GetString("tool_behaviour_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Purely computational or informational tasks (math, random, time)..
+        /// </summary>
+        public static string tool_behaviour_none_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_none_hint", resourceCulture);
             }
         }
         
@@ -4435,11 +4561,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool may perform unexpected or uncontrollable actions..
+        /// </summary>
+        public static string tool_behaviour_possiblyunexpected_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_possiblyunexpected_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Read secrets and sensitive data.
         /// </summary>
         public static string tool_behaviour_readsecrets {
             get {
                 return ResourceManager.GetString("tool_behaviour_readsecrets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool may expose sensitive information such as passwords, API keys or tokens..
+        /// </summary>
+        public static string tool_behaviour_readsecrets_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_readsecrets_hint", resourceCulture);
             }
         }
         
@@ -4453,6 +4597,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool runs commands in an embedded terminal emulator with interactive I/O..
+        /// </summary>
+        public static string tool_behaviour_runterminal_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_runterminal_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Tool access (meta-tools).
         /// </summary>
         public static string tool_behaviour_toolaccess {
@@ -4462,11 +4615,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool creates, modifies, or deletes other tools at runtime..
+        /// </summary>
+        public static string tool_behaviour_toolaccess_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_toolaccess_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на User interaction (forms, confirmations).
         /// </summary>
         public static string tool_behaviour_userinteraction {
             get {
                 return ResourceManager.GetString("tool_behaviour_userinteraction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool requires user input via forms, confirmations, file pickers, etc..
+        /// </summary>
+        public static string tool_behaviour_userinteraction_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_userinteraction_hint", resourceCulture);
             }
         }
         

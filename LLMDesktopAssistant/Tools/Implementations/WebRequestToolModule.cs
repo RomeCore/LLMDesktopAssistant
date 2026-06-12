@@ -44,25 +44,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 			_fileAccess = fileAccess;
 
-			AddTool(WebRequest,
-				new ToolInitializationInfo
-				{
-					Name = "web-request",
-					Description = "Perform a request to a specified URL and method.",
-					Category = "web",
-					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
-				});
-
-			AddTool(DownloadFile, DownloadFileStream, null,
-				new ToolInitializationInfo
-				{
-					Name = "web-download",
-					Description = "Download a file from a specified URL into the working directory.",
-					Category = "web",
-					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.InternetAccess
-				});
-
-			AddTool(CheckWebsiteStatus,
+			AddTool(CheckWebsiteStatus, CheckWebsiteStatusStreaming, null,
 				new ToolInitializationInfo
 				{
 					Name = "web-status",
@@ -71,7 +53,16 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 
-			AddTool(Fetch,
+			AddTool(WebRequest, WebRequestStreaming, null,
+				new ToolInitializationInfo
+				{
+					Name = "web-request",
+					Description = "Perform a request to a specified URL and method.",
+					Category = "web",
+					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
+				});
+
+			AddTool(Fetch, FetchStreaming, null,
 				new ToolInitializationInfo
 				{
 					Name = "web-fetch",
@@ -80,7 +71,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 
-			AddTool(ParseHtml,
+			AddTool(ParseHtml, ParseHtmlStreaming, null,
 				new ToolInitializationInfo
 				{
 					Name = "web-parse",
@@ -88,89 +79,293 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Category = "web",
 					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
+
+			AddTool(DownloadFile, DownloadFileStreaming, null,
+				new ToolInitializationInfo
+				{
+					Name = "web-download",
+					Description = "Download a file from a specified URL into the working directory.",
+					Category = "web",
+					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.InternetAccess
+				});
 		}
 
-		private static HttpClient CreateClient()
+		public StreamingToolArgumentsAnalysisResult CheckWebsiteStatusStreaming(
+			string? url)
 		{
-			var httpClient = new HttpClient();
-			httpClient.DefaultRequestHeaders.Add("User-Agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-			httpClient.DefaultRequestHeaders.Add("Accept",
-				"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-			httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.5");
-			httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
-			httpClient.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
-			return httpClient;
-		}
-
-		private async Task<ToolResult> WebRequest(
-			[Description("Method of the request"), Enum(["GET", "POST", "PUT", "DELETE"])] string method,
-			[Description("URL to send request to")] string url,
-			[Description("Optional: Additional headers as JSON")] JsonObject? headersJson = null,
-			[Description("Optional: Request content")] string content = "",
-			[Description("Content type (default: application/json)")] string contentType = "application/json")
-		{
-			try
+			return new StreamingToolArgumentsAnalysisResult
 			{
-				var httpMethod = method switch
+				StatusIcon = MaterialIconKind.Web,
+				StatusTitle = $"`{url}`"
+			};
+		}
+
+		public async Task<ReactiveToolResult> CheckWebsiteStatus(
+			[Description("URL to check")]
+			string url,
+			[Description("Timeout in seconds (default: 30)")]
+			int timeoutSeconds = 30,
+			CancellationToken cancellationToken = default)
+		{
+			var result = new ReactiveToolResult
+			{
+				StatusIcon = MaterialIconKind.Web,
+				StatusTitle = $"`{url}`"
+			};
+
+			_ = Task.Run(async () =>
+			{
+				try
 				{
-					"GET" => HttpMethod.Get,
-					"POST" => HttpMethod.Post,
-					"PUT" => HttpMethod.Put,
-					"DELETE" => HttpMethod.Delete,
-					_ => throw new ArgumentException("Invalid HTTP method", nameof(method))
-				};
+					using var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
+					using var cts2 = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts1.Token);
+					var startTime = DateTime.UtcNow;
 
-				using var request = new HttpRequestMessage(httpMethod, url);
+					var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cts2.Token);
+					var endTime = DateTime.UtcNow;
 
-				if (!string.IsNullOrEmpty(content))
-					request.Content = new StringContent(content, Encoding.UTF8, contentType);
+					result.ResultContent = $"""
+						Url: {url}
+						Status code: {(int)response.StatusCode}
+						Status description: {response.StatusCode.ToString()}
+						Is accessible: {response.IsSuccessStatusCode}
+						Response time ms: {(endTime - startTime).TotalMilliseconds}
+						Content type: {response.Content.Headers.ContentType?.ToString()}
+						Content length: {response.Content.Headers.ContentLength}
+						Server: {response.Headers.Server?.ToString() ?? "Unknown"}
+						""";
 
-				if (headersJson != null)
-				{
-					foreach (var header in headersJson)
-					{
-						request.Headers.TryAddWithoutValidation(header.Key, header.Value?.GetValue<string>());
-					}
+					result.CompleteWithSuccess();
 				}
+				catch (TaskCanceledException)
+				{
+					result.StatusIcon = MaterialIconKind.WebCancel;
+					result.ResultContent = $"Website check timeout after {timeoutSeconds} seconds for URL: {url}";
+					result.CompleteWithSuccess();
+				}
+				catch (Exception ex)
+				{
+					result.ResultContent = $"Error checking website status: {ex.Message}";
+					result.CompleteWithError();
+				}
+			});
 
-				var response = await _httpClient.SendAsync(request);
-				var responseContent = await response.Content.ReadAsStringAsync();
-
-				const int maxCharacters = 35000;
-				if (responseContent.Length > maxCharacters)
-					responseContent = responseContent[0..maxCharacters] + $" ... and {responseContent.Length - maxCharacters} characters more...";
-
-				var result = $"""
-					Status code: {(int)response.StatusCode}
-					Status description: {response.StatusCode.ToString()}
-					Headers: {JsonSerializer.Serialize(response.Headers)}
-					Content length: {responseContent.Length}
-					Content:
-					```
-					{responseContent}
-					```
-					""";
-
-				return new ToolResult(result);
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error performing GET request: {ex.Message}");
-			}
+			return result;
 		}
 
-		private StreamingToolArgumentsAnalysisResult DownloadFileStream(
+		public StreamingToolArgumentsAnalysisResult WebRequestStreaming(
+			string? method, string? url)
+		{
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.Web,
+				StatusTitle = url != null ? $"{method} `{url}`" : method
+			};
+		}
+
+		public async Task<ReactiveToolResult> WebRequest(
+			[Description("Method of the request"), Enum(["GET", "POST", "PUT", "DELETE"])]
+			string method,
+			[Description("URL to send request to")]
+			string url,
+			[Description("The starting index of character to return")]
+			int start = 0,
+			[Description("The maximum count of characters to return")]
+			int count = 10000,
+			[Description("Optional: Additional headers as JSON")]
+			JsonObject? headersJson = null,
+			[Description("Optional: Request content")]
+			string content = "",
+			[Description("Content type (default: application/json)")]
+			string contentType = "application/json")
+		{
+			var result = new ReactiveToolResult
+			{
+				StatusIcon = MaterialIconKind.Web,
+				StatusTitle = url != null ? $"{method} `{url}`" : method
+			};
+
+			_ = Task.Run(async () =>
+			{
+				try
+				{
+					var httpMethod = method switch
+					{
+						"GET" => HttpMethod.Get,
+						"POST" => HttpMethod.Post,
+						"PUT" => HttpMethod.Put,
+						"DELETE" => HttpMethod.Delete,
+						_ => throw new ArgumentException("Invalid HTTP method", nameof(method))
+					};
+
+					using var request = new HttpRequestMessage(httpMethod, url);
+
+					if (!string.IsNullOrEmpty(content))
+						request.Content = new StringContent(content, Encoding.UTF8, contentType);
+
+					if (headersJson != null)
+					{
+						foreach (var header in headersJson)
+						{
+							request.Headers.TryAddWithoutValidation(header.Key, header.Value?.GetValue<string>());
+						}
+					}
+
+					var response = await _httpClient.SendAsync(request);
+					var responseContent = await response.Content.ReadAsStringAsync();
+
+					var actualCount = Math.Min(count, content.Length - start);
+					var slice = responseContent.Substring(start, actualCount);
+
+					result.ResultContent = $"""
+						Status code: {(int)response.StatusCode}
+						Status description: {response.StatusCode.ToString()}
+						Headers: {JsonSerializer.Serialize(response.Headers)}
+						Content length: {responseContent.Length}
+						Showing slice: {start}-{start + actualCount}
+						Content slice:
+						```
+						{slice}
+						```
+						""";
+					result.CompleteWithSuccess();
+				}
+				catch (Exception ex)
+				{
+					result.ResultContent = $"Error performing {method} request: {ex.Message}";
+					result.CompleteWithError();
+				}
+			});
+
+			return result;
+		}
+
+		public StreamingToolArgumentsAnalysisResult FetchStreaming(
+			string? url)
+		{
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.Web,
+				StatusTitle = $"`{url}`"
+			};
+		}
+
+		public async Task<ReactiveToolResult> Fetch(
+			[Description("URL to fetch HTML from")]
+			string url,
+			[Description("The starting index of character to return")]
+			int start = 0,
+			[Description("The maximum count of characters to return")]
+			int count = 10000,
+			[Description("The content type to fetch")]
+			[Enum(["html", "sanitized_html", "markdown"])]
+			string contentType = "markdown",
+			CancellationToken cancellationToken = default)
+		{
+			var result = new ReactiveToolResult
+			{
+				StatusIcon = MaterialIconKind.Web,
+				StatusTitle = $"`{url}`"
+			};
+
+			_ = Task.Run(async () =>
+			{
+				try
+				{
+					var content = await _fetchContentCache.GetAsync((url, contentType), cancellationToken);
+
+					var actualCount = Math.Min(count, content.Length - start);
+					var slice = content.Substring(start, actualCount);
+
+					result.ResultContent = $"""
+						Url: {url}
+						Total content length: {content.Length}
+						Showing slice: {start}-{start + actualCount}
+						Content slice:
+						{slice}
+						""";
+
+					result.CompleteWithSuccess();
+				}
+				catch (Exception ex)
+				{
+					result.ResultContent = $"Error fetching web content: {ex.Message}";
+					result.CompleteWithError();
+				}
+			});
+
+			return result;
+		}
+
+		public StreamingToolArgumentsAnalysisResult ParseHtmlStreaming(
+			string? url, string? selector)
+		{
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.Web,
+				StatusTitle = selector != null ? $"`{url}` → `{selector}`" : $"`{url}`"
+			};
+		}
+
+		public async Task<ReactiveToolResult> ParseHtml(
+			[Description("URL to fetch HTML from")]
+			string url,
+			[Description("The query selector to select values with")]
+			string selector,
+			[Description("The starting index of character to return")]
+			int start = 0,
+			[Description("The maximum count of characters to return")]
+			int count = 10000,
+			CancellationToken cancellationToken = default)
+		{
+			var result = new ReactiveToolResult
+			{
+				StatusIcon = MaterialIconKind.Web,
+				StatusTitle = $"`{url}` → `{selector}`"
+			};
+
+			_ = Task.Run(async () =>
+			{
+				try
+				{
+					var config = Configuration.Default.WithDefaultLoader();
+					var context = BrowsingContext.New(config);
+					var document = await context.OpenAsync(url, cancellationToken);
+					var elements = document.QuerySelectorAll(selector);
+					var contents = elements.Select(m => m.TextContent);
+
+					var html = string.Join("\n\n", contents);
+					var actualCount = Math.Min(count, html.Length - start);
+					var slice = html.Substring(start, actualCount);
+
+					result.ResultContent = $"""
+						```html
+						{slice}
+						```
+						""";
+					result.CompleteWithSuccess();
+				}
+				catch (Exception ex)
+				{
+					result.ResultContent = $"Error parsing HTML: {ex.Message}";
+					result.CompleteWithError();
+				}
+			});
+
+			return result;
+		}
+
+		public StreamingToolArgumentsAnalysisResult DownloadFileStreaming(
 			string? url, string? savePath)
 		{
 			return new StreamingToolArgumentsAnalysisResult
 			{
 				StatusIcon = MaterialIconKind.Download,
-				StatusTitle = $"`{url}` → `{savePath}`"
+				StatusTitle = savePath != null ? $"`{url}` → `{savePath}`" : $"`{url}`"
 			};
 		}
 
-		private async Task<ReactiveToolResult> DownloadFile(
+		public async Task<ReactiveToolResult> DownloadFile(
 			[Description("URL of the file to download")] string url,
 			[Description("Local working directory path to save the file")] string savePath,
 			[Description("Optional: Additional headers as JSON")] JsonObject? headersJson = null,
@@ -258,41 +453,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			return result;
 		}
 
-		private async Task<ToolResult> CheckWebsiteStatus(
-			[Description("URL to check")] string url,
-			[Description("Timeout in seconds (default: 30)")] int timeoutSeconds = 30,
-			CancellationToken cancellationToken = default)
+		protected override void Dispose(bool disposing)
 		{
-			try
-			{
-				using var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
-				using var cts2 = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts1.Token);
-				var startTime = DateTime.UtcNow;
-
-				var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cts2.Token);
-				var endTime = DateTime.UtcNow;
-
-				var result = $"""
-					Url: {url}
-					Status code: {(int)response.StatusCode}
-					Status description: {response.StatusCode.ToString()}
-					Is accessible: {response.IsSuccessStatusCode}
-					Response time ms: {(endTime - startTime).TotalMilliseconds}
-					Content type: {response.Content.Headers.ContentType?.ToString()}
-					Content length: {response.Content.Headers.ContentLength}
-					Server: {response.Headers.Server?.ToString() ?? "Unknown"}
-					""";
-
-				return new ToolResult(result);
-			}
-			catch (TaskCanceledException)
-			{
-				return new ToolResult($"Website check timeout after {timeoutSeconds} seconds for URL: {url}");
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error checking website status: {ex.Message}");
-			}
+			_httpClient.Dispose();
+			_httpInfiniteTimeoutClient.Dispose();
 		}
 
 		private static readonly ReverseMarkdown.Converter _mdConverter = new(
@@ -326,87 +490,17 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				return content;
 			}, slidingExpirationTime: TimeSpan.FromMinutes(5));
 
-		private async Task<ToolResult> Fetch(
-			[Description("URL to fetch HTML from")]
-			string url,
-			[Description("The starting index of character to return")]
-			int start = 0,
-			[Description("The maximum count of characters to return")]
-			int count = 5000,
-			[Description("The content type to fetch")]
-			[Enum(["html", "sanitized_html", "markdown"])]
-			string contentType = "markdown",
-			CancellationToken cancellationToken = default)
+		private static HttpClient CreateClient()
 		{
-			try
-			{
-				if (start < 0)
-					return new ToolResult(ToolResultStatus.Error,
-						$"Error: 'start' parameter cannot be negative. Provided value: {start}");
-
-				if (count <= 0)
-					return new ToolResult(ToolResultStatus.Error,
-						$"Error: 'count' parameter must be greater than 0. Provided value: {count}");
-
-				var content = await _fetchContentCache.GetAsync((url, contentType), cancellationToken);
-
-				if (start >= content.Length)
-					return new ToolResult(ToolResultStatus.Error,
-						$"Error: Start index {start} exceeds content length {content.Length}");
-
-				var actualCount = Math.Min(count, content.Length - start);
-
-				var slice = content.Substring(start, actualCount);
-
-				var result = $"""
-					Url: {url}
-					Total content length: {content.Length}
-					Showing slice: {start}-{start + actualCount}
-					Content slice:
-					{slice}
-					""";
-				return new ToolResult(result);
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error fetching web content: {ex.Message}");
-			}
-		}
-		
-		private async Task<ToolResult> ParseHtml(
-			[Description("URL to fetch HTML from")] string url,
-			[Description("The query selector to select values with")] string selector,
-			CancellationToken cancellationToken = default)
-		{
-			try
-			{
-				var config = Configuration.Default.WithDefaultLoader();
-				var context = BrowsingContext.New(config);
-				var document = await context.OpenAsync(url, cancellationToken);
-				var elements = document.QuerySelectorAll(selector);
-				var contents = elements.Select(m => m.TextContent);
-
-				var html = string.Join("\n\n", contents);
-				const int maxCharacters = 35000;
-				if (html.Length > maxCharacters)
-					html = html[0..maxCharacters] + $" ... and {html.Length - maxCharacters} characters more...";
-
-				var result = $"""
-					```html
-					{html}
-					```
-					""";
-				return new ToolResult(result);
-			}
-			catch (Exception ex)
-			{
-				return new ToolResult(ToolResultStatus.Error, $"Error parsing HTML: {ex.Message}");
-			}
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			_httpClient?.Dispose();
+			var httpClient = new HttpClient();
+			httpClient.DefaultRequestHeaders.Add("User-Agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+			httpClient.DefaultRequestHeaders.Add("Accept",
+				"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+			httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.5");
+			httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
+			httpClient.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
+			return httpClient;
 		}
 	}
 }
