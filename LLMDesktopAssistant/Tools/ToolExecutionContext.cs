@@ -36,6 +36,11 @@ namespace LLMDesktopAssistant.Tools
 		public required ToolInfo Info { get; init; }
 
 		/// <summary>
+		/// The shared context that can be used to pass data between streaming, preview and main execution calls.
+		/// </summary>
+		public object? SharedContext { get; set; }
+
+		/// <summary>
 		/// Creates a dummy tool execution context. Useful when the original execution context is not available.
 		/// </summary>
 		public static ToolExecutionContext CreateDummy(ToolInfo tool, JsonNode? args, Chat? chat)

@@ -212,60 +212,10 @@ namespace LLMDesktopAssistant.LLM.Services
 
 						async Task WrapToolExecutionTask()
 						{
-							if (funtionCall is PartialFunctionToolCall partialFunctionCall)
-							{
-								domainToolCall.Status = ToolStatus.Pending;
-								Func<JsonNode, ToolExecutionContext, StreamingToolArgumentsAnalysisResult>?
-									streamingArgumentsAnalyser = toolInfo?.StreamingArgumentsAnalyser;
-
-								void AddedPartialArg(object? sender, string deltaArg)
-								{
-									domainToolCall.Arguments = funtionCall.Args;
-
-									if (streamingArgumentsAnalyser != null)
-									{
-										var context = new ToolExecutionContext
-										{
-											Call = domainToolCall,
-											Chat = chat,
-											Info = toolInfo!,
-											Message = domainResponseMessage
-										};
-										try
-										{
-											// TolerantJsonParser can parse partial (unfinished) JSON too!
-											var args = TolerantJsonParser.Parse(domainToolCall.Arguments);
-											var analysisResult = streamingArgumentsAnalyser.Invoke(args ?? new JsonObject(), context);
-
-											if (analysisResult.StopAnalysis)
-												streamingArgumentsAnalyser = null;
-
-											domainToolCall.StatusIcon = analysisResult.StatusIcon;
-											domainToolCall.StatusTitle = analysisResult.StatusTitle;
-										}
-										catch (Exception ex)
-										{
-											Log.Debug(ex, "Error analyzing arguments: {ErrorMessage}", ex.Message);
-										}
-									}
-								}
-
-								partialFunctionCall.ArgsPartAdded += AddedPartialArg;
-								try
-								{
-									await partialFunctionCall;
-								}
-								finally
-								{
-									partialFunctionCall.ArgsPartAdded -= AddedPartialArg;
-									domainToolCall.StatusIcon = null;
-									domainToolCall.StatusTitle = null;
-								}
-							}
-
 							try
 							{
-								await toolExecutor.ExecuteAsync(domainResponseMessage, domainToolCall, llmInfo, toolsetCache.ValidAliasedTools, cancellationToken);
+								await toolExecutor.ExecuteAsync(funtionCall as PartialFunctionToolCall,
+									domainResponseMessage, domainToolCall, toolInfo, cancellationToken);
 							}
 							finally
 							{

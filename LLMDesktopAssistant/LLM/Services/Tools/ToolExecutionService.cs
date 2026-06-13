@@ -21,10 +21,66 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		IAgentManagementService agentManager
 	) : IToolExecutionService
 	{
-		public async Task ExecuteAsync(AssistantMessage message, ToolCall toolCall, LLMInfo llmInfo,
-			ImmutableDictionary<string, ToolInfo> tools, CancellationToken cancellationToken = default)
+		public async Task ExecuteAsync(PartialFunctionToolCall? partialFunctionToolCall,
+			AssistantMessage message, ToolCall toolCall, ToolInfo? toolInfo, CancellationToken cancellationToken = default)
 		{
-			if (!tools.TryGetValue(toolCall.ToolName, out var toolInfo))
+			object? sharedContext = null;
+
+			if (partialFunctionToolCall != null)
+			{
+				toolCall.Status = ToolStatus.Pending;
+				Func<JsonNode, ToolExecutionContext, StreamingToolArgumentsAnalysisResult>?
+					streamingArgumentsAnalyser = toolInfo?.StreamingArgumentsAnalyser;
+
+				void AddedPartialArg(object? sender, string deltaArg)
+				{
+					toolCall.Arguments = partialFunctionToolCall.Args;
+
+					if (streamingArgumentsAnalyser != null)
+					{
+						var streamingToolExecutionContext = new ToolExecutionContext
+						{
+							Call = toolCall,
+							Chat = chat,
+							Info = toolInfo!,
+							Message = message,
+							SharedContext = sharedContext
+						};
+						try
+						{
+							// TolerantJsonParser can parse partial (unfinished) JSON too!
+							var args = TolerantJsonParser.Parse(toolCall.Arguments);
+							var analysisResult = streamingArgumentsAnalyser.Invoke(args ?? new JsonObject(),
+								streamingToolExecutionContext);
+
+							if (analysisResult.StopAnalysis)
+								streamingArgumentsAnalyser = null;
+
+							toolCall.StatusIcon = analysisResult.StatusIcon;
+							toolCall.StatusTitle = analysisResult.StatusTitle;
+						}
+						catch (Exception ex)
+						{
+							Log.Debug(ex, "Error analyzing arguments: {ErrorMessage}", ex.Message);
+						}
+						sharedContext = streamingToolExecutionContext.SharedContext;
+					}
+				}
+
+				partialFunctionToolCall.ArgsPartAdded += AddedPartialArg;
+				try
+				{
+					await partialFunctionToolCall;
+				}
+				finally
+				{
+					partialFunctionToolCall.ArgsPartAdded -= AddedPartialArg;
+					toolCall.StatusIcon = null;
+					toolCall.StatusTitle = null;
+				}
+			}
+
+			if (toolInfo == null)
 			{
 				toolCall.ResultContent = $"Error: Tool '{toolCall.ToolName}' not found.";
 				toolCall.Status = ToolStatus.Error;
@@ -41,7 +97,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					Chat = chat,
 					Message = message,
 					Call = toolCall,
-					Info = toolInfo
+					Info = toolInfo,
+					SharedContext = sharedContext
 				};
 
 				if (toolInfo.PreviewExecutor != null)

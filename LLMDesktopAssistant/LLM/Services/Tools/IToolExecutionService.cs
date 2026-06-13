@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		/// <summary>
 		/// Executes a tool call asynchronously.
 		/// </summary>
-		/// <returns>A task representing the asynchronous operation.</returns>
-		Task ExecuteAsync(AssistantMessage message, ToolCall toolCall, LLMInfo llmInfo, ImmutableDictionary<string, ToolInfo> tools, CancellationToken cancellationToken = default);
+		Task ExecuteAsync(PartialFunctionToolCall? partialFunctionToolCall,
+			AssistantMessage message, ToolCall toolCall, ToolInfo? toolInfo, CancellationToken cancellationToken = default);
 	}
 }

@@ -51,6 +51,7 @@ namespace LLMDesktopAssistant.Tools
 
 			int toolExecutionContextMapping = -1;
 			int originalArgsMapping = -1;
+			int sharedContextMapping = -1;
 			int cancellationTokenMapping = -1;
 			var serviceMappings = new Dictionary<int, Type>();
 
@@ -69,6 +70,12 @@ namespace LLMDesktopAssistant.Tools
 					if (originalArgsMapping != -1)
 						throw new ArgumentException("[OriginalArgs] JsonNode can only be specified once.", nameof(method));
 					originalArgsMapping = paramIndex;
+				}
+				else if (parameter.ParameterType.IsByRef && parameter.IsDefined(typeof(SharedContextAttribute)))
+				{
+					if (sharedContextMapping != -1)
+						throw new ArgumentException("[SharedContext] @ref can only be specified once.", nameof(method));
+					sharedContextMapping = paramIndex;
 				}
 				else if (parameter.ParameterType == typeof(CancellationToken))
 				{
@@ -118,6 +125,8 @@ namespace LLMDesktopAssistant.Tools
 						inParams[toolExecutionContextMapping] = context;
 					if (originalArgsMapping != -1)
 						inParams[originalArgsMapping] = args;
+					if (sharedContextMapping != -1)
+						inParams[sharedContextMapping] = context.SharedContext;
 					if (cancellationTokenMapping != -1)
 						inParams[cancellationTokenMapping] = cancellationToken;
 				}
@@ -127,6 +136,8 @@ namespace LLMDesktopAssistant.Tools
 				}
 
 				var value = method.Invoke(target, inParams)!;
+				if (sharedContextMapping != -1)
+					context.SharedContext = inParams[sharedContextMapping];
 
 				switch (value)
 				{
