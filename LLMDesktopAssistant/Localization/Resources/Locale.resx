@@ -1743,11 +1743,11 @@
   <data name="tool_behaviour_agentexecution_hint" xml:space="preserve">
     <value>The tool invokes, manages, or coordinates other AI agents.</value>
   </data>
-  <data name="tool_behaviour_toolaccess" xml:space="preserve">
-    <value>Tool access (meta-tools)</value>
+  <data name="tool_behaviour_scriptaccess" xml:space="preserve">
+    <value>Tool and script access</value>
   </data>
-  <data name="tool_behaviour_toolaccess_hint" xml:space="preserve">
-    <value>The tool creates, modifies, or deletes other tools at runtime.</value>
+  <data name="tool_behaviour_scriptaccess_hint" xml:space="preserve">
+    <value>The tool creates, modifies, or deletes other tools and user scripts at runtime.</value>
   </data>
   <data name="tool_behaviour_clipboardwrite" xml:space="preserve">
     <value>Clipboard write</value>

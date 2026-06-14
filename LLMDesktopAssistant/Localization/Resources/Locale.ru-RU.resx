@@ -1743,11 +1743,11 @@
   <data name="tool_behaviour_agentexecution_hint" xml:space="preserve">
     <value>Инструмент вызывает, управляет или координирует других AI-агентов.</value>
   </data>
-  <data name="tool_behaviour_toolaccess" xml:space="preserve">
-    <value>Доступ к инструментам (мета-инструменты)</value>
+  <data name="tool_behaviour_scriptaccess" xml:space="preserve">
+    <value>Доступ к инструментам и скриптам</value>
   </data>
-  <data name="tool_behaviour_toolaccess_hint" xml:space="preserve">
-    <value>Инструмент создаёт, изменяет или удаляет другие инструменты во время выполнения.</value>
+  <data name="tool_behaviour_scriptaccess_hint" xml:space="preserve">
+    <value>Инструмент создаёт, изменяет или удаляет другие инструменты и пользовательские скрипты во время выполнения.</value>
   </data>
   <data name="tool_behaviour_clipboardwrite" xml:space="preserve">
     <value>Запись в буфер обмена</value>

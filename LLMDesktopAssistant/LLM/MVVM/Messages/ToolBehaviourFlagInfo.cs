@@ -104,7 +104,7 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.RunTerminal => MaterialIconKind.Terminal,
 		ToolBehaviour.UserInteraction => MaterialIconKind.Account,
 		ToolBehaviour.AgentExecution => MaterialIconKind.Robot,
-		ToolBehaviour.ToolAccess => MaterialIconKind.Tools,
+		ToolBehaviour.ScriptAccess => MaterialIconKind.Tools,
 		_ => MaterialIconKind.HelpCircle
 	};
 
@@ -119,7 +119,7 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.ReadSecrets => Brushes.Red,
 		ToolBehaviour.ExecuteExternalProcess => Brushes.Red,
 		ToolBehaviour.PossiblyUnexpected => Brushes.Red,
-		ToolBehaviour.ToolAccess => Brushes.Red,
+		ToolBehaviour.ScriptAccess => Brushes.Red,
 		ToolBehaviour.AgentExecution => Brushes.Red,
 
 		// Warning (yellow/orange)

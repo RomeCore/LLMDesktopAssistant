@@ -204,16 +204,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 					string nextReadTip = string.Empty;
 					if (endShown < totalLines)
-						nextReadTip = $" (Continue reading from line {endShown + 1}, e.g. {endShown + 1}-{Math.Min(endShown + 100, totalLines)})";
+						nextReadTip = $"{Environment.NewLine}(Continue reading from line {endShown + 1}, e.g. {endShown + 1}-{Math.Min(endShown + 100, totalLines)})";
 
 					var output = $"""
 					[FILE READING]
 					File: {path}
-					Showing: {startLine}-{endShown}{nextReadTip}
+					Showing: {startLine}-{endShown}
 					Total lines: {totalLines}
 					[CONTENT START]
 					{string.Join(Environment.NewLine, lines)}
-					[CONTENT END]
+					[CONTENT END]{nextReadTip}
 					""";
 					sb.AppendLine(output);
 				}

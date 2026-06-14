@@ -4723,20 +4723,20 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Tool access (meta-tools).
+        ///   Ищет локализованную строку, похожую на Tool and script access.
         /// </summary>
-        public static string tool_behaviour_toolaccess {
+        public static string tool_behaviour_scriptaccess {
             get {
-                return ResourceManager.GetString("tool_behaviour_toolaccess", resourceCulture);
+                return ResourceManager.GetString("tool_behaviour_scriptaccess", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на The tool creates, modifies, or deletes other tools at runtime..
+        ///   Ищет локализованную строку, похожую на The tool creates, modifies, or deletes other tools and user scripts at runtime..
         /// </summary>
-        public static string tool_behaviour_toolaccess_hint {
+        public static string tool_behaviour_scriptaccess_hint {
             get {
-                return ResourceManager.GetString("tool_behaviour_toolaccess_hint", resourceCulture);
+                return ResourceManager.GetString("tool_behaviour_scriptaccess_hint", resourceCulture);
             }
         }
         

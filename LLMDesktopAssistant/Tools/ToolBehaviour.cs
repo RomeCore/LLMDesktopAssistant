@@ -173,11 +173,11 @@ public enum ToolBehaviour
 	// ────────────────────────────── Meta ────────────────────────────────────
 
 	/// <summary>
-	/// The tool creates, modifies, or deletes other tools at runtime.
-	/// This includes meta-tools, Lua/Python script registration,
+	/// The tool creates, modifies, or deletes other tools and scripts at runtime.
+	/// This includes meta-tools, Lua/Python user script registration,
 	/// and dynamic tool definitions. Potentially dangerous because
 	/// it can alter the assistant's capabilities on the fly.
-	/// Examples: <c>metatools-create_or_update</c>, <c>metatools-delete</c>.
+	/// Examples: <c>metatools-create_or_update</c>, <c>metatools-delete</c>, <c>lua-register_or_update_script</c>.
 	/// </summary>
-	ToolAccess = 1 << 20,
+	ScriptAccess = 1 << 20,
 }

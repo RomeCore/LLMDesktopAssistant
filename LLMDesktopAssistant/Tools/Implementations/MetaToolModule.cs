@@ -29,7 +29,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "metatools-create_or_update",
 					Description = BuildCreateOrUpdateDescription(),
 					Category = "metatools",
-					DefaultExpectedBehaviour = ToolBehaviour.ToolAccess
+					DefaultExpectedBehaviour = ToolBehaviour.ScriptAccess
 				});
 
 			AddTool(ListMetaTools,
@@ -54,7 +54,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "metatools-rename",
 					Description = "Renames an existing meta tool to a new name. The original tool must exist and the new name must not conflict with any other tools.",
 					Category = "metatools",
-					DefaultExpectedBehaviour = ToolBehaviour.ToolAccess
+					DefaultExpectedBehaviour = ToolBehaviour.ScriptAccess
 				});
 
 			AddTool(DeleteMetaTool,
@@ -63,7 +63,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "metatools-delete",
 					Description = "Removes an existing meta tool. The tool must exist and cannot be a default tool.",
 					Category = "metatools",
-					DefaultExpectedBehaviour = ToolBehaviour.ToolAccess
+					DefaultExpectedBehaviour = ToolBehaviour.ScriptAccess
 				});
 		}
 

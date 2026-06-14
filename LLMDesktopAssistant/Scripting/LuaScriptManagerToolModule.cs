@@ -27,7 +27,7 @@ namespace LLMDesktopAssistant.Scripting
 					Name = "lua-register_or_update_script",
 					Description = BuildRegisterOrUpdateDescription(),
 					Category = "Lua",
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
+					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
 				});
 
 			AddTool(RemoveLuaScript,
@@ -36,7 +36,7 @@ namespace LLMDesktopAssistant.Scripting
 					Name = "lua-remove_script",
 					Description = "Removes a registered Lua user script by its path. The path is relative to the Lua scripts directory.",
 					Category = "Lua",
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
+					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
 				});
 
 			AddTool(MoveLuaScript,
@@ -45,7 +45,7 @@ namespace LLMDesktopAssistant.Scripting
 					Name = "lua-move_script",
 					Description = "Moves or renames a Lua user script from one path to another. Both paths are relative to the Lua scripts directory.",
 					Category = "Lua",
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
+					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
 				});
 
 			AddTool(ListLuaScripts,
