@@ -65,9 +65,9 @@ namespace LLMDesktopAssistant.Scripting
 			if (scriptPath == null && rawScript == null)
 				throw new ArgumentNullException(nameof(scriptPath), "Either scriptPath or rawScript must be provided.");
 
-			var fullScriptPath = scriptPath != null ? Path.GetFullPath(scriptPath) : null;
+			var fullScriptPath = scriptPath != null ? Path.Combine(Directories.LuaScripts, scriptPath) : null;
 			if (fullScriptPath != null && !File.Exists(fullScriptPath))
-				throw new FileNotFoundException("The specified script file does not exist.", fullScriptPath);
+				throw new FileNotFoundException($"The specified script file does not exist: {fullScriptPath}", fullScriptPath);
 
 			if (fullScriptPath != null)
 				rawScript = File.ReadAllText(fullScriptPath);
@@ -78,8 +78,9 @@ namespace LLMDesktopAssistant.Scripting
 
 		public static string NormalizeScriptPath(string path)
 		{
-			return Path.GetRelativePath(Directories.LuaScripts, Path.Combine(Path.GetDirectoryName(path) ?? string.Empty,
-				Path.GetFileNameWithoutExtension(path) + ".lua"));
+			var dirName = Path.GetDirectoryName(path) ?? string.Empty;
+			var combined = Path.Combine(dirName, Path.GetFileNameWithoutExtension(path) + ".lua");
+			return combined;
 		}
 
 		public IEnumerable<LuaApiLoadedScript> GetScripts()
@@ -121,6 +122,10 @@ namespace LLMDesktopAssistant.Scripting
 				]]
 				{script}
 				""";
+
+			var directoryName = Path.GetDirectoryName(fullPath);
+			if (directoryName != null)
+				Directory.CreateDirectory(directoryName);
 			File.WriteAllText(fullPath, combinedScript);
 
 			ScriptsChanged?.Invoke(this, EventArgs.Empty);
@@ -150,6 +155,9 @@ namespace LLMDesktopAssistant.Scripting
 
 			if (File.Exists(fullOldPath) && !File.Exists(fullNewPath))
 			{
+				var directoryName = Path.GetDirectoryName(fullNewPath);
+				if (directoryName != null)
+					Directory.CreateDirectory(directoryName);
 				File.Move(fullOldPath, fullNewPath);
 				ScriptsChanged?.Invoke(this, EventArgs.Empty);
 				return true;

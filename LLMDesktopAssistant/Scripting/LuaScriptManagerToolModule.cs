@@ -267,7 +267,7 @@ namespace LLMDesktopAssistant.Scripting
 				{
 					StatusIcon = MaterialIconKind.LanguageLua,
 					ResultContent = result.ToString()
-				}.CompleteWithError();
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
