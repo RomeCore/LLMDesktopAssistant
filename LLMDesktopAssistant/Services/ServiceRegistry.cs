@@ -14,41 +14,24 @@ namespace LLMDesktopAssistant.Services
 {
 #pragma warning disable CS8631
 
+	public static class ServiceKeys
+	{
+		public static object? AppServices { get; } = "Main";
+		public static object? ChatServices { get; } = "Chat";
+	}
+
 	/// <summary>
 	/// The manager for application services. All services are statically registered and can be retrieved by their type.
 	/// </summary>
 	public static class ServiceRegistry
 	{
-		public static object? AppServicesKey { get; } = "Main";
-		public static object? ChatServicesKey { get; } = "Chat";
-
-		private enum State
-		{
-			None,
-			Initialized,
-			Shutdown
-		}
-
-		private static State _state;
+		private static bool _initialized = false;
 		private static IServiceProvider _serviceProvider = null!;
-		private static ImmutableUniqueTypeDictionary<object> _services = null!;
 
 		/// <summary>
 		/// Gets the service provider for the application. This is used to resolve services by their type.
 		/// </summary>
 		public static IServiceProvider Provider => _serviceProvider;
-
-		/// <summary>
-		/// Gets the collection of all registered services.
-		/// </summary>
-		public static ITypeDictionary<object> Services
-		{
-			get
-			{
-				CheckInitialized();
-				return _services;
-			}
-		}
 
 		/// <summary>
 		/// Add services from <see cref="ServiceRegistry"/> to the provided collection.
@@ -59,7 +42,7 @@ namespace LLMDesktopAssistant.Services
 		{
 			CheckInitialized();
 
-			var originalCollection = _serviceProvider.GetRequiredKeyedService<IServiceCollection>(AppServicesKey);
+			var originalCollection = _serviceProvider.GetRequiredKeyedService<IServiceCollection>(ServiceKeys.AppServices);
 			foreach (var service in originalCollection)
 				if (!service.IsKeyedService)
 					services.AddSingleton(service.ServiceType, _serviceProvider.GetRequiredService(service.ServiceType));
@@ -69,17 +52,8 @@ namespace LLMDesktopAssistant.Services
 
 		private static void CheckInitialized()
 		{
-			switch (_state)
-			{
-				case State.None:
-					throw new InvalidOperationException("ServiceRegistry is not initialized.");
-				case State.Initialized:
-					return;
-				case State.Shutdown:
-					throw new InvalidOperationException("ServiceRegistry is already shutdown.");
-				default:
-					throw new InvalidOperationException("Invalid state.");
-			}
+			if (!_initialized)
+				throw new InvalidOperationException("ServiceRegistry is not initialized.");
 		}
 
 		/// <summary>
@@ -87,12 +61,12 @@ namespace LLMDesktopAssistant.Services
 		/// </summary>
 		public static void Initialize(IEnumerable<object> services, Action<IServiceCollection> configureServices)
 		{
-			if (_state != State.None)
+			if (_initialized)
 				throw new InvalidOperationException("ModuleManager is already initialized.");
 
 			var collection = new ServiceCollection();
 
-			collection.AddKeyedSingleton<IServiceCollection>(AppServicesKey, collection);
+			collection.AddKeyedSingleton<IServiceCollection>(ServiceKeys.AppServices, collection);
 
 			foreach (var service in services)
 			{
@@ -101,8 +75,7 @@ namespace LLMDesktopAssistant.Services
 
 			configureServices?.Invoke(collection);
 
-			foreach (var service in ReflectionUtility.GetTypesWithAttribute<object, ServiceAttribute>()
-				.OrderBy(t => t.Attribute.Order))
+			foreach (var service in ReflectionUtility.GetTypesWithAttribute<object, ServiceAttribute>())
 			{
 				var serviceType = service.Attribute.ServiceType ?? service.Type;
 				collection.AddSingleton(serviceType, service.Type);
@@ -116,63 +89,12 @@ namespace LLMDesktopAssistant.Services
 
 			_serviceProvider = collection.BuildServiceProvider();
 
-			// Validate
-
-			_state = State.Initialized;
-
-			var allServices = new List<object?>();
 			foreach (var service in collection)
-				allServices.AddRange(_serviceProvider.GetServices(service.ServiceType));
-			_services = new(allServices.Where(s => s != null).Distinct()!);
+				_serviceProvider.GetServices(service.ServiceType);
+
+			_initialized = true;
 
 			Log.Information("ServiceRegistry initialized with {Count} App services.", collection.Count);
-		}
-
-		/// <summary>
-		/// Shuts down all registered modules.
-		/// </summary>
-		public static void Shutdown()
-		{
-			if (_state != State.Initialized)
-				throw new InvalidOperationException("ModuleManager is not initialized or already shut down.");
-
-			_services = null!;
-
-			_state = State.Shutdown;
-		}
-
-		/// <summary>
-		/// Gets a module of the specified type.
-		/// </summary>
-		/// <typeparam name="T">The type of the module to retrieve.</typeparam>
-		/// <returns>The module, or null if no such module is registered.</returns>
-		public static T? TryGet<T>()
-		{
-			if (_state == State.Initialized)
-				return _services.TryGet<T>();
-			return default;
-		}
-
-		/// <summary>
-		/// Gets a module of the specified type.
-		/// </summary>
-		/// <typeparam name="T">The type of the module to retrieve.</typeparam>
-		/// <returns>The module of the specified type, or throws an exception if no such module is registered.</returns>
-		public static T Get<T>()
-		{
-			CheckInitialized();
-			return _services.TryGet<T>() ?? throw new ServiceNotFoundException($"No module of type '{typeof(T).FullName}' is registered.");
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		public static IEnumerable<T> GetAll<T>()
-		{
-			CheckInitialized();
-			return _services.GetAll<T>();
 		}
 	}
 }

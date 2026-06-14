@@ -42,7 +42,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			storage.Reload();
 
 			// Activate all chat-specific services
-			var collection = scope.ServiceProvider.GetRequiredKeyedService<IServiceCollection>(ServiceRegistry.ChatServicesKey);
+			var collection = scope.ServiceProvider.GetRequiredKeyedService<IServiceCollection>(ServiceKeys.ChatServices);
 			foreach (var service in collection)
 				if (!service.IsKeyedService && service.Lifetime != ServiceLifetime.Transient)
 					scope.ServiceProvider.GetServices(service.ServiceType);

@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.Localization
 		/// <returns>The localized string, or the original key if not found.</returns>
 		public static string LocalizeStatic(string key)
 		{
-			return ServiceRegistry.TryGet<LocalizationManager>()?.Localize(key) ?? key;
+			return ServiceRegistry.Provider.GetRequiredService<LocalizationManager>()?.Localize(key) ?? key;
 		}
 
 		/// <summary>
@@ -31,7 +31,7 @@ namespace LLMDesktopAssistant.Localization
 		/// <returns>The localized string, or the original key if not found.</returns>
 		public static string LocalizeStaticFormat(string formatKey, params object?[] formatArgs)
 		{
-			var format = ServiceRegistry.TryGet<LocalizationManager>()?.Localize(formatKey) ?? formatKey;
+			var format = ServiceRegistry.Provider.GetRequiredService<LocalizationManager>()?.Localize(formatKey) ?? formatKey;
 			return string.Format(format, formatArgs);
 		}
 
@@ -79,27 +79,5 @@ namespace LLMDesktopAssistant.Localization
 		/// <param name="language">The language to try and set.</param>
 		/// <returns>true if the language was changed; otherwise, false.</returns>
 		protected abstract bool TryChangeLanguage(string language);
-	}
-
-	/// <summary>
-	/// A dummy localization manager that does nothing. This is used as a fallback if no other localization manager is available.
-	/// </summary>
-	[Service(Order = int.MaxValue)]
-	public class DummyLocalizationManager : LocalizationManager
-	{
-		public override IEnumerable<string> GetAvailableLanguages()
-		{
-			return [];
-		}
-
-		public override string Localize(string key)
-		{
-			return key;
-		}
-
-		protected override bool TryChangeLanguage(string language)
-		{
-			return false;
-		}
 	}
 }

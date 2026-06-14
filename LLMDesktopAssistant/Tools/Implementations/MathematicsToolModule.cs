@@ -12,7 +12,7 @@ using RCParsing;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
-	[ToolModule]
+	[ToolModule(chatScoped: false)]
 	public class MathematicsToolModule : ToolModule
 	{
 		public MathematicsToolModule()

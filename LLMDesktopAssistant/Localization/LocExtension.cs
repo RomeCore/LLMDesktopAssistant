@@ -68,7 +68,7 @@ namespace LLMDesktopAssistant.Localization
 				});
 			}
 
-			if (ServiceRegistry.TryGet<LocalizationManager>() is LocalizationManager localizationManager)
+			if (ServiceRegistry.Provider.GetService<LocalizationManager>() is LocalizationManager localizationManager)
 			{
 				multiBinding.Bindings.Add(new Binding
 				{

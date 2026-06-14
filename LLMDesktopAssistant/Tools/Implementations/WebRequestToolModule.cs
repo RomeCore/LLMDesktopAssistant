@@ -1,30 +1,17 @@
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using AngleSharp;
-using Ganss.Xss;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
 using RCLargeLanguageModels.Json.Schema;
-using RCLargeLanguageModels.Security;
-using RCLargeLanguageModels.Tools;
-using RCLargeLanguageModels.Utilities;
-using RCParsing;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
-	[ToolModule]
+	[ToolModule(chatScoped: true)]
 	public class WebRequestToolModule : ToolModule
 	{
 		private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions

@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
-	[ToolModule]
+	[ToolModule(chatScoped: false)]
 	public class RandomToolModule : ToolModule
 	{
 		private Random _random = Random.Shared;

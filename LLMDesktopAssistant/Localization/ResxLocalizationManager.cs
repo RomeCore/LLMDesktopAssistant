@@ -11,7 +11,7 @@ using LLMDesktopAssistant.Services;
 
 namespace LLMDesktopAssistant.Localization
 {
-	[Service(Order = 1)]
+	[Service(typeof(LocalizationManager))]
 	public class ResxLocalizationManager : LocalizationManager
 	{
 		private readonly ImmutableDictionary<string, CultureInfo?> _languageMap;

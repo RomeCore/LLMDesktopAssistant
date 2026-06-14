@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.Settings
 			if (string.IsNullOrEmpty(str))
 				return null;
 
-			var list = ServiceRegistry.Get<LLModelListService>();
+			var list = ServiceRegistry.Provider.GetRequiredService<LLModelListService>();
 			return list.Registry.GetModel(str);
 		}
 

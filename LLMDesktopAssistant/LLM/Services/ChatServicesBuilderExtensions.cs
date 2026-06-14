@@ -27,25 +27,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			services.AddSingleton<IUsageStatsCollector, UsageStatsCollector>();
 
 			services.AddScoped<Chat>();
-			services.AddScoped<IAttachmentApplicationService, AttachmentApplicationService>();
-
-			var chatServices = ReflectionUtility.GetTypesWithAttribute<ChatServiceAttribute>().ToList();
-			foreach (var service in chatServices)
-			{
-				services.AddScoped(service.Attribute.ServiceType ?? service.Type, service.Type);
-			}
-
-			var toolModules = ReflectionUtility.GetTypesWithAttribute<ToolModule, ToolModuleAttribute>().ToList();
-			foreach (var toolModule in toolModules)
-			{
-				services.AddScoped(typeof(ToolModule), toolModule.Type);
-			}
-
-			var luaApis = ReflectionUtility.GetTypesWithAttribute<LuaApiBase, LuaApiAttribute>().ToList();
-			foreach (var luaApi in luaApis)
-			{
-				services.AddScoped(typeof(LuaApiBase), luaApi.Type);
-			}
 
 			foreach (var configurator in ReflectionUtility.GetTypesWithAttribute<ServiceConfigurator, ServiceConfiguratorAttribute>())
 			{

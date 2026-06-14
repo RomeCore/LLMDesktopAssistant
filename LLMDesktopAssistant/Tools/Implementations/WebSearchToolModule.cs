@@ -17,7 +17,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	/// Replaces the external SearXNG dependency with native C# search engine implementations.
 	/// Based on SearXNG's engine architecture with multiple parallel search backends.
 	/// </summary>
-	[ToolModule]
+	[ToolModule(chatScoped: false)]
 	public class WebSearchToolModule : ToolModule
 	{
 		private readonly SearchEngineManager _searchManager;

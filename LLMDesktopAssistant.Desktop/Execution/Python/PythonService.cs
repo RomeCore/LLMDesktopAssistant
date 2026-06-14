@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Scripting
 {
-	[Service(Order = int.MinValue)]
+	[Service]
 	public class PythonService
 	{
 		/// <summary>

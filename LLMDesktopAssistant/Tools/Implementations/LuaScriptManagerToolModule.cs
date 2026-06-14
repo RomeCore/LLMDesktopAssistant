@@ -1,12 +1,9 @@
 using System.ComponentModel;
 using System.Text;
-using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Scripting;
 using Material.Icons;
-using RCLargeLanguageModels.Tools;
-using UglyToad.PdfPig.Graphics.Operations.PathPainting;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.Tools.Implementations
 {
 	/// <summary>
 	/// Module for managing user Lua scripts — scripts that are loaded into the Lua environment

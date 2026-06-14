@@ -9,7 +9,7 @@ using System.Text;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
-	[ToolModule]
+	[ToolModule(chatScoped: false)]
 	public class TimeToolModule : ToolModule
 	{
 		public TimeToolModule()

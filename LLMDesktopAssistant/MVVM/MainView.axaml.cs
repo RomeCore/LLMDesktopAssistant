@@ -11,10 +11,10 @@ namespace LLMDesktopAssistant.MVVM
 		{
 			InitializeComponent();
 
-			var toastService = ServiceRegistry.Get<ToastService>();
-			if (toastService != null)
+			var toastService = ServiceRegistry.Provider.GetRequiredService<IToastService>();
+			if (toastService is ToastService _toastService)
 			{
-				toastService.ToastControl = ToastControl;
+				_toastService.ToastControl = ToastControl;
 			}
 		}
 	}

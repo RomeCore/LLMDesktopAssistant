@@ -1,11 +1,12 @@
 ﻿using System.Text;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
 using MoonSharp.Interpreter;
 using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.Tools.Implementations
 {
 	[ToolModule]
 	public class LuaInterpreterToolModule : ToolModule

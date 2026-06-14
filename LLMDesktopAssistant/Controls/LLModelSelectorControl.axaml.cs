@@ -125,7 +125,7 @@ namespace LLMDesktopAssistant.Controls
 
 			// Из-за этой ебучей подписки у меня ебейшие утечки
 			// Не удаляетя UserInput -> MessageSequence (ChatMessage+++), и настройки заодно тоже не удаляются
-			var list = ServiceRegistry.Get<LLModelListService>();
+			var list = ServiceRegistry.Provider.GetRequiredService<LLModelListService>();
 			var weakRef = new WeakReference(this);
 
 			void ListRefreshBegan(object? s, EventArgs e)
@@ -220,7 +220,7 @@ namespace LLMDesktopAssistant.Controls
 
 		public async Task RefreshAsync()
 		{
-			var list = ServiceRegistry.Get<LLModelListService>();
+			var list = ServiceRegistry.Provider.GetRequiredService<LLModelListService>();
 			await list.Registry.RefreshModelsAsync();
 		}
 
@@ -233,7 +233,7 @@ namespace LLMDesktopAssistant.Controls
 
 		private void Rebuild()
 		{
-			var list = ServiceRegistry.Get<LLModelListService>();
+			var list = ServiceRegistry.Provider.GetRequiredService<LLModelListService>();
 			var registry = list.Registry;
 			var models = CapabilityFilter == LLMCapabilities.Unknown
 				? registry.Models

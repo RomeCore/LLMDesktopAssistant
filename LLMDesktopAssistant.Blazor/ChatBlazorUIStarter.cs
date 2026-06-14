@@ -51,7 +51,7 @@ namespace LLMDesktopAssistant.Blazor
 
 				// Add existing services
 				var services = chatServices;
-				var chatServiceCollection = services.GetRequiredKeyedService<IServiceCollection>(ServiceRegistry.ChatServicesKey);
+				var chatServiceCollection = services.GetRequiredKeyedService<IServiceCollection>(ServiceKeys.ChatServices);
 				var allServices = chatServiceCollection
 					.SelectMany(s => chatServices.GetServices(s.ServiceType)
 						.Select(si => (s.ServiceType, si)))
