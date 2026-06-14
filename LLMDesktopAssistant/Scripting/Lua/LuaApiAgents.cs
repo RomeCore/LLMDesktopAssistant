@@ -12,6 +12,7 @@ using MoonSharp.Interpreter.Serialization.Json;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
+using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Scripting.Lua
@@ -297,7 +298,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					return new RCLargeLanguageModels.Messages.SystemMessage(content);
 
 				case "user":
-					return new RCLargeLanguageModels.Messages.UserMessage(content);
+					var attachmentsTable = messageTable.Get("attachments");
+					var attachments = new List<IAttachment>();
+					foreach (var attachmentValue in attachmentsTable.Table?.Values ?? [])
+					{
+						if (attachmentValue.UserData?.Object is LuaImage image)
+							attachments.Add(new ImageBase64Attachment(image.Format, image.ToBase64()));
+					}
+					return new RCLargeLanguageModels.Messages.UserMessage(Senders.User, content, attachments);
 
 				case "assistant":
 					var reasoningContent = messageTable.Get("reasoning_content").CastToString();

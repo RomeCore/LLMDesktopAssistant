@@ -69,12 +69,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		  Returns a list of supported image formats.
 		  Returns: array of strings
 
-		--- image.from_attachment(att) -> Image
-		  Creates an Image from an attachment table (e.g. from dass.agents result).
-		  Parameters:
-		    - att: table — attachment table with "base64" and optionally "format" fields
-		  Returns: Image object (UserData)
-
 		IMAGE OBJECT METHODS:
 
 		--- img:save(path, [options])
@@ -89,10 +83,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		  Parameters:
 		    - format: string (optional) — output format ("png", "jpg", "webp", default: original)
 		  Returns: string
-
-		--- img:to_attachment() -> table
-		  Converts the image to an attachment table for use with dass.agents.
-		  Returns: table with fields: type, format, base64, width, height
 
 		--- img:resize(width, height, [options])
 		  Resizes the image.
@@ -134,8 +124,16 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		  -- Load from URL and attach to message
 		  local img = image.load_url("https://example.com/chart.png")
-		  local att = img:to_attachment()
-		  -- Use att with dass.agents.execute()
+		  local system_message = {
+		      role = "system",
+		      content = "You are a helpful assistant."
+		  }
+		  local user_message = {
+		      role = "user",
+		      content = "Check out this chart!",
+		      attachments = { img }
+		  }
+		  local response_messages = dass.agents.execute({ system_message, user_message })
 
 		  -- Create an image from scratch
 		  local img = image.create(100, 100, "#ff0000")
@@ -173,7 +171,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			ns["from_bytes"] = DynValue.NewCallback(new CallbackFunction(FromBytes));
 			ns["info"] = DynValue.NewCallback(new CallbackFunction(Info));
 			ns["formats"] = DynValue.NewCallback(new CallbackFunction(Formats));
-			ns["from_attachment"] = DynValue.NewCallback(new CallbackFunction(FromAttachment));
 		}
 
 		private DynValue Load(ScriptExecutionContext ctx, CallbackArguments args)
@@ -318,30 +315,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			catch (Exception ex)
 			{
 				throw new ScriptRuntimeException($"image.formats() error: {ex.Message}");
-			}
-		}
-
-		private DynValue FromAttachment(ScriptExecutionContext ctx, CallbackArguments args)
-		{
-			try
-			{
-				if (args.Count < 1)
-					throw new ScriptRuntimeException("image.from_attachment(att): at least 1 argument expected.");
-				if (args[0].Type != DataType.Table)
-					throw new ScriptRuntimeException("image.from_attachment(att): expected a table.");
-
-				var attTable = args[0].Table;
-				var base64 = attTable.Get("base64")?.CastToString();
-				if (string.IsNullOrEmpty(base64))
-					throw new ScriptRuntimeException("image.from_attachment(att): attachment table must have a 'base64' field.");
-
-				var luaImage = LuaImage.LoadBase64(_fileAccess, base64);
-				return UserData.Create(luaImage);
-			}
-			catch (ScriptRuntimeException) { throw; }
-			catch (Exception ex)
-			{
-				throw new ScriptRuntimeException($"image.from_attachment() error: {ex.Message}");
 			}
 		}
 	}

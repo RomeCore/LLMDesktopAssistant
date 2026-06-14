@@ -190,23 +190,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		}
 
 		/// <summary>
-		/// Converts the image to an attachment table for use with dass.agents.
-		/// </summary>
-		public Table ToAttachment(Script script)
-		{
-			EnsureNotDisposed();
-			var base64 = ToBase64("png");
-
-			var result = new Table(script);
-			result["type"] = DynValue.NewString("image");
-			result["format"] = DynValue.NewString("png");
-			result["base64"] = DynValue.NewString(base64);
-			result["width"] = DynValue.NewNumber(Width);
-			result["height"] = DynValue.NewNumber(Height);
-			return result;
-		}
-
-		/// <summary>
 		/// Resizes the image.
 		/// </summary>
 		public void Resize(int width, int height, Table? optionsTable = null)
