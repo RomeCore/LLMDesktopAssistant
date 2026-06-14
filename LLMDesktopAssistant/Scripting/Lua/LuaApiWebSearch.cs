@@ -146,7 +146,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_searchManager = searchManager;
 		}
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["search"] = DynValue.NewCallback(new CallbackFunction(Search));
 		}

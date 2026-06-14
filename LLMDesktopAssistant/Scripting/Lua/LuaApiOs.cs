@@ -70,7 +70,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  os.sleep(0.5) -- pause 500ms
 			""";
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["platform"] = DynValue.NewCallback(new CallbackFunction(Platform));
 			ns["arch"] = DynValue.NewCallback(new CallbackFunction(Arch));

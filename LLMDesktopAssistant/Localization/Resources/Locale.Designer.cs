@@ -1177,15 +1177,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Execute Lua script.
-        /// </summary>
-        public static string execute_lua {
-            get {
-                return ResourceManager.GetString("execute-lua", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Execute Powershell script.
         /// </summary>
         public static string execute_powershell {
@@ -1992,6 +1983,60 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string list_shuffled {
             get {
                 return ResourceManager.GetString("list_shuffled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute Lua script.
+        /// </summary>
+        public static string lua_execute {
+            get {
+                return ResourceManager.GetString("lua-execute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Get Lua script info.
+        /// </summary>
+        public static string lua_get_script_info {
+            get {
+                return ResourceManager.GetString("lua-get_script_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на List Lua scripts.
+        /// </summary>
+        public static string lua_list_scripts {
+            get {
+                return ResourceManager.GetString("lua-list_scripts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move Lua script.
+        /// </summary>
+        public static string lua_move_script {
+            get {
+                return ResourceManager.GetString("lua-move_script", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Register or update Lua script.
+        /// </summary>
+        public static string lua_register_or_update_script {
+            get {
+                return ResourceManager.GetString("lua-register_or_update_script", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Remove Lua script.
+        /// </summary>
+        public static string lua_remove_script {
+            get {
+                return ResourceManager.GetString("lua-remove_script", resourceCulture);
             }
         }
         
@@ -4354,6 +4399,42 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Clipboard read.
+        /// </summary>
+        public static string tool_behaviour_clipboardread {
+            get {
+                return ResourceManager.GetString("tool_behaviour_clipboardread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool reads text data from the clipboard..
+        /// </summary>
+        public static string tool_behaviour_clipboardread_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_clipboardread_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Clipboard write.
+        /// </summary>
+        public static string tool_behaviour_clipboardwrite {
+            get {
+                return ResourceManager.GetString("tool_behaviour_clipboardwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool writes text data to the clipboard..
+        /// </summary>
+        public static string tool_behaviour_clipboardwrite_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_clipboardwrite_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Delete directories.
         /// </summary>
         public static string tool_behaviour_directorydelete {
@@ -4530,6 +4611,42 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string tool_behaviour_longrunningtask_hint {
             get {
                 return ResourceManager.GetString("tool_behaviour_longrunningtask_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на MCP (external server).
+        /// </summary>
+        public static string tool_behaviour_mcp {
+            get {
+                return ResourceManager.GetString("tool_behaviour_mcp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool originates from an external MCP server and may have unpredictable behaviour..
+        /// </summary>
+        public static string tool_behaviour_mcp_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_mcp_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Meta-tool (LLM-created).
+        /// </summary>
+        public static string tool_behaviour_meta {
+            get {
+                return ResourceManager.GetString("tool_behaviour_meta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool is a meta-tool created at runtime by the LLM via Lua/Python scripting..
+        /// </summary>
+        public static string tool_behaviour_meta_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_meta_hint", resourceCulture);
             }
         }
         

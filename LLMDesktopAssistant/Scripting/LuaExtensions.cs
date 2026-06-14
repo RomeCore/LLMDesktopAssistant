@@ -11,6 +11,8 @@ namespace LLMDesktopAssistant.Scripting
 
 			foreach (var kv in table.Pairs)
 			{
+				if (kv.Key.String == "_G")
+					continue;
 				newTable.Set(kv.Key, kv.Value);
 			}
 
@@ -23,6 +25,8 @@ namespace LLMDesktopAssistant.Scripting
 
 			foreach (var kv in table.Pairs)
 			{
+				if (kv.Key.String == "_G")
+					continue;
 				if (kv.Value.Type == DataType.Table)
 					newTable.Set(kv.Key, DynValue.NewTable(DeepClone(kv.Value.Table)));
 				else

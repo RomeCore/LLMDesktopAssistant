@@ -97,7 +97,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(string.truncate("long text", 6)) -- "long t..."
 			""";
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["split"] = DynValue.NewCallback(new CallbackFunction(Split));
 			ns["trim"] = DynValue.NewCallback(new CallbackFunction(Trim));

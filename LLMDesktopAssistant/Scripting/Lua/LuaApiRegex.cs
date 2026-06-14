@@ -112,7 +112,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(regex.escape("(hello)")) -- "\\(hello\\)"
 			""";
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["test"] = DynValue.NewCallback(new CallbackFunction(Test));
 			ns["match"] = DynValue.NewCallback(new CallbackFunction(Match));

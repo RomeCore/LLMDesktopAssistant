@@ -46,7 +46,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_modelList = modelList;
 		}
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["list"] = DynValue.NewCallback(ListModels);
 		}

@@ -171,7 +171,7 @@
   <data name="error_model" xml:space="preserve">
     <value>Error: {0}</value>
   </data>
-  <data name="execute-lua" xml:space="preserve">
+  <data name="lua-execute" xml:space="preserve">
     <value>Execute Lua script</value>
   </data>
   <data name="execute-python" xml:space="preserve">
@@ -1772,5 +1772,20 @@
   </data>
   <data name="tool_behaviour_meta_hint" xml:space="preserve">
     <value>The tool is a meta-tool created at runtime by the LLM via Lua/Python scripting.</value>
+  </data>
+  <data name="lua-register_or_update_script" xml:space="preserve">
+    <value>Register or update Lua script</value>
+  </data>
+  <data name="lua-remove_script" xml:space="preserve">
+    <value>Remove Lua script</value>
+  </data>
+  <data name="lua-move_script" xml:space="preserve">
+    <value>Move Lua script</value>
+  </data>
+  <data name="lua-list_scripts" xml:space="preserve">
+    <value>List Lua scripts</value>
+  </data>
+  <data name="lua-get_script_info" xml:space="preserve">
+    <value>Get Lua script info</value>
   </data>
 </root>

@@ -105,7 +105,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		private Random _rng = new();
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["number"] = DynValue.NewCallback(new CallbackFunction(Number));
 			ns["integer"] = DynValue.NewCallback(new CallbackFunction(Integer));

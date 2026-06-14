@@ -108,7 +108,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(datetime.timestamp(now))
 			""";
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["now"] = DynValue.NewCallback(new CallbackFunction(Now));
 			ns["now_local"] = DynValue.NewCallback(new CallbackFunction(Local));

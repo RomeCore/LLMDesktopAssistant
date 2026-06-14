@@ -35,7 +35,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_services = services;
 		}
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			globals["manuals"] = DynValue.NewCallback(PrintManuals);
 		}

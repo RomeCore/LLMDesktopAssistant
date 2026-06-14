@@ -159,7 +159,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_fileAccess = fileAccess;
 		}
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			// Register LuaImage as UserData type for MoonSharp
 			UserData.RegisterType<LuaImage>();

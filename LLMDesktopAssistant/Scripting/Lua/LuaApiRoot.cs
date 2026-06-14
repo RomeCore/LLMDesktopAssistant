@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	{
 		public override string? Namespace => "dass";
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			
 		}

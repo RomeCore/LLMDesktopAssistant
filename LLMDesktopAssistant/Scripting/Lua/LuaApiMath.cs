@@ -149,7 +149,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(math.constants.sqrt2) → 1.41421...
 			""";
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			// Core
 			ns["parse"] = DynValue.NewCallback(new CallbackFunction(Parse));

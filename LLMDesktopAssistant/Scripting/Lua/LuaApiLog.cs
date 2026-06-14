@@ -56,7 +56,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_logger = logger;
 		}
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["verbose"] = DynValue.NewCallback(new CallbackFunction(LogVerbose));
 			ns["debug"] = DynValue.NewCallback(new CallbackFunction(LogDebug));

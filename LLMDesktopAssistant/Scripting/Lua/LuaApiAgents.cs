@@ -146,7 +146,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_toolsetCache = toolsetCache;
 		}
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["execute"] = DynValue.NewCallback(Execute);
 		}
@@ -309,16 +309,35 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 				case "assistant":
 					var reasoningContent = messageTable.Get("reasoning_content").CastToString();
+
 					var toolCallsTable = messageTable.Get("tool_calls");
 					var toolCalls = new List<IToolCall>();
 					foreach (var toolCallTable in toolCallsTable.Table?.Values ?? [])
 						toolCalls.Add(ConvertToolCallFromLua(toolCallTable.Table));
-					return new RCLargeLanguageModels.Messages.AssistantMessage(content, reasoningContent, toolCalls);
+
+					attachmentsTable = messageTable.Get("attachments");
+					attachments = new List<IAttachment>();
+					foreach (var attachmentValue in attachmentsTable.Table?.Values ?? [])
+					{
+						if (attachmentValue.UserData?.Object is LuaImage image)
+							attachments.Add(new ImageBase64Attachment(image.Format, image.ToBase64()));
+					}
+
+					return new RCLargeLanguageModels.Messages.AssistantMessage(content, reasoningContent, toolCalls, attachments);
 
 				case "tool":
 					var toolName = messageTable.Get("tool_name").CastToString();
 					var toolCallId = messageTable.Get("tool_call_id").CastToString();
-					return new RCLargeLanguageModels.Messages.ToolMessage(content, toolCallId, toolName);
+
+					attachmentsTable = messageTable.Get("attachments");
+					attachments = new List<IAttachment>();
+					foreach (var attachmentValue in attachmentsTable.Table?.Values ?? [])
+					{
+						if (attachmentValue.UserData?.Object is LuaImage image)
+							attachments.Add(new ImageBase64Attachment(image.Format, image.ToBase64()));
+					}
+
+					return new RCLargeLanguageModels.Messages.ToolMessage(content, toolCallId, toolName, attachments);
 
 				default:
 					throw new ScriptRuntimeException($"dass.agents.execute(): unknown role '{role}'.");

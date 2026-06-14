@@ -200,7 +200,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_fileAccess = fileAccess;
 		}
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["read"] = DynValue.NewCallback(new CallbackFunction(Read));
 			ns["read_lines"] = DynValue.NewCallback(new CallbackFunction(ReadLines));

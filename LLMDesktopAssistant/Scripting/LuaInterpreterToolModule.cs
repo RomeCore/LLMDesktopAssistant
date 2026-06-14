@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.Scripting
 			AddTool(Execute, ExecuteStreaming, ExecutePreview,
 				new ToolInitializationInfo
 				{
-					Name = "execute-lua",
+					Name = "lua-execute",
 					Description = $"""
 						Executes Lua and returns the script result along with messages printed by 'print' function.
 						

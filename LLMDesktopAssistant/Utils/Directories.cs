@@ -20,6 +20,11 @@ namespace LLMDesktopAssistant.Utils
 		public static string LocalAppData { get; }
 
 		/// <summary>
+		/// The path where to store lua scripts to be loaded into the Lua runtime at chat loading.
+		/// </summary>
+		public static string LuaScripts { get; }
+
+		/// <summary>
 		/// The path where to store the temporary scripts to be executed and instantly deleted after execution.
 		/// </summary>
 		public static string TempScripts { get; }
@@ -72,6 +77,7 @@ namespace LLMDesktopAssistant.Utils
 		static Directories()
 		{
 			LocalAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LLMDesktopAssistant");
+			LuaScripts = Path.Combine(LocalAppData, "scripts/lua/");
 			TempScripts = Path.Combine(LocalAppData, "temp/scripts/");
 			Plugins = Path.Combine(LocalAppData, "plugins/");
 			Templates = Path.Combine(LocalAppData, "templates/");
@@ -87,6 +93,7 @@ namespace LLMDesktopAssistant.Utils
 		public static void EnsureAll()
 		{
 			Directory.CreateDirectory(LocalAppData);
+			Directory.CreateDirectory(LuaScripts);
 			Directory.CreateDirectory(TempScripts);
 			Directory.CreateDirectory(Plugins);
 			Directory.CreateDirectory(Templates);

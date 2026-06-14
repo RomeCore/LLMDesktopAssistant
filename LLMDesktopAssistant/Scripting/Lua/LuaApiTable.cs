@@ -137,7 +137,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(table.last(t))  -- 5
 			""";
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["contains"] = DynValue.NewCallback(new CallbackFunction(Contains));
 			ns["find"] = DynValue.NewCallback(new CallbackFunction(Find));

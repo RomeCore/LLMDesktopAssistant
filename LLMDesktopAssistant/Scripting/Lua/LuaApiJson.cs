@@ -103,7 +103,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			WriteIndented = true
 		};
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["decode"] = DynValue.NewCallback(new CallbackFunction(Decode));
 			ns["parse"] = ns["decode"];

@@ -82,7 +82,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  local token = crypto.random_hex(16) -- 32 chars
 			""";
 
-		public override void Populate(Table globals, Table ns)
+		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["md5"] = DynValue.NewCallback(new CallbackFunction(Md5));
 			ns["sha1"] = DynValue.NewCallback(new CallbackFunction(Sha1));
