@@ -75,7 +75,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			foreach (var entry in manuals.Table.Values)
 			{
 				if (entry.Type == DataType.String)
-					result.AppendLine(entry.String.TrimEnd());
+					result.AppendLine(entry.String.TrimEnd()).AppendLine();
 			}
 
 			return DynValue.NewString(result.ToString().TrimEnd());

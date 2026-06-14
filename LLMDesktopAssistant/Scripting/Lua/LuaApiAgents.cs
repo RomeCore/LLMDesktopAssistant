@@ -45,6 +45,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 					role = "user":
 					  - content: string — user message text
+					  - attachments: table (optional) — array of attachment objects (see format below)
 
 					role = "assistant":
 					  - content: string — assistant response text
@@ -62,10 +63,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 				- options: table (optional) — Additional options:
 				  - model: string (optional) — Name of the model to use.
-				    If omitted, the chat's "AgenticToolsModel" is used.
+					If omitted, the chat's "AgenticToolsModel" is used.
 				  - tools: table (optional) — Array of tool names (strings) to restrict which tools
-				    the agent can use. If omitted, all available tools are exposed.
-				    Example: { "web-search", "calculate" }
+					the agent can use. If omitted, all available tools are exposed.
+					Example: { "web-search", "calculate" }
 
 			  Returns: table — array of response messages (same format as input messages).
 
@@ -115,6 +116,18 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				end
 			  end
 
+			  -- Attachments with image description
+			  local r = dass.agents.execute(
+				{
+				  { role = "system", content = "You are image description assistant." },
+				  { role = "user", content = "Describe this image.", attachments = { image.load("image.png") } }
+				},
+				{
+				  model = "openrouter$google/gemini-3.5-flash" -- Use a vision model
+				}
+			  )
+			  print(r[1].content)
+
 			  -- Safe execution with pcall
 			  local ok, result = pcall(dass.agents.execute, {
 				{ role = "system", content = "You are an expert." },
@@ -131,6 +144,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  - You can override the model by passing a "model" field in options.
 			  - You can restrict tools by passing a "tools" array in options.
 			  - All tools available in the current chat are exposed to the agent by default.
+			  - Image attachments can be applied via `image` API (see manuals for details).
 			  - Returns the full conversation history produced by the agent,
 				including all intermediate tool calls and results.
 			""";

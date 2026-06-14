@@ -152,24 +152,6 @@ public enum ToolBehaviour
 	/// </summary>
 	AgentExecution = 1 << 17,
 
-	// ────────────────────────────── Source ─────────────────────────────────
-
-	/// <summary>
-	/// The tool originates from an external MCP (Model Context Protocol) server.
-	/// These tools are provided by external MCP servers and may have
-	/// unpredictable behaviour. Treat MCP tools with caution as they
-	/// may access external systems or resources outside this application's control.
-	/// </summary>
-	MCP = 1 << 18,
-
-	/// <summary>
-	/// The tool is a meta-tool created at runtime by the LLM itself
-	/// (via Lua/Python scripting). Such tools can have arbitrary behaviour
-	/// defined by the LLM and should be carefully monitored.
-	/// </summary>
-	Meta = 1 << 19,
-
-
 	// ────────────────────────────── Meta ────────────────────────────────────
 
 	/// <summary>
@@ -179,5 +161,22 @@ public enum ToolBehaviour
 	/// it can alter the assistant's capabilities on the fly.
 	/// Examples: <c>metatools-create_or_update</c>, <c>metatools-delete</c>, <c>lua-register_or_update_script</c>.
 	/// </summary>
-	ScriptAccess = 1 << 20,
+	ScriptAccess = 1 << 18,
+
+	// ────────────────────────────── Source ─────────────────────────────────
+
+	/// <summary>
+	/// The tool originates from an external MCP (Model Context Protocol) server.
+	/// These tools are provided by external MCP servers and may have
+	/// unpredictable behaviour. Treat MCP tools with caution as they
+	/// may access external systems or resources outside this application's control.
+	/// </summary>
+	MCP = 1 << 30,
+
+	/// <summary>
+	/// The tool is a meta-tool created at runtime by the LLM itself
+	/// (via Lua/Python scripting). Such tools can have arbitrary behaviour
+	/// defined by the LLM and should be carefully monitored.
+	/// </summary>
+	Meta = 1 << 31,
 }

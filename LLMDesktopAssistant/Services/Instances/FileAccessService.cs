@@ -32,12 +32,24 @@ namespace LLMDesktopAssistant.Services.Instances
 
 			var fullPath = Path.GetFullPath(Path.Combine(baseDir, path));
 
-			if (!fullPath.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase))
+			if (!fullPath.StartsWith(baseDir))
 				return null;
 
 			return fullPath;
 		}
 
+		public string ForceAccessPath(string path, out bool isAccessed)
+		{
+			var baseDir = Path.GetFullPath(chat.Settings.Environment.GetWorkingDirectory());
+			if (string.IsNullOrWhiteSpace(path) || path == ".")
+			{
+				isAccessed = true;
+				return baseDir;
+			}
 
+			var fullPath = Path.GetFullPath(Path.Combine(baseDir, path));
+			isAccessed = fullPath.StartsWith(baseDir);
+			return fullPath;
+		}
 	}
 }
