@@ -70,10 +70,10 @@ namespace LLMDesktopAssistant.Tools
 						throw new ArgumentException("[OriginalArgs] JsonNode can only be specified once.", nameof(method));
 					originalArgsMapping = paramIndex;
 				}
-				else if (parameter.ParameterType.IsByRef && parameter.IsDefined(typeof(SharedContextAttribute)))
+				else if (parameter.IsDefined(typeof(SharedContextAttribute)))
 				{
 					if (sharedContextMapping != -1)
-						throw new ArgumentException("[SharedContext] @ref can only be specified once.", nameof(method));
+						throw new ArgumentException("[SharedContext] can only be specified once.", nameof(method));
 					sharedContextMapping = paramIndex;
 				}
 				else if (parameter.IsDefined(typeof(InjectAttribute)))

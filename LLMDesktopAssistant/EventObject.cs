@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using LiteDB;
-using RCParsing.Utils;
+using RCLargeLanguageModels;
 
 namespace LLMDesktopAssistant
 {
@@ -81,7 +81,6 @@ namespace LLMDesktopAssistant
 		/// <summary>
 		/// The event records that store the event handlers and their associated objects.
 		/// </summary>
-		/// <typeparam name="THandler">The type of the event handler.</typeparam>
 		/// <param name="MethodTarget">The object that holds the method that handler created from.</param>
 		/// <param name="Handler">The event handler.</param>
 		private record EventRecord(object MethodTarget, THandler Handler);

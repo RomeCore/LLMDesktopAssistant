@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+﻿using System.Text;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting.Lua;
-using LLMDesktopAssistant.Services;
 using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting

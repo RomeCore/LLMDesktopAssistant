@@ -32,20 +32,21 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				Func<JsonNode, ToolExecutionContext, StreamingToolArgumentsAnalysisResult>?
 					streamingArgumentsAnalyser = toolInfo?.StreamingArgumentsAnalyser;
 
+				var streamingToolExecutionContext = new ToolExecutionContext
+				{
+					Call = toolCall,
+					Chat = chat,
+					Info = toolInfo!,
+					Message = message,
+					SharedContext = sharedContext
+				};
+
 				void AddedPartialArg(object? sender, string deltaArg)
 				{
 					toolCall.Arguments = partialFunctionToolCall.Args;
 
 					if (streamingArgumentsAnalyser != null)
 					{
-						var streamingToolExecutionContext = new ToolExecutionContext
-						{
-							Call = toolCall,
-							Chat = chat,
-							Info = toolInfo!,
-							Message = message,
-							SharedContext = sharedContext
-						};
 						try
 						{
 							// TolerantJsonParser can parse partial (unfinished) JSON too!
@@ -63,7 +64,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						{
 							Log.Debug(ex, "Error analyzing arguments: {ErrorMessage}", ex.Message);
 						}
-						sharedContext = streamingToolExecutionContext.SharedContext;
 					}
 				}
 
@@ -78,6 +78,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					toolCall.StatusIcon = null;
 					toolCall.StatusTitle = null;
 				}
+
+				sharedContext = streamingToolExecutionContext.SharedContext;
 			}
 
 			if (toolInfo == null)
@@ -89,8 +91,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 			try
 			{
-				toolCall.ExpectedBehaviour = toolInfo.DefaultExpectedBehaviour;
-
 				JsonNode? parsedArgs = null;
 				var toolExecutionContext = new ToolExecutionContext
 				{
@@ -110,8 +110,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						var preExecutionResult = await toolInfo.PreviewExecutor(parsedArgs, toolExecutionContext, cancellationToken);
 						toolCall.StatusTitle = preExecutionResult.StatusTitle;
 						toolCall.StatusIcon = preExecutionResult.StatusIcon;
-						if (preExecutionResult.ExpectedBehaviour.HasValue)
-							toolCall.ExpectedBehaviour = preExecutionResult.ExpectedBehaviour.Value;
 
 						if (preExecutionResult.InterruptingSuccess != null)
 						{
@@ -127,12 +125,16 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							}
 							return;
 						}
+
+						toolCall.ExpectedBehaviour = preExecutionResult.ExpectedBehaviour ?? toolInfo.DefaultExpectedBehaviour;
 					}
 					catch (Exception ex)
 					{
 						Log.Debug(ex, "Error during preview execution of tool '{ToolName}': {ExceptionMessage}", toolCall.ToolName, ex.Message);
 					}
 				}
+
+				toolCall.ExpectedBehaviour ??= toolInfo.DefaultExpectedBehaviour;
 
 				var approvalLevel = toolInfo.ApprovalLevel;
 				bool requireConfirmation;
@@ -191,6 +193,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				if (requireConfirmation)
 				{
 					var tcs = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
+					toolCall.ExpectedBehaviour ??= toolInfo.DefaultExpectedBehaviour;
 					toolCall.UserConfirmationSource = tcs;
 					toolCall.Status = ToolStatus.WaitingForApproval;
 

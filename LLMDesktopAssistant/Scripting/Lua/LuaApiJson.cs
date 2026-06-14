@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Unicode;
 using MoonSharp.Interpreter;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -30,10 +31,28 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		--- json.decode(str)
 		--- json.parse(str) (alias)
 		--- json.deserialize(str) (alias)
-		  Parses a JSON string into a Lua value.
+		  Parses a strict JSON string into a Lua value.
 		  Parameters:
 		    - str: string — JSON string to parse
 		  Returns: Lua value (table, string, number, boolean, nil)
+		  Throws on invalid JSON.
+
+		--- json.decode_tolerant(str)
+		--- json.parse_tolerant(str) (alias)
+		--- json.deserialize_tolerant(str) (alias)
+		  Parses a lenient JSON string using a tolerant parser that handles:
+		    - Single-quoted strings ('...')
+		    - Missing quotes around keys/values
+		    - Trailing commas in arrays/objects
+		    - Unclosed brackets
+		    - JavaScript comments (// and /* */)
+		    - NaN, Infinity, +infinity, -infinity
+		    - Wrong escape sequences
+		    - Unquoted string values
+		  Parameters:
+		    - str: string — lenient JSON string to parse
+		  Returns: Lua value (table, string, number, boolean, nil)
+		  Returns nil on parse failure instead of throwing.
 
 		--- json.encode(value, [indented])
 		--- json.stringify(value, [indented]) (alias)
@@ -45,6 +64,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		  Returns: string
 
 		NOTES:
+		  - Use json.decode_tolerant() for parsing LLM output that often
+		    contains malformed JSON (missing quotes, trailing commas, etc.)
 		  - Lua tables with sequential integer keys (1..n) are encoded as JSON arrays.
 		  - Lua tables with string/non-sequential keys are encoded as JSON objects.
 		  - Mixed tables (array part + object part) are encoded as objects,
@@ -53,10 +74,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		EXAMPLES:
 
-		  -- Decode
+		  -- Decode (strict)
 		  local t = json.decode('{"name":"John","age":30}')
 		  print(t.name) -- "John"
 		  print(t.age)  -- 30
+
+		  -- Decode (tolerant) — handles malformed JSON from LLMs
+		  local t = json.decode_tolerant("{ name: 'John', age: 30, }")
+		  print(t.name) -- "John"
 
 		  -- Encode
 		  local s = json.encode({hello = "world", num = 42})
@@ -83,6 +108,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			ns["decode"] = DynValue.NewCallback(new CallbackFunction(Decode));
 			ns["parse"] = ns["decode"];
 			ns["deserialize"] = ns["decode"];
+			ns["decode_tolerant"] = DynValue.NewCallback(new CallbackFunction(DecodeTolerant));
+			ns["parse_tolerant"] = ns["decode_tolerant"];
+			ns["deserialize_tolerant"] = ns["decode_tolerant"];
 			ns["encode"] = DynValue.NewCallback(new CallbackFunction(Encode));
 			ns["stringify"] = ns["encode"];
 			ns["serialize"] = ns["encode"];
@@ -112,6 +140,30 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 		}
 
+		private static DynValue DecodeTolerant(ScriptExecutionContext ctx, CallbackArguments args)
+		{
+			try
+			{
+				if (args.Count < 1)
+					throw new ScriptRuntimeException("json.decode_tolerant(str): at least 1 argument expected.");
+
+				var jsonStr = args[0];
+				if (jsonStr.Type != DataType.String)
+					throw new ScriptRuntimeException($"json.decode_tolerant(str): expected a string, got {jsonStr.Type}.");
+
+				var node = TolerantJsonParser.Parse(jsonStr.String);
+				return JsonLuaConverter.JsonNodeToDynValue(ctx.GetScript(), node);
+			}
+			catch (ScriptRuntimeException)
+			{
+				throw;
+			}
+			catch (Exception)
+			{
+				return DynValue.Nil;
+			}
+		}
+
 		private static DynValue Encode(ScriptExecutionContext ctx, CallbackArguments args)
 		{
 			try
@@ -138,7 +190,5 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				throw new ScriptRuntimeException($"JSON encode error: {ex.Message}");
 			}
 		}
-
-		
 	}
 }
