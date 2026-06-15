@@ -1,3 +1,5 @@
+using System.Linq;
+
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLTSharp;
 using LLTSharp.DataAccessors;
@@ -19,7 +21,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			Templates are identified by ID and can be filtered by metadata (language, model, etc.).
 
 			FUNCTIONS:
-
+			
+			--- templates.import(templateString)
+			  Imports one or more templates from a string (LLT format).
+			  Parameters:
+			    - templateString: string — LLT template source code.
+			  Returns:
+			    - number — number of imported templates.
+			
 			--- templates.render(filters, [context])
 			  Renders a template from the template library.
 			  Parameters:
@@ -63,7 +72,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			      - model_family: string (optional) — Target model family.
 			      - version: string (optional) — Version.
 			      - ... plus any custom metadata keys flattened directly.
-
+			
 			NOTES:
 			  - In templates.render(), templates are matched by intersecting all provided
 			    metadata criteria. Each metadata filter narrows down the candidate set.
@@ -72,6 +81,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    automatically available during rendering.
 
 			EXAMPLES:
+			
+			  -- Import a new template from a LLT string
+			  local count = templates.import([[
+			    @template hello { Hello, @name! }
+			  ]])
+			  print("Imported " .. count .. " templates")
 
 			  -- Render by template ID (string filter)
 			  local prompt = templates.render("system_prompt")
@@ -126,8 +141,32 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
+			ns["import"] = DynValue.NewCallback(Import);
 			ns["render"] = DynValue.NewCallback(Render);
 			ns["list"] = DynValue.NewCallback(List);
+		}
+
+		private DynValue Import(ScriptExecutionContext ctx, CallbackArguments args)
+		{
+			if (args.Count < 1)
+				throw new ScriptRuntimeException("templates.import(templateString): at least 1 argument expected.");
+
+			if (args[0].Type != DataType.String)
+				throw new ScriptRuntimeException("templates.import(): first argument must be a string.");
+
+			var templateString = args[0].String;
+
+			try
+			{
+				var beforeCount = _templateLibrary.Count();
+				_templateLibrary.ImportFromString(templateString, languageCode: "llt");
+				var afterCount = _templateLibrary.Count();
+				return DynValue.NewNumber(afterCount - beforeCount);
+			}
+			catch (Exception ex)
+			{
+				throw new ScriptRuntimeException($"templates.import(): {ex.Message}");
+			}
 		}
 
 		private DynValue Render(ScriptExecutionContext ctx, CallbackArguments args)
@@ -353,14 +392,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				// Additional custom metadata — flattened directly into the entry
 				foreach (var additionalMeta in template.GetAllMetadata<AdditionalMetadata>())
 				{
-					foreach (var key in additionalMeta.Keys)
-					{
-						if (entry.Keys.Contains(DynValue.NewString(key)))
-							continue; // skip if already set by known metadata field
+					if (entry.Keys.Contains(DynValue.NewString(additionalMeta.Key)))
+						continue; // skip if already set by known metadata field
 
-						var val = additionalMeta.Get<object>(key);
-						entry[key] = ObjectToDynValue(script, val);
-					}
+					entry[additionalMeta.Key] = ObjectToDynValue(script, additionalMeta.Value);
 				}
 
 				result[index++] = DynValue.NewTable(entry);
@@ -417,9 +452,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 							bool found = false;
 							foreach (var customMeta in customMetas)
 							{
-								if (customMeta.ContainsKey(key))
+								if (customMeta.Key == key)
 								{
-									var metaVal = customMeta.Get<object>(key);
+									var metaVal = customMeta.Value;
 									if (string.Equals(metaVal?.ToString(), value, StringComparison.OrdinalIgnoreCase))
 									{
 										found = true;
