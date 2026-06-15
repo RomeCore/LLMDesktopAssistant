@@ -1615,16 +1615,16 @@
     <value>Approval Level</value>
   </data>
   <data name="approval_level_autoapprove" xml:space="preserve">
-    <value>Auto-Approve</value>
+    <value>Auto-approve</value>
   </data>
   <data name="approval_level_policybased" xml:space="preserve">
-    <value>Policy Based</value>
+    <value>Policy-based</value>
   </data>
   <data name="approval_level_alwaysask" xml:space="preserve">
-    <value>Always Ask</value>
+    <value>Always ask</value>
   </data>
   <data name="approval_level_alwaysdisallow" xml:space="preserve">
-    <value>Always Disallow</value>
+    <value>Always disallow</value>
   </data>
   <data name="enable_policy_override" xml:space="preserve">
     <value>Override global tool policy for this agent</value>
@@ -1787,5 +1787,8 @@
   </data>
   <data name="lua-get_script_info" xml:space="preserve">
     <value>Get Lua script info</value>
+  </data>
+  <data name="approval_level_askorpolicy" xml:space="preserve">
+    <value>Ask or deny policy-based</value>
   </data>
 </root>

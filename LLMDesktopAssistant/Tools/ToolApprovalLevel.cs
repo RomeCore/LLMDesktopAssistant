@@ -25,15 +25,21 @@ public enum ToolApprovalLevel
 	PolicyBased = 1,
 
 	/// <summary>
+	/// Defer to the agent's policy settings, but prompt the user even if
+	/// the agent has auto-approved this behaviour (see <c>AutoApproveBehaviours</c>).
+	/// </summary>
+	AskOrPolicy = 2,
+
+	/// <summary>
 	/// Always prompt the user for confirmation before executing the tool,
 	/// regardless of the agent's <c>AutoApproveBehaviours</c>.
 	/// Use for high-impact operations like file deletion or code execution.
 	/// </summary>
-	AlwaysAsk = 2,
+	AlwaysAsk = 3,
 
 	/// <summary>
 	/// Always reject the tool call without executing it, regardless of the agent's policy settings.
 	/// This explicitly notifies agents that they are not allowed to execute this tool upon trying to do so.
 	/// </summary>
-	AlwaysDisallow = 3,
+	AlwaysDisallow = 4,
 }

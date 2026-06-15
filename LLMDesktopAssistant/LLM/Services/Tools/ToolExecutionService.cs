@@ -157,6 +157,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						throw new InvalidOperationException($"Invalid approval level for a tool: {approvalLevel}");
 
 					case ToolApprovalLevel.PolicyBased:
+					case ToolApprovalLevel.AskOrPolicy:
 
 						var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
 						var agentToolSettings = senderAgent.Tools;
@@ -176,6 +177,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 						bool disallow = (disallowedBehaviours & toolCall.ExpectedBehaviour) != 0;
 						bool autoApprove = (autoApproveBehaviours & toolCall.ExpectedBehaviour) == toolCall.ExpectedBehaviour;
+						if (approvalLevel == ToolApprovalLevel.AskOrPolicy)
+							autoApprove = false; // Disallowing auto-approving for AskOrPolicy
 
 						if (disallow)
 						{

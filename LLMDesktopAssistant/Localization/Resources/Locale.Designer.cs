@@ -313,7 +313,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Always Ask.
+        ///   Ищет локализованную строку, похожую на Always ask.
         /// </summary>
         public static string approval_level_alwaysask {
             get {
@@ -322,7 +322,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Always Disallow.
+        ///   Ищет локализованную строку, похожую на Always disallow.
         /// </summary>
         public static string approval_level_alwaysdisallow {
             get {
@@ -331,7 +331,16 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Auto-Approve.
+        ///   Ищет локализованную строку, похожую на Ask or deny policy-based.
+        /// </summary>
+        public static string approval_level_askorpolicy {
+            get {
+                return ResourceManager.GetString("approval_level_askorpolicy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Auto-approve.
         /// </summary>
         public static string approval_level_autoapprove {
             get {
@@ -340,7 +349,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Policy Based.
+        ///   Ищет локализованную строку, похожую на Policy-based.
         /// </summary>
         public static string approval_level_policybased {
             get {

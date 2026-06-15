@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(Grep,
+			AddTool(Grep, GrepStreaming, null,
 				new ToolInitializationInfo
 				{
 					Name = "fs-grep",

@@ -99,7 +99,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				return new PreviewToolExecutionResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
-					StatusTitle = $"**{path}**"
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate
 				};
 			}
 			catch (Exception ex)
