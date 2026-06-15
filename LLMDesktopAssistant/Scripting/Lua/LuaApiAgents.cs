@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
@@ -8,7 +6,6 @@ using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Serialization.Json;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
@@ -31,37 +28,37 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			FUNCTIONS:
 
-			--- dass.agents.execute(messages, [options])
+			--- dass.agents.execute(properties...)
 			  Executes an LLM agent with the given conversation and returns its response.
 
 			  Parameters:
-				- messages: table (required) — Array of message tables (see format below).
-				  The LAST message MUST be a "user" message.
-				  Multiple "system" messages are concatenated.
-
-				  Each message table has a "role" field:
+				- properties: table (required) — Additional options:
+				  - messages: table (required) — Array of message tables (see format below).
+					The LAST message MUST be a "user" message.
+					Multiple "system" messages are concatenated.
+			
+					Each message table has a "role" field:
 					role = "system":
 					  - content: string — system instruction
-
+			
 					role = "user":
 					  - content: string — user message text
 					  - attachments: table (optional) — array of attachment objects (see format below)
-
+			
 					role = "assistant":
 					  - content: string — assistant response text
 					  - reasoning_content: string (optional) — reasoning/thinking text
 					  - tool_calls: table (optional) — array of tool call tables
-						  Each tool call:
-							- tool_name: string
-							- tool_call_id: string
-							- arguments: table — arguments matching the tool's schema
-
+					  Each tool call:
+						- tool_name: string
+						- tool_call_id: string
+						- arguments: table — arguments matching the tool's schema
+			
 					role = "tool":
 					  - content: string — tool result text
 					  - tool_name: string
 					  - tool_call_id: string
-
-				- options: table (optional) — Additional options:
+			
 				  - model: string (optional) — Name of the model to use.
 					If omitted, the chat's "AgenticToolsModel" is used.
 				  - tools: table (optional) — Array of tool names (strings) to restrict which tools
@@ -81,27 +78,29 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			  -- Simple greeting
 			  local r = dass.agents.execute({
-				{ role = "system", content = "You are a helpful assistant." },
-				{ role = "user", content = "Say hello!" }
+				messages = {
+				  { role = "system", content = "You are a helpful assistant." },
+				  { role = "user", content = "Say hello!" }
+				}
 			  })
 			  print(r[1].content)
 
 			  -- With custom model and restricted tools
-			  local r = dass.agents.execute(
-				{
+			  local r = dass.agents.execute({
+				messages = {
 				  { role = "system", content = "You can use tools." },
 				  { role = "user", content = "What is 2+2?" }
 				},
-				{
-				  model = "openrouter$google/gemini-3.5-flash",
-				  tools = { "calculate" }
-				}
-			  )
+				model = "openrouter$google/gemini-3.5-flash",
+				tools = { "math-calculate" }
+			  })
 
 			  -- Multi-turn with tools
 			  local r = dass.agents.execute({
-				{ role = "system", content = "You can use web-search." },
-				{ role = "user", content = "Search for latest news about AI" }
+				messages = {
+				  { role = "system", content = "You can use web-search." },
+				  { role = "user", content = "Search for latest news about AI" }
+				}
 			  })
 			  for _, msg in ipairs(r) do
 				if msg.role == "assistant" then
@@ -117,21 +116,21 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  end
 
 			  -- Attachments with image description
-			  local r = dass.agents.execute(
-				{
+			  local r = dass.agents.execute({
+				messages = {
 				  { role = "system", content = "You are image description assistant." },
 				  { role = "user", content = "Describe this image.", attachments = { image.load("image.png") } }
 				},
-				{
-				  model = "openrouter$google/gemini-3.5-flash" -- Use a vision model
-				}
-			  )
+				model = "openrouter$google/gemini-3.5-flash" -- Use a vision model
+			  })
 			  print(r[1].content)
 
 			  -- Safe execution with pcall
 			  local ok, result = pcall(dass.agents.execute, {
-				{ role = "system", content = "You are an expert." },
-				{ role = "user", content = "What is 2+2?" }
+			    messages = {
+				  { role = "system", content = "You are an expert." },
+				  { role = "user", content = "What is 2+2?" }
+				}
 			  })
 			  if ok then
 				print("Answer:", result[1].content)
@@ -146,7 +145,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  - All tools available in the current chat are exposed to the agent by default.
 			  - Image attachments can be applied via `image` API (see manuals for details).
 			  - Returns the full conversation history produced by the agent,
-				including all intermediate tool calls and results.
+				including all intermediate tool calls and their results.
 			""";
 
 		private readonly Chat _chat;
@@ -168,16 +167,77 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private DynValue Execute(ScriptExecutionContext ctx, CallbackArguments args)
 		{
 			if (args.Count < 1)
-				throw new ScriptRuntimeException("dass.agents.execute(messages, [params]): at least 1 argument expected.");
-			var messagesArg = args[0];
-			if (messagesArg.Type != DataType.Table)
-				throw new ScriptRuntimeException("dass.agents.execute(): first argument must be a table.");
-			var optionsArg = args[1];
+				throw new ScriptRuntimeException("dass.agents.execute(properties...): at least 1 argument expected.");
+			for (int i = 0; i < args.Count; i++)
+				if (args[i].Type != DataType.Table)
+					throw new ScriptRuntimeException("dass.agents.execute(): all arguments must be tables.");
+
 			var script = ctx.GetScript();
-			if (args.Count < 2 || optionsArg.Type == DataType.Nil)
-				optionsArg = DynValue.NewTable(script);
-			if (args.Count > 1 && optionsArg.Type != DataType.Table)
-				throw new ScriptRuntimeException("dass.agents.execute(): second argument must be a table if provided.");
+			
+			List<Func<Task<DynValue>>> executionFunctions = [];
+			List<Exception?> exceptions = [];
+
+			for (int i = 0; i < args.Count; i++)
+			{
+				var arg = args[i].Table;
+				try
+				{
+					var executionFunction = PrepareExecutionFunction(script, arg);
+					executionFunctions.Add(executionFunction);
+					exceptions.Add(null);
+				}
+				catch (Exception ex)
+				{
+					exceptions.Add(ex);
+				}
+			}
+
+			var nonNullExceptions = exceptions.Where(ex => ex != null).ToList();
+			if (nonNullExceptions.Count > 0)
+				throw new ScriptRuntimeException($"dass.agents.execute(): {string.Join(", ", nonNullExceptions.Select(e => e!.Message))}");
+
+			var tasks = executionFunctions.Select(f => f()).ToList();
+
+			if (tasks.Count == 1)
+			{
+				try
+				{
+					var task = tasks[0];
+					task.Wait();
+					return task.Result;
+				}
+				catch (Exception ex)
+				{
+					throw new ScriptRuntimeException($"dass.agents.execute(): {ex.Message}");
+				}
+			}
+			else
+			{
+				try
+				{
+					var result = new Table(script);
+
+					for (int i = 0; i < tasks.Count; i++)
+					{
+						var task = tasks[i];
+						tasks[0].Wait();
+						result.Append(task.Result);
+					}
+
+					return DynValue.NewTable(result);
+				}
+				catch (Exception ex)
+				{
+					throw new ScriptRuntimeException($"dass.agents.execute(): {ex.Message}");
+				}
+			}
+		}
+
+		private Func<Task<DynValue>> PrepareExecutionFunction(Script script, Table parameters)
+		{
+			var messagesArg = parameters.Get("messages");
+			if (messagesArg.Type != DataType.Table)
+				throw new Exception("'messages' must be a table.");
 
 			var messagesTable = messagesArg.Table;
 			var systemMessageBuilder = new StringBuilder();
@@ -187,7 +247,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			{
 				var _messageTable = messagesTable.Get(i);
 				if (_messageTable.Type != DataType.Table)
-					throw new ScriptRuntimeException("dass.agents.execute(): each message must be a table.");
+					throw new Exception("each message must be a table.");
 				var messageTable = _messageTable.Table;
 				var message = ConvertMessageFromLua(messageTable);
 				if (message is ISystemMessage systemMessage)
@@ -197,7 +257,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 
 			if (messages.Count == 0 || messages[^1] is not RCLargeLanguageModels.Messages.IUserMessage)
-				throw new ScriptRuntimeException("dass.agents.execute(): last message must be an user message.");
+				throw new Exception("last message must be an user message.");
 
 			var memory = new SlidingChatMemory
 			{
@@ -206,29 +266,26 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				Messages = messages.Take(messages.Count - 1).ToList(),
 			};
 
-			// --- Parse options ---
-			var optionsTable = optionsArg.Table;
-
 			// Resolve model
 			LLModelDescriptor? model;
-			var modelName = optionsTable.Get("model")?.CastToString();
+			var modelName = parameters.Get("model")?.CastToString();
 			if (!string.IsNullOrEmpty(modelName))
 			{
 				var tracked = _modelList.Registry.GetModel(modelName);
 				model = tracked?.Current;
 				if (model is null)
-					throw new ScriptRuntimeException($"dass.agents.execute(): model '{modelName}' not found.");
+					throw new Exception($"model '{modelName}' not found.");
 			}
 			else
 			{
 				model = _chat.Settings.Models.AgenticToolsModel.Current;
 				if (model is null)
-					throw new ScriptRuntimeException("dass.agents.execute(): agentic model is not available.");
+					throw new Exception("agentic model is not available.");
 			}
 
 			// Resolve tool filter
 			HashSet<string>? toolFilter = null;
-			var toolsOption = optionsTable.Get("tools");
+			var toolsOption = parameters.Get("tools");
 			if (toolsOption.Type == DataType.Table)
 			{
 				toolFilter = new HashSet<string>();
@@ -277,28 +334,26 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			var userMessage = (RCLargeLanguageModels.Messages.IUserMessage)messages[^1];
 
-			var reseivedMessages = new List<IMessage>();
-			toolExecutor.MessageReceived += (_, msg) =>
+			async Task<DynValue> ExecuteAgent()
 			{
-				if (msg != userMessage)
-					reseivedMessages.Add(msg);
-			};
-			try
-			{
-				toolExecutor.GenerateResponseAsync(userMessage).Wait();
+				var reseivedMessages = new List<IMessage>();
+				toolExecutor.MessageReceived += (_, msg) =>
+				{
+					if (msg != userMessage)
+						reseivedMessages.Add(msg);
+				};
+				await toolExecutor.GenerateResponseAsync(userMessage);
+
+				var resultTable = new Table(script);
+
+				int im = 1;
+				foreach (var message in reseivedMessages)
+					resultTable.Set(im++, ConvertMessageToLua(message, script));
+
+				return DynValue.NewTable(resultTable);
 			}
-			catch (Exception ex)
-			{
-				throw new ScriptRuntimeException("dass.agents.execute(): " + ex.Message);
-			}
 
-			var resultTable = new Table(script);
-
-			int im = 1;
-			foreach (var message in reseivedMessages)
-				resultTable.Set(im++, ConvertMessageToLua(message, script));
-
-			return DynValue.NewTable(resultTable);
+			return ExecuteAgent;
 		}
 
 		private static IMessage ConvertMessageFromLua(Table messageTable)
