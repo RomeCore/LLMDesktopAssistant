@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,6 +18,11 @@ namespace LLMDesktopAssistant.Utils
 		/// The root directory of the application data, typically located at %LOCALAPPDATA%\LLMDesktopAssistant.
 		/// </summary>
 		public static string LocalAppData { get; }
+
+		/// <summary>
+		/// The path where to store the temporary files for the application. They will be cleared upon application exit.
+		/// </summary>
+		public static string TempFiles { get; }
 
 		/// <summary>
 		/// The path where to store lua scripts to be loaded into the Lua runtime at chat loading.
@@ -77,6 +82,7 @@ namespace LLMDesktopAssistant.Utils
 		static Directories()
 		{
 			LocalAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LLMDesktopAssistant");
+			TempFiles = Path.Combine(LocalAppData, "temp/");
 			LuaScripts = Path.Combine(LocalAppData, "scripts/lua/");
 			TempScripts = Path.Combine(LocalAppData, "temp/scripts/");
 			Plugins = Path.Combine(LocalAppData, "plugins/");
@@ -93,6 +99,7 @@ namespace LLMDesktopAssistant.Utils
 		public static void EnsureAll()
 		{
 			Directory.CreateDirectory(LocalAppData);
+			Directory.CreateDirectory(TempFiles);
 			Directory.CreateDirectory(LuaScripts);
 			Directory.CreateDirectory(TempScripts);
 			Directory.CreateDirectory(Plugins);
@@ -104,6 +111,30 @@ namespace LLMDesktopAssistant.Utils
 			Directory.CreateDirectory(Models);
 			Directory.CreateDirectory(DefaultWorkingDirectory);
 			Directory.CreateDirectory(LogFiles);
+		}
+
+		public static void ClearTempFiles()
+		{
+			try
+			{
+				if (Directory.Exists(TempFiles))
+				{
+					Directory.Delete(TempFiles, recursive: true);
+				}
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Cannot clear temp files: {ex.Message}");
+			}
+			catch (IOException ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Cannot clear temp files (file in use?): {ex.Message}");
+			}
+			finally
+			{
+				Directory.CreateDirectory(TempFiles);
+				Directory.CreateDirectory(TempScripts);
+			}
 		}
 	}
 }

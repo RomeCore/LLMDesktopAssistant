@@ -1,6 +1,10 @@
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
@@ -8,9 +12,6 @@ using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Utils;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.Attachments
 {
@@ -167,6 +168,24 @@ namespace LLMDesktopAssistant.LLM.Attachments
 			if (args.DataTransfer.TryGetText() is string text)
 			{
 				var draft = new AttachmentDraftViewModel(this, new Uri(text));
+				_drafts.Add(draft);
+			}
+		}
+
+		public async void AcceptImage(Bitmap image)
+		{
+			var pathToSave = Path.Combine(Directories.TempFiles, $"cp_{Guid.NewGuid()}.png");
+			image.Save(pathToSave);
+
+			var draft = new AttachmentDraftViewModel(this, new Uri("file:///" + pathToSave, UriKind.Absolute));
+			_drafts.Add(draft);
+		}
+
+		public async void AcceptFiles(IStorageItem[] files)
+		{
+			foreach (var file in files)
+			{
+				var draft = new AttachmentDraftViewModel(this, file.Path);
 				_drafts.Add(draft);
 			}
 		}

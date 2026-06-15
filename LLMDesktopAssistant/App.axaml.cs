@@ -28,6 +28,7 @@ namespace LLMDesktopAssistant
 
 		public override void Initialize()
 		{
+			Directories.ClearTempFiles();
 			Directories.EnsureAll();
 
 			var loggerConfig = new LoggerConfiguration()
@@ -55,8 +56,6 @@ namespace LLMDesktopAssistant
 		{
 			if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
 			{
-				DisableAvaloniaDataAnnotationValidation();
-
 				MainWindow = new MainWindow
 				{
 					DataContext = new MainViewModel()
@@ -76,21 +75,6 @@ namespace LLMDesktopAssistant
 			}
 
 			base.OnFrameworkInitializationCompleted();
-		}
-
-		private void DisableAvaloniaDataAnnotationValidation()
-		{
-			// TODO: Remove comments
-
-			/*// Get an array of plugins to remove
-			var dataValidationPluginsToRemove =
-				BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
-
-			// remove each entry found
-			foreach (var plugin in dataValidationPluginsToRemove)
-			{
-				BindingPlugins.DataValidators.Remove(plugin);
-			}*/
 		}
 	}
 }

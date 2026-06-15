@@ -11,6 +11,8 @@ using LLMDesktopAssistant.LLM.Services;
 using Serilog;
 using LLMDesktopAssistant.WebUI;
 using LLMDesktopAssistant.Controls.Dialogs;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -348,6 +350,20 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		{
 			var viewModel = new AttachmentsManagerViewModel(this);
 			viewModel.AcceptDrop(args);
+			await DialogManager.ShowDialogAsync(viewModel);
+		}
+
+		public async Task AcceptImageAsync(Bitmap image)
+		{
+			var viewModel = new AttachmentsManagerViewModel(this);
+			viewModel.AcceptImage(image);
+			await DialogManager.ShowDialogAsync(viewModel);
+		}
+
+		public async Task AcceptFilesAsync(IStorageItem[] files)
+		{
+			var viewModel = new AttachmentsManagerViewModel(this);
+			viewModel.AcceptFiles(files);
 			await DialogManager.ShowDialogAsync(viewModel);
 		}
 

@@ -11,9 +11,9 @@
 			 x:DataType="local:UserMessageViewModel">
 
 	<StackPanel Orientation="Vertical"
-				VerticalAlignment="Top"
-				Margin="40,8"
-				Spacing="4">
+							VerticalAlignment="Top"
+							Margin="40,8"
+							Spacing="4">
 		
 		<StackPanel Orientation="Horizontal"
 								HorizontalAlignment="Right"
@@ -41,12 +41,12 @@
 		</StackPanel>
 
 		<Border Grid.Column="1"
-				HorizontalAlignment="Right"
-				VerticalAlignment="Top"
-				Padding="12,8"
-				Background="{DynamicResource MessageBackground}"
-				CornerRadius="16 16 4 16"
-				MaxWidth="500">
+						HorizontalAlignment="Right"
+						VerticalAlignment="Top"
+						Padding="12,8"
+						Background="{DynamicResource MessageBackground}"
+						CornerRadius="16 16 4 16"
+						MaxWidth="500">
 
 			<StackPanel>
 
@@ -58,8 +58,8 @@
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
-							<Label Content="{Binding Title}"
-								   Padding="2"/>
+							<TextBlock Text="{Binding Title}"
+												 Padding="2"/>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
