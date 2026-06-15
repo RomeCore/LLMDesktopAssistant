@@ -12,7 +12,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Lua API for HTTP requests: <c>web.request(method, url, params)</c>.
 	/// Registered in the same <c>web</c> namespace as <c>web.search()</c>.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiWebRequest : LuaApiBase
 	{
 		private readonly HttpClient _httpClient, _pureHttpClient;

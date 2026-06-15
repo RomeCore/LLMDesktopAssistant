@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.Json.Nodes;
+using LLTSharp;
+using LLTSharp.DataAccessors;
 using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting
 {
-	public static class JsonLuaConverter
+	public static class StructuredLuaConverter
 	{
 		/// <summary>
 		/// Converts a JsonNode to a DynValue for use in Lua scripts.
@@ -95,6 +97,49 @@ namespace LLMDesktopAssistant.Scripting
 
 				default:
 					return null;
+			}
+		}
+
+		public static TemplateDataAccessor DynValueToLLTSharp(DynValue value)
+		{
+			switch (value.Type)
+			{
+				case DataType.Nil:
+				case DataType.Void:
+					return TemplateNullAccessor.Instance;
+
+				case DataType.Boolean:
+					return new TemplateBooleanAccessor(value.Boolean);
+
+				case DataType.Number:
+					return new TemplateNumberAccessor(value.Number);
+
+				case DataType.String:
+					return new TemplateStringAccessor(value.String);
+
+				case DataType.Table:
+					var table = value.Table;
+					if (IsArray(table))
+					{
+						var arr = new List<TemplateDataAccessor>();
+						for (int i = 1; i <= table.Length; i++)
+							arr.Add(DynValueToLLTSharp(table.Get(i)));
+						return new TemplateArrayAccessor(arr);
+					}
+					else
+					{
+						var obj = new Dictionary<string, TemplateDataAccessor>();
+						foreach (var kvp in table.Pairs)
+						{
+							string? key = KeyToString(kvp.Key);
+							if (key != null)
+								obj[key] = DynValueToLLTSharp(kvp.Value);
+						}
+						return new TemplateDictionaryAccessor(obj);
+					}
+
+				default:
+					return TemplateNullAccessor.Instance;
 			}
 		}
 

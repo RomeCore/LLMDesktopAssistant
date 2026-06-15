@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Adds expression evaluation, variable binding, complex numbers,
 	/// numerical integration, differentiation, and equation solving.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiMath : LuaApiBase
 	{
 		public override string? Namespace => "math";

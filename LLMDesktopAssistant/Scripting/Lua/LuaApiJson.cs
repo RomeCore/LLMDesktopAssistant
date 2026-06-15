@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Registered in the global namespace as "json".
 	/// Uses System.Text.Json.Nodes for both encoding and decoding.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiJson : LuaApiBase
 	{
 		public override string? Namespace => "json";
@@ -128,7 +128,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					throw new ScriptRuntimeException($"json.decode(str): expected a string, got {jsonStr.Type}.");
 
 				var node = JsonNode.Parse(jsonStr.String);
-				return JsonLuaConverter.JsonNodeToDynValue(ctx.GetScript(), node);
+				return StructuredLuaConverter.JsonNodeToDynValue(ctx.GetScript(), node);
 			}
 			catch (ScriptRuntimeException)
 			{
@@ -152,7 +152,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					throw new ScriptRuntimeException($"json.decode_tolerant(str): expected a string, got {jsonStr.Type}.");
 
 				var node = TolerantJsonParser.Parse(jsonStr.String);
-				return JsonLuaConverter.JsonNodeToDynValue(ctx.GetScript(), node);
+				return StructuredLuaConverter.JsonNodeToDynValue(ctx.GetScript(), node);
 			}
 			catch (ScriptRuntimeException)
 			{
@@ -176,7 +176,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					indented = true;
 
 				var value = args[0];
-				var node = JsonLuaConverter.DynValueToJsonNode(value);
+				var node = StructuredLuaConverter.DynValueToJsonNode(value);
 				var options = indented ? _indentedSerializationOptions : _serializationOptions;
 				string s = node?.ToJsonString(options) ?? "null";
 				return DynValue.NewString(s);

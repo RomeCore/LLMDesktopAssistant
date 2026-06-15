@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Registered in the global <c>web</c> namespace, not under <c>dass</c>.
 	/// Returns structured result tables instead of formatted text.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiWebSearch : LuaApiBase
 	{
 		private readonly SearchEngineManager _searchManager;

@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Lua API with extended string utilities: <c>string.*</c>.
 	/// Supplements the built-in string library with commonly needed functions.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiString : LuaApiBase
 	{
 		public override string? Namespace => "string";

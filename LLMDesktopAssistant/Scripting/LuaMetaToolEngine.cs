@@ -135,12 +135,12 @@ namespace LLMDesktopAssistant.Scripting
 					{
 						var scriptResult = _luaService.Execute(tool.ExecutionCode, print => reactiveResult.ResultContentLines.Add(print), g =>
 						{
-							g["tool_args"] = JsonLuaConverter.JsonNodeToDynValue(g.OwnerScript, args);
+							g["tool_args"] = StructuredLuaConverter.JsonNodeToDynValue(g.OwnerScript, args);
 							g["_dass_tool_ctx"] = UserData.Create(context);
 							g["_dass_tool_result"] = UserData.Create(reactiveResult);
 						});
 						if (reactiveResult.StructuredResult == null)
-							reactiveResult.StructuredResult = JsonLuaConverter.DynValueToJsonNode(scriptResult);
+							reactiveResult.StructuredResult = StructuredLuaConverter.DynValueToJsonNode(scriptResult);
 						reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToPrintString());
 						reactiveResult.CompleteWithSuccess();
 					}

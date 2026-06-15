@@ -4,7 +4,7 @@ using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	[ChatService(typeof(LuaApiBase))]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiModels : LuaApiBase
 	{
 		public override string? Namespace => "dass.models";

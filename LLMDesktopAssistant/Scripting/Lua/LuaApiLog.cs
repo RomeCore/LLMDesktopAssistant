@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Lua API for structured logging via Serilog: <c>dass.log.*</c>.
 	/// Supports all Serilog levels with template-based message formatting.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiLog : LuaApiBase
 	{
 		private readonly ILogger _logger;

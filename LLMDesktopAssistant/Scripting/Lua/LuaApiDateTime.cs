@@ -9,7 +9,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// <summary>
 	/// Lua API for date and time operations: <c>datetime.*</c>.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiDateTime : LuaApiBase
 	{
 		public override string? Namespace => "datetime";

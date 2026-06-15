@@ -3,7 +3,7 @@ using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiManuals : LuaApiBase
 	{
 		public override string? Namespace => null;

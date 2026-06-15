@@ -12,7 +12,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Lua API for filesystem operations: <c>fs.*</c>.
 	/// All paths are resolved relative to the chat's working directory.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: true)]
 	public class LuaApiFileSystem : LuaApiBase
 	{
 		public override string? Namespace => "fs";

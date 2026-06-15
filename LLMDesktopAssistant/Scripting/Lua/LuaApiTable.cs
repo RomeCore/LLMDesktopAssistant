@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Lua API with extended table utilities: <c>table.*</c>.
 	/// Supplements the built-in table library with commonly needed functions.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiTable : LuaApiBase
 	{
 		public override string? Namespace => "table";

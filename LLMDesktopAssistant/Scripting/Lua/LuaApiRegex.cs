@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Lua API for regular expressions: <c>regex.*</c>.
 	/// Registered in the global namespace.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiRegex : LuaApiBase
 	{
 		public override string? Namespace => "regex";

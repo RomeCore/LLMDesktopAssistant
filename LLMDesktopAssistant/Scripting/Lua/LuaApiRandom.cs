@@ -9,7 +9,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Lua API for random number generation and sampling: <c>random.*</c>.
 	/// Registered in the global namespace as "random".
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiRandom : LuaApiBase
 	{
 		public override string? Namespace => "random";

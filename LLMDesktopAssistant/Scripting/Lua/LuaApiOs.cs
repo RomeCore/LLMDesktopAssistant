@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Lua API for operating system information: <c>os.*</c>.
 	/// Provides platform info, environment, and sleep.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiOs : LuaApiBase
 	{
 		public override string? Namespace => "os";

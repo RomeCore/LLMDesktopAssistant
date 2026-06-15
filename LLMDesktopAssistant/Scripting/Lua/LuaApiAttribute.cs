@@ -5,7 +5,11 @@
 	/// Class marked with this attribute is registered in the chat services using DI.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class LuaApiAttribute : Attribute
+	public sealed class LuaApiAttribute(bool chatScoped = true) : Attribute
 	{
+		/// <summary>
+		/// Gets a value indicating whether the API is scoped to chat.
+		/// </summary>
+		public bool ChatScoped { get; } = chatScoped;
 	}
 }

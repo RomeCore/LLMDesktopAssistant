@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Lua API for cryptography: <c>crypto.*</c>.
 	/// Provides hashing (MD5, SHA1, SHA256, SHA512), HMAC, Base64 and random hex.
 	/// </summary>
-	[LuaApi]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiCrypto : LuaApiBase
 	{
 		public override string? Namespace => "crypto";
