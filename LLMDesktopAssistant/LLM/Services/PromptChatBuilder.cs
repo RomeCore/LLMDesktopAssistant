@@ -46,7 +46,10 @@ namespace LLMDesktopAssistant.LLM.Services
 		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins
 		) : IPromptChatBuilder
 	{
-		private readonly TemplateFunctionSet functions = new(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
+		private TemplateFunctionSet GetTemplateFunctions()
+		{
+			return new(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
+		}
 
 		private ToolResultStatus ConvertToolStatus(ToolStatus status)
 		{
@@ -134,7 +137,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			return true;
 		}
 
-		private string BuildSystemPrompt(string? summaryOfPrevMessages, AgentDescriptor agent)
+		private string BuildSystemPrompt(string? summaryOfPrevMessages,
+			AgentDescriptor agent, TemplateFunctionSet functions)
 		{
 			var language = GetCurrentLanguageMetadata();
 			var template = templates.TryRetrieveBestAllWithFallback("system_prompt", language)?.LastOrDefault() as ITextTemplate;
@@ -173,7 +177,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			return template!.Render(generalContext, functions);
 		}
 
-		private RCLargeLanguageModels.Messages.UserMessage BuildUserMessage(BranchedMessage message)
+		private RCLargeLanguageModels.Messages.UserMessage BuildUserMessage(BranchedMessage message,
+			TemplateFunctionSet functions)
 		{
 			var userMessage = message.AsUserMessage();
 			var language = GetCurrentLanguageMetadata();
@@ -196,7 +201,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			return new RCLargeLanguageModels.Messages.UserMessage(userName, result, attachments!);
 		}
 
-		private RCLargeLanguageModels.Messages.UserMessage BuildUserMessageForAgent(BranchedMessage message, AgentDescriptor agent)
+		private RCLargeLanguageModels.Messages.UserMessage BuildUserMessageForAgent(BranchedMessage message,
+			AgentDescriptor agent, TemplateFunctionSet functions)
 		{
 			var userMessage = message.AsUserMessage();
 			var language = GetCurrentLanguageMetadata();
@@ -222,7 +228,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			return new RCLargeLanguageModels.Messages.UserMessage(userName, result, attachments);
 		}
 
-		private RCLargeLanguageModels.Messages.UserMessage BuildForeignAgentMessageText(BranchedMessage message, AgentDescriptor agent)
+		private RCLargeLanguageModels.Messages.UserMessage BuildForeignAgentMessageText(BranchedMessage message,
+			AgentDescriptor agent, TemplateFunctionSet functions)
 		{
 			var assistantMessage = message.AsAssistantMessage();
 			var senderDescriptor = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
@@ -299,14 +306,15 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		public IEnumerable<IMessage> ConvertMessageForAgent(BranchedMessage message, AgentDescriptor agent)
+		private IEnumerable<IMessage> ConvertMessageForAgent(BranchedMessage message,
+			AgentDescriptor agent, TemplateFunctionSet functions)
 		{
 			if (message.Message is Domain.UserMessage)
 			{
 				if (!IsUserMessageVisibleToAgent(message, agent))
 					return [];
 
-				return [BuildUserMessageForAgent(message, agent)];
+				return [BuildUserMessageForAgent(message, agent, functions)];
 			}
 			else if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
@@ -318,7 +326,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					return BuildOwnAssistantMessageAsMessages(assistantMessage);
 
 				// Foreign assistant message — merged as quoted user message
-				return [BuildForeignAgentMessageText(message, agent)];
+				return [BuildForeignAgentMessageText(message, agent, functions)];
 			}
 			else if (message.Message is RawUserMessage rawUserMessage)
 			{
@@ -334,9 +342,11 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public string RenderMessage(BranchedMessage message)
 		{
+			var functions = GetTemplateFunctions();
+
 			if (message.Message is Domain.UserMessage userMessage)
 			{
-				return BuildUserMessage(userMessage).Content;
+				return BuildUserMessage(userMessage, functions).Content;
 			}
 
 			if (message.Message is Domain.AssistantMessage assistantMessage)
@@ -347,7 +357,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					{
 						ReadPermissions = (AgentReadPermissions)0x7fffffff
 					}
-				}).Content;
+				}, functions).Content;
 			}
 
 			throw new InvalidOperationException($"Unsupported message type: {message.GetType()}.");
@@ -384,9 +394,11 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// </summary>
 		public IEnumerable<IMessage> ConvertMessage(BranchedMessage message)
 		{
+			var functions = GetTemplateFunctions();
+
 			if (message.Message is Domain.UserMessage userMessage)
 			{
-				return [BuildUserMessage(userMessage)];
+				return [BuildUserMessage(userMessage, functions)];
 			}
 			else if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
@@ -405,6 +417,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			var injectors = promptInjectors.OrderBy(i => i.Order).ToList();
 			var hooks = promptBuildingHooks.OrderBy(h => h.Order).ToList();
+
+			var functions = GetTemplateFunctions();
 
 			var messagesToProcess = MessagesInterface
 				.GroupMessagesIntoRounds(chat.Messages, maxRounds)
@@ -453,7 +467,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					encounteredUserMessage = true;
 					if (summaryOfPrevMessages != null)
 					{
-						var messages = ConvertMessageForAgent(branchedMessage, agent);
+						var messages = ConvertMessageForAgent(branchedMessage, agent, functions);
 						foreach (var hook in hooks)
 						{
 							var editedMessages = hook.ModifyFinalContext(messages, branchedMessage, agent);
@@ -476,7 +490,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				if (summaryOfPrevMessages == null)
 				{
-					var messages = ConvertMessageForAgent(branchedMessage, agent);
+					var messages = ConvertMessageForAgent(branchedMessage, agent, functions);
 					foreach (var hook in hooks)
 					{
 						var editedMessages = hook.ModifyFinalContext(messages, branchedMessage, agent);
@@ -487,7 +501,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				}
 			}
 
-			string systemPrompt = BuildSystemPrompt(summaryOfPrevMessages, agent);
+			string systemPrompt = BuildSystemPrompt(summaryOfPrevMessages, agent, functions);
 			result.Insert(0, new SystemMessage(systemPrompt));
 
 			/*var array = new JsonArray();
