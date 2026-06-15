@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Describes an agent execution conditions settings.
 	/// </summary>
-	public class AgentExecutionConditionsSettings : NotifyPropertyChanged
+	public class AgentExecutionConditionsSettings : AgentSettingsCategoryBase
 	{
 		private bool _canBeMentioned = true;
 		/// <summary>

@@ -4,7 +4,7 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
-	public class ChatAgentSettings : NotifyPropertyChanged
+	public class ChatAgentSettings : ChatSettingsCategoryBase
 	{
 		private RangeObservableCollection<AgentDescriptor> _agents = [];
 		/// <summary>

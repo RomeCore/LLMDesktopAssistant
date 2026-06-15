@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.Agents
 	/// Describes an agent prompt settings.
 	/// Contains the system prompt, nickname, persona, specialization and other settings.
 	/// </summary>
-	public class AgentPromptSettings : NotifyPropertyChanged
+	public class AgentPromptSettings : AgentSettingsCategoryBase
 	{
 		private string? _systemPrompt;
 		/// <summary>

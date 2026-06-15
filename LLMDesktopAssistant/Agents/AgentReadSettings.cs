@@ -5,7 +5,7 @@ namespace LLMDesktopAssistant.Agents
 	/// <summary>
 	/// Describes an agent's reading settings.
 	/// </summary>
-	public class AgentReadSettings : NotifyPropertyChanged
+	public class AgentReadSettings : AgentSettingsCategoryBase
 	{
 		private AgentReadPermissions _readPermissions =
 			AgentReadPermissions.UserMessages |

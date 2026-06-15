@@ -6,7 +6,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// <summary>
 	/// Settings for MCP (Model Context Protocol) servers.
 	/// </summary>
-	public class ChatMcpSettings : NotifyPropertyChanged
+	public class ChatMcpSettings : ChatSettingsCategoryBase
 	{
 		private bool _enableMcp = true;
 		/// <summary>

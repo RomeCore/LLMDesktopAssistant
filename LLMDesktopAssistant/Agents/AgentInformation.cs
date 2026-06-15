@@ -1,6 +1,6 @@
 namespace LLMDesktopAssistant.Agents
 {
-	public class AgentInformation : NotifyPropertyChanged
+	public class AgentInformation : AgentSettingsCategoryBase
 	{
 		private string _name = string.Empty;
 		/// <summary>

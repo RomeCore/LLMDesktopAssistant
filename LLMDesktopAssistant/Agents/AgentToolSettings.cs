@@ -9,7 +9,7 @@ namespace LLMDesktopAssistant.Agents
 	/// Describes an agent tool settings.
 	/// Contains the list of tools that can be used by the agent.
 	/// </summary>
-	public class AgentToolSettings : NotifyPropertyChanged
+	public class AgentToolSettings : AgentSettingsCategoryBase
 	{
 		private bool _enableTools = true;
 		/// <summary>

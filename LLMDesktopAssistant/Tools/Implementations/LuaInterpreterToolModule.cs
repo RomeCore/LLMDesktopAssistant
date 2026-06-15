@@ -1,10 +1,7 @@
-﻿using System.Text;
-using LLMDesktopAssistant.Localization;
+﻿using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Scripting;
-using LLMDesktopAssistant.Tools;
 using Material.Icons;
 using MoonSharp.Interpreter;
-using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -21,7 +18,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				new ToolInitializationInfo
 				{
 					Name = "lua-execute",
-					Description = $"""
+					DescriptionGetter = () => $"""
 						Executes Lua and returns the script result along with messages printed by 'print' function.
 						
 						Lua has the API to interact with the application (called dASS) with these namespaces:

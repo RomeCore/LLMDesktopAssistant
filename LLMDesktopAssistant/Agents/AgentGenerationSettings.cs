@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.Agents
 	/// <summary>
 	/// Describes an agent's generation settings.
 	/// </summary>
-	public class AgentGenerationSettings : NotifyPropertyChanged
+	public class AgentGenerationSettings : AgentSettingsCategoryBase
 	{
 		private bool _enableCustomModel = false;
 		/// <summary>

@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// <summary>
 	/// Environment and working directory settings.
 	/// </summary>
-	public class ChatEnvironmentSettings : NotifyPropertyChanged
+	public class ChatEnvironmentSettings : ChatSettingsCategoryBase
 	{
 		private string? _workingDirectory;
 		/// <summary>

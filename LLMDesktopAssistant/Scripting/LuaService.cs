@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Xml.Linq;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting.Lua;
 using MoonSharp.Interpreter;
@@ -12,6 +13,7 @@ namespace LLMDesktopAssistant.Scripting
 		private readonly Script _lua;
 		private readonly List<string?> _namespaces;
 		private readonly Table _globalTableSnapshot;
+		private readonly List<string?> _namespacesSnapshot;
 		private readonly ILuaUserScriptManager _scriptManager;
 
 		/// <summary>
@@ -40,6 +42,7 @@ namespace LLMDesktopAssistant.Scripting
 				RegisterApi(api);
 
 			_globalTableSnapshot = _lua.Globals.DeepClone();
+			_namespacesSnapshot = [.. _namespaces];
 			RefreshUserScripts();
 
 			_scriptManager.ScriptsChanged += (s, e) =>
@@ -75,6 +78,8 @@ namespace LLMDesktopAssistant.Scripting
 				var value = kvp.Value;
 				_lua.Globals.Set(key, value);
 			}
+			_namespaces.Clear();
+			_namespaces.AddRange(_namespacesSnapshot);
 		}
 
 		private void RefreshUserScripts()

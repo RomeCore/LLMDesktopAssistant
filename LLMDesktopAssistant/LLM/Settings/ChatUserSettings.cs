@@ -4,7 +4,7 @@ using LLMDesktopAssistant.WebUI;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
-	public class ChatUserSettings : SettingsObject
+	public class ChatUserSettings : ChatSettingsCategoryBase
 	{
 		private readonly RangeObservableCollection<UserInformation> _users = [ new UserInformation
 		{

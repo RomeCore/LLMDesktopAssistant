@@ -8,7 +8,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// <summary>
 	/// Settings related to language models used in chat.
 	/// </summary>
-	public class ChatModelSettings : NotifyPropertyChanged
+	public class ChatModelSettings : ChatSettingsCategoryBase
 	{
 		private LLModelDescriptorTracked _chatModel = LLModelDescriptorTracked.Empty;
 		/// <summary>

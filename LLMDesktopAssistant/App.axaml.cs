@@ -1,12 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
-using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using LiveMarkdown.Avalonia;
-using LLMDesktopAssistant;
-using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using Serilog;

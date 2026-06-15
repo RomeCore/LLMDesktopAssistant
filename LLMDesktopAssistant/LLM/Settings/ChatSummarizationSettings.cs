@@ -6,7 +6,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// <summary>
 	/// Settings for conversation auto-summarization.
 	/// </summary>
-	public class ChatSummarizationSettings : NotifyPropertyChanged
+	public class ChatSummarizationSettings : ChatSettingsCategoryBase
 	{
 		private bool _summarizationEnabled = true;
 		/// <summary>

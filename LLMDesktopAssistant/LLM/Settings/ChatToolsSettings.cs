@@ -9,7 +9,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// <summary>
 	/// The settings that related to tools implementations in the chat application.
 	/// </summary>
-	public class ChatToolsSettings : NotifyPropertyChanged
+	public class ChatToolsSettings : ChatSettingsCategoryBase
 	{
 		private bool _enableTools = true;
 		/// <summary>
