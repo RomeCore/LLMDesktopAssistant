@@ -1,10 +1,14 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
-using Avalonia.Markup.Xaml;
+using Avalonia.Interactivity;
 using LiveMarkdown.Avalonia;
-using LLMDesktopAssistant.Markdown;
-using UglyToad.PdfPig.Graphics.Operations.TextObjects;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM;
+using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Controls;
 
@@ -42,6 +46,9 @@ public partial class MarkdownControl : UserControl
 	{
 		InitializeComponent();
 
+		MarkdownRenderer.LinkClick += MarkdownRenderer_LinkClick;
+		MarkdownRenderer.ImageBasePath = null;
+		MarkdownRenderer.CodeBlockColorTheme = TextMateSharp.Grammars.ThemeName.Monokai;
 		MarkdownRenderer.MarkdownBuilder = _markdownBuilder;
 	}
 
@@ -64,5 +71,73 @@ public partial class MarkdownControl : UserControl
 			if (!string.IsNullOrEmpty(delta))
 				_markdownBuilder.Append(delta);
 		}
+	}
+
+	private void MarkdownRenderer_LinkClick(object? sender, LinkClickedEventArgs e)
+	{
+		if (e.HRef != null)
+		{
+			ServiceRegistry.Provider.GetService<ILinkOpener>()?.OpenLink(e.HRef);
+		}
+	}
+
+	// The pizdec
+
+	protected override void OnLoaded(RoutedEventArgs e)
+	{
+		base.OnLoaded(e);
+
+		var chatView = this.FindParent<ChatView>();
+		var chatViewModel = chatView?.DataContext as ChatViewModel;
+		var chat = chatViewModel?.Chat;
+
+		chat?.PropertyChanged += Chat_PropertyChanged;
+		MarkdownRenderer.ImageBasePath = chat?.Settings?.Environment?.GetWorkingDirectory();
+	}
+
+	private WeakReference<ChatSettings>? _chatSettingsWeakRef;
+	private WeakReference<ChatEnvironmentSettings>? _envSettingsWeakRef;
+
+	private void Chat_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName != nameof(Chat.Settings))
+			return;
+
+		if (_chatSettingsWeakRef?.TryGetTarget(out var oldChatSettings) ?? false)
+			oldChatSettings.PropertyChanged -= ChatSettings_PropertyChanged;
+		var chat = (Chat)sender!;
+		_chatSettingsWeakRef = null;
+		if (chat.Settings != null)
+		{
+			_chatSettingsWeakRef = new(chat.Settings);
+			chat.Settings.PropertyChanged += ChatSettings_PropertyChanged;
+		}
+		MarkdownRenderer.ImageBasePath = chat?.Settings?.Environment?.GetWorkingDirectory();
+	}
+
+	private void ChatSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName != nameof(ChatSettings.Environment))
+			return;
+
+		if (_envSettingsWeakRef?.TryGetTarget(out var oldEnvSettings) ?? false)
+			oldEnvSettings.PropertyChanged -= EnvSettings_PropertyChanged;
+		var chatSettings = (ChatSettings)sender!;
+		_envSettingsWeakRef = null;
+		if (chatSettings.Environment != null)
+		{
+			_envSettingsWeakRef = new(chatSettings.Environment);
+			chatSettings.Environment.PropertyChanged += EnvSettings_PropertyChanged;
+		}
+		MarkdownRenderer.ImageBasePath = chatSettings.Environment?.GetWorkingDirectory();
+	}
+
+	private void EnvSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName != nameof(ChatEnvironmentSettings.WorkingDirectory))
+			return;
+
+		var envSettings = (ChatEnvironmentSettings)sender!;
+		MarkdownRenderer.ImageBasePath = envSettings.GetWorkingDirectory();
 	}
 }
