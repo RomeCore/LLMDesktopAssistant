@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			services.AddSingleton(Log.Logger);
 
-			services.AddSingleton(PromptRegistry.SharedLibrary);
+			services.AddSingleton(sp => sp.GetRequiredService<IPromptRegistry>().SharedLibrary);
 			services.AddSingleton<IChatManagementService, ChatManagementService>();
 			services.AddSingleton<IDocumentReadingService, DocumentReadingService>();
 			services.AddSingleton<IMessageTokenSerializationSchema>(MessageTokenSerializationSchema.Default);

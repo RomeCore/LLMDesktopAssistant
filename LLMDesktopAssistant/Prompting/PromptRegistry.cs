@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
@@ -19,51 +20,52 @@ using Serilog;
 
 namespace LLMDesktopAssistant.Prompting
 {
-	public static class PromptRegistry
+	[Service(typeof(IPromptRegistry))]
+	public class PromptRegistry : IPromptRegistry
 	{
-		public static TemplateLibrary SharedLibrary { get; } = new TemplateLibrary();
+		public TemplateLibrary SharedLibrary { get; } = new TemplateLibrary();
 
 		/// <summary>
 		/// Gets all built-in prompt components.
 		/// </summary>
-		public static ImmutableDictionary<(Guid, LanguageCode), PromptComponent> AllBuiltinComponents { get; }
+		public ImmutableDictionary<(Guid, LanguageCode), PromptComponent> AllBuiltinComponents { get; }
 
 		/// <summary>
 		/// Gets all built-in personas.
 		/// </summary>
-		public static ImmutableDictionary<(Guid, LanguageCode), Persona> AllBuiltinPersonas { get; }
+		public ImmutableDictionary<(Guid, LanguageCode), Persona> AllBuiltinPersonas { get; }
 
 		/// <summary>
 		/// Gets all built-in specializations.
 		/// </summary>
-		public static ImmutableDictionary<(Guid, LanguageCode), Specialization> AllBuiltinSpecializations { get; }
+		public ImmutableDictionary<(Guid, LanguageCode), Specialization> AllBuiltinSpecializations { get; }
 
 		/// <summary>
 		/// Gets all built-in behaviour sliders.
 		/// </summary>
-		public static ImmutableDictionary<(Guid, LanguageCode), BehaviourSlider> AllBuiltinSliders { get; }
+		public ImmutableDictionary<(Guid, LanguageCode), BehaviourSlider> AllBuiltinSliders { get; }
 
 		/// <summary>
 		/// Gets target built-in prompt components mapped by their unique identifier.
 		/// </summary>
-		public static ImmutableDictionary<Guid, PromptComponent> BuiltinComponents { get; private set; } = null!;
+		public ImmutableDictionary<Guid, PromptComponent> BuiltinComponents { get; private set; } = null!;
 
 		/// <summary>
 		/// Gets target built-in personas mapped by their unique identifier.
 		/// </summary>
-		public static ImmutableDictionary<Guid, Persona> BuiltinPersonas { get; private set; } = null!;
+		public ImmutableDictionary<Guid, Persona> BuiltinPersonas { get; private set; } = null!;
 
 		/// <summary>
 		/// Gets target built-in specializations mapped by their unique identifier.
 		/// </summary>
-		public static ImmutableDictionary<Guid, Specialization> BuiltinSpecializations { get; private set; } = null!;
+		public ImmutableDictionary<Guid, Specialization> BuiltinSpecializations { get; private set; } = null!;
 
 		/// <summary>
 		/// Gets target built-in behaviour sliders mapped by their unique identifier.
 		/// </summary>
-		public static ImmutableDictionary<Guid, BehaviourSlider> BuiltinSliders { get; private set; } = null!;
+		public ImmutableDictionary<Guid, BehaviourSlider> BuiltinSliders { get; private set; } = null!;
 
-		static PromptRegistry()
+		public PromptRegistry()
 		{
 			var assembly = typeof(PromptRegistry).Assembly;
 
@@ -257,7 +259,7 @@ namespace LLMDesktopAssistant.Prompting
 			RefreshTargetBuiltinPrompts();
 		}
 
-		private static void RefreshTargetBuiltinPrompts()
+		private void RefreshTargetBuiltinPrompts()
 		{
 			var componentsBuilder = ImmutableDictionary.CreateBuilder<Guid, PromptComponent>();
 			var personasBuilder = ImmutableDictionary.CreateBuilder<Guid, Persona>();
@@ -286,7 +288,7 @@ namespace LLMDesktopAssistant.Prompting
 			BuiltinSliders = slidersBuilder.ToImmutable();
 		}
 
-		private static bool ShouldAdd<T>(ImmutableDictionary<Guid, T>.Builder builder,
+		private bool ShouldAdd<T>(ImmutableDictionary<Guid, T>.Builder builder,
 			Guid guid, LanguageCode lang)
 		{
 			if (!builder.ContainsKey(guid))
@@ -298,7 +300,7 @@ namespace LLMDesktopAssistant.Prompting
 			return false;
 		}
 
-		public static PromptComponent? GetComponent(Guid id)
+		public PromptComponent? GetComponent(Guid id)
 		{
 			var componentsConfig = SettingsManager.Get<PromptComponentsConfiguration>();
 			foreach (var component1 in componentsConfig.Components)
@@ -311,7 +313,7 @@ namespace LLMDesktopAssistant.Prompting
 			return null;
 		}
 
-		public static Persona? GetPersona(Guid id)
+		public Persona? GetPersona(Guid id)
 		{
 			var personasConfig = SettingsManager.Get<PersonasConfiguration>();
 			foreach (var persona1 in personasConfig.Personas)
@@ -324,7 +326,7 @@ namespace LLMDesktopAssistant.Prompting
 			return null;
 		}
 
-		public static Specialization? GetSpecialization(Guid id)
+		public Specialization? GetSpecialization(Guid id)
 		{
 			var specializationsConfig = SettingsManager.Get<SpecializationsConfiguration>();
 			foreach (var specialization1 in specializationsConfig.Specializations)
@@ -337,7 +339,7 @@ namespace LLMDesktopAssistant.Prompting
 			return null;
 		}
 
-		public static BehaviourSlider? GetSlider(Guid id)
+		public BehaviourSlider? GetSlider(Guid id)
 		{
 			if (BuiltinSliders.TryGetValue(id, out var slider))
 				return slider;

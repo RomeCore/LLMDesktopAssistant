@@ -162,6 +162,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	public class AgentPromptSettingsViewModel : ViewModelBase
 	{
 		public AgentPromptSettings PromptSettings { get; }
+		public PromptRegistry PromptRegistry { get; }
 
 		public ObservableCollection<ComponentCategoryViewModel> ComponentCategories { get; } = new();
 		public ObservableCollection<PersonaItemViewModel> AvailablePersonas { get; } = new();
@@ -208,9 +209,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public ObservableCollection<BehaviorSliderItemViewModel> SliderItems { get; } = new();
 
 
-		public AgentPromptSettingsViewModel(AgentPromptSettings settings)
+		public AgentPromptSettingsViewModel(AgentPromptSettings settings, IPromptRegistry promptRegistry)
 		{
 			PromptSettings = settings;
+			PromptRegistry = promptRegistry as PromptRegistry ?? throw new InvalidOperationException("Prompt registry must be of type PromptRegistry.");
 
 			ClearPersonaCommand = new RelayCommand(() => SelectedPersona = null);
 			ClearSpecializationCommand = new RelayCommand(() => SelectedSpecialization = null);

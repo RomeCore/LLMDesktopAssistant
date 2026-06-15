@@ -6,6 +6,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
@@ -174,6 +175,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				SettingsTree.RemoveRange(_generalSettingsCount, SettingsTree.Count - _generalSettingsCount);
 
 			var managementService = Chat.Services.GetRequiredService<IAgentManagementService>();
+			var promptRegistry = Chat.Services.GetRequiredService<IPromptRegistry>();
 
 			var allAgents = managementService.ListAgents();
 			foreach (var (descriptor, isGlobal) in allAgents)
@@ -195,7 +197,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_prompts"),
 						MaterialIconKind.Text,
-						new AgentPromptSettingsViewModel(descriptor.Prompts)),
+						new AgentPromptSettingsViewModel(descriptor.Prompts, promptRegistry)),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_tools"),
 						MaterialIconKind.Wrench,

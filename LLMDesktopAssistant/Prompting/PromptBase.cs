@@ -55,9 +55,6 @@ namespace LLMDesktopAssistant.Prompting
 			set => SetProperty(ref _localizedFor, value);
 		}
 
-		[JsonIgnore]
-		public abstract bool IsBuiltin { get; }
-
 		private SerializableTextTemplate _template = SerializableTextTemplate.Empty;
 		public SerializableTextTemplate Template
 		{

@@ -7,9 +7,6 @@ namespace LLMDesktopAssistant.Prompting
 {
 	public class BehaviourSlider : PromptBase
 	{
-		[JsonIgnore]
-		public override bool IsBuiltin => PromptRegistry.BuiltinSliders.ContainsKey(Id);
-
 		private int _minimumValue = 0;
 		public int MinimumValue
 		{

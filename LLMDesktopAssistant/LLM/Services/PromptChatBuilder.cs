@@ -36,6 +36,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	public class PromptChatBuilder(
 		Chat chat,
 		TemplateLibrary templates,
+		IPromptRegistry promptRegistry,
 		IAgentManagementService agentManager,
 		IUserManagementService userManager,
 		IEnumerable<IPromptInjector> promptInjectors,
@@ -146,12 +147,12 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			generalContext["prompt"] = promptSettings.SystemPrompt;
 			generalContext["components"] = promptSettings.PromptComponents
-				.Select(id => PromptRegistry.GetComponent(id)?.Template.Template.Render(componentsContext))
+				.Select(id => promptRegistry.GetComponent(id)?.Template.Template.Render(componentsContext))
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
 			generalContext["sliders"] = promptSettings.SliderValues.Select(s =>
 				{
-					var sliderTemplate = PromptRegistry.GetSlider(s.SliderId)?.Template.Template;
+					var sliderTemplate = promptRegistry.GetSlider(s.SliderId)?.Template.Template;
 					var sliderContext = new
 					{
 						sliderValue = s.Value
@@ -163,10 +164,10 @@ namespace LLMDesktopAssistant.LLM.Services
 			generalContext["assistantNickname"] = promptSettings.Nickname;
 			generalContext["specialization"] = promptSettings.UseCustomSpecialization ?
 				promptSettings.CustomSpecialization :
-				(promptSettings.SpecializationId != null ? PromptRegistry.GetSpecialization(promptSettings.SpecializationId.Value)?.Template.Template.Render(componentsContext) : null);
+				(promptSettings.SpecializationId != null ? promptRegistry.GetSpecialization(promptSettings.SpecializationId.Value)?.Template.Template.Render(componentsContext) : null);
 			generalContext["persona"] = promptSettings.UseCustomPersona ?
 				promptSettings.CustomPersona :
-				(promptSettings.PersonaId != null ? PromptRegistry.GetPersona(promptSettings.PersonaId.Value)?.Template.Template.Render(componentsContext) : null);
+				(promptSettings.PersonaId != null ? promptRegistry.GetPersona(promptSettings.PersonaId.Value)?.Template.Template.Render(componentsContext) : null);
 			generalContext["summary"] = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages;
 
 			return template!.Render(generalContext, functions);
