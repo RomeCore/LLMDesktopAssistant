@@ -10,9 +10,9 @@ namespace LLMDesktopAssistant.Markdown;
 /// for quick actions, quick explanations, and other LLM-specific syntax.
 /// </summary>
 [Service]
-public class MarkdownConfigurator
+public class MarkdownAdditionalNodesConfigurator
 {
-	public MarkdownConfigurator()
+	public MarkdownAdditionalNodesConfigurator()
 	{
 		MarkdownRenderer.ConfigurePipeline += ConfigurePipeline;
 
