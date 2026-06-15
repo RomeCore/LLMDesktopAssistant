@@ -192,12 +192,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 						if (directoryExists)
 						{
-							result.StatusIcon = MaterialIconKind.FileEye;
+							result.StatusIcon = MaterialIconKind.FolderEye;
 							result.StatusTitle = $"**{path}**";
 						}
 						else
 						{
-							result.StatusIcon = MaterialIconKind.FileCode;
+							result.StatusIcon = MaterialIconKind.FileEye;
 							result.StatusTitle = endShown == totalLines ?
 								(startLine == 1 ? $"**{path}**" : $"**{path}** *({startLine}~{endShown})*") :
 								$"**{path}** *({startLine}~{endShown} / {totalLines})*";
@@ -321,7 +321,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 						if (!fileExists)
 						{
-							result.StatusIcon = MaterialIconKind.Folder;
+							result.StatusIcon = MaterialIconKind.FolderEye;
 
 							int startEntry = offset;
 							int totalEntries = totalCount;

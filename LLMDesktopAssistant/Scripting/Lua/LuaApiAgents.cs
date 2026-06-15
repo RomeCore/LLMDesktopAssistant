@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
@@ -29,10 +29,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			FUNCTIONS:
 
 			--- dass.agents.execute(properties...)
-			  Executes an LLM agent with the given conversation and returns its response.
+			  Executes one or more LLM agents with the given conversations and returns their responses.
+
+			  Supports BATCH EXECUTION: pass multiple property tables to run multiple agents
+			  concurrently. Each agent executes independently and the results are returned
+			  as an array of response arrays.
 
 			  Parameters:
-				- properties: table (required) — Additional options:
+				- properties: table (required for each call) — Contains:
 				  - messages: table (required) — Array of message tables (see format below).
 					The LAST message MUST be a "user" message.
 					Multiple "system" messages are concatenated.
@@ -65,12 +69,17 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					the agent can use. If omitted, all available tools are exposed.
 					Example: { "web-search", "calculate" }
 
-			  Returns: table — array of response messages (same format as input messages).
+			  Returns:
+				- If a single property table is passed: table — array of response messages
+				  (same format as input messages).
+				- If multiple property tables are passed (batch): table — array of response arrays,
+				  one per input property table.
 
 			  Throws an error if:
 				- the agentic model is not configured or the specified model is not found
 				- the last message is not a "user" message
 				- any message has an unknown role
+				- any of the property tables is invalid (in batch mode, all errors are collected)
 
 			  Use pcall() for safe error handling.
 
@@ -138,6 +147,26 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				print("Failed:", result)
 			  end
 
+			  -- Batch execution: run multiple agents concurrently
+			  local results = dass.agents.execute(
+				{
+				  messages = {
+					{ role = "system", content = "You are a poet." },
+					{ role = "user", content = "Write a haiku about coding." }
+				  }
+				},
+				{
+				  messages = {
+					{ role = "system", content = "You are a comedian." },
+					{ role = "user", content = "Tell me a programming joke." }
+				  }
+				}
+			  )
+			  -- results[1] is the poet's response array, results[2] is the comedian's
+			  print("Haiku:", results[1][1].content)
+			  print("Joke:", results[2][1].content)
+
+
 			NOTES:
 			  - By default, the agent uses the chat's "AgenticToolsModel" setting.
 			  - You can override the model by passing a "model" field in options.
@@ -146,6 +175,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  - Image attachments can be applied via `image` API (see manuals for details).
 			  - Returns the full conversation history produced by the agent,
 				including all intermediate tool calls and their results.
+			  - BATCH EXECUTION: pass multiple property tables to `execute()` to run
+				multiple agents concurrently. Each call is independent and errors
+				in one do not affect others. Use pcall() around the whole call for
+				error handling, or check individual results.
 			""";
 
 		private readonly Chat _chat;

@@ -236,15 +236,15 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				toolCall.StatusIcon = reactiveResult.StatusIcon;
 				toolCall.StatusTitle = reactiveResult.StatusTitle;
 				toolCall.StructuredResult = reactiveResult.StructuredResult;
-				toolCall.ResultContent = reactiveResult.ResultContent;
 				toolCall.UseMarkdown = reactiveResult.UseMarkdown;
+				toolCall.ResultContent = reactiveResult.ResultContent;
 
 				void OnReactiveResultChanged(object? sender, object? e)
 				{
 					toolCall.StatusIcon = reactiveResult.StatusIcon;
 					toolCall.StatusTitle = reactiveResult.StatusTitle;
-					toolCall.UseMarkdown = reactiveResult.UseMarkdown;
 					toolCall.StructuredResult = reactiveResult.StructuredResult;
+					toolCall.UseMarkdown = reactiveResult.UseMarkdown;
 				}
 				void OnReactiveResultContentChanged(object? sender, object? e)
 				{
@@ -261,6 +261,13 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				finally
 				{
 					toolCall.ReactiveToolResult = null;
+					// Update again, because tool can be TOO FAST
+					toolCall.StatusIcon = reactiveResult.StatusIcon;
+					toolCall.StatusTitle = reactiveResult.StatusTitle;
+					toolCall.StructuredResult = reactiveResult.StructuredResult;
+					toolCall.ResultContent = reactiveResult.ResultContent;
+					toolCall.UseMarkdown = reactiveResult.UseMarkdown;
+
 					reactiveResult.PropertyChanged -= OnReactiveResultChanged;
 					reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultContentChanged;
 				}

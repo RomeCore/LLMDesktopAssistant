@@ -18,12 +18,11 @@ namespace LLMDesktopAssistant.Scripting
 			var builder = new ParserBuilder();
 
 			builder.Settings.Skip(
-				b => b.Whitespaces(),
+				b => b.Spaces().ConfigureForSkip(),
 				ParserSkippingStrategy.TryParseThenSkip);
 
-			builder.CreateRule("namespace")
-				.Literal("--")
-				.Literal("NAMESPACE:")
+			builder.CreateMainRule()
+				.Literal("--[[")
 				.ZeroOrMoreSeparated(
 					b => b.Identifier(),
 					s => s.Literal('.'),
@@ -33,26 +32,12 @@ namespace LLMDesktopAssistant.Scripting
 						return string.Join('.', v.Children.Select(v => v.Text));
 					})
 				.Newline()
-				.TransformSelect(index: 2);
-
-			builder.CreateRule("manuals")
-				.Literal("--[[")
-				.Literal("MANUALS")
-				.Newline()
 				.TextUntil("]]")
 				.Literal("]]")
-				.Transform(v =>
-				{
-					return v[3].Span.Trim().ToString();
-				});
-
-			builder.CreateMainRule()
-				.Rule("namespace")
-				.Rule("manuals")
 				.AllText()
 				.Transform(v =>
 				{
-					return (v[0].GetValue<string>(), v[1].GetValue<string>(), v[2].Text);
+					return (v[1].GetValue<string>(), v[3].Span.Trim().ToString(), v[5].Span.Trim().ToString());
 				});
 
 			_metaParser = builder.Build();
@@ -116,8 +101,7 @@ namespace LLMDesktopAssistant.Scripting
 			}
 
 			string combinedScript = $"""
-				-- NAMESPACE: {ns}
-				--[[ MANUALS
+				--[[ {ns}
 				{manuals}
 				]]
 				{script}
