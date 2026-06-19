@@ -43,6 +43,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private DynValue PrintManuals(ScriptExecutionContext ctx, CallbackArguments args)
 		{
 			var lua = _services.GetRequiredService<LuaService>();
+			var script = ctx.GetScript();
 
 			var nsArg = args[0];
 			Table? nsTable = null;
@@ -59,7 +60,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 			else
 			{
-				nsTable = lua.Lua.Globals;
+				nsTable = script.Globals;
 			}
 
 			// Look for a "_manuals" subtable inside the resolved namespace

@@ -64,9 +64,7 @@ namespace LLMDesktopAssistant.Desktop.Execution
 				case "lua":
 
 					StringBuilder sb = new();
-					lua.ExecuteSyncronized(code, out var print);
-					foreach (var line in print)
-						sb.AppendLine(line);
+					lua.ExecuteSyncronized(code, p => sb.AppendLine(p));
 					AdditionalViewModel = new ExecutionResultViewModel
 					{
 						OutputText = sb.ToString()

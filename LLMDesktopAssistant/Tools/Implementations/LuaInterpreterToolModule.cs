@@ -57,7 +57,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		public ReactiveToolResult Execute(
 			string lua,
-			ToolExecutionContext context)
+			ToolExecutionContext context,
+			bool isolatedExecution = true)
 		{
 			var reactiveResult = new ReactiveToolResult
 			{
@@ -65,15 +66,28 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				StatusTitle = null
 			};
 
-			_ = Task.Run(() =>
+			_ = Task.Run(async () =>
 			{
 				try
 				{
-					var scriptResult = _lua.ExecuteSnapshotted(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
+					DynValue scriptResult;
+					if (isolatedExecution)
 					{
-						g["_dass_tool_ctx"] = UserData.Create(context);
-						g["_dass_tool_result"] = UserData.Create(reactiveResult);
-					});
+						scriptResult = _lua.ExecuteSnapshotted(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
+						{
+							g["_dass_tool_ctx"] = UserData.Create(context);
+							g["_dass_tool_result"] = UserData.Create(reactiveResult);
+						});
+					}
+					else
+					{
+						scriptResult = await _lua.ExecuteSyncronizedAsync(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
+						{
+							g["_dass_tool_ctx"] = UserData.Create(context);
+							g["_dass_tool_result"] = UserData.Create(reactiveResult);
+						});
+					}
+
 					reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToPrintString());
 					reactiveResult.CompleteWithSuccess();
 				}

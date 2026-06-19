@@ -428,7 +428,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			// Registered tools (filtered)
 			foreach (var (_, tool) in _toolsetCache.AvailableTools)
 			{
-				if (toolFilter != null && !toolFilter.Contains(tool.Name))
+				if (toolFilter == null || !toolFilter.Contains(tool.Name))
 					continue;
 
 				var _tool = tool;
