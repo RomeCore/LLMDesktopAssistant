@@ -106,7 +106,7 @@ namespace LLMDesktopAssistant.Tools
 		/// <summary>
 		/// Gets or sets a value indicating whether the tool requires user confirmation before execution.
 		/// </summary>
-		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.AutoApprove;
+		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.PolicyBased;
 
 		/// <summary>
 		/// Creates a new instance of the <see cref="ToolInfo"/> class with the specified executor and initialization information.

@@ -313,6 +313,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Auto-approve.
+        /// </summary>
+        public static string approval_level_alwaysapprove {
+            get {
+                return ResourceManager.GetString("approval_level_alwaysapprove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Always ask.
         /// </summary>
         public static string approval_level_alwaysask {
@@ -331,20 +340,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Ask or deny policy-based.
+        ///   Ищет локализованную строку, похожую на Policy: never disallow.
         /// </summary>
-        public static string approval_level_askorpolicy {
+        public static string approval_level_policyapproveorask {
             get {
-                return ResourceManager.GetString("approval_level_askorpolicy", resourceCulture);
+                return ResourceManager.GetString("approval_level_policyapproveorask", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Auto-approve.
+        ///   Ищет локализованную строку, похожую на Policy: never ask.
         /// </summary>
-        public static string approval_level_autoapprove {
+        public static string approval_level_policyapproveordisallow {
             get {
-                return ResourceManager.GetString("approval_level_autoapprove", resourceCulture);
+                return ResourceManager.GetString("approval_level_policyapproveordisallow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Policy: never auto-approve.
+        /// </summary>
+        public static string approval_level_policyaskordisallow {
+            get {
+                return ResourceManager.GetString("approval_level_policyaskordisallow", resourceCulture);
             }
         }
         

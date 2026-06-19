@@ -1614,7 +1614,7 @@
   <data name="approval_level" xml:space="preserve">
     <value>Уровень подтверждения</value>
   </data>
-  <data name="approval_level_autoapprove" xml:space="preserve">
+  <data name="approval_level_alwaysapprove" xml:space="preserve">
     <value>Авто-одобрение</value>
   </data>
   <data name="approval_level_policybased" xml:space="preserve">
@@ -1788,7 +1788,13 @@
   <data name="lua-get_script_info" xml:space="preserve">
     <value>Получить информацию о Lua-скрипте</value>
   </data>
-  <data name="approval_level_askorpolicy" xml:space="preserve">
-    <value>Спрашивать или запрещать по политике</value>
+  <data name="approval_level_policyaskordisallow" xml:space="preserve">
+    <value>Политика: никогда не одобрять автоматически</value>
+  </data>
+  <data name="approval_level_policyapproveordisallow" xml:space="preserve">
+    <value>Политика: никогда не спрашивать</value>
+  </data>
+  <data name="approval_level_policyapproveorask" xml:space="preserve">
+    <value>Политика: никогда не запрещать</value>
   </data>
 </root>

@@ -140,7 +140,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				bool requireConfirmation;
 				switch (approvalLevel)
 				{
-					case ToolApprovalLevel.AutoApprove:
+					case ToolApprovalLevel.AlwaysApprove:
 						requireConfirmation = false;
 						break;
 
@@ -157,7 +157,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						throw new InvalidOperationException($"Invalid approval level for a tool: {approvalLevel}");
 
 					case ToolApprovalLevel.PolicyBased:
-					case ToolApprovalLevel.AskOrPolicy:
+					case ToolApprovalLevel.PolicyApproveOrAsk:
+					case ToolApprovalLevel.PolicyApproveOrDisallow:
+					case ToolApprovalLevel.PolicyAskOrDisallow:
 
 						var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
 						var agentToolSettings = senderAgent.Tools;
@@ -177,8 +179,21 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 						bool disallow = (disallowedBehaviours & toolCall.ExpectedBehaviour) != 0;
 						bool autoApprove = (autoApproveBehaviours & toolCall.ExpectedBehaviour) == toolCall.ExpectedBehaviour;
-						if (approvalLevel == ToolApprovalLevel.AskOrPolicy)
-							autoApprove = false; // Disallowing auto-approving for AskOrPolicy
+						
+						switch (approvalLevel)
+						{
+							case ToolApprovalLevel.PolicyApproveOrAsk:
+								disallow = false;
+								break;
+
+							case ToolApprovalLevel.PolicyApproveOrDisallow:
+								autoApprove = true;
+								break;
+
+							case ToolApprovalLevel.PolicyAskOrDisallow:
+								autoApprove = false;
+								break;
+						}
 
 						if (disallow)
 						{
