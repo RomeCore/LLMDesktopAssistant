@@ -91,6 +91,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToPrintString());
 					reactiveResult.CompleteWithSuccess();
 				}
+				catch (ScriptRuntimeException srex)
+				{
+					reactiveResult.ResultContentLines.Add("Caught error: " + srex.DecoratedMessage);
+					reactiveResult.CompleteWithError();
+				}
 				catch (Exception ex)
 				{
 					reactiveResult.ResultContentLines.Add("Caught error: " + ex.Message);

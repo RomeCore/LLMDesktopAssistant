@@ -4,6 +4,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
+using RCParsing;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -14,6 +15,25 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	[ToolModule]
 	public class FilesystemEditToolModule : ToolModule
 	{
+		private static readonly Parser _regexReplaceTextParser;
+
+		static FilesystemEditToolModule()
+		{
+			var builder = new ParserBuilder();
+
+			builder.CreateRule("main")
+				.Literal('$')
+				.Literal("{{")
+				.Choice(
+					b => b.Number<int>(RCParsing.TokenPatterns.NumberFlags.UnsignedInteger),
+					b => b.TextUntil("}}")
+				)
+				.Literal("}}")
+				.TransformSelect(2);
+
+			_regexReplaceTextParser = builder.Build();
+		}
+
 		private readonly FileAccessService _fileAccess;
 
 		public FilesystemEditToolModule(FileAccessService fileAccess)
@@ -54,7 +74,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						- Add line after XML element:
 						  fs-edit(path: "config.xml", match: "<value key=\"x\"></value>", operation: "insert_after", text: "<data>new</data>")
 						- Regex replace (rename all classes):
-						  fs-edit(path: "file.cs", match: "class (\w+)", operation: "replace", text: "class Renamed_$1", useRegex: true)
+						  fs-edit(path: "file.cs", match: "class (\w+)", operation: "replace", text: "class Renamed_${{1}}", useRegex: true)
 						- Regex delete (remove debug lines):
 						  fs-edit(path: "file.cs", match: "Console\.WriteLine", operation: "delete", useRegex: true)
 						""",
@@ -132,6 +152,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			if (newContent == null || newContent == originalContent)
 			{
+				sharedCtx = new FSWriteSharedContext
+				{
+					Path = fullPath!,
+					NewContent = originalContent,
+					Diff = new HunkGroups { Groups = [] }
+				};
+
 				return new PreviewToolExecutionResult
 				{
 					InterruptingSuccess = true,
@@ -272,11 +299,37 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			if (matchLines.Count == 1 && operation is "replace" or "delete")
 			{
-				var matchLine = matchLines[0];
-				for (int i = 0; i < fileLines.Count; i++)
+				if (occurrence == 0)
 				{
-					var line = fileLines[i];
-					line = line.Replace(matchLine, text, comparison);
+					for (int i = 0; i < fileLines.Count; i++)
+					{
+						fileLines[i] = fileLines[i].Replace(match, text, comparison);
+					}
+				}
+				else
+				{
+					int count = 0;
+					for (int i = 0; i < fileLines.Count; i++)
+					{
+						var line = fileLines[i];
+						int matchCharIndex = 0;
+						bool found = false;
+						while ((matchCharIndex = line.IndexOf(match, matchCharIndex, comparison)) != -1)
+						{
+							if (++count == occurrence)
+							{
+								fileLines[i] = line.Substring(0, matchCharIndex) + text + line.Substring(matchCharIndex + match.Length);
+								found = true;
+								break;
+							}
+
+							matchCharIndex++;
+							if (matchCharIndex >= line.Length)
+								break;
+						}
+						if (found)
+							break;
+					}
 				}
 				newContent = string.Join("\n", fileLines);
 				newContent = PreserveLineEndings(originalContent, newContent);
@@ -340,7 +393,21 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					return (null, "No matches found.");
 
 				int count = 0;
-				var newContent = regex.Replace(normalizedContent, m => ++count == occurrence || occurrence == 0 ? text : m.Value);
+				var newContent = regex.Replace(normalizedContent, m =>
+				{
+					if (++count == occurrence || occurrence == 0)
+					{
+						return _regexReplaceTextParser.ReplaceAllMatches<object>("main", text, g =>
+						{
+							if (g is int groupNum)
+								return m.Groups[groupNum].Value;
+							if (g is string groupName)
+								return m.Groups[groupName].Value;
+							return string.Empty;
+						});
+					}
+					return m.Value; // No replacement for other matches
+				});
 				newContent = PreserveLineEndings(originalContent, newContent);
 				return (newContent, null);
 			}
@@ -441,7 +508,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				bool found = true;
 				for (int j = 0; j < matchLines.Count; j++)
 				{
-					var fileLine = ignoreWhitespace ? fileLines[i + j].Trim() : fileLines[i + j];
+					var fileLine = fileLines[i + j];
 					if (!fileLine.Contains(trimmedMatch[j], comparison))
 					{
 						found = false;

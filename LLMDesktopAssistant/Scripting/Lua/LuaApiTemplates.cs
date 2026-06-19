@@ -12,24 +12,24 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	[LuaApi(chatScoped: true)]
 	public class LuaApiTemplates : LuaApiBase
 	{
-		public override string? Namespace => "templates";
+		public override string? Namespace => "dass.templates";
 
 		public override string? Manuals => """
-			--- templates — template rendering and inspection API
+			--- dass.templates — template rendering and inspection API
 
 			Provides access to the template library for rendering and listing templates.
 			Templates are identified by ID and can be filtered by metadata (language, model, etc.).
 
 			FUNCTIONS:
 			
-			--- templates.import(templateString)
+			--- dass.templates.import(templateString)
 			  Imports one or more templates from a string (LLT format).
 			  Parameters:
 			    - templateString: string — LLT template source code.
 			  Returns:
 			    - number — number of imported templates.
 			
-			--- templates.render(filters, [context])
+			--- dass.templates.render(filters, [context])
 			  Renders a template from the template library.
 			  Parameters:
 			    - filters: string or table — Specifies which template to render.
@@ -51,7 +51,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - table — for message templates:
 			      Returns an array of { role: string, content: string } tables.
 
-			--- templates.list([filters])
+			--- dass.templates.list([filters])
 			  Lists all templates registered in the template library with their metadata.
 			  Parameters:
 			    - filters: table (optional) — Filter criteria. Supports:
@@ -74,40 +74,38 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			      - ... plus any custom metadata keys flattened directly.
 			
 			NOTES:
-			  - In templates.render(), templates are matched by intersecting all provided
+			  - In dass.templates.render(), templates are matched by intersecting all provided
 			    metadata criteria. Each metadata filter narrows down the candidate set.
 			  - If multiple templates match all filters, the first one is returned.
-			  - Template functions from installed IPromptTemplatePlugins are
-			    automatically available during rendering.
 
 			EXAMPLES:
 			
 			  -- Import a new template from a LLT string
-			  local count = templates.import([[
+			  local count = dass.templates.import([[
 			    @template hello { Hello, @name! }
 			  ]])
 			  print("Imported " .. count .. " templates")
 
 			  -- Render by template ID (string filter)
-			  local prompt = templates.render("system_prompt")
+			  local prompt = dass.templates.render("system_prompt")
 			  print(prompt)
 
 			  -- Render with language filter
-			  local prompt = templates.render({
+			  local prompt = dass.templates.render({
 			    "system_prompt",
 			    lang = "ru_RU"
 			  })
 			  print(prompt)
 
 			  -- Render with context data
-			  local prompt = templates.render("greeting", {
+			  local prompt = dass.templates.render("greeting", {
 			    name = "Alice",
 			    age = 30,
 			    tags = {"admin", "user"}
 			  })
 
 			  -- Render a messages template (returns array of messages)
-			  local messages = templates.render("chat_messages", {
+			  local messages = dass.templates.render("chat_messages", {
 			    topic = "Hello World"
 			  })
 			  for _, msg in ipairs(messages) do
@@ -115,19 +113,19 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  end
 
 			  -- List all templates
-			  local all = templates.list()
+			  local all = dass.templates.list()
 			  for _, t in ipairs(all) do
 			    print(t.id, t.type, t.lang)
 			  end
 
 			  -- List templates by language
-			  local ru = templates.list({ lang = "ru_RU" })
+			  local ru = dass.templates.list({ lang = "ru_RU" })
 
 			  -- List text templates only
-			  local texts = templates.list({ type = "text" })
+			  local texts = dass.templates.list({ type = "text" })
 
 			  -- List by custom metadata
-			  local experimental = templates.list({ my_custom_tag = "experimental" })
+			  local experimental = dass.templates.list({ my_custom_tag = "experimental" })
 			""";
 
 		private readonly TemplateLibrary _templateLibrary;
@@ -149,10 +147,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private DynValue Import(ScriptExecutionContext ctx, CallbackArguments args)
 		{
 			if (args.Count < 1)
-				throw new ScriptRuntimeException("templates.import(templateString): at least 1 argument expected.");
+				throw new ScriptRuntimeException("dass.templates.import(templateString): at least 1 argument expected.");
 
 			if (args[0].Type != DataType.String)
-				throw new ScriptRuntimeException("templates.import(): first argument must be a string.");
+				throw new ScriptRuntimeException("dass.templates.import(): first argument must be a string.");
 
 			var templateString = args[0].String;
 
@@ -165,18 +163,18 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"templates.import(): {ex.Message}");
+				throw new ScriptRuntimeException($"dass.templates.import(): {ex.Message}");
 			}
 		}
 
 		private DynValue Render(ScriptExecutionContext ctx, CallbackArguments args)
 		{
 			if (args.Count < 1)
-				throw new ScriptRuntimeException("templates.render(filters, [context]): at least 1 argument expected.");
+				throw new ScriptRuntimeException("dass.templates.render(filters, [context]): at least 1 argument expected.");
 
 			var filters = args[0];
 			if (filters.Type != DataType.String && filters.Type != DataType.Table)
-				throw new ScriptRuntimeException("templates.render(): first argument must be a string or a table.");
+				throw new ScriptRuntimeException("dass.templates.render(): first argument must be a string or a table.");
 
 			TemplateDataAccessor context = TemplateNullAccessor.Instance;
 			if (args.Count > 1)
@@ -203,14 +201,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						if (kvp.Key.Type == DataType.Number)
 						{
 							if (kvp.Value.Type != DataType.String)
-								throw new ScriptRuntimeException("templates.render(): filter table values for number keys must be strings.");
+								throw new ScriptRuntimeException("dass.templates.render(): filter table values for number keys must be strings.");
 
 							id = kvp.Value.String;
 						}
 						else if (kvp.Key.Type == DataType.String)
 						{
 							if (kvp.Value.Type != DataType.String)
-								throw new ScriptRuntimeException("templates.render(): filter table values for string keys must be strings.");
+								throw new ScriptRuntimeException("dass.templates.render(): filter table values for string keys must be strings.");
 							
 							var key = kvp.Key.String.ToLowerInvariant();
 							var value = kvp.Value.String;
@@ -243,7 +241,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						}
 						else
 						{
-							throw new ScriptRuntimeException("templates.render(): filter table keys must be numbers or strings.");
+							throw new ScriptRuntimeException("dass.templates.render(): filter table keys must be numbers or strings.");
 						}
 					}
 
@@ -271,7 +269,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					return DynValue.NewTable(messagesTable);
 				}
 
-				throw new ScriptRuntimeException($"templates.render(): not supported template type: {template?.GetType().FullName}.");
+				throw new ScriptRuntimeException($"dass.templates.render(): not supported template type: {template?.GetType().FullName}.");
 			}
 			catch (ScriptRuntimeException)
 			{
@@ -279,7 +277,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"templates.render(): {ex.Message}");
+				throw new ScriptRuntimeException($"dass.templates.render(): {ex.Message}");
 			}
 		}
 
@@ -300,13 +298,13 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					if (kvp.Key.Type == DataType.Number)
 					{
 						if (kvp.Value.Type != DataType.String)
-							throw new ScriptRuntimeException("templates.list(): filter table values for number keys must be strings.");
+							throw new ScriptRuntimeException("dass.templates.list(): filter table values for number keys must be strings.");
 						idFilter = kvp.Value.String;
 					}
 					else if (kvp.Key.Type == DataType.String)
 					{
 						if (kvp.Value.Type != DataType.String)
-							throw new ScriptRuntimeException("templates.list(): filter table values for string keys must be strings.");
+							throw new ScriptRuntimeException("dass.templates.list(): filter table values for string keys must be strings.");
 
 						var key = kvp.Key.String.ToLowerInvariant();
 						var value = kvp.Value.String;
@@ -320,7 +318,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					}
 					else
 					{
-						throw new ScriptRuntimeException("templates.list(): filter table keys must be numbers or strings.");
+						throw new ScriptRuntimeException("dass.templates.list(): filter table keys must be numbers or strings.");
 					}
 				}
 			}
