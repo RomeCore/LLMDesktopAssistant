@@ -111,7 +111,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			--- math.constants.phi     — φ = 1.618033988749895 (golden ratio)
 			--- math.constants.tau     — τ = 6.283185307179586
 			--- math.constants.gamma   — γ = 0.5772156649015328 (Euler-Mascheroni)
-			--- math.constants.g       — g = 9.81 (gravitational acceleration)
+			--- math.constants.g       — g = 9.81 (Earth's gravitational acceleration)
 			--- math.constants.c       — c = 299792458 (speed of light)
 			--- math.constants.halfpi  — π/2 = 1.5707963267948966
 			--- math.constants.sqrt2   — √2 = 1.4142135623730951

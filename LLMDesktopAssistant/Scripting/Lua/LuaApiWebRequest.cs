@@ -161,8 +161,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
 			ns["request"] = DynValue.NewCallback(new CallbackFunction(Request));
-			ns["fetch"] = DynValue.NewCallback(new CallbackFunction(Fetch));
 			ns["status"] = DynValue.NewCallback(new CallbackFunction(Status));
+			ns["fetch"] = DynValue.NewCallback(new CallbackFunction(Fetch));
 			ns["parse"] = DynValue.NewCallback(new CallbackFunction(Parse));
 			ns["download"] = DynValue.NewCallback(new CallbackFunction(Download));
 		}
