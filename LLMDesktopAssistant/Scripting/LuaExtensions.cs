@@ -1,5 +1,6 @@
 ﻿using LLMDesktopAssistant.Tools;
 using MoonSharp.Interpreter;
+using Serilog;
 
 namespace LLMDesktopAssistant.Scripting
 {
@@ -12,7 +13,7 @@ namespace LLMDesktopAssistant.Scripting
 
 			foreach (var kv in table.Pairs)
 			{
-				if (kv.Key.String == "_G")
+				if (kv.Key.String == LuaVariables.GlobalTable)
 					continue;
 				newTable.Set(kv.Key, kv.Value);
 			}
@@ -27,7 +28,7 @@ namespace LLMDesktopAssistant.Scripting
 
 			foreach (var kv in table.Pairs)
 			{
-				if (kv.Key.String == "_G")
+				if (kv.Key.String == LuaVariables.GlobalTable)
 					continue;
 				if (kv.Value.Type == DataType.Table)
 					newTable.Set(kv.Key, DynValue.NewTable(DeepClone(kv.Value.Table, script)));
@@ -46,8 +47,9 @@ namespace LLMDesktopAssistant.Scripting
 		/// <returns>A new Lua script that is a snapshot of the original.</returns>
 		public static Script CreateSnapshot(this Script script)
 		{
-			var snapshotLua = new Script(LuaVariables.DefaultModules);
+			var snapshotLua = new Script(CoreModules.None);
 
+			// Options
 			snapshotLua.Options.Stderr = script.Options.Stderr;
 			snapshotLua.Options.Stdout = script.Options.Stdout;
 			snapshotLua.Options.DebugPrint = script.Options.DebugPrint;
@@ -57,9 +59,9 @@ namespace LLMDesktopAssistant.Scripting
 			snapshotLua.Options.TailCallOptimizationThreshold = script.Options.TailCallOptimizationThreshold;
 			snapshotLua.Options.UseLuaErrorLocations = script.Options.UseLuaErrorLocations;
 
+			// Globals
 			var originalGlobals = script.Globals;
 			var snapshotGlobals = snapshotLua.Globals;
-
 			foreach (var kvp in originalGlobals.Pairs)
 			{
 				DynValue value = kvp.Value;
@@ -68,6 +70,19 @@ namespace LLMDesktopAssistant.Scripting
 				snapshotGlobals.Set(kvp.Key, value);
 			}
 			snapshotGlobals.Set(LuaVariables.GlobalTable, DynValue.NewTable(snapshotGlobals));
+
+			// Type metatables
+			foreach (var dataType in LuaConstants.SupportedTypeMetatables)
+			{
+				try
+				{
+					snapshotLua.SetTypeMetatable(dataType, script.GetTypeMetatable(dataType)?.DeepClone(snapshotLua));
+				}
+				catch (Exception ex)
+				{
+					Log.Debug("Failed to clone type metatable for {DataType} in LuaExtensions.CreateSnapshot(): {Error}", dataType, ex);
+				}
+			}
 
 			return snapshotLua;
 		}

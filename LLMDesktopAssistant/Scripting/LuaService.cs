@@ -13,7 +13,9 @@ namespace LLMDesktopAssistant.Scripting
 		private readonly SemaphoreSlim _luaLock = new(1, 1);
 		private readonly Script _lua;
 		private readonly List<string?> _namespaces;
+
 		private readonly Table _globalTableSnapshot;
+		private readonly Dictionary<DataType, Table> _typeMetatablesSnapshot;
 		private readonly List<string?> _namespacesSnapshot;
 		private readonly ILuaUserScriptManager _scriptManager;
 
@@ -24,7 +26,7 @@ namespace LLMDesktopAssistant.Scripting
 
 		public LuaService(IEnumerable<LuaApiBase> apis, ILuaUserScriptManager scriptManager)
 		{
-			_lua = new Script(LuaVariables.DefaultModules);
+			_lua = new Script(LuaConstants.DefaultModules);
 			_lua.Options.CheckThreadAccess = false;
 			_namespaces = [ null ];
 			_scriptManager = scriptManager;
@@ -39,6 +41,8 @@ namespace LLMDesktopAssistant.Scripting
 
 			_globalTableSnapshot = _lua.Globals.DeepClone();
 			_namespacesSnapshot = [.. _namespaces];
+			_typeMetatablesSnapshot = LuaConstants.SupportedTypeMetatables
+				.ToDictionary(t => t, t => _lua.GetTypeMetatable(t).DeepClone());
 			RefreshUserScripts();
 
 			_scriptManager.ScriptsChanged += (s, e) =>
@@ -73,6 +77,10 @@ namespace LLMDesktopAssistant.Scripting
 				var key = kvp.Key;
 				var value = kvp.Value;
 				_lua.Globals.Set(key, value);
+			}
+			foreach (var kvp in _typeMetatablesSnapshot)
+			{
+				_lua.SetTypeMetatable(kvp.Key, kvp.Value);
 			}
 			_namespaces.Clear();
 			_namespaces.AddRange(_namespacesSnapshot);
