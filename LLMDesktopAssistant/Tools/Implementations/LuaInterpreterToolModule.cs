@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						Lua has the API to interact with the application (called dASS) with these namespaces:
 						{string.Join(", ", lua.Namespaces.Select(ns => ns != null ? $"**{ns}**" : "*global namespace*").Order())}
 						
-						Use the `manuals(...)` function to get the documentation for a specific namespace, `print(manuals())`, `print(manuals(dass.tools))` or `print(manuals(fs))` for example.
+						Use the `manuals(...)` function to get the documentation for a specific namespace, `print(manuals())`, `print(manuals(dass.tool))` or `print(manuals(fs))` for example.
 						Its very recommended to see manuals before starting to use the API (do not use it blindly without reading the documentation!).
 						""",
 					Category = "Lua",

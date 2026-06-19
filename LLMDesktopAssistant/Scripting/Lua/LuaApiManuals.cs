@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			Parameters:
 			  - namespace: string or table — dot-separated namespace path,
-			    e.g. dass, dass.tools, dass.chat
+			    e.g. dass, dass.tool, dass.chat, fs, time
 
 			Returns: string — the manuals text for the requested namespace.
 

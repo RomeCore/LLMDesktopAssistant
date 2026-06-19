@@ -38,6 +38,40 @@ namespace LLMDesktopAssistant.Scripting
 			return newTable;
 		}
 
+		/// <summary>
+		/// Creates a snapshot of the current Lua state, including all global variables and tables.
+		/// Useful for concurrent execution.
+		/// </summary>
+		/// <param name="script">The Lua script to take a snapshot of.</param>
+		/// <returns>A new Lua script that is a snapshot of the original.</returns>
+		public static Script CreateSnapshot(this Script script)
+		{
+			var snapshotLua = new Script(CoreModules.None);
+
+			snapshotLua.Options.Stderr = script.Options.Stderr;
+			snapshotLua.Options.Stdout = script.Options.Stdout;
+			snapshotLua.Options.DebugPrint = script.Options.DebugPrint;
+			snapshotLua.Options.ColonOperatorClrCallbackBehaviour = script.Options.ColonOperatorClrCallbackBehaviour;
+			snapshotLua.Options.ScriptLoader = script.Options.ScriptLoader;
+			snapshotLua.Options.CheckThreadAccess = script.Options.CheckThreadAccess;
+			snapshotLua.Options.TailCallOptimizationThreshold = script.Options.TailCallOptimizationThreshold;
+			snapshotLua.Options.UseLuaErrorLocations = script.Options.UseLuaErrorLocations;
+
+			var originalGlobals = script.Globals;
+			var snapshotGlobals = snapshotLua.Globals;
+
+			foreach (var kvp in originalGlobals.Pairs)
+			{
+				DynValue value = kvp.Value;
+				if (value.Type == DataType.Table)
+					value = DynValue.NewTable(value.Table.DeepClone(snapshotLua));
+				snapshotGlobals.Set(kvp.Key, value);
+			}
+			snapshotGlobals.Set(LuaVariables.GlobalTable, DynValue.NewTable(snapshotGlobals));
+
+			return snapshotLua;
+		}
+
 		public static T? TryGetUserData<T>(this ScriptExecutionContext ctx, string variableName)
 			where T : class
 		{

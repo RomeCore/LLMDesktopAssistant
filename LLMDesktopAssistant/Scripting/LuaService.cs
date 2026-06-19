@@ -177,21 +177,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// <returns>A new Lua runtime with a copy of the current global table.</returns>
 		public Script CreateSnapshotRuntime()
 		{
-			var snapshotLua = new Script(CoreModules.None);
-
-			var originalGlobals = _lua.Globals;
-			var snapshotGlobals = snapshotLua.Globals;
-
-			foreach (var kvp in originalGlobals.Pairs)
-			{
-				DynValue value = kvp.Value;
-				if (value.Type == DataType.Table)
-					value = DynValue.NewTable(value.Table.DeepClone(snapshotLua));
-				snapshotGlobals.Set(kvp.Key, value);
-			}
-			snapshotGlobals.Set(LuaVariables.GlobalTable, DynValue.NewTable(snapshotGlobals));
-
-			return snapshotLua;
+			return _lua.CreateSnapshot();
 		}
 
 		/// <summary>
