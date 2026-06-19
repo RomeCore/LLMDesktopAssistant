@@ -123,7 +123,15 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - t: table — source table
 			    - func: function(value, key)
 			  Returns: nil
-
+			
+			--- table.repeat(element, count)
+			  Creates a new array table by repeating the given element `count` times.
+			  Parameters:
+			    - element: any — the value to repeat
+			    - count: number — number of repetitions (must be >= 0)
+			  Returns: table — array with `count` copies of `element`
+			  Example: table.repeat("hello", 3) -> {"hello", "hello", "hello"}
+			
 			EXAMPLES:
 
 			  local t = {1, 2, 3, 4, 5}
@@ -155,6 +163,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			ns["first"] = DynValue.NewCallback(new CallbackFunction(First));
 			ns["last"] = DynValue.NewCallback(new CallbackFunction(Last));
 			ns["each"] = DynValue.NewCallback(new CallbackFunction(Each));
+			ns["repeat"] = DynValue.NewCallback(new CallbackFunction(Repeat));
 		}
 
 		private static DynValue Contains(ScriptExecutionContext ctx, CallbackArguments args)
@@ -502,6 +511,26 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			foreach (var kv in t.Table.Pairs)
 				ctx.GetScript().Call(func, kv.Value, kv.Key);
 			return DynValue.Nil;
+		}
+
+		private static DynValue Repeat(ScriptExecutionContext ctx, CallbackArguments args)
+		{
+			if (args.Count < 2)
+				throw new ScriptRuntimeException("table.repeat(element, count): at least 2 arguments expected.");
+			
+			var countVal = args[1].CastToNumber();
+			if (countVal == null)
+				throw new ScriptRuntimeException("table.repeat(): count must be a number.");
+			
+			int count = (int)countVal.Value;
+			if (count < 0)
+				throw new ScriptRuntimeException("table.repeat(): count must be >= 0.");
+
+			var element = args[0];
+			var result = new Table(ctx.OwnerScript);
+			for (int i = 1; i <= count; i++)
+				result[i] = element;
+			return DynValue.NewTable(result);
 		}
 
 		// --- Helper ---

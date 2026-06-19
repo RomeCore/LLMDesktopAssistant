@@ -357,4 +357,129 @@ public class UnifiedDiffTests
 			Assert.Contains(line.Content, @new);
 		}
 	}
+
+	[Fact]
+	public void ContextLines_ChangeAtFirstLine_OnlyTrailingContext()
+	{
+		// Change at the very first line — no leading context possible
+		var old = "line1\nline2\nline3\nline4\nline5";
+		var @new = "MODIFIED\nline2\nline3\nline4\nline5";
+		var result = UnifiedDiff.Compute(old, @new, 3);
+
+		Assert.True(result.HasGroups);
+		Assert.Single(result.Groups);
+		var group = result.Groups[0];
+
+		// Hunk: 0 context before + 1 removal + 1 addition + 3 context after = 5 lines
+		Assert.Equal(5, group.Lines.Count);
+
+		// First two lines should be the change (remove old + add new)
+		Assert.Equal('-', group.Lines[0].Kind);
+		Assert.Equal("line1", group.Lines[0].Content);
+		Assert.Equal('+', group.Lines[1].Kind);
+		Assert.Equal("MODIFIED", group.Lines[1].Content);
+
+		// Remaining three should be trailing context: line2, line3, line4
+		for (int i = 2; i < 5; i++)
+		{
+			Assert.Equal(' ', group.Lines[i].Kind);
+			Assert.Equal($"line{i}", group.Lines[i].Content); // line2, line3, line4
+		}
+
+		// line5 should NOT be present (it's the 4th trailing line, beyond contextLines=3)
+		Assert.DoesNotContain(group.Lines, l => l.Content == "line5");
+	}
+
+	[Fact]
+	public void ContextLines_ChangeAtLastLine_OnlyLeadingContext()
+	{
+		// Change at the very last line — no trailing context possible
+		var old = "line1\nline2\nline3\nline4\nline5";
+		var @new = "line1\nline2\nline3\nline4\nMODIFIED";
+		var result = UnifiedDiff.Compute(old, @new, 3);
+
+		Assert.True(result.HasGroups);
+		Assert.Single(result.Groups);
+		var group = result.Groups[0];
+
+		// Hunk: 3 context before (line2, line3, line4) + 1 removal + 1 addition = 5 lines
+		Assert.Equal(5, group.Lines.Count);
+
+		// First three should be leading context: line2, line3, line4
+		for (int i = 0; i < 3; i++)
+		{
+			Assert.Equal(' ', group.Lines[i].Kind);
+			Assert.Equal($"line{i + 2}", group.Lines[i].Content);
+		}
+
+		// line1 should NOT be present (it's the 4th leading line, beyond contextLines=3)
+		Assert.DoesNotContain(group.Lines, l => l.Content == "line1");
+
+		// Last two: removal then addition
+		Assert.Equal('-', group.Lines[3].Kind);
+		Assert.Equal("line5", group.Lines[3].Content);
+		Assert.Equal('+', group.Lines[4].Kind);
+		Assert.Equal("MODIFIED", group.Lines[4].Content);
+	}
+
+	[Fact]
+	public void ContextLines_LargerThanFile_IncludesAllLines()
+	{
+		// contextLines = 100, file has only 5 lines — all lines should be included
+		var old = "line1\nline2\nCHANGE_ME\nline4\nline5";
+		var @new = "line1\nline2\nCHANGED\nline4\nline5";
+		var result = UnifiedDiff.Compute(old, @new, 100);
+
+		Assert.True(result.HasGroups);
+		Assert.Single(result.Groups);
+		var group = result.Groups[0];
+
+		// All 5 old lines should participate: 2 context before + 1 removal + 2 context after = 5
+		Assert.Equal(5, group.OldCount);
+		// All 5 new lines: 2 context before + 1 addition + 2 context after = 5
+		Assert.Equal(5, group.NewCount);
+
+		// Verify the exact sequence
+		Assert.Equal(' ', group.Lines[0].Kind); // line1
+		Assert.Equal(' ', group.Lines[1].Kind); // line2
+		Assert.Equal('-', group.Lines[2].Kind); // CHANGE_ME
+		Assert.Equal('+', group.Lines[3].Kind); // CHANGED
+		Assert.Equal(' ', group.Lines[4].Kind); // line4
+		Assert.Equal(' ', group.Lines[5].Kind); // line5
+
+		Assert.Equal(6, group.Lines.Count);
+	}
+
+	[Fact]
+	public void ContextLines_ReplacementWithDifferentCounts_CorrectContext()
+	{
+		// Replace 1 line with 3 lines — verify context counts stay correct
+		var old = "a\nb\nOLD\nc\nd";
+		var @new = "a\nb\nNEW1\nNEW2\nNEW3\nc\nd";
+		var result = UnifiedDiff.Compute(old, @new, 2);
+
+		Assert.True(result.HasGroups);
+		Assert.Single(result.Groups);
+		var group = result.Groups[0];
+
+		// Old: 2 context before (a,b) + 1 removed (OLD) + 2 context after (c,d) = 5
+		Assert.Equal(5, group.OldCount);
+		// New: 2 context before (a,b) + 3 added (NEW1,NEW2,NEW3) + 2 context after (c,d) = 7
+		Assert.Equal(7, group.NewCount);
+
+		// Verify sequence: a, b, -OLD, +NEW1, +NEW2, +NEW3, c, d
+		Assert.Equal(8, group.Lines.Count);
+		Assert.Equal(' ', group.Lines[0].Kind); // a
+		Assert.Equal(' ', group.Lines[1].Kind); // b
+		Assert.Equal('-', group.Lines[2].Kind); // OLD
+		Assert.Equal('+', group.Lines[3].Kind); // NEW1
+		Assert.Equal('+', group.Lines[4].Kind); // NEW2
+		Assert.Equal('+', group.Lines[5].Kind); // NEW3
+		Assert.Equal(' ', group.Lines[6].Kind); // c
+		Assert.Equal(' ', group.Lines[7].Kind); // d
+
+		var (removed, added) = result.GetChangeCounts();
+		Assert.Equal(1, removed);
+		Assert.Equal(3, added);
+	}
 }

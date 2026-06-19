@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using AngleSharp;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Files;
@@ -350,6 +351,41 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				StatusIcon = MaterialIconKind.Download,
 				StatusTitle = savePath != null ? $"`{url}` → `{savePath}`" : $"`{url}`"
 			};
+		}
+
+		public PreviewToolExecutionResult DownloadFilePreview(
+			string url, string savePath)
+		{
+			try
+			{
+				var fullPath = _fileAccess.AccessPath(savePath);
+				var fileExisted = File.Exists(fullPath);
+
+				if (fileExisted)
+				{
+					return new PreviewToolExecutionResult
+					{
+						StatusIcon = MaterialIconKind.Download,
+						StatusTitle = savePath != null ? $"`{url}` → `{savePath}`" : $"`{url}`",
+						ExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.InternetAccess
+					};
+				}
+
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.Download,
+					StatusTitle = savePath != null ? $"`{url}` → `{savePath}`" : $"`{url}`",
+					ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.InternetAccess
+				};
+			}
+			catch (Exception ex)
+			{
+				return new PreviewToolExecutionResult
+				{
+					InterruptingContent = $"Error downloading file: {ex.Message}",
+					InterruptingSuccess = false
+				};
+			}
 		}
 
 		public async Task<ReactiveToolResult> DownloadFile(

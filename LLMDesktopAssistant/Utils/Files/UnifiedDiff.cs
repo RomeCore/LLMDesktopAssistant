@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.Utils.Files
@@ -143,7 +143,9 @@ namespace LLMDesktopAssistant.Utils.Files
 						hunkStart = Math.Max(0, oldLine - contextLines);
 						// Add leading context
 						int ctxStart = Math.Max(0, oldLine - contextLines);
-						int ctxEnd = oldLine;
+						// For insertions (+), oldLine points to the anchor line (which is context),
+						// so we include it. For deletions (-), oldLine IS the change itself.
+						int ctxEnd = kind == '+' ? oldLine + 1 : oldLine;
 						for (int i = ctxStart; i < ctxEnd; i++)
 							hunkLines.Add((' ', oldLines[i]));
 					}
