@@ -46,7 +46,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// <returns>A new Lua script that is a snapshot of the original.</returns>
 		public static Script CreateSnapshot(this Script script)
 		{
-			var snapshotLua = new Script(CoreModules.None);
+			var snapshotLua = new Script(LuaVariables.DefaultModules);
 
 			snapshotLua.Options.Stderr = script.Options.Stderr;
 			snapshotLua.Options.Stdout = script.Options.Stdout;

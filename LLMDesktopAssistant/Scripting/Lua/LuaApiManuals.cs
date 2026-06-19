@@ -15,17 +15,17 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			Use this to explore what functions and features are available.
 
 			Parameters:
-			  - namespace: string or table — dot-separated namespace path,
+			  - namespace (one or more): string or table — dot-separated namespace path,
 			    e.g. dass, dass.tool, dass.chat, fs, time
 
-			Returns: string — the manuals text for the requested namespace.
+			Returns: string — the manuals text for the requested namespace(s).
 
 			Throws an error if the namespace does not exist
 			or has no manuals registered.
 
 			Examples:
 			  print(manuals(dass))
-			  print(manuals(dass.tools))
+			  print(manuals(dass.tool, dass.tool.result, fs, time))
 			""";
 
 		private readonly IServiceProvider _services;
@@ -45,38 +45,47 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var lua = _services.GetRequiredService<LuaService>();
 			var script = ctx.GetScript();
 
-			var nsArg = args[0];
-			Table? nsTable = null;
-
-			if (nsArg.Type == DataType.String)
-			{
-				nsTable = lua.TryResolveNamespace(nsArg.String);
-				if (nsTable == null)
-					return DynValue.NewString($"Error: namespace '{nsArg.String}' not found.");
-			}
-			else if (nsArg.Type == DataType.Table)
-			{
-				nsTable = nsArg.Table;
-			}
-			else
-			{
-				nsTable = script.Globals;
-			}
-
-			// Look for a "_manuals" subtable inside the resolved namespace
-			var manuals = nsTable.Get("_manuals");
-			var nsPath = nsTable.Get("_ns_path").ToPrintString();
-			if (manuals.Type != DataType.Table || manuals.Table.Length == 0)
-				return DynValue.NewString($"No manuals found for namespace '{nsPath}'.");
-
 			var result = new StringBuilder();
-			result.AppendLine($"--- Manuals for namespace '{nsPath}' ---");
-			result.AppendLine();
 
-			foreach (var entry in manuals.Table.Values)
+			for (int i = 0; i < args.Count; i++)
 			{
-				if (entry.Type == DataType.String)
-					result.AppendLine(entry.String.TrimEnd()).AppendLine();
+				var nsArg = args[i];
+				Table? nsTable;
+
+				if (nsArg.Type == DataType.String)
+				{
+					nsTable = lua.TryResolveNamespace(nsArg.String);
+					if (nsTable == null)
+						return DynValue.NewString($"Error: namespace '{nsArg.String}' not found.");
+				}
+				else if (nsArg.Type == DataType.Table)
+				{
+					nsTable = nsArg.Table;
+				}
+				else
+				{
+					nsTable = script.Globals;
+				}
+
+				// Look for a "_manuals" subtable inside the resolved namespace
+				var manuals = nsTable.Get(LuaVariables.NamespaceManuals);
+				var nsPath = nsTable.Get(LuaVariables.NamespaceFullPath).ToPrintString();
+
+				if (manuals.Type != DataType.Table || manuals.Table.Length == 0)
+				{
+					result.AppendLine($"No manuals found for namespace '{nsPath}'.");
+				}
+				else
+				{
+					result.AppendLine($"--- Manuals for namespace '{nsPath}' ---");
+					result.AppendLine();
+
+					foreach (var entry in manuals.Table.Values)
+					{
+						if (entry.Type == DataType.String)
+							result.AppendLine(entry.String.TrimEnd()).AppendLine();
+					}
+				}
 			}
 
 			return DynValue.NewString(result.ToString().TrimEnd());

@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Scripting
 
 		public LuaService(IEnumerable<LuaApiBase> apis, ILuaUserScriptManager scriptManager)
 		{
-			_lua = new Script(CoreModules.Preset_SoftSandbox & ~(CoreModules.Dynamic | CoreModules.Json));
+			_lua = new Script(LuaVariables.DefaultModules);
 			_lua.Options.CheckThreadAccess = false;
 			_namespaces = [ null ];
 			_scriptManager = scriptManager;

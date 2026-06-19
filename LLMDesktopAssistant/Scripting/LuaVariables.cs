@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting
 {
 	public static class LuaVariables
 	{
+		public const CoreModules DefaultModules = CoreModules.Preset_SoftSandbox & ~(CoreModules.Dynamic | CoreModules.Json);
+
 		public const string GlobalTable = "_G";
 
 		public const string NamespaceApiMarker = "_ns_api";

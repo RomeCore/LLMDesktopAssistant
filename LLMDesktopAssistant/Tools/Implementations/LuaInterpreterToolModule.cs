@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Scripting;
 using Material.Icons;
 using MoonSharp.Interpreter;
@@ -19,13 +19,55 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "lua-execute",
 					DescriptionGetter = () => $"""
-						Executes Lua and returns the script result along with messages printed by 'print' function.
-						
+						# MAIN INFO
+						Lua is executing using MoonSharp (Lua 5.2).
+						Executes Lua and returns the script result along with messages printed by 'print' function
+						(the `dass.tool.result.write` works in a similar way).
 						Lua has the API to interact with the application (called dASS) with these namespaces:
-						{string.Join(", ", lua.Namespaces.Select(ns => ns != null ? $"**{ns}**" : "*global namespace*").Order())}
+						{string.Join(", ", lua.Namespaces.Select(ns => ns != null ? $"**{ns}**" : "_G").Order())}
 						
-						Use the `manuals(...)` function to get the documentation for a specific namespace, `print(manuals())`, `print(manuals(dass.tool))` or `print(manuals(fs))` for example.
-						Its very recommended to see manuals before starting to use the API (do not use it blindly without reading the documentation!).
+						# SMART UX WITH STREAMING AND STATUS ICONS/TITLES
+						You can also use the `dass.tool.result` for streaming output, progress and status
+						(for meta-tools and long-running scripts):
+				
+						-- 1. Basic streaming output with status icon (from Material Icons)
+						dass.tool.result.set_status("Download", "Processing...") -- "Download" is the icon name, "Processing..." is the title
+						dass.tool.result.write("Step 1: Starting...")
+						time.sleep(100)
+						dass.tool.result.write("Step 2: Working...")
+						time.sleep(100)
+						dass.tool.result.write("Step 3: Done!")
+						dass.tool.result.complete_with_success()
+
+						-- 2. Progress bar and Markdown output
+						dass.tool.result.use_markdown(true)
+						dass.tool.result.set_status("ChartTimeline", "Processing...")
+						dass.tool.result.set_progress(0, 0, 10) -- current, min, max
+						for i = 1, 10 do
+						  dass.tool.result.set_progress(i)
+						  dass.tool.result.write(string.format("  - **Item %d** completed", i))
+						  time.sleep(100) -- simulate work
+						end
+						dass.tool.result.set_progress(1.0)
+						dass.tool.result.set_status("Check", "All done!")
+						dass.tool.result.complete_with_success()
+
+						-- 3. Structured result + error handling
+						local ok, data = pcall(fs.read, "data.json")
+						if not ok then
+						  dass.tool.result.set_status("AlertCircle", "File not found")
+						  dass.tool.result.write("Error: " .. data)
+						  dass.tool.result.complete_with_error()
+						  return
+						end
+						local parsed = json.decode(data)
+						dass.tool.result.set_structured(parsed)
+						dass.tool.result.set_status("FileCheck", "Loaded")
+						dass.tool.result.complete_with_success()
+						
+						# SEE MANUALS BEFORE USING THE API
+						Use `manuals(...)` function to get the documentation for a specific namespace, `print(manuals(_G))`
+						or `print(manuals(dass.agents, dass.tool, dass.tool.result))` for example.
 						""",
 					Category = "Lua",
 					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
@@ -89,17 +131,19 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					}
 
 					reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToPrintString());
-					reactiveResult.CompleteWithSuccess();
+					reactiveResult.TryCompleteWithSuccess();
 				}
 				catch (ScriptRuntimeException srex)
 				{
 					reactiveResult.ResultContentLines.Add("Caught error: " + srex.DecoratedMessage);
-					reactiveResult.CompleteWithError();
+					reactiveResult.ResultContentLines.Add("Remember to read the manuals for API");
+					reactiveResult.TryCompleteWithError();
 				}
 				catch (Exception ex)
 				{
 					reactiveResult.ResultContentLines.Add("Caught error: " + ex.Message);
-					reactiveResult.CompleteWithError();
+					reactiveResult.ResultContentLines.Add("Remember to read the manuals for API");
+					reactiveResult.TryCompleteWithError();
 				}
 				finally
 				{

@@ -24,7 +24,11 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			Available only inside Lua scripts executed as tools or meta-tools.
 
 			FUNCTIONS:
-
+			
+			--- dass.tool.result.available()
+			  Checks whether a tool execution context is available (i.e. we are inside a running tool).
+			  Returns: boolean — true if dass.tool.result functions can be used
+			
 			--- dass.tool.result.get()
 			  Returns the current reactive result object (table), or nil if not in a tool context.
 			  The returned table has fields (read-only):
@@ -98,10 +102,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			--- dass.tool.result.clear()
 			  Clears all result content lines.
-
-			--- dass.tool.result.available()
-			  Checks whether a tool execution context is available (i.e. we are inside a running tool).
-			  Returns: boolean — true if dass.tool.result functions can be used
 
 			EXAMPLES:
 

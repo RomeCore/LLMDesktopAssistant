@@ -124,13 +124,13 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - func: function(value, key)
 			  Returns: nil
 			
-			--- table.repeat(element, count)
+			--- table.times(element, count)
 			  Creates a new array table by repeating the given element `count` times.
 			  Parameters:
 			    - element: any — the value to repeat
 			    - count: number — number of repetitions (must be >= 0)
 			  Returns: table — array with `count` copies of `element`
-			  Example: table.repeat("hello", 3) -> {"hello", "hello", "hello"}
+			  Example: table.times("hello", 3) -> {"hello", "hello", "hello"}
 			
 			EXAMPLES:
 
@@ -163,7 +163,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			ns["first"] = DynValue.NewCallback(new CallbackFunction(First));
 			ns["last"] = DynValue.NewCallback(new CallbackFunction(Last));
 			ns["each"] = DynValue.NewCallback(new CallbackFunction(Each));
-			ns["repeat"] = DynValue.NewCallback(new CallbackFunction(Repeat));
+			ns["times"] = DynValue.NewCallback(new CallbackFunction(Times));
 		}
 
 		private static DynValue Contains(ScriptExecutionContext ctx, CallbackArguments args)
@@ -513,7 +513,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return DynValue.Nil;
 		}
 
-		private static DynValue Repeat(ScriptExecutionContext ctx, CallbackArguments args)
+		private static DynValue Times(ScriptExecutionContext ctx, CallbackArguments args)
 		{
 			if (args.Count < 2)
 				throw new ScriptRuntimeException("table.repeat(element, count): at least 2 arguments expected.");

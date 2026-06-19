@@ -142,12 +142,17 @@ namespace LLMDesktopAssistant.Scripting
 						if (reactiveResult.StructuredResult == null)
 							reactiveResult.StructuredResult = StructuredLuaConverter.DynValueToJsonNode(scriptResult);
 						reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToPrintString());
-						reactiveResult.CompleteWithSuccess();
+						reactiveResult.TryCompleteWithSuccess();
+					}
+					catch (ScriptRuntimeException srex)
+					{
+						reactiveResult.ResultContentLines.Add("Caught error: " + srex.DecoratedMessage);
+						reactiveResult.TryCompleteWithError();
 					}
 					catch (Exception ex)
 					{
 						reactiveResult.ResultContentLines.Add("Caught error: " + ex.Message);
-						reactiveResult.CompleteWithError();
+						reactiveResult.TryCompleteWithError();
 					}
 					finally
 					{
