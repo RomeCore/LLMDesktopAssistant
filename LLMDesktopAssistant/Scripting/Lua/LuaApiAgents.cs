@@ -67,7 +67,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				  - model: string (optional) — Name of the model to use.
 					If omitted, the chat's "AgenticToolsModel" is used.
 				  - tools: table (optional) — Mixed array of tool names (strings) and/or
-					callback tool definitions (tables). If omitted, all registered tools are exposed.
+					callback tool definitions (tables). If omitted, no tools are available.
 
 					String entries reference registered tools by name:
 					  { "web-search", "fs-read_entry" }
@@ -85,7 +85,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					      required = { "x", "y" }
 					    },
 					    callback = function(args)
-					      return { content = "Result: " .. (args.x + args.y) }
+					      return "Result: " .. (args.x + args.y)
 					    end
 					  }
 
@@ -116,7 +116,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  })
 			  print(table.last(r).content)
 
-			  -- With custom model and restricted tools
+			  -- With custom model and tools
 			  local r = dass.agents.execute({
 				messages = {
 				  { role = "system", content = "You can use tools." },
@@ -132,7 +132,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				messages = {
 				  { role = "system", content = "You can use web-search." },
 				  { role = "user", content = "Search for latest news about AI" }
-				}
+				},
+				tools = { "web-search" }
 			  })
 			  for _, msg in ipairs(r) do
 				if msg.role == "assistant" then
@@ -214,7 +215,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				{
 				  messages = {
 					{ role = "system", content = "You are a helpful assistant." },
-					{ role = "user", content = "You response will be failed!" }
+					{ role = "user", content = "Your response will be failed!" }
 				  }
 				}
 			  )
@@ -227,8 +228,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			NOTES:
 			  - By default, the agent uses the chat's "AgenticToolsModel" setting.
 			  - You can override the model by passing a "model" field in options.
-			  - You can restrict tools by passing a "tools" array in options.
-			  - All tools available in the current chat are exposed to the agent by default.
+			  - No tools are available by default; you must explicitly pass them using the "tools" field.
 			  - Use `table.last` to access the last message in a response array,
 			    so you can ignore useless messages with tool calls.
 			  - CALLBACK TOOLS: pass table entries in the "tools" array with:
