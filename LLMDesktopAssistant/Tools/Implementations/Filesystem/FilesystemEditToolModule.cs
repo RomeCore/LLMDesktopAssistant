@@ -80,6 +80,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			return null;
 		}
 
+		public class FSWriteSharedContext
+		{
+			public required string Path { get; init; }
+			public required string NewContent { get; init; }
+			public required HunkGroups Diff { get; init; }
+		}
+
 		public StreamingToolArgumentsAnalysisResult EditStreaming(
 			string? path)
 		{
@@ -91,6 +98,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		}
 
 		public PreviewToolExecutionResult EditPreview(
+			[SharedContext] ref FSWriteSharedContext? sharedCtx,
 			string path, string operation, bool useRegex, string match, string text = "",
 			int occurrence = 0, bool ignoreWhitespace = true, bool ignoreCase = false,
 			CancellationToken cancellationToken = default)
@@ -113,6 +121,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			var normalizedContent = NormalizeLineEndings(originalContent);
 			var fileLines = normalizedContent.Split('\n').ToList();
 
+			if (operation is "delete")
+				text = string.Empty;
+
 			string? newContent, errorMessage;
 			if (useRegex)
 				(newContent, errorMessage) = EditWithRegex(match, text, operation, occurrence, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
@@ -131,8 +142,15 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				};
 			}
 
-			var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 10);
+			var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 5);
 			var (removed, added) = diff.GetChangeCounts();
+
+			sharedCtx = new FSWriteSharedContext
+			{
+				Path = fullPath!,
+				NewContent = newContent,
+				Diff = diff
+			};
 
 			return new PreviewToolExecutionResult
 			{
@@ -143,6 +161,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		}
 
 		public ReactiveToolResult Edit(
+			[SharedContext] FSWriteSharedContext? sharedCtx,
 			[Description("The path to the file to edit.")]
 			string path,
 			[Description("The operation: 'replace', 'insert_before', 'insert_after', or 'delete'.")]
@@ -163,6 +182,18 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
+				if (sharedCtx != null)
+				{
+					File.WriteAllText(sharedCtx.Path, sharedCtx.NewContent);
+					var (_removed, _added) = sharedCtx.Diff.GetChangeCounts();
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FileDocumentEdit,
+						StatusTitle = $"**{path}** *(-{_removed} +{_added})*",
+						ResultContent = sharedCtx.Diff.ToString()
+					}.CompleteWithSuccess();
+				}
+
 				var fullPath = _fileAccess.TryAccessPath(path);
 				var error = CheckArgs(path, fullPath, operation, useRegex, match, text);
 
@@ -176,19 +207,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					}.CompleteWithError();
 				}
 
-				if (!File.Exists(fullPath))
-					return ReactiveToolResult.CreateError("File not found.");
+				if (operation is "delete")
+					text = string.Empty;
 
-				if (FileUtils.IsBinaryFile(fullPath))
-					return ReactiveToolResult.CreateError("Cannot edit binary files.");
-
-				if (string.IsNullOrWhiteSpace(match))
-					return ReactiveToolResult.CreateError("'match' parameter cannot be empty.");
-
-				if (operation is not ("replace" or "insert_before" or "insert_after" or "delete"))
-					return ReactiveToolResult.CreateError("'operation' must be one of: 'replace', 'insert_before', 'insert_after', 'delete'.");
-
-				var originalContent = File.ReadAllText(fullPath);
+				var originalContent = File.ReadAllText(fullPath!);
 				var normalizedContent = NormalizeLineEndings(originalContent);
 				var fileLines = normalizedContent.Split('\n').ToList();
 
@@ -208,9 +230,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					}.CompleteWithSuccess();
 				}
 
-				File.WriteAllText(fullPath, newContent);
+				File.WriteAllText(fullPath!, newContent);
 
-				var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 10);
+				var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 5);
 				var (removed, added) = diff.GetChangeCounts();
 
 				return new ReactiveToolResult
@@ -230,8 +252,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		#region Plain-Text Mode
-
 		private (string?, string?) EditWithString(
 			string match,
 			string text,
@@ -246,6 +266,23 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			var normalizedMatch = NormalizeLineEndings(match);
 			var matchLines = normalizedMatch.Split('\n').ToList();
+
+			var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+			string newContent;
+
+			if (matchLines.Count == 1 && operation is "replace" or "delete")
+			{
+				var matchLine = matchLines[0];
+				for (int i = 0; i < fileLines.Count; i++)
+				{
+					var line = fileLines[i];
+					line = line.Replace(matchLine, text, comparison);
+				}
+				newContent = string.Join("\n", fileLines);
+				newContent = PreserveLineEndings(originalContent, newContent);
+				return (newContent, null);
+			}
+
 			if (matchLines.Count > 0 && string.IsNullOrEmpty(matchLines[^1]))
 				matchLines.RemoveAt(matchLines.Count - 1); // Remove trailing empty line if present (LLMs loves to add them!)
 
@@ -256,8 +293,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				// Also trim each line for comparison
 				matchLines = matchLines.Select(l => l.Trim()).ToList();
 			}
-
-			var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
 			var foundIndices = FindSequenceIndices(fileLines, matchLines, ignoreWhitespace, comparison, cancellationToken);
 
@@ -275,21 +310,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			var (totalInsertions, totalDeletions) = ApplyLineOperations(fileLines, targetIndices, matchLines.Count, operationLines, operation);
 
-			var newContent = string.Join("\n", fileLines);
-
-			// Preserve original line endings
+			newContent = string.Join("\n", fileLines);
 			newContent = PreserveLineEndings(originalContent, newContent);
-
-			if (newContent == originalContent)
-				return (null, "No changes were made (content is identical).");
-
 			return (newContent, null);
 		}
-
-		#endregion
-
-		#region Regex Mode
-
+		
 		private (string?, string?) EditWithRegex(
 			string pattern,
 			string text,
@@ -305,7 +330,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			var regex = new Regex(pattern, regexOptions);
 			text ??= string.Empty;
 
-			if (operation == "replace")
+			if (operation is "replace" or "delete")
 			{
 				// Standard regex replace on the whole content
 				var matches = regex.Matches(normalizedContent);
@@ -315,9 +340,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					return (null, "No matches found.");
 
 				int count = 0;
-				var newContent = regex.Replace(normalizedContent, m => ++count == occurrence ? text : m.Value);
+				var newContent = regex.Replace(normalizedContent, m => ++count == occurrence || occurrence == 0 ? text : m.Value);
 				newContent = PreserveLineEndings(originalContent, newContent);
-
 				return (newContent, null);
 			}
 			else
@@ -349,15 +373,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				var newContent = string.Join("\n", fileLines);
 				newContent = PreserveLineEndings(originalContent, newContent);
-
-				if (newContent == originalContent)
-					return (null, "No changes were made (content is identical).");
-
 				return (newContent, null);
 			}
 		}
-
-		#endregion
 
 		#region Shared Helpers
 
@@ -424,7 +442,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				for (int j = 0; j < matchLines.Count; j++)
 				{
 					var fileLine = ignoreWhitespace ? fileLines[i + j].Trim() : fileLines[i + j];
-					if (!string.Equals(fileLine, trimmedMatch[j], comparison))
+					if (!fileLine.Contains(trimmedMatch[j], comparison))
 					{
 						found = false;
 						break;
