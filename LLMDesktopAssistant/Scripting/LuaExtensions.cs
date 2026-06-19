@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.Scripting
 					continue;
 				newTable.Set(kv.Key, kv.Value);
 			}
+			newTable.MetaTable = table.MetaTable.DeepClone(script);
 
 			return newTable;
 		}
@@ -35,6 +36,7 @@ namespace LLMDesktopAssistant.Scripting
 				else
 					newTable.Set(kv.Key, kv.Value);
 			}
+			newTable.MetaTable = table.MetaTable.DeepClone(script);
 
 			return newTable;
 		}
@@ -70,6 +72,7 @@ namespace LLMDesktopAssistant.Scripting
 				snapshotGlobals.Set(kvp.Key, value);
 			}
 			snapshotGlobals.Set(LuaVariables.GlobalTable, DynValue.NewTable(snapshotGlobals));
+			snapshotGlobals.MetaTable = originalGlobals.MetaTable.DeepClone(snapshotLua);
 
 			// Type metatables
 			foreach (var dataType in LuaConstants.SupportedTypeMetatables)
