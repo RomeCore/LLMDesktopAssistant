@@ -32,8 +32,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			--- settypemetatable(type, metatable) — set type metatable for a primitive Lua type
 
 			Sets the metatable for ALL values of a primitive Lua type.
-			This allows overriding default behaviour (__tostring, __add, __eq, etc.)
-			for numbers, strings, booleans, functions, nil, and void.
+			This allows overriding default behaviour for
+			numbers, strings, booleans, functions, nil, and void.
 
 			Parameters:
 			  - type: string — type name:
@@ -60,73 +60,146 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			Throws if the type is not recognized.
 
+			--- KNOWN LIMITATIONS (MoonSharp implementation) ---
+
+			Due to MoonSharp's implementation, several metamethods do NOT work
+			when set via settypemetatable, even though they are stored in the
+			type metatable and visible via gettypemetatable:
+
+			  ❌ Arithmetic operators: __add, __sub, __mul, __div, __mod, __pow, __unm
+			     (standard arithmetic is always used)
+			  ❌ Comparison operators: __eq, __lt, __le
+			     (standard comparison is always used)
+			  ❌ __concat (concatenation via ..)
+			  ❌ __gc (garbage collection)
+			  ❌ __len for strings (always returns character count)
+			  ❌ __tostring for function type (always shows "function: ADDRESS")
+			  ❌ print() ignores __tostring (use explicit tostring() instead)
+			  ❌ Concatenation (..) ignores __tostring for booleans
+			     (causes "attempt to concatenate a boolean value" error)
+
+			✅ Metamethods that DO work:
+			  - __tostring — but only via tostring() function, NOT via print() or ..
+			  - __index — for string (native) and number (via colon syntax)
+			  - __newindex — for string
+			  - __call — for number
+			  - __len — for number
+			  - __pairs — for number
+
 			EXAMPLES:
 
-			  -- 1. Custom number formatting
+			  -- 1. Custom number formatting (use tostring(), not print())
 			  settypemetatable("number", {
 			    __tostring = function(n)
 			      return string.format("%.2f", n)
 			    end
 			  })
-			  print(3.14159) -- "3.14"
+			  print(tostring(3.14159)) -- "3.14"
+			  -- NOTE: print(3.14159) would STILL show "3.14159"
 
-			  -- 2. Using string name
+			  -- 2. Using gettypemetatable
 			  local mt = gettypemetatable("number")
 			  print(mt) -- the number metatable
 
-			  -- 3. Safe number addition (with overflow check)
+			  -- 3. Adding methods to numbers via __index (colon syntax!)
 			  settypemetatable("number", {
-			    __add = function(a, b)
-			      local result = a + b
-			      if result > 1e9 then
-			        error("Number too large!")
-			      end
-			      return result
-			    end
+			    __index = {
+			      double = function(self) return self * 2 end,
+			      is_even = function(self) return self % 2 == 0 end,
+			      hex = function(self) return string.format("%X", self) end
+			    }
 			  })
+			  print((5):double())    -- 10  (use colon for method call)
+			  print((7):is_even())    -- false
+			  print((255):hex())      -- "FF"
+			  -- Dot syntax needs explicit self: (5).double(5)
 
-			  -- 4. Boolean pretty printing
+			  -- 4. Boolean __tostring (via tostring)
 			  settypemetatable("boolean", {
 			    __tostring = function(b)
 			      return b and "✓ Yes" or "✗ No"
 			    end
 			  })
-			  print(true)  -- "✓ Yes"
-			  print(false) -- "✗ No"
+			  print(tostring(true))  -- "✓ Yes"
+			  print(tostring(false)) -- "✗ No"
+			  -- NOTE: print(true) still shows "true"
 
-			  -- 5. String with length in words (not characters)
-			  settypemetatable("string", {
-			    __len = function(s)
-			      local count = 0
-			      for _ in s:gmatch("%S+") do count = count + 1 end
-			      return count
+			  -- 5. Custom __len for numbers
+			  settypemetatable("number", {
+			    __len = function(n)
+			      return n % 10
 			    end
 			  })
-			  print(#"Hello world foo") -- 3
+			  print(#42)  -- 2  (42 % 10 = 2)
 
-			  -- 6. Case-insensitive string equality
-			  settypemetatable("string", {
-			    __eq = function(a, b)
-			      return a:lower() == b:lower()
+			  -- 6. Custom pairs iteration over numbers
+			  settypemetatable("number", {
+			    __pairs = function(n)
+			      local i = 0
+			      return function()
+			        i = i + 1
+			        if i <= n then return i, i ^ 2 end
+			      end
 			    end
 			  })
-			  print("Hello" == "hello") --> true
+			  for k, v in pairs(5) do print(k, v) end
+			  -- 1  1
+			  -- 2  4
+			  -- 3  9
+			  -- 4  16
+			  -- 5  25
 
-			  -- 7. Extend: add __tostring without removing __eq
-			  extendtypemetatable("string", {
-			    __tostring = function(s)
-			      return "«" .. s .. "»"
+			  -- 7. Using __call on numbers
+			  settypemetatable("number", {
+			    __call = function(n, multiplier)
+			      return n * multiplier
+			    end
+			  })
+			  print((5)(3))  -- 15
+
+			  -- 8. Extend: add __tostring without removing existing keys
+			  extendtypemetatable("number", {
+			    __tostring = function(n)
+			      return "«" .. n .. "»"
 			    end
 			  })
 
-			  -- 8. Clear/reset a type metatable
+			  -- 9. Clear/reset a type metatable
 			  settypemetatable("number", nil)
+			  -- After reset: tostring(42) returns "42" (default)
+
+			  -- 10. nil __tostring
+			  settypemetatable("nil", {
+			    __tostring = function() return "N/A" end
+			  })
+			  print(tostring(nil)) -- "N/A"
+
+			  -- 11. __newindex for strings (intercepts field assignment)
+			  settypemetatable("string", {
+			    __newindex = function(t, key, value)
+			      print("Cannot set " .. key .. " on string")
+			    end
+			  })
+			  local s = "hello"
+			  s.custom_field = 42  -- triggers __newindex
+
+			  -- 12. Default string metatable must be restored after clearing
+			  settypemetatable("string", nil)
+			  -- s:upper() would now fail!
+			  settypemetatable("string", { __index = string })
+			  -- Now s:upper() works again
 
 			NOTES:
 			  - Changes affect ALL values of the type globally in the Lua runtime.
 			  - Use with care — inappropriate metamethods can break Lua semantics.
 			  - Pass nil to clear/reset a type metatable to default.
 			  - extendtypemetatable is additive: it only sets or overwrites specific keys.
+			  - Only 6 types are supported: "nil", "void", "boolean", "number", "string", "function".
+			    Types like "table", "userdata", "thread" cannot be used.
+			  - String type has a default metatable with __index = string table.
+			    Clearing it removes all string methods until __index is restored.
+			  - print() NEVER uses __tostring — it outputs raw values.
+			    Always use tostring() when you need custom formatting.
 			""";
 
 		public override void Populate(Table globals, Table ns, LuaService luaService)
@@ -188,19 +261,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var script = ctx.OwnerScript;
 			var extensions = args[1].Table;
 
-			// Get existing metatable or create a new one
-			var existingMt = script.GetTypeMetatable(dataType.Value);
-			if (existingMt == null)
-			{
-				existingMt = new Table(script);
-				script.SetTypeMetatable(dataType.Value, existingMt);
-			}
-
-			// Merge each key from extensions into the existing metatable
-			foreach (var kvp in extensions.Pairs)
-			{
-				existingMt.Set(kvp.Key, kvp.Value);
-			}
+			var metatable = script.GetTypeMetatable(dataType.Value)?.DeepMergeWith(extensions) ?? extensions;
+			script.SetTypeMetatable(dataType.Value, metatable);
 
 			return DynValue.Nil;
 		}

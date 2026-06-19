@@ -79,12 +79,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  Returns: table — array of values
 
 			--- table.merge(t1, t2)
-			  Merges t2 into t1 (modifies t1). For arrays, appends elements.
+			  Merges t2 into t1. For arrays, appends elements.
 			  For objects, overwrites/replaces keys from t2.
 			  Parameters:
-			    - t1: table — target table (mutated)
+			    - t1: table — target table
 			    - t2: table — source table
-			  Returns: table — t1 (mutated)
+			  Returns: new merged table
 
 			--- table.clone(t)
 			  Returns a shallow copy of the table.
@@ -393,33 +393,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			var target = t1.Table;
 			var source = t2.Table;
-
-			int targetLen = target.Length;
-
-			// If both are arrays, append
-			if (targetLen > 0)
-			{
-				foreach (var kv in source.Pairs)
-				{
-					if (kv.Key.Type == DataType.Number)
-					{
-						var idx = targetLen + (int)kv.Key.Number;
-						target.Set(idx, kv.Value);
-					}
-					else
-					{
-						target.Set(kv.Key, kv.Value);
-					}
-				}
-			}
-			else
-			{
-				// Object merge
-				foreach (var kv in source.Pairs)
-					target.Set(kv.Key, kv.Value);
-			}
-
-			return t1;
+			return DynValue.NewTable(target.DeepMergeWith(source));
 		}
 
 		private static DynValue Clone(ScriptExecutionContext ctx, CallbackArguments args)

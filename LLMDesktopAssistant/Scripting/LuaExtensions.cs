@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools;
 using MoonSharp.Interpreter;
 using Serilog;
 
@@ -44,6 +44,53 @@ namespace LLMDesktopAssistant.Scripting
 			newTable.MetaTable = table.MetaTable?.DeepClone(script);
 
 			return newTable;
+		}
+
+		/// <summary>
+		/// Creates a deep clone of this table merged with another table (non-mutating).
+		/// The original tables are not modified - a new table is always returned.
+		/// For keys that exist in both tables:
+		///   1) If both values are tables, they are merged recursively into a new table.
+		///   2) Otherwise, the value from <paramref name="otherTable"/> is used.
+		/// For keys only in <paramref name="otherTable"/>, they are added.
+		/// Keys only in <paramref name="table"/> are preserved (deep-cloned).
+		/// All nested tables are deep-cloned to avoid reference sharing.
+		/// </summary>
+		/// <param name="table">The source table (not modified).</param>
+		/// <param name="otherTable">The table to merge in (not modified).</param>
+		/// <param name="script">Optional script for creating new tables. Defaults to <paramref name="table"/>.OwnerScript.</param>
+		/// <returns>A new table that is the merged result of both input tables.</returns>
+		public static Table DeepMergeWith(this Table table, Table otherTable, Script? script = null)
+		{
+			if (table == null)
+				return otherTable;
+			if (otherTable == null)
+				return table;
+
+			script ??= table.OwnerScript;
+
+			var result = DeepClone(table, script);
+			foreach (var kv in otherTable.Pairs)
+			{
+				if (kv.Key.String == LuaVariables.GlobalTable)
+					continue;
+
+				var existingValue = result.Get(kv.Key);
+
+				if (existingValue.Type == DataType.Table && kv.Value.Type == DataType.Table)
+				{
+					result.Set(kv.Key, DynValue.NewTable(existingValue.Table.DeepMergeWith(kv.Value.Table, script)));
+				}
+				else
+				{
+					if (kv.Value.Type == DataType.Table)
+						result.Set(kv.Key, DynValue.NewTable(kv.Value.Table.DeepClone(script)));
+					else
+						result.Set(kv.Key, kv.Value);
+				}
+			}
+
+			return result;
 		}
 
 		/// <summary>
