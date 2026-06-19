@@ -13,17 +13,17 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	[LuaApi(chatScoped: true)]
 	public class LuaApiTools : LuaApiBase
 	{
-		public override string? Namespace => "dass.tools";
+		public override string? Namespace => "dass.tool";
 
 		public override string? Manuals => """
-			--- dass.tools — assistant's tool system
+			--- dass.tool — assistant's tool system
 
 			Provides access to all registered tools (filesystem, web search, Python
 			execution, etc.) directly from Lua scripts.
 
 			FUNCTIONS:
 
-			--- dass.tools.call(name, args)
+			--- dass.tool.call(name, args)
 			  Calls a registered tool by name and returns a structured result table.
 
 			  Parameters:
@@ -39,14 +39,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - content: string - the textual result produced by the tool
 				- structured: table or nil - the optional structured result produced by the tool
 			    - success: boolean — whether the tool executed successfully
-			    - tool: table — the table containing info of the tool that was called (see dass.tools.list() for what that table contains)
+			    - tool: table — the table containing info of the tool that was called (see dass.tool.list() for what that table contains)
 			    - status_title: string or nil — optional status title
 			    - status_icon: string or nil — optional status icon name
 
 			  Throws an error if the tool name is not found or execution fails.
 			  Use pcall() for safe error handling.
 
-			--- dass.tools.list()
+			--- dass.tool.list()
 			  Returns a table with detailed information about all registered tools.
 
 			  Returns: table — array of tool info tables. Each entry contains:
@@ -62,12 +62,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			EXAMPLES:
 
 			  -- Flip a coin (structured result)
-			  local r = dass.tools.call("random-coin_flip", {})
+			  local r = dass.tool.call("random-coin_flip", {})
 			  print("Success:", r.success)
 			  print("Result:", r.content)
 
 			  -- Search the web
-			  local r = dass.tools.call("web-search", {
+			  local r = dass.tool.call("web-search", {
 			    query = "weather in London",
 			    maxResults = 3
 			  })
@@ -76,7 +76,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  end
 
 			  -- Read a file
-			  local r = dass.tools.call("fs-read_entry", {
+			  local r = dass.tool.call("fs-read_entry", {
 			    path = "README.md"
 			  })
 			  print(r.content)

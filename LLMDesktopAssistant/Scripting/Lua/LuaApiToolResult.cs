@@ -7,17 +7,17 @@ using MoonSharp.Interpreter;
 namespace LLMDesktopAssistant.Scripting.Lua
 {
 	/// <summary>
-	/// Lua API for reactive tool result: <c>dass.tool_result.*</c>.
+	/// Lua API for reactive tool result: <c>dass.tool.result.*</c>.
 	/// Provides access to the current tool's <see cref="ReactiveToolResult"/>
 	/// for streaming output, progress updates, status icons, and completion control.
 	/// </summary>
-	[LuaApi(chatScoped: true)]
+	[LuaApi(chatScoped: false)]
 	public class LuaApiToolResult : LuaApiBase
 	{
-		public override string? Namespace => "dass.tool_result";
+		public override string? Namespace => "dass.tool.result";
 
 		public override string? Manuals => """
-			--- dass.tool_result — reactive tool result API
+			--- dass.tool.result — reactive tool result API
 
 			Provides access to the current tool's reactive result for streaming
 			output, progress updates, and completion control.
@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			FUNCTIONS:
 
-			--- dass.tool_result.get()
+			--- dass.tool.result.get()
 			  Returns the current reactive result object (table), or nil if not in a tool context.
 			  The returned table has fields (read-only):
 			    - content: string — current accumulated output
@@ -38,36 +38,36 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - status_title: string or nil — current status title
 			    - use_markdown: boolean — whether content is rendered as Markdown
 
-			--- dass.tool_result.write(line)
+			--- dass.tool.result.write(line)
 			  Appends a line of text to the result output.
 			  Parameters:
 			    - line: string — line to append
 
-			--- dass.tool_result.write_lines(lines)
+			--- dass.tool.result.write_lines(lines)
 			  Appends multiple lines to the result output at once.
 			  Parameters:
 			    - lines: table — array of strings
 
-			--- dass.tool_result.set_content(text)
+			--- dass.tool.result.set_content(text)
 			  Replaces the entire result content with the given text.
 			  Parameters:
 			    - text: string — new content
 
-			--- dass.tool_result.set_progress(value, [min], [max])
+			--- dass.tool.result.set_progress(value, [min], [max])
 			  Sets the progress of the tool execution with optional range limits.
 			  Parameters:
 			    - value: number or nil — progress value, or nil for indeterminate
 			    - min: number (optional) — minimum progress value (default: 0.0)
 			    - max: number (optional) — maximum progress value (default: 1.0)
 
-			--- dass.tool_result.get_progress()
+			--- dass.tool.result.get_progress()
 			  Returns the current progress value.
 			  Returns: table with fields:
 			    - value: number or nil — current progress (nil = indeterminate)
 			    - min: number — minimum progress value
 			    - max: number — maximum progress value
 
-			--- dass.tool_result.set_status(icon, title)
+			--- dass.tool.result.set_status(icon, title)
 			  Sets the status icon and title shown in the UI next to the tool name.
 			  Parameters:
 			    - icon: string — MaterialIconKind name (e.g. "File", "Web", "Check", "Download")
@@ -75,50 +75,50 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - title: string — status title text (e.g. "Downloading file...")
 			      Pass empty string or nil to keep current title.
 
-			--- dass.tool_result.set_structured(data)
+			--- dass.tool.result.set_structured(data)
 			  Sets the structured result data (Lua table → JSON).
 			  Parameters:
 			    - data: table — structured data to return alongside text content
 
-			--- dass.tool_result.use_markdown(enabled)
+			--- dass.tool.result.use_markdown(enabled)
 			  Sets whether the result content should be rendered as Markdown.
 			  Parameters:
 			    - enabled: boolean — true to enable Markdown rendering
 
-			--- dass.tool_result.complete([success])
+			--- dass.tool.result.complete([success])
 			  Completes the tool execution. After calling this, further writes are ignored.
 			  Parameters:
 			    - success: boolean (optional) — true for success (default), false for error
 
-			--- dass.tool_result.complete_with_success()
+			--- dass.tool.result.complete_with_success()
 			  Completes the tool execution with success status.
 
-			--- dass.tool_result.complete_with_error()
+			--- dass.tool.result.complete_with_error()
 			  Completes the tool execution with error status.
 
-			--- dass.tool_result.clear()
+			--- dass.tool.result.clear()
 			  Clears all result content lines.
 
-			--- dass.tool_result.available()
+			--- dass.tool.result.available()
 			  Checks whether a tool execution context is available (i.e. we are inside a running tool).
-			  Returns: boolean — true if dass.tool_result functions can be used
+			  Returns: boolean — true if dass.tool.result functions can be used
 
 			EXAMPLES:
 
 			  -- Streaming output with progress
-			  dass.tool_result.set_status("Download", "Downloading...")
-			  dass.tool_result.set_progress(0.0)
-			  dass.tool_result.write("Starting download...")
+			  dass.tool.result.set_status("Download", "Downloading...")
+			  dass.tool.result.set_progress(0.0)
+			  dass.tool.result.write("Starting download...")
 			  -- ... do work ...
-			  dass.tool_result.set_progress(0.5)
-			  dass.tool_result.write("Halfway there!")
+			  dass.tool.result.set_progress(0.5)
+			  dass.tool.result.write("Halfway there!")
 			  -- ... more work ...
-			  dass.tool_result.set_progress(1.0)
-			  dass.tool_result.write("Done!")
-			  dass.tool_result.complete_with_success()
+			  dass.tool.result.set_progress(1.0)
+			  dass.tool.result.write("Done!")
+			  dass.tool.result.complete_with_success()
 
 			  -- Structured result
-			  dass.tool_result.set_structured({
+			  dass.tool.result.set_structured({
 			    result = "ok",
 			    items = { 1, 2, 3 },
 			    metadata = {
@@ -126,12 +126,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			      version = 2
 			    }
 			  })
-			  dass.tool_result.complete(true)
+			  dass.tool.result.complete(true)
 
 			  -- Error case
-			  dass.tool_result.set_status("Alert", "Something went wrong")
-			  dass.tool_result.write("Error: " .. tostring(err))
-			  dass.tool_result.complete_with_error()
+			  dass.tool.result.set_status("Alert", "Something went wrong")
+			  dass.tool.result.write("Error: " .. tostring(err))
+			  dass.tool.result.complete_with_error()
 
 			NOTES:
 			  - All functions are no-ops if not in a tool execution context.

@@ -74,6 +74,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		static LuaApiIcons()
 		{
 			_iconMap = Enum.GetValues<MaterialIconKind>()
+				.DistinctBy(k => k.ToString().ToLowerInvariant())
 				.ToDictionary(k => k.ToString(), StringComparer.OrdinalIgnoreCase);
 			_allIconNames = _iconMap.Keys.ToArray();
 
