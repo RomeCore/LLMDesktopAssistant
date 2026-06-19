@@ -73,6 +73,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - func: function — the function to execute
 			  Returns: duration_ms (number), ... (function return values)
 
+			--- time.stopwatch()
+			  Creates a new stopwatch object for measuring elapsed time.
+			  Returns: stopwatch userdata with :elapsed(), :elapsed_ns(),
+			            :reset(), and :to_string() methods.
+			""";
+
+		/* REMOVED MANUALS
+		
 			--- time.with_timeout(func, timeout_ms)
 			  Executes a function in a snapshot runtime with a timeout.
 			  If the function exceeds the timeout, it is abandoned.
@@ -81,9 +89,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - timeout_ms: number — timeout in milliseconds
 			  Returns:
 			    - ok: boolean — true if completed within timeout
-			    - result or error: any — return value or error message
 			    - elapsed_ms: number — actual execution time
-
+			    - result or error: any — return value or error message
+		
 			--- time.set_timeout(ms, callback)
 			  Schedules a callback to run once after the specified delay.
 			  The callback runs in an isolated snapshot runtime.
@@ -104,11 +112,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    end)
 			    t:cancel()  -- stop the interval
 
-			--- time.stopwatch()
-			  Creates a new stopwatch object for measuring elapsed time.
-			  Returns: stopwatch userdata with :elapsed(), :elapsed_ns(),
-			            :reset(), and :to_string() methods.
-			""";
+		 */
 
 		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
@@ -120,13 +124,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			ns["format"] = DynValue.NewCallback(Format);
 			ns["convert"] = DynValue.NewCallback(Convert);
 			ns["measure"] = DynValue.NewCallback(Measure);
-			ns["with_timeout"] = DynValue.NewCallback(WithTimeout);
-			ns["set_timeout"] = DynValue.NewCallback(SetTimeout);
-			ns["set_interval"] = DynValue.NewCallback(SetInterval);
 			ns["stopwatch"] = DynValue.NewCallback(NewStopwatch);
+			// These are broken (thanks to moonsharp)
+			// ns["with_timeout"] = DynValue.NewCallback(WithTimeout);
+			// ns["set_timeout"] = DynValue.NewCallback(SetTimeout);
+			// ns["set_interval"] = DynValue.NewCallback(SetInterval);
 		}
-
-		// ─── now* ────────────────────────────────────────────────────────────
 
 		private static DynValue Now(ScriptExecutionContext ctx, CallbackArguments args)
 		{
@@ -375,14 +378,19 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			sw.Stop();
 			var elapsedMs = sw.Elapsed.TotalMilliseconds;
 
-			var rt = new Table(script);
-			rt[1] = DynValue.NewNumber(elapsedMs);
-			if (result.Type == DataType.Table && result.Table.Length > 0)
-				for (int i = 1; i <= result.Table.Length; i++) rt[i + 1] = result.Table.Get(i);
-			else if (result.Type != DataType.Nil && result.Type != DataType.Void)
-				rt[2] = result;
+			// Return elapsed_ms as first value, then unpack the original function's returns
+			if (result.Type == DataType.Tuple)
+			{
+				var tuple = result.Tuple;
+				var returns = new DynValue[tuple.Length + 1];
+				returns[0] = DynValue.NewNumber(elapsedMs);
+				Array.Copy(tuple, 0, returns, 1, tuple.Length);
+				return DynValue.NewTuple(returns);
+			}
+			if (result.Type != DataType.Nil && result.Type != DataType.Void)
+				return DynValue.NewTuple(DynValue.NewNumber(elapsedMs), result);
 
-			return DynValue.NewTable(rt);
+			return DynValue.NewNumber(elapsedMs);
 		}
 
 		private static DynValue WithTimeout(ScriptExecutionContext ctx, CallbackArguments args)
@@ -397,16 +405,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var func = args[0];
 			var script = ctx.GetScript();
 
-			// Run function in a snapshot runtime with timeout
 			var sw = Stopwatch.StartNew();
-			var snapshot = script.CreateSnapshot();
 			DynValue? result = null;
 			Exception? error = null;
 			var cts = new CancellationTokenSource();
 
 			var task = Task.Run(() =>
 			{
-				try { result = snapshot.Call(func); }
+				try { result = script.Call(func.Function); }
 				catch (Exception ex) { error = ex; }
 			}, cts.Token);
 
@@ -416,34 +422,39 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			if (finished)
 			{
-				Table rt;
-
 				if (error != null)
+					return DynValue.NewTuple(
+						DynValue.NewBoolean(false),
+						DynValue.NewNumber(elapsedMs),
+						DynValue.NewString(error.Message));
+
+				if (result!.Type == DataType.Tuple)
 				{
-					rt = new Table(script);
-					rt[1] = DynValue.NewBoolean(false);
-					rt[2] = DynValue.NewString($"Function error: {error.Message}");
-					rt[3] = DynValue.NewNumber(elapsedMs);
-					return DynValue.NewTable(rt);
+					var tuple = result.Tuple;
+					var returns = new DynValue[tuple.Length + 2];
+					returns[0] = DynValue.NewBoolean(true);
+					returns[1] = DynValue.NewNumber(elapsedMs);
+					Array.Copy(tuple, 0, returns, 2, tuple.Length);
+					return DynValue.NewTuple(returns);
 				}
 
-				rt = new Table(script);
-				rt[1] = DynValue.NewBoolean(true);
-				if (result!.Type == DataType.Table && result.Table.Length > 0)
-					for (int i = 1; i <= result.Table.Length; i++) rt[i + 1] = result.Table.Get(i);
-				else if (result.Type != DataType.Nil && result.Type != DataType.Void)
-					rt[2] = result;
-				rt[3] = DynValue.NewNumber(elapsedMs);
-				return DynValue.NewTable(rt);
+				if (result.Type != DataType.Nil && result.Type != DataType.Void)
+					return DynValue.NewTuple(
+						DynValue.NewBoolean(true),
+						DynValue.NewNumber(elapsedMs),
+						result);
+
+				return DynValue.NewTuple(
+					DynValue.NewBoolean(true),
+					DynValue.NewNumber(elapsedMs));
 			}
 			else
 			{
 				cts.Cancel(); // Abandon the background task
-				var rt = new Table(script);
-				rt[1] = DynValue.NewBoolean(false);
-				rt[2] = DynValue.NewString($"Timeout exceeded: {FormatAuto(elapsedMs)} (limit was {FormatAuto(timeoutMs)})");
-				rt[3] = DynValue.NewNumber(elapsedMs);
-				return DynValue.NewTable(rt);
+				return DynValue.NewTuple(
+					DynValue.NewBoolean(false),
+					DynValue.NewNumber(elapsedMs),
+					DynValue.NewString($"Timeout exceeded: {FormatAuto(elapsedMs)} (limit was {FormatAuto(timeoutMs)})"));
 			}
 		}
 
