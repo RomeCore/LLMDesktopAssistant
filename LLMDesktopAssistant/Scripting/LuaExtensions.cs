@@ -38,13 +38,24 @@ namespace LLMDesktopAssistant.Scripting
 			return newTable;
 		}
 
-		public static ToolExecutionContext? TryGetToolExecutionContext(this ScriptExecutionContext ctx)
+		public static T? TryGetUserData<T>(this ScriptExecutionContext ctx, string variableName)
+			where T : class
 		{
 			var globals = ctx.CurrentGlobalEnv ?? ctx.OwnerScript.Globals;
-			var tecDv = globals.Get("_dass_tec");
-			if (tecDv.Type == DataType.UserData)
-				return tecDv.ToObject() as ToolExecutionContext;
+			var userData = globals.Get(variableName);
+			if (userData.Type == DataType.UserData)
+				return userData.ToObject() as T;
 			return null;
+		}
+
+		public static ToolExecutionContext? TryGetToolExecutionContext(this ScriptExecutionContext ctx)
+		{
+			return TryGetUserData<ToolExecutionContext>(ctx, LuaVariables.ToolExecutionContext);
+		}
+
+		public static ReactiveToolResult? TryGetReactiveToolResult(this ScriptExecutionContext ctx)
+		{
+			return TryGetUserData<ReactiveToolResult>(ctx, LuaVariables.ToolReactiveResult);
 		}
 	}
 }

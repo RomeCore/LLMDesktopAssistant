@@ -30,9 +30,9 @@ namespace LLMDesktopAssistant.Scripting
 			_scriptManager = scriptManager;
 			Namespaces = _namespaces.AsReadOnly();
 
-			_lua.Globals.Set("_ns_api", DynValue.NewBoolean(true));
-			_lua.Globals.Set("_ns_part", DynValue.NewString("_G"));
-			_lua.Globals.Set("_ns_path", DynValue.NewString("_G"));
+			_lua.Globals.Set(LuaVariables.NamespaceApiMarker, DynValue.NewBoolean(true));
+			_lua.Globals.Set(LuaVariables.NamespacePartPath, DynValue.NewString(LuaVariables.GlobalTable));
+			_lua.Globals.Set(LuaVariables.NamespaceFullPath, DynValue.NewString(LuaVariables.GlobalTable));
 
 			foreach (var api in apis)
 				RegisterApi(api);
@@ -54,11 +54,11 @@ namespace LLMDesktopAssistant.Scripting
 			var ns = api.Namespace != null ? ResolveNamespace(api.Namespace) : globals;
 			api.Populate(globals, ns, this);
 
-			var manuals = ns.Get("_manuals");
+			var manuals = ns.Get(LuaVariables.NamespaceManuals);
 			if (manuals.Type != DataType.Table)
 			{
 				manuals = DynValue.NewTable(_lua);
-				ns.Set("_manuals", manuals);
+				ns.Set(LuaVariables.NamespaceManuals, manuals);
 			}
 			var apiManuals = api.Manuals;
 			if (apiManuals != null)
@@ -93,7 +93,7 @@ namespace LLMDesktopAssistant.Scripting
 					catch (Exception ex)
 					{
 						Log.Error(ex, "Failed to execute user script: {ScriptPath} (namespace: {Namespace}), Error: {ErrorMessage}",
-							script.Path, script.Namespace ?? "*global namespace*", ex.Message);
+							script.Path, script.Namespace ?? LuaVariables.GlobalTable, ex.Message);
 					}
 				}
 			}
@@ -149,19 +149,19 @@ namespace LLMDesktopAssistant.Scripting
 
 					var table = next.Table;
 					_namespaces.Add(accumulatedPath.ToString());
-					table.Set("_ns_api", DynValue.NewBoolean(true));
-					table.Set("_ns_part", DynValue.NewString(part));
-					table.Set("_ns_path", DynValue.NewString(accumulatedPath.ToString()));
+					table.Set(LuaVariables.NamespaceApiMarker, DynValue.NewBoolean(true));
+					table.Set(LuaVariables.NamespacePartPath, DynValue.NewString(part));
+					table.Set(LuaVariables.NamespaceFullPath, DynValue.NewString(accumulatedPath.ToString()));
 
 					result.Set(part, next);
 				}
-				else if (!next.Table.Get("_ns_api").CastToBool())
+				else if (!next.Table.Get(LuaVariables.NamespaceApiMarker).CastToBool())
 				{
 					var table = next.Table;
 					_namespaces.Add(accumulatedPath.ToString());
-					table.Set("_ns_api", DynValue.NewBoolean(true));
-					table.Set("_ns_part", DynValue.NewString(part));
-					table.Set("_ns_path", DynValue.NewString(accumulatedPath.ToString()));
+					table.Set(LuaVariables.NamespaceApiMarker, DynValue.NewBoolean(true));
+					table.Set(LuaVariables.NamespacePartPath, DynValue.NewString(part));
+					table.Set(LuaVariables.NamespaceFullPath, DynValue.NewString(accumulatedPath.ToString()));
 				}
 
 				result = next.Table;
@@ -189,7 +189,7 @@ namespace LLMDesktopAssistant.Scripting
 					value = DynValue.NewTable(value.Table.DeepClone(snapshotLua));
 				snapshotGlobals.Set(kvp.Key, value);
 			}
-			snapshotGlobals.Set("_G", DynValue.NewTable(snapshotGlobals));
+			snapshotGlobals.Set(LuaVariables.GlobalTable, DynValue.NewTable(snapshotGlobals));
 
 			return snapshotLua;
 		}

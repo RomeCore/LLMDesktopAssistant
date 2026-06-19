@@ -75,16 +75,16 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					{
 						scriptResult = _lua.ExecuteSnapshotted(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
 						{
-							g["_dass_tool_ctx"] = UserData.Create(context);
-							g["_dass_tool_result"] = UserData.Create(reactiveResult);
+							g[LuaVariables.ToolExecutionContext] = UserData.Create(context);
+							g[LuaVariables.ToolReactiveResult] = UserData.Create(reactiveResult);
 						});
 					}
 					else
 					{
 						scriptResult = await _lua.ExecuteSyncronizedAsync(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
 						{
-							g["_dass_tool_ctx"] = UserData.Create(context);
-							g["_dass_tool_result"] = UserData.Create(reactiveResult);
+							g[LuaVariables.ToolExecutionContext] = UserData.Create(context);
+							g[LuaVariables.ToolReactiveResult] = UserData.Create(reactiveResult);
 						});
 					}
 

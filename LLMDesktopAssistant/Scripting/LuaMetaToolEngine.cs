@@ -136,8 +136,8 @@ namespace LLMDesktopAssistant.Scripting
 						var scriptResult = _luaService.ExecuteSnapshotted(tool.ExecutionCode, print => reactiveResult.ResultContentLines.Add(print), g =>
 						{
 							g["tool_args"] = StructuredLuaConverter.JsonNodeToDynValue(g.OwnerScript, args);
-							g["_dass_tool_ctx"] = UserData.Create(context);
-							g["_dass_tool_result"] = UserData.Create(reactiveResult);
+							g[LuaVariables.ToolExecutionContext] = UserData.Create(context);
+							g[LuaVariables.ToolReactiveResult] = UserData.Create(reactiveResult);
 						});
 						if (reactiveResult.StructuredResult == null)
 							reactiveResult.StructuredResult = StructuredLuaConverter.DynValueToJsonNode(scriptResult);
@@ -156,78 +156,6 @@ namespace LLMDesktopAssistant.Scripting
 
 				return Task.FromResult(reactiveResult);
 			};
-		}
-
-		private static string SerializeNodeToLua(JsonNode? node)
-		{
-			if (node == null)
-				return "nil";
-
-			return node switch
-			{
-				JsonValue value => SerializeValueToLua(value),
-				JsonObject obj => SerializeObjectToLua(obj),
-				JsonArray arr => SerializeArrayToLua(arr),
-				_ => throw new NotSupportedException($"Unsupported node type: {node.GetType()}")
-			};
-		}
-
-		private static string SerializeValueToLua(JsonValue value)
-		{
-			switch (value.GetValueKind())
-			{
-				case JsonValueKind.Null:
-					return "nil";
-				case JsonValueKind.True:
-					return "true";
-				case JsonValueKind.False:
-					return "false";
-				case JsonValueKind.String:
-					var str = value.GetValue<string>();
-					// Escape for Lua strings
-					var escaped = str
-						.Replace("\\", "\\\\")
-						.Replace("\"", "\\\"")
-						.Replace("\n", "\\n")
-						.Replace("\r", "\\r")
-						.Replace("\t", "\\t");
-					return $"\"{escaped}\"";
-				case JsonValueKind.Number:
-					return value.ToJsonString();
-				default:
-					return value.ToJsonString();
-			}
-		}
-
-		private static string SerializeObjectToLua(JsonObject obj)
-		{
-			var parts = new List<string>();
-
-			foreach (var kvp in obj)
-			{
-				var key = kvp.Key;
-				// Check if key is a valid Lua identifier
-				bool isValidIdent = Regex.IsMatch(key, @"^[a-zA-Z_][a-zA-Z0-9_]*$");
-				var keyStr = isValidIdent
-					? key
-					: "[" + SerializeValueToLua(JsonValue.Create(key)) + "]";
-				var valueStr = SerializeNodeToLua(kvp.Value);
-				parts.Add($"{keyStr} = {valueStr}");
-			}
-
-			return "{" + string.Join(", ", parts) + "}";
-		}
-
-		private static string SerializeArrayToLua(JsonArray arr)
-		{
-			var items = new List<string>();
-
-			foreach (var item in arr)
-			{
-				items.Add(SerializeNodeToLua(item));
-			}
-
-			return "{" + string.Join(", ", items) + "}";
 		}
 	}
 }
