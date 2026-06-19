@@ -87,7 +87,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						{
 							StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
 							StatusTitle = $"**{path}** *(-{removed} +{added})*",
-							ExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate
+							ExpectedBehaviour = ToolBehaviour.FileEdit
 						};
 					}
 					catch

@@ -133,7 +133,7 @@ namespace LLMDesktopAssistant.Scripting
 				{
 					try
 					{
-						var scriptResult = _luaService.Execute(tool.ExecutionCode, print => reactiveResult.ResultContentLines.Add(print), g =>
+						var scriptResult = _luaService.ExecuteSnapshotted(tool.ExecutionCode, print => reactiveResult.ResultContentLines.Add(print), g =>
 						{
 							g["tool_args"] = StructuredLuaConverter.JsonNodeToDynValue(g.OwnerScript, args);
 							g["_dass_tool_ctx"] = UserData.Create(context);

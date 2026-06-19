@@ -5,9 +5,10 @@ namespace LLMDesktopAssistant.Scripting
 {
 	public static class LuaExtensions
 	{
-		public static Table ShallowClone(this Table table)
+		public static Table ShallowClone(this Table table, Script? script = null)
 		{
-			var newTable = new Table(table.OwnerScript);
+			script ??= table.OwnerScript;
+			var newTable = new Table(script);
 
 			foreach (var kv in table.Pairs)
 			{
@@ -19,16 +20,17 @@ namespace LLMDesktopAssistant.Scripting
 			return newTable;
 		}
 
-		public static Table DeepClone(this Table table)
+		public static Table DeepClone(this Table table, Script? script = null)
 		{
-			var newTable = new Table(table.OwnerScript);
+			script ??= table.OwnerScript;
+			var newTable = new Table(script);
 
 			foreach (var kv in table.Pairs)
 			{
 				if (kv.Key.String == "_G")
 					continue;
 				if (kv.Value.Type == DataType.Table)
-					newTable.Set(kv.Key, DynValue.NewTable(DeepClone(kv.Value.Table)));
+					newTable.Set(kv.Key, DynValue.NewTable(DeepClone(kv.Value.Table, script)));
 				else
 					newTable.Set(kv.Key, kv.Value);
 			}

@@ -191,7 +191,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 				if (filters.Type == DataType.String)
 				{
-					template = _templateLibrary.Retrieve(filters.String);
+					template = _templateLibrary.RetrieveAll(filters.String).Last();
 				}
 				else
 				{
@@ -248,9 +248,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					}
 
 					if (id != null)
-						template = _templateLibrary.Retrieve(id, metadatas.ToArray());
+						template = _templateLibrary.RetrieveAll(id, metadatas.ToArray()).Last();
 					else
-						template = _templateLibrary.Retrieve(metadatas.ToArray());
+						template = _templateLibrary.RetrieveAll(metadatas.ToArray()).Last();
 				}
 
 				if (template is ITextTemplate textTemplate)

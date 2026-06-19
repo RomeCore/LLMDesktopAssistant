@@ -29,7 +29,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			globals["_NS"] = ns;
 			try
 			{
-				luaService.Execute(Script);
+				luaService.ExecuteSyncronized(Script);
 			}
 			finally
 			{

@@ -33,7 +33,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			  Supports BATCH EXECUTION: pass multiple property tables to run multiple agents
 			  concurrently. Each agent executes independently and the results are returned
-			  as an array of response arrays.
+			  as an array of response messages. If any of agent execution failed, the failed 
+			  agent's response returns error string instead of response messages.
 
 			  Parameters:
 				- properties: table (required for each call) — Contains:
@@ -65,9 +66,30 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			
 				  - model: string (optional) — Name of the model to use.
 					If omitted, the chat's "AgenticToolsModel" is used.
-				  - tools: table (optional) — Array of tool names (strings) to restrict which tools
-					the agent can use. If omitted, all available tools are exposed.
-					Example: { "web-search", "calculate" }
+				  - tools: table (optional) — Mixed array of tool names (strings) and/or
+					callback tool definitions (tables). If omitted, all registered tools are exposed.
+
+					String entries reference registered tools by name:
+					  { "web-search", "fs-read_entry" }
+
+					Table entries define ad-hoc Lua callback tools:
+					  {
+					    name = "my_tool",
+					    description = "Does something useful.",
+					    parameters = {
+					      type = "object",
+					      properties = {
+					        x = { type = "number" },
+					        y = { type = "number" }
+					      },
+					      required = { "x", "y" }
+					    },
+					    callback = function(args)
+					      return { content = "Result: " .. (args.x + args.y) }
+					    end
+					  }
+
+					Mixed example: { "web-search", { name = "calc", ... } }
 
 			  Returns:
 				- If a single property table is passed: table — array of response messages
@@ -92,7 +114,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				  { role = "user", content = "Say hello!" }
 				}
 			  })
-			  print(r[1].content)
+			  print(table.last(r).content)
 
 			  -- With custom model and restricted tools
 			  local r = dass.agents.execute({
@@ -103,6 +125,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				model = "openrouter$google/gemini-3.5-flash",
 				tools = { "math-calculate" }
 			  })
+			  print(table.last(r).content)
 
 			  -- Multi-turn with tools
 			  local r = dass.agents.execute({
@@ -132,7 +155,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				},
 				model = "openrouter$google/gemini-3.5-flash" -- Use a vision model
 			  })
-			  print(r[1].content)
+			  print(table.last(r).content)
 
 			  -- Safe execution with pcall
 			  local ok, result = pcall(dass.agents.execute, {
@@ -142,10 +165,37 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				}
 			  })
 			  if ok then
-				print("Answer:", result[1].content)
+				print("Answer:", table.last(r).content)
 			  else
 				print("Failed:", result)
 			  end
+
+			  -- Custom callback tool
+			  local r = dass.agents.execute({
+			    messages = {
+			      { role = "system", content = "Use the calculator tool for math." },
+			      { role = "user", content = "What is 123 * 456?" }
+			    },
+			    tools = {
+			      {
+			        name = "calculator",
+			        description = "Multiplies two integers.",
+			        parameters = {
+			          type = "object",
+			          properties = {
+			            a = { type = "number", description = "First number" },
+			            b = { type = "number", description = "Second number" }
+			          },
+			          required = { "a", "b" }
+			        },
+			        callback = function(args)
+			          local result = args.a * args.b
+			          return tostring(result)
+			        end
+			      }
+			    }
+			  })
+			  print(table.last(r).content)  -- "123 * 456 = 56088"
 
 			  -- Batch execution: run multiple agents concurrently
 			  local results = dass.agents.execute(
@@ -160,11 +210,18 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					{ role = "system", content = "You are a comedian." },
 					{ role = "user", content = "Tell me a programming joke." }
 				  }
+				},
+				{
+				  messages = {
+					{ role = "system", content = "You are a helpful assistant." },
+					{ role = "user", content = "You response will be failed!" }
+				  }
 				}
 			  )
-			  -- results[1] is the poet's response array, results[2] is the comedian's
-			  print("Haiku:", results[1][1].content)
-			  print("Joke:", results[2][1].content)
+			  -- results[1] is the poet's response array, results[2] is the comedian's, and results[3] contain the error message as a string
+			  print("Haiku:", table.last(results[1]).content)
+			  print("Joke:", table.last(results[2]).content)
+			  print("Failed:", results[3]) -- Error message
 
 
 			NOTES:
@@ -172,18 +229,26 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  - You can override the model by passing a "model" field in options.
 			  - You can restrict tools by passing a "tools" array in options.
 			  - All tools available in the current chat are exposed to the agent by default.
+			  - Use `table.last` to access the last message in a response array,
+			    so you can ignore useless messages with tool calls.
+			  - CALLBACK TOOLS: pass table entries in the "tools" array with:
+			    name (string), description (string), parameters (JSON Schema table),
+			    and callback (function). The callback receives a table of arguments
+			    matching the schema and should return a string. Callbacks can use the full Lua API (fs, web,
+			    dass.*, etc.) and execute under a lock for thread safety.
 			  - Image attachments can be applied via `image` API (see manuals for details).
 			  - Returns the full conversation history produced by the agent,
 				including all intermediate tool calls and their results.
 			  - BATCH EXECUTION: pass multiple property tables to `execute()` to run
 				multiple agents concurrently. Each call is independent and errors
-				in one do not affect others. Use pcall() around the whole call for
-				error handling, or check individual results.
+				in one do not affect others. The function will throw exception only when
+				there's error in agent's parameters, the runtime errors just returns strings.
 			""";
 
 		private readonly Chat _chat;
 		private readonly LLModelListService _modelList;
 		private readonly IToolsetCacheService _toolsetCache;
+		private LuaService _luaService = null!;
 
 		public LuaApiAgents(Chat chat, LLModelListService modelList, IToolsetCacheService toolsetCache)
 		{
@@ -194,6 +259,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
+			_luaService = luaService;
 			ns["execute"] = DynValue.NewCallback(Execute);
 		}
 
@@ -253,8 +319,15 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					for (int i = 0; i < tasks.Count; i++)
 					{
 						var task = tasks[i];
-						tasks[0].Wait();
-						result.Append(task.Result);
+						try
+						{
+							task.Wait();
+							result.Append(task.Result);
+						}
+						catch (Exception ex)
+						{
+							result.Append(DynValue.NewString(ex.Message));
+						}
 					}
 
 					return DynValue.NewTable(result);
@@ -316,21 +389,43 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					throw new Exception("agentic model is not available.");
 			}
 
-			// Resolve tool filter
+			// Resolve tools: mixed array of strings (registered tools) and tables (callback tools)
 			HashSet<string>? toolFilter = null;
+			List<(string Name, string Description, JsonNode? Schema, DynValue Callback)> callbackToolDefs = [];
 			var toolsOption = parameters.Get("tools");
 			if (toolsOption.Type == DataType.Table)
 			{
 				toolFilter = new HashSet<string>();
 				foreach (var toolValue in toolsOption.Table.Values)
 				{
-					var toolName = toolValue.CastToString();
-					if (toolName != null)
-						toolFilter.Add(toolName);
+					if (toolValue.Type == DataType.String)
+					{
+						var toolName = toolValue.CastToString();
+						if (toolName != null)
+							toolFilter.Add(toolName);
+					}
+					else if (toolValue.Type == DataType.Table)
+					{
+						var def = toolValue.Table;
+						var cbName = def.Get("name").CastToString();
+						var cbDesc = def.Get("description").CastToString();
+						var cbSchema = StructuredLuaConverter.DynValueToJsonNode(def.Get("parameters"));
+						var cbCallback = def.Get("callback");
+
+						if (string.IsNullOrEmpty(cbName))
+							throw new Exception("callback tool definition: 'name' is required.");
+						if (cbCallback.Type != DataType.Function && cbCallback.Type != DataType.ClrFunction)
+							throw new Exception($"callback tool '{cbName}': 'callback' must be a function.");
+
+						callbackToolDefs.Add((cbName, cbDesc ?? cbName, cbSchema, cbCallback));
+					}
 				}
 			}
 
 			var tools = new List<ITool>();
+			var luaToolsLock = new object();
+
+			// Registered tools (filtered)
 			foreach (var (_, tool) in _toolsetCache.AvailableTools)
 			{
 				if (toolFilter != null && !toolFilter.Contains(tool.Name))
@@ -352,6 +447,56 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					catch (Exception ex)
 					{
 						return new ToolResult(ToolResultStatus.Error, $"Error occured while executing tool: " + ex.Message);
+					}
+				}));
+			}
+
+			// Callback tools (Lua functions)
+			foreach (var (cbName, cbDesc, cbSchema, cbCallback) in callbackToolDefs)
+			{
+				var capturedName = cbName;
+				var capturedDesc = cbDesc;
+				var capturedSchema = cbSchema;
+				var capturedCallback = cbCallback;
+				var capturedScript = script;
+
+				tools.Add(new FunctionTool(capturedName, capturedDesc, capturedSchema?.AsObject() ?? new JsonObject(),
+					async (jsonArgs, ct) =>
+				{
+					try
+					{
+						// Convert JSON args → Lua table
+						var luaArgs = StructuredLuaConverter.JsonNodeToDynValue(capturedScript, jsonArgs);
+
+						DynValue luaResult;
+						try
+						{
+							lock (luaToolsLock)
+							{
+								luaResult = capturedScript.Call(capturedCallback, luaArgs);
+							}
+						}
+						catch (Exception ex)
+						{
+							return new ToolResult(ToolResultStatus.Error, $"Error occured while executing callback tool '{capturedName}': " + ex.Message);
+						}
+
+						string content;
+						if (luaResult.Type == DataType.String)
+							content = luaResult.String;
+						else if (luaResult.Type == DataType.Nil)
+							content = string.Empty;
+						else
+							content = luaResult.ToPrintString();
+
+						if (string.IsNullOrEmpty(content))
+							content = "Tool executed successfully.";
+
+						return new ToolResult(ToolResultStatus.Success, content);
+					}
+					catch (Exception ex)
+					{
+						return new ToolResult(ToolResultStatus.Error, $"Error in callback tool '{capturedName}': {ex.Message}");
 					}
 				}));
 			}

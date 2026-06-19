@@ -69,7 +69,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				try
 				{
-					var scriptResult = _lua.Execute(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
+					var scriptResult = _lua.ExecuteSnapshotted(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
 					{
 						g["_dass_tool_ctx"] = UserData.Create(context);
 						g["_dass_tool_result"] = UserData.Create(reactiveResult);

@@ -1,3 +1,4 @@
+using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -10,6 +11,11 @@ namespace LLMDesktopAssistant
 {
 	public partial class App : Application
 	{
+		/// <summary>
+		/// Gets the current version of the application.
+		/// </summary>
+		public static Version Version { get; } = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0, 0);
+
 		protected virtual LoggerConfiguration ConfigureLogger(LoggerConfiguration config)
 		{
 			return config
