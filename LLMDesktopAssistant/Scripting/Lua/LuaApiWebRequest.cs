@@ -45,10 +45,27 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - headers: table — Response headers as key-value pairs
 			    - content_length: number — Length of the response content
 			    - content: string — Response body (sliced by start/count)
-
+			
+			--- web.status(url, [options])
+			  Checks if a website is accessible and returns detailed status info.
+			
+			  Parameters:
+			    - url: string — URL to check
+			    - options: table (optional):
+			      - timeout: number (default: 30) — Timeout in seconds
+			
+			  Returns: table with:
+			    - url: string — the checked URL
+			    - status_code: number — HTTP status code
+			    - status_description: string — Status description
+			    - is_accessible: boolean — Whether the site is reachable
+			    - response_time_ms: number — Response time in milliseconds
+			    - content_type: string or nil — Content-Type header
+			    - content_length: number or nil — Content-Length header
+			    - server: string or nil — Server header
+			
 			--- web.fetch(url, [contentType])
 			  Fetches a web page and converts it to the specified content type.
-			  Supports caching (5 min sliding expiration) for repeated fetches.
 
 			  Parameters:
 			    - url: string — URL to fetch
@@ -60,25 +77,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - content_length: number — total length of fetched content
 			    - content: string — the converted content (sliced by start/count)
 
-			--- web.status(url, [options])
-			  Checks if a website is accessible and returns detailed status info.
-
-			  Parameters:
-			    - url: string — URL to check
-			    - options: table (optional):
-			      - timeout: number (default: 30) — Timeout in seconds
-
-			  Returns: table with:
-			    - url: string — the checked URL
-			    - status_code: number — HTTP status code
-			    - status_description: string — Status description
-			    - is_accessible: boolean — Whether the site is reachable
-			    - response_time_ms: number — Response time in milliseconds
-			    - content_type: string or nil — Content-Type header
-			    - content_length: number or nil — Content-Length header
-			    - server: string or nil — Server header
-
-			--- web.parse(url, selector, [options])
+			--- web.parse(url, selector)
 			  Fetches HTML content and parses specific elements using a CSS selector.
 
 			  Parameters:
@@ -97,13 +96,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			  Parameters:
 			    - url: string — URL of the file to download
-			    - savePath: string — Path to save the file (absolute or relative to current directory)
+			    - savePath: string — Path to save the file (relative to the working directory)
 			    - options: table (optional):
 			      - headers: table (optional) — Custom headers as key-value pairs
 
 			  Returns: table with:
 			    - url: string — source URL
-			    - save_path: string — where the file was saved
 			    - file_size: number — downloaded file size in bytes
 			    - status_code: number — HTTP status code
 			    - success: boolean — whether the download succeeded
@@ -136,9 +134,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  local r = web.request("POST", "https://api.example.com/data", {
 			    headers = { ["Authorization"] = "Bearer token" },
 			    content = { key = "value" },
-			    contentType = "application/json",
-			    start = 0,
-			    count = 5000
+			    contentType = "application/json"
 			  })
 			  print(r.status_code, r.content)
 			""";
