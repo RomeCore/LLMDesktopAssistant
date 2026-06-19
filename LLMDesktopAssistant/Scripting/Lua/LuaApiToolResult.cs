@@ -329,7 +329,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				return DynValue.Nil;
 
 			var success = args[0].IsNil() || args[0].CastToBool();
-			result.Complete(success);
+			result.TryComplete(success);
 
 			return DynValue.Nil;
 		}
@@ -337,14 +337,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private DynValue CompleteWithSuccess(ScriptExecutionContext ctx, CallbackArguments args)
 		{
 			var result = GetResult(ctx);
-			result?.CompleteWithSuccess();
+			result?.TryCompleteWithSuccess();
 			return DynValue.Nil;
 		}
 
 		private DynValue CompleteWithError(ScriptExecutionContext ctx, CallbackArguments args)
 		{
 			var result = GetResult(ctx);
-			result?.CompleteWithError();
+			result?.TryCompleteWithError();
 			return DynValue.Nil;
 		}
 

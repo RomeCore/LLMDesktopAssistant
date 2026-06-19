@@ -6,10 +6,12 @@ namespace LLMDesktopAssistant.Scripting
 {
 	public static class LuaExtensions
 	{
-		public static Table ShallowClone(this Table table, Script? script = null)
+		public static Table ShallowClone(this Table table)
 		{
-			script ??= table.OwnerScript;
-			var newTable = new Table(script);
+			if (table == null)
+				return null!;
+
+			var newTable = new Table(table.OwnerScript);
 
 			foreach (var kv in table.Pairs)
 			{
@@ -17,13 +19,16 @@ namespace LLMDesktopAssistant.Scripting
 					continue;
 				newTable.Set(kv.Key, kv.Value);
 			}
-			newTable.MetaTable = table.MetaTable.DeepClone(script);
+			newTable.MetaTable = table.MetaTable.DeepClone(table.OwnerScript);
 
 			return newTable;
 		}
 
 		public static Table DeepClone(this Table table, Script? script = null)
 		{
+			if (table == null)
+				return null!;
+
 			script ??= table.OwnerScript;
 			var newTable = new Table(script);
 
@@ -36,7 +41,7 @@ namespace LLMDesktopAssistant.Scripting
 				else
 					newTable.Set(kv.Key, kv.Value);
 			}
-			newTable.MetaTable = table.MetaTable.DeepClone(script);
+			newTable.MetaTable = table.MetaTable?.DeepClone(script);
 
 			return newTable;
 		}
