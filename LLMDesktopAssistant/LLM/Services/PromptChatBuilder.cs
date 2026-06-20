@@ -504,57 +504,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			string systemPrompt = BuildSystemPrompt(summaryOfPrevMessages, agent, functions);
 			result.Insert(0, new SystemMessage(systemPrompt));
 
-			/*var array = new JsonArray();
-			foreach (var message in result)
-			{
-				switch (message)
-				{
-					case SystemMessage system:
-						array.Add(new JsonObject
-						{
-							["type"] = "system",
-							["content"] = system.Content
-						});
-						break;
-					case RCLargeLanguageModels.Messages.UserMessage user:
-						array.Add(new JsonObject
-						{
-							["type"] = "user",
-							["content"] = user.Content
-						});
-						break;
-					case RCLargeLanguageModels.Messages.AssistantMessage assistant:
-						array.Add(new JsonObject
-						{
-							["type"] = "assistant",
-							["reasoning_content"] = assistant.ReasoningContent,
-							["content"] = assistant.Content,
-							["tool_calls"] = new JsonArray(assistant.ToolCalls.Select(tc => new JsonObject
-							{
-								["type"] = "function",
-								["id"] = tc.Id,
-								["name"] = tc.ToolName,
-								["arguments"] = ((FunctionToolCall)tc).Args.DeepClone()
-							}).ToArray())
-						});
-						break;
-					case ToolMessage tool:
-						array.Add(new JsonObject
-						{
-							["type"] = "tool",
-							["id"] = tool.ToolCallId,
-							["name"] = tool.ToolName,
-							["content"] = tool.Content
-						});
-						break;
-				}
-			}
-			File.WriteAllText($"{DateTime.Now:yyyyMMddHHmmssfff}.json", array.ToJsonString(new System.Text.Json.JsonSerializerOptions
-			{
-				WriteIndented = true,
-				Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All)
-			}));*/
-
 			return result;
 		}
 	}

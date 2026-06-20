@@ -101,6 +101,13 @@
 				<ico:MaterialIcon Kind="Edit"/>
 			</Button>
 			
+			<Button Command="{Binding DeleteCommand}"
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc delete}">
+
+				<ico:MaterialIcon Kind="Delete"/>
+			</Button>
+			
 			<StackPanel Orientation="Horizontal"
 									IsVisible="{Binding BranchSelectionAvailable}"
 									Spacing="4">

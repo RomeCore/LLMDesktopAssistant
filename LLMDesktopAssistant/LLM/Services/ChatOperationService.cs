@@ -151,15 +151,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		public void EditMessage(int messageIndex, ChatMessage newMessage)
-		{
-			if (messageIndex < 0 || messageIndex >= chat.Messages.Count)
-				throw new ArgumentOutOfRangeException(nameof(messageIndex));
-
-			ClearCTS();
-			storage.EditMessage(messageIndex, newMessage);
-		}
-
 		public void SwitchBranch(int messageIndex, int branchIndex)
 		{
 			if (messageIndex < 0 || messageIndex >= chat.Messages.Count)
@@ -169,6 +160,24 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			ClearCTS();
 			storage.SwitchBranch(messageIndex, branchIndex);
+		}
+
+		public void EditMessage(int messageIndex, ChatMessage newMessage)
+		{
+			if (messageIndex < 0 || messageIndex >= chat.Messages.Count)
+				throw new ArgumentOutOfRangeException(nameof(messageIndex));
+
+			ClearCTS();
+			storage.EditMessage(messageIndex, newMessage);
+		}
+
+		public void DeleteMessageWithDescendants(int messageIndex)
+		{
+			if (messageIndex < 0 || messageIndex >= chat.Messages.Count)
+				throw new ArgumentOutOfRangeException(nameof(messageIndex));
+
+			ClearCTS();
+			storage.DeleteMessageWithDescendants(messageIndex);
 		}
 	}
 }

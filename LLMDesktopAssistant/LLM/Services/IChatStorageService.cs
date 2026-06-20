@@ -19,6 +19,12 @@ namespace LLMDesktopAssistant.LLM.Services
 		void AppendMessage(ChatMessage message);
 
 		/// <summary>
+		/// Places a new branch at the specified message index. The previous message becomes a leaf of the current chat.
+		/// </summary>
+		/// <param name="messageIndex"></param>
+		void PlaceNewBranch(int messageIndex);
+
+		/// <summary>
 		/// Switches branch at the specified message index.
 		/// </summary>
 		/// <param name="messageIndex"></param>
@@ -26,16 +32,16 @@ namespace LLMDesktopAssistant.LLM.Services
 		void SwitchBranch(int messageIndex, int newBranchIndex);
 
 		/// <summary>
-		/// Edits message in the specified message index.
-		/// </summary>
-		/// <param name="editIndex"></param>
-		/// <param name="newMessage"></param>
-		void EditMessage(int editIndex, ChatMessage newMessage);
-
-		/// <summary>
-		/// Places a new branch at the specified message index. The previous message becomes a leaf of the current chat.
+		/// Edits message into the specified message index.
 		/// </summary>
 		/// <param name="messageIndex"></param>
-		void PlaceNewBranch(int messageIndex);
+		/// <param name="newMessage"></param>
+		void EditMessage(int messageIndex, ChatMessage newMessage);
+
+		/// <summary>
+		/// Deletes message with all descendants at the specified message index and switches to sibling branch.
+		/// </summary>
+		/// <param name="messageIndex"></param>
+		void DeleteMessageWithDescendants(int messageIndex);
 	}
 }

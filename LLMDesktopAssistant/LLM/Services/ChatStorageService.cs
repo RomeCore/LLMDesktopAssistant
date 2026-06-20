@@ -207,6 +207,49 @@ namespace LLMDesktopAssistant.LLM.Services
 			chat.Messages.Add(CreateBranchedMessage(nodeModel, chatMessage, chat.Messages.Count));
 		}
 
+		public void PlaceNewBranch(int messageIndex)
+		{
+			if (messageIndex < 0 || messageIndex >= chat.Messages.Count)
+				throw new ArgumentOutOfRangeException(nameof(messageIndex));
+
+			if (!database.Database.BeginTrans())
+				throw new InvalidOperationException("Failed to begin transaction.");
+
+			var conversation = database.Chats.FindById(chatId);
+			int newLeafNodeId = -1;
+			int currentNodeId = conversation.RootNodeId;
+			int currentIndex = 0;
+
+			while (currentIndex < messageIndex)
+			{
+				var node = database.MessageNodes.FindById(currentNodeId);
+				newLeafNodeId = currentNodeId;
+				currentNodeId = node.SelectedNodeId;
+				currentIndex++;
+			}
+
+			if (newLeafNodeId != -1)
+			{
+				var leafNode = database.MessageNodes.FindById(newLeafNodeId);
+				leafNode.SelectedNodeId = -1;
+				database.MessageNodes.Update(leafNode);
+			}
+
+			if (newLeafNodeId == -1)
+				conversation.RootNodeId = -1;
+
+			conversation.LeafNodeId = newLeafNodeId;
+			conversation.LastModifiedAt = DateTime.Now;
+			database.Chats.Update(conversation);
+
+			if (!database.Database.Commit())
+				throw new InvalidOperationException("Failed to commit transaction.");
+
+			for (int i = messageIndex; i < chat.Messages.Count; i++)
+				Unsubscribe(chat.Messages[i].Message);
+			chat.Messages.RemoveRange(messageIndex, chat.Messages.Count - messageIndex);
+		}
+
 		public void SwitchBranch(int messageIndex, int newBranchIndex)
 		{
 			if (messageIndex < 0 || messageIndex >= chat.Messages.Count)
@@ -276,10 +319,10 @@ namespace LLMDesktopAssistant.LLM.Services
 			chat.Messages.ReplaceRange(messageIndex, chat.Messages.Count - messageIndex, subsequentMessages);
 		}
 
-		public void EditMessage(int editIndex, ChatMessage newMessage)
+		public void EditMessage(int messageIndex, ChatMessage newMessage)
 		{
-			if (editIndex < 0 || editIndex >= chat.Messages.Count)
-				throw new ArgumentOutOfRangeException(nameof(editIndex));
+			if (messageIndex < 0 || messageIndex >= chat.Messages.Count)
+				throw new ArgumentOutOfRangeException(nameof(messageIndex));
 
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
@@ -288,7 +331,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			int currentNodeId = conversation.RootNodeId;
 			int currentIndex = 0;
 
-			while (currentIndex < editIndex)
+			while (currentIndex < messageIndex)
 			{
 				var node = database.MessageNodes.FindById(currentNodeId);
 				currentNodeId = node.SelectedNodeId;
@@ -325,12 +368,12 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!database.Database.Commit())
 				throw new InvalidOperationException("Failed to commit transaction.");
 
-			for (int i = editIndex; i < chat.Messages.Count; i++)
+			for (int i = messageIndex; i < chat.Messages.Count; i++)
 				Unsubscribe(chat.Messages[i].Message);
-			chat.Messages.ReplaceRange(editIndex, chat.Messages.Count - editIndex, [CreateBranchedMessage(newNode, newMessage, editIndex)]);
+			chat.Messages.ReplaceRange(messageIndex, chat.Messages.Count - messageIndex, [CreateBranchedMessage(newNode, newMessage, messageIndex)]);
 		}
 
-		public void PlaceNewBranch(int messageIndex)
+		public void DeleteMessageWithDescendants(int messageIndex)
 		{
 			if (messageIndex < 0 || messageIndex >= chat.Messages.Count)
 				throw new ArgumentOutOfRangeException(nameof(messageIndex));
@@ -339,41 +382,131 @@ namespace LLMDesktopAssistant.LLM.Services
 				throw new InvalidOperationException("Failed to begin transaction.");
 
 			var conversation = database.Chats.FindById(chatId);
-			int newLeafNodeId = -1;
 			int currentNodeId = conversation.RootNodeId;
 			int currentIndex = 0;
 
 			while (currentIndex < messageIndex)
 			{
 				var node = database.MessageNodes.FindById(currentNodeId);
-				newLeafNodeId = currentNodeId;
 				currentNodeId = node.SelectedNodeId;
 				currentIndex++;
 			}
 
-			if (newLeafNodeId != -1)
+			var currentNode = database.MessageNodes.FindById(currentNodeId);
+			var siblings = database.MessageNodes
+				.Find(n => n.ParentId == currentNode.ParentId &&
+						   n.IsRootNode == currentNode.IsRootNode)
+				.OrderBy(n => n.Id)
+				.ToList();
+			int siblingIndex = siblings.FindIndex(n => n.Id == currentNodeId);
+
+			// Delete all descendants
+			var nodesToDelete = new List<int>();
+			List<int> nodesToCheck = [currentNodeId];
+
+			while (nodesToCheck.Count > 0)
 			{
-				var leafNode = database.MessageNodes.FindById(newLeafNodeId);
-				leafNode.SelectedNodeId = -1;
-				database.MessageNodes.Update(leafNode);
+				var lastElement = nodesToCheck[nodesToCheck.Count - 1];
+				var childNodes = database.MessageNodes
+					.Find(m => !m.IsRootNode && m.ParentId == lastElement)
+					.Select(m => m.Id)
+					.ToList();
+
+				nodesToDelete.Add(lastElement);
+				nodesToCheck.RemoveAt(nodesToCheck.Count - 1);
+				nodesToCheck.AddRange(childNodes);
 			}
 
-			if (newLeafNodeId == -1)
-				conversation.RootNodeId = -1;
+			for (int i = 0; i < nodesToDelete.Count; i++)
+			{
+				DeleteNode(nodesToDelete[i]);
+			}
 
-			conversation.LeafNodeId = newLeafNodeId;
-			conversation.LastModifiedAt = DateTime.Now;
-			database.Chats.Update(conversation);
+			// Select another sibling
+			List<BranchedMessage> subsequentMessages = [];
+			if (siblings.Count > 1)
+			{
+				siblingIndex--;
+				if (siblingIndex < 0)
+					siblingIndex = 0;
+				var selectedNode = siblings[siblingIndex];
 
-			if (!database.Database.Commit())
-				throw new InvalidOperationException("Failed to commit transaction.");
+				if (currentNode.IsRootNode)
+				{
+					conversation.RootNodeId = selectedNode.Id;
+				}
+				else
+				{
+					var parent = database.MessageNodes.FindById(currentNode.ParentId);
+					parent.SelectedNodeId = selectedNode.Id;
+					database.MessageNodes.Update(parent);
+				}
+
+				currentNodeId = selectedNode.Id;
+				int leafId = currentNodeId;
+				while (currentNodeId != -1)
+				{
+					var node = database.MessageNodes.FindById(currentNodeId);
+					var messageModel = database.Messages.FindById(node.MessageId);
+					subsequentMessages.Add(CreateBranchedMessage(node, CreateChatMessage(messageModel), messageIndex + subsequentMessages.Count));
+
+					leafId = currentNodeId;
+					currentNodeId = node.SelectedNodeId;
+				}
+
+				conversation.LeafNodeId = leafId;
+				if (currentNode.IsRootNode)
+					conversation.RootNodeId = selectedNode.Id;
+				conversation.LastModifiedAt = DateTime.Now;
+				database.Chats.Update(conversation);
+
+				if (!database.Database.Commit())
+					throw new InvalidOperationException("Failed to commit transaction.");
+			}
+			else
+			{
+				conversation.LeafNodeId = currentNode.IsRootNode ? -1 : currentNode.ParentId;
+				if (currentNode.IsRootNode)
+					conversation.RootNodeId = -1;
+				conversation.LastModifiedAt = DateTime.Now;
+				database.Chats.Update(conversation);
+
+				if (!database.Database.Commit())
+					throw new InvalidOperationException("Failed to commit transaction.");
+			}
 
 			for (int i = messageIndex; i < chat.Messages.Count; i++)
 				Unsubscribe(chat.Messages[i].Message);
-			chat.Messages.RemoveRange(messageIndex, chat.Messages.Count - messageIndex);
+			chat.Messages.ReplaceRange(messageIndex, chat.Messages.Count - messageIndex, subsequentMessages);
 		}
 
 
+
+		private void DeleteNode(int nodeId)
+		{
+			var node = database.MessageNodes.FindById(nodeId);
+			if (node == null) return;
+
+			var message = database.Messages.FindById(node.MessageId);
+			if (message == null)
+			{
+				database.MessageNodes.Delete(nodeId);
+				return;
+			}
+
+			database.AdditionalMessageViewModels.DeleteMany(v => v.MessageId == message.Id);
+			database.Attachments.DeleteMany(v => !v.IsParentToolCall && v.ParentId == message.Id);
+
+			var toolCalls = database.ToolCalls.Find(m => m.MessageId == message.Id).ToList();
+			foreach (var toolCall in toolCalls)
+			{
+				database.Attachments.DeleteMany(v => v.IsParentToolCall && v.ParentId == toolCall.Id);
+			}
+			database.ToolCalls.DeleteMany(m => m.MessageId == message.Id);
+
+			database.Messages.Delete(message.Id);
+			database.MessageNodes.Delete(nodeId);
+		}
 
 		private ToolCallModel CreateAndInsertToolCallModel(ToolCall toolCall, MessageModel model)
 		{

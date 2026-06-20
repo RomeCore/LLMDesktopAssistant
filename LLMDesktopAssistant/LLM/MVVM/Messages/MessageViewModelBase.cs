@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 		public ICommand RegenerateCommand { get; }
 		public ICommand ResendCommand { get; }
+		public ICommand DeleteCommand { get; }
 		public ICommand SwitchBranchCommand { get; }
 
 		public IEnumerable<int> BranchIndices =>
@@ -50,11 +51,16 @@ namespace LLMDesktopAssistant.LLM.Messages
 				chatOperator.ResendMessageAsync(branchedMessage.MessageIndex);
 			});
 
+			DeleteCommand = new RelayCommand(() =>
+			{
+				chatOperator.DeleteMessageWithDescendants(branchedMessage.MessageIndex);
+			});
+
 			SwitchBranchCommand = new RelayCommand<int>(branchIndex =>
 			{
 				chatOperator.SwitchBranch(branchedMessage.MessageIndex, branchIndex - 1);
 			},
-			branchIndex => branchIndex - 1 >= 0 && branchIndex - 1 < branchedMessage.AvailableBranchesCount);
+				branchIndex => branchIndex - 1 >= 0 && branchIndex - 1 < branchedMessage.AvailableBranchesCount);
 		}
 	}
 }
