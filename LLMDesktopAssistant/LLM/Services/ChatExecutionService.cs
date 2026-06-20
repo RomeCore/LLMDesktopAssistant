@@ -149,7 +149,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				var agent = agentManager.GetAgentDescriptor(agentId);
 				var inputMessages = promptBuilder.Build(agent);
 				toolsetCache.Invalidate(agentId);
-				var toolset = new ImmutableToolSet(toolsetCache.ValidTools.Values.Select(t => t.Tool));
+				// Lul, provider caching is fixed now!
+				var toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
 				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				var responseMessage = response.Message;
 
@@ -387,7 +388,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 					inputMessages = promptBuilder.Build(agent);
 					toolsetCache.Invalidate(agentId);
-					toolset = new ImmutableToolSet(toolsetCache.ValidTools.Values.Select(t => t.Tool));
+					toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
 					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 					responseMessage = response.Message;
 

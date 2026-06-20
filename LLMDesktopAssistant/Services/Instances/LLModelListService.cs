@@ -1,4 +1,5 @@
-﻿using RCLargeLanguageModels;
+﻿using LLMDesktopAssistant.Utils;
+using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients;
 using RCLargeLanguageModels.Clients.Deepseek;
 using RCLargeLanguageModels.Clients.Ollama;
@@ -22,7 +23,8 @@ namespace LLMDesktopAssistant.Services.Instances
 	[Service]
 	public class LLModelListService
 	{
-		static readonly DeepSeekClient deepseek = new("https://api.deepseek.com/beta", new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
+		static readonly DeepSeekClient deepseek = new("https://api.deepseek.com/beta",
+			new EnvironmentTokenAccessor("DEEPSEEK_API_KEY"));
 		static readonly OpenRouterClient openrouter = new(new EnvironmentTokenAccessor("OPENROUTER_API_KEY"));
 		static readonly OllamaClient ollama = new();
 
