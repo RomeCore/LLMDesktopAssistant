@@ -57,6 +57,7 @@ namespace LLMDesktopAssistant.Tools
 			};
 			var message = new AssistantMessage
 			{
+				CreatedAt = DateTime.Now,
 				AgentStageId = Guid.Empty,
 				SenderAgentId = Guid.Empty,
 				CompletionToken = ct

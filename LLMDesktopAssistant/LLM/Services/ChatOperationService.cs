@@ -55,6 +55,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				storage.AppendMessage(new UserMessage
 				{
+					CreatedAt = DateTime.Now,
 					Content = userInput.Content,
 					SenderLogin = userInput.SenderLogin,
 					Attachments = [..userInput.Attachments],
@@ -82,6 +83,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				storage.EditMessage(messageIndex, new UserMessage
 				{
+					CreatedAt = DateTime.Now,
 					Content = userInput.Content,
 					SenderLogin = userInput.SenderLogin,
 					Attachments = [.. userInput.Attachments],

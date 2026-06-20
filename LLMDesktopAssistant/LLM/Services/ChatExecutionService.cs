@@ -157,6 +157,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				var completionSource = new CompletionSource();
 				var domainResponseMessage = new Domain.AssistantMessage
 				{
+					CreatedAt = DateTime.Now,
 					Status = AssistantMessageStatus.Pending,
 					SenderAgentId = agentId,
 					AgentStageId = agentStageId,
@@ -395,6 +396,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					completionSource = new CompletionSource();
 					domainResponseMessage = new Domain.AssistantMessage
 					{
+						CreatedAt = DateTime.Now,
 						Status = AssistantMessageStatus.Pending,
 						SenderAgentId = agentId,
 						AgentStageId = agentStageId,

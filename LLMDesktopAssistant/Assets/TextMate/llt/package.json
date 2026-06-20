@@ -2,7 +2,7 @@
 	"name": "llt",
 	"displayName": "LLT (LLM Template)",
 	"description": "LLT template language for prompt engineering",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"contributes": {
 		"languages": [
 			{
