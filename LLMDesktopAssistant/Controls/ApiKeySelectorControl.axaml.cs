@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using Avalonia.Interactivity;
 using LLMDesktopAssistant.ApiKeys;
 using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Controls.Dialogs;
 
 namespace LLMDesktopAssistant.Controls
 {
@@ -110,8 +111,7 @@ namespace LLMDesktopAssistant.Controls
 			Dispatcher.UIThread.Post(async () =>
 			{
 				var vm = new AddApiKeyDialogViewModel();
-				var view = new AddApiKeyDialogView { DataContext = vm };
-				var result = await DialogHostAvalonia.DialogHost.Show(view);
+				var result = await DialogManager.ShowDialogAsync(vm);
 
 				if (result is true && vm.CreatedKeyId != null)
 				{
@@ -126,8 +126,7 @@ namespace LLMDesktopAssistant.Controls
 			Dispatcher.UIThread.Post(async () =>
 			{
 				var vm = new ManageApiKeysDialogViewModel();
-				var view = new ManageApiKeysDialogView { DataContext = vm };
-				await DialogHostAvalonia.DialogHost.Show(view);
+				await DialogManager.ShowDialogAsync(vm);
 				Rebuild();
 			});
 		}

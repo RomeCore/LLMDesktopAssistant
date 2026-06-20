@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Services;
@@ -105,7 +106,7 @@ namespace LLMDesktopAssistant.ApiKeys
 
 		private void Close()
 		{
-			DialogHostAvalonia.DialogHost.Close(null, null);
+			DialogManager.CloseDialog(null);
 		}
 	}
 

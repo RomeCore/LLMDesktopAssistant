@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Settings;
@@ -102,7 +103,10 @@ namespace LLMDesktopAssistant.Settings
 		public ICommand ConfirmEditIdCommand { get; }
 		public ICommand CancelEditIdCommand { get; }
 
-		public SettingsCategoryViewModel(Func<TSettings, ViewModelBase> vmFactory,
+		public bool OpenedInDialog { get; }
+		public ICommand CloseDialogCommand { get; }
+
+		public SettingsCategoryViewModel(Func<TSettings, ViewModelBase> vmFactory, bool openedInDialog,
 			Action<TSettings>? changed = null, string initialId = SettingsObject.DefaultId)
 		{
 			_vmFactory = vmFactory;
@@ -177,6 +181,12 @@ namespace LLMDesktopAssistant.Settings
 			{
 				IsEditingId = false;
 				NewId = null;
+			});
+
+			OpenedInDialog = openedInDialog;
+			CloseDialogCommand = new RelayCommand(() =>
+			{
+				DialogManager.CloseDialog();
 			});
 		}
 	}

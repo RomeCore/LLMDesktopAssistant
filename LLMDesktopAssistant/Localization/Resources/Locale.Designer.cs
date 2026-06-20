@@ -457,6 +457,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Attach.
+        /// </summary>
+        public static string attachments_manager_title {
+            get {
+                return ResourceManager.GetString("attachments_manager_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy URL to clipboard.
         /// </summary>
         public static string blazor_host_copy_url {
@@ -3540,6 +3549,150 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_allow_summaries_hint {
             get {
                 return ResourceManager.GetString("settings_allow_summaries_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Add API Key.
+        /// </summary>
+        public static string settings_apikey_add {
+            get {
+                return ResourceManager.GetString("settings_apikey_add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Add API Key.
+        /// </summary>
+        public static string settings_apikey_add_title {
+            get {
+                return ResourceManager.GetString("settings_apikey_add_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit API Key.
+        /// </summary>
+        public static string settings_apikey_edit_title {
+            get {
+                return ResourceManager.GetString("settings_apikey_edit_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Key name is required..
+        /// </summary>
+        public static string settings_apikey_error_name_required {
+            get {
+                return ResourceManager.GetString("settings_apikey_error_name_required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на API key value is required..
+        /// </summary>
+        public static string settings_apikey_error_value_required {
+            get {
+                return ResourceManager.GetString("settings_apikey_error_value_required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Manage API Keys.
+        /// </summary>
+        public static string settings_apikey_manage {
+            get {
+                return ResourceManager.GetString("settings_apikey_manage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Manage API Keys.
+        /// </summary>
+        public static string settings_apikey_manage_title {
+            get {
+                return ResourceManager.GetString("settings_apikey_manage_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Key Name.
+        /// </summary>
+        public static string settings_apikey_name {
+            get {
+                return ResourceManager.GetString("settings_apikey_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на e.g. OpenAI Production, DeepSeek Personal.
+        /// </summary>
+        public static string settings_apikey_name_placeholder {
+            get {
+                return ResourceManager.GetString("settings_apikey_name_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на None.
+        /// </summary>
+        public static string settings_apikey_none {
+            get {
+                return ResourceManager.GetString("settings_apikey_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Storage Scheme.
+        /// </summary>
+        public static string settings_apikey_scheme {
+            get {
+                return ResourceManager.GetString("settings_apikey_scheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Encrypted (AES-256).
+        /// </summary>
+        public static string settings_apikey_scheme_encrypted {
+            get {
+                return ResourceManager.GetString("settings_apikey_scheme_encrypted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Environment Variable.
+        /// </summary>
+        public static string settings_apikey_scheme_env {
+            get {
+                return ResourceManager.GetString("settings_apikey_scheme_env", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Raw (Plain Text).
+        /// </summary>
+        public static string settings_apikey_scheme_raw {
+            get {
+                return ResourceManager.GetString("settings_apikey_scheme_raw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на API Key Value.
+        /// </summary>
+        public static string settings_apikey_value {
+            get {
+                return ResourceManager.GetString("settings_apikey_value", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter your API key.
+        /// </summary>
+        public static string settings_apikey_value_placeholder {
+            get {
+                return ResourceManager.GetString("settings_apikey_value_placeholder", resourceCulture);
             }
         }
         

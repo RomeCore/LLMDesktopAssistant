@@ -7,6 +7,7 @@ using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services.Attachments;
@@ -102,6 +103,9 @@ namespace LLMDesktopAssistant.LLM.Attachments
 		public ICommand AddUrlCommand { get; }
 		public ICommand AttachFilesCommand { get; }
 
+		public bool OpenedInDialog { get; }
+		public ICommand CloseDialogCommand { get; }
+
 		public AttachmentsManagerViewModel(UserInputViewModel parent)
 		{
 			UserInput = parent;
@@ -115,10 +119,15 @@ namespace LLMDesktopAssistant.LLM.Attachments
 				// Close the dialog when there are no drafts left.
 				if (Drafts.Count == 0)
 				{
-					// TODO: Uncomment
-					// DialogHost.Close(null);
+					DialogManager.CloseDialog();
 				}
 			};
+
+			OpenedInDialog = true;
+			CloseDialogCommand = new RelayCommand(() =>
+			{
+				DialogManager.CloseDialog();
+			});
 		}
 
 		private void AddUrl()

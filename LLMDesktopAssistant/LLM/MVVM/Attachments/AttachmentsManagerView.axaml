@@ -12,50 +12,68 @@
 			 x:DataType="local:AttachmentsManagerViewModel">
 
 	<Grid Margin="10"
-		  MinWidth="400" MinHeight="250"
-		  Background="Transparent">
+			  MinWidth="400" MinHeight="250"
+			  Background="Transparent"
+				RowDefinitions="auto,auto,*">
 
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
+		<!-- Header -->
+		<DockPanel Grid.Row="0"
+							 Margin="0,0,0,10">
 
-		<Grid Margin="0,0,0,10">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-			</Grid.ColumnDefinitions>
+			<ico:MaterialIcon Kind="Paperclip" FontSize="28"/>
+
+			<TextBlock Text="{loc:Loc attachments_manager_title}"
+								 Margin="8,0,0,0"
+								 FontWeight="Bold"
+								 FontSize="20"
+								 VerticalAlignment="Center"/>
+			
+			<Button DockPanel.Dock="Right"
+							Classes="IconButton"
+							IsVisible="{Binding OpenedInDialog}"
+							VerticalAlignment="Center"
+							HorizontalAlignment="Right"
+							Command="{Binding CloseDialogCommand}">
+			
+				<ico:MaterialIcon Kind="Close"/>
+
+			</Button>
+
+		</DockPanel>
+
+		<Grid Margin="0,0,0,10"
+					Grid.Row="1"
+					ColumnDefinitions="*,auto,auto">
 
 			<TextBox x:Name="UrlInputBox"
-					 Grid.Column="0"
-					 Text="{Binding InputUrl, UpdateSourceTrigger=PropertyChanged}"
-					 PlaceholderText="{loc:Loc attachment-url_hint}"
-					 UseFloatingPlaceholder="True"
-					 VerticalContentAlignment="Center"
-					 KeyDown="OnUrlInputKeyDown"/>
+							 Grid.Column="0"
+							 Text="{Binding InputUrl, UpdateSourceTrigger=PropertyChanged}"
+							 PlaceholderText="{loc:Loc attachment-url_hint}"
+							 UseFloatingPlaceholder="True"
+							 VerticalContentAlignment="Center"
+							 KeyDown="OnUrlInputKeyDown"/>
 
 			<Button Grid.Column="1"
-					Margin="8,0,0,0"
-					Command="{Binding AddUrlCommand}"
-					Classes="BigIconButton"
-					ToolTip.Tip="{loc:Loc attachment-add_url_hint}">
+							Margin="8,0,0,0"
+							Command="{Binding AddUrlCommand}"
+							Classes="BigIconButton"
+							ToolTip.Tip="{loc:Loc attachment-add_url_hint}">
 
 				<ico:MaterialIcon Kind="Link" />
 			</Button>
 
 			<Button Grid.Column="2"
-					Margin="8,0,0,0"
-					Command="{Binding AttachFilesCommand}"
-					Classes="BigIconButton"
-					ToolTip.Tip="{loc:Loc attachment-attach_files_hint}">
+							Margin="8,0,0,0"
+							Command="{Binding AttachFilesCommand}"
+							Classes="BigIconButton"
+							ToolTip.Tip="{loc:Loc attachment-attach_files_hint}">
 
 				<ico:MaterialIcon Kind="FolderOpen" />
 			</Button>
 		</Grid>
 
-		<ItemsControl Grid.Row="1" 
-					  ItemsSource="{Binding Drafts}">
+		<ItemsControl Grid.Row="2" 
+								  ItemsSource="{Binding Drafts}">
 
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
@@ -71,21 +89,21 @@
 						<StackPanel>
 
 							<TextBlock Text="{Binding Title}"
-									   FontWeight="Bold"
-									   TextTrimming="CharacterEllipsis"/>
+												 FontWeight="Bold"
+												 TextTrimming="CharacterEllipsis"/>
 
 							<CheckBox IsChecked="{Binding CopyToWorkingDirectory}"
-									  Content="{loc:Loc attachment-copy_to_working_directory}"
-									  Margin="0,5,0,0"/>
+												Content="{loc:Loc attachment-copy_to_working_directory}"
+												Margin="0,5,0,0"/>
 
 							<CheckBox IsChecked="{Binding ApplyNative}"
-									  Content="{loc:Loc attachment-apply_native}"
-									  Margin="0,3,0,0"/>
+												Content="{loc:Loc attachment-apply_native}"
+												Margin="0,3,0,0"/>
 
 							<Button Content="{loc:Loc application-applicate_hint}"
-									Command="{Binding ApplyCommand}"
-									HorizontalAlignment="Right"
-									Margin="0,10,0,0"/>
+											Command="{Binding ApplyCommand}"
+											HorizontalAlignment="Right"
+											Margin="0,10,0,0"/>
 
 						</StackPanel>
 
@@ -97,19 +115,20 @@
 		</ItemsControl>
 
 		<Border x:Name="DropOverlay"
-				Grid.RowSpan="2"
-				Background="#2000BCD4"
-				BorderBrush="#6000BCD4"
-				BorderThickness="3"
-				CornerRadius="8"
-				IsVisible="False"
-				IsHitTestVisible="False">
+						Grid.Row="1"
+						Grid.RowSpan="2"
+						Background="#2000BCD4"
+						BorderBrush="#6000BCD4"
+						BorderThickness="3"
+						CornerRadius="8"
+						IsVisible="False"
+						IsHitTestVisible="False">
 			
 			<TextBlock Text="{loc:Loc attachment-drop_files_here}"
-					   HorizontalAlignment="Center"
-					   VerticalAlignment="Center"
-					   FontSize="18"
-					   Foreground="#FF00BCD4"/>
+								 HorizontalAlignment="Center"
+								 VerticalAlignment="Center"
+								 FontSize="18"
+								 Foreground="#FF00BCD4"/>
 		</Border>
 
 	</Grid>

@@ -14,15 +14,32 @@
 
 	<Grid RowDefinitions="auto,auto,*">
 		
-		<TextBlock Grid.Column="0"
-				   Margin="10"
-				   Text="{loc:Loc settings}"
-				   FontSize="{DynamicResource FontSizeL}"
-				   FontWeight="Bold"
-				   VerticalAlignment="Center"/>
+		<DockPanel Grid.Row="0"
+							 Margin="10"
+							 HorizontalAlignment="Stretch">
+			
+			<TextBlock Text="{loc:Loc settings}"
+								 DockPanel.Dock="Left"
+								 FontSize="{DynamicResource FontSizeL}"
+								 FontWeight="Bold"
+								 VerticalAlignment="Center"
+								 HorizontalAlignment="Left"/>
+
+			<Button DockPanel.Dock="Right"
+							Classes="IconButton"
+							IsVisible="{Binding OpenedInDialog}"
+							VerticalAlignment="Center"
+							HorizontalAlignment="Right"
+							Command="{Binding CloseDialogCommand}">
+			
+				<ico:MaterialIcon Kind="Close"/>
+
+			</Button>
+
+		</DockPanel>
 
 		<StackPanel Grid.Row="1"
-			  HorizontalAlignment="Right"
+			  HorizontalAlignment="Left"
 				Orientation="Horizontal"
 				Spacing="4"
 			  Margin="10">

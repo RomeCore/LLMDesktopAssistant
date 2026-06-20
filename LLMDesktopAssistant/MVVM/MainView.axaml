@@ -15,8 +15,7 @@
 
 	<Panel>
 
-		<dialogHost:DialogHost CloseOnClickAway="True"
-													 IsMultipleDialogsEnabled="True">
+		<dialogHost:DialogHost IsMultipleDialogsEnabled="True">
 
 			<SplitView x:Name="MainSplitView"
 								 DisplayMode="CompactInline"

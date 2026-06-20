@@ -1,7 +1,8 @@
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Services;
 
 namespace LLMDesktopAssistant.ApiKeys
 {
@@ -98,7 +99,7 @@ namespace LLMDesktopAssistant.ApiKeys
 
 			try
 			{
-if (EditingKeyId != null)
+				if (EditingKeyId != null)
 				{
 					// Edit mode — update existing key
 					_apiKeys.UpdateKey(EditingKeyId.Value, Name.Trim(), Value, Scheme);
@@ -111,7 +112,7 @@ if (EditingKeyId != null)
 					CreatedKeyId = item.Id;
 				}
 
-				DialogHostAvalonia.DialogHost.Close(null, true);
+				DialogManager.CloseDialog(true);
 			}
 			catch (Exception ex)
 			{
@@ -121,7 +122,7 @@ if (EditingKeyId != null)
 
 		private void Cancel()
 		{
-			DialogHostAvalonia.DialogHost.Close(null, false);
+			DialogManager.CloseDialog(false);
 		}
 	}
 }

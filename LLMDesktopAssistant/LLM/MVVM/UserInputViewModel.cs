@@ -257,7 +257,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			OpenSettingsCommand = new AsyncRelayCommand(async () =>
 			{
 				var viewModel = new SettingsCategoryViewModel<ChatSettings>(cs => new ChatSettingsViewModel(cs, Chat),
-					newSettings => Chat.Settings = newSettings, Chat.Settings.Id);
+					true, newSettings => Chat.Settings = newSettings, Chat.Settings.Id);
 				await DialogManager.ShowDialogAsync(viewModel);
 			});
 

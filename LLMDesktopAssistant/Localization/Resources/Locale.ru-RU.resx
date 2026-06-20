@@ -1845,4 +1845,7 @@
   <data name="settings_apikey_none" xml:space="preserve">
     <value>Нет</value>
   </data>
+  <data name="attachments_manager_title" xml:space="preserve">
+    <value>Вложить</value>
+  </data>
 </root>

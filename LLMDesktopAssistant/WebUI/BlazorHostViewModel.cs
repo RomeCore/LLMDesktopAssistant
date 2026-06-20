@@ -1,11 +1,12 @@
-using Avalonia.Input.Platform;
-using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.Settings;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
+using Avalonia.Input.Platform;
+using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Controls.Dialogs;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Settings;
 
 namespace LLMDesktopAssistant.WebUI
 {
@@ -17,6 +18,21 @@ namespace LLMDesktopAssistant.WebUI
 		private readonly WebUIStartupSettings _settings;
 
 		public WebUIStartupSettings Settings => _settings;
+
+		private bool _isRunning;
+		public bool IsRunning
+		{
+			get => _isRunning;
+			private set => SetProperty(ref _isRunning, value);
+		}
+
+		public IAsyncRelayCommand StartCommand { get; }
+		public IAsyncRelayCommand StopCommand { get; }
+		public ICommand CopyUrlCommand { get; }
+		public ICommand OpenInBrowserCommand { get; }
+
+		public bool OpenedInDialog { get; }
+		public ICommand CloseDialogCommand { get; }
 
 		public BlazorHostViewModel(IServiceProvider chatServices)
 		{
@@ -31,6 +47,12 @@ namespace LLMDesktopAssistant.WebUI
 			StopCommand = new AsyncRelayCommand(StopAsync, () => _blazorStarter != null && _blazorStarter.IsRunning);
 			CopyUrlCommand = new RelayCommand(CopyUrl);
 			OpenInBrowserCommand = new RelayCommand(OpenInBrowser);
+
+			OpenedInDialog = true;
+			CloseDialogCommand = new RelayCommand(() =>
+			{
+				DialogManager.CloseDialog();
+			});
 
 			UpdateStatus();
 		}
@@ -49,18 +71,6 @@ namespace LLMDesktopAssistant.WebUI
 			StartCommand.NotifyCanExecuteChanged();
 			StopCommand.NotifyCanExecuteChanged();
 		}
-
-		private bool _isRunning;
-		public bool IsRunning
-		{
-			get => _isRunning;
-			private set => SetProperty(ref _isRunning, value);
-		}
-
-		public IAsyncRelayCommand StartCommand { get; }
-		public IAsyncRelayCommand StopCommand { get; }
-		public ICommand CopyUrlCommand { get; }
-		public ICommand OpenInBrowserCommand { get; }
 
 		private async Task StartAsync()
 		{
