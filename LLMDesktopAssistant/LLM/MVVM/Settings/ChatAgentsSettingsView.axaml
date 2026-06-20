@@ -6,16 +6,16 @@
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ChatAgentsSettingsView"
 			 x:Name="AgentsView"
 			 x:DataType="local:ChatAgentsSettingsViewModel">
 
-	<DockPanel>
+	<StackPanel Orientation="Vertical">
 		<!-- Toolbar -->
-		<Border DockPanel.Dock="Top"
-				BorderBrush="{DynamicResource SecondaryAccentBrush}"
-				BorderThickness="0,0,0,1"
-				Padding="8,6">
+		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+						BorderThickness="0,0,0,1"
+						Padding="8,6">
 			<StackPanel Orientation="Horizontal" Spacing="4">
 				<Button Command="{Binding AddAgentCommand}" Classes="IconButton"
 						ToolTip.Tip="{loc:Loc settings_add_agent}">
@@ -30,8 +30,8 @@
 
 		<!-- Agent list -->
 		<ListBox ItemsSource="{Binding AgentOptions}"
-				 SelectedItem="{Binding SelectedAgent, Mode=TwoWay}"
-				 Margin="8">
+						 SelectedItem="{Binding SelectedAgent, Mode=TwoWay}"
+						 Margin="8">
 			<ListBox.ItemTemplate>
 				<DataTemplate DataType="local:AgentOptionViewModel">
 					<Border Padding="6,4" BorderBrush="{DynamicResource SecondaryAccentBrush}" BorderThickness="0,0,0,0.5">
@@ -78,6 +78,6 @@
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>
-	</DockPanel>
+	</StackPanel>
 
 </UserControl>

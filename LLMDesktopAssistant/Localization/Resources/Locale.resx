@@ -1797,4 +1797,52 @@
   <data name="approval_level_policyapproveorask" xml:space="preserve">
     <value>Policy: never disallow</value>
   </data>
+  <data name="settings_apikey_add" xml:space="preserve">
+    <value>Add API Key</value>
+  </data>
+  <data name="settings_apikey_add_title" xml:space="preserve">
+    <value>Add API Key</value>
+  </data>
+  <data name="settings_apikey_edit_title" xml:space="preserve">
+    <value>Edit API Key</value>
+  </data>
+  <data name="settings_apikey_manage" xml:space="preserve">
+    <value>Manage API Keys</value>
+  </data>
+  <data name="settings_apikey_manage_title" xml:space="preserve">
+    <value>Manage API Keys</value>
+  </data>
+  <data name="settings_apikey_name" xml:space="preserve">
+    <value>Key Name</value>
+  </data>
+  <data name="settings_apikey_name_placeholder" xml:space="preserve">
+    <value>e.g. OpenAI Production, DeepSeek Personal</value>
+  </data>
+  <data name="settings_apikey_value" xml:space="preserve">
+    <value>API Key Value</value>
+  </data>
+  <data name="settings_apikey_value_placeholder" xml:space="preserve">
+    <value>Enter your API key</value>
+  </data>
+  <data name="settings_apikey_scheme" xml:space="preserve">
+    <value>Storage Scheme</value>
+  </data>
+  <data name="settings_apikey_scheme_encrypted" xml:space="preserve">
+    <value>Encrypted (AES-256)</value>
+  </data>
+  <data name="settings_apikey_scheme_raw" xml:space="preserve">
+    <value>Raw (Plain Text)</value>
+  </data>
+  <data name="settings_apikey_scheme_env" xml:space="preserve">
+    <value>Environment Variable</value>
+  </data>
+  <data name="settings_apikey_error_name_required" xml:space="preserve">
+    <value>Key name is required.</value>
+  </data>
+  <data name="settings_apikey_error_value_required" xml:space="preserve">
+    <value>API key value is required.</value>
+  </data>
+  <data name="settings_apikey_none" xml:space="preserve">
+    <value>None</value>
+  </data>
 </root>

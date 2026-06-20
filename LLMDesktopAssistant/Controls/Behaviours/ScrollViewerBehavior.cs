@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 
-namespace LLMDesktopAssistant.Behaviours
+namespace LLMDesktopAssistant.Controls.Behaviours
 {
 	public class ScrollViewerBehavior
 	{

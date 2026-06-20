@@ -1,0 +1,136 @@
+using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Utils;
+
+namespace LLMDesktopAssistant.ApiKeys
+{
+	/// <summary>
+	/// ViewModel for the "Manage API Keys" dialog.
+	/// </summary>
+	public class ManageApiKeysDialogViewModel : ViewModelBase
+	{
+		private readonly IApiKeyManagerService _apiKeys;
+
+		public RangeObservableCollection<ApiKeyDisplayItem> Keys { get; } = [];
+
+		private ApiKeyDisplayItem? _selectedKey;
+		public ApiKeyDisplayItem? SelectedKey
+		{
+			get => _selectedKey;
+			set
+			{
+				if (SetProperty(ref _selectedKey, value))
+				{
+					NotifyCanExecuteChanged();
+					RaisePropertyChanged(nameof(IsKeySelected));
+				}
+			}
+		}
+
+		public bool IsKeySelected => SelectedKey != null;
+
+		public IRelayCommand AddCommand { get; }
+		public IRelayCommand DeleteCommand { get; }
+		public IRelayCommand EditCommand { get; }
+		public IRelayCommand CloseCommand { get; }
+
+		public ManageApiKeysDialogViewModel()
+		{
+			_apiKeys = ServiceRegistry.Provider.GetRequiredService<IApiKeyManagerService>();
+
+			AddCommand = new RelayCommand(Add);
+			DeleteCommand = new RelayCommand(Delete, () => IsKeySelected);
+			EditCommand = new RelayCommand(Edit, () => IsKeySelected);
+			CloseCommand = new RelayCommand(Close);
+
+			ReloadKeys();
+		}
+
+		private void NotifyCanExecuteChanged()
+		{
+			DeleteCommand.NotifyCanExecuteChanged();
+			EditCommand.NotifyCanExecuteChanged();
+		}
+
+		private void ReloadKeys()
+		{
+			Keys.Clear();
+			foreach (var key in _apiKeys.GetAllKeys().OrderBy(k => k.Name))
+				Keys.Add(new ApiKeyDisplayItem(key));
+		}
+
+		private async void Add()
+		{
+			var vm = new AddApiKeyDialogViewModel();
+			var view = new AddApiKeyDialogView { DataContext = vm };
+			var result = await DialogHostAvalonia.DialogHost.Show(view);
+
+			if (result is true)
+				ReloadKeys();
+		}
+
+		private void Delete()
+		{
+			if (SelectedKey == null)
+				return;
+
+			_apiKeys.RemoveKey(SelectedKey.Id);
+			ReloadKeys();
+			SelectedKey = null;
+		}
+
+		private async void Edit()
+		{
+			if (SelectedKey == null)
+				return;
+
+			var resolvedValue = _apiKeys.ResolveKey(SelectedKey.Id);
+
+			var editVm = new AddApiKeyDialogViewModel
+			{
+				EditingKeyId = SelectedKey.Id,
+				Name = SelectedKey.Name,
+				Value = resolvedValue ?? string.Empty,
+				Scheme = SelectedKey.StorageScheme
+			};
+
+			var view = new AddApiKeyDialogView { DataContext = editVm };
+			var result = await DialogHostAvalonia.DialogHost.Show(view);
+
+			if (result is true)
+				ReloadKeys();
+		}
+
+		private void Close()
+		{
+			DialogHostAvalonia.DialogHost.Close(null, null);
+		}
+	}
+
+	/// <summary>
+	/// Wrapper around <see cref="ApiKeysConfigurationItem"/> for display in the manager,
+	/// providing localized scheme text.
+	/// </summary>
+	public class ApiKeyDisplayItem
+	{
+		public Guid Id => Source.Id;
+		public string Name => Source.Name;
+		public ApiKeyStorageScheme StorageScheme => Source.StorageScheme;
+		public string SchemeText => StorageScheme switch
+		{
+			ApiKeyStorageScheme.Encrypted => LocalizationManager.LocalizeStatic("settings_apikey_scheme_encrypted"),
+			ApiKeyStorageScheme.Raw => LocalizationManager.LocalizeStatic("settings_apikey_scheme_raw"),
+			ApiKeyStorageScheme.EnvironmentVariable => LocalizationManager.LocalizeStatic("settings_apikey_scheme_env"),
+			_ => StorageScheme.ToString()
+		};
+
+		public ApiKeysConfigurationItem Source { get; }
+
+		public ApiKeyDisplayItem(ApiKeysConfigurationItem source)
+		{
+			Source = source;
+		}
+	}
+}

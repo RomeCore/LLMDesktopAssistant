@@ -4,7 +4,7 @@ using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using RCLargeLanguageModels.Clients;
 
-namespace LLMDesktopAssistant.Settings
+namespace LLMDesktopAssistant.Settings.Converters
 {
 	public class JsonLLModelDescriptorConverter : JsonConverter<LLModelDescriptorTracked>
 	{

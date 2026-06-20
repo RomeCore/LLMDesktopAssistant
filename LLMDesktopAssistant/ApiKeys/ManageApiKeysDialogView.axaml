@@ -1,0 +1,90 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="using:LLMDesktopAssistant.ApiKeys"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
+			 x:Class="LLMDesktopAssistant.ApiKeys.ManageApiKeysDialogView"
+			 x:DataType="local:ManageApiKeysDialogViewModel">
+
+	<StackPanel Orientation="Vertical" Spacing="8" Margin="16" Width="480" MinHeight="300">
+
+		<!-- Header -->
+		<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,6">
+			<ico:MaterialIcon Kind="KeyVariant" Width="20" Height="20" 
+							  VerticalAlignment="Center"
+							  Foreground="{DynamicResource PrimaryAccentBrush}"/>
+			<TextBlock Text="{loc:Loc settings_apikey_manage_title}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
+		</StackPanel>
+
+		<!-- Toolbar -->
+		<StackPanel Orientation="Horizontal" Spacing="6" Margin="0,0,0,4">
+			<Button Command="{Binding AddCommand}"
+							Classes="Primary">
+				<Button.Content>
+					<StackPanel Orientation="Horizontal" Spacing="4">
+						<ico:MaterialIcon Kind="AddCircle" Width="14" Height="14"/>
+						<TextBlock Text="{loc:Loc settings_apikey_add}"/>
+					</StackPanel>
+				</Button.Content>
+			</Button>
+
+			<Button Command="{Binding EditCommand}"
+							IsEnabled="{Binding IsKeySelected}">
+				<Button.Content>
+					<StackPanel Orientation="Horizontal" Spacing="4">
+						<ico:MaterialIcon Kind="Edit" Width="14" Height="14"/>
+						<TextBlock Text="{loc:Loc edit}"/>
+					</StackPanel>
+				</Button.Content>
+			</Button>
+
+			<Button Command="{Binding DeleteCommand}"
+							IsEnabled="{Binding IsKeySelected}"
+							Classes="Danger">
+				<Button.Content>
+					<StackPanel Orientation="Horizontal" Spacing="4">
+						<ico:MaterialIcon Kind="Delete" Width="14" Height="14"/>
+						<TextBlock Text="{loc:Loc delete}"/>
+					</StackPanel>
+				</Button.Content>
+			</Button>
+		</StackPanel>
+
+		<!-- Key list -->
+		<ListBox ItemsSource="{Binding Keys}"
+				 SelectedItem="{Binding SelectedKey, Mode=TwoWay}"
+				 MinHeight="180">
+			<ListBox.DataTemplates>
+				<DataTemplate x:DataType="local:ApiKeyDisplayItem">
+					<StackPanel Orientation="Horizontal" Spacing="8" Margin="4,3">
+						<ico:MaterialIcon Kind="Key" 
+										  Width="14" Height="14"
+										  VerticalAlignment="Center"
+										  Opacity="0.7"/>
+						<StackPanel Orientation="Vertical">
+							<TextBlock Text="{Binding Name}" 
+									   FontWeight="Medium"/>
+							<TextBlock Text="{Binding SchemeText}" 
+									   FontSize="{DynamicResource FontSizeS}"
+									   Opacity="0.6"/>
+						</StackPanel>
+					</StackPanel>
+				</DataTemplate>
+			</ListBox.DataTemplates>
+		</ListBox>
+
+		<!-- Close button -->
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+			<Button Content="{loc:Loc close}"
+					Command="{Binding CloseCommand}"/>
+		</StackPanel>
+
+	</StackPanel>
+
+</UserControl>

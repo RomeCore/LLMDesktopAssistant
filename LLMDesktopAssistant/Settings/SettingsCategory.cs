@@ -6,6 +6,7 @@ using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
 using RCParsing.Building.ErrorRecoveryStrategies;
+using LLMDesktopAssistant.Settings.Converters;
 
 namespace LLMDesktopAssistant.Settings
 {
@@ -27,6 +28,7 @@ namespace LLMDesktopAssistant.Settings
 			ReferenceHandler = ReferenceHandler.Preserve,
 			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
 			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+			Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),
 			Converters =
 			{
 				new JsonStringEnumConverter(),

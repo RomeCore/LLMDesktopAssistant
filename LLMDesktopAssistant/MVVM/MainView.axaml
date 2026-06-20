@@ -4,7 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:local="using:LLMDesktopAssistant.MVVM"
 			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
-			 xmlns:beh="using:LLMDesktopAssistant.Behaviours"
+			 xmlns:beh="using:LLMDesktopAssistant.Controls.Behaviours"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 xmlns:toasts="using:LLMDesktopAssistant.Controls.Toasts"
@@ -15,7 +15,8 @@
 
 	<Panel>
 
-		<dialogHost:DialogHost CloseOnClickAway="True">
+		<dialogHost:DialogHost CloseOnClickAway="True"
+													 IsMultipleDialogsEnabled="True">
 
 			<SplitView x:Name="MainSplitView"
 								 DisplayMode="CompactInline"

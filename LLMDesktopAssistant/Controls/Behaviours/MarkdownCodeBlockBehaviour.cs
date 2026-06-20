@@ -8,7 +8,7 @@ using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.UIExtensions.CodeBlockExtensions;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Behaviours
+namespace LLMDesktopAssistant.Controls.Behaviours
 {
 	public static class MarkdownCodeBlockBehaviour
 	{

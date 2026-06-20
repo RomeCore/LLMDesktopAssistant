@@ -8,7 +8,7 @@
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 xmlns:flui="using:FluentAvalonia.UI.Controls"
-			 xmlns:beh="clr-namespace:LLMDesktopAssistant.Behaviours"
+			 xmlns:beh="clr-namespace:LLMDesktopAssistant.Controls.Behaviours"
 			 x:Class="LLMDesktopAssistant.LLM.Messages.ToolCallView"
 			 x:DataType="local:ToolCallViewModel">
 	

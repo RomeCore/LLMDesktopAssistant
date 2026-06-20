@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AngleSharp.Dom;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.LogicalTree;
-using Avalonia.VisualTree;
-using LLMDesktopAssistant.UIExtensions.CodeBlockExtensions;
-using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Behaviours
+namespace LLMDesktopAssistant.Controls.Behaviours
 {
 	public static class ListBoxItemBehaviour
 	{

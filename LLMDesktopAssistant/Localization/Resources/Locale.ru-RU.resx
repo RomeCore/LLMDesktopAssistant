@@ -1797,4 +1797,52 @@
   <data name="approval_level_policyapproveorask" xml:space="preserve">
     <value>Политика: никогда не запрещать</value>
   </data>
+  <data name="settings_apikey_add" xml:space="preserve">
+    <value>Добавить API-ключ</value>
+  </data>
+  <data name="settings_apikey_add_title" xml:space="preserve">
+    <value>Добавить API-ключ</value>
+  </data>
+  <data name="settings_apikey_edit_title" xml:space="preserve">
+    <value>Изменить API-ключ</value>
+  </data>
+  <data name="settings_apikey_manage" xml:space="preserve">
+    <value>Управление API-ключами</value>
+  </data>
+  <data name="settings_apikey_manage_title" xml:space="preserve">
+    <value>Управление API-ключами</value>
+  </data>
+  <data name="settings_apikey_name" xml:space="preserve">
+    <value>Название ключа</value>
+  </data>
+  <data name="settings_apikey_name_placeholder" xml:space="preserve">
+    <value>Например: OpenAI Production, DeepSeek Personal</value>
+  </data>
+  <data name="settings_apikey_value" xml:space="preserve">
+    <value>Значение API-ключа</value>
+  </data>
+  <data name="settings_apikey_value_placeholder" xml:space="preserve">
+    <value>Введите ваш API-ключ</value>
+  </data>
+  <data name="settings_apikey_scheme" xml:space="preserve">
+    <value>Способ хранения</value>
+  </data>
+  <data name="settings_apikey_scheme_encrypted" xml:space="preserve">
+    <value>Зашифровано (AES-256)</value>
+  </data>
+  <data name="settings_apikey_scheme_raw" xml:space="preserve">
+    <value>Открытый текст</value>
+  </data>
+  <data name="settings_apikey_scheme_env" xml:space="preserve">
+    <value>Переменная окружения</value>
+  </data>
+  <data name="settings_apikey_error_name_required" xml:space="preserve">
+    <value>Название ключа обязательно.</value>
+  </data>
+  <data name="settings_apikey_error_value_required" xml:space="preserve">
+    <value>Значение API-ключа обязательно.</value>
+  </data>
+  <data name="settings_apikey_none" xml:space="preserve">
+    <value>Нет</value>
+  </data>
 </root>

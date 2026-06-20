@@ -4,7 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="clr-namespace:LLMDesktopAssistant.LLM.MVVM"
-			 xmlns:beh="clr-namespace:LLMDesktopAssistant.Behaviours"
+			 xmlns:beh="clr-namespace:LLMDesktopAssistant.Controls.Behaviours"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.ChatView"
 			 x:DataType="local:ChatViewModel">
