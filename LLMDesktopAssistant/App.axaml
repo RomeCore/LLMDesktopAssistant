@@ -6,19 +6,6 @@
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 RequestedThemeVariant="Dark">
 	
-	<Application.Styles>
-		<FluentTheme />
-		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/Theme/Theme.axaml"/>
-
-		<materialIcons:MaterialIconStyles />
-		<dialogHostAvalonia:DialogHostStyles />
-		<StyleInclude Source="avares://LiveMarkdown.Avalonia/Styles.axaml"/>
-		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/CommonStyles.axaml"/>
-		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/ButtonsIcons.axaml"/>
-		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/MarkdownStyles.axaml"/>
-
-	</Application.Styles>
-
 	<Application.Resources>
 		<ResourceDictionary>
 			
@@ -35,6 +22,20 @@
 		</ResourceDictionary>
 	</Application.Resources>
 	
+	<Application.Styles>
+		<FluentTheme />
+
+		<materialIcons:MaterialIconStyles />
+		<dialogHostAvalonia:DialogHostStyles />
+
+		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/Theme/Theme.axaml"/>
+		<StyleInclude Source="avares://LiveMarkdown.Avalonia/Styles.axaml"/>
+		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/CommonStyles.axaml"/>
+		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/ButtonsIcons.axaml"/>
+		<StyleInclude Source="avares://LLMDesktopAssistant/Styles/MarkdownStyles.axaml"/>
+
+	</Application.Styles>
+
 	<Application.DataTemplates>
 		<mvvm:ViewLocator />
 	</Application.DataTemplates>

@@ -35,6 +35,7 @@
 	<StyleInclude Source="avares://LLMDesktopAssistant/Styles/Theme/Controls/SplitButton.axaml" />
 	<StyleInclude Source="avares://LLMDesktopAssistant/Styles/Theme/Controls/DropDownButton.axaml" />
 	<StyleInclude Source="avares://LLMDesktopAssistant/Styles/Theme/Controls/GroupBox.axaml" />
+	<StyleInclude Source="avares://LLMDesktopAssistant/Styles/Theme/Controls/DialogHost.axaml" />
 	<StyleInclude Source="avares://LLMDesktopAssistant/Styles/Theme/Controls/Separator.axaml" />
 
 </Styles>

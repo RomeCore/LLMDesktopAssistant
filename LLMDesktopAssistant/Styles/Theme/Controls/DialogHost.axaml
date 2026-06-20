@@ -1,0 +1,62 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dialogHostAvalonia="using:DialogHostAvalonia">
+
+  <Design.PreviewWith>
+    <dialogHostAvalonia:DialogHost Height="300" Width="400"
+                                   Background="#2A2A3E">
+      <dialogHostAvalonia:DialogHost.DialogContent>
+        <Border Padding="24">
+          <StackPanel Spacing="16">
+            <TextBlock Text="Dialog Title"
+                       FontSize="20" FontWeight="Bold"
+                       Foreground="#EAEAEA" />
+            <TextBlock Text="Dialog content goes here..."
+                       Foreground="#AAAAAA" />
+            <Button Content="OK" Classes="accent"
+                    HorizontalAlignment="Right" />
+          </StackPanel>
+        </Border>
+      </dialogHostAvalonia:DialogHost.DialogContent>
+    </dialogHostAvalonia:DialogHost>
+  </Design.PreviewWith>
+
+  <Styles.Resources>
+    <ResourceDictionary>
+      <SolidColorBrush x:Key="DialogHostOverlayBackgroundMixinBrush"
+                       Color="#80000000" />
+
+      <SolidColorBrush x:Key="DialogHostBackgroundMixinBrush"
+                       Color="#161628" />
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <Style Selector="dialogHostAvalonia|DialogHost">
+    <Setter Property="Background"
+            Value="{DynamicResource DialogHostBackgroundMixinBrush}" />
+    <Setter Property="OverlayBackground"
+            Value="{DynamicResource DialogHostOverlayBackgroundMixinBrush}" />
+
+    <Setter Property="dialogHostAvalonia:DialogHostStyle.CornerRadius"
+            Value="10" />
+
+    <Setter Property="dialogHostAvalonia:DialogHostStyle.BorderBrush"
+            Value="#3A3A5E" />
+    <Setter Property="dialogHostAvalonia:DialogHostStyle.BorderThickness"
+            Value="1" />
+
+    <Setter Property="dialogHostAvalonia:DialogHostStyle.BoxShadow"
+            Value="0 8 24 #4c000000" />
+
+    <Setter Property="dialogHostAvalonia:DialogHostStyle.ClipToBounds"
+            Value="True" />
+
+    <Setter Property="DialogMargin" Value="8" />
+  </Style>
+
+  <Style Selector="dialogHostAvalonia|DialogOverlayPopupHost">
+    <Setter Property="Background"
+            Value="{DynamicResource DialogHostBackgroundMixinBrush}" />
+  </Style>
+
+</Styles>
