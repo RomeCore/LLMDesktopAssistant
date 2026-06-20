@@ -1,0 +1,23 @@
+{
+	"name": "llt",
+	"displayName": "LLT (LLM Template)",
+	"description": "LLT template language for prompt engineering",
+	"version": "1.0.0",
+	"contributes": {
+		"languages": [
+			{
+				"id": "llt",
+				"aliases": ["LLT", "llt", "LLM Template"],
+				"extensions": [".llt"],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "llt",
+				"scopeName": "source.llt",
+				"path": "./syntaxes/llt.json"
+			}
+		]
+	}
+}

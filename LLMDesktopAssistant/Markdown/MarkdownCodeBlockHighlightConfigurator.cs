@@ -1,6 +1,10 @@
+using System.Collections;
+using System.Reflection;
 using Avalonia;
 using LiveMarkdown.Avalonia;
 using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services.Instances;
+using Serilog;
 using TextMateSharp.Grammars;
 
 namespace LLMDesktopAssistant.Markdown;
@@ -8,7 +12,7 @@ namespace LLMDesktopAssistant.Markdown;
 [Service]
 public class MarkdownCodeBlockHighlightConfigurator
 {
-	public MarkdownCodeBlockHighlightConfigurator()
+	public MarkdownCodeBlockHighlightConfigurator(TextMateLoader loader)
 	{
 		CodeBlock.LanguageProperty.Changed.AddClassHandler<CodeBlock>((block, e) =>
 		{
@@ -114,8 +118,44 @@ public class MarkdownCodeBlockHighlightConfigurator
 				"vhdl" or "vhd" => ThemeName.SolarizedLight,
 				"tex" or "latex" => ThemeName.QuietLight,
 
+				"llt" => ThemeName.Monokai,
+
 				_ => ThemeName.DarkPlus
 			};
 		});
+
+		LoadGrammars(loader);
 	}
+
+	private static void LoadGrammars(TextMateLoader loader)
+	{
+		try
+		{
+			var shType = typeof(SyntaxHighlighting);
+
+			var registryField = shType.GetField("RegistryOptions",
+				BindingFlags.Static | BindingFlags.NonPublic);
+
+			if (registryField?.GetValue(null) is not RegistryOptions registry)
+			{
+				Log.Error("[MarkdownCodeBlockHighlightConfigurator] RegistryOptions not found via reflection");
+				return;
+			}
+
+			loader.LoadGrammarsInto(registry);
+
+			var cacheField = shType.GetField("LanguageCache",
+				BindingFlags.Static | BindingFlags.NonPublic);
+
+			if (cacheField?.GetValue(null) is IDictionary cache)
+			{
+				cache.Clear();
+			}
+		}
+		catch (Exception ex)
+		{
+			Log.Error(ex, "[MarkdownCodeBlockHighlightConfigurator] Failed to load grammars");
+		}
+	}
+
 }
