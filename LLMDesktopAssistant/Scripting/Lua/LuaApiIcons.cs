@@ -1,3 +1,5 @@
+using AsyncLua;
+using AsyncLua.Values;
 using Material.Icons;
 using MoonSharp.Interpreter;
 
@@ -8,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Provides access to MaterialIconKind enum for status icons, toasts, etc.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiIcons : LuaApiBase
+	public class LuaApiIcons : LuaApiBaseAsync
 	{
 		public override string? Namespace => "icon";
 
@@ -81,45 +83,49 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			Array.Sort(_allIconNames, StringComparer.OrdinalIgnoreCase);
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["exists"] = DynValue.NewCallback(Exists);
-			ns["get"] = DynValue.NewCallback(Get);
-			ns["list"] = DynValue.NewCallback(List);
-			ns["random"] = DynValue.NewCallback(Random);
+			ns["exists"] = new LuaCallbackFunction(Exists);
+			ns["get"] = new LuaCallbackFunction(Get);
+			ns["list"] = new LuaCallbackFunction(List);
+			ns["random"] = new LuaCallbackFunction(Random);
 		}
 
-		private DynValue Exists(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Exists(LuaCallingContext ctx, LuaValue[] args)
 		{
-			var kind = args[0].CastToString();
-			if (string.IsNullOrEmpty(kind))
-				return DynValue.False;
+			if (args.Length < 1)
+				throw new LuaRuntimeException("icon.exists(kind): at least 1 argument expected.");
 
-			return DynValue.NewBoolean(_iconMap.ContainsKey(kind));
+			args[0].TryToString(out var kind);
+			if (string.IsNullOrEmpty(kind))
+				return new LuaTuple(LuaBoolean.False);
+
+			return new LuaTuple(LuaBoolean.FromBoolean(_iconMap.ContainsKey(kind)));
 		}
 
-		private DynValue Get(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Get(LuaCallingContext ctx, LuaValue[] args)
 		{
-			var kind = args[0].CastToString();
+			if (args.Length < 1)
+				throw new LuaRuntimeException("icon.get(kind): at least 1 argument expected.");
+
+			args[0].TryToString(out var kind);
 			if (string.IsNullOrEmpty(kind))
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 
 			if (!_iconMap.TryGetValue(kind, out var iconKind))
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 
-			var script = ctx.GetScript();
-			var table = new Table(script);
-			table["name"] = iconKind.ToString();
-			table["kind"] = (int)iconKind;
-			return DynValue.NewTable(table);
+			var table = new LuaTable();
+			table.Set("name", iconKind.ToString());
+			table.Set("kind", (int)iconKind);
+			return new LuaTuple(table);
 		}
 
-		private DynValue List(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple List(LuaCallingContext ctx, LuaValue[] args)
 		{
-			var script = ctx.GetScript();
-			var result = new Table(script);
+			var result = new LuaTable();
 
-			if (args.Count == 0)
+			if (args.Length == 0)
 			{
 				foreach (var name in _allIconNames)
 				{
@@ -128,7 +134,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 			else
 			{
-				var filter = args[0].CastToString();
+				args[0].TryToString(out var filter);
 				foreach (var name in _allIconNames)
 				{
 					if (name.Contains(filter, StringComparison.OrdinalIgnoreCase))
@@ -138,13 +144,13 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				}
 			}
 
-			return DynValue.NewTable(result);
+			return new LuaTuple(result);
 		}
 
-		private DynValue Random(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Random(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var index = System.Random.Shared.Next(_allIconNames.Length);
-			return DynValue.NewString(_allIconNames[index]);
+			return new LuaTuple(new LuaString(_allIconNames[index]));
 		}
 	}
 }

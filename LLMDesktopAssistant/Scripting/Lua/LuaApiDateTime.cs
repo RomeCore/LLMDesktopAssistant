@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using AsyncLua;
+using AsyncLua.Values;
 using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
@@ -10,7 +12,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Lua API for date and time operations: <c>datetime.*</c>.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiDateTime : LuaApiBase
+	public class LuaApiDateTime : LuaApiBaseAsync
 	{
 		public override string? Namespace => "datetime";
 
@@ -108,122 +110,117 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(datetime.timestamp(now))
 			""";
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["now"] = DynValue.NewCallback(new CallbackFunction(Now));
-			ns["now_local"] = DynValue.NewCallback(new CallbackFunction(Local));
-			ns["parse"] = DynValue.NewCallback(new CallbackFunction(Parse));
-			ns["format"] = DynValue.NewCallback(new CallbackFunction(Format));
-			ns["diff"] = DynValue.NewCallback(new CallbackFunction(Diff));
-			ns["add"] = DynValue.NewCallback(new CallbackFunction(Add));
-			ns["utc"] = DynValue.NewCallback(new CallbackFunction(Utc));
-			ns["timestamp"] = DynValue.NewCallback(new CallbackFunction(Timestamp));
-			ns["from_timestamp"] = DynValue.NewCallback(new CallbackFunction(FromTimestamp));
+			ns["now"] = new LuaCallbackFunction(Now);
+			ns["now_local"] = new LuaCallbackFunction(Local);
+			ns["parse"] = new LuaCallbackFunction(Parse);
+			ns["format"] = new LuaCallbackFunction(Format);
+			ns["diff"] = new LuaCallbackFunction(Diff);
+			ns["add"] = new LuaCallbackFunction(Add);
+			ns["utc"] = new LuaCallbackFunction(Utc);
+			ns["timestamp"] = new LuaCallbackFunction(Timestamp);
+			ns["from_timestamp"] = new LuaCallbackFunction(FromTimestamp);
 		}
 
-		private static DynValue Now(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Now(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewTable(DateTimeToTable(ctx.OwnerScript, DateTimeOffset.UtcNow));
+			return new LuaTuple(DateTimeToTable(DateTimeOffset.UtcNow));
 		}
 
-		private static DynValue Local(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Local(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewTable(DateTimeToTable(ctx.OwnerScript, DateTimeOffset.Now));
+			return new LuaTuple(DateTimeToTable(DateTimeOffset.Now));
 		}
 
-		private static DynValue Parse(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Parse(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("datetime.parse(str, [format]): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("datetime.parse(str, [format]): at least 1 argument expected.");
 
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("datetime.parse(): first argument must be a string.");
+			if (!args[1].TryToString(out var str))
+				throw new LuaRuntimeException("datetime.parse(): first argument must be a string.");
 
 			try
 			{
-				if (args.Count > 1 && !args[1].IsNil())
+				if (args.Length > 1 && args[1] is not LuaNil)
 				{
-					var format = args[1].CastToString();
-					if (format == null)
-						throw new ScriptRuntimeException("datetime.parse(): second argument must be a string (format).");
+					if (!args[1].TryToString(out var format))
+						throw new LuaRuntimeException("datetime.parse(): second argument must be a string (format).");
 					var dt = DateTimeOffset.ParseExact(str, format, CultureInfo.InvariantCulture);
-					return DynValue.NewTable(DateTimeToTable(ctx.OwnerScript, dt));
+					return new LuaTuple(DateTimeToTable(dt));
 				}
 
 				var parsed = DateTimeOffset.Parse(str, CultureInfo.InvariantCulture);
-				return DynValue.NewTable(DateTimeToTable(ctx.OwnerScript, parsed));
+				return new LuaTuple(DateTimeToTable(parsed));
 			}
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"datetime.parse() error: {ex.Message}");
+				throw new LuaRuntimeException($"datetime.parse() error: {ex.Message}");
 			}
 		}
 
-		private static DynValue Format(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Format(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("datetime.format(dt, [format]): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("datetime.format(dt, [format]): at least 1 argument expected.");
 
-			var dt = TableToDateTime(args[0]);
+			var dt = TableToDateTime(args[0] as LuaTable);
 			if (dt == null)
-				throw new ScriptRuntimeException("datetime.format(): first argument must be a datetime table.");
+				throw new LuaRuntimeException("datetime.format(): first argument must be a datetime table.");
 
 			var format = "o"; // ISO 8601 default
-			if (args.Count > 1 && !args[1].IsNil())
+			if (args.Length > 1 && args[1] is not LuaNil)
 			{
-				var fmt = args[1].CastToString();
-				if (fmt == null)
-					throw new ScriptRuntimeException("datetime.format(): second argument must be a string (format).");
+				if (!args[1].TryToString(out var fmt))
+					throw new LuaRuntimeException("datetime.format(): second argument must be a string (format).");
 				format = fmt;
 			}
 
 			try
 			{
-				return DynValue.NewString(dt.Value.ToUniversalTime().ToString(format, CultureInfo.InvariantCulture));
+				return new LuaTuple(new LuaString(dt.Value.ToUniversalTime().ToString(format, CultureInfo.InvariantCulture)));
 			}
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"datetime.format() error: {ex.Message}");
+				throw new LuaRuntimeException($"datetime.format() error: {ex.Message}");
 			}
 		}
 
-		private static DynValue Diff(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Diff(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("datetime.diff(dt1, dt2): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("datetime.diff(dt1, dt2): at least 2 arguments expected.");
 
-			var dt1 = TableToDateTime(args[0]);
-			var dt2 = TableToDateTime(args[1]);
+			var dt1 = TableToDateTime(args[0] as LuaTable);
+			var dt2 = TableToDateTime(args[1] as LuaTable);
 			if (dt1 == null || dt2 == null)
-				throw new ScriptRuntimeException("datetime.diff(): both arguments must be datetime tables.");
+				throw new LuaRuntimeException("datetime.diff(): both arguments must be datetime tables.");
 
-			return DynValue.NewNumber((dt1.Value - dt2.Value).TotalSeconds);
+			return new LuaTuple(new LuaNumber((dt1.Value - dt2.Value).TotalSeconds));
 		}
 
-		private static DynValue Add(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Add(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("datetime.add(dt, interval): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("datetime.add(dt, interval): at least 2 arguments expected.");
 
-			var dt = TableToDateTime(args[0]);
-			if (dt == null)
-				throw new ScriptRuntimeException("datetime.add(): first argument must be a datetime table.");
+			if (args[0] is not LuaTable t || TableToDateTime(t) is not DateTimeOffset dt)
+				throw new LuaRuntimeException("datetime.add(): first argument must be a datetime table.");
 
 			var interval = args[1];
-			if (interval.Type != DataType.Table)
-				throw new ScriptRuntimeException("datetime.add(): second argument must be a table (interval).");
+			if (interval is not LuaTable it)
+				throw new LuaRuntimeException("datetime.add(): second argument must be a table (interval).");
 
-			var t = interval.Table;
-			var years = GetIntField(t, "years", 0);
-			var months = GetIntField(t, "months", 0);
-			var days = GetIntField(t, "days", 0);
-			var hours = GetIntField(t, "hours", 0);
-			var minutes = GetIntField(t, "minutes", 0);
-			var seconds = GetIntField(t, "seconds", 0);
-			var ms = GetIntField(t, "ms", 0);
+			var years = GetIntField(it, "years", 0);
+			var months = GetIntField(it, "months", 0);
+			var days = GetIntField(it, "days", 0);
+			var hours = GetIntField(it, "hours", 0);
+			var minutes = GetIntField(it, "minutes", 0);
+			var seconds = GetIntField(it, "seconds", 0);
+			var ms = GetIntField(it, "ms", 0);
 
-			var result = dt.Value.ToUniversalTime();
+			var result = dt.ToUniversalTime();
 			if (years != 0 || months != 0)
 			{
 				// Add years/months via calendar (preserving time)
@@ -233,72 +230,68 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 			result = result.AddDays(days).AddHours(hours).AddMinutes(minutes).AddSeconds(seconds).AddMilliseconds(ms);
 
-			return DynValue.NewTable(DateTimeToTable(ctx.OwnerScript, result));
+			return new LuaTuple(DateTimeToTable(result));
 		}
 
-		private static DynValue Utc(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Utc(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("datetime.utc(dt): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("datetime.utc(dt): at least 1 argument expected.");
 
-			var dt = TableToDateTime(args[0]);
-			if (dt == null)
-				throw new ScriptRuntimeException("datetime.utc(): first argument must be a datetime table.");
+			if (TableToDateTime(args[0] as LuaTable) is not DateTimeOffset dt)
+				throw new LuaRuntimeException("datetime.utc(): first argument must be a datetime table.");
 
-			return DynValue.NewTable(DateTimeToTable(ctx.OwnerScript, dt.Value.ToUniversalTime()));
+			return new LuaTuple(DateTimeToTable(dt.ToUniversalTime()));
 		}
 
-		private static DynValue Timestamp(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Timestamp(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("datetime.timestamp(dt): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("datetime.timestamp(dt): at least 1 argument expected.");
 
-			var dt = TableToDateTime(args[0]);
-			if (dt == null)
-				throw new ScriptRuntimeException("datetime.timestamp(): first argument must be a datetime table.");
+			if (TableToDateTime(args[0] as LuaTable) is not DateTimeOffset dt)
+				throw new LuaRuntimeException("datetime.timestamp(): first argument must be a datetime table.");
 
-			return DynValue.NewNumber(dt.Value.ToUnixTimeSeconds());
+			return new LuaTuple(new LuaNumber(dt.ToUnixTimeSeconds()));
 		}
 
-		private static DynValue FromTimestamp(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple FromTimestamp(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("datetime.from_timestamp(ts): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("datetime.from_timestamp(ts): at least 1 argument expected.");
 
-			var ts = args[0].CastToNumber();
-			if (ts == null)
-				throw new ScriptRuntimeException("datetime.from_timestamp(): first argument must be a number.");
+			if (!args[0].TryToNumber(out var ts))
+				throw new LuaRuntimeException("datetime.from_timestamp(): first argument must be a number.");
 
-			var dt = DateTimeOffset.FromUnixTimeSeconds((long)ts.Value);
-			return DynValue.NewTable(DateTimeToTable(ctx.OwnerScript, dt));
+			var dt = DateTimeOffset.FromUnixTimeSeconds((long)ts);
+			return new LuaTuple(DateTimeToTable(dt));
 		}
 
 		// --- Helpers ---
 
-		private static Table DateTimeToTable(Script script, DateTimeOffset dt)
+		private static LuaTable DateTimeToTable(DateTimeOffset dt)
 		{
-			var t = new Table(script);
-			t["year"] = DynValue.NewNumber(dt.Year);
-			t["month"] = DynValue.NewNumber(dt.Month);
-			t["day"] = DynValue.NewNumber(dt.Day);
-			t["hour"] = DynValue.NewNumber(dt.Hour);
-			t["min"] = DynValue.NewNumber(dt.Minute);
-			t["sec"] = DynValue.NewNumber(dt.Second);
-			t["ms"] = DynValue.NewNumber(dt.Millisecond);
-			t["is_dst"] = DynValue.NewBoolean(dt.DateTime.IsDaylightSavingTime());
-			t["utc_offset"] = DynValue.NewNumber((int)dt.Offset.TotalMinutes);
-			t["timestamp"] = DynValue.NewNumber(dt.ToUnixTimeSeconds());
-			t["day_of_week"] = DynValue.NewNumber((int)dt.DayOfWeek); // 0=Sunday, 6=Saturday
-			t["day_of_year"] = DynValue.NewNumber(dt.DayOfYear);
+			var t = new LuaTable();
+			t["year"] = new LuaNumber(dt.Year);
+			t["month"] = new LuaNumber(dt.Month);
+			t["day"] = new LuaNumber(dt.Day);
+			t["hour"] = new LuaNumber(dt.Hour);
+			t["min"] = new LuaNumber(dt.Minute);
+			t["sec"] = new LuaNumber(dt.Second);
+			t["ms"] = new LuaNumber(dt.Millisecond);
+			t["is_dst"] = LuaBoolean.FromBoolean(dt.DateTime.IsDaylightSavingTime());
+			t["utc_offset"] = new LuaNumber((int)dt.Offset.TotalMinutes);
+			t["timestamp"] = new LuaNumber(dt.ToUnixTimeSeconds());
+			t["day_of_week"] = new LuaNumber((int)dt.DayOfWeek); // 0=Sunday, 6=Saturday
+			t["day_of_year"] = new LuaNumber(dt.DayOfYear);
 			return t;
 		}
 
-		private static DateTimeOffset? TableToDateTime(DynValue val)
+		private static DateTimeOffset? TableToDateTime(LuaTable? t)
 		{
-			if (val.Type != DataType.Table)
+			if (t is null)
 				return null;
 
-			var t = val.Table;
 			var year = GetIntField(t, "year", 1);
 			var month = GetIntField(t, "month", 1);
 			var day = GetIntField(t, "day", 1);
@@ -309,9 +302,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			// If timestamp is present, prefer it
 			var tsField = t.Get("timestamp");
-			if (tsField.Type == DataType.Number)
+			if (tsField is LuaNumber number)
 			{
-				return DateTimeOffset.FromUnixTimeSeconds((long)tsField.Number);
+				return DateTimeOffset.FromUnixTimeSeconds((long)number.Value);
 			}
 
 			int offsetMinutes = GetIntField(t, "utc_offset", 0);
@@ -328,11 +321,11 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 		}
 
-		private static int GetIntField(Table t, string key, int defaultValue)
+		private static int GetIntField(LuaTable t, string key, int defaultValue)
 		{
 			var val = t.Get(key);
-			if (val.Type == DataType.Number)
-				return (int)val.Number;
+			if (val is LuaNumber number)
+				return (int)number.Value;
 			return defaultValue;
 		}
 	}

@@ -1,12 +1,12 @@
 using System.Text;
+using AsyncLua;
+using AsyncLua.Values;
 using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	/*
-
 	[LuaApi(chatScoped: false)]
-	public class LuaApiManuals : LuaApiBase
+	public class LuaApiManuals : LuaApiBaseAsync
 	{
 		public override string? Namespace => null;
 
@@ -37,43 +37,42 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_services = services;
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			globals["manuals"] = DynValue.NewCallback(PrintManuals);
+			globals["manuals"] = new LuaCallbackFunction(PrintManuals);
 		}
 
-		private DynValue PrintManuals(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple PrintManuals(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var lua = _services.GetRequiredService<LuaService>();
-			var script = ctx.GetScript();
 
 			var result = new StringBuilder();
 
-			for (int i = 0; i < args.Count; i++)
+			for (int i = 0; i < args.Length; i++)
 			{
 				var nsArg = args[i];
-				Table? nsTable;
+				LuaTable? nsTable;
 
-				if (nsArg.Type == DataType.String)
+				if (nsArg is LuaString str)
 				{
-					nsTable = lua.TryResolveNamespace(nsArg.String);
+					nsTable = lua.TryResolveNamespace(str.Value);
 					if (nsTable == null)
-						return DynValue.NewString($"Error: namespace '{nsArg.String}' not found.");
+						return new LuaTuple(new LuaString($"Error: namespace '{str.Value}' not found."));
 				}
-				else if (nsArg.Type == DataType.Table)
+				else if (nsArg is LuaTable table)
 				{
-					nsTable = nsArg.Table;
+					nsTable = table;
 				}
 				else
 				{
-					nsTable = script.Globals;
+					nsTable = ctx.Globals;
 				}
 
 				// Look for a "_manuals" subtable inside the resolved namespace
 				var manuals = nsTable.Get(LuaVariables.NamespaceManuals);
-				var nsPath = nsTable.Get(LuaVariables.NamespaceFullPath).ToPrintString();
+				var nsPath = nsTable.Get(LuaVariables.NamespaceFullPath).ToString();
 
-				if (manuals.Type != DataType.Table || manuals.Table.Length == 0)
+				if (manuals is not LuaTable manTable || manTable.Length == 0)
 				{
 					result.AppendLine($"No manuals found for namespace '{nsPath}'.");
 				}
@@ -82,17 +81,15 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					result.AppendLine($"--- Manuals for namespace '{nsPath}' ---");
 					result.AppendLine();
 
-					foreach (var entry in manuals.Table.Values)
+					foreach (var entry in manTable.Values)
 					{
-						if (entry.Type == DataType.String)
-							result.AppendLine(entry.String.TrimEnd()).AppendLine();
+						if (entry is LuaString manStr)
+							result.AppendLine(manStr.Value.TrimEnd()).AppendLine();
 					}
 				}
 			}
 
-			return DynValue.NewString(result.ToString().TrimEnd());
+			return new LuaTuple(new LuaString(result.ToString().TrimEnd()));
 		}
 	}
-
-	*/
 }

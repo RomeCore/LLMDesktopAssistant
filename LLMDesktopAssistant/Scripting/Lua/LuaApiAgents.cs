@@ -1,11 +1,12 @@
 using System.Text;
 using System.Text.Json.Nodes;
+using AsyncLua;
+using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
-using MoonSharp.Interpreter;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
@@ -14,10 +15,8 @@ using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	/*
-
 	[LuaApi(chatScoped: true)]
-	public class LuaApiAgents : LuaApiBase
+	public class LuaApiAgents : LuaApiBaseAsync
 	{
 		public override string? Namespace => "dass.agents";
 
@@ -30,7 +29,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			FUNCTIONS:
 
-			--- dass.agents.execute(properties...)
+			--- async dass.agents.execute(properties...)
 			  Executes one or more LLM agents with the given conversations and returns their responses.
 
 			  Supports BATCH EXECUTION: pass multiple property tables to run multiple agents
@@ -76,19 +75,19 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 					Table entries define ad-hoc Lua callback tools:
 					  {
-					    name = "my_tool",
-					    description = "Does something useful.",
-					    parameters = {
-					      type = "object",
-					      properties = {
-					        x = { type = "number" },
-					        y = { type = "number" }
-					      },
-					      required = { "x", "y" }
-					    },
-					    callback = function(args)
-					      return "Result: " .. (args.x + args.y)
-					    end
+						name = "my_tool",
+						description = "Does something useful.",
+						parameters = {
+						  type = "object",
+						  properties = {
+							x = { type = "number" },
+							y = { type = "number" }
+						  },
+						  required = { "x", "y" }
+						},
+						callback = function(args)
+						  return "Result: " .. (args.x + args.y)
+						end
 					  }
 
 					Mixed example: { "web-search", { name = "calc", ... } }
@@ -110,7 +109,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			EXAMPLES:
 
 			  -- Simple greeting
-			  local r = dass.agents.execute({
+			  local r = await dass.agents.execute({
 				messages = {
 				  { role = "system", content = "You are a helpful assistant." },
 				  { role = "user", content = "Say hello!" }
@@ -119,7 +118,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(table.last(r).content)
 
 			  -- With custom model and tools
-			  local r = dass.agents.execute({
+			  local r = await dass.agents.execute({
 				messages = {
 				  { role = "system", content = "You can use tools." },
 				  { role = "user", content = "What is 2+2?" }
@@ -130,7 +129,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(table.last(r).content)
 
 			  -- Multi-turn with tools
-			  local r = dass.agents.execute({
+			  local r = await dass.agents.execute({
 				messages = {
 				  { role = "system", content = "You can use web-search." },
 				  { role = "user", content = "Search for latest news about AI" }
@@ -151,7 +150,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  end
 
 			  -- Attachments with image description
-			  local r = dass.agents.execute({
+			  local r = await dass.agents.execute({
 				messages = {
 				  { role = "system", content = "You are image description assistant." },
 				  { role = "user", content = "Describe this image.", attachments = { image.load("image.png") } }
@@ -160,48 +159,48 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  })
 			  print(table.last(r).content)
 
-			  -- Safe execution with pcall
-			  local ok, result = pcall(dass.agents.execute, {
-			    messages = {
-				  { role = "system", content = "You are an expert." },
-				  { role = "user", content = "What is 2+2?" }
-				}
-			  })
-			  if ok then
+			  -- Safe execution with try-catch
+			  try
+				local result = await dass.agents.execute({
+				  messages = {
+					{ role = "system", content = "You are an expert." },
+					{ role = "user", content = "What is 2+2?" }
+				  }
+				})
 				print("Answer:", table.last(r).content)
-			  else
-				print("Failed:", result)
+			  catch error do
+				print("Failed:", error)
 			  end
 
 			  -- Custom callback tool
-			  local r = dass.agents.execute({
-			    messages = {
-			      { role = "system", content = "Use the calculator tool for math." },
-			      { role = "user", content = "What is 123 * 456?" }
-			    },
-			    tools = {
-			      {
-			        name = "calculator",
-			        description = "Multiplies two integers.",
-			        parameters = {
-			          type = "object",
-			          properties = {
-			            a = { type = "number", description = "First number" },
-			            b = { type = "number", description = "Second number" }
-			          },
-			          required = { "a", "b" }
-			        },
-			        callback = function(args)
-			          local result = args.a * args.b
-			          return tostring(result)
-			        end
-			      }
-			    }
+			  local r = await dass.agents.execute({
+				messages = {
+				  { role = "system", content = "Use the calculator tool for math." },
+				  { role = "user", content = "What is 123 * 456?" }
+				},
+				tools = {
+				  {
+					name = "calculator",
+					description = "Multiplies two integers.",
+					parameters = {
+					  type = "object",
+					  properties = {
+						a = { type = "number", description = "First number" },
+						b = { type = "number", description = "Second number" }
+					  },
+					  required = { "a", "b" }
+					},
+					callback = function(args)
+					  local result = args.a * args.b
+					  return tostring(result)
+					end
+				  }
+				}
 			  })
 			  print(table.last(r).content)  -- "123 * 456 = 56088"
 
 			  -- Batch execution: run multiple agents concurrently
-			  local results = dass.agents.execute(
+			  local results  await= dass.agents.execute(
 				{
 				  messages = {
 					{ role = "system", content = "You are a poet." },
@@ -226,18 +225,17 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print("Joke:", table.last(results[2]).content)
 			  print("Failed:", results[3]) -- Error message
 
-
 			NOTES:
 			  - By default, the agent uses the chat's "AgenticToolsModel" setting.
 			  - You can override the model by passing a "model" field in options.
 			  - No tools are available by default; you must explicitly pass them using the "tools" field.
 			  - Use `table.last` to access the last message in a response array,
-			    so you can ignore useless messages with tool calls.
+				so you can ignore useless messages with tool calls.
 			  - CALLBACK TOOLS: pass table entries in the "tools" array with:
-			    name (string), description (string), parameters (JSON Schema table),
-			    and callback (function). The callback receives a table of arguments
-			    matching the schema and should return a string. Callbacks can use the full Lua API (fs, web,
-			    dass.*, etc.) and execute under a lock for thread safety.
+				name (string), description (string), parameters (JSON Schema table),
+				and callback (function). The callback receives a table of arguments
+				matching the schema and should return a string. Callbacks can use the full Lua API (fs, web,
+				dass.*, etc.) and execute under a lock for thread safety.
 			  - Image attachments can be applied via `image` API (see manuals for details).
 			  - Returns the full conversation history produced by the agent,
 				including all intermediate tool calls and their results.
@@ -259,31 +257,29 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_toolsetCache = toolsetCache;
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
 			_luaService = luaService;
-			ns["execute"] = DynValue.NewCallback(Execute);
+			ns["execute"] = new LuaCallbackFunction(ExecuteAsync);
 		}
 
-		private DynValue Execute(ScriptExecutionContext ctx, CallbackArguments args)
+		private async Task<LuaTuple> ExecuteAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("dass.agents.execute(properties...): at least 1 argument expected.");
-			for (int i = 0; i < args.Count; i++)
-				if (args[i].Type != DataType.Table)
-					throw new ScriptRuntimeException("dass.agents.execute(): all arguments must be tables.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("dass.agents.execute(properties...): at least 1 argument expected.");
+			for (int i = 0; i < args.Length; i++)
+				if (args[i].Type != LuaType.Table)
+					throw new LuaRuntimeException("dass.agents.execute(): all arguments must be tables.");
 
-			var script = ctx.GetScript();
-			
-			List<Func<Task<DynValue>>> executionFunctions = [];
+			List<Func<Task<LuaTable>>> executionFunctions = [];
 			List<Exception?> exceptions = [];
 
-			for (int i = 0; i < args.Count; i++)
+			for (int i = 0; i < args.Length; i++)
 			{
-				var arg = args[i].Table;
+				var arg = (LuaTable)args[i];
 				try
 				{
-					var executionFunction = PrepareExecutionFunction(script, arg);
+					var executionFunction = PrepareExecutionFunction(ctx, arg);
 					executionFunctions.Add(executionFunction);
 					exceptions.Add(null);
 				}
@@ -295,7 +291,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			var nonNullExceptions = exceptions.Where(ex => ex != null).ToList();
 			if (nonNullExceptions.Count > 0)
-				throw new ScriptRuntimeException($"dass.agents.execute(): {string.Join(", ", nonNullExceptions.Select(e => e!.Message))}");
+				throw new LuaRuntimeException($"dass.agents.execute(): {string.Join(", ", nonNullExceptions.Select(e => e!.Message))}");
 
 			var tasks = executionFunctions.Select(f => f()).ToList();
 
@@ -304,59 +300,55 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				try
 				{
 					var task = tasks[0];
-					task.Wait();
-					return task.Result;
+					return new LuaTuple(await task);
 				}
 				catch (Exception ex)
 				{
-					throw new ScriptRuntimeException($"dass.agents.execute(): {ex.Message}");
+					throw new LuaRuntimeException($"dass.agents.execute(): {ex.Message}");
 				}
 			}
 			else
 			{
 				try
 				{
-					var result = new Table(script);
+					var result = new LuaTable();
 
 					for (int i = 0; i < tasks.Count; i++)
 					{
 						var task = tasks[i];
 						try
 						{
-							task.Wait();
-							result.Append(task.Result);
+							result.Append(await task);
 						}
 						catch (Exception ex)
 						{
-							result.Append(DynValue.NewString(ex.Message));
+							result.Append(new LuaString(ex.Message));
 						}
 					}
 
-					return DynValue.NewTable(result);
+					return new LuaTuple(result);
 				}
 				catch (Exception ex)
 				{
-					throw new ScriptRuntimeException($"dass.agents.execute(): {ex.Message}");
+					throw new LuaRuntimeException($"dass.agents.execute(): {ex.Message}");
 				}
 			}
 		}
 
-		private Func<Task<DynValue>> PrepareExecutionFunction(Script script, Table parameters)
+		private Func<Task<LuaTable>> PrepareExecutionFunction(LuaCallingContext ctx, LuaTable parameters)
 		{
 			var messagesArg = parameters.Get("messages");
-			if (messagesArg.Type != DataType.Table)
+			if (messagesArg is not LuaTable messagesTable)
 				throw new Exception("'messages' must be a table.");
 
-			var messagesTable = messagesArg.Table;
 			var systemMessageBuilder = new StringBuilder();
 			var messages = new List<IMessage>();
 
 			for (int i = 1; i <= messagesTable.Length; i++)
 			{
 				var _messageTable = messagesTable.Get(i);
-				if (_messageTable.Type != DataType.Table)
+				if (_messageTable is not LuaTable messageTable)
 					throw new Exception("each message must be a table.");
-				var messageTable = _messageTable.Table;
 				var message = ConvertMessageFromLua(messageTable);
 				if (message is ISystemMessage systemMessage)
 					systemMessageBuilder.AppendLine(systemMessage.Content);
@@ -374,9 +366,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				Messages = messages.Take(messages.Count - 1).ToList(),
 			};
 
-			// Resolve model
+			// Resolve model name and descriptor.
 			LLModelDescriptor? model;
-			var modelName = parameters.Get("model")?.CastToString();
+			var modelName = parameters.Get("model")?.ToString();
 			if (!string.IsNullOrEmpty(modelName))
 			{
 				var tracked = _modelList.Registry.GetModel(modelName);
@@ -393,39 +385,35 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			// Resolve tools: mixed array of strings (registered tools) and tables (callback tools)
 			HashSet<string>? toolFilter = null;
-			List<(string Name, string Description, JsonNode? Schema, DynValue Callback)> callbackToolDefs = [];
+			List<(string Name, string Description, JsonNode? Schema, LuaFunction Callback)> callbackToolDefs = [];
 			var toolsOption = parameters.Get("tools");
-			if (toolsOption.Type == DataType.Table)
+			if (toolsOption is LuaTable toolsOptionTable)
 			{
 				toolFilter = new HashSet<string>();
-				foreach (var toolValue in toolsOption.Table.Values)
+				foreach (var toolValue in toolsOptionTable.Values)
 				{
-					if (toolValue.Type == DataType.String)
+					if (toolValue is LuaString toolValueString)
 					{
-						var toolName = toolValue.CastToString();
-						if (toolName != null)
-							toolFilter.Add(toolName);
+						toolFilter.Add(toolValueString.Value);
 					}
-					else if (toolValue.Type == DataType.Table)
+					else if (toolValue is LuaTable toolValueTable)
 					{
-						var def = toolValue.Table;
-						var cbName = def.Get("name").CastToString();
-						var cbDesc = def.Get("description").CastToString();
-						var cbSchema = StructuredLuaConverter.LuaValueToJsonNode(def.Get("parameters"));
-						var cbCallback = def.Get("callback");
+						var cbName = toolValueTable.Get("name").ToString();
+						var cbDesc = toolValueTable.Get("description").ToString();
+						var cbSchema = StructuredLuaConverter.LuaValueToJsonNode(toolValueTable.Get("parameters"));
+						var cbCallback = toolValueTable.Get("callback");
 
 						if (string.IsNullOrEmpty(cbName))
 							throw new Exception("callback tool definition: 'name' is required.");
-						if (cbCallback.Type != DataType.Function && cbCallback.Type != DataType.ClrFunction)
+						if (cbCallback is not LuaFunction cbFunc)
 							throw new Exception($"callback tool '{cbName}': 'callback' must be a function.");
 
-						callbackToolDefs.Add((cbName, cbDesc ?? cbName, cbSchema, cbCallback));
+						callbackToolDefs.Add((cbName, cbDesc ?? cbName, cbSchema, cbFunc));
 					}
 				}
 			}
 
 			var tools = new List<ITool>();
-			var luaToolsLock = new object();
 
 			// Registered tools (filtered)
 			foreach (var (_, tool) in _toolsetCache.AvailableTools)
@@ -460,7 +448,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				var capturedDesc = cbDesc;
 				var capturedSchema = cbSchema;
 				var capturedCallback = cbCallback;
-				var capturedScript = script;
 
 				tools.Add(new FunctionTool(capturedName, capturedDesc, capturedSchema?.AsObject() ?? new JsonObject(),
 					async (jsonArgs, ct) =>
@@ -470,13 +457,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						// Convert JSON args → Lua table
 						var luaArgs = StructuredLuaConverter.JsonNodeToLuaValue(jsonArgs);
 
-						DynValue luaResult;
+						LuaValue luaResult;
 						try
 						{
-							lock (luaToolsLock)
-							{
-								luaResult = capturedScript.Call(capturedCallback, luaArgs);
-							}
+							luaResult = await capturedCallback.InvokeAsync(ctx, luaArgs);
 						}
 						catch (Exception ex)
 						{
@@ -484,12 +468,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						}
 
 						string content;
-						if (luaResult.Type == DataType.String)
-							content = luaResult.String;
-						else if (luaResult.Type == DataType.Nil)
+						if (luaResult is LuaString str)
+							content = str.Value;
+						else if (luaResult is LuaNil)
 							content = string.Empty;
 						else
-							content = luaResult.ToPrintString();
+							content = luaResult.ToString();
 
 						if (string.IsNullOrEmpty(content))
 							content = "Tool executed successfully.";
@@ -514,7 +498,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			var userMessage = (RCLargeLanguageModels.Messages.IUserMessage)messages[^1];
 
-			async Task<DynValue> ExecuteAgent()
+			async Task<LuaTable> ExecuteAgent()
 			{
 				var reseivedMessages = new List<IMessage>();
 				toolExecutor.MessageReceived += (_, msg) =>
@@ -524,22 +508,22 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				};
 				await toolExecutor.GenerateResponseAsync(userMessage);
 
-				var resultTable = new Table(script);
+				var resultTable = new LuaTable();
 
 				int im = 1;
 				foreach (var message in reseivedMessages)
-					resultTable.Set(im++, ConvertMessageToLua(message, script));
+					resultTable.Set(im++, ConvertMessageToLua(message));
 
-				return DynValue.NewTable(resultTable);
+				return resultTable;
 			}
 
 			return ExecuteAgent;
 		}
 
-		private static IMessage ConvertMessageFromLua(Table messageTable)
+		private static IMessage ConvertMessageFromLua(LuaTable messageTable)
 		{
-			var role = messageTable.Get("role").CastToString();
-			var content = messageTable.Get("content").CastToString();
+			var role = messageTable.Get("role").ToString();
+			var content = messageTable.Get("content").ToString();
 
 			switch (role)
 			{
@@ -549,107 +533,105 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				case "user":
 					var attachmentsTable = messageTable.Get("attachments");
 					var attachments = new List<IAttachment>();
-					foreach (var attachmentValue in attachmentsTable.Table?.Values ?? [])
+					foreach (var attachmentValue in (attachmentsTable as LuaTable)?.Values ?? [])
 					{
-						if (attachmentValue.UserData?.Object is LuaImage image)
+						if ((attachmentValue as LuaUserData)?.Target is LuaImage image)
 							attachments.Add(new ImageBase64Attachment(image.Format, image.ToBase64()));
 					}
 					return new RCLargeLanguageModels.Messages.UserMessage(Senders.User, content, attachments);
 
 				case "assistant":
-					var reasoningContent = messageTable.Get("reasoning_content").CastToString();
+					var reasoningContent = messageTable.Get("reasoning_content").ToString();
 
 					var toolCallsTable = messageTable.Get("tool_calls");
 					var toolCalls = new List<IToolCall>();
-					foreach (var toolCallTable in toolCallsTable.Table?.Values ?? [])
-						toolCalls.Add(ConvertToolCallFromLua(toolCallTable.Table));
+					foreach (var toolCallTable in (toolCallsTable as LuaTable)?.Values ?? [])
+						toolCalls.Add(ConvertToolCallFromLua((LuaTable)toolCallTable));
 
 					attachmentsTable = messageTable.Get("attachments");
 					attachments = new List<IAttachment>();
-					foreach (var attachmentValue in attachmentsTable.Table?.Values ?? [])
+					foreach (var attachmentValue in (attachmentsTable as LuaTable)?.Values ?? [])
 					{
-						if (attachmentValue.UserData?.Object is LuaImage image)
+						if ((attachmentValue as LuaUserData)?.Target is LuaImage image)
 							attachments.Add(new ImageBase64Attachment(image.Format, image.ToBase64()));
 					}
 
 					return new RCLargeLanguageModels.Messages.AssistantMessage(content, reasoningContent, toolCalls, attachments);
 
 				case "tool":
-					var toolName = messageTable.Get("tool_name").CastToString();
-					var toolCallId = messageTable.Get("tool_call_id").CastToString();
+					var toolName = messageTable.Get("tool_name").ToString();
+					var toolCallId = messageTable.Get("tool_call_id").ToString();
 
 					attachmentsTable = messageTable.Get("attachments");
 					attachments = new List<IAttachment>();
-					foreach (var attachmentValue in attachmentsTable.Table?.Values ?? [])
+					foreach (var attachmentValue in (attachmentsTable as LuaTable)?.Values ?? [])
 					{
-						if (attachmentValue.UserData?.Object is LuaImage image)
+						if ((attachmentValue as LuaUserData)?.Target is LuaImage image)
 							attachments.Add(new ImageBase64Attachment(image.Format, image.ToBase64()));
 					}
 
 					return new RCLargeLanguageModels.Messages.ToolMessage(content, toolCallId, toolName, attachments);
 
 				default:
-					throw new ScriptRuntimeException($"dass.agents.execute(): unknown role '{role}'.");
+					throw new LuaRuntimeException($"dass.agents.execute(): unknown role '{role}'.");
 			}
 		}
 
-		private static IToolCall ConvertToolCallFromLua(Table toolCallTable)
+		private static IToolCall ConvertToolCallFromLua(LuaTable toolCallTable)
 		{
-			var toolName = toolCallTable.Get("tool_name").CastToString();
-			var toolCallId = toolCallTable.Get("tool_call_id").CastToString();
+			var toolName = toolCallTable.Get("tool_name").ToString();
+			var toolCallId = toolCallTable.Get("tool_call_id").ToString();
 			var arguments = StructuredLuaConverter.LuaValueToJsonNode(toolCallTable.Get("arguments")) ?? JsonValue.Create((string?)null)!;
 			return new FunctionToolCall(toolCallId, toolName, arguments.ToJsonString());
 		}
 
-		private static DynValue ConvertMessageToLua(IMessage message, Script script)
+		private static LuaTable ConvertMessageToLua(IMessage message)
 		{
 			switch (message)
 			{
 				case IUserMessage userMessage:
-					var userMessageTable = new Table(script);
-					userMessageTable["role"] = "user";
-					userMessageTable["content"] = userMessage.Content;
-					return DynValue.NewTable(userMessageTable);
+					var userMessageTable = new LuaTable();
+					userMessageTable.Set("role", "user");
+					userMessageTable.Set("content", userMessage.Content);
+					return userMessageTable;
 
 				case IAssistantMessage assistantMessage:
-					var assistantMessageTable = new Table(script);
-					assistantMessageTable["role"] = "assistant";
-					assistantMessageTable["reasoning_content"] = assistantMessage.ReasoningContent;
-					assistantMessageTable["content"] = assistantMessage.Content;
+					var assistantMessageTable = new LuaTable();
+					assistantMessageTable.Set("role", "assistant");
+					assistantMessageTable.Set("reasoning_content", assistantMessage.ReasoningContent);
+					assistantMessageTable.Set("content", assistantMessage.Content);
 
 					int i = 1;
-					var toolCallsTable = new Table(script);
+					var toolCallsTable = new LuaTable();
 					foreach (var toolCall in assistantMessage.ToolCalls)
-						toolCallsTable.Set(i++, ConvertToolCallToLua(toolCall, script));
+						toolCallsTable.Set(i++, ConvertToolCallToLua(toolCall));
 					assistantMessageTable["tool_calls"] = toolCallsTable;
 
-					return DynValue.NewTable(assistantMessageTable);
+					return assistantMessageTable;
 
 				case IToolMessage toolMessage:
-					var toolMessageTable = new Table(script);
-					toolMessageTable["role"] = "tool";
-					toolMessageTable["tool_name"] = toolMessage.ToolName;
-					toolMessageTable["tool_call_id"] = toolMessage.ToolCallId;
-					toolMessageTable["content"] = toolMessage.Content;
-					return DynValue.NewTable(toolMessageTable);
+					var toolMessageTable = new LuaTable();
+					toolMessageTable.Set("role", "tool");
+					toolMessageTable.Set("tool_name", toolMessage.ToolName);
+					toolMessageTable.Set("tool_call_id", toolMessage.ToolCallId);
+					toolMessageTable.Set("content", toolMessage.Content);
+					return toolMessageTable;
 
 				default:
-					throw new ScriptRuntimeException($"dass.agents.execute(): unknown message '{message}'.");
+					throw new LuaRuntimeException($"dass.agents.execute(): unknown message '{message}'.");
 			}
 		}
 
-		private static DynValue ConvertToolCallToLua(IToolCall toolCall, Script script)
+		private static LuaTable ConvertToolCallToLua(IToolCall toolCall)
 		{
 			if (toolCall is not FunctionToolCall functionCall)
-				throw new ScriptRuntimeException($"dass.agents.execute(): tool call is not function tool call: '{toolCall}'.");
+				throw new LuaRuntimeException($"dass.agents.execute(): tool call is not function tool call: '{toolCall}'.");
 
-			var resultTable = new Table(script);
-			resultTable["tool_name"] = functionCall.ToolName;
-			resultTable["tool_call_id"] = functionCall.Id;
-			resultTable["arguments"] = StructuredLuaConverter.JsonNodeToLuaValue(script, functionCall.Args);
-			return DynValue.NewTable(resultTable);
+			var resultTable = new LuaTable();
+			resultTable.Set("tool_name", functionCall.ToolName);
+			resultTable.Set("tool_call_id", functionCall.Id);
+			resultTable.Set("arguments", StructuredLuaConverter.JsonNodeToLuaValue(functionCall.Args));
+			return resultTable;
 		}
 	}
-
-	*/
 }
