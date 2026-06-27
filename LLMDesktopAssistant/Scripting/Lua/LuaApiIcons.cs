@@ -1,7 +1,6 @@
 using AsyncLua;
 using AsyncLua.Values;
 using Material.Icons;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -129,7 +128,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			{
 				foreach (var name in _allIconNames)
 				{
-					result.Append(DynValue.NewString(name));
+					result.Append(new LuaString(name));
 				}
 			}
 			else
@@ -139,7 +138,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				{
 					if (name.Contains(filter, StringComparison.OrdinalIgnoreCase))
 					{
-						result.Append(DynValue.NewString(name));
+						result.Append(new LuaString(name));
 					}
 				}
 			}

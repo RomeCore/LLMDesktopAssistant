@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using AsyncLua;
+using AsyncLua.Values;
 using LLMDesktopAssistant.Services.Instances;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -13,7 +14,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// All paths are resolved relative to the chat's working directory.
 	/// </summary>
 	[LuaApi(chatScoped: true)]
-	public class LuaApiFileSystem : LuaApiBase
+	public class LuaApiFileSystem : LuaApiBaseAsync
 	{
 		public override string? Namespace => "fs";
 
@@ -200,217 +201,208 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_fileAccess = fileAccess;
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["read"] = DynValue.NewCallback(new CallbackFunction(Read));
-			ns["read_lines"] = DynValue.NewCallback(new CallbackFunction(ReadLines));
-			ns["read_binary"] = DynValue.NewCallback(new CallbackFunction(ReadBinary));
-			ns["write"] = DynValue.NewCallback(new CallbackFunction(Write));
-			ns["write_binary"] = DynValue.NewCallback(new CallbackFunction(WriteBinary));
-			ns["append"] = DynValue.NewCallback(new CallbackFunction(Append));
-			ns["exists"] = DynValue.NewCallback(new CallbackFunction(Exists));
-			ns["is_file"] = DynValue.NewCallback(new CallbackFunction(IsFile));
-			ns["is_dir"] = DynValue.NewCallback(new CallbackFunction(IsDir));
-			ns["list"] = DynValue.NewCallback(new CallbackFunction(List));
-			ns["detail"] = DynValue.NewCallback(new CallbackFunction(Detail));
-			ns["size"] = DynValue.NewCallback(new CallbackFunction(Size));
-			ns["copy"] = DynValue.NewCallback(new CallbackFunction(Copy));
-			ns["move"] = DynValue.NewCallback(new CallbackFunction(Move));
-			ns["delete"] = DynValue.NewCallback(new CallbackFunction(Delete));
-			ns["delete_dir"] = DynValue.NewCallback(new CallbackFunction(DeleteDir));
-			ns["create_dir"] = DynValue.NewCallback(new CallbackFunction(CreateDir));
-			ns["join"] = DynValue.NewCallback(new CallbackFunction(Join));
-			ns["dirname"] = DynValue.NewCallback(new CallbackFunction(DirName));
-			ns["basename"] = DynValue.NewCallback(new CallbackFunction(BaseName));
-			ns["extname"] = DynValue.NewCallback(new CallbackFunction(ExtName));
-			ns["abs"] = DynValue.NewCallback(new CallbackFunction(Abs));
+			ns["read"] = new LuaCallbackFunction(Read);
+			ns["read_lines"] = new LuaCallbackFunction(ReadLines);
+			ns["read_binary"] = new LuaCallbackFunction(ReadBinary);
+			ns["write"] = new LuaCallbackFunction(Write);
+			ns["write_binary"] = new LuaCallbackFunction(WriteBinary);
+			ns["append"] = new LuaCallbackFunction(Append);
+			ns["exists"] = new LuaCallbackFunction(Exists);
+			ns["is_file"] = new LuaCallbackFunction(IsFile);
+			ns["is_dir"] = new LuaCallbackFunction(IsDir);
+			ns["list"] = new LuaCallbackFunction(List);
+			ns["detail"] = new LuaCallbackFunction(Detail);
+			ns["size"] = new LuaCallbackFunction(Size);
+			ns["copy"] = new LuaCallbackFunction(Copy);
+			ns["move"] = new LuaCallbackFunction(Move);
+			ns["delete"] = new LuaCallbackFunction(Delete);
+			ns["delete_dir"] = new LuaCallbackFunction(DeleteDir);
+			ns["create_dir"] = new LuaCallbackFunction(CreateDir);
+			ns["join"] = new LuaCallbackFunction(Join);
+			ns["dirname"] = new LuaCallbackFunction(DirName);
+			ns["basename"] = new LuaCallbackFunction(BaseName);
+			ns["extname"] = new LuaCallbackFunction(ExtName);
+			ns["abs"] = new LuaCallbackFunction(Abs);
 		}
 
-		private DynValue Read(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Read(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.read(path): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.read(path): at least 1 argument expected.");
 			var path = GetPath(args, 0);
-			return DynValue.NewString(File.ReadAllText(path));
+			return new LuaTuple(new LuaString(File.ReadAllText(path)));
 		}
 
-		private DynValue ReadLines(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple ReadLines(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.read_lines(path): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.read_lines(path): at least 1 argument expected.");
 			var path = GetPath(args, 0);
 			var lines = File.ReadAllLines(path);
-			var result = new Table(ctx.OwnerScript);
+			var result = new LuaTable();
 			for (int i = 0; i < lines.Length; i++)
-				result[i + 1] = DynValue.NewString(lines[i]);
-			return DynValue.NewTable(result);
+				result[i + 1] = new LuaString(lines[i]);
+			return new LuaTuple(result);
 		}
 
-		private DynValue ReadBinary(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple ReadBinary(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.read_binary(path): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.read_binary(path): at least 1 argument expected.");
 			var path = GetPath(args, 0);
 			var bytes = File.ReadAllBytes(path);
-			var result = new Table(ctx.OwnerScript);
+			var result = new LuaTable();
 			for (int i = 0; i < bytes.Length; i++)
-				result[i + 1] = DynValue.NewNumber(bytes[i]);
-			return DynValue.NewTable(result);
+				result[i + 1] = new LuaNumber(bytes[i]);
+			return new LuaTuple(result);
 		}
 
-		private DynValue Write(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Write(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("fs.write(path, content): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("fs.write(path, content): at least 2 arguments expected.");
 			var path = GetPath(args, 0);
-			var content = args[1].CastToString();
-			if (content == null)
-				throw new ScriptRuntimeException("fs.write(): second argument must be a string.");
-			File.WriteAllText(path, content);
-			return DynValue.Nil;
+			if (args[1] is not LuaString contentVal)
+				throw new LuaRuntimeException("fs.write(): second argument must be a string.");
+			File.WriteAllText(path, contentVal.Value);
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue WriteBinary(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple WriteBinary(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("fs.write_binary(path, bytes): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("fs.write_binary(path, bytes): at least 2 arguments expected.");
 			var path = GetPath(args, 0);
-			var bytesTable = args[1];
-			if (bytesTable.Type != DataType.Table)
-				throw new ScriptRuntimeException("fs.write_binary(): second argument must be a table of bytes.");
+			if (args[1] is not LuaTable bytesTable)
+				throw new LuaRuntimeException("fs.write_binary(): second argument must be a table of bytes.");
 			var bytes = new List<byte>();
-			foreach (var kv in bytesTable.Table.Pairs)
+			foreach (var kv in bytesTable.Entries)
 			{
-				if (kv.Value.Type == DataType.Number)
-					bytes.Add((byte)kv.Value.Number);
+				if (kv.Value is LuaNumber num)
+					bytes.Add((byte)num.Value);
 			}
 			File.WriteAllBytes(path, [.. bytes]);
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue Append(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Append(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("fs.append(path, content): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("fs.append(path, content): at least 2 arguments expected.");
 			var path = GetPath(args, 0);
-			var content = args[1].CastToString();
-			if (content == null)
-				throw new ScriptRuntimeException("fs.append(): second argument must be a string.");
-			File.AppendAllText(path, content);
-			return DynValue.Nil;
+			if (args[1] is not LuaString contentVal)
+				throw new LuaRuntimeException("fs.append(): second argument must be a string.");
+			File.AppendAllText(path, contentVal.Value);
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue Exists(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Exists(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.exists(path): at least 1 argument expected.");
-			var path = args[0].CastToString();
-			if (path == null)
-				throw new ScriptRuntimeException("fs.exists(): first argument must be a string.");
-			var fullPath = _fileAccess.TryAccessPath(path);
-			return DynValue.NewBoolean(fullPath != null && (File.Exists(fullPath) || Directory.Exists(fullPath)));
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.exists(path): at least 1 argument expected.");
+			if (args[0] is not LuaString pathVal)
+				throw new LuaRuntimeException("fs.exists(): first argument must be a string.");
+			var fullPath = _fileAccess.TryAccessPath(pathVal.Value);
+			return new LuaTuple(LuaBoolean.FromBoolean(fullPath != null && (File.Exists(fullPath) || Directory.Exists(fullPath))));
 		}
 
-		private DynValue IsFile(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple IsFile(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.is_file(path): at least 1 argument expected.");
-			var path = args[0].CastToString();
-			if (path == null)
-				throw new ScriptRuntimeException("fs.is_file(): first argument must be a string.");
-			var fullPath = _fileAccess.TryAccessPath(path);
-			return DynValue.NewBoolean(fullPath != null && File.Exists(fullPath));
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.is_file(path): at least 1 argument expected.");
+			if (args[0] is not LuaString pathVal)
+				throw new LuaRuntimeException("fs.is_file(): first argument must be a string.");
+			var fullPath = _fileAccess.TryAccessPath(pathVal.Value);
+			return new LuaTuple(LuaBoolean.FromBoolean(fullPath != null && File.Exists(fullPath)));
 		}
 
-		private DynValue IsDir(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple IsDir(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.is_dir(path): at least 1 argument expected.");
-			var path = args[0].CastToString();
-			if (path == null)
-				throw new ScriptRuntimeException("fs.is_dir(): first argument must be a string.");
-			var fullPath = _fileAccess.TryAccessPath(path);
-			return DynValue.NewBoolean(fullPath != null && Directory.Exists(fullPath));
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.is_dir(path): at least 1 argument expected.");
+			if (args[0] is not LuaString pathVal)
+				throw new LuaRuntimeException("fs.is_dir(): first argument must be a string.");
+			var fullPath = _fileAccess.TryAccessPath(pathVal.Value);
+			return new LuaTuple(LuaBoolean.FromBoolean(fullPath != null && Directory.Exists(fullPath)));
 		}
 
-		private DynValue List(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple List(LuaCallingContext ctx, LuaValue[] args)
 		{
-			var path = args.Count > 0 ? (args[0].CastToString() ?? ".") : ".";
+			var path = args.Length > 0 && args[0] is LuaString pathStr ? pathStr.Value : ".";
 			var fullPath = _fileAccess.TryAccessPath(path);
 			if (fullPath == null)
-				throw new ScriptRuntimeException($"fs.list(): path '{path}' is outside working directory.");
+				throw new LuaRuntimeException($"fs.list(): path '{path}' is outside working directory.");
 			if (!Directory.Exists(fullPath))
-				throw new ScriptRuntimeException($"fs.list(): directory '{path}' does not exist.");
+				throw new LuaRuntimeException($"fs.list(): directory '{path}' does not exist.");
 
 			var entries = Directory.GetFileSystemEntries(fullPath);
-			var result = new Table(ctx.OwnerScript);
+			var result = new LuaTable();
 			for (int i = 0; i < entries.Length; i++)
-				result[i + 1] = DynValue.NewString(Path.GetFileName(entries[i]));
-			return DynValue.NewTable(result);
+				result[i + 1] = new LuaString(Path.GetFileName(entries[i]));
+			return new LuaTuple(result);
 		}
 
-		private DynValue Detail(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Detail(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.detail(path): at least 1 argument expected.");
-			var path = args[0].CastToString();
-			if (path == null)
-				throw new ScriptRuntimeException("fs.detail(): first argument must be a string.");
-			var fullPath = _fileAccess.TryAccessPath(path);
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.detail(path): at least 1 argument expected.");
+			if (args[0] is not LuaString pathVal)
+				throw new LuaRuntimeException("fs.detail(): first argument must be a string.");
+			var fullPath = _fileAccess.TryAccessPath(pathVal.Value);
 			if (fullPath == null)
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 
-			var t = new Table(ctx.OwnerScript);
-			t["name"] = DynValue.NewString(Path.GetFileName(fullPath));
-			t["path"] = DynValue.NewString(fullPath);
-			t["is_file"] = DynValue.NewBoolean(File.Exists(fullPath));
-			t["is_dir"] = DynValue.NewBoolean(Directory.Exists(fullPath));
+			var t = new LuaTable();
+			t["name"] = new LuaString(Path.GetFileName(fullPath));
+			t["path"] = new LuaString(fullPath);
+			t["is_file"] = LuaBoolean.FromBoolean(File.Exists(fullPath));
+			t["is_dir"] = LuaBoolean.FromBoolean(Directory.Exists(fullPath));
 
 			try
 			{
 				var info = new FileInfo(fullPath);
 				if (info.Exists)
 				{
-					t["size"] = DynValue.NewNumber(info.Length);
-					t["created"] = DynValue.NewString(info.CreationTimeUtc.ToString("O"));
-					t["modified"] = DynValue.NewString(info.LastWriteTimeUtc.ToString("O"));
+					t["size"] = new LuaNumber(info.Length);
+					t["created"] = new LuaString(info.CreationTimeUtc.ToString("O"));
+					t["modified"] = new LuaString(info.LastWriteTimeUtc.ToString("O"));
 				}
 				else
 				{
 					var dirInfo = new DirectoryInfo(fullPath);
 					if (dirInfo.Exists)
 					{
-						t["size"] = DynValue.NewNumber(0);
-						t["created"] = DynValue.NewString(dirInfo.CreationTimeUtc.ToString("O"));
-						t["modified"] = DynValue.NewString(dirInfo.LastWriteTimeUtc.ToString("O"));
+						t["size"] = new LuaNumber(0);
+						t["created"] = new LuaString(dirInfo.CreationTimeUtc.ToString("O"));
+						t["modified"] = new LuaString(dirInfo.LastWriteTimeUtc.ToString("O"));
 					}
 				}
 			}
 			catch
 			{
-				// ignore
 			}
 
-			return DynValue.NewTable(t);
+			return new LuaTuple(t);
 		}
 
-		private DynValue Size(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Size(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.size(path): at least 1 argument expected.");
-			var path = args[0].CastToString();
-			if (path == null)
-				throw new ScriptRuntimeException("fs.size(): first argument must be a string.");
-			var fullPath = _fileAccess.TryAccessPath(path);
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.size(path): at least 1 argument expected.");
+			if (args[0] is not LuaString pathVal)
+				throw new LuaRuntimeException("fs.size(): first argument must be a string.");
+			var fullPath = _fileAccess.TryAccessPath(pathVal.Value);
 			if (fullPath == null || !File.Exists(fullPath))
-				return DynValue.Nil;
-			return DynValue.NewNumber(new FileInfo(fullPath).Length);
+				return new LuaTuple(LuaNil.Instance);
+			return new LuaTuple(new LuaNumber(new FileInfo(fullPath).Length));
 		}
 
-		private DynValue Copy(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Copy(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("fs.copy(src, dest): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("fs.copy(src, dest): at least 2 arguments expected.");
 			var src = GetPath(args, 0);
 			var dest = GetPath(args, 1);
 
@@ -419,13 +411,13 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			else
 				File.Copy(src, dest, overwrite: true);
 
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue Move(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Move(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("fs.move(src, dest): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("fs.move(src, dest): at least 2 arguments expected.");
 			var src = GetPath(args, 0);
 			var dest = GetPath(args, 1);
 
@@ -434,102 +426,96 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			else
 				File.Move(src, dest, overwrite: true);
 
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue Delete(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Delete(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.delete(path): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.delete(path): at least 1 argument expected.");
 			var path = GetPath(args, 0);
 			File.Delete(path);
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue DeleteDir(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple DeleteDir(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.delete_dir(path): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.delete_dir(path): at least 1 argument expected.");
 			var path = GetPath(args, 0);
 			Directory.Delete(path, recursive: true);
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue CreateDir(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple CreateDir(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.create_dir(path): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.create_dir(path): at least 1 argument expected.");
 			var path = GetPath(args, 0);
 			Directory.CreateDirectory(path);
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private static DynValue Join(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Join(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.join(...): at least 1 argument expected.");
-			var parts = new string[args.Count];
-			for (int i = 0; i < args.Count; i++)
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.join(...): at least 1 argument expected.");
+			var parts = new string[args.Length];
+			for (int i = 0; i < args.Length; i++)
 			{
-				var s = args[i].CastToString();
-				if (s == null)
-					throw new ScriptRuntimeException($"fs.join(): argument {i + 1} must be a string or number.");
-				parts[i] = s;
+				if (args[i] is not LuaString s)
+					throw new LuaRuntimeException($"fs.join(): argument {i + 1} must be a string or number.");
+				parts[i] = s.Value;
 			}
-			return DynValue.NewString(Path.Combine(parts));
+			return new LuaTuple(new LuaString(Path.Combine(parts)));
 		}
 
-		private static DynValue DirName(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple DirName(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.dirname(path): at least 1 argument expected.");
-			var path = args[0].CastToString();
-			if (path == null)
-				throw new ScriptRuntimeException("fs.dirname(): first argument must be a string.");
-			return DynValue.NewString(Path.GetDirectoryName(path) ?? "");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.dirname(path): at least 1 argument expected.");
+			if (args[0] is not LuaString pathVal)
+				throw new LuaRuntimeException("fs.dirname(): first argument must be a string.");
+			return new LuaTuple(new LuaString(Path.GetDirectoryName(pathVal.Value) ?? ""));
 		}
 
-		private static DynValue BaseName(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple BaseName(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.basename(path): at least 1 argument expected.");
-			var path = args[0].CastToString();
-			if (path == null)
-				throw new ScriptRuntimeException("fs.basename(): first argument must be a string.");
-			return DynValue.NewString(Path.GetFileName(path));
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.basename(path): at least 1 argument expected.");
+			if (args[0] is not LuaString pathVal)
+				throw new LuaRuntimeException("fs.basename(): first argument must be a string.");
+			return new LuaTuple(new LuaString(Path.GetFileName(pathVal.Value)));
 		}
 
-		private static DynValue ExtName(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple ExtName(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.extname(path): at least 1 argument expected.");
-			var path = args[0].CastToString();
-			if (path == null)
-				throw new ScriptRuntimeException("fs.extname(): first argument must be a string.");
-			return DynValue.NewString(Path.GetExtension(path));
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.extname(path): at least 1 argument expected.");
+			if (args[0] is not LuaString pathVal)
+				throw new LuaRuntimeException("fs.extname(): first argument must be a string.");
+			return new LuaTuple(new LuaString(Path.GetExtension(pathVal.Value)));
 		}
 
-		private DynValue Abs(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Abs(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("fs.abs(path): at least 1 argument expected.");
-			var path = args[0].CastToString();
-			if (path == null)
-				throw new ScriptRuntimeException("fs.abs(): first argument must be a string.");
-			var full = _fileAccess.TryAccessPath(path);
+			if (args.Length < 1)
+				throw new LuaRuntimeException("fs.abs(path): at least 1 argument expected.");
+			if (args[0] is not LuaString pathVal)
+				throw new LuaRuntimeException("fs.abs(): first argument must be a string.");
+			var full = _fileAccess.TryAccessPath(pathVal.Value);
 			if (full == null)
-				return DynValue.Nil;
-			return DynValue.NewString(full);
+				return new LuaTuple(LuaNil.Instance);
+			return new LuaTuple(new LuaString(full));
 		}
 
 		// --- Helpers ---
 
-		private string GetPath(CallbackArguments args, int index)
+		private string GetPath(LuaValue[] args, int index)
 		{
-			var path = args[index].CastToString();
-			if (path == null)
-				throw new ScriptRuntimeException($"Argument {index + 1} must be a string (path).");
-			return _fileAccess.AccessPath(path);
+			if (args[index] is not LuaString pathVal)
+				throw new LuaRuntimeException($"Argument {index + 1} must be a string (path).");
+			return _fileAccess.AccessPath(pathVal.Value);
 		}
 
 		private static void CopyDirectoryRecursive(string source, string dest)

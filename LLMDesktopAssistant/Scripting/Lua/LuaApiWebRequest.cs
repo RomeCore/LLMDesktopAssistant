@@ -1,10 +1,11 @@
 using System.Text;
+using System.Threading.Tasks;
 using AngleSharp;
+using AsyncLua;
+using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils;
-using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Serialization.Json;
 using ReverseMarkdown;
 
 namespace LLMDesktopAssistant.Scripting.Lua
@@ -14,7 +15,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Registered in the global <c>web</c> namespace alongside <c>web.search()</c>.
 	/// </summary>
 	[LuaApi(chatScoped: true)]
-	public class LuaApiWebRequest : LuaApiBase
+	public class LuaApiWebRequest : LuaApiBaseAsync
 	{
 		public override string? Namespace => "web";
 
@@ -26,7 +27,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			FUNCTIONS:
 
-			--- web.request(method, url, [params])
+			--- async web.request(method, url, [params])
 			  Performs an HTTP request with the specified method and URL.
 			  Returns structured response data.
 
@@ -46,7 +47,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - content_length: number — Length of the response content
 			    - content: string — Response body (sliced by start/count)
 			
-			--- web.status(url, [options])
+			--- async web.status(url, [options])
 			  Checks if a website is accessible and returns detailed status info.
 			
 			  Parameters:
@@ -64,7 +65,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - content_length: number or nil — Content-Length header
 			    - server: string or nil — Server header
 			
-			--- web.fetch(url, [contentType])
+			--- async web.fetch(url, [contentType])
 			  Fetches a web page and converts it to the specified content type.
 
 			  Parameters:
@@ -77,7 +78,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - content_length: number — total length of fetched content
 			    - content: string — the converted content (sliced by start/count)
 
-			--- web.parse(url, selector)
+			--- async web.parse(url, selector)
 			  Fetches HTML content and parses specific elements using a CSS selector.
 
 			  Parameters:
@@ -91,7 +92,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - contents: array of strings — text content of each matched element
 			    - html: string — combined HTML of matched elements (sliced)
 
-			--- web.download(url, savePath, [options])
+			--- async web.download(url, savePath, [options])
 			  Downloads a file from a URL and saves it to the local filesystem.
 
 			  Parameters:
@@ -109,29 +110,29 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			EXAMPLES:
 
 			  -- Fetch a page as Markdown
-			  local r = web.fetch("https://example.com")
+			  local r = await web.fetch("https://example.com")
 			  print(r.content)
 
 			  -- Fetch as raw HTML
-			  local r = web.fetch("https://example.com", { contentType = "html" })
+			  local r = await web.fetch("https://example.com", { contentType = "html" })
 			  print(r.content)
 
 			  -- Check website status
-			  local s = web.status("https://google.com")
+			  local s = await web.status("https://google.com")
 			  print(s.status_code, s.response_time_ms)
 
 			  -- Parse specific elements
-			  local r = web.parse("https://news.ycombinator.com", "a.storylink")
+			  local r = await web.parse("https://news.ycombinator.com", "a.storylink")
 			  for _, title in ipairs(r.contents) do
 			    print(title)
 			  end
 
 			  -- Download a file
-			  local r = web.download("https://example.com/image.png", "downloaded_image.png")
+			  local r = await web.download("https://example.com/image.png", "downloaded_image.png")
 			  print("Saved", r.file_size, "bytes to", r.save_path)
 
-			  -- Request with custom headers and content slicing
-			  local r = web.request("POST", "https://api.example.com/data", {
+			  -- Request with custom headers
+			  local r = await web.request("POST", "https://api.example.com/data", {
 			    headers = { ["Authorization"] = "Bearer token" },
 			    content = { key = "value" },
 			    contentType = "application/json"
@@ -158,75 +159,72 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_infiniteTimeoutClient = CreateClient(timeoutSeconds: null);
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["request"] = DynValue.NewCallback(new CallbackFunction(Request));
-			ns["status"] = DynValue.NewCallback(new CallbackFunction(Status));
-			ns["fetch"] = DynValue.NewCallback(new CallbackFunction(Fetch));
-			ns["parse"] = DynValue.NewCallback(new CallbackFunction(Parse));
-			ns["download"] = DynValue.NewCallback(new CallbackFunction(Download));
+			ns["request"] = new LuaCallbackFunction(RequestAsync);
+			ns["status"] = new LuaCallbackFunction(StatusAsync);
+			ns["fetch"] = new LuaCallbackFunction(FetchAsync);
+			ns["parse"] = new LuaCallbackFunction(ParseAsync);
+			ns["download"] = new LuaCallbackFunction(DownloadAsync);
 		}
 
-		private DynValue Request(ScriptExecutionContext ctx, CallbackArguments args)
+		private async Task<LuaTuple> RequestAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("web.request() requires at least method and url arguments.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("web.request() requires at least method and url arguments.");
 
-			var method = args[0].CastToString()
-				?? throw new ScriptRuntimeException("First argument must be a string (HTTP method).");
-			var url = args[1].CastToString()
-				?? throw new ScriptRuntimeException("Second argument must be a string (URL).");
+			if (args[0] is not LuaString methodVal)
+				throw new LuaRuntimeException("First argument must be a string (HTTP method).");
+			if (args[1] is not LuaString urlVal)
+				throw new LuaRuntimeException("Second argument must be a string (URL).");
 
-			// Defaults
 			string? content = null;
 			string contentType = "application/json";
 			Dictionary<string, string>? headers = null;
 			bool usePureClient = false;
 
-			// Parse optional params table
-			if (args.Count > 2 && args[2].Type == DataType.Table)
+			if (args.Length > 2 && args[2] is LuaTable opts)
 			{
-				var opts = args[2].Table;
+				if (opts.Get("use_pure_client") is LuaBoolean upc)
+					usePureClient = upc.Value;
 
-				if (opts.Get("use_pure_client") is DynValue upc && upc.Type == DataType.Boolean)
-					usePureClient = upc.Boolean;
-
-				if (opts.Get("content") is DynValue cv)
+				if (opts.Get("content") is LuaValue cv)
 				{
-					if (cv.Type == DataType.String)
-						content = cv.String;
-					else if (cv.Type == DataType.Table)
-						content = cv.Table.TableToJson();
+					if (cv is LuaString cvStr)
+						content = cvStr.Value;
+					else if (cv is LuaTable)
+					{
+						var jsonNode = StructuredLuaConverter.LuaValueToJsonNode(cv);
+						content = jsonNode?.ToJsonString() ?? "{}";
+					}
 				}
 
-				if (opts.Get("contentType") is DynValue ct && ct.Type == DataType.String)
-					contentType = ct.String;
+				if (opts.Get("contentType") is LuaString ct)
+					contentType = ct.Value;
 
-				if (opts.Get("headers") is DynValue hv && hv.Type == DataType.Table)
+				if (opts.Get("headers") is LuaTable hv)
 				{
 					headers = new Dictionary<string, string>();
-					foreach (var kv in hv.Table.Pairs)
+					foreach (var kv in hv.Entries)
 					{
-						var key = kv.Key.CastToString();
-						var val = kv.Value.CastToString();
-						if (key != null && val != null)
-							headers[key] = val;
+						if (kv.Key is LuaString keyStr && kv.Value is LuaString valStr)
+							headers[keyStr.Value] = valStr.Value;
 					}
 				}
 			}
 
 			try
 			{
-				var httpMethod = method.ToUpperInvariant() switch
+				var httpMethod = methodVal.Value.ToUpperInvariant() switch
 				{
 					"GET" => HttpMethod.Get,
 					"POST" => HttpMethod.Post,
 					"PUT" => HttpMethod.Put,
 					"DELETE" => HttpMethod.Delete,
-					_ => throw new ScriptRuntimeException($"Invalid HTTP method: '{method}'. Supported: GET, POST, PUT, DELETE.")
+					_ => throw new LuaRuntimeException($"Invalid HTTP method: '{methodVal.Value}'. Supported: GET, POST, PUT, DELETE.")
 				};
 
-				using var request = new HttpRequestMessage(httpMethod, url);
+				using var request = new HttpRequestMessage(httpMethod, urlVal.Value);
 
 				if (!string.IsNullOrEmpty(content))
 					request.Content = new StringContent(content, Encoding.UTF8, contentType);
@@ -238,54 +236,50 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				}
 
 				var client = usePureClient ? _pureHttpClient : _httpClient;
-				var response = client.SendAsync(request).Result;
-				var responseContent = response.Content.ReadAsStringAsync().Result;
+				var response = await client.SendAsync(request);
+				var responseContent = await response.Content.ReadAsStringAsync();
 
-				var script = ctx.OwnerScript;
-				var result = new Table(script);
+				var result = new LuaTable();
 
-				result["status_code"] = DynValue.NewNumber((int)response.StatusCode);
-				result["status_description"] = DynValue.NewString(response.StatusCode.ToString());
+				result["status_code"] = new LuaNumber((int)response.StatusCode);
+				result["status_description"] = new LuaString(response.StatusCode.ToString());
 
-				var headersTable = new Table(script);
+				var headersTable = new LuaTable();
 				foreach (var h in response.Headers)
-					headersTable[h.Key] = DynValue.NewString(string.Join(", ", h.Value));
+					headersTable[h.Key] = new LuaString(string.Join(", ", h.Value));
 				foreach (var h in response.Content.Headers)
-					headersTable[h.Key] = DynValue.NewString(string.Join(", ", h.Value));
+					headersTable[h.Key] = new LuaString(string.Join(", ", h.Value));
 				result["headers"] = headersTable;
 
-				result["content_length"] = DynValue.NewNumber(responseContent.Length);
-				result["content"] = DynValue.NewString(responseContent);
+				result["content_length"] = new LuaNumber(responseContent.Length);
+				result["content"] = new LuaString(responseContent);
 
-				return DynValue.NewTable(result);
+				return new LuaTuple(result);
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"HTTP request failed: {ex.Message}");
+				throw new LuaRuntimeException($"HTTP request failed: {ex.Message}");
 			}
 		}
 
-		private DynValue Fetch(ScriptExecutionContext ctx, CallbackArguments args)
+		private async Task<LuaTuple> FetchAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("web.fetch(url, [contentType]): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("web.fetch(url, [contentType]): at least 1 argument expected.");
 
-			var url = args[0].CastToString()
-				?? throw new ScriptRuntimeException("First argument must be a string (URL).");
+			if (args[0] is not LuaString urlVal)
+				throw new LuaRuntimeException("First argument must be a string (URL).");
 
 			string contentType = "markdown";
-
-			if (args.Count > 1 && args[1].Type == DataType.String)
-			{
-				contentType = args[1].String;
-			}
+			if (args.Length > 1 && args[1] is LuaString ctVal)
+				contentType = ctVal.Value;
 
 			try
 			{
 				var config = Configuration.Default.WithDefaultLoader();
 				var context = BrowsingContext.New(config);
-				var document = context.OpenAsync(url).Result;
+				var document = await context.OpenAsync(urlVal.Value);
 
 				var bodyHtml = document.Body?.OuterHtml ?? string.Empty;
 				string content;
@@ -295,48 +289,43 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					case "sanitized_html":
 						content = HtmlUtils.Sanitize(bodyHtml);
 						break;
-
 					case "markdown":
 						content = _mdConverter.Convert(bodyHtml);
 						break;
-
 					case "html":
 					default:
 						content = bodyHtml;
 						break;
 				}
 
-				var script = ctx.OwnerScript;
-				var result = new Table(script);
+				var result = new LuaTable();
+				result["url"] = new LuaString(urlVal.Value);
+				result["content_type"] = new LuaString(contentType);
+				result["content_length"] = new LuaNumber(content.Length);
+				result["content"] = new LuaString(content);
 
-				result["url"] = DynValue.NewString(url);
-				result["content_type"] = DynValue.NewString(contentType);
-				result["content_length"] = DynValue.NewNumber(content.Length);
-				result["content"] = DynValue.NewString(content);
-
-				return DynValue.NewTable(result);
+				return new LuaTuple(result);
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"Web fetch failed: {ex.Message}");
+				throw new LuaRuntimeException($"Web fetch failed: {ex.Message}");
 			}
 		}
 
-		private DynValue Status(ScriptExecutionContext ctx, CallbackArguments args)
+		private async Task<LuaTuple> StatusAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("web.status(url, [options]): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("web.status(url, [options]): at least 1 argument expected.");
 
-			var url = args[0].CastToString()
-				?? throw new ScriptRuntimeException("First argument must be a string (URL).");
+			if (args[0] is not LuaString urlVal)
+				throw new LuaRuntimeException("First argument must be a string (URL).");
 
 			int timeout = 30;
-			if (args.Count > 1 && args[1].Type == DataType.Table)
+			if (args.Length > 1 && args[1] is LuaTable opts)
 			{
-				var opts = args[1].Table;
-				if (opts.Get("timeout") is DynValue tv && tv.Type == DataType.Number)
-					timeout = (int)tv.Number;
+				if (opts.Get("timeout") is LuaNumber tv)
+					timeout = (int)tv.Value;
 			}
 
 			try
@@ -344,164 +333,152 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeout));
 				var startTime = DateTime.UtcNow;
 
-				var response = _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cts.Token).Result;
+				var response = await _httpClient.GetAsync(urlVal.Value, HttpCompletionOption.ResponseHeadersRead, cts.Token);
 				var endTime = DateTime.UtcNow;
 
-				var script = ctx.OwnerScript;
-				var result = new Table(script);
+				var result = new LuaTable();
+				result["url"] = new LuaString(urlVal.Value);
+				result["status_code"] = new LuaNumber((int)response.StatusCode);
+				result["status_description"] = new LuaString(response.StatusCode.ToString());
+				result["is_accessible"] = LuaBoolean.FromBoolean(response.IsSuccessStatusCode);
+				result["response_time_ms"] = new LuaNumber(Math.Round((endTime - startTime).TotalMilliseconds, 2));
+				result["content_type"] = new LuaString(response.Content.Headers.ContentType?.ToString() ?? string.Empty);
+				result["content_length"] = new LuaNumber(response.Content.Headers.ContentLength ?? -1);
+				result["server"] = new LuaString(response.Headers.Server?.ToString() ?? "Unknown");
 
-				result["url"] = DynValue.NewString(url);
-				result["status_code"] = DynValue.NewNumber((int)response.StatusCode);
-				result["status_description"] = DynValue.NewString(response.StatusCode.ToString());
-				result["is_accessible"] = DynValue.NewBoolean(response.IsSuccessStatusCode);
-				result["response_time_ms"] = DynValue.NewNumber(Math.Round((endTime - startTime).TotalMilliseconds, 2));
-				result["content_type"] = DynValue.NewString(response.Content.Headers.ContentType?.ToString());
-				result["content_length"] = DynValue.NewNumber(response.Content.Headers.ContentLength ?? -1);
-				result["server"] = DynValue.NewString(response.Headers.Server?.ToString() ?? "Unknown");
-
-				return DynValue.NewTable(result);
+				return new LuaTuple(result);
 			}
 			catch (TaskCanceledException)
 			{
-				var script = ctx.OwnerScript;
-				var result = new Table(script);
-				result["url"] = DynValue.NewString(url);
-				result["status_code"] = DynValue.NewNumber(0);
-				result["status_description"] = DynValue.NewString("Timeout");
-				result["is_accessible"] = DynValue.False;
-				result["response_time_ms"] = DynValue.NewNumber(timeout * 1000);
-				result["content_type"] = DynValue.Nil;
-				result["content_length"] = DynValue.NewNumber(-1);
-				result["server"] = DynValue.Nil;
-				return DynValue.NewTable(result);
+				var result = new LuaTable();
+				result["url"] = new LuaString(urlVal.Value);
+				result["status_code"] = new LuaNumber(0);
+				result["status_description"] = new LuaString("Timeout");
+				result["is_accessible"] = LuaBoolean.False;
+				result["response_time_ms"] = new LuaNumber(timeout * 1000);
+				result["content_type"] = LuaNil.Instance;
+				result["content_length"] = new LuaNumber(-1);
+				result["server"] = LuaNil.Instance;
+				return new LuaTuple(result);
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"Website status check failed: {ex.Message}");
+				throw new LuaRuntimeException($"Website status check failed: {ex.Message}");
 			}
 		}
 
-		private DynValue Parse(ScriptExecutionContext ctx, CallbackArguments args)
+		private async Task<LuaTuple> ParseAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("web.parse(url, selector): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("web.parse(url, selector): at least 2 arguments expected.");
 
-			var url = args[0].CastToString()
-				?? throw new ScriptRuntimeException("First argument must be a string (URL).");
-			var selector = args[1].CastToString()
-				?? throw new ScriptRuntimeException("Second argument must be a string (CSS selector).");
+			if (args[0] is not LuaString urlVal)
+				throw new LuaRuntimeException("First argument must be a string (URL).");
+			if (args[1] is not LuaString selectorVal)
+				throw new LuaRuntimeException("Second argument must be a string (CSS selector).");
 
 			try
 			{
 				var config = Configuration.Default.WithDefaultLoader();
 				var context = BrowsingContext.New(config);
-				var document = context.OpenAsync(url).Result;
-				var elements = document.QuerySelectorAll(selector);
+				var document = await context.OpenAsync(urlVal.Value);
+				var elements = document.QuerySelectorAll(selectorVal.Value);
 
-				var script = ctx.OwnerScript;
-				var result = new Table(script);
-
-				result["url"] = DynValue.NewString(url);
-				result["selector"] = DynValue.NewString(selector);
+				var result = new LuaTable();
+				result["url"] = new LuaString(urlVal.Value);
+				result["selector"] = new LuaString(selectorVal.Value);
 
 				var matchCount = elements.Length;
-				result["match_count"] = DynValue.NewNumber(matchCount);
+				result["match_count"] = new LuaNumber(matchCount);
 
-				// Contents array
-				var contentsTable = new Table(script);
+				var contentsTable = new LuaTable();
 				int i = 1;
 				foreach (var el in elements)
 				{
-					contentsTable[i++] = DynValue.NewString(el.TextContent.Trim());
+					contentsTable[i++] = new LuaString(el.TextContent.Trim());
 				}
 				result["contents"] = contentsTable;
 
-				// Combined HTML
 				var combinedHtml = string.Join("\n\n", elements.Select(e => e.OuterHtml));
-				result["html"] = DynValue.NewString(combinedHtml);
+				result["html"] = new LuaString(combinedHtml);
 
-				return DynValue.NewTable(result);
+				return new LuaTuple(result);
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"HTML parse failed: {ex.Message}");
+				throw new LuaRuntimeException($"HTML parse failed: {ex.Message}");
 			}
 		}
 
-		private DynValue Download(ScriptExecutionContext ctx, CallbackArguments args)
+		private async Task<LuaTuple> DownloadAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("web.download(url, savePath, [options]): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("web.download(url, savePath, [options]): at least 2 arguments expected.");
 
-			var url = args[0].CastToString()
-				?? throw new ScriptRuntimeException("First argument must be a string (URL).");
-			var savePath = args[1].CastToString()
-				?? throw new ScriptRuntimeException("Second argument must be a string (save path).");
+			if (args[0] is not LuaString urlVal)
+				throw new LuaRuntimeException("First argument must be a string (URL).");
+			if (args[1] is not LuaString savePathVal)
+				throw new LuaRuntimeException("Second argument must be a string (save path).");
 
 			Dictionary<string, string>? headers = null;
-			if (args.Count > 2 && args[2].Type == DataType.Table)
+			if (args.Length > 2 && args[2] is LuaTable opts)
 			{
-				var opts = args[2].Table;
-				if (opts.Get("headers") is DynValue hv && hv.Type == DataType.Table)
+				if (opts.Get("headers") is LuaTable hv)
 				{
 					headers = new Dictionary<string, string>();
-					foreach (var kv in hv.Table.Pairs)
+					foreach (var kv in hv.Entries)
 					{
-						var key = kv.Key.CastToString();
-						var val = kv.Value.CastToString();
-						if (key != null && val != null)
-							headers[key] = val;
+						if (kv.Key is LuaString keyStr && kv.Value is LuaString valStr)
+							headers[keyStr.Value] = valStr.Value;
 					}
 				}
 			}
 
 			try
 			{
-				var fullSavePath = _fileAccess.AccessPath(savePath);
+				var fullSavePath = _fileAccess.AccessPath(savePathVal.Value);
 
-				// Ensure directory exists
 				var dir = Path.GetDirectoryName(fullSavePath);
 				if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
 					Directory.CreateDirectory(dir);
 
-				using var request = new HttpRequestMessage(HttpMethod.Get, url);
+				using var request = new HttpRequestMessage(HttpMethod.Get, urlVal.Value);
 				if (headers != null)
 				{
 					foreach (var header in headers)
 						request.Headers.TryAddWithoutValidation(header.Key, header.Value);
 				}
 
-				var response = _infiniteTimeoutClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).Result;
-				var script = ctx.OwnerScript;
-				var result = new Table(script);
+				var response = await _infiniteTimeoutClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+				var result = new LuaTable();
 
 				if (!response.IsSuccessStatusCode)
 				{
-					result["url"] = DynValue.NewString(url);
-					result["file_size"] = DynValue.NewNumber(0);
-					result["status_code"] = DynValue.NewNumber((int)response.StatusCode);
-					result["success"] = DynValue.False;
-					return DynValue.NewTable(result);
+					result["url"] = new LuaString(urlVal.Value);
+					result["file_size"] = new LuaNumber(0);
+					result["status_code"] = new LuaNumber((int)response.StatusCode);
+					result["success"] = LuaBoolean.False;
+					return new LuaTuple(result);
 				}
 
-				using var downloadStream = response.Content.ReadAsStreamAsync().Result;
+				using var downloadStream = await response.Content.ReadAsStreamAsync();
 				using var fileStream = File.Create(fullSavePath);
-				downloadStream.CopyTo(fileStream);
+				await downloadStream.CopyToAsync(fileStream);
 				var fileSize = fileStream.Length;
 
-				result["url"] = DynValue.NewString(url);
-				result["file_size"] = DynValue.NewNumber(fileSize);
-				result["status_code"] = DynValue.NewNumber((int)response.StatusCode);
-				result["success"] = DynValue.True;
+				result["url"] = new LuaString(urlVal.Value);
+				result["file_size"] = new LuaNumber(fileSize);
+				result["status_code"] = new LuaNumber((int)response.StatusCode);
+				result["success"] = LuaBoolean.True;
 
-				return DynValue.NewTable(result);
+				return new LuaTuple(result);
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"File download failed: {ex.Message}");
+				throw new LuaRuntimeException($"File download failed: {ex.Message}");
 			}
 		}
 

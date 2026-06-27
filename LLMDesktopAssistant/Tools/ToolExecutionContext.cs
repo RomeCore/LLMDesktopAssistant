@@ -3,7 +3,6 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Scripting;
 using LLTSharp;
 using ModelContextProtocol.Protocol;
-using MoonSharp.Interpreter;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 
@@ -13,7 +12,6 @@ namespace LLMDesktopAssistant.Tools
 	/// The context in which a tool is executed.
 	/// This used to provide additional information about the execution environment of a tool.
 	/// </summary>
-	[MoonSharpUserData]
 	public class ToolExecutionContext
 	{
 		/// <summary>

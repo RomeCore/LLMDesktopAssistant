@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using MoonSharp.Interpreter;
+using AsyncLua;
+using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	/*
-
 	/// <summary>
 	/// Lua API with extended table utilities: <c>table.*</c>.
 	/// Supplements the built-in table library with commonly needed functions.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiTable : LuaApiBase
+	public class LuaApiTable : LuaApiBaseAsync
 	{
 		public override string? Namespace => "table";
 
@@ -147,384 +145,349 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(table.last(t))  -- 5
 			""";
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["contains"] = DynValue.NewCallback(new CallbackFunction(Contains));
-			ns["find"] = DynValue.NewCallback(new CallbackFunction(Find));
-			ns["map"] = DynValue.NewCallback(new CallbackFunction(Map));
-			ns["filter"] = DynValue.NewCallback(new CallbackFunction(Filter));
-			ns["reduce"] = DynValue.NewCallback(new CallbackFunction(Reduce));
-			ns["slice"] = DynValue.NewCallback(new CallbackFunction(Slice));
-			ns["keys"] = DynValue.NewCallback(new CallbackFunction(Keys));
-			ns["values"] = DynValue.NewCallback(new CallbackFunction(Values));
-			ns["merge"] = DynValue.NewCallback(new CallbackFunction(Merge));
-			ns["clone"] = DynValue.NewCallback(new CallbackFunction(Clone));
-			ns["deep_clone"] = DynValue.NewCallback(new CallbackFunction(DeepClone));
-			ns["is_empty"] = DynValue.NewCallback(new CallbackFunction(IsEmpty));
-			ns["size"] = DynValue.NewCallback(new CallbackFunction(Size));
-			ns["first"] = DynValue.NewCallback(new CallbackFunction(First));
-			ns["last"] = DynValue.NewCallback(new CallbackFunction(Last));
-			ns["each"] = DynValue.NewCallback(new CallbackFunction(Each));
-			ns["times"] = DynValue.NewCallback(new CallbackFunction(Times));
+			ns["contains"] = new LuaCallbackFunction(Contains);
+			ns["find"] = new LuaCallbackFunction(Find);
+			ns["map"] = new LuaCallbackFunction(Map);
+			ns["filter"] = new LuaCallbackFunction(Filter);
+			ns["reduce"] = new LuaCallbackFunction(Reduce);
+			ns["slice"] = new LuaCallbackFunction(Slice);
+			ns["keys"] = new LuaCallbackFunction(Keys);
+			ns["values"] = new LuaCallbackFunction(Values);
+			ns["merge"] = new LuaCallbackFunction(Merge);
+			ns["clone"] = new LuaCallbackFunction(Clone);
+			ns["deep_clone"] = new LuaCallbackFunction(DeepClone);
+			ns["is_empty"] = new LuaCallbackFunction(IsEmpty);
+			ns["size"] = new LuaCallbackFunction(Size);
+			ns["first"] = new LuaCallbackFunction(First);
+			ns["last"] = new LuaCallbackFunction(Last);
+			ns["each"] = new LuaCallbackFunction(Each);
+			ns["times"] = new LuaCallbackFunction(Times);
 		}
 
-		private static DynValue Contains(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Contains(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("table.contains(t, value): at least 2 arguments expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.contains(): first argument must be a table.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("table.contains(t, value): at least 2 arguments expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.contains(): first argument must be a table.");
 			var value = args[1];
 
-			foreach (var kv in t.Table.Pairs)
+			foreach (var kv in t.Entries)
 			{
 				if (ValuesEqual(kv.Value, value))
-					return DynValue.True;
+					return new LuaTuple(LuaBoolean.True);
 			}
-			return DynValue.False;
+			return new LuaTuple(LuaBoolean.False);
 		}
 
-		private static DynValue Find(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Find(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("table.find(t, value): at least 2 arguments expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.find(): first argument must be a table.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("table.find(t, value): at least 2 arguments expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.find(): first argument must be a table.");
 			var value = args[1];
 
-			foreach (var kv in t.Table.Pairs)
+			foreach (var kv in t.Entries)
 			{
 				if (ValuesEqual(kv.Value, value))
-					return kv.Key;
+					return new LuaTuple(kv.Key);
 			}
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private static DynValue Map(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Map(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("table.map(t, func): at least 2 arguments expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.map(): first argument must be a table.");
-			var func = args[1];
-			if (func.Type != DataType.Function)
-				throw new ScriptRuntimeException("table.map(): second argument must be a function.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("table.map(t, func): at least 2 arguments expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.map(): first argument must be a table.");
+			if (args[1] is not LuaFunction func)
+				throw new LuaRuntimeException("table.map(): second argument must be a function.");
 
-			var result = new Table(ctx.OwnerScript);
-			foreach (var kv in t.Table.Pairs)
+			var result = new LuaTable();
+			foreach (var kv in t.Entries)
 			{
-				var newVal = ctx.GetScript().Call(func, kv.Value, kv.Key);
-				result.Set(kv.Key, newVal);
+				var newVal = func.Invoke(ctx, kv.Value, kv.Key);
+				result.Set(kv.Key, newVal.Count > 0 ? newVal[0] : LuaNil.Instance);
 			}
-			return DynValue.NewTable(result);
+			return new LuaTuple(result);
 		}
 
-		private static DynValue Filter(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Filter(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("table.filter(t, func): at least 2 arguments expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.filter(): first argument must be a table.");
-			var func = args[1];
-			if (func.Type != DataType.Function)
-				throw new ScriptRuntimeException("table.filter(): second argument must be a function.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("table.filter(t, func): at least 2 arguments expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.filter(): first argument must be a table.");
+			if (args[1] is not LuaFunction func)
+				throw new LuaRuntimeException("table.filter(): second argument must be a function.");
 
-			var script = ctx.OwnerScript;
-			var isArray = IsArray(t.Table);
+			var isArray = IsArray(t);
+			var result = new LuaTable();
 
 			if (isArray)
 			{
-				var result = new Table(script);
 				int idx = 1;
-				for (int i = 1; i <= t.Table.Length; i++)
+				for (int i = 1; i <= t.Length; i++)
 				{
-					var val = t.Table.Get(i);
-					var keep = script.Call(func, val, DynValue.NewNumber(i));
-					if (keep.CastToBool())
+					var val = t.Get(i);
+					var keep = func.Invoke(ctx, val, new LuaNumber(i));
+					if (keep.Count > 0 && keep[0] is LuaBoolean bKeep && bKeep.Value)
 					{
 						result[idx] = val;
 						idx++;
 					}
 				}
-				return DynValue.NewTable(result);
 			}
 			else
 			{
-				var result = new Table(script);
-				foreach (var kv in t.Table.Pairs)
+				foreach (var kv in t.Entries)
 				{
-					var keep = script.Call(func, kv.Value, kv.Key);
-					if (keep.CastToBool())
+					var keep = func.Invoke(ctx, kv.Value, kv.Key);
+					if (keep.Count > 0 && keep[0] is LuaBoolean bKeep && bKeep.Value)
 						result.Set(kv.Key, kv.Value);
 				}
-				return DynValue.NewTable(result);
 			}
+
+			return new LuaTuple(result);
 		}
 
-		private static bool IsArray(Table t)
+		private static bool IsArray(LuaTable t)
 		{
 			int len = t.Length;
 			if (len == 0)
 			{
-				// Empty table with no hash keys is an array
-				foreach (var _ in t.Pairs)
+				foreach (var _ in t.Entries)
 					return false;
 				return true;
 			}
-			// Check that all keys 1..len exist and no non-numeric keys
 			for (int i = 1; i <= len; i++)
 			{
-				if (t.Get(i).Type == DataType.Nil)
+				if (t.Get(i) is LuaNil)
 					return false;
 			}
-			// Check there are no non-numeric keys
-			foreach (var kv in t.Pairs)
+			foreach (var kv in t.Entries)
 			{
-				if (kv.Key.Type != DataType.Number)
+				if (kv.Key is not LuaNumber)
 					return false;
 			}
 			return true;
 		}
 
-		private static DynValue Reduce(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Reduce(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 3)
-				throw new ScriptRuntimeException("table.reduce(t, func, initial): at least 3 arguments expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.reduce(): first argument must be a table.");
-			var func = args[1];
-			if (func.Type != DataType.Function)
-				throw new ScriptRuntimeException("table.reduce(): second argument must be a function.");
+			if (args.Length < 3)
+				throw new LuaRuntimeException("table.reduce(t, func, initial): at least 3 arguments expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.reduce(): first argument must be a table.");
+			if (args[1] is not LuaFunction func)
+				throw new LuaRuntimeException("table.reduce(): second argument must be a function.");
 			var acc = args[2];
 
-			foreach (var kv in t.Table.Pairs)
+			foreach (var kv in t.Entries)
 			{
-				acc = ctx.GetScript().Call(func, acc, kv.Value, kv.Key);
+				var result = func.Invoke(ctx, acc, kv.Value, kv.Key);
+				acc = result.Count > 0 ? result[0] : LuaNil.Instance;
 			}
-			return acc;
+			return new LuaTuple(acc);
 		}
 
-		private static DynValue Slice(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Slice(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("table.slice(t, start, [end]): at least 2 arguments expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.slice(): first argument must be a table.");
-			var startVal = args[1].CastToNumber();
-			if (startVal == null)
-				throw new ScriptRuntimeException("table.slice(): start must be a number.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("table.slice(t, start, [end]): at least 2 arguments expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.slice(): first argument must be a table.");
+			if (args[1] is not LuaNumber startVal)
+				throw new LuaRuntimeException("table.slice(): start must be a number.");
 			int start = (int)startVal.Value;
 
-			int len = t.Table.Length;
+			int len = t.Length;
 			int end = len;
-			if (args.Count > 2 && !args[2].IsNil())
+			if (args.Length > 2 && args[2] is not LuaNil)
 			{
-				var endVal = args[2].CastToNumber();
-				if (endVal == null)
-					throw new ScriptRuntimeException("table.slice(): end must be a number.");
+				if (args[2] is not LuaNumber endVal)
+					throw new LuaRuntimeException("table.slice(): end must be a number.");
 				end = (int)endVal.Value;
 			}
 
-			// Clamp
 			if (start < 1) start = 1;
 			if (end > len) end = len;
 
-			var result = new Table(ctx.OwnerScript);
+			var result = new LuaTable();
 			if (start > end)
-				return DynValue.NewTable(result);
+				return new LuaTuple(result);
 
 			int idx = 1;
 			for (int i = start; i <= end; i++)
 			{
-				result[idx] = t.Table.Get(i);
+				result[idx] = t.Get(i);
 				idx++;
 			}
-			return DynValue.NewTable(result);
+			return new LuaTuple(result);
 		}
 
-		private static DynValue Keys(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Keys(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("table.keys(t): at least 1 argument expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.keys(): first argument must be a table.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("table.keys(t): at least 1 argument expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.keys(): first argument must be a table.");
 
-			var result = new Table(ctx.OwnerScript);
+			var result = new LuaTable();
 			int idx = 1;
-			foreach (var kv in t.Table.Pairs)
+			foreach (var kv in t.Entries)
 			{
 				result[idx] = kv.Key;
 				idx++;
 			}
-			return DynValue.NewTable(result);
+			return new LuaTuple(result);
 		}
 
-		private static DynValue Values(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Values(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("table.values(t): at least 1 argument expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.values(): first argument must be a table.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("table.values(t): at least 1 argument expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.values(): first argument must be a table.");
 
-			var result = new Table(ctx.OwnerScript);
+			var result = new LuaTable();
 			int idx = 1;
-			foreach (var kv in t.Table.Pairs)
+			foreach (var kv in t.Entries)
 			{
 				result[idx] = kv.Value;
 				idx++;
 			}
-			return DynValue.NewTable(result);
+			return new LuaTuple(result);
 		}
 
-		private static DynValue Merge(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Merge(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("table.merge(t1, t2): at least 2 arguments expected.");
-			var t1 = args[0];
-			var t2 = args[1];
-			if (t1.Type != DataType.Table || t2.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.merge(): both arguments must be tables.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("table.merge(t1, t2): at least 2 arguments expected.");
+			if (args[0] is not LuaTable t1 || args[1] is not LuaTable t2)
+				throw new LuaRuntimeException("table.merge(): both arguments must be tables.");
 
-			var target = t1.Table;
-			var source = t2.Table;
-			return DynValue.NewTable(target.DeepMergeWith(source));
+			return new LuaTuple(t1.DeepMergeWith(t2));
 		}
 
-		private static DynValue Clone(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Clone(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("table.clone(t): at least 1 argument expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.clone(): first argument must be a table.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("table.clone(t): at least 1 argument expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.clone(): first argument must be a table.");
 
-			return DynValue.NewTable(t.Table.ShallowClone());
+			return new LuaTuple(t.ShallowClone());
 		}
 
-		private static DynValue DeepClone(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple DeepClone(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("table.deep_clone(t): at least 1 argument expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.deep_clone(): first argument must be a table.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("table.deep_clone(t): at least 1 argument expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.deep_clone(): first argument must be a table.");
 
-			return DynValue.NewTable(t.Table.DeepClone());
+			return new LuaTuple(t.DeepClone());
 		}
 
-		private static DynValue IsEmpty(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple IsEmpty(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("table.is_empty(t): at least 1 argument expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.is_empty(): first argument must be a table.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("table.is_empty(t): at least 1 argument expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.is_empty(): first argument must be a table.");
 
-			// Check if there's any key
-			foreach (var _ in t.Table.Pairs)
-				return DynValue.False;
-			return DynValue.True;
+			foreach (var _ in t.Entries)
+				return new LuaTuple(LuaBoolean.False);
+			return new LuaTuple(LuaBoolean.True);
 		}
 
-		private static DynValue Size(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Size(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("table.size(t): at least 1 argument expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.size(): first argument must be a table.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("table.size(t): at least 1 argument expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.size(): first argument must be a table.");
 
 			int count = 0;
-			foreach (var _ in t.Table.Pairs)
+			foreach (var _ in t.Entries)
 				count++;
-			return DynValue.NewNumber(count);
+			return new LuaTuple(new LuaNumber(count));
 		}
 
-		private static DynValue First(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple First(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("table.first(t): at least 1 argument expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.first(): first argument must be a table.");
-			if (t.Table.Length == 0)
-				return DynValue.Nil;
-			return t.Table.Get(1);
+			if (args.Length < 1)
+				throw new LuaRuntimeException("table.first(t): at least 1 argument expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.first(): first argument must be a table.");
+			if (t.Length == 0)
+				return new LuaTuple(LuaNil.Instance);
+			return new LuaTuple(t.Get(1));
 		}
 
-		private static DynValue Last(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Last(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("table.last(t): at least 1 argument expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.last(): first argument must be a table.");
-			int len = t.Table.Length;
+			if (args.Length < 1)
+				throw new LuaRuntimeException("table.last(t): at least 1 argument expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.last(): first argument must be a table.");
+			int len = t.Length;
 			if (len == 0)
-				return DynValue.Nil;
-			return t.Table.Get(len);
+				return new LuaTuple(LuaNil.Instance);
+			return new LuaTuple(t.Get(len));
 		}
 
-		private static DynValue Each(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Each(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("table.each(t, func): at least 2 arguments expected.");
-			var t = args[0];
-			if (t.Type != DataType.Table)
-				throw new ScriptRuntimeException("table.each(): first argument must be a table.");
-			var func = args[1];
-			if (func.Type != DataType.Function)
-				throw new ScriptRuntimeException("table.each(): second argument must be a function.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("table.each(t, func): at least 2 arguments expected.");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("table.each(): first argument must be a table.");
+			if (args[1] is not LuaFunction func)
+				throw new LuaRuntimeException("table.each(): second argument must be a function.");
 
-			foreach (var kv in t.Table.Pairs)
-				ctx.GetScript().Call(func, kv.Value, kv.Key);
-			return DynValue.Nil;
+			foreach (var kv in t.Entries)
+				func.Invoke(ctx, kv.Value, kv.Key);
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private static DynValue Times(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Times(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("table.repeat(element, count): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("table.repeat(element, count): at least 2 arguments expected.");
 			
-			var countVal = args[1].CastToNumber();
-			if (countVal == null)
-				throw new ScriptRuntimeException("table.repeat(): count must be a number.");
+			if (args[1] is not LuaNumber countVal)
+				throw new LuaRuntimeException("table.repeat(): count must be a number.");
 			
 			int count = (int)countVal.Value;
 			if (count < 0)
-				throw new ScriptRuntimeException("table.repeat(): count must be >= 0.");
+				throw new LuaRuntimeException("table.repeat(): count must be >= 0.");
 
 			var element = args[0];
-			var result = new Table(ctx.OwnerScript);
+			var result = new LuaTable();
 			for (int i = 1; i <= count; i++)
 				result[i] = element;
-			return DynValue.NewTable(result);
+			return new LuaTuple(result);
 		}
 
 		// --- Helper ---
 
-		private static bool ValuesEqual(DynValue a, DynValue b)
+		private static bool ValuesEqual(LuaValue a, LuaValue b)
 		{
-			if (a.Type != b.Type)
-				return false;
-			switch (a.Type)
-			{
-				case DataType.Nil: return true;
-				case DataType.Boolean: return a.Boolean == b.Boolean;
-				case DataType.Number: return a.Number == b.Number;
-				case DataType.String: return a.String == b.String;
-				default: return a.Equals(b);
-			}
+			if (a is LuaNil)
+				return b is LuaNil;
+			if (a is LuaBoolean boolA && b is LuaBoolean boolB)
+				return boolA.Value == boolB.Value;
+			if (a is LuaNumber numA && b is LuaNumber numB)
+				return numA.Value == numB.Value;
+			if (a is LuaString strA && b is LuaString strB)
+				return strA.Value == strB.Value;
+			return a.Equals(b);
 		}
 	}
-
-	*/
 }

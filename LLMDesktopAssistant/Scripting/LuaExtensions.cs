@@ -1,6 +1,5 @@
 using AsyncLua;
 using LLMDesktopAssistant.Tools;
-using MoonSharp.Interpreter;
 using Serilog;
 
 namespace LLMDesktopAssistant.Scripting

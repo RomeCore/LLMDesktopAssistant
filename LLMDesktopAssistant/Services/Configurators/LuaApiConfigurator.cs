@@ -8,10 +8,10 @@ namespace LLMDesktopAssistant.Services.Configurators
 	{
 		public override void Configure(IServiceCollection services)
 		{
-			var luaApis = ReflectionUtility.GetTypesWithAttribute<LuaApiBase, LuaApiAttribute>().ToList();
+			var luaApis = ReflectionUtility.GetTypesWithAttribute<LuaApiBaseAsync, LuaApiAttribute>().ToList();
 			foreach (var luaApi in luaApis)
 			{
-				services.AddScoped(typeof(LuaApiBase), luaApi.Type);
+				services.AddScoped(typeof(LuaApiBaseAsync), luaApi.Type);
 			}
 		}
 	}

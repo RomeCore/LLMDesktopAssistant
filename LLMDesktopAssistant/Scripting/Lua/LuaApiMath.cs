@@ -1,7 +1,8 @@
 using System.Numerics;
+using AsyncLua;
+using AsyncLua.Values;
 using LLMDesktopAssistant.Calculation;
 using LLMDesktopAssistant.Calculation.Ast;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -11,7 +12,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// numerical integration, differentiation, and equation solving.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiMath : LuaApiBase
+	public class LuaApiMath : LuaApiBaseAsync
 	{
 		public override string? Namespace => "math";
 
@@ -149,109 +150,101 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(math.constants.sqrt2) → 1.41421...
 			""";
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
 			// Core
-			ns["parse"] = DynValue.NewCallback(new CallbackFunction(Parse));
-			ns["evaluate"] = DynValue.NewCallback(new CallbackFunction(Evaluate));
-			ns["solve"] = DynValue.NewCallback(new CallbackFunction(Solve));
+			ns["parse"] = new LuaCallbackFunction(Parse);
+			ns["evaluate"] = new LuaCallbackFunction(Evaluate);
+			ns["solve"] = new LuaCallbackFunction(Solve);
 
 			// Numerical methods
-			ns["integral"] = DynValue.NewCallback(new CallbackFunction(Integral));
-			ns["derivative"] = DynValue.NewCallback(new CallbackFunction(Derivative));
+			ns["integral"] = new LuaCallbackFunction(Integral);
+			ns["derivative"] = new LuaCallbackFunction(Derivative);
 
 			// Complex number support
-			ns["complex"] = DynValue.NewCallback(new CallbackFunction(MakeComplex));
-			ns["mag"] = DynValue.NewCallback(new CallbackFunction(Mag));
-			ns["conj"] = DynValue.NewCallback(new CallbackFunction(Conj));
-			ns["real"] = DynValue.NewCallback(new CallbackFunction(Real));
-			ns["imag"] = DynValue.NewCallback(new CallbackFunction(Imag));
+			ns["complex"] = new LuaCallbackFunction(MakeComplex);
+			ns["mag"] = new LuaCallbackFunction(Mag);
+			ns["conj"] = new LuaCallbackFunction(Conj);
+			ns["real"] = new LuaCallbackFunction(Real);
+			ns["imag"] = new LuaCallbackFunction(Imag);
 
 			// Extra math functions
-			ns["log2"] = DynValue.NewCallback(new CallbackFunction(Log2));
-			ns["logb"] = DynValue.NewCallback(new CallbackFunction(LogB));
-			ns["cbrt"] = DynValue.NewCallback(new CallbackFunction(Cbrt));
-			ns["gamma"] = DynValue.NewCallback(new CallbackFunction(Gamma));
-			ns["factorial"] = DynValue.NewCallback(new CallbackFunction(Factorial));
-			ns["round"] = DynValue.NewCallback(new CallbackFunction(Round));
-			ns["trunc"] = DynValue.NewCallback(new CallbackFunction(Trunc));
-			ns["sind"] = DynValue.NewCallback(new CallbackFunction(Sind));
-			ns["cosd"] = DynValue.NewCallback(new CallbackFunction(Cosd));
-			ns["tand"] = DynValue.NewCallback(new CallbackFunction(Tand));
+			ns["log2"] = new LuaCallbackFunction(Log2);
+			ns["logb"] = new LuaCallbackFunction(LogB);
+			ns["cbrt"] = new LuaCallbackFunction(Cbrt);
+			ns["gamma"] = new LuaCallbackFunction(Gamma);
+			ns["factorial"] = new LuaCallbackFunction(Factorial);
+			ns["round"] = new LuaCallbackFunction(Round);
+			ns["trunc"] = new LuaCallbackFunction(Trunc);
+			ns["sind"] = new LuaCallbackFunction(Sind);
+			ns["cosd"] = new LuaCallbackFunction(Cosd);
+			ns["tand"] = new LuaCallbackFunction(Tand);
 
 			// Constants table
-			var constants = new Table(globals.OwnerScript);
-			constants["pi"] = DynValue.NewNumber(Math.PI);
-			constants["e"] = DynValue.NewNumber(double.E);
-			constants["phi"] = DynValue.NewNumber(1.618033988749895);
-			constants["tau"] = DynValue.NewNumber(6.283185307179586);
-			constants["gamma"] = DynValue.NewNumber(0.5772156649015328);
-			constants["g"] = DynValue.NewNumber(9.81);
-			constants["c"] = DynValue.NewNumber(299792458.0);
-			constants["inf"] = DynValue.NewNumber(double.PositiveInfinity);
-			constants["nan"] = DynValue.NewNumber(double.NaN);
-			constants["halfpi"] = DynValue.NewNumber(Math.PI / 2);
-			constants["sqrt2"] = DynValue.NewNumber(1.4142135623730951);
-			constants["sqrt3"] = DynValue.NewNumber(1.7320508075688772);
-			constants["ln2"] = DynValue.NewNumber(0.6931471805599453);
-			ns["constants"] = DynValue.NewTable(constants);
+			var constants = new LuaTable();
+			constants["pi"] = new LuaNumber(Math.PI);
+			constants["e"] = new LuaNumber(double.E);
+			constants["phi"] = new LuaNumber(1.618033988749895);
+			constants["tau"] = new LuaNumber(6.283185307179586);
+			constants["gamma"] = new LuaNumber(0.5772156649015328);
+			constants["g"] = new LuaNumber(9.81);
+			constants["c"] = new LuaNumber(299792458.0);
+			constants["inf"] = new LuaNumber(double.PositiveInfinity);
+			constants["nan"] = new LuaNumber(double.NaN);
+			constants["halfpi"] = new LuaNumber(Math.PI / 2);
+			constants["sqrt2"] = new LuaNumber(1.4142135623730951);
+			constants["sqrt3"] = new LuaNumber(1.7320508075688772);
+			constants["ln2"] = new LuaNumber(0.6931471805599453);
+			ns["constants"] = constants;
 		}
 
 		// ============================================================
 		//  math.parse(expression) → function(vars)
 		// ============================================================
 
-		private DynValue Parse(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Parse(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.parse(expression, [vars]): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("math.parse(expression, [vars]): at least 1 argument expected.");
 
-			var exprStr = args[0].CastToString()
-				?? throw new ScriptRuntimeException("math.parse(expression): expression must be a string.");
+			if (args[0] is not LuaString exprVal)
+				throw new LuaRuntimeException("math.parse(expression): expression must be a string.");
 
 			MathEntity parsed;
 			try
 			{
-				parsed = MathExpressionParser.Parse(exprStr);
+				parsed = MathExpressionParser.Parse(exprVal.Value);
 			}
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"math.parse() error: {ex.Message}");
+				throw new LuaRuntimeException($"math.parse() error: {ex.Message}");
 			}
 
-			// Capture the parsed expression in a closure
-			var script = ctx.OwnerScript;
 			var capturedEntity = parsed;
 
-			var closure = DynValue.NewCallback(new CallbackFunction((c, a) =>
+			var closure = new LuaCallbackFunction((c, a) =>
 			{
 				var evalCtx = new MathEvaluationContext();
 
-				// If variables table provided, push it as a scope
-				if (a.Count >= 1 && a[0].Type == DataType.Table)
+				if (a.Length >= 1 && a[0] is LuaTable vars)
 				{
-					var vars = a[0].Table;
 					var scope = new Dictionary<string, MathEntity>();
 					foreach (var key in vars.Keys)
 					{
-						var keyStr = key.CastToString();
-						if (keyStr == null) continue;
+						if (key is not LuaString keyStr) continue;
 
 						var val = vars.Get(key);
-						var num = val.CastToNumber();
-						if (num != null)
+						if (val is LuaNumber num)
 						{
-							scope[keyStr] = new ConstantEntity(new Complex(num.Value, 0));
+							scope[keyStr.Value] = new ConstantEntity(new Complex(num.Value, 0));
 							continue;
 						}
 
-						// Support complex table {real, imag}
-						if (val.Type == DataType.Table)
+						if (val is LuaTable t)
 						{
-							var t = val.Table;
-							var re = t.Get("real").CastToNumber() ?? 0;
-							var im = t.Get("imag").CastToNumber() ?? 0;
-							scope[keyStr] = new ConstantEntity(new Complex(re, im));
+							double re = t.Get("real") is LuaNumber reNum ? reNum.Value : 0;
+							double im = t.Get("imag") is LuaNumber imNum ? imNum.Value : 0;
+							scope[keyStr.Value] = new ConstantEntity(new Complex(re, im));
 							continue;
 						}
 					}
@@ -264,68 +257,63 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					var complex = result.ToComplexOrThrow();
 
 					if (complex.Imaginary == 0)
-						return DynValue.NewNumber(complex.Real);
+						return new LuaTuple(new LuaNumber(complex.Real));
 
-					var tbl = new Table(script);
-					tbl["real"] = DynValue.NewNumber(complex.Real);
-					tbl["imag"] = DynValue.NewNumber(complex.Imaginary);
-					return DynValue.NewTable(tbl);
+					var tbl = new LuaTable();
+					tbl["real"] = new LuaNumber(complex.Real);
+					tbl["imag"] = new LuaNumber(complex.Imaginary);
+					return new LuaTuple(tbl);
 				}
 				catch (Exception ex)
 				{
-					throw new ScriptRuntimeException($"math.parse() evaluation error: {ex.Message}");
+					throw new LuaRuntimeException($"math.parse() evaluation error: {ex.Message}");
 				}
 				finally
 				{
-					if (a.Count >= 1 && a[0].Type == DataType.Table)
+					if (a.Length >= 1 && a[0] is LuaTable)
 						evalCtx.PopScope();
 				}
-			}));
+			});
 
-			return closure;
+			return new LuaTuple(closure);
 		}
 
 		// ============================================================
 		//  math.evaluate(expression, [vars])
 		// ============================================================
 
-		private DynValue Evaluate(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Evaluate(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.evaluate(expression, [vars]): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("math.evaluate(expression, [vars]): at least 1 argument expected.");
 
-			var exprStr = args[0].CastToString()
-				?? throw new ScriptRuntimeException("math.evaluate(expression, [vars]): expression must be a string.");
+			if (args[0] is not LuaString exprVal)
+				throw new LuaRuntimeException("math.evaluate(expression, [vars]): expression must be a string.");
 
 			try
 			{
-				var parsed = MathExpressionParser.Parse(exprStr);
+				var parsed = MathExpressionParser.Parse(exprVal.Value);
 				var evalCtx = new MathEvaluationContext();
 
-				// Optional variables table
-				if (args.Count >= 2 && args[1].Type == DataType.Table)
+				if (args.Length >= 2 && args[1] is LuaTable vars)
 				{
-					var vars = args[1].Table;
 					var scope = new Dictionary<string, MathEntity>();
 					foreach (var key in vars.Keys)
 					{
-						var keyStr = key.CastToString();
-						if (keyStr == null) continue;
+						if (key is not LuaString keyStr) continue;
 
 						var val = vars.Get(key);
-						var num = val.CastToNumber();
-						if (num != null)
+						if (val is LuaNumber num)
 						{
-							scope[keyStr] = new ConstantEntity(new Complex(num.Value, 0));
+							scope[keyStr.Value] = new ConstantEntity(new Complex(num.Value, 0));
 							continue;
 						}
 
-						if (val.Type == DataType.Table)
+						if (val is LuaTable t)
 						{
-							var t = val.Table;
-							var re = t.Get("real").CastToNumber() ?? 0;
-							var im = t.Get("imag").CastToNumber() ?? 0;
-							scope[keyStr] = new ConstantEntity(new Complex(re, im));
+							double re = t.Get("real") is LuaNumber reNum ? reNum.Value : 0;
+							double im = t.Get("imag") is LuaNumber imNum ? imNum.Value : 0;
+							scope[keyStr.Value] = new ConstantEntity(new Complex(re, im));
 							continue;
 						}
 					}
@@ -339,23 +327,23 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				}
 				finally
 				{
-					if (args.Count >= 2 && args[1].Type == DataType.Table)
+					if (args.Length >= 2 && args[1] is LuaTable)
 						evalCtx.PopScope();
 				}
 
-				var complex = result.ToComplexOrThrow();
+				var complexNumber = result.ToComplexOrThrow();
 
-				if (complex.Imaginary == 0)
-					return DynValue.NewNumber(complex.Real);
+				if (complexNumber.Imaginary == 0)
+					return new LuaTuple(new LuaNumber(complexNumber.Real));
 
-				var tbl = new Table(ctx.OwnerScript);
-				tbl["real"] = DynValue.NewNumber(complex.Real);
-				tbl["imag"] = DynValue.NewNumber(complex.Imaginary);
-				return DynValue.NewTable(tbl);
+				var tbl = new LuaTable();
+				tbl["real"] = new LuaNumber(complexNumber.Real);
+				tbl["imag"] = new LuaNumber(complexNumber.Imaginary);
+				return new LuaTuple(tbl);
 			}
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"math.evaluate() error: {ex.Message}");
+				throw new LuaRuntimeException($"math.evaluate() error: {ex.Message}");
 			}
 		}
 
@@ -363,50 +351,49 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		//  math.solve(equation, [variable], [rangeStart], [rangeEnd], [scanStep])
 		// ============================================================
 
-		private DynValue Solve(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Solve(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.solve(equation, ...): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("math.solve(equation, ...): at least 1 argument expected.");
 
-			var equation = args[0].CastToString()
-				?? throw new ScriptRuntimeException("math.solve(equation, ...): equation must be a string.");
+			if (args[0] is not LuaString equationVal)
+				throw new LuaRuntimeException("math.solve(equation, ...): equation must be a string.");
 
 			string variable = "x";
 			double rangeStart = -100.0;
 			double rangeEnd = 100.0;
 			double scanStep = 0.1;
 
-			if (args.Count >= 2 && args[1].Type != DataType.Nil)
-				variable = args[1].CastToString() ?? "x";
-			if (args.Count >= 3 && args[2].Type != DataType.Nil)
-				rangeStart = args[2].CastToNumber() ?? -100.0;
-			if (args.Count >= 4 && args[3].Type != DataType.Nil)
-				rangeEnd = args[3].CastToNumber() ?? 100.0;
-			if (args.Count >= 5 && args[4].Type != DataType.Nil)
-				scanStep = args[4].CastToNumber() ?? 0.1;
+			if (args.Length >= 2 && args[1] is not LuaNil)
+				variable = args[1] is LuaString varStr ? varStr.Value : "x";
+			if (args.Length >= 3 && args[2] is not LuaNil)
+				rangeStart = args[2] is LuaNumber rs ? rs.Value : -100.0;
+			if (args.Length >= 4 && args[3] is not LuaNil)
+				rangeEnd = args[3] is LuaNumber re ? re.Value : 100.0;
+			if (args.Length >= 5 && args[4] is not LuaNil)
+				scanStep = args[4] is LuaNumber ss ? ss.Value : 0.1;
 
 			try
 			{
-				// Support "expr = 0" or just "expr"
-				string expressionStr = equation;
-				if (equation.Contains('='))
+				string expressionStr = equationVal.Value;
+				if (expressionStr.Contains('='))
 				{
-					var parts = equation.Split('=', 2);
+					var parts = expressionStr.Split('=', 2);
 					expressionStr = $"({parts[0].Trim()}) - ({parts[1].Trim()})";
 				}
 
 				var parsed = MathExpressionParser.Parse(expressionStr);
 				var roots = MathEquationSolver.FindRoots(parsed, variable, rangeStart, rangeEnd, scanStep);
 
-				var resultTable = new Table(ctx.OwnerScript);
+				var resultTable = new LuaTable();
 				for (int i = 0; i < roots.Length; i++)
-					resultTable[i + 1] = DynValue.NewNumber(roots[i]);
+					resultTable[i + 1] = new LuaNumber(roots[i]);
 
-				return DynValue.NewTable(resultTable);
+				return new LuaTuple(resultTable);
 			}
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"math.solve() error: {ex.Message}");
+				throw new LuaRuntimeException($"math.solve() error: {ex.Message}");
 			}
 		}
 
@@ -414,23 +401,24 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		//  math.integral(f, a, b, [steps])
 		// ============================================================
 
-		private DynValue Integral(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Integral(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 3)
-				throw new ScriptRuntimeException("math.integral(f, a, b, [steps]): at least 3 arguments expected.");
+			if (args.Length < 3)
+				throw new LuaRuntimeException("math.integral(f, a, b, [steps]): at least 3 arguments expected.");
 
-			if (args[0].Type != DataType.Function)
-				throw new ScriptRuntimeException("math.integral(f, a, b, [steps]): first argument must be a function.");
+			if (args[0] is not LuaFunction func)
+				throw new LuaRuntimeException("math.integral(f, a, b, [steps]): first argument must be a function.");
 
-			var func = args[0].Function;
-			double a = args[1].CastToNumber()
-				?? throw new ScriptRuntimeException("math.integral(f, a, b, [steps]): a must be a number.");
-			double b = args[2].CastToNumber()
-				?? throw new ScriptRuntimeException("math.integral(f, a, b, [steps]): b must be a number.");
+			if (args[1] is not LuaNumber aVal)
+				throw new LuaRuntimeException("math.integral(f, a, b, [steps]): a must be a number.");
+			if (args[2] is not LuaNumber bVal)
+				throw new LuaRuntimeException("math.integral(f, a, b, [steps]): b must be a number.");
 
+			double a = aVal.Value;
+			double b = bVal.Value;
 			int steps = NumericalIntegration.DefaultSteps;
-			if (args.Count >= 4 && args[3].Type != DataType.Nil)
-				steps = (int)(args[3].CastToNumber() ?? NumericalIntegration.DefaultSteps);
+			if (args.Length >= 4 && args[3] is not LuaNil)
+				steps = (int)(args[3] is LuaNumber s ? s.Value : NumericalIntegration.DefaultSteps);
 
 			double h = (b - a) / steps;
 			double sum = 0;
@@ -441,218 +429,192 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				double x1 = x0 + h;
 				double xm = (x0 + x1) / 2;
 
-				double f0 = CallFunction(func, x0);
-				double fm = CallFunction(func, xm);
-				double f1 = CallFunction(func, x1);
+				double f0 = CallFunction(func, ctx, x0);
+				double fm = CallFunction(func, ctx, xm);
+				double f1 = CallFunction(func, ctx, x1);
 
 				sum += h / 6 * (f0 + 4 * fm + f1);
 			}
 
-			return DynValue.NewNumber(sum);
+			return new LuaTuple(new LuaNumber(sum));
 		}
 
 		// ============================================================
 		//  math.derivative(f, x)
 		// ============================================================
 
-		private DynValue Derivative(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Derivative(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("math.derivative(f, x): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("math.derivative(f, x): at least 2 arguments expected.");
 
-			if (args[0].Type != DataType.Function)
-				throw new ScriptRuntimeException("math.derivative(f, x): first argument must be a function.");
+			if (args[0] is not LuaFunction func)
+				throw new LuaRuntimeException("math.derivative(f, x): first argument must be a function.");
 
-			var func = args[0].Function;
-			double x = args[1].CastToNumber()
-				?? throw new ScriptRuntimeException("math.derivative(f, x): x must be a number.");
+			if (args[1] is not LuaNumber xVal)
+				throw new LuaRuntimeException("math.derivative(f, x): x must be a number.");
 
+			double x = xVal.Value;
 			const double h = NumericalDifferentiation.DefaultStepSize;
-			double fp = CallFunction(func, x + h);
-			double fm = CallFunction(func, x - h);
+			double fp = CallFunction(func, ctx, x + h);
+			double fm = CallFunction(func, ctx, x - h);
 
-			return DynValue.NewNumber((fp - fm) / (2 * h));
+			return new LuaTuple(new LuaNumber((fp - fm) / (2 * h)));
 		}
 
 		// ============================================================
 		//  Complex number utilities
 		// ============================================================
 
-		private DynValue MakeComplex(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple MakeComplex(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("math.complex(real, imag): 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("math.complex(real, imag): 2 arguments expected.");
 
-			double real = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.complex(): real must be a number.");
-			double imag = args[1].CastToNumber()
-				?? throw new ScriptRuntimeException("math.complex(): imag must be a number.");
+			if (args[0] is not LuaNumber realVal)
+				throw new LuaRuntimeException("math.complex(): real must be a number.");
+			if (args[1] is not LuaNumber imagVal)
+				throw new LuaRuntimeException("math.complex(): imag must be a number.");
 
-			var tbl = new Table(ctx.OwnerScript);
-			tbl["real"] = DynValue.NewNumber(real);
-			tbl["imag"] = DynValue.NewNumber(imag);
-			return DynValue.NewTable(tbl);
+			var tbl = new LuaTable();
+			tbl["real"] = new LuaNumber(realVal.Value);
+			tbl["imag"] = new LuaNumber(imagVal.Value);
+			return new LuaTuple(tbl);
 		}
 
-		private DynValue Mag(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Mag(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var (re, im) = GetComplex(args, "math.mag");
-			return DynValue.NewNumber(Math.Sqrt(re * re + im * im));
+			return new LuaTuple(new LuaNumber(Math.Sqrt(re * re + im * im)));
 		}
 
-		private DynValue Conj(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Conj(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var (re, im) = GetComplex(args, "math.conj");
-			var tbl = new Table(ctx.OwnerScript);
-			tbl["real"] = DynValue.NewNumber(re);
-			tbl["imag"] = DynValue.NewNumber(-im);
-			return DynValue.NewTable(tbl);
+			var tbl = new LuaTable();
+			tbl["real"] = new LuaNumber(re);
+			tbl["imag"] = new LuaNumber(-im);
+			return new LuaTuple(tbl);
 		}
 
-		private DynValue Real(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Real(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var (re, _) = GetComplex(args, "math.real");
-			return DynValue.NewNumber(re);
+			return new LuaTuple(new LuaNumber(re));
 		}
 
-		private DynValue Imag(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Imag(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var (_, im) = GetComplex(args, "math.imag");
-			return DynValue.NewNumber(im);
+			return new LuaTuple(new LuaNumber(im));
 		}
 
 		// ============================================================
 		//  Extra math functions
 		// ============================================================
 
-		private DynValue Log2(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Log2(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.log2(x): 1 argument expected.");
-			double x = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.log2(x): x must be a number.");
-			return DynValue.NewNumber(Math.Log(x, 2));
+			if (args.Length < 1 || args[0] is not LuaNumber xVal)
+				throw new LuaRuntimeException("math.log2(x): 1 argument expected (number).");
+			return new LuaTuple(new LuaNumber(Math.Log(xVal.Value, 2)));
 		}
 
-		private DynValue LogB(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple LogB(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("math.logb(x, base): 2 arguments expected.");
-			double x = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.logb(x, base): x must be a number.");
-			double baseVal = args[1].CastToNumber()
-				?? throw new ScriptRuntimeException("math.logb(x, base): base must be a number.");
-			return DynValue.NewNumber(Math.Log(x, baseVal));
+			if (args.Length < 2 || args[0] is not LuaNumber xVal || args[1] is not LuaNumber baseVal)
+				throw new LuaRuntimeException("math.logb(x, base): 2 arguments expected (numbers).");
+			return new LuaTuple(new LuaNumber(Math.Log(xVal.Value, baseVal.Value)));
 		}
 
-		private DynValue Cbrt(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Cbrt(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.cbrt(x): 1 argument expected.");
-			double x = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.cbrt(x): x must be a number.");
-			return DynValue.NewNumber(Math.Cbrt(x));
+			if (args.Length < 1 || args[0] is not LuaNumber xVal)
+				throw new LuaRuntimeException("math.cbrt(x): 1 argument expected (number).");
+			return new LuaTuple(new LuaNumber(Math.Cbrt(xVal.Value)));
 		}
 
-		private DynValue Gamma(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Gamma(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.gamma(x): 1 argument expected.");
-			double x = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.gamma(x): x must be a number.");
-			return DynValue.NewNumber(ComputeGamma(x));
+			if (args.Length < 1 || args[0] is not LuaNumber xVal)
+				throw new LuaRuntimeException("math.gamma(x): 1 argument expected (number).");
+			return new LuaTuple(new LuaNumber(ComputeGamma(xVal.Value)));
 		}
 
-		private DynValue Factorial(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Factorial(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.factorial(n): 1 argument expected.");
-			double n = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.factorial(n): n must be a number.");
-			return DynValue.NewNumber(ComputeFactorial((int)n));
+			if (args.Length < 1 || args[0] is not LuaNumber nVal)
+				throw new LuaRuntimeException("math.factorial(n): 1 argument expected (number).");
+			return new LuaTuple(new LuaNumber(ComputeFactorial((int)nVal.Value)));
 		}
 
-		private DynValue Round(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Round(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.round(x): 1 argument expected.");
-			double x = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.round(x): x must be a number.");
-			return DynValue.NewNumber(Math.Round(x));
+			if (args.Length < 1 || args[0] is not LuaNumber xVal)
+				throw new LuaRuntimeException("math.round(x): 1 argument expected (number).");
+			return new LuaTuple(new LuaNumber(Math.Round(xVal.Value)));
 		}
 
-		private DynValue Trunc(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Trunc(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.trunc(x): 1 argument expected.");
-			double x = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.trunc(x): x must be a number.");
-			return DynValue.NewNumber(Math.Truncate(x));
+			if (args.Length < 1 || args[0] is not LuaNumber xVal)
+				throw new LuaRuntimeException("math.trunc(x): 1 argument expected (number).");
+			return new LuaTuple(new LuaNumber(Math.Truncate(xVal.Value)));
 		}
 
-		private DynValue Sind(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Sind(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.sind(x): 1 argument expected.");
-			double x = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.sind(x): x must be a number.");
-			return DynValue.NewNumber(Math.Sin(x * Math.PI / 180.0));
+			if (args.Length < 1 || args[0] is not LuaNumber xVal)
+				throw new LuaRuntimeException("math.sind(x): 1 argument expected (number).");
+			return new LuaTuple(new LuaNumber(Math.Sin(xVal.Value * Math.PI / 180.0)));
 		}
 
-		private DynValue Cosd(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Cosd(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.cosd(x): 1 argument expected.");
-			double x = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.cosd(x): x must be a number.");
-			return DynValue.NewNumber(Math.Cos(x * Math.PI / 180.0));
+			if (args.Length < 1 || args[0] is not LuaNumber xVal)
+				throw new LuaRuntimeException("math.cosd(x): 1 argument expected (number).");
+			return new LuaTuple(new LuaNumber(Math.Cos(xVal.Value * Math.PI / 180.0)));
 		}
 
-		private DynValue Tand(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Tand(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("math.tand(x): 1 argument expected.");
-			double x = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("math.tand(x): x must be a number.");
-			return DynValue.NewNumber(Math.Tan(x * Math.PI / 180.0));
+			if (args.Length < 1 || args[0] is not LuaNumber xVal)
+				throw new LuaRuntimeException("math.tand(x): 1 argument expected (number).");
+			return new LuaTuple(new LuaNumber(Math.Tan(xVal.Value * Math.PI / 180.0)));
 		}
 
 		// ============================================================
 		//  Helpers
 		// ============================================================
 
-		private static (double real, double imag) GetComplex(CallbackArguments args, string funcName)
+		private static (double real, double imag) GetComplex(LuaValue[] args, string funcName)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException($"{funcName}(z): 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException($"{funcName}(z): 1 argument expected.");
 
-			if (args[0].Type == DataType.Table)
+			if (args[0] is LuaTable tbl)
 			{
-				var tbl = args[0].Table;
-				var real = tbl.Get("real").CastToNumber() ?? 0;
-				var imag = tbl.Get("imag").CastToNumber() ?? 0;
+				double real = tbl.Get("real") is LuaNumber reNum ? reNum.Value : 0;
+				double imag = tbl.Get("imag") is LuaNumber imNum ? imNum.Value : 0;
 				return (real, imag);
 			}
 
-			var num = args[0].CastToNumber();
-			if (num != null)
+			if (args[0] is LuaNumber num)
 				return (num.Value, 0);
 
-			throw new ScriptRuntimeException($"{funcName}(z): argument must be a number or complex table.");
+			throw new LuaRuntimeException($"{funcName}(z): argument must be a number or complex table.");
 		}
 
-		private static double CallFunction(Closure func, double x)
+		private static double CallFunction(LuaFunction func, LuaCallingContext ctx, double x)
 		{
-			var result = func.Call(DynValue.NewNumber(x));
-			var num = result.CastToNumber();
-			if (num == null)
-				throw new ScriptRuntimeException("Function returned non-numeric value.");
-			return num.Value;
+			var result = func.Invoke(ctx, new LuaNumber(x));
+			if (result.Count > 0 && result[0] is LuaNumber num)
+				return num.Value;
+			throw new LuaRuntimeException("Function returned non-numeric value.");
 		}
 
 		private static double ComputeGamma(double x)
 		{
-			// Lanczos approximation for real gamma
 			if (x <= 0) return double.NaN;
 			double[] p = {
 				0.99999999999980993, 676.5203681218851, -1259.1392167224028,

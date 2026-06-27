@@ -1,18 +1,16 @@
 using System.Linq;
-
+using AsyncLua;
+using AsyncLua.Values;
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLTSharp;
 using LLTSharp.DataAccessors;
 using LLTSharp.Metadata;
 using LLTSharp.Metadata.Types;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	/*
-
 	[LuaApi(chatScoped: true)]
-	public class LuaApiTemplates : LuaApiBase
+	public class LuaApiTemplates : LuaApiBaseAsync
 	{
 		public override string? Namespace => "dass.templates";
 
@@ -139,103 +137,95 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_promptTemplatePlugins = promptTemplatePlugins;
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["import"] = DynValue.NewCallback(Import);
-			ns["render"] = DynValue.NewCallback(Render);
-			ns["list"] = DynValue.NewCallback(List);
+			ns["import"] = new LuaCallbackFunction(Import);
+			ns["render"] = new LuaCallbackFunction(Render);
+			ns["list"] = new LuaCallbackFunction(List);
 		}
 
-		private DynValue Import(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Import(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("dass.templates.import(templateString): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("dass.templates.import(templateString): at least 1 argument expected.");
 
-			if (args[0].Type != DataType.String)
-				throw new ScriptRuntimeException("dass.templates.import(): first argument must be a string.");
-
-			var templateString = args[0].String;
+			if (args[0] is not LuaString templateStr)
+				throw new LuaRuntimeException("dass.templates.import(): first argument must be a string.");
 
 			try
 			{
 				var beforeCount = _templateLibrary.Count();
-				_templateLibrary.ImportFromString(templateString, languageCode: "llt");
+				_templateLibrary.ImportFromString(templateStr.Value, languageCode: "llt");
 				var afterCount = _templateLibrary.Count();
-				return DynValue.NewNumber(afterCount - beforeCount);
+				return new LuaTuple(new LuaNumber(afterCount - beforeCount));
 			}
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"dass.templates.import(): {ex.Message}");
+				throw new LuaRuntimeException($"dass.templates.import(): {ex.Message}");
 			}
 		}
 
-		private DynValue Render(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Render(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("dass.templates.render(filters, [context]): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("dass.templates.render(filters, [context]): at least 1 argument expected.");
 
 			var filters = args[0];
-			if (filters.Type != DataType.String && filters.Type != DataType.Table)
-				throw new ScriptRuntimeException("dass.templates.render(): first argument must be a string or a table.");
+			if (filters is not LuaString && filters is not LuaTable)
+				throw new LuaRuntimeException("dass.templates.render(): first argument must be a string or a table.");
 
 			TemplateDataAccessor context = TemplateNullAccessor.Instance;
-			if (args.Count > 1)
+			if (args.Length > 1)
 				context = StructuredLuaConverter.LuaValueToLLTSharp(args[1]);
-
-			var script = ctx.GetScript();
 
 			try
 			{
 				ITemplate template;
 				var functions = new TemplateFunctionSet(_promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
 
-				if (filters.Type == DataType.String)
+				if (filters is LuaString filterStr)
 				{
-					template = _templateLibrary.RetrieveAll(filters.String).Last();
+					template = _templateLibrary.RetrieveAll(filterStr.Value).Last();
 				}
 				else
 				{
+					var filtersTable = (LuaTable)filters;
 					string? id = null;
 					var metadatas = new List<IMetadata>();
 
-					foreach (var kvp in filters.Table.Pairs)
+					foreach (var kvp in filtersTable.Entries)
 					{
-						if (kvp.Key.Type == DataType.Number)
+						if (kvp.Key is LuaNumber)
 						{
-							if (kvp.Value.Type != DataType.String)
-								throw new ScriptRuntimeException("dass.templates.render(): filter table values for number keys must be strings.");
+							if (kvp.Value is not LuaString)
+								throw new LuaRuntimeException("dass.templates.render(): filter table values for number keys must be strings.");
 
-							id = kvp.Value.String;
+							id = ((LuaString)kvp.Value).Value;
 						}
-						else if (kvp.Key.Type == DataType.String)
+						else if (kvp.Key is LuaString keyStr)
 						{
-							if (kvp.Value.Type != DataType.String)
-								throw new ScriptRuntimeException("dass.templates.render(): filter table values for string keys must be strings.");
-							
-							var key = kvp.Key.String.ToLowerInvariant();
-							var value = kvp.Value.String;
+							if (kvp.Value is not LuaString valStr)
+								throw new LuaRuntimeException("dass.templates.render(): filter table values for string keys must be strings.");
+
+							var key = keyStr.Value.ToLowerInvariant();
+							var value = valStr.Value;
 							switch (key)
 							{
 								case "id":
 									id = value;
 									break;
-
 								case "lang":
 									metadatas.Add(new LanguageMetadata(value));
 									break;
-
 								case "model":
 									metadatas.Add(new TargetModelMetadata(value));
 									break;
-
 								case "model_family":
 									metadatas.Add(new TargetModelFamilyMetadata(value));
 									break;
-
 								case "version":
 									metadatas.Add(new VersionMetadata(Version.Parse(value)));
 									break;
-
 								default:
 									metadatas.Add(new AdditionalMetadata(key, value));
 									break;
@@ -243,7 +233,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						}
 						else
 						{
-							throw new ScriptRuntimeException("dass.templates.render(): filter table keys must be numbers or strings.");
+							throw new LuaRuntimeException("dass.templates.render(): filter table keys must be numbers or strings.");
 						}
 					}
 
@@ -255,61 +245,59 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 				if (template is ITextTemplate textTemplate)
 				{
-					return DynValue.NewString(textTemplate.Render(context, functions));
+					return new LuaTuple(new LuaString(textTemplate.Render(context, functions)));
 				}
 				else if (template is IMessagesTemplate messagesTemplate)
 				{
 					var messages = messagesTemplate.Render(context, functions);
-					var messagesTable = new Table(script, messages.Select(m =>
+					var messagesTable = new LuaTable();
+					foreach (var m in messages)
 					{
-						return DynValue.NewTable(new Table(script)
-						{
-							["role"] = m.Role.ToString(),
-							["content"] = m.Content
-						});
-					}).ToArray());
-					return DynValue.NewTable(messagesTable);
+						var msgTable = new LuaTable();
+						msgTable["role"] = new LuaString(m.Role.ToString());
+						msgTable["content"] = new LuaString(m.Content);
+						messagesTable.Append(msgTable);
+					}
+					return new LuaTuple(messagesTable);
 				}
 
-				throw new ScriptRuntimeException($"dass.templates.render(): not supported template type: {template?.GetType().FullName}.");
+				throw new LuaRuntimeException($"dass.templates.render(): not supported template type: {template?.GetType().FullName}.");
 			}
-			catch (ScriptRuntimeException)
+			catch (LuaRuntimeException)
 			{
 				throw;
 			}
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"dass.templates.render(): {ex.Message}");
+				throw new LuaRuntimeException($"dass.templates.render(): {ex.Message}");
 			}
 		}
 
-		private DynValue List(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple List(LuaCallingContext ctx, LuaValue[] args)
 		{
-			var script = ctx.GetScript();
-
 			// Parse optional filter
 			Dictionary<string, string>? stringFilters = null;
 			string? typeFilter = null;
 			string? idFilter = null;
 
-			if (args.Count > 0 && args[0].Type == DataType.Table)
+			if (args.Length > 0 && args[0] is LuaTable filterTable)
 			{
 				stringFilters = new Dictionary<string, string>();
-				foreach (var kvp in args[0].Table.Pairs)
+				foreach (var kvp in filterTable.Entries)
 				{
-					if (kvp.Key.Type == DataType.Number)
+					if (kvp.Key is LuaNumber)
 					{
-						if (kvp.Value.Type != DataType.String)
-							throw new ScriptRuntimeException("dass.templates.list(): filter table values for number keys must be strings.");
-						idFilter = kvp.Value.String;
+						if (kvp.Value is not LuaString)
+							throw new LuaRuntimeException("dass.templates.list(): filter table values for number keys must be strings.");
+						idFilter = ((LuaString)kvp.Value).Value;
 					}
-					else if (kvp.Key.Type == DataType.String)
+					else if (kvp.Key is LuaString keyStr)
 					{
-						if (kvp.Value.Type != DataType.String)
-							throw new ScriptRuntimeException("dass.templates.list(): filter table values for string keys must be strings.");
+						if (kvp.Value is not LuaString valStr)
+							throw new LuaRuntimeException("dass.templates.list(): filter table values for string keys must be strings.");
 
-						var key = kvp.Key.String.ToLowerInvariant();
-						var value = kvp.Value.String;
+						var key = keyStr.Value.ToLowerInvariant();
+						var value = valStr.Value;
 
 						if (key == "id")
 							idFilter = value;
@@ -320,17 +308,16 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					}
 					else
 					{
-						throw new ScriptRuntimeException("dass.templates.list(): filter table keys must be numbers or strings.");
+						throw new LuaRuntimeException("dass.templates.list(): filter table keys must be numbers or strings.");
 					}
 				}
 			}
 
-			var result = new Table(script);
+			var result = new LuaTable();
 			int index = 1;
 
 			foreach (var template in _templateLibrary)
 			{
-				// Check type filter
 				if (typeFilter != null)
 				{
 					string type = template is ITextTemplate ? "text"
@@ -340,7 +327,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						continue;
 				}
 
-				// Check ID filter
 				if (idFilter != null)
 				{
 					var tmplIdMeta = template.GetMetadata<TemplateIdentifierMetadata>();
@@ -348,60 +334,51 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						continue;
 				}
 
-				// Check metadata string filters
 				if (stringFilters != null && stringFilters.Count > 0)
 				{
 					if (!TemplateMatchesFilters(template, stringFilters))
 						continue;
 				}
 
-				// Build entry table
-				var entry = new Table(script);
+				var entry = new LuaTable();
 
-				// ID
 				var idMeta = template.GetMetadata<TemplateIdentifierMetadata>();
 				if (idMeta != null)
-					entry["id"] = DynValue.NewString(idMeta.Identifier);
+					entry["id"] = new LuaString(idMeta.Identifier);
 
-				// Type
 				if (template is ITextTemplate)
-					entry["type"] = DynValue.NewString("text");
+					entry["type"] = new LuaString("text");
 				else if (template is IMessagesTemplate)
-					entry["type"] = DynValue.NewString("messages");
+					entry["type"] = new LuaString("messages");
 
-				// Language
 				var langMeta = template.GetMetadata<LanguageMetadata>();
 				if (langMeta != null)
-					entry["lang"] = DynValue.NewString(langMeta.LanguageCode.ToString());
+					entry["lang"] = new LuaString(langMeta.LanguageCode.ToString());
 
-				// Target model
 				var modelMeta = template.GetMetadata<TargetModelMetadata>();
 				if (modelMeta != null)
-					entry["model"] = DynValue.NewString(modelMeta.ModelName);
+					entry["model"] = new LuaString(modelMeta.ModelName);
 
-				// Target model family
 				var familyMeta = template.GetMetadata<TargetModelFamilyMetadata>();
 				if (familyMeta != null)
-					entry["model_family"] = DynValue.NewString(familyMeta.FamilyName);
+					entry["model_family"] = new LuaString(familyMeta.FamilyName);
 
-				// Version
 				var versionMeta = template.GetMetadata<VersionMetadata>();
 				if (versionMeta != null)
-					entry["version"] = DynValue.NewString(versionMeta.Version.ToString());
+					entry["version"] = new LuaString(versionMeta.Version.ToString());
 
-				// Additional custom metadata — flattened directly into the entry
 				foreach (var additionalMeta in template.GetAllMetadata<AdditionalMetadata>())
 				{
-					if (entry.Keys.Contains(DynValue.NewString(additionalMeta.Key)))
-						continue; // skip if already set by known metadata field
+					if (entry.ContainsKey(new LuaString(additionalMeta.Key)))
+						continue;
 
-					entry[additionalMeta.Key] = ObjectToDynValue(script, additionalMeta.Value);
+					entry[additionalMeta.Key] = LuaValueConverter.ToLuaValue(additionalMeta.Value);
 				}
 
-				result[index++] = DynValue.NewTable(entry);
+				result[index++] = entry;
 			}
 
-			return DynValue.NewTable(result);
+			return new LuaTuple(result);
 		}
 
 		private static bool TemplateMatchesFilters(ITemplate template, Dictionary<string, string> filters)
@@ -447,7 +424,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 					default:
 						{
-							// Custom metadata — check AdditionalMetadata
 							var customMetas = template.GetAllMetadata<AdditionalMetadata>();
 							bool found = false;
 							foreach (var customMeta in customMetas)
@@ -470,30 +446,5 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 			return true;
 		}
-
-		private static DynValue ObjectToDynValue(Script script, object? value)
-		{
-			if (value == null)
-				return DynValue.Nil;
-
-			if (value is string s)
-				return DynValue.NewString(s);
-			if (value is bool b)
-				return DynValue.NewBoolean(b);
-			if (value is int i)
-				return DynValue.NewNumber(i);
-			if (value is long l)
-				return DynValue.NewNumber(l);
-			if (value is double d)
-				return DynValue.NewNumber(d);
-			if (value is float f)
-				return DynValue.NewNumber(f);
-			if (value is decimal m)
-				return DynValue.NewNumber((double)m);
-
-			return DynValue.NewString(value.ToString() ?? "");
-		}
 	}
-
-	*/
 }

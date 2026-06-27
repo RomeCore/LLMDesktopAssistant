@@ -1,5 +1,4 @@
 ﻿using AsyncLua.Values;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {

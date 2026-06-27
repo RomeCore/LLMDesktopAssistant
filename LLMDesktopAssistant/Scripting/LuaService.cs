@@ -1,10 +1,8 @@
 ﻿using System.Text;
-using System.Xml.Linq;
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting.Lua;
-using MoonSharp.Interpreter;
 using Serilog;
 
 namespace LLMDesktopAssistant.Scripting

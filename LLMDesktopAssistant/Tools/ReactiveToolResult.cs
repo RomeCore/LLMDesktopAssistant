@@ -5,7 +5,6 @@ using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
-using MoonSharp.Interpreter;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Tools
@@ -15,7 +14,6 @@ namespace LLMDesktopAssistant.Tools
 	/// Supports brief status icons and progress updates, title updates, and streaming content.
 	/// Also supports advanced human-in-the-loop features like forms, prompts and fast answers.
 	/// </summary>
-	[MoonSharpUserData]
 	public class ReactiveToolResult : NotifyPropertyChanged
 	{
 		private readonly TaskCompletionSource<bool> _completionSource = new();

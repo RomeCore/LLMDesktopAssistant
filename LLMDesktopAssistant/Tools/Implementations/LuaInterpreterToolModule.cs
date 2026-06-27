@@ -1,8 +1,8 @@
+using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Scripting;
 using Material.Icons;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -142,9 +142,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToString());
 					reactiveResult.TryCompleteWithSuccess();
 				}
-				catch (ScriptRuntimeException srex)
+				catch (LuaRuntimeException srex)
 				{
-					reactiveResult.ResultContentLines.Add("Caught error: " + srex.DecoratedMessage);
+					reactiveResult.ResultContentLines.Add("Caught error: " + srex.Message);
 					reactiveResult.ResultContentLines.Add("Remember to read the manuals for API");
 					reactiveResult.TryCompleteWithError();
 				}

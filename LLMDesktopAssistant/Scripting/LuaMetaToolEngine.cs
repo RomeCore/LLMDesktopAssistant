@@ -1,17 +1,13 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
-using LLMDesktopAssistant.LLM.Domain;
+using AsyncLua;
+using AsyncLua.Values;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
-using MoonSharp.Interpreter;
+using RCParsing;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-
-using LLMDesktopAssistant.LLM.Services;
-using RCParsing;
-using System.Text;
-using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting
 {
@@ -145,9 +141,9 @@ namespace LLMDesktopAssistant.Scripting
 						reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToString());
 						reactiveResult.TryCompleteWithSuccess();
 					}
-					catch (ScriptRuntimeException srex)
+					catch (LuaRuntimeException srex)
 					{
-						reactiveResult.ResultContentLines.Add("Caught error: " + srex.DecoratedMessage);
+						reactiveResult.ResultContentLines.Add("Caught error: " + srex.Message);
 						reactiveResult.TryCompleteWithError();
 					}
 					catch (Exception ex)

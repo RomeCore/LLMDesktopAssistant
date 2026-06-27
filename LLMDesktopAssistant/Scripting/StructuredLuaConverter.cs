@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿using System.Globalization;
 using System.Text.Json.Nodes;
-using AsyncLua;
 using AsyncLua.Values;
 using LLTSharp;
 using LLTSharp.DataAccessors;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting
 {

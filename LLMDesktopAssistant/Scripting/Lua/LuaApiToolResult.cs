@@ -186,7 +186,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			table["progress_min"] = new LuaNumber(result.MinProgress);
 			table["progress_max"] = new LuaNumber(result.MaxProgress);
 			if (result.StatusIcon != null)
-				table["status_icon"] = new LuaString(result.StatusIcon.ToString());
+				table["status_icon"] = new LuaString(result.StatusIcon.ToString()!);
 			if (result.StatusTitle != null)
 				table["status_title"] = new LuaString(result.StatusTitle);
 			table["use_markdown"] = LuaBoolean.FromBoolean(result.UseMarkdown);
