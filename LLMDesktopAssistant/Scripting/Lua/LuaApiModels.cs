@@ -1,11 +1,12 @@
+using AsyncLua;
+using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Services.Instances;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
 	[LuaApi(chatScoped: false)]
-	public class LuaApiModels : LuaApiBase
+	public class LuaApiModels : LuaApiBaseAsync
 	{
 		public override string? Namespace => "dass.models";
 
@@ -46,30 +47,29 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_modelList = modelList;
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["list"] = DynValue.NewCallback(ListModels);
+			ns["list"] = new LuaCallbackFunction(ListModels);
 		}
 
-		private DynValue ListModels(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple ListModels(LuaCallingContext ctx, LuaValue[] args)
 		{
-			var script = ctx.GetScript();
 			var models = _modelList.Registry.Models;
-			var resultTable = new Table(script);
+			var resultTable = new LuaTable();
 
 			int i = 1;
 			foreach (var model in models)
 			{
-				var entry = new Table(script);
-				entry["client_name"] = model.Client?.Name;
-				entry["client_display_name"] = model.Client?.DisplayName;
-				entry["name"] = model.Name;
-				entry["display_name"] = model.DisplayName;
-				entry["full_name"] = model.FullName;
-				resultTable.Set(i++, DynValue.NewTable(entry));
+				var entry = new LuaTable();
+entry["client_name"] = new LuaString(model.Client?.Name ?? "");
+			entry["client_display_name"] = new LuaString(model.Client?.DisplayName ?? "");
+				entry["name"] = new LuaString(model.Name);
+				entry["display_name"] = new LuaString(model.DisplayName);
+				entry["full_name"] = new LuaString(model.FullName);
+				resultTable.Set(i++, entry);
 			}
 
-			return DynValue.NewTable(resultTable);
+			return new LuaTuple(resultTable);
 		}
 	}
 }

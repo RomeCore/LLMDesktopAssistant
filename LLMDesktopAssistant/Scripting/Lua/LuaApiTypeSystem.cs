@@ -1,23 +1,21 @@
-using System;
-using MoonSharp.Interpreter;
+using AsyncLua;
+using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	/*
-
 	/// <summary>
 	/// Lua API for type metatable manipulation.
 	/// Provides global functions <c>gettypemetatable</c>, <c>settypemetatable</c>,
-	/// and <c>extendtypemetatable</c> for working with MoonSharp's type metatables
+	/// and <c>extendtypemetatable</c> for working with type metatables
 	/// on primitive Lua types.
 	/// 
 	/// Type metatables let you override default behavior of ALL values of a given type,
 	/// similar to how regular metatables work on tables.
 	/// 
-	/// Supported type names: "nil", "boolean", "number", "string", "function", "void"
+	/// Supported type names: "nil", "boolean", "number", "string", "function"
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiTypeSystem : LuaApiBase
+	public class LuaApiTypeSystem : LuaApiBaseAsync
 	{
 		public override string? Namespace => null;
 
@@ -39,7 +37,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			Parameters:
 			  - type: string — type name:
-			    "nil", "void", "boolean", "number", "string", "function"
+			    "nil", "boolean", "number", "string", "function"
 			    (also accepts short aliases: "bool", "num", "str", "func")
 			  - metatable: table or nil — the metatable to set, or nil to clear.
 
@@ -62,32 +60,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			Throws if the type is not recognized.
 
-			--- KNOWN LIMITATIONS (MoonSharp implementation) ---
-
-			Due to MoonSharp's implementation, several metamethods do NOT work
-			when set via settypemetatable, even though they are stored in the
-			type metatable and visible via gettypemetatable:
-
-			  ❌ Arithmetic operators: __add, __sub, __mul, __div, __mod, __pow, __unm
-			     (standard arithmetic is always used)
-			  ❌ Comparison operators: __eq, __lt, __le
-			     (standard comparison is always used)
-			  ❌ __concat (concatenation via ..)
-			  ❌ __gc (garbage collection)
-			  ❌ __len for strings (always returns character count)
-			  ❌ __tostring for function type (always shows "function: ADDRESS")
-			  ❌ print() ignores __tostring (use explicit tostring() instead)
-			  ❌ Concatenation (..) ignores __tostring for booleans
-			     (causes "attempt to concatenate a boolean value" error)
-
-			✅ Metamethods that DO work:
-			  - __tostring — but only via tostring() function, NOT via print() or ..
-			  - __index — for string (native) and number (via colon syntax)
-			  - __newindex — for string
-			  - __call — for number
-			  - __len — for number
-			  - __pairs — for number
-
 			EXAMPLES:
 
 			  -- 1. Custom number formatting (use tostring(), not print())
@@ -97,7 +69,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    end
 			  })
 			  print(tostring(3.14159)) -- "3.14"
-			  -- NOTE: print(3.14159) would STILL show "3.14159"
 
 			  -- 2. Using gettypemetatable
 			  local mt = gettypemetatable("number")
@@ -114,7 +85,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print((5):double())    -- 10  (use colon for method call)
 			  print((7):is_even())    -- false
 			  print((255):hex())      -- "FF"
-			  -- Dot syntax needs explicit self: (5).double(5)
 
 			  -- 4. Boolean __tostring (via tostring)
 			  settypemetatable("boolean", {
@@ -124,7 +94,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  })
 			  print(tostring(true))  -- "✓ Yes"
 			  print(tostring(false)) -- "✗ No"
-			  -- NOTE: print(true) still shows "true"
 
 			  -- 5. Custom __len for numbers
 			  settypemetatable("number", {
@@ -196,96 +165,97 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  - Use with care — inappropriate metamethods can break Lua semantics.
 			  - Pass nil to clear/reset a type metatable to default.
 			  - extendtypemetatable is additive: it only sets or overwrites specific keys.
-			  - Only 6 types are supported: "nil", "void", "boolean", "number", "string", "function".
+			  - Only 5 types are supported: "nil", "boolean", "number", "string", "function".
 			    Types like "table", "userdata", "thread" cannot be used.
 			  - String type has a default metatable with __index = string table.
 			    Clearing it removes all string methods until __index is restored.
-			  - print() NEVER uses __tostring — it outputs raw values.
-			    Always use tostring() when you need custom formatting.
 			""";
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			globals["gettypemetatable"] = DynValue.NewCallback(new CallbackFunction(GetTypeMetatable));
-			globals["settypemetatable"] = DynValue.NewCallback(new CallbackFunction(SetTypeMetatable));
-			globals["extendtypemetatable"] = DynValue.NewCallback(new CallbackFunction(ExtendTypeMetatable));
+			globals["gettypemetatable"] = new LuaCallbackFunction(GetTypeMetatable);
+			globals["settypemetatable"] = new LuaCallbackFunction(SetTypeMetatable);
+			globals["extendtypemetatable"] = new LuaCallbackFunction(ExtendTypeMetatable);
 		}
 
-		private static DynValue GetTypeMetatable(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple GetTypeMetatable(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1 || args[0].Type != DataType.String)
-				return DynValue.Nil;
+			if (args.Length < 1 || args[0] is not LuaString typeStr)
+				return new LuaTuple(LuaNil.Instance);
 
-			var dataType = ParseDataType(args[0].String);
-			if (dataType == null)
-				return DynValue.Nil;
+			var luaType = ParseLuaType(typeStr.Value);
+			if (luaType == null)
+				return new LuaTuple(LuaNil.Instance);
 
-			var mt = ctx.OwnerScript.GetTypeMetatable(dataType.Value);
-			return mt != null ? DynValue.NewTable(mt) : DynValue.Nil;
+			if (ctx.State.TypeMetatables.TryGetValue(luaType.Value, out var mt))
+				return new LuaTuple(mt.ToTable());
+
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private static DynValue SetTypeMetatable(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple SetTypeMetatable(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1 || args[0].Type != DataType.String)
-				throw new ScriptRuntimeException("settypemetatable(type, [metatable]): first argument must be a type name string.");
+			if (args.Length < 1 || args[0] is not LuaString typeStr)
+				throw new LuaRuntimeException("settypemetatable(type, [metatable]): first argument must be a type name string.");
 
-			var dataType = ParseDataType(args[0].String);
-			if (dataType == null)
-				throw new ScriptRuntimeException($"settypemetatable: unknown type '{args[0].String}'. " +
-					"Supported: \"nil\", \"void\", \"boolean\", \"number\", \"string\", \"function\".");
+			var luaType = ParseLuaType(typeStr.Value);
+			if (luaType == null)
+				throw new LuaRuntimeException($"settypemetatable: unknown type '{typeStr.Value}'. " +
+					"Supported: \"nil\", \"boolean\", \"number\", \"string\", \"function\".");
 
-			Table? metatable = null;
-			if (args.Count >= 2)
+			if (args.Length >= 2 && args[1] is LuaTable table)
 			{
-				if (args[1].Type == DataType.Table)
-					metatable = args[1].Table;
-				else if (args[1].Type != DataType.Nil)
-					throw new ScriptRuntimeException("settypemetatable: metatable must be a table or nil.");
+				var mt = LuaMetatable.FromTable(table);
+				ctx.State.TypeMetatables[luaType.Value] = mt;
+			}
+			else
+			{
+				ctx.State.TypeMetatables.TryRemove(luaType.Value, out _);
 			}
 
-			ctx.OwnerScript.SetTypeMetatable(dataType.Value, metatable);
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private static DynValue ExtendTypeMetatable(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple ExtendTypeMetatable(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1 || args[0].Type != DataType.String)
-				throw new ScriptRuntimeException("extendtypemetatable(type, extensions): first argument must be a type name string.");
+			if (args.Length < 1 || args[0] is not LuaString typeStr)
+				throw new LuaRuntimeException("extendtypemetatable(type, extensions): first argument must be a type name string.");
 
-			if (args.Count < 2 || args[1].Type != DataType.Table)
-				throw new ScriptRuntimeException("extendtypemetatable(type, extensions): second argument must be a table.");
+			if (args.Length < 2 || args[1] is not LuaTable extensions)
+				throw new LuaRuntimeException("extendtypemetatable(type, extensions): second argument must be a table.");
 
-			var dataType = ParseDataType(args[0].String);
-			if (dataType == null)
-				throw new ScriptRuntimeException($"extendtypemetatable: unknown type '{args[0].String}'. " +
-					"Supported: \"nil\", \"void\", \"boolean\", \"number\", \"string\", \"function\".");
+			var luaType = ParseLuaType(typeStr.Value);
+			if (luaType == null)
+				throw new LuaRuntimeException($"extendtypemetatable: unknown type '{typeStr.Value}'. " +
+					"Supported: \"nil\", \"boolean\", \"number\", \"string\", \"function\".");
 
-			var script = ctx.OwnerScript;
-			var extensions = args[1].Table;
+			// Get existing metatable as LuaTable, or start with an empty table
+			LuaTable existingTable;
+			if (ctx.State.TypeMetatables.TryGetValue(luaType.Value, out var existingMt))
+				existingTable = existingMt.ToTable();
+			else
+				existingTable = new LuaTable();
 
-			var metatable = script.GetTypeMetatable(dataType.Value)?.DeepMergeWith(extensions) ?? extensions;
-			script.SetTypeMetatable(dataType.Value, metatable);
+			// Deep merge (non-mutating) — creates a new table
+			var mergedTable = existingTable.DeepMergeWith(extensions);
 
-			return DynValue.Nil;
+			// Convert back to LuaMetatable and store
+			ctx.State.TypeMetatables[luaType.Value] = LuaMetatable.FromTable(mergedTable);
+
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		/// <summary>
-		/// Parses a Lua type name string to a MoonSharp DataType enum value.
-		/// </summary>
-		private static DataType? ParseDataType(string typeName)
+		private static LuaType? ParseLuaType(string typeName)
 		{
 			return typeName.ToLowerInvariant() switch
 			{
-				"nil" => DataType.Nil,
-				"void" => DataType.Void,
-				"boolean" or "bool" => DataType.Boolean,
-				"number" or "num" => DataType.Number,
-				"string" or "str" => DataType.String,
-				"function" or "func" => DataType.Function,
+				"nil" => LuaType.Nil,
+				"boolean" or "bool" => LuaType.Boolean,
+				"number" or "num" => LuaType.Number,
+				"string" or "str" => LuaType.String,
+				"function" or "func" => LuaType.Function,
 				_ => null
 			};
 		}
 	}
-
-	*/
 }

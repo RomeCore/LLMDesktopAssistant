@@ -1,17 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
-using MoonSharp.Interpreter;
+using AsyncLua;
+using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
 	/// <summary>
 	/// Lua API for regular expressions: <c>regex.*</c>.
-	/// Registered in the global namespace.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiRegex : LuaApiBase
+	public class LuaApiRegex : LuaApiBaseAsync
 	{
 		public override string? Namespace => "regex";
 
@@ -112,209 +110,189 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(regex.escape("(hello)")) -- "\\(hello\\)"
 			""";
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["test"] = DynValue.NewCallback(new CallbackFunction(Test));
-			ns["match"] = DynValue.NewCallback(new CallbackFunction(Match));
-			ns["matches"] = DynValue.NewCallback(new CallbackFunction(Matches));
-			ns["replace"] = DynValue.NewCallback(new CallbackFunction(Replace));
-			ns["split"] = DynValue.NewCallback(new CallbackFunction(Split));
-			ns["escape"] = DynValue.NewCallback(new CallbackFunction(Escape));
+			ns["test"] = new LuaCallbackFunction(Test);
+			ns["match"] = new LuaCallbackFunction(Match);
+			ns["matches"] = new LuaCallbackFunction(Matches);
+			ns["replace"] = new LuaCallbackFunction(Replace);
+			ns["split"] = new LuaCallbackFunction(Split);
+			ns["escape"] = new LuaCallbackFunction(Escape);
 		}
 
-		private static DynValue Test(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Test(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("regex.test(pattern, text, [flags]): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("regex.test(pattern, text, [flags]): at least 2 arguments expected.");
 
-			var pattern = args[0].CastToString();
-			var text = args[1].CastToString();
-			if (pattern == null)
-				throw new ScriptRuntimeException("regex.test(): first argument must be a string (pattern).");
-			if (text == null)
-				throw new ScriptRuntimeException("regex.test(): second argument must be a string (text).");
+			if (args[0] is not LuaString patternVal)
+				throw new LuaRuntimeException("regex.test(): first argument must be a string (pattern).");
+			if (args[1] is not LuaString textVal)
+				throw new LuaRuntimeException("regex.test(): second argument must be a string (text).");
 
 			var flags = ParseFlags(args, 2);
 			try
 			{
-				var regex = new Regex(pattern, flags);
-				return DynValue.NewBoolean(regex.IsMatch(text));
+				var regex = new Regex(patternVal.Value, flags);
+				return new LuaTuple(LuaBoolean.FromBoolean(regex.IsMatch(textVal.Value)));
 			}
 			catch (ArgumentException ex)
 			{
-				throw new ScriptRuntimeException($"Regex error: {ex.Message}");
+				throw new LuaRuntimeException($"Regex error: {ex.Message}");
 			}
 		}
 
-		private static DynValue Match(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Match(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("regex.match(pattern, text, [flags]): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("regex.match(pattern, text, [flags]): at least 2 arguments expected.");
 
-			var pattern = args[0].CastToString();
-			var text = args[1].CastToString();
-			if (pattern == null)
-				throw new ScriptRuntimeException("regex.match(): first argument must be a string (pattern).");
-			if (text == null)
-				throw new ScriptRuntimeException("regex.match(): second argument must be a string (text).");
+			if (args[0] is not LuaString patternVal)
+				throw new LuaRuntimeException("regex.match(): first argument must be a string (pattern).");
+			if (args[1] is not LuaString textVal)
+				throw new LuaRuntimeException("regex.match(): second argument must be a string (text).");
 
 			var flags = ParseFlags(args, 2);
 			try
 			{
-				var regex = new Regex(pattern, flags);
-				var match = regex.Match(text);
+				var regex = new Regex(patternVal.Value, flags);
+				var match = regex.Match(textVal.Value);
 				if (!match.Success)
-					return DynValue.Nil;
+					return new LuaTuple(LuaNil.Instance);
 
-				return DynValue.NewTable(MatchToTable(ctx.OwnerScript, regex, match));
+				return new LuaTuple(MatchToTable(regex, match));
 			}
 			catch (ArgumentException ex)
 			{
-				throw new ScriptRuntimeException($"Regex error: {ex.Message}");
+				throw new LuaRuntimeException($"Regex error: {ex.Message}");
 			}
 		}
 
-		private static DynValue Matches(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Matches(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("regex.matches(pattern, text, [flags]): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("regex.matches(pattern, text, [flags]): at least 2 arguments expected.");
 
-			var pattern = args[0].CastToString();
-			var text = args[1].CastToString();
-			if (pattern == null)
-				throw new ScriptRuntimeException("regex.matches(): first argument must be a string (pattern).");
-			if (text == null)
-				throw new ScriptRuntimeException("regex.matches(): second argument must be a string (text).");
+			if (args[0] is not LuaString patternVal)
+				throw new LuaRuntimeException("regex.matches(): first argument must be a string (pattern).");
+			if (args[1] is not LuaString textVal)
+				throw new LuaRuntimeException("regex.matches(): second argument must be a string (text).");
 
 			var flags = ParseFlags(args, 2);
 			try
 			{
-				var regex = new Regex(pattern, flags);
-				var matches = regex.Matches(text);
+				var regex = new Regex(patternVal.Value, flags);
+				var matches = regex.Matches(textVal.Value);
 
-				var resultArray = new Table(ctx.OwnerScript);
+				var resultArray = new LuaTable();
 				for (int i = 0; i < matches.Count; i++)
 				{
-					resultArray[i + 1] = DynValue.NewTable(MatchToTable(ctx.OwnerScript, regex, matches[i]));
+					resultArray[i + 1] = MatchToTable(regex, matches[i]);
 				}
-				return DynValue.NewTable(resultArray);
+				return new LuaTuple(resultArray);
 			}
 			catch (ArgumentException ex)
 			{
-				throw new ScriptRuntimeException($"Regex error: {ex.Message}");
+				throw new LuaRuntimeException($"Regex error: {ex.Message}");
 			}
 		}
 
-		private static DynValue Replace(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Replace(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 3)
-				throw new ScriptRuntimeException("regex.replace(pattern, replacement, text, [flags]): at least 3 arguments expected.");
+			if (args.Length < 3)
+				throw new LuaRuntimeException("regex.replace(pattern, replacement, text, [flags]): at least 3 arguments expected.");
 
-			var pattern = args[0].CastToString();
-			var replacement = args[1].CastToString();
-			var text = args[2].CastToString();
-			if (pattern == null)
-				throw new ScriptRuntimeException("regex.replace(): first argument must be a string (pattern).");
-			if (replacement == null)
-				throw new ScriptRuntimeException("regex.replace(): second argument must be a string (replacement).");
-			if (text == null)
-				throw new ScriptRuntimeException("regex.replace(): third argument must be a string (text).");
+			if (args[0] is not LuaString patternVal)
+				throw new LuaRuntimeException("regex.replace(): first argument must be a string (pattern).");
+			if (args[1] is not LuaString replacementVal)
+				throw new LuaRuntimeException("regex.replace(): second argument must be a string (replacement).");
+			if (args[2] is not LuaString textVal)
+				throw new LuaRuntimeException("regex.replace(): third argument must be a string (text).");
 
 			var (regexOptions, countOne) = ParseReplaceFlags(args, 3);
 
 			try
 			{
-				var regex = new Regex(pattern, regexOptions);
+				var regex = new Regex(patternVal.Value, regexOptions);
 
 				string result;
 				if (countOne)
-					result = regex.Replace(text, replacement, 1);
+					result = regex.Replace(textVal.Value, replacementVal.Value, 1);
 				else
-					result = regex.Replace(text, replacement);
+					result = regex.Replace(textVal.Value, replacementVal.Value);
 
-				return DynValue.NewString(result);
+				return new LuaTuple(new LuaString(result));
 			}
 			catch (ArgumentException ex)
 			{
-				throw new ScriptRuntimeException($"Regex error: {ex.Message}");
+				throw new LuaRuntimeException($"Regex error: {ex.Message}");
 			}
 		}
 
-		private static DynValue Split(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Split(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("regex.split(pattern, text, [flags]): at least 2 arguments expected.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("regex.split(pattern, text, [flags]): at least 2 arguments expected.");
 
-			var pattern = args[0].CastToString();
-			var text = args[1].CastToString();
-			if (pattern == null)
-				throw new ScriptRuntimeException("regex.split(): first argument must be a string (pattern).");
-			if (text == null)
-				throw new ScriptRuntimeException("regex.split(): second argument must be a string (text).");
+			if (args[0] is not LuaString patternVal)
+				throw new LuaRuntimeException("regex.split(): first argument must be a string (pattern).");
+			if (args[1] is not LuaString textVal)
+				throw new LuaRuntimeException("regex.split(): second argument must be a string (text).");
 
 			var flags = ParseFlags(args, 2);
 			try
 			{
-				var regex = new Regex(pattern, flags);
-				var parts = regex.Split(text);
+				var regex = new Regex(patternVal.Value, flags);
+				var parts = regex.Split(textVal.Value);
 
-				var resultArray = new Table(ctx.OwnerScript);
+				var resultArray = new LuaTable();
 				for (int i = 0; i < parts.Length; i++)
 				{
-					resultArray[i + 1] = DynValue.NewString(parts[i]);
+					resultArray[i + 1] = new LuaString(parts[i]);
 				}
-				return DynValue.NewTable(resultArray);
+				return new LuaTuple(resultArray);
 			}
 			catch (ArgumentException ex)
 			{
-				throw new ScriptRuntimeException($"Regex error: {ex.Message}");
+				throw new LuaRuntimeException($"Regex error: {ex.Message}");
 			}
 		}
 
-		private static DynValue Escape(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Escape(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("regex.escape(text): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("regex.escape(text): at least 1 argument expected.");
 
-			var text = args[0].CastToString();
-			if (text == null)
-				throw new ScriptRuntimeException("regex.escape(): first argument must be a string (text).");
+			if (args[0] is not LuaString textVal)
+				throw new LuaRuntimeException("regex.escape(): first argument must be a string (text).");
 
 			try
 			{
-				return DynValue.NewString(Regex.Escape(text));
+				return new LuaTuple(new LuaString(Regex.Escape(textVal.Value)));
 			}
 			catch (ArgumentException ex)
 			{
-				throw new ScriptRuntimeException($"Regex error: {ex.Message}");
+				throw new LuaRuntimeException($"Regex error: {ex.Message}");
 			}
 		}
 
-		/// <summary>
-		/// Parses flags string into RegexOptions.
-		/// Special flag 'c' uses Compiled bit as a marker for count=1.
-		/// </summary>
-		private static RegexOptions ParseFlags(CallbackArguments args, int flagsIndex)
+		private static RegexOptions ParseFlags(LuaValue[] args, int flagsIndex)
 		{
 			var options = RegexOptions.None;
 
-			if (args.Count > flagsIndex)
+			if (args.Length > flagsIndex && args[flagsIndex] is LuaString flagsStr)
 			{
-				var flagsStr = args[flagsIndex].CastToString();
-				if (flagsStr != null)
+				foreach (char c in flagsStr.Value)
 				{
-					foreach (char c in flagsStr)
+					switch (c)
 					{
-						switch (c)
-						{
-							case 'i': options |= RegexOptions.IgnoreCase; break;
-							case 'm': options |= RegexOptions.Multiline; break;
-							case 's': options |= RegexOptions.Singleline; break;
-							case 'x': options |= RegexOptions.IgnorePatternWhitespace; break;
-							case 'c': break; // special: count=1
-							default:
-								throw new ScriptRuntimeException($"Unknown regex flag: '{c}'. Supported: i, m, s, x, c");
-						}
+						case 'i': options |= RegexOptions.IgnoreCase; break;
+						case 'm': options |= RegexOptions.Multiline; break;
+						case 's': options |= RegexOptions.Singleline; break;
+						case 'x': options |= RegexOptions.IgnorePatternWhitespace; break;
+						case 'c': break;
+						default:
+							throw new LuaRuntimeException($"Unknown regex flag: '{c}'. Supported: i, m, s, x, c");
 					}
 				}
 			}
@@ -322,32 +300,24 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return options;
 		}
 
-		/// <summary>
-		/// Parses flags string for regex.replace, supporting all regex flags plus 'c' for count=1.
-		/// Returns a tuple of (RegexOptions, countOne).
-		/// </summary>
-		private static (RegexOptions Options, bool CountOne) ParseReplaceFlags(CallbackArguments args, int flagsIndex)
+		private static (RegexOptions Options, bool CountOne) ParseReplaceFlags(LuaValue[] args, int flagsIndex)
 		{
 			var options = RegexOptions.None;
 			bool countOne = false;
 
-			if (args.Count > flagsIndex)
+			if (args.Length > flagsIndex && args[flagsIndex] is LuaString flagsStr)
 			{
-				var flagsStr = args[flagsIndex].CastToString();
-				if (flagsStr != null)
+				foreach (char c in flagsStr.Value)
 				{
-					foreach (char c in flagsStr)
+					switch (c)
 					{
-						switch (c)
-						{
-							case 'i': options |= RegexOptions.IgnoreCase; break;
-							case 'm': options |= RegexOptions.Multiline; break;
-							case 's': options |= RegexOptions.Singleline; break;
-							case 'x': options |= RegexOptions.IgnorePatternWhitespace; break;
-							case 'c': countOne = true; break;
-							default:
-								throw new ScriptRuntimeException($"Unknown regex flag: '{c}'. Supported: i, m, s, x, c");
-						}
+						case 'i': options |= RegexOptions.IgnoreCase; break;
+						case 'm': options |= RegexOptions.Multiline; break;
+						case 's': options |= RegexOptions.Singleline; break;
+						case 'x': options |= RegexOptions.IgnorePatternWhitespace; break;
+						case 'c': countOne = true; break;
+						default:
+							throw new LuaRuntimeException($"Unknown regex flag: '{c}'. Supported: i, m, s, x, c");
 					}
 				}
 			}
@@ -355,66 +325,57 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return (options, countOne);
 		}
 
-
-		/// <summary>
-		/// Converts a .NET Match object into a Lua table with detailed info.
-		/// </summary>
-		private static Table MatchToTable(Script script, Regex regex, Match match)
+		private static LuaTable MatchToTable(Regex regex, Match match)
 		{
-			var t = new Table(script);
+			var t = new LuaTable();
 
-			t["value"] = DynValue.NewString(match.Value);
-			t["start"] = DynValue.NewNumber(match.Index + 1); // Lua is 1-based
-			t["end"] = DynValue.NewNumber(match.Index + match.Length); // inclusive
-			t["length"] = DynValue.NewNumber(match.Length);
+			t["value"] = new LuaString(match.Value);
+			t["start"] = new LuaNumber(match.Index + 1);
+			t["end"] = new LuaNumber(match.Index + match.Length);
+			t["length"] = new LuaNumber(match.Length);
 
 			// Group names list
-			var groupNamesTable = new Table(script);
+			var groupNamesTable = new LuaTable();
 			var groupNames = regex.GetGroupNames();
 			int nameIdx = 1;
 			foreach (var name in groupNames)
 			{
-				// skip numeric names (they are just indices)
 				if (!int.TryParse(name, out _))
 				{
-					groupNamesTable[nameIdx] = DynValue.NewString(name);
+					groupNamesTable[nameIdx] = new LuaString(name);
 					nameIdx++;
 				}
 			}
-			if (nameIdx == 1)
-				t["group_names"] = DynValue.NewTable(new Table(script)); // empty table
-			else
-				t["group_names"] = DynValue.NewTable(groupNamesTable);
+			t["group_names"] = nameIdx == 1 ? new LuaTable() : groupNamesTable;
 
 			// Groups
-			var groupsTable = new Table(script);
+			var groupsTable = new LuaTable();
 			foreach (var name in groupNames)
 			{
 				var group = match.Groups[name];
-				var groupTable = new Table(script);
+				var groupTable = new LuaTable();
 
 				if (group.Success)
 				{
-					groupTable["value"] = DynValue.NewString(group.Value);
-					groupTable["start"] = DynValue.NewNumber(group.Index + 1);
-					groupTable["end"] = DynValue.NewNumber(group.Index + group.Length);
-					groupTable["length"] = DynValue.NewNumber(group.Length);
+					groupTable["value"] = new LuaString(group.Value);
+					groupTable["start"] = new LuaNumber(group.Index + 1);
+					groupTable["end"] = new LuaNumber(group.Index + group.Length);
+					groupTable["length"] = new LuaNumber(group.Length);
 				}
 				else
 				{
-					groupTable["value"] = DynValue.Nil;
-					groupTable["start"] = DynValue.Nil;
-					groupTable["end"] = DynValue.Nil;
-					groupTable["length"] = DynValue.NewNumber(0);
+					groupTable["value"] = LuaNil.Instance;
+					groupTable["start"] = LuaNil.Instance;
+					groupTable["end"] = LuaNil.Instance;
+					groupTable["length"] = new LuaNumber(0);
 				}
 
-				// Use numeric key if name is a number, otherwise string key
 				if (int.TryParse(name, out int numericKey))
-					groupsTable[numericKey] = DynValue.NewTable(groupTable);
+					groupsTable[numericKey] = groupTable;
 				else
-					groupsTable[name] = DynValue.NewTable(groupTable);
+					groupsTable[name] = groupTable;
 			}
-			t["groups"] = DynValue.NewTable(groupsTable);
+			t["groups"] = groupsTable;
 
 			return t;
 		}

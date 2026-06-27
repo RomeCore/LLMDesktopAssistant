@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
-using MoonSharp.Interpreter;
+using System.Threading.Tasks;
+using AsyncLua;
+using AsyncLua.Values;
 using SearXSharp;
 using SearXSharp.Models;
 
@@ -8,11 +10,11 @@ namespace LLMDesktopAssistant.Scripting.Lua
 {
 	/// <summary>
 	/// Lua API for web search: <c>web.search()</c>.
-	/// Registered in the global <c>web</c> namespace, not under <c>dass</c>.
+	/// Registered in the global <c>web</c> namespace.
 	/// Returns structured result tables instead of formatted text.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiWebSearch : LuaApiBase
+	public class LuaApiWebSearch : LuaApiBaseAsync
 	{
 		private readonly SearchEngineManager _searchManager;
 
@@ -26,8 +28,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			FUNCTIONS:
 
-			--- web.search(query, [options])
+			--- async web.search(query, [options])
 			  Searches the web using all available search engines.
+			  Must be called with await.
 
 			  Parameters:
 			    - query: string (required) — The search query
@@ -55,8 +58,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			  Returns: table with:
 			    - results: array of result tables (see below)
-			    - suggestions: array of strings
-			    - corrections: array of strings
+			    - suggestions: array of strings or nil
+			    - corrections: array of strings or nil
 			    - total_results: number or nil
 			    - engine_timings: array of strings
 			    - unresponsive_engines: array of strings
@@ -90,49 +93,30 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - metadata (string or nil)
 			    - source (string or nil)
 			    - views (number or nil)
-			    - resolution (string or nil)
-
-			  Engine fields:
-			    - engines (array of strings or nil)
 			    - position (number)
-
-			  Torrent fields:
-			    - seed (number)
-			    - leech (number)
+			    - seed, leech (number)
 			    - magnet_link (string or nil)
-
-			  Geo fields:
-			    - latitude (number)
-			    - longitude (number)
-
-			  Paper fields:
-			    - doi (string or nil)
-			    - authors (array of strings or nil)
-			    - journal (string or nil)
-			    - tags (array of strings or nil)
-			    - comments (string or nil)
-			    - pdf_url (string or nil)
-			    - pages (string or nil)
-			    - volume (string or nil)
-			    - number (string or nil)
+			    - latitude, longitude (number)
+			    - doi, journal, comments, pdf_url, pages, volume, number (string or nil)
+			    - authors, tags (table or nil)
 
 			EXAMPLES:
 
 			  -- Simple search
-			  local r = web.search("weather in London")
+			  local r = await web.search("weather in London")
 			  for _, res in ipairs(r.results) do
 			    print(res.title .. " - " .. res.url)
 			  end
 
 			  -- Search with options
-			  local r = web.search("Lua programming", {
+			  local r = await web.search("Lua programming", {
 			    engines = { "google", "bing" },
 			    maxResults = 5,
 			    category = "web"
 			  })
 
 			  -- Search images
-			  local imgs = web.search("cats", {
+			  local imgs = await web.search("cats", {
 			    category = "images",
 			    maxResults = 10
 			  })
@@ -146,19 +130,18 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_searchManager = searchManager;
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["search"] = DynValue.NewCallback(new CallbackFunction(Search));
+			ns["search"] = new LuaCallbackFunction(SearchAsync);
 		}
 
-		private DynValue Search(ScriptExecutionContext ctx, CallbackArguments args)
+		private async Task<LuaTuple> SearchAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count == 0)
-				throw new ScriptRuntimeException("web.search() requires at least a query string.");
+			if (args.Length == 0)
+				throw new LuaRuntimeException("web.search() requires at least a query string.");
 
-			var query = args[0].CastToString();
-			if (query == null)
-				throw new ScriptRuntimeException("First argument must be a string (query).");
+			if (args[0] is not LuaString queryVal)
+				throw new LuaRuntimeException("First argument must be a string (query).");
 
 			// Defaults
 			int page = 1;
@@ -170,169 +153,138 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			int maxResults = 10;
 
 			// Parse optional options table
-			if (args.Count > 1 && args[1].Type == DataType.Table)
+			if (args.Length > 1 && args[1] is LuaTable opts)
 			{
-				var opts = args[1].Table;
-
-				if (opts.Get("page") is DynValue pageVal && pageVal.Type == DataType.Number)
-					page = (int)pageVal.Number;
-
-				if (opts.Get("language") is DynValue langVal && langVal.Type == DataType.String)
-					language = langVal.String;
-
-				if (opts.Get("timeRange") is DynValue trVal && trVal.Type == DataType.String)
-					timeRange = trVal.String;
-
-				if (opts.Get("safeSearch") is DynValue ssVal && ssVal.Type == DataType.String)
-					safeSearch = ssVal.String;
-
-				if (opts.Get("category") is DynValue catVal && catVal.Type == DataType.String)
-					category = catVal.String;
-
-				if (opts.Get("maxResults") is DynValue mrVal && mrVal.Type == DataType.Number)
-					maxResults = (int)mrVal.Number;
-
-				if (opts.Get("engines") is DynValue engVal && engVal.Type == DataType.Table)
+				if (opts.Get("page") is LuaNumber pageVal)
+					page = (int)pageVal.Value;
+				if (opts.Get("language") is LuaString langVal)
+					language = langVal.Value;
+				if (opts.Get("timeRange") is LuaString trVal)
+					timeRange = trVal.Value;
+				if (opts.Get("safeSearch") is LuaString ssVal)
+					safeSearch = ssVal.Value;
+				if (opts.Get("category") is LuaString catVal)
+					category = catVal.Value;
+				if (opts.Get("maxResults") is LuaNumber mrVal)
+					maxResults = (int)mrVal.Value;
+				if (opts.Get("engines") is LuaTable engVal)
 				{
 					var engList = new List<string>();
-					foreach (var e in engVal.Table.Values)
+					foreach (var e in engVal.Values)
 					{
-						if (e.Type == DataType.String)
-							engList.Add(e.String);
+						if (e is LuaString es)
+							engList.Add(es.Value);
 					}
 					if (engList.Count > 0)
 						engines = engList.ToArray();
 				}
 			}
 
-			// Build search query
-			var searchQuery = BuildSearchQuery(query, page, language, timeRange, safeSearch, category, engines, maxResults);
+			var searchQuery = BuildSearchQuery(queryVal.Value, page, language, timeRange, safeSearch, category, engines, maxResults);
 
-			// Execute search
 			SearchResultList resultList;
 			try
 			{
-				resultList = _searchManager.SearchAllAsync(searchQuery, default).Result;
+				resultList = await _searchManager.SearchAllAsync(searchQuery, default);
 			}
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"Web search failed: {ex.Message}");
+				throw new LuaRuntimeException($"Web search failed: {ex.Message}");
 			}
 
-			// Build result table
-			var script = ctx.OwnerScript;
-			var rootTable = new Table(script);
+			var rootTable = new LuaTable();
 
-			// Results array
-			var resultsArray = new Table(script);
+			var resultsArray = new LuaTable();
 			int idx = 1;
 			foreach (var result in resultList.Results)
 			{
-				resultsArray[idx] = ResultToTable(script, result);
+				resultsArray[idx] = ResultToTable(result);
 				idx++;
 			}
 			rootTable["results"] = resultsArray;
 
-			// Suggestions
-			rootTable["suggestions"] = StringArrayToTable(script, resultList.Suggestions);
-
-			// Corrections
-			rootTable["corrections"] = StringArrayToTable(script, resultList.Corrections);
-
-			// Total results
+			if (resultList.Suggestions is { Count: > 0 })
+				rootTable["suggestions"] = StringArrayToTable(resultList.Suggestions) as LuaValue ?? LuaNil.Instance;
+			if (resultList.Corrections is { Count: > 0 })
+				rootTable["corrections"] = StringArrayToTable(resultList.Corrections) as LuaValue ?? LuaNil.Instance;
 			if (resultList.TotalResults.HasValue)
-				rootTable["total_results"] = DynValue.NewNumber(resultList.TotalResults.Value);
+				rootTable["total_results"] = new LuaNumber(resultList.TotalResults.Value);
 
-			// Engine timings
-			var timingsArray = new Table(script);
+			var timingsArray = new LuaTable();
 			for (int i = 0; i < resultList.EngineTimings.Count; i++)
 			{
 				var t = resultList.EngineTimings[i];
-				timingsArray[i + 1] = DynValue.NewString($"{t.Engine} ({t.TotalTime}ms)");
+				timingsArray[i + 1] = new LuaString($"{t.Engine} ({t.TotalTime}ms)");
 			}
 			rootTable["engine_timings"] = timingsArray;
 
-			// Unresponsive engines
-			var unresponsiveArray = new Table(script);
+			var unresponsiveArray = new LuaTable();
 			for (int i = 0; i < resultList.UnresponsiveEngines.Count; i++)
 			{
 				var u = resultList.UnresponsiveEngines[i];
-				unresponsiveArray[i + 1] = DynValue.NewString($"{u.Engine}: {u.ErrorType}{(u.IsSuspended ? " (suspended)" : "")}");
+				unresponsiveArray[i + 1] = new LuaString($"{u.Engine}: {u.ErrorType}{(u.IsSuspended ? " (suspended)" : "")}");
 			}
 			rootTable["unresponsive_engines"] = unresponsiveArray;
 
-			rootTable["supports_paging"] = DynValue.NewBoolean(resultList.SupportsPaging);
+			rootTable["supports_paging"] = LuaBoolean.FromBoolean(resultList.SupportsPaging);
 
-			return DynValue.NewTable(rootTable);
+			return new LuaTuple(rootTable);
 		}
 
-		private static Table ResultToTable(Script script, SearchResult r)
+		private static LuaTable ResultToTable(SearchResult r)
 		{
-			var t = new Table(script);
+			var t = new LuaTable();
 
-			// Core fields
 			SetField(t, "url", r.Url);
 			SetField(t, "title", r.Title);
 			SetField(t, "content", r.Content);
 			SetField(t, "engine", r.Engine);
 			SetField(t, "template", r.Template);
-			t["score"] = DynValue.NewNumber(r.Score);
+			t["score"] = new LuaNumber(r.Score);
 			SetField(t, "type", r.Type.ToString());
 			SetField(t, "category", r.Category.ToString());
 
-			// Media fields
 			SetField(t, "thumbnail", r.Thumbnail);
 			SetField(t, "img_src", r.ImgSrc);
 			SetField(t, "iframe_src", r.IframeSrc);
 			SetField(t, "audio_src", r.AudioSrc);
 
-			// Time fields
 			if (r.PublishedDate.HasValue)
-				t["published_date"] = DynValue.NewString(r.PublishedDate.Value.ToString("O"));
+				t["published_date"] = new LuaString(r.PublishedDate.Value.ToString("O"));
 			if (r.Duration.HasValue && r.Duration.Value > TimeSpan.Zero)
-				t["duration"] = DynValue.NewString(r.Duration.Value.ToString(@"hh\:mm\:ss"));
+				t["duration"] = new LuaString(r.Duration.Value.ToString(@"hh\:mm\:ss"));
 
-			// Metadata fields
 			SetField(t, "author", r.Author);
 			SetField(t, "metadata", r.Metadata);
 			SetField(t, "source", r.Source);
 			if (r.Views.HasValue)
-				t["views"] = DynValue.NewNumber(r.Views.Value);
+				t["views"] = new LuaNumber(r.Views.Value);
 			SetField(t, "resolution", r.Resolution);
 
-			// Engine-specific — always return an array, even if empty
+			var engArr = new LuaTable();
+			int i = 1;
+			foreach (var e in r.Engines)
 			{
-				var engArr = new Table(script);
-				int i = 1;
-				foreach (var e in r.Engines)
-				{
-					engArr[i] = DynValue.NewString(e);
-					i++;
-				}
-				if (i == 1)
-				{
-					engArr[i] = DynValue.NewString(r.Engine);
-				}
-				t["engines"] = engArr;
+				engArr[i] = new LuaString(e);
+				i++;
 			}
-			t["position"] = DynValue.NewNumber(r.Position);
+			if (i == 1)
+				engArr[i] = new LuaString(r.Engine);
+			t["engines"] = engArr;
+			t["position"] = new LuaNumber(r.Position);
 
-			// Torrent fields
-			t["seed"] = DynValue.NewNumber(r.Seed);
-			t["leech"] = DynValue.NewNumber(r.Leech);
+			t["seed"] = new LuaNumber(r.Seed);
+			t["leech"] = new LuaNumber(r.Leech);
 			SetField(t, "magnet_link", r.MagnetLink);
+			t["latitude"] = new LuaNumber(r.Latitude);
+			t["longitude"] = new LuaNumber(r.Longitude);
 
-			// Geo fields
-			t["latitude"] = DynValue.NewNumber(r.Latitude);
-			t["longitude"] = DynValue.NewNumber(r.Longitude);
-
-			// Paper fields
 			SetField(t, "doi", r.Doi);
 			if (r.Authors is { Count: > 0 })
-				t["authors"] = StringArrayToTable(script, r.Authors);
+				t["authors"] = StringArrayToTable(r.Authors) as LuaValue ?? LuaNil.Instance;
 			SetField(t, "journal", r.Journal);
 			if (r.Tags is { Count: > 0 })
-				t["tags"] = StringArrayToTable(script, r.Tags);
+				t["tags"] = StringArrayToTable(r.Tags) as LuaValue ?? LuaNil.Instance;
 			SetField(t, "comments", r.Comments);
 			SetField(t, "pdf_url", r.PdfUrl);
 			SetField(t, "pages", r.Pages);
@@ -342,20 +294,20 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return t;
 		}
 
-		private static void SetField(Table t, string key, string? value)
+		private static void SetField(LuaTable t, string key, string? value)
 		{
 			if (value != null)
-				t[key] = DynValue.NewString(value);
+				t[key] = new LuaString(value);
 		}
 
-		private static DynValue StringArrayToTable(Script script, IReadOnlyList<string>? list)
+		private static LuaTable? StringArrayToTable(IReadOnlyList<string>? list)
 		{
 			if (list == null || list.Count == 0)
-				return DynValue.Nil;
-			var arr = new Table(script);
+				return null;
+			var arr = new LuaTable();
 			for (int i = 0; i < list.Count; i++)
-				arr[i + 1] = DynValue.NewString(list[i]);
-			return DynValue.NewTable(arr);
+				arr[i + 1] = new LuaString(list[i]);
+			return arr;
 		}
 
 		private static SearchQuery BuildSearchQuery(

@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using MoonSharp.Interpreter;
+using AsyncLua;
+using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -10,7 +9,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Registered in the global namespace as "random".
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiRandom : LuaApiBase
+	public class LuaApiRandom : LuaApiBaseAsync
 	{
 		public override string? Namespace => "random";
 
@@ -105,105 +104,95 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		private Random _rng = new();
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["number"] = DynValue.NewCallback(new CallbackFunction(Number));
-			ns["integer"] = DynValue.NewCallback(new CallbackFunction(Integer));
-			ns["boolean"] = DynValue.NewCallback(new CallbackFunction(Boolean));
-			ns["choice"] = DynValue.NewCallback(new CallbackFunction(Choice));
-			ns["shuffle"] = DynValue.NewCallback(new CallbackFunction(Shuffle));
-			ns["guid"] = DynValue.NewCallback(new CallbackFunction(Guid));
-			ns["bytes"] = DynValue.NewCallback(new CallbackFunction(Bytes));
-			ns["seed"] = DynValue.NewCallback(new CallbackFunction(Seed));
+			ns["number"] = new LuaCallbackFunction(Number);
+			ns["integer"] = new LuaCallbackFunction(Integer);
+			ns["boolean"] = new LuaCallbackFunction(Boolean);
+			ns["choice"] = new LuaCallbackFunction(Choice);
+			ns["shuffle"] = new LuaCallbackFunction(Shuffle);
+			ns["guid"] = new LuaCallbackFunction(Guid);
+			ns["bytes"] = new LuaCallbackFunction(Bytes);
+			ns["seed"] = new LuaCallbackFunction(Seed);
 		}
 
-		private DynValue Number(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Number(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count == 0)
-				throw new ScriptRuntimeException("random.number([min], max): at least 1 argument expected.");
+			if (args.Length == 0)
+				throw new LuaRuntimeException("random.number([min], max): at least 1 argument expected.");
 
-			if (args.Count == 1)
+			if (args.Length == 1)
 			{
-				var max = args[0].CastToNumber();
-				if (max == null)
-					throw new ScriptRuntimeException("random.number(max): max must be a number.");
-				return DynValue.NewNumber(_rng.NextDouble() * max.Value);
+				if (args[0] is not LuaNumber max)
+					throw new LuaRuntimeException("random.number(max): max must be a number.");
+				return new LuaTuple(new LuaNumber(_rng.NextDouble() * max.Value));
 			}
 
-			var min = args[0].CastToNumber();
-			var max2 = args[1].CastToNumber();
-			if (min == null || max2 == null)
-				throw new ScriptRuntimeException("random.number(min, max): both arguments must be numbers.");
-			return DynValue.NewNumber(min.Value + _rng.NextDouble() * (max2.Value - min.Value));
+			if (args[0] is not LuaNumber min || args[1] is not LuaNumber max2)
+				throw new LuaRuntimeException("random.number(min, max): both arguments must be numbers.");
+			return new LuaTuple(new LuaNumber(min.Value + _rng.NextDouble() * (max2.Value - min.Value)));
 		}
 
-		private DynValue Integer(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Integer(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count == 0)
-				throw new ScriptRuntimeException("random.integer([min], max): at least 1 argument expected.");
+			if (args.Length == 0)
+				throw new LuaRuntimeException("random.integer([min], max): at least 1 argument expected.");
 
-			if (args.Count == 1)
+			if (args.Length == 1)
 			{
-				var max = args[0].CastToNumber();
-				if (max == null)
-					throw new ScriptRuntimeException("random.integer(max): max must be a number.");
-				return DynValue.NewNumber(_rng.Next(1, (int)max.Value + 1));
+				if (args[0] is not LuaNumber max)
+					throw new LuaRuntimeException("random.integer(max): max must be a number.");
+				return new LuaTuple(new LuaNumber(_rng.Next(1, (int)max.Value + 1)));
 			}
 
-			var min = args[0].CastToNumber();
-			var max2 = args[1].CastToNumber();
-			if (min == null || max2 == null)
-				throw new ScriptRuntimeException("random.integer(min, max): both arguments must be numbers.");
-			return DynValue.NewNumber(_rng.Next((int)min.Value, (int)max2.Value + 1));
+			if (args[0] is not LuaNumber min || args[1] is not LuaNumber max2)
+				throw new LuaRuntimeException("random.integer(min, max): both arguments must be numbers.");
+			return new LuaTuple(new LuaNumber(_rng.Next((int)min.Value, (int)max2.Value + 1)));
 		}
 
-		private DynValue Boolean(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Boolean(LuaCallingContext ctx, LuaValue[] args)
 		{
 			double chance = 0.5;
-			if (args.Count > 0)
+			if (args.Length > 0)
 			{
-				var c = args[0].CastToNumber();
-				if (c == null)
-					throw new ScriptRuntimeException("random.boolean([chance]): chance must be a number between 0 and 1.");
+				if (args[0] is not LuaNumber c)
+					throw new LuaRuntimeException("random.boolean([chance]): chance must be a number between 0 and 1.");
 				chance = c.Value;
 				if (chance < 0 || chance > 1)
-					throw new ScriptRuntimeException("random.boolean([chance]): chance must be between 0 and 1.");
+					throw new LuaRuntimeException("random.boolean([chance]): chance must be between 0 and 1.");
 			}
-			return DynValue.NewBoolean(_rng.NextDouble() < chance);
+			return new LuaTuple(LuaBoolean.FromBoolean(_rng.NextDouble() < chance));
 		}
 
-		private DynValue Choice(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Choice(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("random.choice(array, [n]): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("random.choice(array, [n]): at least 1 argument expected.");
 
-			var array = args[0];
-			if (array.Type != DataType.Table)
-				throw new ScriptRuntimeException("random.choice(): first argument must be a table (array).");
+			if (args[0] is not LuaTable array)
+				throw new LuaRuntimeException("random.choice(): first argument must be a table (array).");
 
-			var length = array.Table.Length;
+			var length = array.Length;
 			if (length == 0)
-				throw new ScriptRuntimeException("random.choice(): array is empty.");
+				throw new LuaRuntimeException("random.choice(): array is empty.");
 
 			// If n is nil or 1, return a single element
-			if (args.Count < 2 || args[1].IsNil())
+			if (args.Length < 2 || args[1] is LuaNil)
 			{
-				return array.Table.Get(_rng.Next(1, length + 1));
+				return new LuaTuple(array.Get(_rng.Next(1, length + 1)));
 			}
 
-			var nVal = args[1].CastToNumber();
-			if (nVal == null)
-				throw new ScriptRuntimeException("random.choice(array, n): n must be a number.");
+			if (args[1] is not LuaNumber nVal)
+				throw new LuaRuntimeException("random.choice(array, n): n must be a number.");
 			int n = (int)nVal.Value;
 
 			if (n < 1)
-				throw new ScriptRuntimeException("random.choice(array, n): n must be at least 1.");
+				throw new LuaRuntimeException("random.choice(array, n): n must be at least 1.");
 			if (n > length)
-				throw new ScriptRuntimeException($"random.choice(array, n): n ({n}) exceeds array length ({length}).");
+				throw new LuaRuntimeException($"random.choice(array, n): n ({n}) exceeds array length ({length}).");
 
 			// Fisher-Yates partial shuffle — pick first n elements
-			var script = ctx.OwnerScript;
-			var result = new Table(script);
+			var result = new LuaTable();
 
 			// Copy indices
 			var indices = new int[length];
@@ -219,28 +208,25 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				indices[i] = indices[j];
 				indices[j] = temp;
 
-				result[i + 1] = array.Table.Get(indices[i]);
+				result[i + 1] = array.Get(indices[i]);
 			}
 
-			return DynValue.NewTable(result);
+			return new LuaTuple(result);
 		}
 
-		private DynValue Shuffle(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Shuffle(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("random.shuffle(array): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("random.shuffle(array): at least 1 argument expected.");
 
-			var array = args[0];
-			if (array.Type != DataType.Table)
-				throw new ScriptRuntimeException("random.shuffle(): first argument must be a table (array).");
+			if (args[0] is not LuaTable t)
+				throw new LuaRuntimeException("random.shuffle(): first argument must be a table (array).");
 
-			var t = array.Table;
 			int len = t.Length;
 			if (len <= 1)
-				return array;
+				return new LuaTuple(t);
 
 			// Fisher-Yates in-place
-			var keys = t.Keys;
 			for (int i = len; i >= 2; i--)
 			{
 				int j = _rng.Next(1, i + 1);
@@ -250,49 +236,47 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				t.Set(j, tmp);
 			}
 
-			return array;
+			return new LuaTuple(t);
 		}
 
-		private static DynValue Guid(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Guid(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewString(System.Guid.NewGuid().ToString());
+			return new LuaTuple(new LuaString(System.Guid.NewGuid().ToString()));
 		}
 
-		private DynValue Bytes(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Bytes(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("random.bytes(n): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("random.bytes(n): at least 1 argument expected.");
 
-			var nVal = args[0].CastToNumber();
-			if (nVal == null)
-				throw new ScriptRuntimeException("random.bytes(n): n must be a number.");
+			if (args[0] is not LuaNumber nVal)
+				throw new LuaRuntimeException("random.bytes(n): n must be a number.");
 			int n = (int)nVal.Value;
 			if (n < 0)
-				throw new ScriptRuntimeException("random.bytes(n): n must be non-negative.");
+				throw new LuaRuntimeException("random.bytes(n): n must be non-negative.");
 
 			var buffer = new byte[n];
 			_rng.NextBytes(buffer);
 
-			var result = new Table(ctx.OwnerScript);
+			var result = new LuaTable();
 			for (int i = 0; i < n; i++)
-				result[i + 1] = DynValue.NewNumber(buffer[i]);
+				result[i + 1] = new LuaNumber(buffer[i]);
 
-			return DynValue.NewTable(result);
+			return new LuaTuple(result);
 		}
 
-		private DynValue Seed(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Seed(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count == 0 || args[0].IsNil())
+			if (args.Length == 0 || args[0] is LuaNil)
 			{
 				_rng = new();
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 			}
 
-			var seedVal = args[0].CastToNumber();
-			if (seedVal == null)
-				throw new ScriptRuntimeException("random.seed([seed]): seed must be a number.");
+			if (args[0] is not LuaNumber seedVal)
+				throw new LuaRuntimeException("random.seed([seed]): seed must be a number.");
 			_rng = new Random((int)seedVal.Value);
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 	}
 }

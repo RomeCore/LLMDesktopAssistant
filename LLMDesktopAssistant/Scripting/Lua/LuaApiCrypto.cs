@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using MoonSharp.Interpreter;
+using AsyncLua;
+using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Provides hashing (MD5, SHA1, SHA256, SHA512), HMAC, Base64 and random hex.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiCrypto : LuaApiBase
+	public class LuaApiCrypto : LuaApiBaseAsync
 	{
 		public override string? Namespace => "crypto";
 
@@ -82,64 +82,63 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  local token = crypto.random_hex(16) -- 32 chars
 			""";
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["md5"] = DynValue.NewCallback(new CallbackFunction(Md5));
-			ns["sha1"] = DynValue.NewCallback(new CallbackFunction(Sha1));
-			ns["sha256"] = DynValue.NewCallback(new CallbackFunction(Sha256));
-			ns["sha512"] = DynValue.NewCallback(new CallbackFunction(Sha512));
-			ns["hmac"] = DynValue.NewCallback(new CallbackFunction(Hmac));
-			ns["base64_encode"] = DynValue.NewCallback(new CallbackFunction(Base64Encode));
-			ns["base64_decode"] = DynValue.NewCallback(new CallbackFunction(Base64Decode));
-			ns["base64_decode_bytes"] = DynValue.NewCallback(new CallbackFunction(Base64DecodeBytes));
-			ns["random_hex"] = DynValue.NewCallback(new CallbackFunction(RandomHex));
+			ns["md5"] = new LuaCallbackFunction(Md5);
+			ns["sha1"] = new LuaCallbackFunction(Sha1);
+			ns["sha256"] = new LuaCallbackFunction(Sha256);
+			ns["sha512"] = new LuaCallbackFunction(Sha512);
+			ns["hmac"] = new LuaCallbackFunction(Hmac);
+			ns["base64_encode"] = new LuaCallbackFunction(Base64Encode);
+			ns["base64_decode"] = new LuaCallbackFunction(Base64Decode);
+			ns["base64_decode_bytes"] = new LuaCallbackFunction(Base64DecodeBytes);
+			ns["random_hex"] = new LuaCallbackFunction(RandomHex);
 		}
 
-		private static DynValue Md5(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Md5(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("crypto.md5(data): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("crypto.md5(data): at least 1 argument expected.");
 			var data = GetBytes(args[0]);
-			return DynValue.NewString(HexEncode(MD5.HashData(data)));
+			return new LuaTuple(new LuaString(HexEncode(MD5.HashData(data))));
 		}
 
-		private static DynValue Sha1(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Sha1(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("crypto.sha1(data): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("crypto.sha1(data): at least 1 argument expected.");
 			var data = GetBytes(args[0]);
-			return DynValue.NewString(HexEncode(SHA1.HashData(data)));
+			return new LuaTuple(new LuaString(HexEncode(SHA1.HashData(data))));
 		}
 
-		private static DynValue Sha256(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Sha256(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("crypto.sha256(data): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("crypto.sha256(data): at least 1 argument expected.");
 			var data = GetBytes(args[0]);
-			return DynValue.NewString(HexEncode(SHA256.HashData(data)));
+			return new LuaTuple(new LuaString(HexEncode(SHA256.HashData(data))));
 		}
 
-		private static DynValue Sha512(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Sha512(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("crypto.sha512(data): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("crypto.sha512(data): at least 1 argument expected.");
 			var data = GetBytes(args[0]);
-			return DynValue.NewString(HexEncode(SHA512.HashData(data)));
+			return new LuaTuple(new LuaString(HexEncode(SHA512.HashData(data))));
 		}
 
-		private static DynValue Hmac(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Hmac(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 3)
-				throw new ScriptRuntimeException("crypto.hmac(key, data, algorithm): at least 3 arguments expected.");
+			if (args.Length < 3)
+				throw new LuaRuntimeException("crypto.hmac(key, data, algorithm): at least 3 arguments expected.");
 
 			var key = GetBytes(args[0]);
 			var data = GetBytes(args[1]);
-			var algorithm = args[2].CastToString();
-			if (algorithm == null)
-				throw new ScriptRuntimeException("crypto.hmac(): third argument must be a string (algorithm: md5, sha1, sha256, sha512).");
+			if (args[2] is not LuaString algorithmVal)
+				throw new LuaRuntimeException("crypto.hmac(): third argument must be a string (algorithm: md5, sha1, sha256, sha512).");
 
 			byte[] hash;
-			switch (algorithm.ToLowerInvariant())
+			switch (algorithmVal.Value.ToLowerInvariant())
 			{
 				case "md5":
 					hash = HMACMD5.HashData(key, data);
@@ -154,78 +153,70 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					hash = HMACSHA512.HashData(key, data);
 					break;
 				default:
-					throw new ScriptRuntimeException($"crypto.hmac(): unknown algorithm '{algorithm}'. Supported: md5, sha1, sha256, sha512.");
+					throw new LuaRuntimeException($"crypto.hmac(): unknown algorithm '{algorithmVal.Value}'. Supported: md5, sha1, sha256, sha512.");
 			}
 
-			return DynValue.NewString(HexEncode(hash));
+			return new LuaTuple(new LuaString(HexEncode(hash)));
 		}
 
-		private static DynValue Base64Encode(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Base64Encode(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("crypto.base64_encode(data): at least 1 argument expected.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("crypto.base64_encode(data): at least 1 argument expected.");
 			var data = GetBytes(args[0]);
-			return DynValue.NewString(Convert.ToBase64String(data));
+			return new LuaTuple(new LuaString(Convert.ToBase64String(data)));
 		}
 
-		private static DynValue Base64Decode(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Base64Decode(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("crypto.base64_decode(str): at least 1 argument expected.");
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("crypto.base64_decode(): first argument must be a string.");
-			var bytes = Convert.FromBase64String(str);
-			return DynValue.NewString(Encoding.UTF8.GetString(bytes));
+			if (args.Length < 1)
+				throw new LuaRuntimeException("crypto.base64_decode(str): at least 1 argument expected.");
+			if (args[0] is not LuaString strVal)
+				throw new LuaRuntimeException("crypto.base64_decode(): first argument must be a string.");
+			var bytes = Convert.FromBase64String(strVal.Value);
+			return new LuaTuple(new LuaString(Encoding.UTF8.GetString(bytes)));
 		}
 
-		private static DynValue Base64DecodeBytes(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Base64DecodeBytes(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("crypto.base64_decode_bytes(str): at least 1 argument expected.");
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("crypto.base64_decode_bytes(): first argument must be a string.");
-			var bytes = Convert.FromBase64String(str);
-			var result = new Table(ctx.OwnerScript);
+			if (args.Length < 1)
+				throw new LuaRuntimeException("crypto.base64_decode_bytes(str): at least 1 argument expected.");
+			if (args[0] is not LuaString strVal)
+				throw new LuaRuntimeException("crypto.base64_decode_bytes(): first argument must be a string.");
+			var bytes = Convert.FromBase64String(strVal.Value);
+			var result = new LuaTable();
 			for (int i = 0; i < bytes.Length; i++)
-				result[i + 1] = DynValue.NewNumber(bytes[i]);
-			return DynValue.NewTable(result);
+				result[i + 1] = new LuaNumber(bytes[i]);
+			return new LuaTuple(result);
 		}
 
-		private static DynValue RandomHex(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple RandomHex(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("crypto.random_hex(n): at least 1 argument expected.");
-			var nVal = args[0].CastToNumber();
-			if (nVal == null)
-				throw new ScriptRuntimeException("crypto.random_hex(): first argument must be a number.");
-			int n = (int)nVal.Value;
-			if (n < 0)
-				throw new ScriptRuntimeException("crypto.random_hex(): n must be non-negative.");
-
-			var bytes = new byte[n];
-			RandomNumberGenerator.Fill(bytes);
-			return DynValue.NewString(HexEncode(bytes));
+			if (args.Length < 1)
+				throw new LuaRuntimeException("crypto.random_hex(n): at least 1 argument expected.");
+			if (args[0] is not LuaNumber nVal)
+				throw new LuaRuntimeException("crypto.random_hex(): first argument must be a number.");
+			var n = (int)nVal.Value;
+			var bytes = RandomNumberGenerator.GetBytes(n);
+			return new LuaTuple(new LuaString(HexEncode(bytes)));
 		}
 
-		// --- Helpers ---
-
-		private static byte[] GetBytes(DynValue val)
+		private static byte[] GetBytes(LuaValue value)
 		{
-			if (val.Type == DataType.String)
-				return Encoding.UTF8.GetBytes(val.String);
-			if (val.Type == DataType.Table)
+			if (value is LuaString str)
+				return Encoding.UTF8.GetBytes(str.Value);
+			if (value is LuaTable table)
 			{
-				var list = new List<byte>();
-				foreach (var kv in val.Table.Pairs)
+				var bytes = new byte[table.Length];
+				for (int i = 0; i < table.Length; i++)
 				{
-					if (kv.Value.Type == DataType.Number)
-						list.Add((byte)kv.Value.Number);
+					var item = table.Get(i + 1);
+					if (item is LuaNumber num)
+						bytes[i] = (byte)num.Value;
 				}
-				return [.. list];
+				return bytes;
 			}
-			throw new ScriptRuntimeException($"Expected string or table of bytes, got {val.Type}.");
+			throw new LuaRuntimeException("expected a string or table of bytes.");
 		}
 
 		private static string HexEncode(byte[] bytes)

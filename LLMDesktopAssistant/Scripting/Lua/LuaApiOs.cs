@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
-using MoonSharp.Interpreter;
+using AsyncLua;
+using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -11,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Provides platform info, environment, and sleep.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiOs : LuaApiBase
+	public class LuaApiOs : LuaApiBaseAsync
 	{
 		public override string? Namespace => "os";
 
@@ -70,32 +69,32 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  os.sleep(0.5) -- pause 500ms
 			""";
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["platform"] = DynValue.NewCallback(new CallbackFunction(Platform));
-			ns["arch"] = DynValue.NewCallback(new CallbackFunction(Arch));
-			ns["env"] = DynValue.NewCallback(new CallbackFunction(Env));
-			ns["username"] = DynValue.NewCallback(new CallbackFunction(Username));
-			ns["hostname"] = DynValue.NewCallback(new CallbackFunction(Hostname));
-			ns["sleep"] = DynValue.NewCallback(new CallbackFunction(Sleep));
-			ns["pid"] = DynValue.NewCallback(new CallbackFunction(Pid));
-			ns["uptime"] = DynValue.NewCallback(new CallbackFunction(Uptime));
+			ns["platform"] = new LuaCallbackFunction(Platform);
+			ns["arch"] = new LuaCallbackFunction(Arch);
+			ns["env"] = new LuaCallbackFunction(Env);
+			ns["username"] = new LuaCallbackFunction(Username);
+			ns["hostname"] = new LuaCallbackFunction(Hostname);
+			ns["sleep"] = new LuaCallbackFunction(Sleep);
+			ns["pid"] = new LuaCallbackFunction(Pid);
+			ns["uptime"] = new LuaCallbackFunction(Uptime);
 		}
 
-		private static DynValue Platform(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Platform(LuaCallingContext ctx, LuaValue[] args)
 		{
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-				return DynValue.NewString("win");
+				return new LuaTuple(new LuaString("win"));
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-				return DynValue.NewString("linux");
+				return new LuaTuple(new LuaString("linux"));
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-				return DynValue.NewString("osx");
+				return new LuaTuple(new LuaString("osx"));
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
-				return DynValue.NewString("freebsd");
-			return DynValue.NewString("unknown");
+				return new LuaTuple(new LuaString("freebsd"));
+			return new LuaTuple(new LuaString("unknown"));
 		}
 
-		private static DynValue Arch(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Arch(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var arch = RuntimeInformation.ProcessArchitecture switch
 			{
@@ -105,51 +104,49 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				System.Runtime.InteropServices.Architecture.Arm => "arm",
 				_ => "unknown"
 			};
-			return DynValue.NewString(arch);
+			return new LuaTuple(new LuaString(arch));
 		}
 
-		private static DynValue Env(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Env(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("os.env(name): at least 1 argument expected.");
-			var name = args[0].CastToString();
-			if (name == null)
-				throw new ScriptRuntimeException("os.env(): first argument must be a string.");
-			var value = Environment.GetEnvironmentVariable(name);
+			if (args.Length < 1)
+				throw new LuaRuntimeException("os.env(name): at least 1 argument expected.");
+			if (args[0] is not LuaString nameValue)
+				throw new LuaRuntimeException("os.env(): first argument must be a string.");
+			var value = Environment.GetEnvironmentVariable(nameValue.Value);
 			if (value == null)
-				return DynValue.Nil;
-			return DynValue.NewString(value);
+				return new LuaTuple(LuaNil.Instance);
+			return new LuaTuple(new LuaString(value));
 		}
 
-		private static DynValue Username(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Username(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewString(Environment.UserName);
+			return new LuaTuple(new LuaString(Environment.UserName));
 		}
 
-		private static DynValue Hostname(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Hostname(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewString(Environment.MachineName);
+			return new LuaTuple(new LuaString(Environment.MachineName));
 		}
 
-		private static DynValue Sleep(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Sleep(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("os.sleep(seconds): at least 1 argument expected.");
-			var seconds = args[0].CastToNumber();
-			if (seconds == null)
-				throw new ScriptRuntimeException("os.sleep(): first argument must be a number.");
-			System.Threading.Thread.Sleep(TimeSpan.FromSeconds(seconds.Value));
-			return DynValue.Nil;
+			if (args.Length < 1)
+				throw new LuaRuntimeException("os.sleep(seconds): at least 1 argument expected.");
+			if (args[0] is not LuaNumber secondsVal)
+				throw new LuaRuntimeException("os.sleep(): first argument must be a number.");
+			System.Threading.Thread.Sleep(TimeSpan.FromSeconds(secondsVal.Value));
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private static DynValue Pid(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Pid(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewNumber(Environment.ProcessId);
+			return new LuaTuple(new LuaNumber(Environment.ProcessId));
 		}
 
-		private static DynValue Uptime(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Uptime(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewNumber(Environment.TickCount64 / 1000.0);
+			return new LuaTuple(new LuaNumber(Environment.TickCount64 / 1000.0));
 		}
 	}
 }

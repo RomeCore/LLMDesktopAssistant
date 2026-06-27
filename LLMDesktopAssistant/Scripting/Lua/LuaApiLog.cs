@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
-using MoonSharp.Interpreter;
+using AsyncLua;
+using AsyncLua.Values;
 using Serilog;
 
 namespace LLMDesktopAssistant.Scripting.Lua
@@ -11,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Supports all Serilog levels with template-based message formatting.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiLog : LuaApiBase
+	public class LuaApiLog : LuaApiBaseAsync
 	{
 		private readonly ILogger _logger;
 
@@ -56,100 +55,96 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_logger = logger;
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["verbose"] = DynValue.NewCallback(new CallbackFunction(LogVerbose));
-			ns["debug"] = DynValue.NewCallback(new CallbackFunction(LogDebug));
-			ns["info"] = DynValue.NewCallback(new CallbackFunction(LogInfo));
-			ns["warning"] = DynValue.NewCallback(new CallbackFunction(LogWarning));
-			ns["error"] = DynValue.NewCallback(new CallbackFunction(LogError));
-			ns["fatal"] = DynValue.NewCallback(new CallbackFunction(LogFatal));
+			ns["verbose"] = new LuaCallbackFunction(LogVerbose);
+			ns["debug"] = new LuaCallbackFunction(LogDebug);
+			ns["info"] = new LuaCallbackFunction(LogInfo);
+			ns["warning"] = new LuaCallbackFunction(LogWarning);
+			ns["error"] = new LuaCallbackFunction(LogError);
+			ns["fatal"] = new LuaCallbackFunction(LogFatal);
 		}
 
-		private DynValue LogVerbose(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple LogVerbose(LuaCallingContext ctx, LuaValue[] args)
 		{
 			LogWithLevel(args, (t, p) => _logger.Verbose(t, p));
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue LogDebug(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple LogDebug(LuaCallingContext ctx, LuaValue[] args)
 		{
 			LogWithLevel(args, (t, p) => _logger.Debug(t, p));
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue LogInfo(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple LogInfo(LuaCallingContext ctx, LuaValue[] args)
 		{
 			LogWithLevel(args, (t, p) => _logger.Information(t, p));
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue LogWarning(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple LogWarning(LuaCallingContext ctx, LuaValue[] args)
 		{
 			LogWithLevel(args, (t, p) => _logger.Warning(t, p));
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue LogError(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple LogError(LuaCallingContext ctx, LuaValue[] args)
 		{
 			LogWithLevel(args, (t, p) => _logger.Error(t, p));
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue LogFatal(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple LogFatal(LuaCallingContext ctx, LuaValue[] args)
 		{
 			LogWithLevel(args, (t, p) => _logger.Fatal(t, p));
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private static void LogWithLevel(CallbackArguments args, Action<string, object[]> logAction)
+		private static void LogWithLevel(LuaValue[] args, System.Action<string, object[]> logAction)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("dass.log.LEVEL(template, ...): at least 1 argument expected (template).");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("dass.log.LEVEL(template, ...): at least 1 argument expected (template).");
 
-			var template = args[0].CastToString();
-			if (template == null)
-				throw new ScriptRuntimeException("dass.log.LEVEL(): first argument must be a string (template).");
+			if (args[0] is not LuaString templateVal)
+				throw new LuaRuntimeException("dass.log.LEVEL(): first argument must be a string (template).");
 
-			if (args.Count == 1)
+			if (args.Length == 1)
 			{
-				logAction(template, []);
+				logAction(templateVal.Value, []);
 				return;
 			}
 
-			var propertyValues = new object[args.Count - 1];
-			for (int i = 1; i < args.Count; i++)
+			var propertyValues = new object[args.Length - 1];
+			for (int i = 1; i < args.Length; i++)
 			{
-				propertyValues[i - 1] = DynValueToObject(args[i]);
+				propertyValues[i - 1] = LuaValueToObject(args[i]);
 			}
 
-			logAction(template, propertyValues);
+			logAction(templateVal.Value, propertyValues);
 		}
 
-		private static object DynValueToObject(DynValue val)
+		private static object LuaValueToObject(LuaValue val)
 		{
-			switch (val.Type)
+			if (val is LuaNil)
+				return null!;
+			if (val is LuaBoolean boolean)
+				return boolean.Value;
+			if (val is LuaNumber number)
+				return number.Value;
+			if (val is LuaString str)
+				return str.Value;
+			if (val is LuaTable t)
 			{
-				case DataType.Nil:
-					return null!;
-				case DataType.Boolean:
-					return val.Boolean;
-				case DataType.Number:
-					return val.Number;
-				case DataType.String:
-					return val.String;
-				case DataType.Table:
-					// Convert to simple dict/array for readability
-					var t = val.Table;
-					var dict = new Dictionary<string, object?>();
-					foreach (var kv in t.Pairs)
-					{
-						dict.Add(kv.Key.ToPrintString(), DynValueToObject(kv.Value));
-					}
-					return dict;
-				default:
-					return val.ToPrintString();
+				// Convert to simple dict/array for readability
+				var dict = new Dictionary<string, object?>();
+				foreach (var kv in t.Entries)
+				{
+					dict.Add(kv.Key.ToString() ?? "?", LuaValueToObject(kv.Value));
+				}
+				return dict;
 			}
+			return val.ToString() ?? "?";
 		}
 	}
 }
