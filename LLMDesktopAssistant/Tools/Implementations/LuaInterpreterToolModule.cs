@@ -1,3 +1,4 @@
+using AsyncLua.Values;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Scripting;
 using Material.Icons;
@@ -20,12 +21,20 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "lua-execute",
 					DescriptionGetter = () => $"""
 						# MAIN INFO
-						Lua is executing using MoonSharp (Lua 5.2).
+						Lua is executing using AsyncLua v0.2.2 (Lua 5.5).
 						Executes Lua and returns the script result along with messages printed by 'print' function
 						(the `dass.tool.result.write` works in a similar way).
 						Lua has the API to interact with the application (called dASS) with these namespaces:
 						{string.Join(", ", lua.Namespaces.Select(ns => ns != null ? $"**{ns}**" : "_G").Order())}
-						
+
+						# AsyncLua changes
+						You can use `async/await` in your scripts, for example:
+						local async function doWork()
+							await delay(100)
+							return 'done'
+						end
+						print(await doWork())
+
 						# SMART UX WITH STREAMING AND STATUS ICONS/TITLES
 						You can also use the `dass.tool.result` for streaming output, progress and status
 						(for meta-tools and long-running scripts):
@@ -112,25 +121,25 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				try
 				{
-					DynValue scriptResult;
+					LuaTuple scriptResult;
 					if (isolatedExecution)
 					{
-						scriptResult = _lua.ExecuteSnapshotted(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
+						scriptResult = await _lua.ExecuteAsync(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
 						{
-							g[LuaVariables.ToolExecutionContext] = UserData.Create(context);
-							g[LuaVariables.ToolReactiveResult] = UserData.Create(reactiveResult);
+							g[LuaVariables.ToolExecutionContext] = LuaValueConverter.ToLuaValue(context);
+							g[LuaVariables.ToolReactiveResult] = LuaValueConverter.ToLuaValue(reactiveResult);
 						});
 					}
 					else
 					{
-						scriptResult = await _lua.ExecuteSyncronizedAsync(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
+						scriptResult = await _lua.ExecuteAsync(lua, print => reactiveResult.ResultContentLines.Add(print), g =>
 						{
-							g[LuaVariables.ToolExecutionContext] = UserData.Create(context);
-							g[LuaVariables.ToolReactiveResult] = UserData.Create(reactiveResult);
+							g[LuaVariables.ToolExecutionContext] = LuaValueConverter.ToLuaValue(context);
+							g[LuaVariables.ToolReactiveResult] = LuaValueConverter.ToLuaValue(reactiveResult);
 						});
 					}
 
-					reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToPrintString());
+					reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToString());
 					reactiveResult.TryCompleteWithSuccess();
 				}
 				catch (ScriptRuntimeException srex)

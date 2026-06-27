@@ -11,6 +11,7 @@ using YamlDotNet.Serialization.NamingConventions;
 using LLMDesktopAssistant.LLM.Services;
 using RCParsing;
 using System.Text;
+using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting
 {
@@ -129,19 +130,19 @@ namespace LLMDesktopAssistant.Scripting
 			{
 				var reactiveResult = new ReactiveToolResult();
 
-				_ = Task.Run(() =>
+				_ = Task.Run(async () =>
 				{
 					try
 					{
-						var scriptResult = _luaService.ExecuteSnapshotted(tool.ExecutionCode, print => reactiveResult.ResultContentLines.Add(print), g =>
+						var scriptResult = await _luaService.ExecuteAsync(tool.ExecutionCode, print => reactiveResult.ResultContentLines.Add(print), g =>
 						{
-							g["tool_args"] = StructuredLuaConverter.JsonNodeToDynValue(g.OwnerScript, args);
-							g[LuaVariables.ToolExecutionContext] = UserData.Create(context);
-							g[LuaVariables.ToolReactiveResult] = UserData.Create(reactiveResult);
+							g["tool_args"] = StructuredLuaConverter.JsonNodeToLuaValue(args);
+							g[LuaVariables.ToolExecutionContext] = LuaValueConverter.ToLuaValue(context);
+							g[LuaVariables.ToolReactiveResult] = LuaValueConverter.ToLuaValue(reactiveResult);
 						});
 						if (reactiveResult.StructuredResult == null)
-							reactiveResult.StructuredResult = StructuredLuaConverter.DynValueToJsonNode(scriptResult);
-						reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToPrintString());
+							reactiveResult.StructuredResult = StructuredLuaConverter.LuaValueToJsonNode(scriptResult);
+						reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToString());
 						reactiveResult.TryCompleteWithSuccess();
 					}
 					catch (ScriptRuntimeException srex)

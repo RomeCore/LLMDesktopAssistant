@@ -3,6 +3,8 @@ using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	[LuaApi(chatScoped: false)]
 	public class LuaApiManuals : LuaApiBase
 	{
@@ -91,4 +93,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return DynValue.NewString(result.ToString().TrimEnd());
 		}
 	}
+
+	*/
 }

@@ -204,6 +204,12 @@
 					  TextWrapping="Wrap"/>
 
 		<ItemsControl ItemsSource="{Binding SliderItems}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Vertical"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Margin="0,6">
@@ -243,6 +249,7 @@
 										Minimum="{Binding MinValue}"
 										Maximum="{Binding MaxValue}"
 										TickFrequency="1"
+										HorizontalAlignment="Stretch"
 										IsSnapToTickEnabled="True"
 										TickPlacement="TopLeft"/>
 
@@ -266,45 +273,32 @@
 		<TextBlock Text="{loc:Loc prompt_components_hint}"
 					  Opacity="0.6"
 					  TextWrapping="Wrap"/>
+		
+		<TreeView ItemsSource="{Binding ComponentCategories}"
+					BorderThickness="0">
 
-		<Border BorderBrush="{DynamicResource DefaultForeground}"
-				BorderThickness="1"
-				CornerRadius="4"
-				Padding="4"
-				Opacity="0.7">
+			<TreeView.DataTemplates>
 
-			<ScrollViewer MaxHeight="250"
-							VerticalScrollBarVisibility="Auto">
+				<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
+									ItemsSource="{Binding Components}">
 
-				<TreeView ItemsSource="{Binding ComponentCategories}"
-							BorderThickness="0">
+					<TextBlock Text="{Binding CategoryName}"
+									FontWeight="Bold"
+									Margin="0,2"/>
 
-					<TreeView.DataTemplates>
+				</TreeDataTemplate>
 
-						<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
-											ItemsSource="{Binding Components}">
+				<DataTemplate DataType="local:ComponentItemViewModel">
 
-							<TextBlock Text="{Binding CategoryName}"
-										  FontWeight="Bold"
-										  Margin="0,2"/>
+					<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+								Content="{Binding Component.Name}"
+								Margin="16,1,0,1"/>
 
-						</TreeDataTemplate>
+				</DataTemplate>
 
-						<DataTemplate DataType="local:ComponentItemViewModel">
+			</TreeView.DataTemplates>
 
-							<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-										Content="{Binding Component.Name}"
-										Margin="16,1,0,1"/>
-
-						</DataTemplate>
-
-					</TreeView.DataTemplates>
-
-				</TreeView>
-
-			</ScrollViewer>
-
-		</Border>
+		</TreeView>
 
 	</StackPanel>
 

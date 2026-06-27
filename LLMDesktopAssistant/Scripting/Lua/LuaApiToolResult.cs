@@ -6,6 +6,8 @@ using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	/// <summary>
 	/// Lua API for reactive tool result: <c>dass.tool.result.*</c>.
 	/// Provides access to the current tool's <see cref="ReactiveToolResult"/>
@@ -306,7 +308,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			if (data.Type != DataType.Table && !data.IsNil())
 				return DynValue.Nil;
 
-			var jsonNode = StructuredLuaConverter.DynValueToJsonNode(data);
+			var jsonNode = StructuredLuaConverter.LuaValueToJsonNode(data);
 			result.StructuredResult = jsonNode;
 
 			return DynValue.Nil;
@@ -356,4 +358,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return DynValue.Nil;
 		}
 	}
+
+	*/
 }

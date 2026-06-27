@@ -2,6 +2,8 @@ using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	/// <summary>
 	/// A timer that fires a Lua callback after a delay, optionally repeating.
 	/// Each invocation runs in its own snapshot runtime for isolation.
@@ -79,4 +81,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return _task != null && !_task.IsCompleted;
 		}
 	}
+
+	*/
 }

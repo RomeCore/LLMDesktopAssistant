@@ -3,6 +3,8 @@ using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	/// <summary>
 	/// Lua API for type metatable manipulation.
 	/// Provides global functions <c>gettypemetatable</c>, <c>settypemetatable</c>,
@@ -284,4 +286,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			};
 		}
 	}
+
+	*/
 }

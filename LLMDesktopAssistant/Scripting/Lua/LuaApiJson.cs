@@ -10,6 +10,8 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	/// <summary>
 	/// Lua API for JSON encoding/decoding: <c>json.*</c>.
 	/// Registered in the global namespace as "json".
@@ -45,7 +47,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		    - Missing quotes around keys/values
 		    - Trailing commas in arrays/objects
 		    - Unclosed brackets
-		    - JavaScript comments (// and /* */)
+		    - JavaScript comments (// and /* )
 		    - NaN, Infinity, +infinity, -infinity
 		    - Wrong escape sequences
 		    - Unquoted string values
@@ -128,7 +130,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					throw new ScriptRuntimeException($"json.decode(str): expected a string, got {jsonStr.Type}.");
 
 				var node = JsonNode.Parse(jsonStr.String);
-				return StructuredLuaConverter.JsonNodeToDynValue(ctx.GetScript(), node);
+				return StructuredLuaConverter.JsonNodeToLuaValue(ctx.GetScript(), node);
 			}
 			catch (ScriptRuntimeException)
 			{
@@ -152,7 +154,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					throw new ScriptRuntimeException($"json.decode_tolerant(str): expected a string, got {jsonStr.Type}.");
 
 				var node = TolerantJsonParser.Parse(jsonStr.String);
-				return StructuredLuaConverter.JsonNodeToDynValue(ctx.GetScript(), node);
+				return StructuredLuaConverter.JsonNodeToLuaValue(ctx.GetScript(), node);
 			}
 			catch (ScriptRuntimeException)
 			{
@@ -176,7 +178,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					indented = true;
 
 				var value = args[0];
-				var node = StructuredLuaConverter.DynValueToJsonNode(value);
+				var node = StructuredLuaConverter.LuaValueToJsonNode(value);
 				var options = indented ? _indentedSerializationOptions : _serializationOptions;
 				string s = node?.ToJsonString(options) ?? "null";
 				return DynValue.NewString(s);
@@ -191,4 +193,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 		}
 	}
+
+	*/
 }

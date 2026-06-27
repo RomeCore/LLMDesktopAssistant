@@ -1,4 +1,5 @@
 ﻿using LiteDB;
+using LLMDesktopAssistant.Tools;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Data.ChatModels
@@ -49,6 +50,11 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		/// Gets or sets the status icon to be displayed. This will be shown next to the main title (that contains tool name).
 		/// </summary>
 		public MaterialIconKind? StatusIcon { get; set; }
+
+		/// <summary>
+		/// Gets or sets the expected behaviour of the tool.
+		/// </summary>
+		public ToolBehaviour? ExpectedBehaviour { get; set; }
 
 		/// <summary>
 		/// Gets or sets the title of the status that will be shown next to the main title (that contains tool name).

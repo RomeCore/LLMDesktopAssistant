@@ -1,8 +1,9 @@
-﻿using MoonSharp.Interpreter;
+﻿using AsyncLua.Values;
+using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	public class LuaApiLoadedScript : LuaApiBase
+	public class LuaApiLoadedScript : LuaApiBaseAsync
 	{
 		public string? Path { get; }
 		public override string? Namespace { get; }
@@ -24,12 +25,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			Script = script;
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
 			globals["_NS"] = ns;
 			try
 			{
-				luaService.ExecuteSyncronized(Script);
+				luaService.Execute(Script);
 			}
 			finally
 			{

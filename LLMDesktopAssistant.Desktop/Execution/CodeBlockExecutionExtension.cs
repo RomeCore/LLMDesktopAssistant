@@ -62,9 +62,9 @@ namespace LLMDesktopAssistant.Desktop.Execution
 			switch (codeBlock.Language)
 			{
 				case "lua":
-
+					 
 					StringBuilder sb = new();
-					lua.ExecuteSyncronized(code, p => sb.AppendLine(p));
+					lua.Execute(code, p => sb.AppendLine(p));
 					AdditionalViewModel = new ExecutionResultViewModel
 					{
 						OutputText = sb.ToString()

@@ -528,6 +528,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				},
 				StatusIcon = toolCall.StatusIcon,
 				StatusTitle = toolCall.StatusTitle,
+				ExpectedBehaviour = toolCall.ExpectedBehaviour,
 				ResultContent = toolCall.ResultContent,
 				UseMarkdown = toolCall.UseMarkdown,
 				StructuredResult = toolCall.StructuredResult?.ToJsonString()
@@ -565,6 +566,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				model.FunctionArguments = toolCall.Arguments;
 				model.StatusIcon = toolCall.StatusIcon;
 				model.StatusTitle = toolCall.StatusTitle;
+				model.ExpectedBehaviour = toolCall.ExpectedBehaviour;
 				model.ResultContent = toolCall.ResultContent;
 				model.UseMarkdown = toolCall.UseMarkdown;
 				model.StructuredResult = toolCall.StructuredResult?.ToJsonString();
@@ -938,6 +940,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						},
 						StatusIcon = toolCallModel.StatusIcon,
 						StatusTitle = toolCallModel.StatusTitle,
+						ExpectedBehaviour = toolCallModel.ExpectedBehaviour,
 						CompletionToken = CompletionToken.Success
 					};
 

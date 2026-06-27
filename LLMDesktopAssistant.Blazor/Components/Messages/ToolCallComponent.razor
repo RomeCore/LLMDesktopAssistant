@@ -2,6 +2,7 @@
 @using LLMDesktopAssistant.LLM.Domain
 @using LLMDesktopAssistant.LLM.Messages
 @using LLMDesktopAssistant.Localization
+@using LLMDesktopAssistant.Utils
 @using Material.Icons
 @implements IDisposable
 @rendermode InteractiveServer
@@ -48,7 +49,7 @@
 	@if (_showArgs)
 	{
 		<div class="toolcall-args">
-			<MarkdownComponent MarkdownText="@_argsPreview" />
+			<MarkdownComponent MarkdownText="@ToolCallArgumentFormatter.FormatToMarkdown(TolerantJsonParser.Parse(ToolCall.Arguments))" />
 		</div>
 	}
 
@@ -72,22 +73,12 @@
 	public required ToolCall ToolCall { get; init; }
 
 	private string? _title;
-	private bool _showArgs;
+	private bool _showArgs = false;
 	private string _argsPreview = string.Empty;
 
 	protected override void OnInitialized()
 	{
 		_title = LocalizationManager.LocalizeStatic(ToolCall.Title ?? ToolCall.ToolName);
-
-		if (ToolCall.Arguments is not null)
-		{
-			var args = ToolCallArgumentFormatter.FormatToMarkdown(ToolCall.Arguments);
-			if (!string.IsNullOrWhiteSpace(args))
-			{
-				_showArgs = true;
-				_argsPreview = args.Length > 500 ? args[..500] + "..." : args;
-			}
-		}
 
 		ToolCall.PropertyChanged += OnToolCallPropertyChanged;
 	}

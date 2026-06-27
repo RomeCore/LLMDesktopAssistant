@@ -108,7 +108,7 @@
 			var isAuthed = await JS.InvokeAsync<bool>("checkAuth");
 			if (isAuthed)
 			{
-				Navigation.NavigateTo("/chat", forceLoad: true);
+				Navigation.NavigateTo("/", forceLoad: true);
 			}
 		}
 		catch
@@ -141,7 +141,7 @@
 
 			if (success)
 			{
-				Navigation.NavigateTo("/chat");
+				Navigation.NavigateTo("/");
 			}
 			else
 			{

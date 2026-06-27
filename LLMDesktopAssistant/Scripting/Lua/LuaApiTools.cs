@@ -10,6 +10,8 @@ using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	[LuaApi(chatScoped: true)]
 	public class LuaApiTools : LuaApiBase
 	{
@@ -113,7 +115,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			if (!_toolsetCache.AvailableTools.TryGetValue(function, out var tool))
 				throw new ScriptRuntimeException($"Tool '{function}' not found.");
 
-			var jsonArgs = StructuredLuaConverter.DynValueToJsonNode(arguments) ?? new JsonObject();
+			var jsonArgs = StructuredLuaConverter.LuaValueToJsonNode(arguments) ?? new JsonObject();
 			var context = ctx.TryGetToolExecutionContext();
 			if (context == null)
 			{
@@ -127,7 +129,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			// Wait for completion to get success status
 			var success = reactiveResult.Completion.GetAwaiter().GetResult();
 			var content = reactiveResult.ResultContent;
-			var structured = StructuredLuaConverter.JsonNodeToDynValue(script, reactiveResult.StructuredResult);
+			var structured = StructuredLuaConverter.JsonNodeToLuaValue(script, reactiveResult.StructuredResult);
 
 			// Build structured result table
 			var resultTable = new Table(script);
@@ -169,9 +171,11 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			result["enabled"] = DynValue.NewBoolean(tool.Enabled);
 			result["approval_level"] = DynValue.NewString(tool.ApprovalLevel.ToString());
 			result["source"] = tool.Source.ToString().ToLower();
-			result["arguments"] = StructuredLuaConverter.JsonNodeToDynValue(script, tool.ArgumentSchema);
+			result["arguments"] = StructuredLuaConverter.JsonNodeToLuaValue(script, tool.ArgumentSchema);
 			return result;
 		}
 	}
+
+	*/
 }
 

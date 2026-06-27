@@ -8,6 +8,8 @@ using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	/// <summary>
 	/// Lua API for time operations: <c>time.*</c>.
 	/// Provides stopwatch, duration formatting, unit conversion,
@@ -112,7 +114,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    end)
 			    t:cancel()  -- stop the interval
 
-		 */
+		
 
 		public override void Populate(Table globals, Table ns, LuaService luaService)
 		{
@@ -487,4 +489,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return UserData.Create(new LuaStopwatch());
 		}
 	}
+
+	*/
 }

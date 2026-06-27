@@ -6,6 +6,8 @@ using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	/// <summary>
 	/// Lua API with extended table utilities: <c>table.*</c>.
 	/// Supplements the built-in table library with commonly needed functions.
@@ -523,4 +525,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 		}
 	}
+
+	*/
 }

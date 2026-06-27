@@ -5,6 +5,8 @@ using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	/// <summary>
 	/// Lua API root namespace <c>dass.*</c>.
 	/// Provides application-level utilities: version, help, working directory.
@@ -84,4 +86,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				DynValue.NewString(_fileAccess.GetWorkingDirectory())));
 		}
 	}
+
+	*/
 }

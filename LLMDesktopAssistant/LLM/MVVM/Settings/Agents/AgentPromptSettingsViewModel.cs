@@ -227,8 +227,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			allComponents.AddRange(componentsConfig.Components);
 			allComponents.AddRange(PromptRegistry.BuiltinComponents.Values);
 
-			var grouped = allComponents.GroupBy(c => string.IsNullOrEmpty(c.Category) 
-				? LocalizationManager.LocalizeStatic("prompt_category_uncategorized") 
+			var grouped = allComponents.GroupBy(c => string.IsNullOrEmpty(c.Category)
+				? LocalizationManager.LocalizeStatic("prompt_category_uncategorized")
 				: c.Category);
 
 			ComponentCategories.Clear();
@@ -278,17 +278,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 
 			// --- Sliders ---
-			RefreshSliders();
-		}
-
-		/// <summary>
-		/// Loads slider definitions from PromptRegistry and creates ViewModel items.
-		/// For each builtin slider, finds or creates a matching BehaviorSliderValue in PromptSettings.
-		/// </summary>
-		private void RefreshSliders()
-		{
-			SliderItems.Clear();
-
 			foreach (var (sliderId, slider) in PromptRegistry.BuiltinSliders)
 			{
 				// Find existing slider value or create new one with default (0)

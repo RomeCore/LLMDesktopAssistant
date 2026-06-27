@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.Json.Nodes;
+using AsyncLua;
+using AsyncLua.Values;
 using LLTSharp;
 using LLTSharp.DataAccessors;
 using MoonSharp.Interpreter;
@@ -17,38 +19,38 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="script">The Lua script to which the value will be assigned.</param>
 		/// <param name="node">The JsonNode to convert.</param>
 		/// <returns>The converted DynValue.</returns>
-		public static DynValue JsonNodeToDynValue(Script script, JsonNode? node)
+		public static LuaValue JsonNodeToLuaValue(JsonNode? node)
 		{
 			if (node == null)
-				return DynValue.Nil;
+				return LuaNil.Instance;
 
 			switch (node)
 			{
 				case JsonObject obj:
-					var table = new Table(script);
+					var table = new LuaTable();
 					foreach (var prop in obj)
-						table[prop.Key] = JsonNodeToDynValue(script, prop.Value);
-					return DynValue.NewTable(table);
+						table[prop.Key] = JsonNodeToLuaValue(prop.Value);
+					return table;
 
 				case JsonArray arr:
-					var arrTable = new Table(script);
+					var arrTable = new LuaTable();
 					for (int i = 0; i < arr.Count; i++)
-						arrTable[i + 1] = JsonNodeToDynValue(script, arr[i]);
-					return DynValue.NewTable(arrTable);
+						arrTable[i + 1] = JsonNodeToLuaValue(arr[i]);
+					return arrTable;
 
 				case JsonValue val:
 					if (val.TryGetValue(out string? s))
-						return DynValue.NewString(s);
+						return new LuaString(s);
 					if (val.TryGetValue(out long l))
-						return DynValue.NewNumber(l);
+						return new LuaNumber(l);
 					if (val.TryGetValue(out double d))
-						return DynValue.NewNumber(d);
+						return new LuaNumber(d);
 					if (val.TryGetValue(out bool b))
-						return DynValue.NewBoolean(b);
-					return DynValue.Nil;
+						return LuaBoolean.FromBoolean(b);
+					return LuaNil.Instance;
 
 				default:
-					return DynValue.Nil;
+					return LuaNil.Instance;
 			}
 		}
 
@@ -57,40 +59,38 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		/// <param name="value">The DynValue to convert.</param>
 		/// <returns>The converted JsonNode.</returns>
-		public static JsonNode? DynValueToJsonNode(DynValue value)
+		public static JsonNode? LuaValueToJsonNode(LuaValue value)
 		{
-			switch (value.Type)
+			switch (value)
 			{
-				case DataType.Nil:
-				case DataType.Void:
+				case LuaNil:
 					return null;
 
-				case DataType.Boolean:
-					return JsonValue.Create(value.Boolean);
+				case LuaBoolean boolean:
+					return JsonValue.Create(boolean.Value);
 
-				case DataType.Number:
-					return JsonValue.Create(value.Number);
+				case LuaNumber number:
+					return JsonValue.Create(number.Value);
 
-				case DataType.String:
-					return JsonValue.Create(value.String);
+				case LuaString str:
+					return JsonValue.Create(str.Value);
 
-				case DataType.Table:
-					var table = value.Table;
+				case LuaTable table:
 					if (IsArray(table))
 					{
 						var arr = new JsonArray();
 						for (int i = 1; i <= table.Length; i++)
-							arr.Add(DynValueToJsonNode(table.Get(i)));
+							arr.Add(LuaValueToJsonNode(table.Get(i)));
 						return arr;
 					}
 					else
 					{
 						var obj = new JsonObject();
-						foreach (var kvp in table.Pairs)
+						foreach (var kvp in table.Entries)
 						{
 							string? key = KeyToString(kvp.Key);
 							if (key != null)
-								obj[key] = DynValueToJsonNode(kvp.Value);
+								obj[key] = LuaValueToJsonNode(kvp.Value);
 						}
 						return obj;
 					}
@@ -100,40 +100,38 @@ namespace LLMDesktopAssistant.Scripting
 			}
 		}
 
-		public static TemplateDataAccessor DynValueToLLTSharp(DynValue value)
+		public static TemplateDataAccessor LuaValueToLLTSharp(LuaValue value)
 		{
-			switch (value.Type)
+			switch (value)
 			{
-				case DataType.Nil:
-				case DataType.Void:
+				case LuaNil:
 					return TemplateNullAccessor.Instance;
 
-				case DataType.Boolean:
-					return new TemplateBooleanAccessor(value.Boolean);
+				case LuaBoolean boolean:
+					return new TemplateBooleanAccessor(boolean.Value);
 
-				case DataType.Number:
-					return new TemplateNumberAccessor(value.Number);
+				case LuaNumber number:
+					return new TemplateNumberAccessor(number.Value);
 
-				case DataType.String:
-					return new TemplateStringAccessor(value.String);
+				case LuaString str:
+					return new TemplateStringAccessor(str.Value);
 
-				case DataType.Table:
-					var table = value.Table;
+				case LuaTable table:
 					if (IsArray(table))
 					{
 						var arr = new List<TemplateDataAccessor>();
 						for (int i = 1; i <= table.Length; i++)
-							arr.Add(DynValueToLLTSharp(table.Get(i)));
+							arr.Add(LuaValueToLLTSharp(table.Get(i)));
 						return new TemplateArrayAccessor(arr);
 					}
 					else
 					{
 						var obj = new Dictionary<string, TemplateDataAccessor>();
-						foreach (var kvp in table.Pairs)
+						foreach (var kvp in table.Entries)
 						{
 							string? key = KeyToString(kvp.Key);
 							if (key != null)
-								obj[key] = DynValueToLLTSharp(kvp.Value);
+								obj[key] = LuaValueToLLTSharp(kvp.Value);
 						}
 						return new TemplateDictionaryAccessor(obj);
 					}
@@ -149,7 +147,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// integer keys from 1 to <see cref="Table.Length"/> and no keys
 		/// outside that range.
 		/// </summary>
-		private static bool IsArray(Table table)
+		private static bool IsArray(LuaTable table)
 		{
 			int len = table.Length;
 
@@ -161,15 +159,15 @@ namespace LLMDesktopAssistant.Scripting
 
 			for (int i = 1; i <= len; i++)
 			{
-				if (!table.Keys.Contains(DynValue.NewNumber(i)))
+				if (!table.Keys.Contains(new LuaNumber(i)))
 					return false;
 			}
 
 			foreach (var key in table.Keys)
 			{
-				if (key.Type != DataType.Number)
+				if (key is not LuaNumber numberKey)
 					return false;
-				double num = key.Number;
+				double num = numberKey.Value;
 				if (num < 1 || num > len || num != Math.Truncate(num))
 					return false;
 			}
@@ -181,14 +179,14 @@ namespace LLMDesktopAssistant.Scripting
 		/// Converts a Lua key to a JSON object key string.
 		/// Returns null for keys that cannot be represented (e.g. table keys).
 		/// </summary>
-		private static string? KeyToString(DynValue key)
+		private static string? KeyToString(LuaValue key)
 		{
-			switch (key.Type)
+			switch (key)
 			{
-				case DataType.String:
-					return key.String;
-				case DataType.Number:
-					return key.Number.ToString(CultureInfo.InvariantCulture);
+				case LuaString str:
+					return str.Value;
+				case LuaNumber num:
+					return num.Value.ToString(CultureInfo.InvariantCulture);
 				default:
 					return null;
 			}

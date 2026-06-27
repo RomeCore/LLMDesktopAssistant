@@ -14,6 +14,8 @@ using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	[LuaApi(chatScoped: true)]
 	public class LuaApiAgents : LuaApiBase
 	{
@@ -409,7 +411,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						var def = toolValue.Table;
 						var cbName = def.Get("name").CastToString();
 						var cbDesc = def.Get("description").CastToString();
-						var cbSchema = StructuredLuaConverter.DynValueToJsonNode(def.Get("parameters"));
+						var cbSchema = StructuredLuaConverter.LuaValueToJsonNode(def.Get("parameters"));
 						var cbCallback = def.Get("callback");
 
 						if (string.IsNullOrEmpty(cbName))
@@ -466,7 +468,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					try
 					{
 						// Convert JSON args → Lua table
-						var luaArgs = StructuredLuaConverter.JsonNodeToDynValue(capturedScript, jsonArgs);
+						var luaArgs = StructuredLuaConverter.JsonNodeToLuaValue(jsonArgs);
 
 						DynValue luaResult;
 						try
@@ -595,7 +597,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		{
 			var toolName = toolCallTable.Get("tool_name").CastToString();
 			var toolCallId = toolCallTable.Get("tool_call_id").CastToString();
-			var arguments = StructuredLuaConverter.DynValueToJsonNode(toolCallTable.Get("arguments")) ?? JsonValue.Create((string?)null)!;
+			var arguments = StructuredLuaConverter.LuaValueToJsonNode(toolCallTable.Get("arguments")) ?? JsonValue.Create((string?)null)!;
 			return new FunctionToolCall(toolCallId, toolName, arguments.ToJsonString());
 		}
 
@@ -644,8 +646,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var resultTable = new Table(script);
 			resultTable["tool_name"] = functionCall.ToolName;
 			resultTable["tool_call_id"] = functionCall.Id;
-			resultTable["arguments"] = StructuredLuaConverter.JsonNodeToDynValue(script, functionCall.Args);
+			resultTable["arguments"] = StructuredLuaConverter.JsonNodeToLuaValue(script, functionCall.Args);
 			return DynValue.NewTable(resultTable);
 		}
 	}
+
+	*/
 }

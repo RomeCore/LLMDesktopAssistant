@@ -9,6 +9,8 @@ using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
+	/*
+
 	[LuaApi(chatScoped: true)]
 	public class LuaApiTemplates : LuaApiBase
 	{
@@ -178,7 +180,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			TemplateDataAccessor context = TemplateNullAccessor.Instance;
 			if (args.Count > 1)
-				context = StructuredLuaConverter.DynValueToLLTSharp(args[1]);
+				context = StructuredLuaConverter.LuaValueToLLTSharp(args[1]);
 
 			var script = ctx.GetScript();
 
@@ -492,4 +494,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return DynValue.NewString(value.ToString() ?? "");
 		}
 	}
+
+	*/
 }

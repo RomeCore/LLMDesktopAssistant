@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using System.Xml.Linq;
+using AsyncLua;
+using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting.Lua;
 using MoonSharp.Interpreter;
@@ -10,12 +12,11 @@ namespace LLMDesktopAssistant.Scripting
 	[ChatService]
 	public class LuaService
 	{
-		private readonly SemaphoreSlim _luaLock = new(1, 1);
-		private readonly Script _lua;
+		private readonly LuaState _lua;
 		private readonly List<string?> _namespaces;
 
-		private readonly Table _globalTableSnapshot;
-		private readonly Dictionary<DataType, Table> _typeMetatablesSnapshot;
+		private readonly LuaTable _globalTableSnapshot;
+		private readonly Dictionary<LuaType, LuaMetatable> _typeMetatablesSnapshot;
 		private readonly List<string?> _namespacesSnapshot;
 		private readonly ILuaUserScriptManager _scriptManager;
 
@@ -24,25 +25,23 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		public IReadOnlyList<string?> Namespaces { get; }
 
-		public LuaService(IEnumerable<LuaApiBase> apis, ILuaUserScriptManager scriptManager)
+		public LuaService(IEnumerable<LuaApiBaseAsync> apis, ILuaUserScriptManager scriptManager)
 		{
-			_lua = new Script(LuaConstants.DefaultModules);
-			_lua.Options.CheckThreadAccess = false;
+			_lua = new LuaState().LoadDefaultLibraries();
 			_namespaces = [ null ];
 			_scriptManager = scriptManager;
 			Namespaces = _namespaces.AsReadOnly();
 
-			_lua.Globals.Set(LuaVariables.NamespaceApiMarker, DynValue.NewBoolean(true));
-			_lua.Globals.Set(LuaVariables.NamespacePartPath, DynValue.NewString(LuaVariables.GlobalTable));
-			_lua.Globals.Set(LuaVariables.NamespaceFullPath, DynValue.NewString(LuaVariables.GlobalTable));
+			_lua.Globals.Set(LuaVariables.NamespaceApiMarker, LuaBoolean.True);
+			_lua.Globals.Set(LuaVariables.NamespacePartPath, new LuaString(LuaVariables.GlobalTable));
+			_lua.Globals.Set(LuaVariables.NamespaceFullPath, new LuaString(LuaVariables.GlobalTable));
 
 			foreach (var api in apis)
 				RegisterApi(api);
 
 			_globalTableSnapshot = _lua.Globals.DeepClone();
 			_namespacesSnapshot = [.. _namespaces];
-			_typeMetatablesSnapshot = LuaConstants.SupportedTypeMetatables
-				.ToDictionary(t => t, t => _lua.GetTypeMetatable(t).DeepClone());
+			_typeMetatablesSnapshot = _lua.TypeMetatables.ToDictionary();
 			RefreshUserScripts();
 
 			_scriptManager.ScriptsChanged += (s, e) =>
@@ -52,35 +51,36 @@ namespace LLMDesktopAssistant.Scripting
 			};
 		}
 
-		private void RegisterApi(LuaApiBase api)
+		private void RegisterApi(LuaApiBaseAsync api)
 		{
 			var globals = _lua.Globals;
 			var ns = api.Namespace != null ? ResolveNamespace(api.Namespace) : globals;
 			api.Populate(globals, ns, this);
 
 			var manuals = ns.Get(LuaVariables.NamespaceManuals);
-			if (manuals.Type != DataType.Table)
+			if (manuals is not LuaTable manualsTable)
 			{
-				manuals = DynValue.NewTable(_lua);
-				ns.Set(LuaVariables.NamespaceManuals, manuals);
+				manualsTable = new LuaTable();
+				ns.Set(LuaVariables.NamespaceManuals, manualsTable);
 			}
 			var apiManuals = api.Manuals;
 			if (apiManuals != null)
-				manuals.Table.Append(DynValue.NewString(apiManuals));
+				manualsTable.Append(new LuaString(apiManuals));
 		}
 
 		private void ResetGlobalTable()
 		{
 			_lua.Globals.Clear();
-			foreach (var kvp in _globalTableSnapshot.Pairs)
+			foreach (var kvp in _globalTableSnapshot.Entries)
 			{
 				var key = kvp.Key;
 				var value = kvp.Value;
 				_lua.Globals.Set(key, value);
 			}
+			_lua.TypeMetatables.Clear();
 			foreach (var kvp in _typeMetatablesSnapshot)
 			{
-				_lua.SetTypeMetatable(kvp.Key, kvp.Value);
+				_lua.TypeMetatables[kvp.Key] = kvp.Value.DeepClone();
 			}
 			_namespaces.Clear();
 			_namespaces.AddRange(_namespacesSnapshot);
@@ -116,7 +116,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		/// <param name="namespaceName">The Lua namespace string to resolve.</param>
 		/// <returns>The resolved Lua table, or null if the namespace does not exist.</returns>
-		public Table? TryResolveNamespace(string namespaceName)
+		public LuaTable? TryResolveNamespace(string namespaceName)
 		{
 			var parts = namespaceName.Split(['.'], StringSplitOptions.RemoveEmptyEntries);
 			var result = _lua.Globals;
@@ -124,9 +124,9 @@ namespace LLMDesktopAssistant.Scripting
 			foreach (var part in parts)
 			{
 				var next = result.Get(part);
-				if (next.Type != DataType.Table)
+				if (next is not LuaTable nextTable)
 					return null;
-				result = next.Table;
+				result = nextTable;
 			}
 
 			return result;
@@ -137,7 +137,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// </summary>
 		/// <param name="namespaceName">The Lua namespace string to resolve.</param>
 		/// <returns>The resolved Lua table.</returns>
-		public Table ResolveNamespace(string namespaceName)
+		public LuaTable ResolveNamespace(string namespaceName)
 		{
 			var parts = namespaceName.Split(['.'], StringSplitOptions.RemoveEmptyEntries);
 			var result = _lua.Globals;
@@ -151,28 +151,25 @@ namespace LLMDesktopAssistant.Scripting
 					accumulatedPath.Append('.');
 				accumulatedPath.Append(part);
 
-				if (next.Type != DataType.Table)
+				if (next is not LuaTable table)
 				{
-					next = DynValue.NewTable(_lua);
-
-					var table = next.Table;
+					table = new LuaTable();
 					_namespaces.Add(accumulatedPath.ToString());
-					table.Set(LuaVariables.NamespaceApiMarker, DynValue.NewBoolean(true));
-					table.Set(LuaVariables.NamespacePartPath, DynValue.NewString(part));
-					table.Set(LuaVariables.NamespaceFullPath, DynValue.NewString(accumulatedPath.ToString()));
+					table.Set(LuaVariables.NamespaceApiMarker, LuaBoolean.True);
+					table.Set(LuaVariables.NamespacePartPath, new LuaString(part));
+					table.Set(LuaVariables.NamespaceFullPath, new LuaString(accumulatedPath.ToString()));
 
 					result.Set(part, next);
 				}
-				else if (!next.Table.Get(LuaVariables.NamespaceApiMarker).CastToBool())
+				else if (!table.Get(LuaVariables.NamespaceApiMarker).ToBoolean())
 				{
-					var table = next.Table;
 					_namespaces.Add(accumulatedPath.ToString());
-					table.Set(LuaVariables.NamespaceApiMarker, DynValue.NewBoolean(true));
-					table.Set(LuaVariables.NamespacePartPath, DynValue.NewString(part));
-					table.Set(LuaVariables.NamespaceFullPath, DynValue.NewString(accumulatedPath.ToString()));
+					table.Set(LuaVariables.NamespaceApiMarker, LuaBoolean.True);
+					table.Set(LuaVariables.NamespacePartPath, new LuaString(part));
+					table.Set(LuaVariables.NamespaceFullPath, new LuaString(accumulatedPath.ToString()));
 				}
 
-				result = next.Table;
+				result = table;
 			}
 
 			return result;
@@ -183,7 +180,7 @@ namespace LLMDesktopAssistant.Scripting
 		/// Used for running concurrent scripts without interfering with each other.
 		/// </summary>
 		/// <returns>A new Lua runtime with a copy of the current global table.</returns>
-		public Script CreateSnapshotRuntime()
+		public LuaState CreateSnapshotRuntime()
 		{
 			return _lua.CreateSnapshot();
 		}
@@ -194,23 +191,18 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="lua">The Lua code to execute.</param>
 		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public DynValue ExecuteSyncronized(string lua, Action<Table>? modifyGlobals = null)
+		public LuaTuple Execute(string lua, Action<LuaTable>? modifyGlobals = null)
 		{
-			_luaLock.Wait();
-			try
+			var globals = _lua.Globals;
+			if (modifyGlobals != null)
 			{
-				var globals = _lua.Globals;
-				if (modifyGlobals != null)
-				{
-					globals = globals.ShallowClone();
-					modifyGlobals(globals);
-				}
-				return _lua.DoString(lua, globals);
+				globals = globals.ShallowClone();
+				modifyGlobals(globals);
 			}
-			finally
+			return _lua.Execute(lua, editContext: ctx =>
 			{
-				_luaLock.Release();
-			}
+				ctx.Globals = globals;
+			});
 		}
 
 		/// <summary>
@@ -220,26 +212,19 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="printOutput">The list to capture output into.</param>
 		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public DynValue ExecuteSyncronized(string lua, Action<string> printOutput, Action<Table>? modifyGlobals = null)
+		public LuaTuple Execute(string lua, Action<string> printOutput, Action<LuaTable>? modifyGlobals = null)
 		{
-			_luaLock.Wait();
-			var prevPrint = _lua.Options.DebugPrint;
-			try
+			var globals = _lua.Globals;
+			if (modifyGlobals != null)
 			{
-				_lua.Options.DebugPrint = printOutput;
-				var globals = _lua.Globals;
-				if (modifyGlobals != null)
-				{
-					globals = globals.ShallowClone();
-					modifyGlobals(globals);
-				}
-				return _lua.DoString(lua, globals);
+				globals = globals.ShallowClone();
+				modifyGlobals(globals);
 			}
-			finally
+			return _lua.Execute(lua, editContext: ctx =>
 			{
-				_luaLock.Release();
-				_lua.Options.DebugPrint = prevPrint;
-			}
+				ctx.Globals = globals;
+				ctx.Print = printOutput;
+			});
 		}
 
 		/// <summary>
@@ -248,23 +233,18 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="lua">The Lua code to execute.</param>
 		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public async Task<DynValue> ExecuteSyncronizedAsync(string lua, Action<Table>? modifyGlobals = null)
+		public Task<LuaTuple> ExecuteAsync(string lua, Action<LuaTable>? modifyGlobals = null)
 		{
-			await _luaLock.WaitAsync();
-			try
+			var globals = _lua.Globals;
+			if (modifyGlobals != null)
 			{
-				var globals = _lua.Globals;
-				if (modifyGlobals != null)
-				{
-					globals = globals.ShallowClone();
-					modifyGlobals(globals);
-				}
-				return _lua.DoString(lua, globals);
+				globals = globals.ShallowClone();
+				modifyGlobals(globals);
 			}
-			finally
+			return _lua.ExecuteAsync(lua, editContext: ctx =>
 			{
-				_luaLock.Release();
-			}
+				ctx.Globals = globals;
+			});
 		}
 
 		/// <summary>
@@ -274,70 +254,19 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="printOutput">The list to capture output into.</param>
 		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public async Task<DynValue> ExecuteSyncronizedAsync(string lua, Action<string> printOutput, Action<Table>? modifyGlobals = null)
+		public Task<LuaTuple> ExecuteAsync(string lua, Action<string> printOutput, Action<LuaTable>? modifyGlobals = null)
 		{
-			await _luaLock.WaitAsync();
-			var prevPrint = _lua.Options.DebugPrint;
-			try
+			var globals = _lua.Globals;
+			if (modifyGlobals != null)
 			{
-				_lua.Options.DebugPrint = printOutput;
-				var globals = _lua.Globals;
-				if (modifyGlobals != null)
-				{
-					globals = globals.ShallowClone();
-					modifyGlobals(globals);
-				}
-				return _lua.DoString(lua, globals);
+				globals = globals.ShallowClone();
+				modifyGlobals(globals);
 			}
-			finally
+			return _lua.ExecuteAsync(lua, editContext: ctx =>
 			{
-				_luaLock.Release();
-				_lua.Options.DebugPrint = prevPrint;
-			}
-		}
-
-		/// <summary>
-		/// Executes the provided Lua code in current Lua runtime snapshot.
-		/// </summary>
-		/// <param name="lua">The Lua code to execute.</param>
-		/// <param name="modifyGlobals">Action used to modify _G table. If not null, the globals will be passed to this action, then passed to Lua.</param>
-		/// <returns>The result of the Lua execution.</returns>
-		public DynValue ExecuteSnapshotted(string lua, Action<Table>? modifyGlobals = null)
-		{
-			var snapshotLua = CreateSnapshotRuntime();
-			try
-			{
-				var globals = snapshotLua.Globals;
-				modifyGlobals?.Invoke(globals);
-				return snapshotLua.DoString(lua, globals);
-			}
-			finally
-			{
-			}
-		}
-
-		/// <summary>
-		/// Executes the provided Lua code in current Lua runtime snapshot and captures any output generated by print statements.
-		/// </summary>
-		/// <param name="lua">The Lua code to execute.</param>
-		/// <param name="printOutput">The list to capture output into.</param>
-		/// <param name="modifyGlobals">Action used to modify _G table. If not null, the globals will be passed to this action, then passed to Lua.</param>
-		/// <returns>The result of the Lua execution.</returns>
-		public DynValue ExecuteSnapshotted(string lua, Action<string> printOutput, Action<Table>? modifyGlobals = null)
-		{
-			var snapshotLua = CreateSnapshotRuntime();
-			var prevPrint = snapshotLua.Options.DebugPrint;
-			try
-			{
-				snapshotLua.Options.DebugPrint = printOutput;
-				var globals = snapshotLua.Globals;
-				modifyGlobals?.Invoke(globals);
-				return snapshotLua.DoString(lua, globals);
-			}
-			finally
-			{
-				snapshotLua.Options.DebugPrint = prevPrint;
-			}
+				ctx.Globals = globals;
+				ctx.Print = printOutput;
+			});
 		}
 	}
 }

@@ -1,20 +1,11 @@
 @inherits LayoutComponentBase
 @inject NavigationManager Navigation
 
-<div class="page @(_isChatPage ? "chat-page" : "")">
-    @if (!_isChatPage)
-    {
-        <div class="sidebar">
-            <NavMenu />
-        </div>
-    }
-
-    <main class="@(_isChatPage ? "chat-main" : "")">
-        <article class="content @(_isChatPage ? "chat-content" : "px-4")">
-            @Body
-        </article>
-    </main>
-</div>
+<main class="chat-main">
+    <article class="content chat-content">
+        @Body
+    </article>
+</main>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -23,10 +14,4 @@
 </div>
 
 @code {
-    private bool _isChatPage = false;
-
-    protected override void OnInitialized()
-    {
-        _isChatPage = Navigation.Uri.EndsWith("/chat") || Navigation.Uri.Contains("/chat");
-    }
 }

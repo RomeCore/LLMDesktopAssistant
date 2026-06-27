@@ -159,9 +159,9 @@ namespace LLMDesktopAssistant.Prompting
 								Log.Warning("PromptRegistry: Duplicate slider found: {Id}, {Lang}", guid, lang.LanguageCode);
 
 							var hintsRaw = template.Metadata.TryGetAdditional<object?[]>("hints") ?? [];
-							var sliderMin = template.Metadata.TryGetAdditional<int>("slider_min");
-							var sliderMax = template.Metadata.TryGetAdditional<int>("slider_max");
-							var sliderDefault = template.Metadata.TryGetAdditional<int>("slider_default");
+							var sliderMin = (int)template.Metadata.TryGetAdditional<double>("slider_min");
+							var sliderMax = (int)template.Metadata.TryGetAdditional<double>("slider_max");
+							var sliderDefault = (int)template.Metadata.TryGetAdditional<double>("slider_default");
 
 							var hints = ImmutableDictionary.CreateBuilder<int, string>();
 							var hintsLength = sliderMin != 0 && sliderMax != 0 ? sliderMax - sliderMin + 1 : hintsRaw.Length;
