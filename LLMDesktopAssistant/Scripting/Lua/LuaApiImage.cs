@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using AsyncLua;
+using AsyncLua.Values;
 using LLMDesktopAssistant.Services.Instances;
-using MoonSharp.Interpreter;
 using SixLabors.ImageSharp;
 
 namespace LLMDesktopAssistant.Scripting.Lua
@@ -13,7 +14,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Registered in the global namespace as "image".
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiImage : LuaApiBase
+	public class LuaApiImage : LuaApiBaseAsync
 	{
 		public override string? Namespace => "image";
 
@@ -159,162 +160,152 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_fileAccess = fileAccess;
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			// Register LuaImage as UserData type for MoonSharp
-			UserData.RegisterType<LuaImage>();
-
-			ns["load"] = DynValue.NewCallback(new CallbackFunction(Load));
-			ns["load_base64"] = DynValue.NewCallback(new CallbackFunction(LoadBase64));
-			ns["load_url"] = DynValue.NewCallback(new CallbackFunction(LoadUrl));
-			ns["create"] = DynValue.NewCallback(new CallbackFunction(Create));
-			ns["from_bytes"] = DynValue.NewCallback(new CallbackFunction(FromBytes));
-			ns["info"] = DynValue.NewCallback(new CallbackFunction(Info));
-			ns["formats"] = DynValue.NewCallback(new CallbackFunction(Formats));
+			ns["load"] = new LuaCallbackFunction(Load);
+			ns["load_base64"] = new LuaCallbackFunction(LoadBase64);
+			ns["load_url"] = new LuaCallbackFunction(LoadUrl);
+			ns["create"] = new LuaCallbackFunction(Create);
+			ns["from_bytes"] = new LuaCallbackFunction(FromBytes);
+			ns["info"] = new LuaCallbackFunction(Info);
+			ns["formats"] = new LuaCallbackFunction(Formats);
 		}
 
-		private DynValue Load(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Load(LuaCallingContext ctx, LuaValue[] args)
 		{
 			try
 			{
-				if (args.Count < 1)
-					throw new ScriptRuntimeException("image.load(path): at least 1 argument expected.");
-				var path = args[0].CastToString();
-				if (string.IsNullOrEmpty(path))
-					throw new ScriptRuntimeException("image.load(path): path must be a non-empty string.");
+				if (args.Length < 1)
+					throw new LuaRuntimeException("image.load(path): at least 1 argument expected.");
+				if (args[0] is not LuaString pathVal || string.IsNullOrEmpty(pathVal.Value))
+					throw new LuaRuntimeException("image.load(path): path must be a non-empty string.");
 
-				var luaImage = LuaImage.Load(_fileAccess, path);
-				return UserData.Create(luaImage);
+				var luaImage = LuaImage.Load(_fileAccess, pathVal.Value);
+				return new LuaTuple(LuaValueConverter.ToLuaValue(luaImage));
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"image.load() error: {ex.Message}");
+				throw new LuaRuntimeException($"image.load() error: {ex.Message}");
 			}
 		}
 
-		private DynValue LoadBase64(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple LoadBase64(LuaCallingContext ctx, LuaValue[] args)
 		{
 			try
 			{
-				if (args.Count < 1)
-					throw new ScriptRuntimeException("image.load_base64(base64): at least 1 argument expected.");
-				var base64 = args[0].CastToString();
-				if (string.IsNullOrEmpty(base64))
-					throw new ScriptRuntimeException("image.load_base64(base64): base64 must be a non-empty string.");
+				if (args.Length < 1)
+					throw new LuaRuntimeException("image.load_base64(base64): at least 1 argument expected.");
+				if (args[0] is not LuaString base64Val)
+					throw new LuaRuntimeException("image.load_base64(): first argument must be a string (base64).");
 
-				var luaImage = LuaImage.LoadBase64(_fileAccess, base64);
-				return UserData.Create(luaImage);
+				var luaImage = LuaImage.LoadBase64(_fileAccess, base64Val.Value);
+				return new LuaTuple(LuaValueConverter.ToLuaValue(luaImage));
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"image.load_base64() error: {ex.Message}");
+				throw new LuaRuntimeException($"image.load_base64() error: {ex.Message}");
 			}
 		}
 
-		private DynValue LoadUrl(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple LoadUrl(LuaCallingContext ctx, LuaValue[] args)
 		{
 			try
 			{
-				if (args.Count < 1)
-					throw new ScriptRuntimeException("image.load_url(url): at least 1 argument expected.");
-				var url = args[0].CastToString();
-				if (string.IsNullOrEmpty(url))
-					throw new ScriptRuntimeException("image.load_url(url): url must be a non-empty string.");
+				if (args.Length < 1)
+					throw new LuaRuntimeException("image.load_url(url): at least 1 argument expected.");
+				if (args[0] is not LuaString urlVal)
+					throw new LuaRuntimeException("image.load_url(): first argument must be a string (URL).");
 
-				var luaImage = LuaImage.LoadUrl(_fileAccess, url);
-				return UserData.Create(luaImage);
+				var luaImage = LuaImage.LoadUrl(_fileAccess, urlVal.Value);
+				return new LuaTuple(LuaValueConverter.ToLuaValue(luaImage));
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"image.load_url() error: {ex.Message}");
+				throw new LuaRuntimeException($"image.load_url() error: {ex.Message}");
 			}
 		}
 
-		private DynValue Create(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Create(LuaCallingContext ctx, LuaValue[] args)
 		{
 			try
 			{
-				if (args.Count < 2)
-					throw new ScriptRuntimeException("image.create(width, height, [color]): at least 2 arguments expected.");
+				if (args.Length < 2)
+					throw new LuaRuntimeException("image.create(width, height, [color]): at least 2 arguments expected.");
+				if (args[0] is not LuaNumber widthVal || args[1] is not LuaNumber heightVal)
+					throw new LuaRuntimeException("image.create(): width and height must be numbers.");
 
-				var widthNum = args[0].CastToNumber();
-				var heightNum = args[1].CastToNumber();
-				if (widthNum == null || heightNum == null)
-					throw new ScriptRuntimeException("image.create(width, height, [color]): width and height must be numbers.");
-				var width = (int)widthNum.Value;
-				var height = (int)heightNum.Value;
-				string? color = args.Count > 2 ? args[2].CastToString() : null;
+				string? color = null;
+				if (args.Length > 2 && args[2] is LuaString colorVal)
+					color = colorVal.Value;
 
-				var luaImage = LuaImage.Create(_fileAccess, width, height, color);
-				return UserData.Create(luaImage);
+				var luaImage = LuaImage.Create(_fileAccess, (int)widthVal.Value, (int)heightVal.Value, color);
+				return new LuaTuple(LuaValueConverter.ToLuaValue(luaImage));
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"image.create() error: {ex.Message}");
+				throw new LuaRuntimeException($"image.create() error: {ex.Message}");
 			}
 		}
 
-		private DynValue FromBytes(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple FromBytes(LuaCallingContext ctx, LuaValue[] args)
 		{
 			try
 			{
-				if (args.Count < 1)
-					throw new ScriptRuntimeException("image.from_bytes(bytes, [format]): at least 1 argument expected.");
+				if (args.Length < 1)
+					throw new LuaRuntimeException("image.from_bytes(bytes, [format]): at least 1 argument expected.");
+				if (args[0] is not LuaString bytesVal)
+					throw new LuaRuntimeException("image.from_bytes(): first argument must be a string (binary data).");
 
-				var bytesStr = args[0].CastToString();
-				if (string.IsNullOrEmpty(bytesStr))
-					throw new ScriptRuntimeException("image.from_bytes(bytes): bytes must be a non-empty string.");
+				string? format = null;
+				if (args.Length > 1 && args[1] is LuaString formatVal)
+					format = formatVal.Value;
 
-				// Convert Lua string (which is just binary data as a string) to byte[]
-				var bytes = System.Text.Encoding.UTF8.GetBytes(bytesStr);
-				// Actually, in MoonSharp, strings can hold binary data directly
-				// We should use the raw string data
-				bytes = System.Text.Encoding.Default.GetBytes(bytesStr);
-
-				string? format = args.Count > 1 ? args[1].CastToString() : null;
+				// Lua string as raw byte data
+				var bytes = System.Text.Encoding.UTF8.GetBytes(bytesVal.Value);
 				var luaImage = LuaImage.FromBytes(_fileAccess, bytes, format);
-				return UserData.Create(luaImage);
+				return new LuaTuple(LuaValueConverter.ToLuaValue(luaImage));
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"image.from_bytes() error: {ex.Message}");
+				throw new LuaRuntimeException($"image.from_bytes() error: {ex.Message}");
 			}
 		}
 
-		private DynValue Info(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Info(LuaCallingContext ctx, LuaValue[] args)
 		{
 			try
 			{
-				if (args.Count < 1)
-					throw new ScriptRuntimeException("image.info(path): at least 1 argument expected.");
-				var path = args[0].CastToString();
-				if (string.IsNullOrEmpty(path))
-					throw new ScriptRuntimeException("image.info(path): path must be a non-empty string.");
+				if (args.Length < 1)
+					throw new LuaRuntimeException("image.info(path): at least 1 argument expected.");
+				if (args[0] is not LuaString pathVal)
+					throw new LuaRuntimeException("image.info(): first argument must be a string (path).");
 
-				var fullPath = _fileAccess.AccessPath(path);
-				return DynValue.NewTable(LuaImage.GetInfo(ctx.GetScript(), fullPath));
+				var fullPath = _fileAccess.AccessPath(pathVal.Value);
+				var info = LuaImage.GetInfo(fullPath);
+				return new LuaTuple(info);
 			}
-			catch (ScriptRuntimeException) { throw; }
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"image.info() error: {ex.Message}");
+				throw new LuaRuntimeException($"image.info() error: {ex.Message}");
 			}
 		}
 
-		private DynValue Formats(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Formats(LuaCallingContext ctx, LuaValue[] args)
 		{
 			try
 			{
-				return DynValue.NewTable(LuaImage.GetFormats(ctx.GetScript()));
+				return new LuaTuple(LuaImage.GetFormats());
 			}
+			catch (LuaRuntimeException) { throw; }
 			catch (Exception ex)
 			{
-				throw new ScriptRuntimeException($"image.formats() error: {ex.Message}");
+				throw new LuaRuntimeException($"image.formats() error: {ex.Message}");
 			}
 		}
 	}

@@ -1,30 +1,30 @@
-using MoonSharp.Interpreter;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using AsyncLua;
+using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	/*
-
 	/// <summary>
 	/// A timer that fires a Lua callback after a delay, optionally repeating.
-	/// Each invocation runs in its own snapshot runtime for isolation.
+	/// Each invocation runs asynchronously.
 	/// </summary>
-	[MoonSharpUserData]
 	public class LuaTimer
 	{
-		private readonly double _intervalMs;
-		private readonly DynValue _callback;
-		private readonly Script _originalScript;
+		private readonly int _intervalMs;
+		private readonly LuaFunction _callback;
+		private readonly LuaCallingContext _context;
 		private CancellationTokenSource? _cts;
 		private Task? _task;
 
-		public LuaTimer(double intervalMs, DynValue callback, Script script, bool isRepeating)
+		public LuaTimer(int intervalMs, LuaFunction callback, LuaCallingContext context, bool isRepeating)
 		{
 			_intervalMs = intervalMs;
 			_callback = callback;
-			_originalScript = script;
+			_context = context;
 			IsRepeating = isRepeating;
 
-			// Auto-start
 			_cts = new CancellationTokenSource();
 			var ct = _cts.Token;
 			_task = Task.Run(() => RunLoopAsync(ct));
@@ -36,19 +36,17 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			{
 				try
 				{
-					await Task.Delay((int)Math.Round(_intervalMs), ct).ConfigureAwait(false);
+					await Task.Delay(_intervalMs, ct).ConfigureAwait(false);
 				}
 				catch (OperationCanceledException) { return; }
 				if (ct.IsCancellationRequested) return;
 
 				try
 				{
-					var snapshot = _originalScript.CreateSnapshot();
-					snapshot.Call(_callback);
+					await _callback.InvokeAsync(_context);
 				}
 				catch
 				{
-					// Callback error — silently ignore for interval timers
 					if (!IsRepeating) return;
 				}
 			}
@@ -81,6 +79,4 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return _task != null && !_task.IsCompleted;
 		}
 	}
-
-	*/
 }

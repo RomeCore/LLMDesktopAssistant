@@ -1,16 +1,16 @@
-using MoonSharp.Interpreter;
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+using AsyncLua.Values;
+using LLMDesktopAssistant.Services.Instances;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Webp;
-using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.PixelFormats;
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-using LLMDesktopAssistant.Services.Instances;
+using SixLabors.ImageSharp.Processing;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -18,7 +18,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Represents an image object exposed to Lua as UserData.
 	/// Wraps SixLabors.ImageSharp.Image with disposal support.
 	/// </summary>
-	[MoonSharpUserData]
 	public sealed class LuaImage : IDisposable
 	{
 		private static readonly HttpClient _httpClient = new() { Timeout = TimeSpan.FromSeconds(30) };
@@ -90,7 +89,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				var stream = await response.Content.ReadAsStreamAsync();
 				var image = Image.Load(stream);
 
-				// Try to detect format from Content-Type or URL
 				var contentType = response.Content.Headers.ContentType?.MediaType;
 				var format = contentType switch
 				{
@@ -130,7 +128,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// <summary>
 		/// Gets image info (width, height, format) without loading the full image into memory.
 		/// </summary>
-		public static Table GetInfo(Script script, string path)
+		public static LuaTable GetInfo(string path)
 		{
 			using var stream = File.OpenRead(path);
 			var info = Image.Identify(stream);
@@ -138,22 +136,22 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				?? Path.GetExtension(path)?.TrimStart('.').ToLowerInvariant()
 				?? "unknown";
 
-			var result = new Table(script);
-			result["width"] = DynValue.NewNumber(info.Width);
-			result["height"] = DynValue.NewNumber(info.Height);
-			result["format"] = DynValue.NewString(format);
+			var result = new LuaTable();
+			result["width"] = new LuaNumber(info.Width);
+			result["height"] = new LuaNumber(info.Height);
+			result["format"] = new LuaString(format);
 			return result;
 		}
 
 		/// <summary>
 		/// Returns a table of supported image formats.
 		/// </summary>
-		public static Table GetFormats(Script script)
+		public static LuaTable GetFormats()
 		{
-			var result = new Table(script);
+			var result = new LuaTable();
 			var formats = new[] { "png", "jpg", "jpeg", "bmp", "gif", "webp" };
 			for (int i = 0; i < formats.Length; i++)
-				result.Set(i + 1, DynValue.NewString(formats[i]));
+				result.Set(i + 1, new LuaString(formats[i]));
 			return result;
 		}
 
@@ -164,7 +162,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// <summary>
 		/// Saves the image to a file.
 		/// </summary>
-		public void Save(string path, Table? optionsTable = null)
+		public void Save(string path, LuaTable? optionsTable = null)
 		{
 			var fullPath = _fileAccess.AccessPath(path);
 
@@ -192,19 +190,19 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// <summary>
 		/// Resizes the image.
 		/// </summary>
-		public void Resize(int width, int height, Table? optionsTable = null)
+		public void Resize(int width, int height, LuaTable? optionsTable = null)
 		{
 			EnsureNotDisposed();
 
 			var mode = ResizeMode.Stretch;
 			if (optionsTable != null)
 			{
-				var modeStr = optionsTable.Get("mode")?.CastToString();
+				var modeStr = optionsTable.Get("mode") is LuaString modeStrVal ? modeStrVal.Value : null;
 				mode = modeStr?.ToLowerInvariant() switch
 				{
 					"stretch" => ResizeMode.Stretch,
-					"contain" => ResizeMode.BoxPad,  // preserve aspect, pad if needed
-					"cover" => ResizeMode.Crop,       // preserve aspect, crop if needed
+					"contain" => ResizeMode.BoxPad,
+					"cover" => ResizeMode.Crop,
 					"pad" => ResizeMode.BoxPad,
 					"crop" => ResizeMode.Crop,
 					_ => ResizeMode.Stretch
@@ -267,13 +265,13 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// <summary>
 		/// Gets image information as a Lua table.
 		/// </summary>
-		public Table GetInfoTable(Script script)
+		public LuaTable GetInfoTable()
 		{
 			EnsureNotDisposed();
-			var result = new Table(script);
-			result["width"] = DynValue.NewNumber(Width);
-			result["height"] = DynValue.NewNumber(Height);
-			result["format"] = DynValue.NewString(Format);
+			var result = new LuaTable();
+			result["width"] = new LuaNumber(Width);
+			result["height"] = new LuaNumber(Height);
+			result["format"] = new LuaString(Format);
 			return result;
 		}
 
@@ -334,24 +332,19 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		{
 			if (bytes.Length < 4) return null;
 
-			// PNG: 89 50 4E 47
 			if (bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47)
 				return "png";
 
-			// JPEG: FF D8 FF
 			if (bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF)
 				return "jpg";
 
-			// WEBP: 52 49 46 46 ... 57 45 42 50
 			if (bytes.Length > 12 && bytes[0] == 0x52 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x46
 				&& bytes[8] == 0x57 && bytes[9] == 0x45 && bytes[10] == 0x42 && bytes[11] == 0x50)
 				return "webp";
 
-			// GIF: 47 49 46 38
 			if (bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x38)
 				return "gif";
 
-			// BMP: 42 4D
 			if (bytes[0] == 0x42 && bytes[1] == 0x4D)
 				return "bmp";
 
@@ -365,7 +358,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			if (color.StartsWith("0x"))
 				return Rgba32.ParseHex(color[2..]);
 
-			// Try parsing as hex directly
 			if (Rgba32.TryParseHex(color, out var parsed))
 				return parsed;
 
@@ -377,12 +369,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			public int? Quality { get; set; }
 		}
 
-		private static ImageSaveOptions OptionsFromTable(Table table)
+		private static ImageSaveOptions OptionsFromTable(LuaTable table)
 		{
 			var opts = new ImageSaveOptions();
 			var quality = table.Get("quality");
-			if (quality.Type == DataType.Number)
-				opts.Quality = (int)quality.Number;
+			if (quality is LuaNumber q)
+				opts.Quality = (int)q.Value;
 			return opts;
 		}
 

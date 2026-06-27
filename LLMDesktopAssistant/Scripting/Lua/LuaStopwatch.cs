@@ -1,12 +1,10 @@
 using System.Diagnostics;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
 	/// <summary>
 	/// A high-resolution stopwatch for measuring elapsed time in Lua scripts.
 	/// </summary>
-	[MoonSharpUserData]
 	public class LuaStopwatch
 	{
 		private readonly Stopwatch _sw;

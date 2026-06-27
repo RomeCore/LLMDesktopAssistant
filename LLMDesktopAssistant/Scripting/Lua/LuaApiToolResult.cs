@@ -1,20 +1,18 @@
 using System.Text.Json.Nodes;
+using AsyncLua;
+using AsyncLua.Values;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
-using ModelContextProtocol.Protocol;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	/*
-
 	/// <summary>
 	/// Lua API for reactive tool result: <c>dass.tool.result.*</c>.
 	/// Provides access to the current tool's <see cref="ReactiveToolResult"/>
 	/// for streaming output, progress updates, status icons, and completion control.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiToolResult : LuaApiBase
+	public class LuaApiToolResult : LuaApiBaseAsync
 	{
 		public override string? Namespace => "dass.tool.result";
 
@@ -141,149 +139,144 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  - Use icon.exists() and icon.list() to explore available icon names.
 			""";
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["available"] = DynValue.NewCallback(Available);
-			ns["get"] = DynValue.NewCallback(Get);
-			ns["write"] = DynValue.NewCallback(Write);
-			ns["write_lines"] = DynValue.NewCallback(WriteLines);
-			ns["set_content"] = DynValue.NewCallback(SetContent);
-			ns["set_progress"] = DynValue.NewCallback(SetProgress);
-			ns["get_progress"] = DynValue.NewCallback(GetProgress);
-			ns["set_status"] = DynValue.NewCallback(SetStatus);
-			ns["set_structured"] = DynValue.NewCallback(SetStructured);
-			ns["use_markdown"] = DynValue.NewCallback(UseMarkdown);
-			ns["complete"] = DynValue.NewCallback(Complete);
-			ns["complete_with_success"] = DynValue.NewCallback(CompleteWithSuccess);
-			ns["complete_with_error"] = DynValue.NewCallback(CompleteWithError);
-			ns["clear"] = DynValue.NewCallback(Clear);
+			ns["available"] = new LuaCallbackFunction(Available);
+			ns["get"] = new LuaCallbackFunction(Get);
+			ns["write"] = new LuaCallbackFunction(Write);
+			ns["write_lines"] = new LuaCallbackFunction(WriteLines);
+			ns["set_content"] = new LuaCallbackFunction(SetContent);
+			ns["set_progress"] = new LuaCallbackFunction(SetProgress);
+			ns["get_progress"] = new LuaCallbackFunction(GetProgress);
+			ns["set_status"] = new LuaCallbackFunction(SetStatus);
+			ns["set_structured"] = new LuaCallbackFunction(SetStructured);
+			ns["use_markdown"] = new LuaCallbackFunction(UseMarkdown);
+			ns["complete"] = new LuaCallbackFunction(Complete);
+			ns["complete_with_success"] = new LuaCallbackFunction(CompleteWithSuccess);
+			ns["complete_with_error"] = new LuaCallbackFunction(CompleteWithError);
+			ns["clear"] = new LuaCallbackFunction(Clear);
 		}
 
-		private static ReactiveToolResult? GetResult(ScriptExecutionContext ctx)
+		private static ReactiveToolResult? GetResult(LuaCallingContext ctx)
 		{
 			return ctx.TryGetReactiveToolResult();
 		}
 
-		private DynValue Available(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Available(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewBoolean(GetResult(ctx) != null);
+			return new LuaTuple(LuaBoolean.FromBoolean(GetResult(ctx) != null));
 		}
 
-		private DynValue Get(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Get(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
 			if (result == null)
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 
-			var script = ctx.GetScript();
-			var table = new Table(script);
+			var table = new LuaTable();
 
-			table["content"] = result.ResultContent;
-			table["is_completed"] = DynValue.NewBoolean(result.Completion.IsCompleted);
+			table["content"] = new LuaString(result.ResultContent);
+			table["is_completed"] = LuaBoolean.FromBoolean(result.Completion.IsCompleted);
 			table["success"] = result.Completion.IsCompleted
-				? DynValue.NewBoolean(result.Completion.Result)
-				: DynValue.Nil;
+				? LuaBoolean.FromBoolean(result.Completion.Result) as LuaValue
+				: LuaNil.Instance;
 			table["progress"] = result.Progress.HasValue
-				? DynValue.NewNumber(result.Progress.Value)
-				: DynValue.Nil;
-			table["progress_min"] = DynValue.NewNumber(result.MinProgress);
-			table["progress_max"] = DynValue.NewNumber(result.MaxProgress);
-			table["status_icon"] = result.StatusIcon?.ToString();
-			table["status_title"] = result.StatusTitle;
-			table["use_markdown"] = DynValue.NewBoolean(result.UseMarkdown);
+				? new LuaNumber(result.Progress.Value) as LuaValue
+				: LuaNil.Instance;
+			table["progress_min"] = new LuaNumber(result.MinProgress);
+			table["progress_max"] = new LuaNumber(result.MaxProgress);
+			if (result.StatusIcon != null)
+				table["status_icon"] = new LuaString(result.StatusIcon.ToString());
+			if (result.StatusTitle != null)
+				table["status_title"] = new LuaString(result.StatusTitle);
+			table["use_markdown"] = LuaBoolean.FromBoolean(result.UseMarkdown);
 
-			return DynValue.NewTable(table);
+			return new LuaTuple(table);
 		}
 
-		private DynValue Write(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Write(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
-			var text = args[0].CastToString();
-			if (result != null && text != null)
-				result.ResultContentLines.Add(text);
-			return DynValue.Nil;
+			if (args.Length > 0 && args[0] is LuaString text && result != null)
+				result.ResultContentLines.Add(text.Value);
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue WriteLines(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple WriteLines(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
 			if (result == null)
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 
-			var lines = args[0];
-			if (lines.Type != DataType.Table)
-				return DynValue.Nil;
-
-			foreach (var value in lines.Table.Values)
+			if (args.Length > 0 && args[0] is LuaTable lines)
 			{
-				var text = value.CastToString();
-				if (text != null)
-					result.ResultContentLines.Add(text);
+				foreach (var value in lines.Values)
+				{
+					if (value is LuaString text)
+						result.ResultContentLines.Add(text.Value);
+				}
 			}
 
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue SetContent(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple SetContent(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
-			var text = args[0].CastToString();
-			if (result != null && text != null)
-				result.ResultContent = text;
-			return DynValue.Nil;
+			if (args.Length > 0 && args[0] is LuaString text && result != null)
+				result.ResultContent = text.Value;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue SetProgress(ScriptExecutionContext ctx, CallbackArguments args)
-		{
-			var result = GetResult(ctx);
-			if (result == null)
-				return DynValue.Nil;
-
-			var value = args[0];
-			if (value.Type == DataType.Number)
-				result.Progress = value.Number;
-			else if (value.IsNil())
-				result.Progress = null;
-
-			// Optional min/max range
-			if (args.Count >= 2 && args[1].Type == DataType.Number)
-				result.MinProgress = args[1].Number;
-			if (args.Count >= 3 && args[2].Type == DataType.Number)
-				result.MaxProgress = args[2].Number;
-
-			return DynValue.Nil;
-		}
-
-		private DynValue GetProgress(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple SetProgress(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
 			if (result == null)
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 
-			var script = ctx.GetScript();
-			var table = new Table(script);
+			if (args.Length > 0)
+			{
+				var value = args[0];
+				if (value is LuaNumber num)
+					result.Progress = num.Value;
+				else if (value is LuaNil)
+					result.Progress = null;
+			}
+
+			if (args.Length >= 2 && args[1] is LuaNumber minNum)
+				result.MinProgress = minNum.Value;
+			if (args.Length >= 3 && args[2] is LuaNumber maxNum)
+				result.MaxProgress = maxNum.Value;
+
+			return new LuaTuple(LuaNil.Instance);
+		}
+
+		private LuaTuple GetProgress(LuaCallingContext ctx, LuaValue[] args)
+		{
+			var result = GetResult(ctx);
+			if (result == null)
+				return new LuaTuple(LuaNil.Instance);
+
+			var table = new LuaTable();
 			table["value"] = result.Progress.HasValue
-				? DynValue.NewNumber(result.Progress.Value)
-				: DynValue.Nil;
-			table["min"] = DynValue.NewNumber(result.MinProgress);
-			table["max"] = DynValue.NewNumber(result.MaxProgress);
-			return DynValue.NewTable(table);
+				? new LuaNumber(result.Progress.Value) as LuaValue
+				: LuaNil.Instance;
+			table["min"] = new LuaNumber(result.MinProgress);
+			table["max"] = new LuaNumber(result.MaxProgress);
+			return new LuaTuple(table);
 		}
 
-		private DynValue SetStatus(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple SetStatus(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
 			if (result == null)
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 
-			var iconArg = args[0].CastToString();
-			var titleArg = args[1].CastToString();
-
-			if (!string.IsNullOrEmpty(iconArg))
+			if (args.Length > 0 && args[0] is LuaString iconArg && !string.IsNullOrEmpty(iconArg.Value))
 			{
 				try
 				{
-					var icon = Enum.Parse<MaterialIconKind>(iconArg, ignoreCase: true);
+					var icon = Enum.Parse<MaterialIconKind>(iconArg.Value, ignoreCase: true);
 					result.StatusIcon = icon;
 				}
 				catch
@@ -292,72 +285,75 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				}
 			}
 
-			if (!string.IsNullOrEmpty(titleArg))
-				result.StatusTitle = titleArg;
+			if (args.Length > 1 && args[1] is LuaString titleArg && !string.IsNullOrEmpty(titleArg.Value))
+				result.StatusTitle = titleArg.Value;
 
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue SetStructured(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple SetStructured(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
 			if (result == null)
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 
-			var data = args[0];
-			if (data.Type != DataType.Table && !data.IsNil())
-				return DynValue.Nil;
+			if (args.Length > 0)
+			{
+				var data = args[0];
+				if (data is LuaTable || data is LuaNil)
+				{
+					var jsonNode = StructuredLuaConverter.LuaValueToJsonNode(data);
+					result.StructuredResult = jsonNode;
+				}
+			}
 
-			var jsonNode = StructuredLuaConverter.LuaValueToJsonNode(data);
-			result.StructuredResult = jsonNode;
-
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue UseMarkdown(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple UseMarkdown(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
 			if (result == null)
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 
-			result.UseMarkdown = args[0].CastToBool();
-			return DynValue.Nil;
+			if (args.Length > 0)
+				result.UseMarkdown = args[0] is LuaBoolean bVal && bVal.Value;
+
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue Complete(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Complete(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
 			if (result == null)
-				return DynValue.Nil;
+				return new LuaTuple(LuaNil.Instance);
 
-			var success = args[0].IsNil() || args[0].CastToBool();
+			var success = args.Length == 0 || args[0] is LuaNil || (args[0] is LuaBoolean bVal && bVal.Value);
 			result.TryComplete(success);
 
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue CompleteWithSuccess(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple CompleteWithSuccess(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
 			result?.TryCompleteWithSuccess();
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue CompleteWithError(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple CompleteWithError(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
 			result?.TryCompleteWithError();
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private DynValue Clear(ScriptExecutionContext ctx, CallbackArguments args)
+		private LuaTuple Clear(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var result = GetResult(ctx);
 			if (result != null)
 				result.ResultContentLines.Clear();
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 	}
-
-	*/
 }

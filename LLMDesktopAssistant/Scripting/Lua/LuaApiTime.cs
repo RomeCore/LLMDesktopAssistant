@@ -4,19 +4,18 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MoonSharp.Interpreter;
+using AsyncLua;
+using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	/*
-
 	/// <summary>
 	/// Lua API for time operations: <c>time.*</c>.
 	/// Provides stopwatch, duration formatting, unit conversion,
 	/// high-resolution timestamps, delays, timers, and execution measurement.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiTime : LuaApiBase
+	public class LuaApiTime : LuaApiBaseAsync
 	{
 		public override string? Namespace => "time";
 
@@ -79,12 +78,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  Creates a new stopwatch object for measuring elapsed time.
 			  Returns: stopwatch userdata with :elapsed(), :elapsed_ns(),
 			            :reset(), and :to_string() methods.
-			""";
 
-		/* REMOVED MANUALS
-		
-			--- time.with_timeout(func, timeout_ms)
-			  Executes a function in a snapshot runtime with a timeout.
+			--- async time.with_timeout(func, timeout_ms)
+			  Executes a function with a timeout.
 			  If the function exceeds the timeout, it is abandoned.
 			  Parameters:
 			    - func: function — the function to execute
@@ -93,10 +89,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - ok: boolean — true if completed within timeout
 			    - elapsed_ms: number — actual execution time
 			    - result or error: any — return value or error message
-		
+
 			--- time.set_timeout(ms, callback)
 			  Schedules a callback to run once after the specified delay.
-			  The callback runs in an isolated snapshot runtime.
+			  The callback runs asynchronously.
 			  Returns: timer userdata with :cancel() and :is_pending() methods.
 			  Example:
 			    local t = time.set_timeout(1000, function()
@@ -106,55 +102,54 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			--- time.set_interval(ms, callback)
 			  Schedules a callback to run repeatedly every `ms` milliseconds.
-			  Each invocation runs in an isolated snapshot runtime.
+			  Each invocation runs asynchronously.
 			  Returns: timer userdata with :cancel() and :is_pending() methods.
 			  Example:
 			    local t = time.set_interval(500, function()
 			      print("tick")
 			    end)
 			    t:cancel()  -- stop the interval
+			""";
 
-		
-
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["now"] = DynValue.NewCallback(Now);
-			ns["now_ms"] = DynValue.NewCallback(NowMs);
-			ns["now_ns"] = DynValue.NewCallback(NowNs);
-			ns["sleep"] = DynValue.NewCallback(Sleep);
-			ns["sleep_until"] = DynValue.NewCallback(SleepUntil);
-			ns["format"] = DynValue.NewCallback(Format);
-			ns["convert"] = DynValue.NewCallback(Convert);
-			ns["measure"] = DynValue.NewCallback(Measure);
-			ns["stopwatch"] = DynValue.NewCallback(NewStopwatch);
-			// These are broken (thanks to moonsharp)
-			// ns["with_timeout"] = DynValue.NewCallback(WithTimeout);
-			// ns["set_timeout"] = DynValue.NewCallback(SetTimeout);
-			// ns["set_interval"] = DynValue.NewCallback(SetInterval);
+			ns["now"] = new LuaCallbackFunction(Now);
+			ns["now_ms"] = new LuaCallbackFunction(NowMs);
+			ns["now_ns"] = new LuaCallbackFunction(NowNs);
+			ns["sleep"] = new LuaCallbackFunction(Sleep);
+			ns["sleep_until"] = new LuaCallbackFunction(SleepUntil);
+			ns["format"] = new LuaCallbackFunction(Format);
+			ns["convert"] = new LuaCallbackFunction(Convert);
+			ns["measure"] = new LuaCallbackFunction(Measure);
+			ns["stopwatch"] = new LuaCallbackFunction(NewStopwatch);
+			ns["with_timeout"] = new LuaCallbackFunction(WithTimeoutAsync);
+			ns["set_timeout"] = new LuaCallbackFunction(SetTimeout);
+			ns["set_interval"] = new LuaCallbackFunction(SetInterval);
 		}
 
-		private static DynValue Now(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Now(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewNumber(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0);
+			return new LuaTuple(new LuaNumber(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0));
 		}
 
-		private static DynValue NowMs(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple NowMs(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewNumber(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+			return new LuaTuple(new LuaNumber(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()));
 		}
 
-		private static DynValue NowNs(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple NowNs(LuaCallingContext ctx, LuaValue[] args)
 		{
-			return DynValue.NewNumber(Stopwatch.GetTimestamp() * 1_000_000_000.0 / Stopwatch.Frequency);
+			return new LuaTuple(new LuaNumber(Stopwatch.GetTimestamp() * 1_000_000_000.0 / Stopwatch.Frequency));
 		}
 
-		private static DynValue Sleep(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Sleep(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("time.sleep(ms): at least 1 argument expected.");
-			var ms = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("time.sleep(): argument must be a number (milliseconds).");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("time.sleep(ms): at least 1 argument expected.");
+			if (args[0] is not LuaNumber msVal)
+				throw new LuaRuntimeException("time.sleep(): argument must be a number (milliseconds).");
 
+			var ms = msVal.Value;
 			if (ms > 0)
 			{
 				var delayMs = (int)Math.Round(ms);
@@ -163,26 +158,100 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				else
 					Thread.SpinWait(1);
 			}
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
 
-		private static DynValue SleepUntil(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple SleepUntil(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("time.sleep_until(timestamp): at least 1 argument expected.");
-			var ts = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("time.sleep_until(): argument must be a number (Unix timestamp).");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("time.sleep_until(timestamp): at least 1 argument expected.");
+			if (args[0] is not LuaNumber tsVal)
+				throw new LuaRuntimeException("time.sleep_until(): argument must be a number (Unix timestamp).");
 
 			var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
-			var diff = ts - now;
+			var diff = tsVal.Value - now;
 			if (diff > 0)
 			{
 				var delayMs = (int)Math.Round(diff * 1000);
 				if (delayMs > 0)
 					Thread.Sleep(delayMs);
 			}
-			return DynValue.Nil;
+			return new LuaTuple(LuaNil.Instance);
 		}
+
+		private static LuaTuple Convert(LuaCallingContext ctx, LuaValue[] args)
+		{
+			if (args.Length < 3)
+				throw new LuaRuntimeException("time.convert(value, from, to): at least 3 arguments expected.");
+			if (args[0] is not LuaNumber valueVal)
+				throw new LuaRuntimeException("time.convert(): first argument must be a number.");
+			if (args[1] is not LuaString fromVal)
+				throw new LuaRuntimeException("time.convert(): second argument must be a string (source unit).");
+			if (args[2] is not LuaString toVal)
+				throw new LuaRuntimeException("time.convert(): third argument must be a string (target unit).");
+
+			var result = FromNanoseconds(ToNanoseconds(valueVal.Value, fromVal.Value.ToLowerInvariant()), toVal.Value.ToLowerInvariant());
+			return new LuaTuple(new LuaNumber(result));
+		}
+
+		private static LuaTuple Format(LuaCallingContext ctx, LuaValue[] args)
+		{
+			if (args.Length < 1)
+				throw new LuaRuntimeException("time.format(ms, [style]): at least 1 argument expected.");
+			if (args[0] is not LuaNumber msVal)
+				throw new LuaRuntimeException("time.format(): first argument must be a number (milliseconds).");
+
+			var style = "auto";
+			if (args.Length > 1 && args[1] is not LuaNil)
+			{
+				if (args[1] is LuaString sVal)
+					style = sVal.Value.ToLowerInvariant();
+			}
+
+			return new LuaTuple(new LuaString(FormatDuration(msVal.Value, style)));
+		}
+
+		private static LuaTuple Measure(LuaCallingContext ctx, LuaValue[] args)
+		{
+			if (args.Length < 1 || args[0] is not LuaFunction func)
+				throw new LuaRuntimeException("time.measure(func): first argument must be a function.");
+
+			var sw = Stopwatch.StartNew();
+
+			LuaTuple result;
+			try { result = func.Invoke(ctx); }
+			catch (Exception ex)
+			{
+				sw.Stop();
+				throw new LuaRuntimeException($"time.measure(): failed after {sw.Elapsed.TotalMilliseconds:F1}ms: {ex.Message}");
+			}
+
+			sw.Stop();
+			var elapsedMs = sw.Elapsed.TotalMilliseconds;
+			var elapsedValue = new LuaNumber(elapsedMs);
+
+			// Return elapsed_ms as first value, then unpack the original function's returns
+			if (result.Count > 1) // multiple return values (tuple)
+			{
+				var returns = new LuaValue[result.Count + 1];
+				returns[0] = elapsedValue;
+				for (int i = 0; i < result.Count; i++)
+					returns[i + 1] = result[i];
+				return new LuaTuple(returns);
+			}
+			if (result.Count == 1 && result[0] is not LuaNil) // single non-nil value
+				return new LuaTuple(elapsedValue, result[0]);
+
+			// nil or empty — return just elapsed time
+			return new LuaTuple(elapsedValue);
+		}
+
+		private static LuaTuple NewStopwatch(LuaCallingContext ctx, LuaValue[] args)
+		{
+			return new LuaTuple(LuaValueConverter.ToLuaValue(new LuaStopwatch()));
+		}
+
+		// --- Helpers ---
 
 		private static double ToNanoseconds(double value, string unit) => unit switch
 		{
@@ -194,7 +263,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			"h" or "hours" => value * 3_600_000_000_000,
 			"d" or "days" => value * 86_400_000_000_000,
 			"wk" or "weeks" => value * 604_800_000_000_000,
-			_ => throw new ScriptRuntimeException($"time.convert(): unknown unit '{unit}'")
+			_ => throw new LuaRuntimeException($"time.convert(): unknown unit '{unit}'")
 		};
 
 		private static double FromNanoseconds(double ns, string unit) => unit switch
@@ -207,39 +276,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			"h" or "hours" => ns / 3_600_000_000_000,
 			"d" or "days" => ns / 86_400_000_000_000,
 			"wk" or "weeks" => ns / 604_800_000_000_000,
-			_ => throw new ScriptRuntimeException($"time.convert(): unknown unit '{unit}'")
+			_ => throw new LuaRuntimeException($"time.convert(): unknown unit '{unit}'")
 		};
-
-		private static DynValue Convert(ScriptExecutionContext ctx, CallbackArguments args)
-		{
-			if (args.Count < 3)
-				throw new ScriptRuntimeException("time.convert(value, from, to): at least 3 arguments expected.");
-			var value = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("time.convert(): first argument must be a number.");
-			var from = args[1].CastToString()
-				?? throw new ScriptRuntimeException("time.convert(): second argument must be a string (source unit).");
-			var to = args[2].CastToString()
-				?? throw new ScriptRuntimeException("time.convert(): third argument must be a string (target unit).");
-
-			return DynValue.NewNumber(FromNanoseconds(ToNanoseconds(value, from.ToLowerInvariant()), to.ToLowerInvariant()));
-		}
-
-		private static DynValue Format(ScriptExecutionContext ctx, CallbackArguments args)
-		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("time.format(ms, [style]): at least 1 argument expected.");
-			var ms = args[0].CastToNumber()
-				?? throw new ScriptRuntimeException("time.format(): first argument must be a number (milliseconds).");
-
-			var style = "auto";
-			if (args.Count > 1 && !args[1].IsNil())
-			{
-				var s = args[1].CastToString();
-				if (s != null) style = s.ToLowerInvariant();
-			}
-
-			return DynValue.NewString(FormatDuration(ms, style));
-		}
 
 		private static string FormatDuration(double ms, string style)
 		{
@@ -360,135 +398,75 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			return $"{totalSeconds / 3600:D2}:{(totalSeconds % 3600) / 60:D2}:{totalSeconds % 60:D2}.{remainingMs:D3}";
 		}
 
-		private static DynValue Measure(ScriptExecutionContext ctx, CallbackArguments args)
+		private static async Task<LuaTuple> WithTimeoutAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1 || args[0].Type != DataType.Function)
-				throw new ScriptRuntimeException("time.measure(func): first argument must be a function.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("time.with_timeout(func, timeout_ms): at least 2 arguments expected.");
+			if (args[0] is not LuaFunction func)
+				throw new LuaRuntimeException("time.with_timeout(): first argument must be a function.");
+			if (args[1] is not LuaNumber timeoutVal)
+				throw new LuaRuntimeException("time.with_timeout(): second argument must be a positive number (timeout in ms).");
 
-			var func = args[0];
-			var script = ctx.GetScript();
+			var timeoutMs = (int)timeoutVal.Value;
 			var sw = Stopwatch.StartNew();
 
-			DynValue result;
-			try { result = script.Call(func); }
-			catch (Exception ex)
-			{
-				sw.Stop();
-				throw new ScriptRuntimeException($"time.measure(): failed after {sw.Elapsed.TotalMilliseconds:F1}ms: {ex.Message}");
-			}
-
+			var invokeTask = func.InvokeAsync(ctx);
+			var delayTask = Task.Delay(timeoutMs);
+			var completed = await Task.WhenAny(invokeTask, delayTask);
 			sw.Stop();
 			var elapsedMs = sw.Elapsed.TotalMilliseconds;
 
-			// Return elapsed_ms as first value, then unpack the original function's returns
-			if (result.Type == DataType.Tuple)
+			if (completed == invokeTask)
 			{
-				var tuple = result.Tuple;
-				var returns = new DynValue[tuple.Length + 1];
-				returns[0] = DynValue.NewNumber(elapsedMs);
-				Array.Copy(tuple, 0, returns, 1, tuple.Length);
-				return DynValue.NewTuple(returns);
-			}
-			if (result.Type != DataType.Nil && result.Type != DataType.Void)
-				return DynValue.NewTuple(DynValue.NewNumber(elapsedMs), result);
+				var result = await invokeTask;
 
-			return DynValue.NewNumber(elapsedMs);
-		}
-
-		private static DynValue WithTimeout(ScriptExecutionContext ctx, CallbackArguments args)
-		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("time.with_timeout(func, timeout_ms): at least 2 arguments expected.");
-			if (args[0].Type != DataType.Function)
-				throw new ScriptRuntimeException("time.with_timeout(): first argument must be a function.");
-			var timeoutMs = args[1].CastToNumber()
-				?? throw new ScriptRuntimeException("time.with_timeout(): second argument must be a positive number (timeout in ms).");
-
-			var func = args[0];
-			var script = ctx.GetScript();
-
-			var sw = Stopwatch.StartNew();
-			DynValue? result = null;
-			Exception? error = null;
-			var cts = new CancellationTokenSource();
-
-			var task = Task.Run(() =>
-			{
-				try { result = script.Call(func.Function); }
-				catch (Exception ex) { error = ex; }
-			}, cts.Token);
-
-			var finished = task.Wait((int)Math.Round(timeoutMs));
-			sw.Stop();
-			var elapsedMs = sw.Elapsed.TotalMilliseconds;
-
-			if (finished)
-			{
-				if (error != null)
-					return DynValue.NewTuple(
-						DynValue.NewBoolean(false),
-						DynValue.NewNumber(elapsedMs),
-						DynValue.NewString(error.Message));
-
-				if (result!.Type == DataType.Tuple)
+				if (result.Count > 1)
 				{
-					var tuple = result.Tuple;
-					var returns = new DynValue[tuple.Length + 2];
-					returns[0] = DynValue.NewBoolean(true);
-					returns[1] = DynValue.NewNumber(elapsedMs);
-					Array.Copy(tuple, 0, returns, 2, tuple.Length);
-					return DynValue.NewTuple(returns);
+					var returns = new LuaValue[result.Count + 2];
+					returns[0] = LuaBoolean.True;
+					returns[1] = new LuaNumber(elapsedMs);
+					for (int i = 0; i < result.Count; i++)
+						returns[i + 2] = result[i];
+					return new LuaTuple(returns);
 				}
+				if (result.Count == 1 && result[0] is not LuaNil)
+					return new LuaTuple(LuaBoolean.True, new LuaNumber(elapsedMs), result[0]);
 
-				if (result.Type != DataType.Nil && result.Type != DataType.Void)
-					return DynValue.NewTuple(
-						DynValue.NewBoolean(true),
-						DynValue.NewNumber(elapsedMs),
-						result);
-
-				return DynValue.NewTuple(
-					DynValue.NewBoolean(true),
-					DynValue.NewNumber(elapsedMs));
+				return new LuaTuple(LuaBoolean.True, new LuaNumber(elapsedMs));
 			}
 			else
 			{
-				cts.Cancel(); // Abandon the background task
-				return DynValue.NewTuple(
-					DynValue.NewBoolean(false),
-					DynValue.NewNumber(elapsedMs),
-					DynValue.NewString($"Timeout exceeded: {FormatAuto(elapsedMs)} (limit was {FormatAuto(timeoutMs)})"));
+				return new LuaTuple(
+					LuaBoolean.False,
+					new LuaNumber(elapsedMs),
+					new LuaString($"Timeout exceeded (limit was {timeoutMs}ms)"));
 			}
 		}
 
-		private static DynValue SetTimeout(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple SetTimeout(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("time.set_timeout(ms, callback): at least 2 arguments expected.");
-			if (args[0].Type != DataType.Number)
-				throw new ScriptRuntimeException("time.set_timeout(): first argument must be a number (milliseconds).");
-			if (args[1].Type != DataType.Function)
-				throw new ScriptRuntimeException("time.set_timeout(): second argument must be a function (callback).");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("time.set_timeout(ms, callback): at least 2 arguments expected.");
+			if (args[0] is not LuaNumber msVal)
+				throw new LuaRuntimeException("time.set_timeout(): first argument must be a number (milliseconds).");
+			if (args[1] is not LuaFunction callback)
+				throw new LuaRuntimeException("time.set_timeout(): second argument must be a function (callback).");
 
-			return UserData.Create(new LuaTimer(args[0].Number, args[1], ctx.GetScript(), isRepeating: false));
+			var timer = new LuaTimer((int)msVal.Value, callback, ctx, isRepeating: false);
+			return new LuaTuple(LuaValueConverter.ToLuaValue(timer));
 		}
 
-		private static DynValue SetInterval(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple SetInterval(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("time.set_interval(ms, callback): at least 2 arguments expected.");
-			if (args[0].Type != DataType.Number)
-				throw new ScriptRuntimeException("time.set_interval(): first argument must be a number (milliseconds).");
-			if (args[1].Type != DataType.Function)
-				throw new ScriptRuntimeException("time.set_interval(): second argument must be a function (callback).");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("time.set_interval(ms, callback): at least 2 arguments expected.");
+			if (args[0] is not LuaNumber msVal)
+				throw new LuaRuntimeException("time.set_interval(): first argument must be a number (milliseconds).");
+			if (args[1] is not LuaFunction callback)
+				throw new LuaRuntimeException("time.set_interval(): second argument must be a function (callback).");
 
-			return UserData.Create(new LuaTimer(args[0].Number, args[1], ctx.GetScript(), isRepeating: true));
-		}
-
-		private static DynValue NewStopwatch(ScriptExecutionContext ctx, CallbackArguments args)
-		{
-			return UserData.Create(new LuaStopwatch());
+			var timer = new LuaTimer((int)msVal.Value, callback, ctx, isRepeating: true);
+			return new LuaTuple(LuaValueConverter.ToLuaValue(timer));
 		}
 	}
-
-	*/
 }

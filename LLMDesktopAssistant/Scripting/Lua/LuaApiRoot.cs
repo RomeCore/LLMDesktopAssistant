@@ -1,18 +1,17 @@
 using System.Reflection;
+using AsyncLua;
+using AsyncLua.Values;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils;
-using MoonSharp.Interpreter;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	/*
-
 	/// <summary>
 	/// Lua API root namespace <c>dass.*</c>.
 	/// Provides application-level utilities: version, help, working directory.
 	/// </summary>
 	[LuaApi(chatScoped: true)]
-	public class LuaApiRoot : LuaApiBase
+	public class LuaApiRoot : LuaApiBaseAsync
 	{
 		private readonly FileAccessService _fileAccess;
 		private static readonly string _version = App.Version.ToString();
@@ -49,14 +48,13 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_fileAccess = fileAccess;
 		}
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["version"] = DynValue.NewCallback(new CallbackFunction((ctx, args) =>
-				DynValue.NewString(_version)));
+			ns["version"] = new LuaCallbackFunction((ctx, args) =>
+				new LuaTuple(new LuaString(_version)));
 
-			ns["help"] = DynValue.NewCallback(new CallbackFunction((ctx, args) =>
+			ns["help"] = new LuaCallbackFunction((ctx, args) =>
 			{
-				var script = ctx.GetScript();
 				var printFunc = globals.Get("print");
 
 				foreach (var nsName in luaService.Namespaces)
@@ -65,27 +63,26 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					var nsTable = nsName != null ? luaService.TryResolveNamespace(nsName) : globals;
 					if (nsTable == null) continue;
 
-					var manuals = nsTable.Get("_manuals");
-					if (manuals.Type != DataType.Table) continue;
+					var manualsValue = nsTable.Get(LuaVariables.NamespaceManuals);
+					if (manualsValue is not LuaTable manualsTable) continue;
 
-					// Print header
-					if (printFunc.Type == DataType.Function)
-						script.Call(printFunc, DynValue.NewString($"\n=== {displayName} ==="));
-
-					foreach (var m in manuals.Table.Values)
+					if (printFunc is LuaFunction printFn)
 					{
-						if (m.Type == DataType.String && printFunc.Type == DataType.Function)
-							script.Call(printFunc, m);
+						printFn.Invoke(ctx, new LuaString($"\n=== {displayName} ==="));
+
+						foreach (var m in manualsTable.Values)
+						{
+							if (m is LuaString)
+								printFn.Invoke(ctx, m);
+						}
 					}
 				}
 
-				return DynValue.Nil;
-			}));
+				return new LuaTuple(LuaNil.Instance);
+			});
 
-			ns["working_dir"] = DynValue.NewCallback(new CallbackFunction((ctx, args) =>
-				DynValue.NewString(_fileAccess.GetWorkingDirectory())));
+			ns["working_dir"] = new LuaCallbackFunction((ctx, args) =>
+				new LuaTuple(new LuaString(_fileAccess.GetWorkingDirectory())));
 		}
 	}
-
-	*/
 }

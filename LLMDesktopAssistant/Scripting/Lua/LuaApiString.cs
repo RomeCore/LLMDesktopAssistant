@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using MoonSharp.Interpreter;
+using AsyncLua;
+using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -12,7 +11,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Supplements the built-in string library with commonly needed functions.
 	/// </summary>
 	[LuaApi(chatScoped: false)]
-	public class LuaApiString : LuaApiBase
+	public class LuaApiString : LuaApiBaseAsync
 	{
 		public override string? Namespace => "string";
 
@@ -97,141 +96,117 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(string.truncate("long text", 6)) -- "long t..."
 			""";
 
-		public override void Populate(Table globals, Table ns, LuaService luaService)
+		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["split"] = DynValue.NewCallback(new CallbackFunction(Split));
-			ns["trim"] = DynValue.NewCallback(new CallbackFunction(Trim));
-			ns["trim_left"] = DynValue.NewCallback(new CallbackFunction(TrimLeft));
-			ns["trim_right"] = DynValue.NewCallback(new CallbackFunction(TrimRight));
-			ns["startswith"] = DynValue.NewCallback(new CallbackFunction(StartsWith));
-			ns["endswith"] = DynValue.NewCallback(new CallbackFunction(EndsWith));
-			ns["contains"] = DynValue.NewCallback(new CallbackFunction(Contains));
-			ns["slug"] = DynValue.NewCallback(new CallbackFunction(Slug));
-			ns["wrap"] = DynValue.NewCallback(new CallbackFunction(Wrap));
-			ns["truncate"] = DynValue.NewCallback(new CallbackFunction(Truncate));
-			ns["pad_left"] = DynValue.NewCallback(new CallbackFunction(PadLeft));
-			ns["pad_right"] = DynValue.NewCallback(new CallbackFunction(PadRight));
-			ns["lines"] = DynValue.NewCallback(new CallbackFunction(Lines));
-			ns["upper_first"] = DynValue.NewCallback(new CallbackFunction(UpperFirst));
+			ns["split"] = new LuaCallbackFunction(Split);
+			ns["trim"] = new LuaCallbackFunction(Trim);
+			ns["trim_left"] = new LuaCallbackFunction(TrimLeft);
+			ns["trim_right"] = new LuaCallbackFunction(TrimRight);
+			ns["startswith"] = new LuaCallbackFunction(StartsWith);
+			ns["endswith"] = new LuaCallbackFunction(EndsWith);
+			ns["contains"] = new LuaCallbackFunction(Contains);
+			ns["slug"] = new LuaCallbackFunction(Slug);
+			ns["wrap"] = new LuaCallbackFunction(Wrap);
+			ns["truncate"] = new LuaCallbackFunction(Truncate);
+			ns["pad_left"] = new LuaCallbackFunction(PadLeft);
+			ns["pad_right"] = new LuaCallbackFunction(PadRight);
+			ns["lines"] = new LuaCallbackFunction(Lines);
+			ns["upper_first"] = new LuaCallbackFunction(UpperFirst);
 		}
 
-		private static DynValue Split(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Split(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("string.split(str, [delimiter]): at least 1 argument expected.");
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("string.split(): first argument must be a string.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("string.split(str, [delimiter]): at least 1 argument expected.");
+			if (args[0] is not LuaString strVal)
+				throw new LuaRuntimeException("string.split(): first argument must be a string.");
 
-			string delimiter = "%s+"; // Lua pattern by default
-			if (args.Count > 1 && !args[1].IsNil())
+			string delimiter = "%s+";
+			if (args.Length > 1 && args[1] is not LuaNil)
 			{
-				var d = args[1].CastToString();
-				if (d == null)
-					throw new ScriptRuntimeException("string.split(): delimiter must be a string.");
-				delimiter = d;
+				if (args[1] is not LuaString dVal)
+					throw new LuaRuntimeException("string.split(): delimiter must be a string.");
+				delimiter = dVal.Value;
 			}
 
 			// Escape Lua magic characters for literal splitting,
 			// but allow Lua patterns if explicitly using % patterns
-			// For literal strings, escape special chars
 			string pattern;
 			if (delimiter.Contains('%'))
-				pattern = delimiter; // user wants Lua pattern
+				pattern = delimiter;
 			else
-				pattern = EscapeLuaPattern(delimiter); // literal split
+				pattern = EscapeLuaPattern(delimiter);
 
-			var result = new Table(ctx.OwnerScript);
-			// Use Lua string.gmatch via MoonSharp
-			var script = ctx.OwnerScript;
-			var gmatchCode = $@"
-local result = {{}}
-for s in string.gmatch({EscapeLuaString(str)}, {EscapeLuaString(pattern)}) do
-    result[#result + 1] = s
-end
-return result
-";
-			// Simpler approach: manual split
-			var parts = SplitByPattern(str, pattern);
+			var result = new LuaTable();
+			var parts = SplitByPattern(strVal.Value, pattern);
 			for (int i = 0; i < parts.Length; i++)
-				result[i + 1] = DynValue.NewString(parts[i]);
+				result[i + 1] = new LuaString(parts[i]);
 
-			return DynValue.NewTable(result);
+			return new LuaTuple(result);
 		}
 
-		private static DynValue Trim(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Trim(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("string.trim(str): at least 1 argument expected.");
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("string.trim(): first argument must be a string.");
-			return DynValue.NewString(str.Trim());
+			if (args.Length < 1)
+				throw new LuaRuntimeException("string.trim(str): at least 1 argument expected.");
+			if (args[0] is not LuaString strVal)
+				throw new LuaRuntimeException("string.trim(): first argument must be a string.");
+			return new LuaTuple(new LuaString(strVal.Value.Trim()));
 		}
 
-		private static DynValue TrimLeft(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple TrimLeft(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("string.trim_left(str): at least 1 argument expected.");
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("string.trim_left(): first argument must be a string.");
-			return DynValue.NewString(str.TrimStart());
+			if (args.Length < 1)
+				throw new LuaRuntimeException("string.trim_left(str): at least 1 argument expected.");
+			if (args[0] is not LuaString strVal)
+				throw new LuaRuntimeException("string.trim_left(): first argument must be a string.");
+			return new LuaTuple(new LuaString(strVal.Value.TrimStart()));
 		}
 
-		private static DynValue TrimRight(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple TrimRight(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("string.trim_right(str): at least 1 argument expected.");
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("string.trim_right(): first argument must be a string.");
-			return DynValue.NewString(str.TrimEnd());
+			if (args.Length < 1)
+				throw new LuaRuntimeException("string.trim_right(str): at least 1 argument expected.");
+			if (args[0] is not LuaString strVal)
+				throw new LuaRuntimeException("string.trim_right(): first argument must be a string.");
+			return new LuaTuple(new LuaString(strVal.Value.TrimEnd()));
 		}
 
-		private static DynValue StartsWith(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple StartsWith(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("string.startswith(str, prefix): at least 2 arguments expected.");
-			var str = args[0].CastToString();
-			var prefix = args[1].CastToString();
-			if (str == null || prefix == null)
-				throw new ScriptRuntimeException("string.startswith(): both arguments must be strings.");
-			return DynValue.NewBoolean(str.StartsWith(prefix));
+			if (args.Length < 2)
+				throw new LuaRuntimeException("string.startswith(str, prefix): at least 2 arguments expected.");
+			if (args[0] is not LuaString strVal || args[1] is not LuaString prefixVal)
+				throw new LuaRuntimeException("string.startswith(): both arguments must be strings.");
+			return new LuaTuple(LuaBoolean.FromBoolean(strVal.Value.StartsWith(prefixVal.Value)));
 		}
 
-		private static DynValue EndsWith(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple EndsWith(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("string.endswith(str, suffix): at least 2 arguments expected.");
-			var str = args[0].CastToString();
-			var suffix = args[1].CastToString();
-			if (str == null || suffix == null)
-				throw new ScriptRuntimeException("string.endswith(): both arguments must be strings.");
-			return DynValue.NewBoolean(str.EndsWith(suffix));
+			if (args.Length < 2)
+				throw new LuaRuntimeException("string.endswith(str, suffix): at least 2 arguments expected.");
+			if (args[0] is not LuaString strVal || args[1] is not LuaString suffixVal)
+				throw new LuaRuntimeException("string.endswith(): both arguments must be strings.");
+			return new LuaTuple(LuaBoolean.FromBoolean(strVal.Value.EndsWith(suffixVal.Value)));
 		}
 
-		private static DynValue Contains(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Contains(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("string.contains(str, substr): at least 2 arguments expected.");
-			var str = args[0].CastToString();
-			var substr = args[1].CastToString();
-			if (str == null || substr == null)
-				throw new ScriptRuntimeException("string.contains(): both arguments must be strings.");
-			return DynValue.NewBoolean(str.Contains(substr));
+			if (args.Length < 2)
+				throw new LuaRuntimeException("string.contains(str, substr): at least 2 arguments expected.");
+			if (args[0] is not LuaString strVal || args[1] is not LuaString substrVal)
+				throw new LuaRuntimeException("string.contains(): both arguments must be strings.");
+			return new LuaTuple(LuaBoolean.FromBoolean(strVal.Value.Contains(substrVal.Value)));
 		}
 
-		private static DynValue Slug(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Slug(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("string.slug(str): at least 1 argument expected.");
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("string.slug(): first argument must be a string.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("string.slug(str): at least 1 argument expected.");
+			if (args[0] is not LuaString strVal)
+				throw new LuaRuntimeException("string.slug(): first argument must be a string.");
 
-			// Transliterate common chars, then slugify
-			var slug = str.ToLowerInvariant();
+			var slug = strVal.Value.ToLowerInvariant();
 			slug = RemoveDiacritics(slug);
 			var sb = new StringBuilder();
 			foreach (char c in slug)
@@ -241,42 +216,37 @@ return result
 				else if (c == ' ' || c == '-' || c == '_' || c == '.' || c == '~')
 					sb.Append('-');
 			}
-			// Collapse multiple hyphens
 			var result = System.Text.RegularExpressions.Regex.Replace(sb.ToString(), "-{2,}", "-");
-			// Trim hyphens from edges
 			result = result.Trim('-');
-			return DynValue.NewString(result);
+			return new LuaTuple(new LuaString(result));
 		}
 
-		private static DynValue Wrap(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Wrap(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("string.wrap(str, [width], [indent]): at least 1 argument expected.");
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("string.wrap(): first argument must be a string.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("string.wrap(str, [width], [indent]): at least 1 argument expected.");
+			if (args[0] is not LuaString strVal)
+				throw new LuaRuntimeException("string.wrap(): first argument must be a string.");
 
 			int width = 80;
-			if (args.Count > 1 && !args[1].IsNil())
+			if (args.Length > 1 && args[1] is not LuaNil)
 			{
-				var w = args[1].CastToNumber();
-				if (w == null)
-					throw new ScriptRuntimeException("string.wrap(): width must be a number.");
-				width = (int)w.Value;
+				if (args[1] is not LuaNumber wVal)
+					throw new LuaRuntimeException("string.wrap(): width must be a number.");
+				width = (int)wVal.Value;
 				if (width < 1)
-					throw new ScriptRuntimeException("string.wrap(): width must be positive.");
+					throw new LuaRuntimeException("string.wrap(): width must be positive.");
 			}
 
 			string indent = "";
-			if (args.Count > 2 && !args[2].IsNil())
+			if (args.Length > 2 && args[2] is not LuaNil)
 			{
-				var ind = args[2].CastToString();
-				if (ind == null)
-					throw new ScriptRuntimeException("string.wrap(): indent must be a string.");
-				indent = ind;
+				if (args[2] is not LuaString indVal)
+					throw new LuaRuntimeException("string.wrap(): indent must be a string.");
+				indent = indVal.Value;
 			}
 
-			var words = str.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+			var words = strVal.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 			var result = new StringBuilder();
 			int lineLen = indent.Length;
 
@@ -298,115 +268,103 @@ return result
 				lineLen += word.Length;
 			}
 
-			return DynValue.NewString(result.ToString());
+			return new LuaTuple(new LuaString(result.ToString()));
 		}
 
-		private static DynValue Truncate(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Truncate(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("string.truncate(str, max_len, [suffix]): at least 2 arguments expected.");
-			var str = args[0].CastToString();
-			var maxLenVal = args[1].CastToNumber();
-			if (str == null || maxLenVal == null)
-				throw new ScriptRuntimeException("string.truncate(): first two arguments must be string and number.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("string.truncate(str, max_len, [suffix]): at least 2 arguments expected.");
+			if (args[0] is not LuaString strVal || args[1] is not LuaNumber maxLenVal)
+				throw new LuaRuntimeException("string.truncate(): first two arguments must be string and number.");
 			int maxLen = (int)maxLenVal.Value;
 
 			string suffix = "...";
-			if (args.Count > 2 && !args[2].IsNil())
+			if (args.Length > 2 && args[2] is not LuaNil)
 			{
-				var s = args[2].CastToString();
-				if (s == null)
-					throw new ScriptRuntimeException("string.truncate(): suffix must be a string.");
-				suffix = s;
+				if (args[2] is not LuaString sVal)
+					throw new LuaRuntimeException("string.truncate(): suffix must be a string.");
+				suffix = sVal.Value;
 			}
 
-			if (str.Length <= maxLen)
-				return DynValue.NewString(str);
+			if (strVal.Value.Length <= maxLen)
+				return new LuaTuple(new LuaString(strVal.Value));
 
 			if (maxLen <= suffix.Length)
-				return DynValue.NewString(str.Substring(0, maxLen));
+				return new LuaTuple(new LuaString(strVal.Value.Substring(0, maxLen)));
 
-			return DynValue.NewString(str.Substring(0, maxLen - suffix.Length) + suffix);
+			return new LuaTuple(new LuaString(strVal.Value.Substring(0, maxLen - suffix.Length) + suffix));
 		}
 
-		private static DynValue PadLeft(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple PadLeft(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("string.pad_left(str, total_width, [char]): at least 2 arguments expected.");
-			var str = args[0].CastToString();
-			var widthVal = args[1].CastToNumber();
-			if (str == null || widthVal == null)
-				throw new ScriptRuntimeException("string.pad_left(): first two arguments must be string and number.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("string.pad_left(str, total_width, [char]): at least 2 arguments expected.");
+			if (args[0] is not LuaString strVal || args[1] is not LuaNumber widthVal)
+				throw new LuaRuntimeException("string.pad_left(): first two arguments must be string and number.");
 			int width = (int)widthVal.Value;
 
 			char padChar = ' ';
-			if (args.Count > 2 && !args[2].IsNil())
+			if (args.Length > 2 && args[2] is not LuaNil)
 			{
-				var pc = args[2].CastToString();
-				if (pc == null || pc.Length == 0)
-					throw new ScriptRuntimeException("string.pad_left(): pad char must be a non-empty string.");
-				padChar = pc[0];
+				if (args[2] is not LuaString pcVal || string.IsNullOrEmpty(pcVal.Value))
+					throw new LuaRuntimeException("string.pad_left(): pad char must be a non-empty string.");
+				padChar = pcVal.Value[0];
 			}
 
-			return DynValue.NewString(str.PadLeft(width, padChar));
+			return new LuaTuple(new LuaString(strVal.Value.PadLeft(width, padChar)));
 		}
 
-		private static DynValue PadRight(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple PadRight(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 2)
-				throw new ScriptRuntimeException("string.pad_right(str, total_width, [char]): at least 2 arguments expected.");
-			var str = args[0].CastToString();
-			var widthVal = args[1].CastToNumber();
-			if (str == null || widthVal == null)
-				throw new ScriptRuntimeException("string.pad_right(): first two arguments must be string and number.");
+			if (args.Length < 2)
+				throw new LuaRuntimeException("string.pad_right(str, total_width, [char]): at least 2 arguments expected.");
+			if (args[0] is not LuaString strVal || args[1] is not LuaNumber widthVal)
+				throw new LuaRuntimeException("string.pad_right(): first two arguments must be string and number.");
 			int width = (int)widthVal.Value;
 
 			char padChar = ' ';
-			if (args.Count > 2 && !args[2].IsNil())
+			if (args.Length > 2 && args[2] is not LuaNil)
 			{
-				var pc = args[2].CastToString();
-				if (pc == null || pc.Length == 0)
-					throw new ScriptRuntimeException("string.pad_right(): pad char must be a non-empty string.");
-				padChar = pc[0];
+				if (args[2] is not LuaString pcVal || string.IsNullOrEmpty(pcVal.Value))
+					throw new LuaRuntimeException("string.pad_right(): pad char must be a non-empty string.");
+				padChar = pcVal.Value[0];
 			}
 
-			return DynValue.NewString(str.PadRight(width, padChar));
+			return new LuaTuple(new LuaString(strVal.Value.PadRight(width, padChar)));
 		}
 
-		private static DynValue Lines(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple Lines(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("string.lines(str): at least 1 argument expected.");
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("string.lines(): first argument must be a string.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("string.lines(str): at least 1 argument expected.");
+			if (args[0] is not LuaString strVal)
+				throw new LuaRuntimeException("string.lines(): first argument must be a string.");
 
-			var lines = str.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-			var result = new Table(ctx.OwnerScript);
+			var lines = strVal.Value.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+			var result = new LuaTable();
 			for (int i = 0; i < lines.Length; i++)
-				result[i + 1] = DynValue.NewString(lines[i]);
-			return DynValue.NewTable(result);
+				result[i + 1] = new LuaString(lines[i]);
+			return new LuaTuple(result);
 		}
 
-		private static DynValue UpperFirst(ScriptExecutionContext ctx, CallbackArguments args)
+		private static LuaTuple UpperFirst(LuaCallingContext ctx, LuaValue[] args)
 		{
-			if (args.Count < 1)
-				throw new ScriptRuntimeException("string.upper_first(str): at least 1 argument expected.");
-			var str = args[0].CastToString();
-			if (str == null)
-				throw new ScriptRuntimeException("string.upper_first(): first argument must be a string.");
+			if (args.Length < 1)
+				throw new LuaRuntimeException("string.upper_first(str): at least 1 argument expected.");
+			if (args[0] is not LuaString strVal)
+				throw new LuaRuntimeException("string.upper_first(): first argument must be a string.");
 
-			if (string.IsNullOrEmpty(str))
-				return DynValue.NewString(str);
+			if (string.IsNullOrEmpty(strVal.Value))
+				return new LuaTuple(new LuaString(strVal.Value));
 
-			return DynValue.NewString(char.ToUpperInvariant(str[0]) + str.Substring(1));
+			return new LuaTuple(new LuaString(char.ToUpperInvariant(strVal.Value[0]) + strVal.Value.Substring(1)));
 		}
 
 		// --- Helpers ---
 
 		private static string EscapeLuaPattern(string s)
 		{
-			// Escape Lua magic characters: ^ $ ( ) % . [ ] * + - ?
 			return s.Replace("\\", "\\\\")
 					.Replace("^", "\\^")
 					.Replace("$", "\\$")
@@ -424,7 +382,6 @@ return result
 
 		private static string EscapeLuaString(string s)
 		{
-			// Escape a string for Lua code generation
 			return "\"" + s.Replace("\\", "\\\\")
 						   .Replace("\"", "\\\"")
 						   .Replace("\n", "\\n")
@@ -434,23 +391,17 @@ return result
 
 		private static string[] SplitByPattern(string str, string pattern)
 		{
-			// Simple split by literal string (not Lua pattern)
 			if (pattern.StartsWith("\\"))
 			{
-				// Remove escaping for simple matching
 				var unescaped = pattern.Replace("\\", "");
 				if (string.IsNullOrEmpty(unescaped))
 					return [str];
 				return str.Split(new[] { unescaped }, StringSplitOptions.None);
 			}
 
-			// For Lua patterns, fall back to regex approximation
-			// This is a simplification — for full Lua pattern support,
-			// we'd need to call Lua engine
 			if (pattern == "%s+")
 				return str.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
-			// Default: split by literal
 			return str.Split(new[] { pattern }, StringSplitOptions.None);
 		}
 
