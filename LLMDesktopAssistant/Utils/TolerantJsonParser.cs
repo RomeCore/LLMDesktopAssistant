@@ -297,6 +297,8 @@ namespace LLMDesktopAssistant.Utils
 		/// <returns>A JSON node or null if the JSON value means null.</returns>
 		public static JsonNode? Parse(string input)
 		{
+			if (input is null)
+				return null;
 			return _parser.Parse<JsonNode?>(input);
 		}
 
@@ -308,6 +310,11 @@ namespace LLMDesktopAssistant.Utils
 		/// <returns>True if the parsing succeeds; otherwise, false.</returns>
 		public static bool TryParse(string input, out JsonNode? result)
 		{
+			if (input is null)
+			{
+				result = null;
+				return false;
+			}
 			return _parser.TryParse(input, out result);
 		}
 	}

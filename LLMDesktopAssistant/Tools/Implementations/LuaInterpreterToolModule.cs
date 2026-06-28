@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "lua-execute",
 					DescriptionGetter = () => $"""
 						# MAIN INFO
-						Lua is executing using AsyncLua v0.2.2 (Lua 5.5).
+						Lua is executing using AsyncLua 5.5+{typeof(LuaState).Assembly.GetName().Version?.ToString() ?? ""}.
 						Executes Lua and returns the script result along with messages printed by 'print' function
 						(the `dass.tool.result.write` works in a similar way).
 						Lua has the API to interact with the application (called dASS) with these namespaces:
@@ -34,6 +34,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 							return 'done'
 						end
 						print(await doWork())
+						For full AsyncLua manuals see `print(manuals(asynclua))`
 
 						# SMART UX WITH STREAMING AND STATUS ICONS/TITLES
 						You can also use the `dass.tool.result` for streaming output, progress and status
@@ -139,7 +140,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						});
 					}
 
-					reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToString());
 					reactiveResult.TryCompleteWithSuccess();
 				}
 				catch (LuaRuntimeException srex)

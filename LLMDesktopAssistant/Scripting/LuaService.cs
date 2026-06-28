@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using AsyncLua;
 using AsyncLua.Values;
+using DocumentFormat.OpenXml.Office2016.Drawing.Charts;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting.Lua;
 using Serilog;
@@ -156,8 +157,7 @@ namespace LLMDesktopAssistant.Scripting
 					table.Set(LuaVariables.NamespaceApiMarker, LuaBoolean.True);
 					table.Set(LuaVariables.NamespacePartPath, new LuaString(part));
 					table.Set(LuaVariables.NamespaceFullPath, new LuaString(accumulatedPath.ToString()));
-
-					result.Set(part, next);
+					result.Set(part, table);
 				}
 				else if (!table.Get(LuaVariables.NamespaceApiMarker).ToBoolean())
 				{

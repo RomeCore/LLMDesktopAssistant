@@ -22,7 +22,7 @@
 - **Human-in-the-Loop** — file pickers, confirmation dialogs, choice selection
 - **Time utilities** — get current time, wait/delays
 - **Python execution** — Python execution in isolated or shared environments
-- **Lua scripting** — scriptable via MoonSharp Lua interpreter
+- **Lua scripting** — scriptable via AsyncLua (async/await Lua interpreter with full dASS API bindings)
 - **Meta tools** — dynamic tools that can be created by LLM using Python
 
 ### 🌐 MCP Support (Model Context Protocol)
@@ -133,7 +133,7 @@ The application uses a settings system stored in the configured directories (see
 | **Serilog** | Logging |
 | **Markdig** | Markdown parsing |
 | **LiveMarkdown.Avalonia** | Rich markdown rendering |
-| **MoonSharp** | Lua scripting |
+| **AsyncLua** | Lua scripting (async/await, integrated dASS API) |
 | **Whisper.net** | Speech recognition |
 | **System.Speech** | TTS on Windows |
 | **NAudio** | Audio playback |

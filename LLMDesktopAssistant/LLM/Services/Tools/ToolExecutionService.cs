@@ -91,6 +91,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 			try
 			{
+				cancellationToken.ThrowIfCancellationRequested();
+
 				JsonNode? parsedArgs = null;
 				var toolExecutionContext = new ToolExecutionContext
 				{
@@ -133,6 +135,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						Log.Debug(ex, "Error during preview execution of tool '{ToolName}': {ExceptionMessage}", toolCall.ToolName, ex.Message);
 					}
 				}
+
+				cancellationToken.ThrowIfCancellationRequested();
 
 				toolCall.ExpectedBehaviour ??= toolInfo.DefaultExpectedBehaviour;
 
@@ -245,6 +249,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					Log.Error(ex, "Error parsing tool arguments. Arguments: {Args}.", toolCall.Arguments);
 					throw;
 				}
+
+				cancellationToken.ThrowIfCancellationRequested();
 
 				toolCall.StatusIcon = null;
 				toolCall.StatusTitle = null;
