@@ -17,7 +17,7 @@ namespace LLMDesktopAssistant.ApiKeys
 	{
 		private const string KeyFileName = "api_keys.aes";
 		private const int AesKeySizeBits = 256;
-		private const int AesIvSizeBytes = 16; // AES block size
+		private const int AesIvSizeBytes = 16;
 
 		private readonly ApiKeysConfiguration _configuration;
 		private readonly byte[] _aesKey;
@@ -184,7 +184,7 @@ namespace LLMDesktopAssistant.ApiKeys
 		{
 			using var aes = Aes.Create();
 			aes.Key = _aesKey;
-			aes.GenerateIV(); // fresh IV per encryption
+			aes.GenerateIV();
 
 			using var encryptor = aes.CreateEncryptor();
 			var plaintextBytes = System.Text.Encoding.UTF8.GetBytes(plaintext);
