@@ -43,9 +43,11 @@ namespace LLMDesktopAssistant.Services
 			CheckInitialized();
 
 			var originalCollection = _serviceProvider.GetRequiredKeyedService<IServiceCollection>(ServiceKeys.AppServices);
-			foreach (var service in originalCollection)
-				if (!service.IsKeyedService)
-					services.AddSingleton(service.ServiceType, _serviceProvider.GetRequiredService(service.ServiceType));
+			var serviceTypes = originalCollection.Select(s => s.ServiceType).Distinct();
+			var servicesToAdd = serviceTypes.SelectMany(t => _serviceProvider.GetServices(t).Select(s => (t, s))).Distinct();
+			foreach (var (serviceType, service) in servicesToAdd)
+				if (service != null)
+					services.AddSingleton(serviceType, service);
 
 			return services;
 		}

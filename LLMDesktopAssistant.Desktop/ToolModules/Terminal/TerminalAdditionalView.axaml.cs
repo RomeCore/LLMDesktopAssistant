@@ -16,6 +16,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 	public partial class TerminalAdditionalView : UserControl
 	{
 		private TerminalAdditionalViewModel? _viewModel;
+		private bool _isRunning;
 		private CancellationTokenSource? _cts;
 		private IDisposable? _killUnsub;
 
@@ -45,14 +46,15 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 
 		private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			// React to ViewModel state changes if needed
+			
 		}
 
 		private async void OnLoaded(object? sender, RoutedEventArgs e)
 		{
-			if (_viewModel == null || Terminal == null)
+			if (_viewModel == null || Terminal == null || _isRunning)
 				return;
 
+			_isRunning = true;
 			_cts = CancellationTokenSource.CreateLinkedTokenSource(_viewModel.CancellationToken);
 			_viewModel.SetCancellationTokenSource(_cts);
 

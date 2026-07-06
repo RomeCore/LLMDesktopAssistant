@@ -1255,7 +1255,22 @@
     <value>Только по упоминанию</value>
   </data>
   <data name="stage_type_adaptive" xml:space="preserve">
-    <value>Адаптивный (LLM выбирает)</value>
+    <value>Адаптивный</value>
+  </data>
+  <data name="stage_type_round_robin" xml:space="preserve">
+    <value>По кругу</value>
+  </data>
+  <data name="settings_stage_min_cycles" xml:space="preserve">
+    <value>Мин. циклов</value>
+  </data>
+  <data name="settings_stage_max_cycles" xml:space="preserve">
+    <value>Макс. циклов</value>
+  </data>
+  <data name="settings_stage_can_agents_be_skipped" xml:space="preserve">
+    <value>Пропускать агентов (по весу)</value>
+  </data>
+  <data name="settings_stage_weight_tooltip" xml:space="preserve">
+    <value>Вероятность выбора агента (0 = всегда пропускать, 1 = никогда не пропускать)</value>
   </data>
   <data name="settings_stage_enable_mentions" xml:space="preserve">
     <value>Включить @упоминания</value>

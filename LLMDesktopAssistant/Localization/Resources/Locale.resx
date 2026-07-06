@@ -1255,7 +1255,22 @@
     <value>Mention only</value>
   </data>
   <data name="stage_type_adaptive" xml:space="preserve">
-    <value>Adaptive (LLM selects)</value>
+    <value>Adaptive</value>
+  </data>
+  <data name="stage_type_round_robin" xml:space="preserve">
+    <value>Round Robin</value>
+  </data>
+  <data name="settings_stage_min_cycles" xml:space="preserve">
+    <value>Min cycles</value>
+  </data>
+  <data name="settings_stage_max_cycles" xml:space="preserve">
+    <value>Max cycles</value>
+  </data>
+  <data name="settings_stage_can_agents_be_skipped" xml:space="preserve">
+    <value>Can agents be skipped (by weight)</value>
+  </data>
+  <data name="settings_stage_weight_tooltip" xml:space="preserve">
+    <value>Probability of being selected (0 = always skipped, 1 = never skipped)</value>
   </data>
   <data name="settings_stage_enable_mentions" xml:space="preserve">
     <value>Enable @mentions</value>

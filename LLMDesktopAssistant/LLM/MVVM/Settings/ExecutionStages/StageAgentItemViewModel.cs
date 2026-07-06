@@ -46,6 +46,27 @@ public class RandomStageAgentViewModel : StageAgentItemViewModelBase
 }
 
 /// <summary>
+/// ViewModel for an agent inside a round-robin stage.
+/// Supports ordering (move up/down) and weight display.
+/// </summary>
+public class RoundRobinStageAgentViewModel : StageAgentItemViewModelBase
+{
+	public IRelayCommand MoveUpCommand { get; }
+	public IRelayCommand MoveDownCommand { get; }
+	public IRelayCommand RemoveCommand { get; }
+
+	public RoundRobinStageAgentViewModel(
+		Action<RoundRobinStageAgentViewModel> onMoveUp,
+		Action<RoundRobinStageAgentViewModel> onMoveDown,
+		Action<RoundRobinStageAgentViewModel> onRemove)
+	{
+		MoveUpCommand = new RelayCommand<RoundRobinStageAgentViewModel>(_ => onMoveUp(this));
+		MoveDownCommand = new RelayCommand<RoundRobinStageAgentViewModel>(_ => onMoveDown(this));
+		RemoveCommand = new RelayCommand<RoundRobinStageAgentViewModel>(_ => onRemove(this));
+	}
+}
+
+/// <summary>
 /// ViewModel for an agent inside a mention-only stage or adaptive stage.
 /// No weight, no ordering — just enabled/disabled with remove.
 /// </summary>

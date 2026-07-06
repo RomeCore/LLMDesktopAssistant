@@ -115,6 +115,14 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 							rnd.AgentInstances.RemoveAt(i);
 					}
 				}
+				else if (stage is RoundRobinAgentExecutionStage rr)
+				{
+					for (int i = rr.AgentInstances.Count - 1; i >= 0; i--)
+					{
+						if (rr.AgentInstances[i].AgentId == agent.Id)
+							rr.AgentInstances.RemoveAt(i);
+					}
+				}
 			}
 
 			RefreshAgentList();

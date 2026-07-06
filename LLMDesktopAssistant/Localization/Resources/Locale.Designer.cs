@@ -4228,6 +4228,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Can agents be skipped (by weight).
+        /// </summary>
+        public static string settings_stage_can_agents_be_skipped {
+            get {
+                return ResourceManager.GetString("settings_stage_can_agents_be_skipped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Can agents execute again.
         /// </summary>
         public static string settings_stage_can_agents_execute_again {
@@ -4246,6 +4255,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Max cycles.
+        /// </summary>
+        public static string settings_stage_max_cycles {
+            get {
+                return ResourceManager.GetString("settings_stage_max_cycles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Max iterations.
         /// </summary>
         public static string settings_stage_max_iterations {
@@ -4260,6 +4278,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_stage_mentionable_agents {
             get {
                 return ResourceManager.GetString("settings_stage_mentionable_agents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Min cycles.
+        /// </summary>
+        public static string settings_stage_min_cycles {
+            get {
+                return ResourceManager.GetString("settings_stage_min_cycles", resourceCulture);
             }
         }
         
@@ -4305,6 +4332,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_stage_stop_chance {
             get {
                 return ResourceManager.GetString("settings_stage_stop_chance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Probability of being selected (0 = always skipped, 1 = never skipped).
+        /// </summary>
+        public static string settings_stage_weight_tooltip {
+            get {
+                return ResourceManager.GetString("settings_stage_weight_tooltip", resourceCulture);
             }
         }
         
@@ -4390,7 +4426,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Adaptive (LLM selects).
+        ///   Ищет локализованную строку, похожую на Adaptive.
         /// </summary>
         public static string stage_type_adaptive {
             get {
@@ -4413,6 +4449,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string stage_type_random {
             get {
                 return ResourceManager.GetString("stage_type_random", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Round Robin.
+        /// </summary>
+        public static string stage_type_round_robin {
+            get {
+                return ResourceManager.GetString("stage_type_round_robin", resourceCulture);
             }
         }
         

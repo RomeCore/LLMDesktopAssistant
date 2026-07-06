@@ -19,22 +19,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 		public ChatAgentSettings AgentSettings { get; }
 		public IAgentManagementService AgentManager { get; }
 
-		/// <summary>
-		/// Available stage types for the ComboBox in the header.
-		/// </summary>
-		public List<StageTypeOption> AvailableStageTypes { get; } =
-		[
-			StageTypeOption.Sequential,
-			StageTypeOption.Random,
-			StageTypeOption.MentionOnly,
-			StageTypeOption.Adaptive
-		];
-
 		public RangeObservableCollection<StageContainerViewModel> Stages { get; } = [];
 
 		public IRelayCommand AddStageCommand { get; }
-
-
 
 		public ChatExecutionStagesSettingsViewModel(
 			ChatAgentSettings agentSettings,
@@ -62,8 +49,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 		{
 			var container = new StageContainerViewModel(
 				this,
-				stage,
-				AvailableStageTypes);
+				stage);
 
 			return container;
 		}

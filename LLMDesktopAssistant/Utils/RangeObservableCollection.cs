@@ -376,14 +376,10 @@ namespace LLMDesktopAssistant.Utils
 			if (oldIndex < 0 || oldIndex >= _count)
 				throw new ArgumentOutOfRangeException(nameof(oldIndex));
 
-			int insertIndex = newIndex;
-			if (insertIndex > oldIndex)
-				insertIndex--;
-
-			if (insertIndex < 0 || insertIndex >= _count)
+			if (newIndex < 0 || newIndex >= _count)
 				throw new ArgumentOutOfRangeException(nameof(oldIndex));
 
-			if (newIndex == oldIndex || (newIndex > oldIndex && newIndex <= oldIndex + 1))
+			if (newIndex == oldIndex)
 				return;
 
 			T item;
@@ -392,7 +388,7 @@ namespace LLMDesktopAssistant.Utils
 			{
 				item = _items[oldIndex];
 				_items.RemoveAt(oldIndex);
-				_items.Insert(insertIndex, item);
+				_items.Insert(newIndex, item);
 			}
 
 			RaiseChangedEvents(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, item, newIndex, oldIndex));

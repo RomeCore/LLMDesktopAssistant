@@ -13,6 +13,7 @@ public static class StageViewModelFactory
 			RandomAgentExecutionStage random => new RandomStageViewModel(random, agentManager),
 			MentionOnlyAgentExecutionStage mention => new MentionOnlyStageViewModel(mention, agentManager),
 			AdaptiveAgentExecutionStage adaptive => new AdaptiveStageViewModel(adaptive, agentManager),
+		RoundRobinAgentExecutionStage roundRobin => new RoundRobinStageViewModel(roundRobin, agentManager),
 			_ => throw new ArgumentException($"Unknown stage type: {stage.GetType()}")
 		};
 	}

@@ -1,0 +1,131 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages.RoundRobinStageView"
+			 x:DataType="local:RoundRobinStageViewModel"
+			 x:Name="Root">
+
+	<StackPanel>
+
+		<!-- Round-robin cycle settings -->
+		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto"
+			  Margin="0,0,0,8">
+
+			<TextBlock Grid.Row="0" Grid.Column="0" 
+					   Text="{loc:Loc settings_stage_can_agents_be_skipped}"
+					   VerticalAlignment="Center" Margin="0,0,8,4"/>
+			<CheckBox Grid.Row="0" Grid.Column="1"
+					  IsChecked="{Binding RoundRobinStage.CanAgentsBeSkipped}"
+					  VerticalAlignment="Center" Margin="0,0,0,4"/>
+
+			<TextBlock Grid.Row="1" Grid.Column="0" 
+					   Text="{loc:Loc settings_stage_min_cycles}"
+					   VerticalAlignment="Center" Margin="0,0,8,4"/>
+			<NumericUpDown Grid.Row="1" Grid.Column="1"
+						   Value="{Binding RoundRobinStage.MinCycles}"
+						   Minimum="-1"
+						   Margin="0,0,0,4"/>
+
+			<TextBlock Grid.Row="2" Grid.Column="0" 
+					   Text="{loc:Loc settings_stage_max_cycles}"
+					   VerticalAlignment="Center" Margin="0,0,8,4"/>
+			<NumericUpDown Grid.Row="2" Grid.Column="1"
+						   Value="{Binding RoundRobinStage.MaxCycles}"
+						   Minimum="-1"
+						   Margin="0,0,0,4"/>
+
+			<TextBlock Grid.Row="3" Grid.Column="0" 
+					   Text="{loc:Loc settings_stage_stop_chance}"
+					   VerticalAlignment="Center" Margin="0,0,8,0"/>
+			<NumericUpDown Grid.Row="3" Grid.Column="1"
+						   Value="{Binding RoundRobinStage.StopChance}"
+						   Minimum="0" Maximum="1"
+						   Increment="0.05"/>
+		</Grid>
+
+		<!-- Divider -->
+		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+				BorderThickness="0,0,0,1"
+				Opacity="0.3"
+				Margin="0,0,0,6"/>
+
+		<!-- Agent list -->
+		<ItemsControl ItemsSource="{Binding Agents}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate DataType="local:RoundRobinStageAgentViewModel">
+					<Border Padding="4,2" Margin="0,1"
+							BorderBrush="{DynamicResource SecondaryAccentBrush}"
+							BorderThickness="0,0,0,0.5">
+						<Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+							<!-- Enabled checkbox -->
+							<CheckBox Grid.Column="0"
+									  IsChecked="{Binding Instance.Enabled}"
+									  VerticalAlignment="Center"/>
+
+							<!-- Agent name -->
+							<TextBlock Grid.Column="1"
+									   Text="{Binding Agent.Info.Name}"
+									   VerticalAlignment="Center"
+									   Margin="4,0"/>
+
+							<!-- Weight (visible only when CanAgentsBeSkipped is enabled) -->
+							<NumericUpDown Grid.Column="2"
+										   Value="{Binding Instance.Weight}"
+										   Minimum="0" Maximum="1"
+										   Increment="0.1"
+										   Width="150"
+										   VerticalAlignment="Center"
+										   Margin="4,0"
+										   IsVisible="{Binding #Root.DataContext.RoundRobinStage.CanAgentsBeSkipped}"
+										   ToolTip.Tip="{loc:Loc settings_stage_weight_tooltip}"/>
+
+							<!-- Move up -->
+							<Button Grid.Column="3"
+									Command="{Binding MoveUpCommand}"
+									Classes="IconButton"
+									Margin="2,0"
+									ToolTip.Tip="{loc:Loc settings_stage_move_agent_up}">
+								<ico:MaterialIcon Kind="ChevronUp"/>
+							</Button>
+
+							<!-- Move down -->
+							<Button Grid.Column="4"
+									Command="{Binding MoveDownCommand}"
+									Classes="IconButton"
+									Margin="2,0"
+									ToolTip.Tip="{loc:Loc settings_stage_move_agent_down}">
+								<ico:MaterialIcon Kind="ChevronDown"/>
+							</Button>
+
+							<!-- Remove -->
+							<Button Grid.Column="5"
+									Command="{Binding RemoveCommand}"
+									Classes="IconButton"
+									Margin="2,0"
+									ToolTip.Tip="{loc:Loc settings_stage_remove_agent}">
+								<ico:MaterialIcon Kind="Close"/>
+							</Button>
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<!-- Add agent button -->
+		<Button Command="{Binding AddAgentCommand}"
+				Margin="0,4"
+				HorizontalAlignment="Left"
+				ToolTip.Tip="{loc:Loc settings_stage_add_agent}">
+			<StackPanel Orientation="Horizontal" Spacing="4">
+				<ico:MaterialIcon Kind="Plus"/>
+				<TextBlock Text="{loc:Loc settings_stage_add_agent}"/>
+			</StackPanel>
+		</Button>
+	</StackPanel>
+
+</UserControl>

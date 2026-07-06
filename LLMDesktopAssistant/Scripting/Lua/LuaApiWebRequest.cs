@@ -47,13 +47,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - content_length: number — Length of the response content
 			    - content: string — Response body (sliced by start/count)
 			
-			--- async web.status(url, [options])
+			--- async web.status(url, [timeout])
 			  Checks if a website is accessible and returns detailed status info.
 			
 			  Parameters:
 			    - url: string — URL to check
-			    - options: table (optional):
-			      - timeout: number (default: 30) — Timeout in seconds
+			    - timeout: number (optional, default: 30) — Timeout in seconds
 			
 			  Returns: table with:
 			    - url: string — the checked URL
@@ -114,7 +113,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(r.content)
 
 			  -- Fetch as raw HTML
-			  local r = await web.fetch("https://example.com", { contentType = "html" })
+			  local r = await web.fetch("https://example.com", "html")
 			  print(r.content)
 
 			  -- Check website status
@@ -316,17 +315,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private async Task<LuaTuple> StatusAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
 			if (args.Length < 1)
-				throw new LuaRuntimeException("web.status(url, [options]): at least 1 argument expected.");
+				throw new LuaRuntimeException("web.status(url, [timeout]): at least 1 argument expected.");
 
 			if (args[0] is not LuaString urlVal)
 				throw new LuaRuntimeException("First argument must be a string (URL).");
 
 			int timeout = 30;
-			if (args.Length > 1 && args[1] is LuaTable opts)
-			{
-				if (opts.Get("timeout") is LuaNumber tv)
-					timeout = (int)tv.Value;
-			}
+			if (args.Length > 1 && args[1] is LuaNumber tv)
+				timeout = (int)tv.Value;
 
 			try
 			{

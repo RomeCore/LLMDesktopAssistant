@@ -58,7 +58,7 @@ namespace LLMDesktopAssistant.Scripting
 		public string ExampleCode => """
 			-- Fetch weather data
 			local url = "https://api.weather.com/forecast?q=" .. tool_args.location .. "&days=" .. tool_args.days
-			local result = web.fetch(url)
+			local result = await web.fetch(url)
 			print("Weather in " .. tool_args.location .. ": " .. result)
 			""";
 

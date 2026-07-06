@@ -81,12 +81,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			try
 			{
-				if (allowedExtensions == null || allowedExtensions.Length == 0)
-				{
-					result.ResultContent = "Allowed extensions cannot be empty.";
-					return result.CompleteWithError();
-				}
-
 				var workingDirectory = _fileAccess.GetWorkingDirectory();
 				var fullPath = _fileAccess.AccessPath(path);
 				var regexIgnoreCaseOptions = ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
@@ -102,6 +96,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				if (!fileExists && !dirExists)
 				{
 					result.ResultContent = $"File or directory not found: {path}";
+					return result.CompleteWithError();
+				}
+
+				if (dirExists && (allowedExtensions == null || allowedExtensions.Length == 0))
+				{
+					result.ResultContent = "Allowed extensions cannot be empty when searching inside directory.";
 					return result.CompleteWithError();
 				}
 

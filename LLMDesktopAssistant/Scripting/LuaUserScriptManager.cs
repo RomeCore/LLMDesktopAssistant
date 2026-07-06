@@ -126,7 +126,7 @@ namespace LLMDesktopAssistant.Scripting
 				ScriptsChanged?.Invoke(this, EventArgs.Empty);
 				return true;
 			}
-			return true;
+			return false;
 		}
 
 		public bool MoveScript(string oldPath, string newPath)

@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,6 +10,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 	[JsonDerivedType(typeof(MentionOnlyAgentExecutionStage), "mentionOnly")]
 	[JsonDerivedType(typeof(RandomAgentExecutionStage), "random")]
 	[JsonDerivedType(typeof(AdaptiveAgentExecutionStage), "adaptive")]
+	[JsonDerivedType(typeof(RoundRobinAgentExecutionStage), "roundRobin")]
 	public abstract class AgentExecutionStage : NotifyPropertyChanged
 	{
 		private Guid _id;

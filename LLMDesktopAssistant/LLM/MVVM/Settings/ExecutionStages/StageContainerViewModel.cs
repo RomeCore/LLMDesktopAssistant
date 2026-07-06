@@ -36,6 +36,13 @@ public sealed class StageTypeOption
 		Name = "stage_type_adaptive",
 		StageType = typeof(AdaptiveAgentExecutionStage)
 	};
+	public static StageTypeOption RoundRobin { get; } = new StageTypeOption
+	{
+		Name = "stage_type_round_robin",
+		StageType = typeof(RoundRobinAgentExecutionStage)
+	};
+
+	public static StageTypeOption[] All { get; } = new[] { Sequential, Random, MentionOnly, Adaptive, RoundRobin };
 }
 
 /// <summary>
@@ -61,11 +68,7 @@ public class StageContainerViewModel : ViewModelBase
 		set => SetProperty(ref _stageVM, value);
 	}
 
-	/// <summary>
-	/// Available stage types for the type ComboBox.
-	/// Set externally by parent VM.
-	/// </summary>
-	public List<StageTypeOption> AvailableStageTypes { get; set; } = [];
+	public StageTypeOption[] AvailableStageTypes => StageTypeOption.All;
 
 	private StageTypeOption _selectedType;
 	public StageTypeOption SelectedType
@@ -87,8 +90,7 @@ public class StageContainerViewModel : ViewModelBase
 
 	public StageContainerViewModel(
 		ChatExecutionStagesSettingsViewModel parent,
-		AgentExecutionStage stage,
-		List<StageTypeOption> availableStageTypes)
+		AgentExecutionStage stage)
 	{
 		_parent = parent;
 		_stage = stage;
@@ -99,10 +101,9 @@ public class StageContainerViewModel : ViewModelBase
 			RandomAgentExecutionStage => StageTypeOption.Random,
 			MentionOnlyAgentExecutionStage => StageTypeOption.MentionOnly,
 			AdaptiveAgentExecutionStage => StageTypeOption.Adaptive,
+			RoundRobinAgentExecutionStage => StageTypeOption.RoundRobin,
 			_ => StageTypeOption.Sequential
 		};
-
-		AvailableStageTypes = availableStageTypes;
 
 		MoveUpCommand = new RelayCommand<StageContainerViewModel>(_ => MoveStage(-1));
 		MoveDownCommand = new RelayCommand<StageContainerViewModel>(_ => MoveStage(+1));
@@ -201,6 +202,22 @@ public class StageContainerViewModel : ViewModelBase
 				MinIterations = prevRepeatable?.MinIterations ?? -1,
 				MaxIterations = prevRepeatable?.MaxIterations ?? -1,
 				StopChance = prevRepeatable?.StopChance ?? 0.0,
+			};
+		}
+		else if (SelectedType.StageType == typeof(RoundRobinAgentExecutionStage))
+		{
+			Stage = new RoundRobinAgentExecutionStage
+			{
+				Id = Stage.Id,
+				Enabled = Stage.Enabled,
+				AgentInstances = [.. Stage.AgentInstances.Select(i => {
+					i.Weight = Math.Clamp(i.Weight, 0.0, 1.0);
+					return i;
+				}) ],
+				CanAgentsBeSkipped = false,
+				MinCycles = -1,
+				MaxCycles = -1,
+				StopChance = 0.0,
 			};
 		}
 		else
