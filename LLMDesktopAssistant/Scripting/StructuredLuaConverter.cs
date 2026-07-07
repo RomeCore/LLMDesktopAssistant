@@ -71,7 +71,7 @@ namespace LLMDesktopAssistant.Scripting
 					return JsonValue.Create(str.Value);
 
 				case LuaTable table:
-					if (IsArray(table))
+					if (table.IsArrayTable())
 					{
 						var arr = new JsonArray();
 						for (int i = 1; i <= table.Length; i++)
@@ -112,7 +112,7 @@ namespace LLMDesktopAssistant.Scripting
 					return new TemplateStringAccessor(str.Value);
 
 				case LuaTable table:
-					if (IsArray(table))
+					if (table.IsArrayTable())
 					{
 						var arr = new List<TemplateDataAccessor>();
 						for (int i = 1; i <= table.Length; i++)
@@ -134,40 +134,6 @@ namespace LLMDesktopAssistant.Scripting
 				default:
 					return TemplateNullAccessor.Instance;
 			}
-		}
-
-		/// <summary>
-		/// Determines whether a Lua table should be serialized as a JSON array.
-		/// A table is considered an array if it has a contiguous sequence of
-		/// integer keys from 1 to <see cref="Table.Length"/> and no keys
-		/// outside that range.
-		/// </summary>
-		private static bool IsArray(LuaTable table)
-		{
-			int len = table.Length;
-
-			if (len == 0 && table.Keys.Count() == 0)
-				return true;
-
-			if (len == 0)
-				return false;
-
-			for (int i = 1; i <= len; i++)
-			{
-				if (!table.Keys.Contains(new LuaNumber(i)))
-					return false;
-			}
-
-			foreach (var key in table.Keys)
-			{
-				if (key is not LuaNumber numberKey)
-					return false;
-				double num = numberKey.Value;
-				if (num < 1 || num > len || num != Math.Truncate(num))
-					return false;
-			}
-
-			return true;
 		}
 
 		/// <summary>

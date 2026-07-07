@@ -125,12 +125,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 			var reactiveResult = await tool.Executor.Invoke(jsonArgs, context, CancellationToken.None);
 
-			// Wait for completion to get success status
 			var success = await reactiveResult.Completion;
 			var content = reactiveResult.ResultContent;
 			var structured = StructuredLuaConverter.JsonNodeToLuaValue(reactiveResult.StructuredResult);
 
-			// Build structured result table
 			var resultTable = new LuaTable();
 			resultTable["content"] = new LuaString(content);
 			resultTable["structured"] = structured;

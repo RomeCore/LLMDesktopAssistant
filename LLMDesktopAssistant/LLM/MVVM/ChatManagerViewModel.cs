@@ -102,6 +102,16 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	{
 		public required IChatManagementService ChatManager { get; init; }
 
+		private bool _isSelected = false;
+		public bool IsSelected
+		{
+			get => _isSelected;
+			set
+			{
+				SetProperty(ref _isSelected, value);
+			}
+		}
+
 		private IServiceScope? _currentChatScope;
 		private ChatViewModel? _currentChat;
 		public ChatViewModel? CurrentChat
@@ -353,7 +363,15 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public OpenedChatViewModel? SelectedChat
 		{
 			get => _selectedChat;
-			set => SetProperty(ref _selectedChat, value);
+			set
+			{
+				var prevChat = _selectedChat;
+				if (SetProperty(ref _selectedChat, value))
+				{
+					prevChat?.IsSelected = false;
+					_selectedChat?.IsSelected = true;
+				}
+			}
 		}
 
 		public ICommand CreateChatCommand { get; }

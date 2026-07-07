@@ -8,11 +8,8 @@
 			 xmlns:beh="using:LLMDesktopAssistant.Controls.Behaviours"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.ChatManagerView"
-			 x:DataType="local:ChatManagerViewModel">
-
-	<Design.DataContext>
-		<local:ChatManagerViewModel />
-	</Design.DataContext>
+			 x:DataType="local:ChatManagerViewModel"
+			 x:Name="VMRoot">
 
 	<SplitView x:Name="ChatSplitView"
 						 PanePlacement="Right"
@@ -289,8 +286,20 @@
 			</DockPanel>
 
 			<!-- CHAT -->
-			<ContentControl Grid.Row="1"
-											Content="{Binding SelectedChat.CurrentChat}"/>
+			<ItemsControl Grid.Row="1"
+										ItemsSource="{Binding OpenedChats}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<Panel/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<ContentControl Content="{Binding CurrentChat}"
+														IsVisible="{Binding IsSelected}"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
 		</Grid>
 
 	</SplitView>

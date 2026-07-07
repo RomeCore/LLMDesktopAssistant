@@ -181,6 +181,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 							startLine = 1;
 						if (endLine < startLine)
 							endLine = startLine + 199;
+						if (maxLineLength <= 0)
+							maxLineLength = 2000; // Дипсик ебалай, любит указывать нулевую длину и удивляться "а хули я нихуя не вижу???"
 
 						var (lines, totalLines) = FileUtils.ReadLinesChunk(
 							fullPath,

@@ -7,6 +7,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
@@ -200,7 +201,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(table.last(r).content)  -- "123 * 456 = 56088"
 
 			  -- Batch execution: run multiple agents concurrently
-			  local results  await= dass.agents.execute(
+			  local results await = dass.agents.execute(
 				{
 				  messages = {
 					{ role = "system", content = "You are a poet." },
@@ -277,15 +278,34 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			for (int i = 0; i < args.Length; i++)
 			{
 				var arg = (LuaTable)args[i];
-				try
+				if (arg.IsArrayTable())
 				{
-					var executionFunction = PrepareExecutionFunction(ctx, arg);
-					executionFunctions.Add(executionFunction);
-					exceptions.Add(null);
+					foreach (var item in arg.Values)
+					{
+						try
+						{
+							var executionFunction = PrepareExecutionFunction(ctx, arg);
+							executionFunctions.Add(executionFunction);
+							exceptions.Add(null);
+						}
+						catch (Exception ex)
+						{
+							exceptions.Add(ex);
+						}
+					}
 				}
-				catch (Exception ex)
+				else
 				{
-					exceptions.Add(ex);
+					try
+					{
+						var executionFunction = PrepareExecutionFunction(ctx, arg);
+						executionFunctions.Add(executionFunction);
+						exceptions.Add(null);
+					}
+					catch (Exception ex)
+					{
+						exceptions.Add(ex);
+					}
 				}
 			}
 
@@ -368,7 +388,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			// Resolve model name and descriptor.
 			LLModelDescriptor? model;
-			var modelName = parameters.Get("model")?.ToString();
+			var modelName = parameters.Get("model")?.TryToString();
 			if (!string.IsNullOrEmpty(modelName))
 			{
 				var tracked = _modelList.Registry.GetModel(modelName);
@@ -581,8 +601,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		{
 			var toolName = toolCallTable.Get("tool_name").ToString();
 			var toolCallId = toolCallTable.Get("tool_call_id").ToString();
-			var arguments = StructuredLuaConverter.LuaValueToJsonNode(toolCallTable.Get("arguments")) ?? JsonValue.Create((string?)null)!;
-			return new FunctionToolCall(toolCallId, toolName, arguments.ToJsonString());
+			var arguments = StructuredLuaConverter.LuaValueToJsonNode(toolCallTable.Get("arguments"));
+			return new FunctionToolCall(toolCallId, toolName, arguments?.ToJsonString() ?? "{}");
 		}
 
 		private static LuaTable ConvertMessageToLua(IMessage message)
@@ -630,7 +650,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var resultTable = new LuaTable();
 			resultTable.Set("tool_name", functionCall.ToolName);
 			resultTable.Set("tool_call_id", functionCall.Id);
-			resultTable.Set("arguments", StructuredLuaConverter.JsonNodeToLuaValue(functionCall.Args));
+			resultTable.Set("arguments", StructuredLuaConverter.JsonNodeToLuaValue(TolerantJsonParser.Parse(functionCall.Args)));
 			return resultTable;
 		}
 	}

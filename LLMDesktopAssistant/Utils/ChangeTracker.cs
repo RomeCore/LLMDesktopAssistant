@@ -21,6 +21,8 @@ namespace LLMDesktopAssistant.Utils
 	/// </remarks>
 	public class ChangeTracker : IDisposable
 	{
+		public class UntrackedAttribute : Attribute { } // Custom attribute to mark properties that should not be tracked
+
 		private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _propertyCache = [];
 
 		private readonly object _lock = new();
@@ -109,6 +111,9 @@ namespace LLMDesktopAssistant.Utils
 
 				foreach (var prop in properties)
 				{
+					if (prop.IsDefined(typeof(UntrackedAttribute), true))
+						continue;
+
 					var value = prop.GetValue(obj);
 					UpdatePropertyValue(obj, prop.Name, value);
 					TrackObject(value);

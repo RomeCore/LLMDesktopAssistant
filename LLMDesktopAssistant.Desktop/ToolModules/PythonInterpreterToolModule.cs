@@ -149,7 +149,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					command = $"python \"{pyFile}\"";
 
 				// Run in terminal
-				return await RunAsync(new TerminalToolRunParameters
+				var result = await RunAsync(new TerminalToolRunParameters
 				{
 					StatusIcon = MaterialIconKind.LanguagePython,
 					StatusTitle = null,
@@ -157,24 +157,34 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Command = command,
 					WorkingDirectory = workDir,
 				}, context, cancellationToken);
-			}
-			finally
-			{
-				// Clean up temp file after process completes
-				try
+
+				_ = result.Completion.ContinueWith(t =>
 				{
-					_ = Task.Run(async () =>
+					try
 					{
-						// Костыль ёбаный, но работает
-						await Task.Delay(1000);
 						if (isTemporaryFile && File.Exists(pyFile))
 							File.Delete(pyFile);
-					});
-				}
-				catch
+					}
+					catch { }
+				}, CancellationToken.None);
+
+				return result;
+			}
+			catch (Exception ex)
+			{
+				try
 				{
-					// Ignore cleanup errors
+					if (isTemporaryFile && File.Exists(pyFile))
+						File.Delete(pyFile);
 				}
+				catch { }
+
+				return new ReactiveToolResult
+				{
+					ResultContent = "Error running Python script: " + ex.Message,
+					StatusIcon = MaterialIconKind.LanguagePython,
+					StatusTitle = null,
+				}.CompleteWithError();
 			}
 		}
 

@@ -1,9 +1,10 @@
-using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.MVVM;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.MVVM;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 {
@@ -19,6 +20,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 		/// <summary>
 		/// Task that completes when the process exits, returning the exit code.
 		/// </summary>
+		[ChangeTracker.Untracked]
 		public Task<int> ExitCodeTask => _exitCodeTcs.Task;
 
 		private string _processName = string.Empty;

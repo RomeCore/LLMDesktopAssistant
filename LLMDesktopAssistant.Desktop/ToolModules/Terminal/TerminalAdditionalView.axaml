@@ -1,13 +1,13 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-			 xmlns:mc="http://schemas.microsoft.com/winfx/markup-compatibility/2006"
-			 d:DesignWidth="600" d:DesignHeight="300"
-			 xmlns:local="using:LLMDesktopAssistant.Desktop.ToolModules.Terminal"
-			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 xmlns:terminal="using:Iciclecreek.Terminal"
-			 x:Class="LLMDesktopAssistant.Desktop.ToolModules.Terminal.TerminalAdditionalView"
-			 x:DataType="local:TerminalAdditionalViewModel">
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.microsoft.com/winfx/markup-compatibility/2006"
+						 d:DesignWidth="600" d:DesignHeight="300"
+						 xmlns:local="using:LLMDesktopAssistant.Desktop.ToolModules.Terminal"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:terminal="using:Iciclecreek.Terminal"
+						 x:Class="LLMDesktopAssistant.Desktop.ToolModules.Terminal.TerminalAdditionalView"
+						 x:DataType="local:TerminalAdditionalViewModel">
 
 	<Border BorderBrush="{DynamicResource CardBorderBrush}"
 			BorderThickness="1"

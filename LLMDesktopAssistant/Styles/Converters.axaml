@@ -11,6 +11,7 @@
 	<conv:StringToNullIfWhiteSpaceConverter x:Key="StringToNullIfWhiteSpaceConverter"/>
 	<conv:NotnullToBooleanConverter x:Key="NotnullToBooleanConverter"/>
 	<conv:NotnullToBooleanConverter Invert="True" x:Key="NotnullToBooleanConverterInverted"/>
+	<conv:EqualsConverter x:Key="EqualsConverter"/>
 	<conv:StringEqualsConverter x:Key="StringEqualsConverter"/>
 
 </ResourceDictionary>
