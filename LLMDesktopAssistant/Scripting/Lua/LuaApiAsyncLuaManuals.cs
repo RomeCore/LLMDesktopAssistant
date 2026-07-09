@@ -21,13 +21,13 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		Below are the supported extended features with examples.
 		
 		───────────────────────────────────────────────────────────────
-		1. ASYNC / AWAIT
+		ASYNC / AWAIT
 		───────────────────────────────────────────────────────────────
 		
 		Declare an async function with `async function` (or `local async function`):
 		
 		  async function fetchData()
-		      await delay(100)
+		      await task.delay(100)
 		      return 'data received'
 		  end
 		  
@@ -37,9 +37,9 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		Use `await` to wait for a task (async function call) to complete.
 		The `await` keyword can also be used in expressions:
 		
-		  local task = someAsyncFunc()
+		  local task1 = someAsyncFunc()
 		  -- ... do other work ...
-		  local result = await task
+		  local result = await task1
 		
 		`await` can receive multiple return values:
 		
@@ -58,7 +58,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		these functions will be WAITED by the interpreter, so this:
 		
 		  local async function fetchData()
-		      await delay(100)
+		      await task.delay(100)
 			  return 'data received'
 		  end
 		  local result = await fetchData()
@@ -66,42 +66,52 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		Will work as same as this:
 		
 		  -- No async keyword
-		  local function fetchData()
-		      await delay(100)
+		  local function fetchDataSync()
+		      await task.delay(100)
 			  return 'data received'
 		  end
-		  local result = fetchData() -- Will be awaited by interpreter, the code will sleep at this moment
+		  local result = fetchDataSync() -- Will be awaited by interpreter, the code will sleep at this moment
 
 		And if we deep dive to know how interpreter works, the code will run like:
 
-		  await delay(100)
+		  await task.delay(100)
 		  local result = 'data received'
 
 		───────────────────────────────────────────────────────────────
-		2. DELAY
+		DELAY
 		───────────────────────────────────────────────────────────────
 		
-		`delay(ms)` — returns a task that completes after the specified
-		milliseconds. Must be awaited:
+		`task.delay(ms)` — returns a task that completes after the specified milliseconds:
 		
-		  await delay(500)  -- waits 500ms
+		  await task.delay(500)  -- waits 500ms
+		  await task.delay(0.5) -- waits 500us
 		
 		───────────────────────────────────────────────────────────────
-		3. RUN (fire-and-forget)
+		RUN (fire-and-forget)
 		───────────────────────────────────────────────────────────────
 		
-		`run(asyncFunc)` — launches an sync/async function in another thread.
+		`task.run(asyncFunc, args...)` — launches an sync/async function in another thread.
 		Can be useful on synchronous functions that take a long time to complete
 		(long-running cycles and calculations without async features).
 		The function runs concurrently in the background:
 		
-		  local task = run(doSomeHeavyWork, arg1, arg2, ...)  -- note: pass function, NOT call it
+		  local task1 = task.run(doSomeHeavyWork, arg1, arg2, ...)  -- note: pass function, NOT call it
 		  print('Main continues...')
-		  local result = await task
+		  local result = await task1
 		  print('Result: ' .. result)
 		
 		───────────────────────────────────────────────────────────────
-		4. IS_ASYNC
+		PARARUN (Parallel Run)
+		───────────────────────────────────────────────────────────────
+		
+		`task.pararun(table, transformer, [concurrency_level])` — iterates over a table
+		and applies the transformer function to each element concurrently:
+		
+		  local result = await task.pararun({1, 2, 3, 4}, function(item) return item * 2 end, 2)  -- note: pass function, NOT call it
+		  print(result[1], result[2], result[3], result[4])  -- prints: 2, 4, 6, 8
+		
+		───────────────────────────────────────────────────────────────
+		IS_ASYNC
 		───────────────────────────────────────────────────────────────
 		
 		`is_async(func)` — returns true if the given value is an async function:
@@ -111,7 +121,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		  print(is_async(42))         -- nil, not a function
 		
 		───────────────────────────────────────────────────────────────
-		5. PCALL_ASYNC / XPCALL_ASYNC
+		PCALL_ASYNC / XPCALL_ASYNC
 		───────────────────────────────────────────────────────────────
 		
 		`pcall_async(asyncFunc, ...)` — protected call for async functions.
@@ -131,7 +141,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		  local ok, result = await xpcall_async(dangerousFunc, handler)
 		
 		───────────────────────────────────────────────────────────────
-		6. TRY / CATCH / THROW
+		TRY / CATCH / THROW
 		───────────────────────────────────────────────────────────────
 		
 		Structured exception handling. Unlike standard Lua's pcall/error,
@@ -154,7 +164,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		      result = 42
 		  end
 		
-		`throw` can raise a string as exception message:
+		`throw` can raise a string as exception message (works same as error() in Lua):
 		
 		  throw 'error message'
 		
@@ -172,7 +182,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		  end
 		
 		───────────────────────────────────────────────────────────────
-		7. LOCK / MUTEX
+		LOCK / MUTEX
 		───────────────────────────────────────────────────────────────
 		
 		Critical sections using `lock mutex do ... end`.
@@ -184,7 +194,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		      lock mutex do
 		          -- Critical section: only one coroutine enters at a time
 		          local temp = shared_counter
-		          await delay(10)  -- lock is held during await!
+		          await task.delay(10)  -- lock is held during await!
 		          shared_counter = temp + 1
 		      end
 		  end
@@ -196,7 +206,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		- `lock` is reentrant: same mutex can be locked multiple times by the same coroutine
 		
 		───────────────────────────────────────────────────────────────
-		8. AUGMENTED ASSIGNMENTS
+		AUGMENTED ASSIGNMENTS
 		───────────────────────────────────────────────────────────────
 		
 		Compound assignment operators that modify a variable in place.
@@ -209,7 +219,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		  x //= 2   -- integer division (floor)
 		  x %= 3    -- modulo
 		  x ^= 2    -- power
-		  s ..= " world"  -- string concatenation
+		  s ..= " world" -- string concatenation
 		  x &= 0x0F -- bitwise AND
 		  x |= 0xF0 -- bitwise OR
 		  x ~= 0xFF -- bitwise XOR
@@ -226,7 +236,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		  t.value *= 2
 		
 		───────────────────────────────────────────────────────────────
-		9. CONTINUE
+		CONTINUE
 		───────────────────────────────────────────────────────────────
 		
 		`continue` skips the current loop iteration and proceeds to the next.
@@ -240,7 +250,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		  end
 		
 		───────────────────────────────────────────────────────────────
-		10. ADDITIONAL OPERATORS
+		ADDITIONAL OPERATORS
 		───────────────────────────────────────────────────────────────
 		
 		Standard Lua operators — all work as expected:
@@ -259,7 +269,7 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		  >>  Right shift:    16 >> 2 = 4
 		
 		───────────────────────────────────────────────────────────────
-		11. GOTO / LABELS
+		GOTO / LABELS
 		───────────────────────────────────────────────────────────────
 		
 		Standard Lua goto with named labels:
@@ -297,7 +307,6 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		await t3
 		print("Final counter:", counter)  -- 60
 		
-		-- -------------------------------------------------------
 		-- Safe async call with pcall_async and try-catch
 		
 		async function riskyOperation()
@@ -307,11 +316,30 @@ public class LuaApiAsyncLuaManuals : LuaApiBaseAsync
 		    return "success"
 		end
 		
+		-- Alternative 1 (try-catch)
 		try
-		    local result = await pcall_async(riskyOperation)
+		    local result = await riskyOperation()
 		    print("Result:", result)
 		catch e do
 		    print("Operation failed:", e)
+		end
+		
+		-- Alternative 2 (pcall_async)
+		local ok, result = await pcall_async(riskyOperation)
+		if ok then
+		    print("Result:", result)
+		else
+		    print("Operation failed:", result)
+		end
+		
+		-- Alternative 3
+		-- Remember that sync functions (pcall in this example) is waited automatically by the interpreter,
+		-- and pcall can can take both sync and async functions.
+		local ok, result = pcall(riskyOperation)
+		if ok then
+		    print("Result:", result)
+		else
+		    print("Operation failed:", result)
 		end
 		""".Replace("$ASYNCLUA_VER", typeof(LuaState).Assembly.GetName().Version?.ToString() ?? "");
 

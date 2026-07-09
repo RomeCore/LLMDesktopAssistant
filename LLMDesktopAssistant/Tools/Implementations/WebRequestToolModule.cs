@@ -165,7 +165,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Description("Optional: Request content")]
 			string content = "",
 			[Description("Content type (default: application/json)")]
-			string contentType = "application/json")
+			string contentType = "application/json",
+			CancellationToken cancellationToken = default)
 		{
 			var result = new ReactiveToolResult
 			{
@@ -199,7 +200,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						}
 					}
 
-					var response = await _httpClient.SendAsync(request);
+					var response = await _httpClient.SendAsync(request, cancellationToken);
 					var responseContent = await response.Content.ReadAsStringAsync();
 
 					var actualCount = Math.Min(count, content.Length - start);

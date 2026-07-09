@@ -1,47 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using RCLargeLanguageModels;
+using RCLargeLanguageModels.Security;
 
 namespace LLMDesktopAssistant.Providers
 {
-	public enum ModelProviderType
+	public abstract class ModelProviderType
 	{
-		// ==============================
-		// OpenAI-compatible group
-		// ==============================
+		public abstract string Id { get; }
 
-		/// <summary>
-		/// A model provider that is compatible with OpenAI's style API.
-		/// </summary>
-		OpenAICompatible,
+		public abstract ModelProviderConfiguration CreateDefaultConfiguration();
 
-		/// <summary>
-		/// An OpenAI model provider (OpenAI-compatible).
-		/// </summary>
-		OpenAI,
+		public abstract bool? IsApiKeyRequired(ModelProviderConfiguration providerConfig);
 
-		/// <summary>
-		/// An OpenRouter model provider (OpenAI-compatible).
-		/// </summary>
-		OpenRouter,
-
-		/// <summary>
-		/// A DeepSeek model provider (OpenAI-compatible).
-		/// </summary>
-		DeepSeek,
-
-		/// <summary>
-		/// A Novita model provider (OpenAI-compatible).
-		/// </summary>
-		Novita,
-
-		// ==============================
-		// Other providers
-		// ==============================
-
-		/// <summary>
-		/// An Ollama model provider (specific).
-		/// </summary>
-		Ollama
+		public abstract LLMClient CreateClient(ModelProviderConfiguration providerConfig, ITokenAccessor? tokenAccessor);
 	}
 }

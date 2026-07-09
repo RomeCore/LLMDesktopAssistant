@@ -26,6 +26,16 @@ namespace LLMDesktopAssistant.Providers
 			set => SetProperty(ref _isInformationKnown, value);
 		}
 
+		private string _displayName = string.Empty;
+		/// <summary>
+		/// Gets or sets the display human-readable name of the model.
+		/// </summary>
+		public string DisplayName
+		{
+			get => _displayName;
+			set => SetProperty(ref _displayName, value);
+		}
+
 		private LLMModalities _inputModalities = LLMModalities.Text;
 		public LLMModalities InputModalities
 		{

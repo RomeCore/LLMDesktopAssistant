@@ -201,7 +201,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(table.last(r).content)  -- "123 * 456 = 56088"
 
 			  -- Batch execution: run multiple agents concurrently
-			  local results await = dass.agents.execute(
+			  local results = await dass.agents.execute(
 				{
 				  messages = {
 					{ role = "system", content = "You are a poet." },
@@ -225,6 +225,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print("Haiku:", table.last(results[1]).content)
 			  print("Joke:", table.last(results[2]).content)
 			  print("Failed:", results[3]) -- Error message
+			  
+			  -- Note: arguments for batch execution can be passed in two ways:
+			  -- 1. As separate arguments:
+			  dass.agents.execute(batch1, batch2, batch3, ...)
+			  -- 2. As an array of tables:
+			  dass.agents.execute({batch1, batch2, batch3, ...})
 
 			NOTES:
 			  - By default, the agent uses the chat's "AgenticToolsModel" setting.
@@ -236,7 +242,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				name (string), description (string), parameters (JSON Schema table),
 				and callback (function). The callback receives a table of arguments
 				matching the schema and should return a string. Callbacks can use the full Lua API (fs, web,
-				dass.*, etc.) and execute under a lock for thread safety.
+				dass.*, etc.).
 			  - Image attachments can be applied via `image` API (see manuals for details).
 			  - Returns the full conversation history produced by the agent,
 				including all intermediate tool calls and their results.

@@ -341,7 +341,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				result["content_type"] = new LuaString(response.Content.Headers.ContentType?.ToString() ?? string.Empty);
 				result["content_length"] = new LuaNumber(response.Content.Headers.ContentLength ?? -1);
 				result["server"] = new LuaString(response.Headers.Server?.ToString() ?? "Unknown");
-
 				return new LuaTuple(result);
 			}
 			catch (TaskCanceledException)

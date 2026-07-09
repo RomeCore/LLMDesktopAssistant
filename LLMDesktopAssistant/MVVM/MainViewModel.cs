@@ -16,6 +16,13 @@ namespace LLMDesktopAssistant.MVVM
 		public required string Title { get; init; }
 
 		public required object? Content { get; init; }
+
+		private bool _isSelected;
+		public bool IsSelected
+		{
+			get => _isSelected;
+			set => SetProperty(ref _isSelected, value);
+		}
 	}
 
 	public class MainViewModel : ViewModelBase
@@ -28,7 +35,15 @@ namespace LLMDesktopAssistant.MVVM
 		public MainViewModelSidebarItemViewModel? SelectedSidebarItem
 		{
 			get => _selectedSidebarItem;
-			set => SetProperty(ref _selectedSidebarItem, value);
+			set
+			{
+				var prev = _selectedSidebarItem;
+				if (SetProperty(ref _selectedSidebarItem, value))
+				{
+					prev?.IsSelected = false;
+					_selectedSidebarItem?.IsSelected = true;
+				}
+			}
 		}
 
 		public ChatManagerViewModel ChatManager { get; }

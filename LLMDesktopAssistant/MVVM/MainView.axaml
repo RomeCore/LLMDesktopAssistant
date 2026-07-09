@@ -68,7 +68,37 @@
 
 				</SplitView.Pane>
 				
-				<ContentControl Content="{Binding SelectedSidebarItem.Content}"/>
+				<Panel>
+				
+					<ItemsControl ItemsSource="{Binding TopSidebarItems}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<Panel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<ContentControl Content="{Binding Content}"
+																IsVisible="{Binding IsSelected}"/>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+					
+					<ItemsControl ItemsSource="{Binding BottomSidebarItems}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<Panel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<ContentControl Content="{Binding Content}"
+																IsVisible="{Binding IsSelected}"/>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+
+				</Panel>
 
 			</SplitView>
 

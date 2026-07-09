@@ -5,16 +5,6 @@ namespace LLMDesktopAssistant.Providers
 {
 	public class ModelProviderConfiguration : NotifyPropertyChanged
 	{
-		private Guid _id = Guid.NewGuid();
-		/// <summary>
-		/// Unique identifier for this model provider.
-		/// </summary>
-		public Guid Id
-		{
-			get => _id;
-			set => SetProperty(ref _id, value);
-		}
-
 		private string _name = string.Empty;
 		/// <summary>
 		/// The display name of this model provider.
@@ -25,11 +15,12 @@ namespace LLMDesktopAssistant.Providers
 			set => SetProperty(ref _name, value);
 		}
 
-		private ModelProviderType _type;
+		private string _type;
 		/// <summary>
 		/// The type of the model provider (e.g. OpenAI, Anthropic, Ollama, etc.).
+		/// Found by ID from <see cref="ModelProviderType.Id"/> in the APP services.
 		/// </summary>
-		public ModelProviderType Type
+		public string Type
 		{
 			get => _type;
 			set => SetProperty(ref _type, value);
