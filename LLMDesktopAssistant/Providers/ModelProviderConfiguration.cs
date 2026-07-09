@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.ApiKeys;
+using LLMDesktopAssistant.ApiKeys;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Providers
@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.Providers
 			set => SetProperty(ref _name, value);
 		}
 
-		private string _type;
+		private string _type = string.Empty;
 		/// <summary>
 		/// The type of the model provider (e.g. OpenAI, Anthropic, Ollama, etc.).
 		/// Found by ID from <see cref="ModelProviderType.Id"/> in the APP services.
@@ -46,6 +46,19 @@ namespace LLMDesktopAssistant.Providers
 			get => _apiKeyId;
 			set => SetProperty(ref _apiKeyId, value);
 		}
+
+		private readonly RangeObservableCollection<string> _selectedModelNames = [];
+		/// <summary>
+		/// A collection of selected model names to show in the model selector.
+		/// Only models listed here (plus <see cref="CustomModels"/>) will be displayed.
+		/// If empty, all models are shown.
+		/// </summary>
+		public RangeObservableCollection<string> SelectedModelNames
+		{
+			get => _selectedModelNames;
+			set => _selectedModelNames.Reset(value);
+		}
+
 
 		private readonly RangeObservableCollection<ModelDescriptor> _models = [];
 		/// <summary>

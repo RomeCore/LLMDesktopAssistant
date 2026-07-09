@@ -98,10 +98,6 @@
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
-		<Compile Update="Controls\LLModelSelectorControl.axaml.cs">
-		  <SubType>Code</SubType>
-		  <DependentUpon>%(Filename)</DependentUpon>
-		</Compile>
 		<Compile Update="Controls\MarkdownControl.axaml.cs">
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>

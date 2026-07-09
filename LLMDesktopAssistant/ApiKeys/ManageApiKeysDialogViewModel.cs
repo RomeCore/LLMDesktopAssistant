@@ -10,6 +10,7 @@ namespace LLMDesktopAssistant.ApiKeys
 	/// <summary>
 	/// ViewModel for the "Manage API Keys" dialog.
 	/// </summary>
+	[ViewModelFor(typeof(ManageApiKeysDialogView))]
 	public class ManageApiKeysDialogViewModel : ViewModelBase
 	{
 		private readonly IApiKeyManagerService _apiKeys;
@@ -65,8 +66,7 @@ namespace LLMDesktopAssistant.ApiKeys
 		private async void Add()
 		{
 			var vm = new AddApiKeyDialogViewModel();
-			var view = new AddApiKeyDialogView { DataContext = vm };
-			var result = await DialogHostAvalonia.DialogHost.Show(view);
+			var result = await DialogHostAvalonia.DialogHost.Show(vm);
 
 			if (result is true)
 				ReloadKeys();
@@ -97,8 +97,7 @@ namespace LLMDesktopAssistant.ApiKeys
 				Scheme = SelectedKey.StorageScheme
 			};
 
-			var view = new AddApiKeyDialogView { DataContext = editVm };
-			var result = await DialogHostAvalonia.DialogHost.Show(view);
+			var result = await DialogHostAvalonia.DialogHost.Show(editVm);
 
 			if (result is true)
 				ReloadKeys();

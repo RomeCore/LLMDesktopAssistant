@@ -1,5 +1,4 @@
-﻿using LLMDesktopAssistant.Settings;
-using RCLargeLanguageModels.Clients;
+using LLMDesktopAssistant.Settings;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -39,11 +38,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _ignoreLastRounds, value);
 		}
 
-		private LLModelDescriptorTracked _summarizerModel = LLModelDescriptorTracked.Empty;
+		private string _summarizerModel = string.Empty;
 		/// <summary>
 		/// The model to use for summarizing the conversation for compacting.
+		/// Format: "ProviderName$ModelName".
 		/// </summary>
-		public LLModelDescriptorTracked SummarizerModel
+		public string SummarizerModel
 		{
 			get => _summarizerModel;
 			set => SetProperty(ref _summarizerModel, value);

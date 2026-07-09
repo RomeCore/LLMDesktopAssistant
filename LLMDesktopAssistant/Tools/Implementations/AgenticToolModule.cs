@@ -8,6 +8,7 @@ using LLMDesktopAssistant.Attachments;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using LLTSharp;
@@ -25,12 +26,14 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly Chat _chat;
 		private readonly TemplateLibrary _templateLibrary;
 		private readonly IToolsetBuildingService _toolsetBuildingService;
+		private readonly IModelManager _modelManager;
 
-		public AgenticToolModule(Chat chat, TemplateLibrary templateLibrary, IToolsetBuildingService toolsetBuildingService)
+		public AgenticToolModule(Chat chat, TemplateLibrary templateLibrary, IToolsetBuildingService toolsetBuildingService, IModelManager modelManager)
 		{
 			_chat = chat;
 			_templateLibrary = templateLibrary;
 			_toolsetBuildingService = toolsetBuildingService;
+			_modelManager = modelManager;
 
 			AddTool(AskQuestionAsync,
 				new ToolInitializationInfo
@@ -93,10 +96,20 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			ToolExecutionContext ctx,
 			CancellationToken cancellationToken = default)
 		{
-			if (_chat.Settings.Models.AgenticToolsModel.Current is not LLModelDescriptor modelDescriptor)
+			var modelName = _chat.Settings.Models.AgenticToolsModel;
+			if (string.IsNullOrEmpty(modelName))
 				return new ToolResult(ToolResultStatus.Error, "No agentic model selected. Say user to select an agentic model first.");
 
-			var llm = new LLModel(modelDescriptor);
+			LLModel llm;
+			try
+			{
+				llm = _modelManager.GetModel(modelName);
+			}
+			catch (Exception ex)
+			{
+				return new ToolResult(ToolResultStatus.Error, $"Agentic model '{modelName}' is not available: {ex.Message}");
+			}
+
 			// Pass empty agent ID for the toolset builder to use all available tools (not filtered by agent)
 			var toolMap = _toolsetBuildingService.BuildTools(Guid.Empty).ToDictionary(t => t.Tool.Name);
 			var tools = new ToolSet();
@@ -147,12 +160,22 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Description("The path to the image file to describe")] string path,
 			CancellationToken cancellationToken = default)
 		{
-			if (_chat.Settings.Models.VisionModel.Current is not LLModelDescriptor modelDescriptor)
+			var modelName = _chat.Settings.Models.VisionModel;
+			if (string.IsNullOrEmpty(modelName))
 				return ReactiveToolResult.CreateError("No vision model selected. Say user to select a vision model first.");
+
+			LLModel llm;
+			try
+			{
+				llm = _modelManager.GetModel(modelName);
+			}
+			catch (Exception ex)
+			{
+				return ReactiveToolResult.CreateError($"Vision model '{modelName}' is not available: {ex.Message}");
+			}
 
 			try
 			{
-				var llm = new LLModel(modelDescriptor);
 				path = ResolvePath(path);
 				var attachment = new SerializableImageAttachment(path);
 				var result = new ReactiveToolResult();

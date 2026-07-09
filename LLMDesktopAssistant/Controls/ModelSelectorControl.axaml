@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="using:LLMDesktopAssistant.Controls"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="40"
+			 x:Class="LLMDesktopAssistant.Controls.ModelSelectorControl">
+
+	<StackPanel Orientation="Horizontal" Spacing="4"
+							x:Name="SelectorRoot">
+
+		<ComboBox x:Name="Selector"
+							MinWidth="200"
+							VerticalAlignment="Stretch">
+
+			<ComboBox.DataTemplates>
+
+				<DataTemplate DataType="local:ModelItemWrapper">
+					<StackPanel Orientation="Horizontal" Spacing="4">
+						<TextBlock Text="{Binding DisplayText}"
+										   VerticalAlignment="Center"/>
+					</StackPanel>
+				</DataTemplate>
+
+				<DataTemplate DataType="local:ComboBoxHeaderItem">
+					<StackPanel Opacity="0.6">
+						<Rectangle Height="1" MinWidth="100"
+											 Fill="Gray" HorizontalAlignment="Stretch"
+											 Margin="2,3,2,3"/>
+						<TextBlock Text="{Binding Title}"/>
+					</StackPanel>
+				</DataTemplate>
+
+				<DataTemplate DataType="local:ComboBoxEmptyItem">
+					<TextBlock Foreground="Gray"
+									   Text="{Binding Title}"/>
+				</DataTemplate>
+
+			</ComboBox.DataTemplates>
+
+		</ComboBox>
+
+		<Button x:Name="SettingsButton"
+						Classes="IconButton"
+						VerticalAlignment="Center"
+						Click="SettingsButton_Click"
+						ToolTip.Tip="{loc:Loc model_selector_manage_tooltip}">
+			<ico:MaterialIcon Kind="RobotExcited"/>
+		</Button>
+
+	</StackPanel>
+
+</UserControl>

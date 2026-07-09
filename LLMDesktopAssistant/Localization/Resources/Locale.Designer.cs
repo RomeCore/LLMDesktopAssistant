@@ -2338,6 +2338,276 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Chat Completions.
+        /// </summary>
+        public static string model_capability_chat {
+            get {
+                return ResourceManager.GetString("model_capability_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Completions.
+        /// </summary>
+        public static string model_capability_completion {
+            get {
+                return ResourceManager.GetString("model_capability_completion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Embeddings.
+        /// </summary>
+        public static string model_capability_embeddings {
+            get {
+                return ResourceManager.GetString("model_capability_embeddings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Cap.
+        /// </summary>
+        public static string model_capability_label {
+            get {
+                return ResourceManager.GetString("model_capability_label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Reasoning.
+        /// </summary>
+        public static string model_capability_reasoning {
+            get {
+                return ResourceManager.GetString("model_capability_reasoning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Reranking.
+        /// </summary>
+        public static string model_capability_reranking {
+            get {
+                return ResourceManager.GetString("model_capability_reranking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Streaming.
+        /// </summary>
+        public static string model_capability_streaming {
+            get {
+                return ResourceManager.GetString("model_capability_streaming", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tool Calling.
+        /// </summary>
+        public static string model_capability_tools {
+            get {
+                return ResourceManager.GetString("model_capability_tools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Unknown.
+        /// </summary>
+        public static string model_capability_unknown {
+            get {
+                return ResourceManager.GetString("model_capability_unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Audio.
+        /// </summary>
+        public static string model_modality_audio {
+            get {
+                return ResourceManager.GetString("model_modality_audio", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Image.
+        /// </summary>
+        public static string model_modality_image {
+            get {
+                return ResourceManager.GetString("model_modality_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на In.
+        /// </summary>
+        public static string model_modality_in {
+            get {
+                return ResourceManager.GetString("model_modality_in", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Out.
+        /// </summary>
+        public static string model_modality_out {
+            get {
+                return ResourceManager.GetString("model_modality_out", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Text.
+        /// </summary>
+        public static string model_modality_text {
+            get {
+                return ResourceManager.GetString("model_modality_text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Unknown.
+        /// </summary>
+        public static string model_modality_unknown {
+            get {
+                return ResourceManager.GetString("model_modality_unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Video.
+        /// </summary>
+        public static string model_modality_video {
+            get {
+                return ResourceManager.GetString("model_modality_video", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на DeepSeek.
+        /// </summary>
+        public static string model_provider_deepseek {
+            get {
+                return ResourceManager.GetString("model_provider_deepseek", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Novita.
+        /// </summary>
+        public static string model_provider_novita {
+            get {
+                return ResourceManager.GetString("model_provider_novita", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ollama.
+        /// </summary>
+        public static string model_provider_ollama {
+            get {
+                return ResourceManager.GetString("model_provider_ollama", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на OpenAI.
+        /// </summary>
+        public static string model_provider_openai {
+            get {
+                return ResourceManager.GetString("model_provider_openai", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на OpenAI Compatible.
+        /// </summary>
+        public static string model_provider_openai_compat {
+            get {
+                return ResourceManager.GetString("model_provider_openai-compat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на OpenRouter.
+        /// </summary>
+        public static string model_provider_openrouter {
+            get {
+                return ResourceManager.GetString("model_provider_openrouter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Available Models.
+        /// </summary>
+        public static string model_selector_available_models {
+            get {
+                return ResourceManager.GetString("model_selector_available_models", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Deselect all.
+        /// </summary>
+        public static string model_selector_deselect_all {
+            get {
+                return ResourceManager.GetString("model_selector_deselect_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Failed to load models.
+        /// </summary>
+        public static string model_selector_failed {
+            get {
+                return ResourceManager.GetString("model_selector_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Manage providers &amp; models.
+        /// </summary>
+        public static string model_selector_manage_tooltip {
+            get {
+                return ResourceManager.GetString("model_selector_manage_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на No models available.
+        /// </summary>
+        public static string model_selector_no_models {
+            get {
+                return ResourceManager.GetString("model_selector_no_models", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на — None —.
+        /// </summary>
+        public static string model_selector_none {
+            get {
+                return ResourceManager.GetString("model_selector_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Refresh Models.
+        /// </summary>
+        public static string model_selector_refresh {
+            get {
+                return ResourceManager.GetString("model_selector_refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select all.
+        /// </summary>
+        public static string model_selector_select_all {
+            get {
+                return ResourceManager.GetString("model_selector_select_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Name.
         /// </summary>
         public static string name {
@@ -4098,6 +4368,231 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_promote_to_global {
             get {
                 return ResourceManager.GetString("settings_promote_to_global", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Add.
+        /// </summary>
+        public static string settings_providers_add {
+            get {
+                return ResourceManager.GetString("settings_providers_add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Add Model Provider.
+        /// </summary>
+        public static string settings_providers_add_title {
+            get {
+                return ResourceManager.GetString("settings_providers_add_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на API Key.
+        /// </summary>
+        public static string settings_providers_apikey {
+            get {
+                return ResourceManager.GetString("settings_providers_apikey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancel.
+        /// </summary>
+        public static string settings_providers_cancel {
+            get {
+                return ResourceManager.GetString("settings_providers_cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Close.
+        /// </summary>
+        public static string settings_providers_close {
+            get {
+                return ResourceManager.GetString("settings_providers_close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на ✓ Connected.
+        /// </summary>
+        public static string settings_providers_connected {
+            get {
+                return ResourceManager.GetString("settings_providers_connected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Error: {0}.
+        /// </summary>
+        public static string settings_providers_connection_error {
+            get {
+                return ResourceManager.GetString("settings_providers_connection_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на ✗ Connection failed.
+        /// </summary>
+        public static string settings_providers_connection_failed {
+            get {
+                return ResourceManager.GetString("settings_providers_connection_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на ✓ Connection successful.
+        /// </summary>
+        public static string settings_providers_connection_success {
+            get {
+                return ResourceManager.GetString("settings_providers_connection_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Custom Models.
+        /// </summary>
+        public static string settings_providers_custom_models {
+            get {
+                return ResourceManager.GetString("settings_providers_custom_models", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete.
+        /// </summary>
+        public static string settings_providers_delete {
+            get {
+                return ResourceManager.GetString("settings_providers_delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на ✗ Failed.
+        /// </summary>
+        public static string settings_providers_disconnected {
+            get {
+                return ResourceManager.GetString("settings_providers_disconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit.
+        /// </summary>
+        public static string settings_providers_edit {
+            get {
+                return ResourceManager.GetString("settings_providers_edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit Model Provider.
+        /// </summary>
+        public static string settings_providers_edit_title {
+            get {
+                return ResourceManager.GetString("settings_providers_edit_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Endpoint URI.
+        /// </summary>
+        public static string settings_providers_endpoint {
+            get {
+                return ResourceManager.GetString("settings_providers_endpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на https://api.openai.com/v1.
+        /// </summary>
+        public static string settings_providers_endpoint_placeholder {
+            get {
+                return ResourceManager.GetString("settings_providers_endpoint_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Model Providers.
+        /// </summary>
+        public static string settings_providers_manage_title {
+            get {
+                return ResourceManager.GetString("settings_providers_manage_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} models.
+        /// </summary>
+        public static string settings_providers_models_count {
+            get {
+                return ResourceManager.GetString("settings_providers_models_count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Provider Name.
+        /// </summary>
+        public static string settings_providers_name {
+            get {
+                return ResourceManager.GetString("settings_providers_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на e.g. My OpenAI Provider.
+        /// </summary>
+        public static string settings_providers_name_placeholder {
+            get {
+                return ResourceManager.GetString("settings_providers_name_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на No custom models configured.
+        /// </summary>
+        public static string settings_providers_no_custom_models {
+            get {
+                return ResourceManager.GetString("settings_providers_no_custom_models", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Refresh Models.
+        /// </summary>
+        public static string settings_providers_refresh_models {
+            get {
+                return ResourceManager.GetString("settings_providers_refresh_models", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Save.
+        /// </summary>
+        public static string settings_providers_save {
+            get {
+                return ResourceManager.GetString("settings_providers_save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Test Connection.
+        /// </summary>
+        public static string settings_providers_test_connection {
+            get {
+                return ResourceManager.GetString("settings_providers_test_connection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Provider Type.
+        /// </summary>
+        public static string settings_providers_type {
+            get {
+                return ResourceManager.GetString("settings_providers_type", resourceCulture);
             }
         }
         

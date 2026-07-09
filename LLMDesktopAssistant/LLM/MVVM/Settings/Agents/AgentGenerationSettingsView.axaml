@@ -28,7 +28,7 @@
 					Margin="20,0,0,0"
 					IsEnabled="{Binding GenerationSettings.EnableCustomModel}">
 
-			<ctrl:LLModelSelectorControl SelectedModel="{Binding GenerationSettings.Model, Mode=TwoWay}"/>
+			<ctrl:ModelSelectorControl SelectedModel="{Binding GenerationSettings.Model, Mode=TwoWay}"/>
 
 		</StackPanel>
 

@@ -9,6 +9,7 @@ namespace LLMDesktopAssistant.ApiKeys
 	/// <summary>
 	/// ViewModel for the "Add / Edit API Key" dialog.
 	/// </summary>
+	[ViewModelFor(typeof(AddApiKeyDialogView))]
 	public class AddApiKeyDialogViewModel : ViewModelBase
 	{
 		private readonly IApiKeyManagerService _apiKeys;

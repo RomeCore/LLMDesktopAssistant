@@ -27,7 +27,7 @@
 
 			<TextBlock Text="{loc:Loc settings-summarizer_model_hint}"
 					   Margin="0,15,0,2"/>
-			<ctrl:LLModelSelectorControl SelectedModel="{Binding SummarizationSettings.SummarizerModel, Mode=TwoWay}"/>
+			<ctrl:ModelSelectorControl SelectedModel="{Binding SummarizationSettings.SummarizerModel, Mode=TwoWay}"/>
 
 		</StackPanel>
 	</ScrollViewer>

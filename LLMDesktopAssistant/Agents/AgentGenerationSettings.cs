@@ -1,6 +1,5 @@
-﻿using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Utils;
-using RCLargeLanguageModels.Clients;
 
 namespace LLMDesktopAssistant.Agents
 {
@@ -19,11 +18,11 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _enableCustomModel, value);
 		}
 
-		private LLModelDescriptorTracked _model = LLModelDescriptorTracked.Empty;
+		private string _model = string.Empty;
 		/// <summary>
-		/// The model to use for the agent.
+		/// The model to use for the agent. Format: "ProviderName$ModelName".
 		/// </summary>
-		public LLModelDescriptorTracked Model
+		public string Model
 		{
 			get => _model;
 			set => SetProperty(ref _model, value);

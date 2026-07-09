@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using AngleSharp.Common;
 using LLMDesktopAssistant.ApiKeys;
 using LLMDesktopAssistant.Services;
@@ -50,6 +50,25 @@ namespace LLMDesktopAssistant.Providers
 					Descriptor = m.IsInformationKnown ? m : cacheLookup.TryGetValue(m.Name, out var cached) ? cached : m,
 					FullName = p.Name + "$" + m.Name
 				}));
+		}
+
+		public IEnumerable<ModelItem> ListSelectedModels()
+		{
+			var cacheLookup = cache.Descriptors.ToDictionary(k => k.Name);
+			return providers.ModelProviders.SelectMany(p =>
+			{
+				var selectedModelNames = p.SelectedModelNames.ToHashSet();
+				return p.Models.Where(m => selectedModelNames.Contains(m.Name))
+					.Concat(p.CustomModels)
+					.GroupBy(m => m.Name)
+					.Select(g => g.Last())
+					.Select(m => new ModelItem
+					{
+						Provider = p,
+						Descriptor = m.IsInformationKnown ? m : cacheLookup.TryGetValue(m.Name, out var cached) ? cached : m,
+						FullName = p.Name + "$" + m.Name
+					});
+			});
 		}
 
 		public async Task<bool> CheckConnectionAsync(ModelProviderConfiguration provider, CancellationToken cancellationToken = default)

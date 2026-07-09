@@ -5,7 +5,7 @@ using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Tools;
-using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
@@ -253,14 +253,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			""";
 
 		private readonly Chat _chat;
-		private readonly LLModelListService _modelList;
+		private readonly IModelManager _modelManager;
 		private readonly IToolsetCacheService _toolsetCache;
 		private LuaService _luaService = null!;
 
-		public LuaApiAgents(Chat chat, LLModelListService modelList, IToolsetCacheService toolsetCache)
+		public LuaApiAgents(Chat chat, IModelManager modelManager, IToolsetCacheService toolsetCache)
 		{
 			_chat = chat;
-			_modelList = modelList;
+			_modelManager = modelManager;
 			_toolsetCache = toolsetCache;
 		}
 
@@ -392,21 +392,22 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				Messages = messages.Take(messages.Count - 1).ToList(),
 			};
 
-			// Resolve model name and descriptor.
-			LLModelDescriptor? model;
+			// Resolve model name and LLM.
 			var modelName = parameters.Get("model")?.TryToString();
-			if (!string.IsNullOrEmpty(modelName))
+			if (string.IsNullOrEmpty(modelName))
+				modelName = _chat.Settings.Models.AgenticToolsModel;
+
+			if (string.IsNullOrEmpty(modelName))
+				throw new Exception("agentic model is not selected.");
+
+			LLModel llm;
+			try
 			{
-				var tracked = _modelList.Registry.GetModel(modelName);
-				model = tracked?.Current;
-				if (model is null)
-					throw new Exception($"model '{modelName}' not found.");
+				llm = _modelManager.GetModel(modelName);
 			}
-			else
+			catch (Exception ex)
 			{
-				model = _chat.Settings.Models.AgenticToolsModel.Current;
-				if (model is null)
-					throw new Exception("agentic model is not available.");
+				throw new Exception($"model '{modelName}' is not available: {ex.Message}");
 			}
 
 			// Resolve tools: mixed array of strings (registered tools) and tables (callback tools)
@@ -516,7 +517,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var toolExecutor = new LLMToolExecutor
 			{
 				Memory = memory,
-				LLMProvider = new LLModel(model).WithTools(tools),
+				LLMProvider = llm.WithTools(tools),
 				MaxParallelToolExecutions = -1,
 				MaxToolCycles = -1,
 				MaxToolCalls = -1

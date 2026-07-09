@@ -1,0 +1,247 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="using:LLMDesktopAssistant.Providers"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 mc:Ignorable="d" d:DesignWidth="560" d:DesignHeight="600"
+			 x:Class="LLMDesktopAssistant.Providers.AddModelProviderDialogView"
+			 x:DataType="local:AddModelProviderDialogViewModel">
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+	<StackPanel Orientation="Vertical" Spacing="10" Margin="20" Width="520">
+
+		<!-- Header -->
+		<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,10">
+			<ico:MaterialIcon Kind="Settings" Width="20" Height="20"
+							  VerticalAlignment="Center"
+							  Foreground="{DynamicResource PrimaryAccentBrush}"/>
+			<TextBlock Text="{loc:Loc settings_providers_add_title}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
+		</StackPanel>
+
+		<!-- Name -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			<TextBlock Text="{loc:Loc settings_providers_name}"/>
+			<TextBox Text="{Binding EditingProvider.Name, Mode=TwoWay}"
+					 PlaceholderText="{loc:Loc settings_providers_name_placeholder}"/>
+		</StackPanel>
+
+		<!-- Provider Type -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			<TextBlock Text="{loc:Loc settings_providers_type}"/>
+			<ComboBox ItemsSource="{Binding ProviderTypes}"
+					  SelectedItem="{Binding SelectedProviderType, Mode=TwoWay}"
+					  PlaceholderText="{loc:Loc settings_providers_type}">
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:ProviderTypeItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+		</StackPanel>
+
+		<!-- Endpoint URI -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			<TextBlock Text="{loc:Loc settings_providers_endpoint}"/>
+			<TextBox Text="{Binding EditingProvider.EndpointUri, Mode=TwoWay}"
+					 PlaceholderText="{loc:Loc settings_providers_endpoint_placeholder}"/>
+		</StackPanel>
+
+		<!-- API Key -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			<TextBlock Text="{loc:Loc settings_providers_apikey}"/>
+			<ctrl:ApiKeySelectorControl ApiKeyId="{Binding EditingProvider.ApiKeyId, Mode=TwoWay}"/>
+		</StackPanel>
+
+		<!-- Test Connection + Refresh Models -->
+		<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4">
+			<Button Command="{Binding TestConnectionCommand}"
+					Classes="Primary">
+				<StackPanel Orientation="Horizontal" Spacing="4">
+					<ico:MaterialIcon Kind="Link" Width="16" Height="16"/>
+					<TextBlock Text="{loc:Loc settings_providers_test_connection}"/>
+				</StackPanel>
+			</Button>
+
+			<Button Command="{Binding LoadModelsCommand}">
+				<StackPanel Orientation="Horizontal" Spacing="4">
+					<ico:MaterialIcon Kind="Refresh" Width="16" Height="16"/>
+					<TextBlock Text="{loc:Loc model_selector_refresh}"/>
+				</StackPanel>
+			</Button>
+
+			<TextBlock Text="{Binding ConnectionTestResult}"
+					   VerticalAlignment="Center"
+					   FontWeight="Medium"
+					   Margin="4,0,0,0"/>
+		</StackPanel>
+
+		<!-- Model list -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			
+			<Separator Margin="0,4"/>
+			
+			<StackPanel Orientation="Horizontal" Spacing="8">
+				<TextBlock Text="{loc:Loc model_selector_available_models}"
+						   FontWeight="Bold"
+						   FontSize="{DynamicResource FontSizeL}"
+						   VerticalAlignment="Center"/>
+				
+				<Button Command="{Binding SelectAllCommand}"
+						Classes="IconButton"
+						ToolTip.Tip="{loc:Loc model_selector_select_all}">
+					<ico:MaterialIcon Kind="SelectAll" Width="14" Height="14"/>
+				</Button>
+
+				<Button Command="{Binding DeselectAllCommand}"
+						Classes="IconButton"
+						ToolTip.Tip="{loc:Loc model_selector_deselect_all}">
+					<ico:MaterialIcon Kind="SelectOff" Width="14" Height="14"/>
+				</Button>
+			</StackPanel>
+
+			<Border BorderBrush="{DynamicResource DefaultForeground}"
+					BorderThickness="1"
+					CornerRadius="4"
+					MaxHeight="300">
+				<ScrollViewer VerticalScrollBarVisibility="Auto"
+											HorizontalScrollBarVisibility="Auto">
+					<ItemsControl ItemsSource="{Binding AvailableModels}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="local:ModelCheckboxItem">
+
+								<Panel>
+								
+									<Border BorderThickness="0,0,0,1"
+											BorderBrush="{DynamicResource DefaultForeground}"
+											Opacity="0.3"
+											Padding="4"/>
+									
+									<Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto"
+											ColumnSpacing="6">
+									
+										<CheckBox Grid.Column="0"
+													IsChecked="{Binding IsSelected, Mode=TwoWay}"
+													VerticalAlignment="Center"/>
+									
+										<StackPanel Grid.Column="1" Orientation="Vertical"
+																IsVisible="{Binding DisplayName, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+											<TextBlock Text="{Binding DisplayName}"
+																 FontWeight="Medium"/>
+											<TextBlock Text="{Binding Model.Name}"
+																 FontSize="{DynamicResource FontSizeS}"
+																 Opacity="0.6"/>
+										</StackPanel>
+									
+										<TextBlock Grid.Column="1" 
+															 Text="{Binding Model.Name}"
+															 IsVisible="{Binding DisplayName, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"/>
+									
+										<!-- Input Modalities icons -->
+										<StackPanel Grid.Column="2" Orientation="Vertical"
+													VerticalAlignment="Center">
+											<TextBlock Text="{loc:Loc model_modality_in}"
+														 FontSize="10"
+														 Opacity="0.4"
+														 HorizontalAlignment="Center"/>
+											<ItemsControl ItemsSource="{Binding InputModalityFlags}">
+												<ItemsControl.ItemsPanel>
+													<ItemsPanelTemplate>
+														<WrapPanel ItemSpacing="2"/>
+													</ItemsPanelTemplate>
+												</ItemsControl.ItemsPanel>
+												<ItemsControl.ItemTemplate>
+													<DataTemplate x:DataType="local:ModelModalityFlagInfo">
+														<Panel ToolTip.Tip="{Binding DisplayName}"
+																	 Background="Transparent">
+															<ico:MaterialIcon Kind="{Binding Icon}"
+																								Foreground="{Binding Color}"
+																								Width="12" Height="12"/>
+														</Panel>
+													</DataTemplate>
+												</ItemsControl.ItemTemplate>
+											</ItemsControl>
+										</StackPanel>
+									
+										<!-- Output Modalities icons -->
+										<StackPanel Grid.Column="3" Orientation="Vertical"
+													VerticalAlignment="Center">
+											<TextBlock Text="{loc:Loc model_modality_out}"
+														 FontSize="10"
+														 Opacity="0.4"
+														 HorizontalAlignment="Center"/>
+											<ItemsControl ItemsSource="{Binding OutputModalityFlags}">
+												<ItemsControl.ItemsPanel>
+													<ItemsPanelTemplate>
+														<WrapPanel ItemSpacing="2"/>
+													</ItemsPanelTemplate>
+												</ItemsControl.ItemsPanel>
+												<ItemsControl.ItemTemplate>
+													<DataTemplate x:DataType="local:ModelModalityFlagInfo">
+														<Panel ToolTip.Tip="{Binding DisplayName}"
+																	 Background="Transparent">
+															<ico:MaterialIcon Kind="{Binding Icon}"
+																								Foreground="{Binding Color}"
+																								Width="12" Height="12"/>
+														</Panel>
+													</DataTemplate>
+												</ItemsControl.ItemTemplate>
+											</ItemsControl>
+										</StackPanel>
+									
+										<!-- Capabilities icons -->
+										<StackPanel Grid.Column="4" Orientation="Vertical"
+													VerticalAlignment="Center">
+											<TextBlock Text="{loc:Loc model_capability_label}"
+														 FontSize="10"
+														 Opacity="0.4"
+														 HorizontalAlignment="Center"/>
+											<ItemsControl ItemsSource="{Binding CapabilityFlags}">
+												<ItemsControl.ItemsPanel>
+													<ItemsPanelTemplate>
+														<WrapPanel ItemSpacing="2"/>
+													</ItemsPanelTemplate>
+												</ItemsControl.ItemsPanel>
+												<ItemsControl.ItemTemplate>
+													<DataTemplate x:DataType="local:ModelCapabilityFlagInfo">
+														<Panel ToolTip.Tip="{Binding DisplayName}"
+																	 Background="Transparent">
+															<ico:MaterialIcon Kind="{Binding Icon}"
+																								Foreground="{Binding Color}"
+																								Width="12" Height="12"/>
+														</Panel>
+													</DataTemplate>
+												</ItemsControl.ItemTemplate>
+											</ItemsControl>
+										</StackPanel>
+									</Grid>
+
+								</Panel>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</ScrollViewer>
+			</Border>
+		</StackPanel>
+
+		<!-- Buttons -->
+		<StackPanel Orientation="Horizontal"
+					HorizontalAlignment="Right"
+					Spacing="8"
+					Margin="0,16,0,0">
+
+			<Button Content="{loc:Loc close}"
+					Command="{Binding CloseCommand}"
+					Classes="Primary"/>
+
+		</StackPanel>
+
+	</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using RCLargeLanguageModels;
@@ -26,6 +26,12 @@ namespace LLMDesktopAssistant.Providers
 		/// </summary>
 		/// <returns>A collection of model items. Each item represents a model with its full name and other details.</returns>
 		IEnumerable<ModelItem> ListModels();
+
+		/// <summary>
+		/// Lists all selected models (from <see cref="ModelProviderConfiguration.SelectedModelNames"/> and <see cref="ModelProviderConfiguration.CustomModels"/>).
+		/// </summary>
+		/// <returns>A collection of model items filtered by selection.</returns>
+		IEnumerable<ModelItem> ListSelectedModels();
 
 		/// <summary>
 		/// Checks if a connection to a model provider is available and configuration is valid.

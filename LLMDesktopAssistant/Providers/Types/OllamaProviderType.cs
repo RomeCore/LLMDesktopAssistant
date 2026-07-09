@@ -29,7 +29,9 @@ namespace LLMDesktopAssistant.Providers.Types
 		public override LLMClient CreateClient(ModelProviderConfiguration providerConfig, ITokenAccessor? tokenAccessor)
 		{
 			var endpoint = providerConfig.EndpointUri ?? OllamaClient.DefaultBaseUri;
-			return new DeepSeekClient(endpoint, tokenAccessor!);
+			if (tokenAccessor != null)
+				return new OllamaClient(endpoint, tokenAccessor);
+			return new OllamaClient(endpoint);
 		}
 	}
 }

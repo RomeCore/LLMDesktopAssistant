@@ -1,4 +1,5 @@
-﻿using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using RCLargeLanguageModels;
@@ -51,11 +52,21 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			if (await base.SelectNextAgentAsync(selectFrom, context, cancellationToken) is Guid nextAgent)
 				return nextAgent;
 
-			var model = context.Chat.Settings.Models.AgenticRouterModel;
-			if (!model.Available)
-				throw new InvalidOperationException("Agentic router model is not available.");
+			var routerModelName = context.Chat.Settings.Models.AgenticRouterModel;
+			if (string.IsNullOrEmpty(routerModelName))
+				throw new InvalidOperationException("Agentic router model is not selected. Please select a router model in chat settings.");
 
-			var llm = model.Model!;
+			var modelManager = context.Services.GetRequiredService<IModelManager>();
+			LLModel llm;
+			try
+			{
+				llm = modelManager.GetModel(routerModelName);
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException($"Agentic router model '{routerModelName}' is not available: {ex.Message}");
+			}
+
 			var templateLibrary = context.Services.GetRequiredService<TemplateLibrary>();
 
 			var agents = selectFrom

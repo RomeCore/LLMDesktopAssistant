@@ -1,7 +1,6 @@
-﻿using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools.Implementations;
 using LLMDesktopAssistant.Agents.ExecutionStages;
-using RCLargeLanguageModels.Clients;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -10,41 +9,44 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// </summary>
 	public class ChatModelSettings : ChatSettingsCategoryBase
 	{
-		private LLModelDescriptorTracked _chatModel = LLModelDescriptorTracked.Empty;
+		private string _chatModel = string.Empty;
 		/// <summary>
-		/// The model to use for chat.
+		/// The model to use for chat. Format: "ProviderName$ModelName".
 		/// </summary>
-		public LLModelDescriptorTracked ChatModel
+		public string ChatModel
 		{
 			get => _chatModel;
 			set => SetProperty(ref _chatModel, value);
 		}
 
-		private LLModelDescriptorTracked _agenticToolsModel = LLModelDescriptorTracked.Empty;
+		private string _agenticToolsModel = string.Empty;
 		/// <summary>
 		/// The model to use for <see cref="AgenticToolModule"/>.
+		/// Format: "ProviderName$ModelName".
 		/// </summary>
-		public LLModelDescriptorTracked AgenticToolsModel
+		public string AgenticToolsModel
 		{
 			get => _agenticToolsModel;
 			set => SetProperty(ref _agenticToolsModel, value);
 		}
 
-		private LLModelDescriptorTracked _routerModel = LLModelDescriptorTracked.Empty;
+		private string _routerModel = string.Empty;
 		/// <summary>
 		/// The model to use for agentic routing in the <see cref="AdaptiveAgentExecutionStage"/>.
+		/// Format: "ProviderName$ModelName".
 		/// </summary>
-		public LLModelDescriptorTracked AgenticRouterModel
+		public string AgenticRouterModel
 		{
 			get => _routerModel;
 			set => SetProperty(ref _routerModel, value);
 		}
 
-		private LLModelDescriptorTracked _visionModel = LLModelDescriptorTracked.Empty;
+		private string _visionModel = string.Empty;
 		/// <summary>
 		/// The model to use for vision and image-understanding tasks.
+		/// Format: "ProviderName$ModelName".
 		/// </summary>
-		public LLModelDescriptorTracked VisionModel
+		public string VisionModel
 		{
 			get => _visionModel;
 			set => SetProperty(ref _visionModel, value);

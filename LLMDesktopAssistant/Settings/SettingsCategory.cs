@@ -6,7 +6,7 @@ using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tasks;
 using RCParsing.Building.ErrorRecoveryStrategies;
-using LLMDesktopAssistant.Settings.Converters;
+
 
 namespace LLMDesktopAssistant.Settings
 {
@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.Settings
 			Converters =
 			{
 				new JsonStringEnumConverter(),
-				new JsonLLModelDescriptorConverter()
+	
 			}
 		};
 

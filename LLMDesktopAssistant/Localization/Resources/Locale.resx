@@ -1860,7 +1860,172 @@
   <data name="settings_apikey_none" xml:space="preserve">
     <value>None</value>
   </data>
+  <data name="settings_providers_manage_title" xml:space="preserve">
+    <value>Model Providers</value>
+  </data>
+  <data name="settings_providers_add_title" xml:space="preserve">
+    <value>Add Model Provider</value>
+  </data>
+  <data name="settings_providers_edit_title" xml:space="preserve">
+    <value>Edit Model Provider</value>
+  </data>
+  <data name="settings_providers_add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="settings_providers_edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="settings_providers_delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="settings_providers_name" xml:space="preserve">
+    <value>Provider Name</value>
+  </data>
+  <data name="settings_providers_name_placeholder" xml:space="preserve">
+    <value>e.g. My OpenAI Provider</value>
+  </data>
+  <data name="settings_providers_type" xml:space="preserve">
+    <value>Provider Type</value>
+  </data>
+  <data name="settings_providers_endpoint" xml:space="preserve">
+    <value>Endpoint URI</value>
+  </data>
+  <data name="settings_providers_endpoint_placeholder" xml:space="preserve">
+    <value>https://api.openai.com/v1</value>
+  </data>
+  <data name="settings_providers_apikey" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="settings_providers_test_connection" xml:space="preserve">
+    <value>Test Connection</value>
+  </data>
+  <data name="settings_providers_refresh_models" xml:space="preserve">
+    <value>Refresh Models</value>
+  </data>
+  <data name="settings_providers_connection_success" xml:space="preserve">
+    <value>✓ Connection successful</value>
+  </data>
+  <data name="settings_providers_connection_failed" xml:space="preserve">
+    <value>✗ Connection failed</value>
+  </data>
+  <data name="settings_providers_save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="settings_providers_cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="settings_providers_close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="settings_providers_models_count" xml:space="preserve">
+    <value>{0} models</value>
+  </data>
+  <data name="settings_providers_custom_models" xml:space="preserve">
+    <value>Custom Models</value>
+  </data>
+  <data name="settings_providers_no_custom_models" xml:space="preserve">
+    <value>No custom models configured</value>
+  </data>
+  <data name="model_provider_openai" xml:space="preserve">
+    <value>OpenAI</value>
+  </data>
+  <data name="model_provider_openai-compat" xml:space="preserve">
+    <value>OpenAI Compatible</value>
+  </data>
+  <data name="model_provider_openrouter" xml:space="preserve">
+    <value>OpenRouter</value>
+  </data>
+  <data name="model_provider_deepseek" xml:space="preserve">
+    <value>DeepSeek</value>
+  </data>
+  <data name="model_provider_novita" xml:space="preserve">
+    <value>Novita</value>
+  </data>
+  <data name="model_provider_ollama" xml:space="preserve">
+    <value>Ollama</value>
+  </data>
+  <data name="model_selector_none" xml:space="preserve">
+    <value>— None —</value>
+  </data>
+  <data name="model_selector_no_models" xml:space="preserve">
+    <value>No models available</value>
+  </data>
+  <data name="model_selector_failed" xml:space="preserve">
+    <value>Failed to load models</value>
+  </data>
+  <data name="model_modality_text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="model_modality_image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="model_modality_audio" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="model_modality_video" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="model_capability_chat" xml:space="preserve">
+    <value>Chat Completions</value>
+  </data>
+  <data name="model_capability_completion" xml:space="preserve">
+    <value>Completions</value>
+  </data>
+  <data name="model_capability_embeddings" xml:space="preserve">
+    <value>Embeddings</value>
+  </data>
+  <data name="model_capability_reranking" xml:space="preserve">
+    <value>Reranking</value>
+  </data>
+  <data name="model_capability_tools" xml:space="preserve">
+    <value>Tool Calling</value>
+  </data>
+  <data name="model_capability_reasoning" xml:space="preserve">
+    <value>Reasoning</value>
+  </data>
+  <data name="model_capability_streaming" xml:space="preserve">
+    <value>Streaming</value>
+  </data>
+  <data name="model_selector_refresh" xml:space="preserve">
+    <value>Refresh Models</value>
+  </data>
+  <data name="model_selector_available_models" xml:space="preserve">
+    <value>Available Models</value>
+  </data>
+  <data name="model_selector_select_all" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="model_selector_deselect_all" xml:space="preserve">
+    <value>Deselect all</value>
+  </data>
+  <data name="model_modality_in" xml:space="preserve">
+    <value>In</value>
+  </data>
+  <data name="model_modality_out" xml:space="preserve">
+    <value>Out</value>
+  </data>
+  <data name="model_capability_label" xml:space="preserve">
+    <value>Cap</value>
+  </data>
+  <data name="settings_providers_connection_error" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="settings_providers_connected" xml:space="preserve">
+    <value>✓ Connected</value>
+  </data>
+  <data name="settings_providers_disconnected" xml:space="preserve">
+    <value>✗ Failed</value>
+  </data>
+  <data name="model_selector_manage_tooltip" xml:space="preserve">
+    <value>Manage providers &amp; models</value>
+  </data>
   <data name="attachments_manager_title" xml:space="preserve">
     <value>Attach</value>
+  </data>
+  <data name="model_modality_unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="model_capability_unknown" xml:space="preserve">
+    <value>Unknown</value>
   </data>
 </root>

@@ -1860,7 +1860,172 @@
   <data name="settings_apikey_none" xml:space="preserve">
     <value>Нет</value>
   </data>
+  <data name="settings_providers_manage_title" xml:space="preserve">
+    <value>Провайдеры моделей</value>
+  </data>
+  <data name="settings_providers_add_title" xml:space="preserve">
+    <value>Добавить провайдера</value>
+  </data>
+  <data name="settings_providers_edit_title" xml:space="preserve">
+    <value>Редактировать провайдера</value>
+  </data>
+  <data name="settings_providers_add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="settings_providers_edit" xml:space="preserve">
+    <value>Редактировать</value>
+  </data>
+  <data name="settings_providers_delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="settings_providers_name" xml:space="preserve">
+    <value>Имя провайдера</value>
+  </data>
+  <data name="settings_providers_name_placeholder" xml:space="preserve">
+    <value>например, Мой OpenAI провайдер</value>
+  </data>
+  <data name="settings_providers_type" xml:space="preserve">
+    <value>Тип провайдера</value>
+  </data>
+  <data name="settings_providers_endpoint" xml:space="preserve">
+    <value>Endpoint URI</value>
+  </data>
+  <data name="settings_providers_endpoint_placeholder" xml:space="preserve">
+    <value>https://api.openai.com/v1</value>
+  </data>
+  <data name="settings_providers_apikey" xml:space="preserve">
+    <value>API-ключ</value>
+  </data>
+  <data name="settings_providers_test_connection" xml:space="preserve">
+    <value>Проверить соединение</value>
+  </data>
+  <data name="settings_providers_refresh_models" xml:space="preserve">
+    <value>Обновить модели</value>
+  </data>
+  <data name="settings_providers_connection_success" xml:space="preserve">
+    <value>✓ Соединение успешно</value>
+  </data>
+  <data name="settings_providers_connection_failed" xml:space="preserve">
+    <value>✗ Соединение не удалось</value>
+  </data>
+  <data name="settings_providers_save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="settings_providers_cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="settings_providers_close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="settings_providers_models_count" xml:space="preserve">
+    <value>{0} моделей</value>
+  </data>
+  <data name="settings_providers_custom_models" xml:space="preserve">
+    <value>Пользовательские модели</value>
+  </data>
+  <data name="settings_providers_no_custom_models" xml:space="preserve">
+    <value>Нет пользовательских моделей</value>
+  </data>
+  <data name="model_provider_openai" xml:space="preserve">
+    <value>OpenAI</value>
+  </data>
+  <data name="model_provider_openai-compat" xml:space="preserve">
+    <value>OpenAI Совместимый</value>
+  </data>
+  <data name="model_provider_openrouter" xml:space="preserve">
+    <value>OpenRouter</value>
+  </data>
+  <data name="model_provider_deepseek" xml:space="preserve">
+    <value>DeepSeek</value>
+  </data>
+  <data name="model_provider_novita" xml:space="preserve">
+    <value>Novita</value>
+  </data>
+  <data name="model_provider_ollama" xml:space="preserve">
+    <value>Ollama</value>
+  </data>
+  <data name="model_selector_none" xml:space="preserve">
+    <value>— Нет —</value>
+  </data>
+  <data name="model_selector_no_models" xml:space="preserve">
+    <value>Нет доступных моделей</value>
+  </data>
+  <data name="model_selector_failed" xml:space="preserve">
+    <value>Не удалось загрузить модели</value>
+  </data>
+  <data name="model_modality_text" xml:space="preserve">
+    <value>Текст</value>
+  </data>
+  <data name="model_modality_image" xml:space="preserve">
+    <value>Изображение</value>
+  </data>
+  <data name="model_modality_audio" xml:space="preserve">
+    <value>Аудио</value>
+  </data>
+  <data name="model_modality_video" xml:space="preserve">
+    <value>Видео</value>
+  </data>
+  <data name="model_capability_chat" xml:space="preserve">
+    <value>Чат</value>
+  </data>
+  <data name="model_capability_completion" xml:space="preserve">
+    <value>Завершение</value>
+  </data>
+  <data name="model_capability_embeddings" xml:space="preserve">
+    <value>Эмбеддинги</value>
+  </data>
+  <data name="model_capability_reranking" xml:space="preserve">
+    <value>Ранжирование</value>
+  </data>
+  <data name="model_capability_tools" xml:space="preserve">
+    <value>Инструменты</value>
+  </data>
+  <data name="model_capability_reasoning" xml:space="preserve">
+    <value>Рассуждение</value>
+  </data>
+  <data name="model_capability_streaming" xml:space="preserve">
+    <value>Стриминг</value>
+  </data>
+  <data name="model_selector_refresh" xml:space="preserve">
+    <value>Обновить модели</value>
+  </data>
+  <data name="model_selector_available_models" xml:space="preserve">
+    <value>Доступные модели</value>
+  </data>
+  <data name="model_selector_select_all" xml:space="preserve">
+    <value>Выбрать все</value>
+  </data>
+  <data name="model_selector_deselect_all" xml:space="preserve">
+    <value>Снять все</value>
+  </data>
+  <data name="model_modality_in" xml:space="preserve">
+    <value>Вход</value>
+  </data>
+  <data name="model_modality_out" xml:space="preserve">
+    <value>Выход</value>
+  </data>
+  <data name="model_capability_label" xml:space="preserve">
+    <value>Возм</value>
+  </data>
+  <data name="settings_providers_connection_error" xml:space="preserve">
+    <value>Ошибка: {0}</value>
+  </data>
+  <data name="settings_providers_connected" xml:space="preserve">
+    <value>✓ Подключено</value>
+  </data>
+  <data name="settings_providers_disconnected" xml:space="preserve">
+    <value>✗ Не удалось</value>
+  </data>
+  <data name="model_selector_manage_tooltip" xml:space="preserve">
+    <value>Управление провайдерами и моделями</value>
+  </data>
   <data name="attachments_manager_title" xml:space="preserve">
     <value>Вложить</value>
+  </data>
+  <data name="model_modality_unknown" xml:space="preserve">
+    <value>Неизвестно</value>
+  </data>
+  <data name="model_capability_unknown" xml:space="preserve">
+    <value>Неизвестно</value>
   </data>
 </root>
