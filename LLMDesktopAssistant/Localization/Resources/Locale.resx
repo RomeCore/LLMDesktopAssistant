@@ -1918,7 +1918,7 @@
     <value>Close</value>
   </data>
   <data name="settings_providers_models_count" xml:space="preserve">
-    <value>{0} models</value>
+    <value>{0} loaded, {1} selected, {2} custom models</value>
   </data>
   <data name="settings_providers_custom_models" xml:space="preserve">
     <value>Custom Models</value>

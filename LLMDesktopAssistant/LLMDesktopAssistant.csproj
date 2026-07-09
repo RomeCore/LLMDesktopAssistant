@@ -196,6 +196,9 @@
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
+		<Compile Update="Providers\ConfigureModelProviderDialogView.axaml.cs">
+		  <DependentUpon>ConfigureModelProviderDialogView.axaml</DependentUpon>
+		</Compile>
 		<Compile Update="Settings\SettingsCategoryView.axaml.cs">
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>

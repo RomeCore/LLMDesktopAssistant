@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace LLMDesktopAssistant.Providers;
 
-public partial class AddModelProviderDialogView : UserControl
+public partial class ConfigureModelProviderDialogView : UserControl
 {
-    public AddModelProviderDialogView()
+    public ConfigureModelProviderDialogView()
     {
         InitializeComponent();
     }

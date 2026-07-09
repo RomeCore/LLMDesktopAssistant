@@ -1,5 +1,6 @@
 ﻿using RCLargeLanguageModels;
 using RCLargeLanguageModels.Clients.Deepseek;
+using RCLargeLanguageModels.Clients.Novita;
 using RCLargeLanguageModels.Clients.Ollama;
 using RCLargeLanguageModels.Security;
 
@@ -10,13 +11,7 @@ namespace LLMDesktopAssistant.Providers.Types
 	{
 		public override string Id => "ollama";
 
-		public override ModelProviderConfiguration CreateDefaultConfiguration()
-		{
-			return new ModelProviderConfiguration
-			{
-				EndpointUri = OllamaClient.DefaultBaseUri
-			};
-		}
+		public override string? DefaultEndpoint => OllamaClient.DefaultBaseUri;
 
 		public override bool? IsApiKeyRequired(ModelProviderConfiguration providerConfig)
 		{

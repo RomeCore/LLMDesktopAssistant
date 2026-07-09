@@ -1,4 +1,5 @@
 ﻿using RCLargeLanguageModels;
+using RCLargeLanguageModels.Clients.Ollama;
 using RCLargeLanguageModels.Clients.OpenAI;
 using RCLargeLanguageModels.Security;
 
@@ -9,12 +10,7 @@ namespace LLMDesktopAssistant.Providers.Types
 	{
 		public override string Id => "openai-compat";
 
-		public override ModelProviderConfiguration CreateDefaultConfiguration()
-		{
-			return new ModelProviderConfiguration
-			{
-			};
-		}
+		public override string? DefaultEndpoint => null;
 
 		public override bool? IsApiKeyRequired(ModelProviderConfiguration providerConfig)
 		{

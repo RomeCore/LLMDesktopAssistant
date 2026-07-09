@@ -9,13 +9,7 @@ namespace LLMDesktopAssistant.Providers.Types
 	{
 		public override string Id => "openai";
 
-		public override ModelProviderConfiguration CreateDefaultConfiguration()
-		{
-			return new ModelProviderConfiguration
-			{
-				EndpointUri = OpenAIClient.BaseUri
-			};
-		}
+		public override string? DefaultEndpoint => OpenAIClient.BaseUri;
 
 		public override bool? IsApiKeyRequired(ModelProviderConfiguration providerConfig)
 		{

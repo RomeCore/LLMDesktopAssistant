@@ -9,13 +9,7 @@ namespace LLMDesktopAssistant.Providers.Types
 	{
 		public override string Id => "deepseek";
 
-		public override ModelProviderConfiguration CreateDefaultConfiguration()
-		{
-			return new ModelProviderConfiguration
-			{
-				EndpointUri = DeepSeekClient.BaseUri
-			};
-		}
+		public override string? DefaultEndpoint => DeepSeekClient.BaseUri;
 
 		public override bool? IsApiKeyRequired(ModelProviderConfiguration providerConfig)
 		{

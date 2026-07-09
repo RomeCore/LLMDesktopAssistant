@@ -4525,7 +4525,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на {0} models.
+        ///   Ищет локализованную строку, похожую на {0} loaded, {1} selected, {2} custom models.
         /// </summary>
         public static string settings_providers_models_count {
             get {

@@ -1918,7 +1918,7 @@
     <value>Закрыть</value>
   </data>
   <data name="settings_providers_models_count" xml:space="preserve">
-    <value>{0} моделей</value>
+    <value>{0} загруженных, {1} выбранных, {2} кастомных моделей</value>
   </data>
   <data name="settings_providers_custom_models" xml:space="preserve">
     <value>Пользовательские модели</value>

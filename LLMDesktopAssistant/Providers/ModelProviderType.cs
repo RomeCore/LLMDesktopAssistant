@@ -21,9 +21,9 @@ namespace LLMDesktopAssistant.Providers
 		public string DisplayName => LocalizationManager.LocalizeStatic("model_provider_" + Id);
 
 		/// <summary>
-		/// Creates a default configuration for this provider type.
+		/// Gets the default endpoint URL for this model provider type.
 		/// </summary>
-		public abstract ModelProviderConfiguration CreateDefaultConfiguration();
+		public abstract string? DefaultEndpoint { get; }
 
 		/// <summary>
 		/// Determines whether an API key is required for the given provider configuration.

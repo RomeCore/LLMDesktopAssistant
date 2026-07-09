@@ -12,7 +12,7 @@
 							x:Name="SelectorRoot">
 
 		<ComboBox x:Name="Selector"
-							MinWidth="200"
+							MinWidth="150"
 							VerticalAlignment="Stretch">
 
 			<ComboBox.DataTemplates>

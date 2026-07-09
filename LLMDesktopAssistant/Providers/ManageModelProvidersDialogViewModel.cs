@@ -81,7 +81,7 @@ namespace LLMDesktopAssistant.Providers
 			var providersConfig = SettingsManager.Get<ModelProvidersConfiguration>();
 			var providerConfig = new ModelProviderConfiguration();
 			providersConfig.ModelProviders.Add(providerConfig);
-			var vm = new AddModelProviderDialogViewModel(providerConfig);
+			var vm = new ConfigureModelProviderDialogViewModel(providerConfig);
 			var result = await DialogManager.ShowDialogAsync(vm);
 			if (result is true)
 				ReloadProviders();
@@ -92,7 +92,7 @@ namespace LLMDesktopAssistant.Providers
 			if (SelectedProvider == null)
 				return;
 
-			var vm = new AddModelProviderDialogViewModel(SelectedProvider.Source);
+			var vm = new ConfigureModelProviderDialogViewModel(SelectedProvider.Source);
 			await DialogManager.ShowDialogAsync(vm);
 			ReloadProviders();
 		}
@@ -126,7 +126,7 @@ namespace LLMDesktopAssistant.Providers
 		public string Name => Source.Name;
 		public string Type => Source.Type;
 		public string? EndpointUri => Source.EndpointUri;
-		public string ModelCount => LocalizationManager.LocalizeStaticFormat("settings_providers_models_count", Source.Models.Count + Source.CustomModels.Count);
+		public string ModelCount => LocalizationManager.LocalizeStaticFormat("settings_providers_models_count", Source.Models.Count, Source.SelectedModelNames.Count, Source.CustomModels.Count);
 
 		private string? _connectionStatus;
 		public string? ConnectionStatus

@@ -61,8 +61,8 @@ namespace LLMDesktopAssistant.Providers
 	/// <summary>
 	/// ViewModel for adding or editing a model provider.
 	/// </summary>
-	[ViewModelFor(typeof(AddModelProviderDialogView))]
-	public class AddModelProviderDialogViewModel : ViewModelBase
+	[ViewModelFor(typeof(ConfigureModelProviderDialogView))]
+	public class ConfigureModelProviderDialogViewModel : ViewModelBase
 	{
 		private readonly IApiKeyManagerService _apiKeys;
 		private readonly IModelManager _modelManager;
@@ -97,10 +97,10 @@ namespace LLMDesktopAssistant.Providers
 						var providerTypeImpl = _providerTypes.FirstOrDefault(t => t.Id == _selectedProviderType.Id);
 						if (providerTypeImpl != null)
 						{
-							var prevDefaultConfig = prevProviderImpl?.CreateDefaultConfiguration();
-							var defaultConfig = providerTypeImpl.CreateDefaultConfiguration();
-							if (string.IsNullOrEmpty(EditingProvider.EndpointUri) || prevDefaultConfig?.EndpointUri == EditingProvider.EndpointUri)
-								EditingProvider.EndpointUri = defaultConfig.EndpointUri;
+							var prevDefaultEndpoint = prevProviderImpl?.DefaultEndpoint;
+							var defaultEndpoint = providerTypeImpl.DefaultEndpoint;
+							if (string.IsNullOrEmpty(EditingProvider.EndpointUri) || prevDefaultEndpoint == EditingProvider.EndpointUri)
+								EditingProvider.EndpointUri = defaultEndpoint;
 						}
 					}
 				}
@@ -143,7 +143,7 @@ namespace LLMDesktopAssistant.Providers
 		public IRelayCommand TestConnectionCommand { get; }
 		public IRelayCommand CloseCommand { get; }
 
-		public AddModelProviderDialogViewModel(ModelProviderConfiguration editingProvider)
+		public ConfigureModelProviderDialogViewModel(ModelProviderConfiguration editingProvider)
 		{
 			_apiKeys = ServiceRegistry.Provider.GetRequiredService<IApiKeyManagerService>();
 			_modelManager = ServiceRegistry.Provider.GetRequiredService<IModelManager>();

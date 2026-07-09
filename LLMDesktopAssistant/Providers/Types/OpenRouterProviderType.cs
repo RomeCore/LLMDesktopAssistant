@@ -1,4 +1,5 @@
 ﻿using RCLargeLanguageModels;
+using RCLargeLanguageModels.Clients.OpenAI;
 using RCLargeLanguageModels.Clients.OpenRouter;
 using RCLargeLanguageModels.Security;
 
@@ -9,13 +10,7 @@ namespace LLMDesktopAssistant.Providers.Types
 	{
 		public override string Id => "openrouter";
 
-		public override ModelProviderConfiguration CreateDefaultConfiguration()
-		{
-			return new ModelProviderConfiguration
-			{
-				EndpointUri = OpenRouterClient.BaseUri
-			};
-		}
+		public override string? DefaultEndpoint => OpenRouterClient.BaseUri;
 
 		public override bool? IsApiKeyRequired(ModelProviderConfiguration providerConfig)
 		{

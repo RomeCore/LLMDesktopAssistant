@@ -1,4 +1,5 @@
 ﻿using RCLargeLanguageModels;
+using RCLargeLanguageModels.Clients.Deepseek;
 using RCLargeLanguageModels.Clients.Novita;
 using RCLargeLanguageModels.Security;
 
@@ -9,13 +10,7 @@ namespace LLMDesktopAssistant.Providers.Types
 	{
 		public override string Id => "novita";
 
-		public override ModelProviderConfiguration CreateDefaultConfiguration()
-		{
-			return new ModelProviderConfiguration
-			{
-				EndpointUri = NovitaClient.BaseUri
-			};
-		}
+		public override string? DefaultEndpoint => NovitaClient.BaseUri;
 
 		public override bool? IsApiKeyRequired(ModelProviderConfiguration providerConfig)
 		{
