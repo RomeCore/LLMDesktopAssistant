@@ -40,6 +40,11 @@ namespace LLMDesktopAssistant.Tools
 		public ToolBehaviour DefaultExpectedBehaviour { get; init; }
 
 		/// <summary>
+		/// Specifies whether the tool overrides the standard HITL pipeline with its own policy decisions.
+		/// </summary>
+		public ToolPolicyDecision DefaultSelfHandledDecisions { get; init; }
+
+		/// <summary>
 		/// Gets or sets a JSON object that defines the schema of the structured output for the tool.
 		/// Can be null if tool does not produces structured output.
 		/// </summary>

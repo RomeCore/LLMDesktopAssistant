@@ -69,6 +69,9 @@ public class FormsToolModule : ToolModule
 		ToolExecutionContext context,
 		CancellationToken cancellationToken = default)
 	{
+		if (!context.RunningInUI)
+			return ReactiveToolResult.CreateError("This tool requires a UI context to run.");
+
 		var message = context.Message;
 		var viewModel = new FormsConfirmViewModel
 		{
@@ -110,6 +113,9 @@ public class FormsToolModule : ToolModule
 		[Description("Maximum number of selectable options (default: 1, when allowMultiple=true: all options)")] int? maxSelect,
 		CancellationToken cancellationToken = default)
 	{
+		if (!context.RunningInUI)
+			return ReactiveToolResult.CreateError("This tool requires a UI context to run.");
+
 		var message = context.Message;
 		var formOptions = new List<ChoiceOption>();
 
@@ -161,6 +167,9 @@ public class FormsToolModule : ToolModule
 		JsonNode[] fields,
 		CancellationToken cancellationToken = default)
 	{
+		if (!context.RunningInUI)
+			return ReactiveToolResult.CreateError("This tool requires a UI context to run.");
+
 		var formFields = new List<InputField>();
 
 		foreach (var fieldNode in fields)
@@ -219,6 +228,9 @@ public class FormsToolModule : ToolModule
 		[Description("Allow multiple file selection")] bool allowMultiple = false,
 		CancellationToken cancellationToken = default)
 	{
+		if (!context.RunningInUI)
+			return ReactiveToolResult.CreateError("This tool requires a UI context to run.");
+
 		var message = context.Message;
 		var viewModel = new FormsFilePickerViewModel
 		{

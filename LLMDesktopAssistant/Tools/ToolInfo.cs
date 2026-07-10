@@ -79,6 +79,11 @@ namespace LLMDesktopAssistant.Tools
 		public ToolBehaviour DefaultExpectedBehaviour { get; init; }
 
 		/// <summary>
+		/// Specifies whether the tool overrides the standard HITL pipeline with its own policy decisions.
+		/// </summary>
+		public ToolPolicyDecision DefaultSelfHandledDecisions { get; init; }
+
+		/// <summary>
 		/// Gets or sets the executor function for the tool. This function is responsible for executing the tool with the provided arguments and context.
 		/// </summary>
 		public required Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor { get; init; }
@@ -139,6 +144,7 @@ namespace LLMDesktopAssistant.Tools
 				OutputSchema = info.OutputSchema,
 				StreamingArgumentsAnalyser = _streamingAnalyzer,
 				DefaultExpectedBehaviour = info.DefaultExpectedBehaviour,
+				DefaultSelfHandledDecisions = info.DefaultSelfHandledDecisions,
 				PreviewExecutor = _previewExecutor,
 				Executor = _executor,
 				DisplayName = info.DisplayName,

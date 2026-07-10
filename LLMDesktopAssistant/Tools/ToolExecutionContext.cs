@@ -35,6 +35,21 @@ namespace LLMDesktopAssistant.Tools
 		public required ToolInfo Info { get; init; }
 
 		/// <summary>
+		/// Whether the tool is running in a user interface.
+		/// </summary>
+		public required bool RunningInUI { get; init; }
+
+		/// <summary>
+		/// The decision made by the tool execution pipeline.
+		/// For non-UI contexts, this will be <see cref="ToolPolicyDecision.None"/> at most times.
+		/// For UI contexts and without a specific self-handled decisions 
+		/// (see <see cref="ToolInfo.DefaultSelfHandledDecisions"/> and <see cref="PreviewToolExecutionResult.SelfHandledDecisions"/>)
+		/// this will be <see cref="ToolPolicyDecision.Approve"/>.
+		/// For UI contexts with a specific self-handled decisions this will be the decision made by the tool execution pipeline.
+		/// </summary>
+		public required ToolPolicyDecision PolicyDecision { get; init; } = ToolPolicyDecision.None;
+
+		/// <summary>
 		/// The shared context that can be used to pass data between streaming, preview and main execution calls.
 		/// </summary>
 		public object? SharedContext { get; set; }
@@ -67,7 +82,9 @@ namespace LLMDesktopAssistant.Tools
 				Chat = chat ?? new Chat(new ServiceCollection().BuildServiceProvider()),
 				Call = toolCall,
 				Message = message,
-				Info = tool
+				Info = tool,
+				RunningInUI = false,
+				PolicyDecision = ToolPolicyDecision.None
 			};
 		}
 	}

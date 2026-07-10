@@ -38,7 +38,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					Chat = chat,
 					Info = toolInfo!,
 					Message = message,
-					SharedContext = sharedContext
+					SharedContext = sharedContext,
+					RunningInUI = true,
+					PolicyDecision = ToolPolicyDecision.None
 				};
 
 				void AddedPartialArg(object? sender, string deltaArg)
@@ -94,14 +96,18 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				cancellationToken.ThrowIfCancellationRequested();
 
 				JsonNode? parsedArgs = null;
-				var toolExecutionContext = new ToolExecutionContext
+				var previewToolExecutionContext = new ToolExecutionContext
 				{
 					Chat = chat,
 					Message = message,
 					Call = toolCall,
 					Info = toolInfo,
-					SharedContext = sharedContext
+					SharedContext = sharedContext,
+					RunningInUI = true,
+					PolicyDecision = ToolPolicyDecision.None
 				};
+				toolCall.ExpectedBehaviour = toolInfo.DefaultExpectedBehaviour;
+				var toolHandledDecisions = toolInfo.DefaultSelfHandledDecisions;
 
 				if (toolInfo.PreviewExecutor != null)
 				{
@@ -109,7 +115,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					{
 						parsedArgs = TolerantJsonParser.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
 						toolCall.Status = ToolStatus.PreExecuting;
-						var preExecutionResult = await toolInfo.PreviewExecutor(parsedArgs, toolExecutionContext, cancellationToken);
+						var preExecutionResult = await toolInfo.PreviewExecutor(parsedArgs, previewToolExecutionContext, cancellationToken);
 						toolCall.StatusTitle = preExecutionResult.StatusTitle;
 						toolCall.StatusIcon = preExecutionResult.StatusIcon;
 
@@ -128,7 +134,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							return;
 						}
 
-						toolCall.ExpectedBehaviour = preExecutionResult.ExpectedBehaviour ?? toolInfo.DefaultExpectedBehaviour;
+						if (preExecutionResult.ExpectedBehaviour != null)
+							toolCall.ExpectedBehaviour = preExecutionResult.ExpectedBehaviour.Value;
+						if (preExecutionResult.SelfHandledDecisions != null)
+							toolHandledDecisions = preExecutionResult.SelfHandledDecisions.Value;
 					}
 					catch (Exception ex)
 					{
@@ -138,10 +147,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 				cancellationToken.ThrowIfCancellationRequested();
 
-				toolCall.ExpectedBehaviour ??= toolInfo.DefaultExpectedBehaviour;
-
 				var approvalLevel = toolInfo.ApprovalLevel;
-				bool requireConfirmation;
+				bool requireConfirmation, disallow = false;
 				switch (approvalLevel)
 				{
 					case ToolApprovalLevel.AlwaysApprove:
@@ -153,6 +160,12 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						break;
 
 					case ToolApprovalLevel.AlwaysDisallow:
+						if (toolHandledDecisions.HasFlag(ToolPolicyDecision.Disallow))
+						{
+							disallow = true;
+							requireConfirmation = false;
+							break;
+						}
 						toolCall.Status = ToolStatus.Error;
 						toolCall.ResultContent = $"The tool execution is disallowed by the agent's settings policy.";
 						return;
@@ -181,7 +194,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							disallowedBehaviours = chat.Settings.Tools.DisallowedBehaviours;
 						}
 
-						bool disallow = (disallowedBehaviours & toolCall.ExpectedBehaviour) != 0;
+						disallow = (disallowedBehaviours & toolCall.ExpectedBehaviour) != 0;
 						bool autoApprove = (autoApproveBehaviours & toolCall.ExpectedBehaviour) == toolCall.ExpectedBehaviour;
 						
 						switch (approvalLevel)
@@ -201,6 +214,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 						if (disallow)
 						{
+							if (toolHandledDecisions.HasFlag(ToolPolicyDecision.Disallow))
+							{
+								requireConfirmation = !autoApprove;
+								break;
+							}
 							toolCall.Status = ToolStatus.Error;
 							toolCall.ResultContent = $"The tool execution is disallowed by the agent's settings policy. " +
 								$"Policy disallows: {disallowedBehaviours}; the tool expected behaviour: {toolCall.ExpectedBehaviour}.";
@@ -208,11 +226,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						}
 
 						requireConfirmation = !autoApprove;
-
 						break;
 				}
 
-				if (requireConfirmation)
+				if (requireConfirmation && !toolHandledDecisions.HasFlag(ToolPolicyDecision.Ask))
 				{
 					var tcs = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
 					toolCall.ExpectedBehaviour ??= toolInfo.DefaultExpectedBehaviour;
@@ -237,7 +254,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					}
 				}
 
-				toolCall.ExpectedBehaviour = null;
 				toolCall.Status = ToolStatus.Executing;
 
 				try
@@ -254,6 +270,18 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 				toolCall.StatusIcon = null;
 				toolCall.StatusTitle = null;
+				var toolExecutionContext = new ToolExecutionContext
+				{
+					Chat = chat,
+					Message = message,
+					Call = toolCall,
+					Info = toolInfo,
+					SharedContext = sharedContext,
+					RunningInUI = true,
+					PolicyDecision = requireConfirmation ? ToolPolicyDecision.Ask :
+									 disallow ? ToolPolicyDecision.Disallow :
+									 ToolPolicyDecision.None
+				};
 				var reactiveResult = await toolInfo.Executor.Invoke(parsedArgs, toolExecutionContext, cancellationToken);
 
 				toolCall.ReactiveToolResult = reactiveResult;
