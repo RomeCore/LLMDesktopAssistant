@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
-using UglyToad.PdfPig.Graphics.Operations.PathPainting;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -18,7 +17,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			_fileAccess = fileAccess;
 			_documentReader = documentReader;
 
-			AddTool(GetFileInfo,
+			AddTool(GetFileInfo, null, PreviewGetFileInfo,
 				new ToolInitializationInfo
 				{
 					Name = "fs-get_file_info",
@@ -27,7 +26,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					DefaultExpectedBehaviour = ToolBehaviour.FileRead
 				});
 
-			AddTool(ReadBinaryFile,
+			AddTool(ReadBinaryFile, null, PreviewReadBinaryFile,
 				new ToolInitializationInfo
 				{
 					Name = "fs-read_binary_file",
@@ -36,7 +35,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					DefaultExpectedBehaviour = ToolBehaviour.FileRead
 				});
 
-			AddTool(ReadDocumentFile,
+			AddTool(ReadDocumentFile, null, PreviewReadDocumentFile,
 				new ToolInitializationInfo
 				{
 					Name = "fs-read_document_file",
@@ -45,7 +44,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					DefaultExpectedBehaviour = ToolBehaviour.FileRead
 				});
 
-			AddTool(WriteBinaryFile,
+			AddTool(WriteBinaryFile, null, PreviewWriteBinaryFile,
 				new ToolInitializationInfo
 				{
 					Name = "fs-write_binary_file",
@@ -54,7 +53,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit
 				});
 
-			AddTool(CreateDirectory,
+			AddTool(CreateDirectory, null, PreviewCreateDirectory,
 				new ToolInitializationInfo
 				{
 					Name = "fs-create_directory",
@@ -72,7 +71,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					DefaultExpectedBehaviour = ToolBehaviour.FileDelete
 				});
 
-			AddTool(DeleteDirectory,
+			AddTool(DeleteDirectory, null, PreviewDeleteDirectory,
 				new ToolInitializationInfo
 				{
 					Name = "fs-delete_directory",
@@ -81,7 +80,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					DefaultExpectedBehaviour = ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete
 				});
 
-			AddTool(CopyFile,
+			AddTool(CopyFile, null, PreviewCopyFile,
 				new ToolInitializationInfo
 				{
 					Name = "fs-copy_file",
@@ -90,7 +89,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate
 				});
 
-			AddTool(CopyDirectory,
+			AddTool(CopyDirectory, null, PreviewCopyDirectory,
 				new ToolInitializationInfo
 				{
 					Name = "fs-copy_directory",
@@ -99,7 +98,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate
 				});
 
-			AddTool(RenameFile,
+			AddTool(RenameFile, null, PreviewRenameFile,
 				new ToolInitializationInfo
 				{
 					Name = "fs-rename_file",
@@ -108,7 +107,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					DefaultExpectedBehaviour = ToolBehaviour.FileEdit
 				});
 
-			AddTool(MoveDirectory,
+			AddTool(MoveDirectory, null, PreviewMoveDirectory,
 				new ToolInitializationInfo
 				{
 					Name = "fs-move_directory",
@@ -118,11 +117,36 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				});
 		}
 
-		public ReactiveToolResult GetFileInfo(string path)
+		public PreviewToolExecutionResult PreviewGetFileInfo(string path, [SharedContext] out string fullPath)
+		{
+			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+
+			var metrics = FileUtils.GetFileMetrics(fullPath);
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = metrics.Type switch
+				{
+					FileType.Binary => Material.Icons.MaterialIconKind.File,
+					FileType.Text => Material.Icons.MaterialIconKind.FileText,
+					FileType.Code => Material.Icons.MaterialIconKind.FileCode,
+					FileType.Image => Material.Icons.MaterialIconKind.FileImage,
+					FileType.Audio => Material.Icons.MaterialIconKind.FileMusic,
+					FileType.Video => Material.Icons.MaterialIconKind.FileVideo,
+					FileType.Executable => Material.Icons.MaterialIconKind.Application,
+					FileType.Archive => Material.Icons.MaterialIconKind.Archive,
+					FileType.Document => Material.Icons.MaterialIconKind.FileDocument,
+					_ => Material.Icons.MaterialIconKind.FileQuestion
+				},
+				StatusTitle = $"**{path}** *({FileUtils.BytesToDisplaySize(metrics.Size)})*",
+				ExpectedBehaviour = ToolBehaviour.FileRead | (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+			};
+		}
+
+		public ReactiveToolResult GetFileInfo(string path, [SharedContext] string? fullPath = null)
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path);
 				var metrics = FileUtils.GetFileMetrics(fullPath);
 
 				var result = new ReactiveToolResult
@@ -166,15 +190,66 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
+		public PreviewToolExecutionResult PreviewReadBinaryFile(
+			string path, [SharedContext] out string fullPath,
+			int startByte = 1,
+			int endByte = 4096)
+		{
+			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+
+			var fileExists = File.Exists(fullPath);
+			var expectedBehaviour = ToolBehaviour.FileRead | (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
+
+			PreviewToolExecutionResult result;
+			if (!fileExists)
+			{
+				result = new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "File not found."
+				};
+			}
+			else if (endByte < startByte)
+			{
+				result = new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileCode,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Invalid byte range."
+				};
+			}
+			else
+			{
+				var fileInfo = new FileInfo(fullPath);
+				var totalBytes = fileInfo.Length;
+				result = new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileCode,
+					StatusTitle = startByte == 1 && endByte >= totalBytes
+						? $"**{path}**"
+						: $"**{path}** *({startByte}~{Math.Min(endByte, totalBytes)} / {totalBytes})*",
+					ExpectedBehaviour = expectedBehaviour
+				};
+			}
+
+			return result;
+		}
+
 		public ReactiveToolResult ReadBinaryFile(
 			string path,
 			[Description("The 1-based index of the first byte to read.")]
 			int startByte = 1,
-			int endByte = 4096)
+			int endByte = 4096,
+			[SharedContext] string? fullPath = null)
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path);
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -222,16 +297,59 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
+		public PreviewToolExecutionResult PreviewReadDocumentFile(
+			string path, [SharedContext] out string fullPath,
+			int startPage = 1,
+			int endPage = 30)
+		{
+			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+
+			var fileExists = File.Exists(fullPath);
+			var expectedBehaviour = ToolBehaviour.FileRead | (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
+
+			if (!fileExists)
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "File not found."
+				};
+			}
+
+			if (endPage < startPage)
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileDocument,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Invalid page range."
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = Material.Icons.MaterialIconKind.FileDocument,
+				StatusTitle = $"**{path}** *({startPage}~{endPage})*",
+				ExpectedBehaviour = expectedBehaviour
+			};
+		}
+
 		public ReactiveToolResult ReadDocumentFile(
 			string path,
 			[Description("The 1-based index of the first page to read.")]
 			int startPage = 1,
 			[Description("The 1-based index of the last page to read.")]
-			int endPage = 30)
+			int endPage = 30,
+			[SharedContext] string? fullPath = null)
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path);
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -272,36 +390,95 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
+		private static byte[] ParseHex(string hex)
+		{
+			var hexClean = Regex.Replace(hex, @"[^0-9A-Fa-f]+", "");
+
+			if (hexClean.Length % 2 != 0)
+				throw new ArgumentException("Invalid hex string length. Hex string must have an even number of characters.");
+
+			var bytes = new byte[hexClean.Length / 2];
+			for (int i = 0; i < bytes.Length; i++)
+			{
+				var hexByte = hexClean.Substring(i * 2, 2);
+				if (!byte.TryParse(hexByte, System.Globalization.NumberStyles.HexNumber, null, out byte parsedByte))
+					throw new ArgumentException($"Invalid hex byte at position {i * 2}: '{hexByte}'");
+				bytes[i] = parsedByte;
+			}
+
+			return bytes;
+		}
+
+		public class WriteBinaryFileContext
+		{
+			public required string FullPath { get; init; }
+			public required byte[] Bytes { get; init; }
+		}
+
+		public PreviewToolExecutionResult PreviewWriteBinaryFile(string path, string hex,
+			[SharedContext] out WriteBinaryFileContext? ctx, bool append = false)
+		{
+			var fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			bool fileExisted = File.Exists(fullPath);
+
+			try
+			{
+				var bytes = ParseHex(hex);
+				ctx = new WriteBinaryFileContext
+				{
+					FullPath = fullPath,
+					Bytes = bytes
+				};
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = fileExisted ?
+						(append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck) :
+						Material.Icons.MaterialIconKind.FilePlus,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = (fileExisted ? ToolBehaviour.FileEdit : ToolBehaviour.FileDirectoryCreate) |
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+				};
+			}
+			catch (Exception ex)
+			{
+				ctx = null;
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentError,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = (fileExisted ? ToolBehaviour.FileEdit : ToolBehaviour.FileDirectoryCreate) |
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None),
+					InterruptingSuccess = false,
+					InterruptingContent = $"Error writing binary file: {ex.Message}"
+				};
+			}
+		}
+
 		public ReactiveToolResult WriteBinaryFile(
 			string path,
 			[Description("Hexadecimal string representing binary data in format '01 F8 2A'")]
 			string hex,
-			bool append = false)
+			bool append = false,
+			[SharedContext] WriteBinaryFileContext? ctx = null)
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
-				var dir = Path.GetDirectoryName(fullPath);
-
-				if (!Directory.Exists(dir))
-					Directory.CreateDirectory(dir!);
-
-				var hexClean = Regex.Replace(hex, @"[^0-9A-Fa-f]+", "");
-
-				if (hexClean.Length % 2 != 0)
-					return ReactiveToolResult.CreateError(
-						"Invalid hex string length. Hex string must have an even number of characters.");
-
-				var bytes = new byte[hexClean.Length / 2];
-				for (int i = 0; i < bytes.Length; i++)
+				string fullPath;
+				byte[] bytes;
+				if (ctx != null)
 				{
-					var hexByte = hexClean.Substring(i * 2, 2);
-					if (!byte.TryParse(hexByte, System.Globalization.NumberStyles.HexNumber, null, out byte parsedByte))
-						return ReactiveToolResult.CreateError(
-							$"Invalid hex byte at position {i * 2}: '{hexByte}'");
-					bytes[i] = parsedByte;
+					fullPath = ctx.FullPath;
+					bytes = ctx.Bytes;
+				}
+				else
+				{
+					fullPath = _fileAccess.AccessPath(path);
+					bytes = ParseHex(hex);
 				}
 
+				var dir = Path.GetDirectoryName(fullPath);
+				if (!Directory.Exists(dir))
+					Directory.CreateDirectory(dir!);
 				var fileExisted = File.Exists(fullPath);
 
 				if (append)
@@ -317,23 +494,19 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var fileInfo = new FileInfo(fullPath);
 				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
 
-				var result = new ReactiveToolResult
+				return new ReactiveToolResult
 				{
 					StatusIcon = fileExisted ?
 						(append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck) :
 						Material.Icons.MaterialIconKind.FilePlus,
-					StatusTitle = $"**{path}**"
-				};
-
-				var output = $"""
-					File: {path}
-					Operation: {(append ? "Append" : "Write")}
-					Bytes written: {bytes.Length}
-					Total size: {fileInfo.Length} bytes ~ ({size})
-					""";
-
-				result.ResultContent = output;
-				return result.Complete(true);
+					StatusTitle = $"**{path}**",
+					ResultContent = $"""
+						File: {path}
+						Operation: {(append ? "Append" : "Write")}
+						Bytes written: {bytes.Length}
+						Total size: {fileInfo.Length} bytes ~ ({size})
+						"""
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
@@ -341,25 +514,41 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public ReactiveToolResult CreateDirectory(string path)
+		public PreviewToolExecutionResult PreviewCreateDirectory(string path, [SharedContext] out string fullPath)
+		{
+			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = Material.Icons.MaterialIconKind.FolderPlus,
+				StatusTitle = $"**{path}**",
+				ExpectedBehaviour = (!Directory.Exists(fullPath) ? ToolBehaviour.FileDirectoryCreate : ToolBehaviour.None) |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+			};
+		}
+
+		public ReactiveToolResult CreateDirectory(string path, [SharedContext] string? fullPath = null)
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path);
 
 				if (Directory.Exists(fullPath))
-					return ReactiveToolResult.CreateError("Directory already exists.");
+					return new ReactiveToolResult
+					{
+						StatusIcon = Material.Icons.MaterialIconKind.FolderQuestion,
+						StatusTitle = $"**{path}**",
+						ResultContent = $"Directory already exists."
+					}.CompleteWithSuccess();
 
 				Directory.CreateDirectory(fullPath);
 
-				var result = new ReactiveToolResult
+				return new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FolderPlus,
 					StatusTitle = $"**{path}**",
 					ResultContent = $"Directory '{path}' created successfully."
-				};
-
-				return result.Complete(true);
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
@@ -367,23 +556,24 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public PreviewToolExecutionResult PreviewDeleteFile(string path)
+		public PreviewToolExecutionResult PreviewDeleteFile(string path, [SharedContext] out string? fullPath)
 		{
-			var fullPath = _fileAccess.TryAccessPath(path);
+			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
 
 			return new PreviewToolExecutionResult
 			{
 				StatusIcon = Material.Icons.MaterialIconKind.Delete,
 				StatusTitle = $"**{path}**",
-				ExpectedBehaviour = File.Exists(fullPath) ? ToolBehaviour.FileDelete : ToolBehaviour.None
+				ExpectedBehaviour = (File.Exists(fullPath) ? ToolBehaviour.FileDelete : ToolBehaviour.None) |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 
-		public ReactiveToolResult DeleteFile(string path)
+		public ReactiveToolResult DeleteFile(string path, [SharedContext] string? fullPath = null)
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path);
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -408,7 +598,40 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public ReactiveToolResult DeleteDirectory(string path)
+		public class DeleteDirectoryContext
+		{
+			public required string FullPath { get; init; }
+		}
+
+		public PreviewToolExecutionResult PreviewDeleteDirectory(string path, [SharedContext] out DeleteDirectoryContext? ctx)
+		{
+			var fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			ctx = new DeleteDirectoryContext { FullPath = fullPath };
+
+			var expectedBehaviour = (Directory.Exists(fullPath) ? ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete : ToolBehaviour.None) |
+				(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
+
+			if (path == "." || path == "" || path == "/")
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FolderRemove,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Cannot delete the root working directory."
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = Material.Icons.MaterialIconKind.FolderRemove,
+				StatusTitle = $"**{path}**",
+				ExpectedBehaviour = expectedBehaviour
+			};
+		}
+
+		public ReactiveToolResult DeleteDirectory(string path, [SharedContext] DeleteDirectoryContext? ctx = null)
 		{
 			try
 			{
@@ -416,7 +639,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				if (path == "." || path == "" || path == "/")
 					return ReactiveToolResult.CreateError("Cannot delete the root working directory.");
 
-				var fullPath = _fileAccess.AccessPath(path);
+				var fullPath = ctx?.FullPath ?? _fileAccess.AccessPath(path);
 
 				if (!Directory.Exists(fullPath))
 					return ReactiveToolResult.CreateError("Directory not found.");
@@ -440,15 +663,67 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
+		public class RenameFileContext
+		{
+			public required string FullOldPath { get; init; }
+			public required string FullNewPath { get; init; }
+		}
+
+		public PreviewToolExecutionResult PreviewRenameFile(
+			string oldPath,
+			string newPath,
+			[SharedContext] out RenameFileContext? ctx,
+			bool overwrite = false)
+		{
+			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, out var isOldAccessed);
+			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
+			ctx = new RenameFileContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
+
+			var expectedBehaviour = ToolBehaviour.FileEdit |
+				(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
+
+			if (!File.Exists(fullOldPath))
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
+					StatusTitle = $"**{oldPath}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Source file not found."
+				};
+			}
+
+			if (File.Exists(fullNewPath) && !overwrite)
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Pencil,
+					StatusTitle = $"**{oldPath}** → **{newPath}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Destination file already exists."
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = Material.Icons.MaterialIconKind.Pencil,
+				StatusTitle = $"**{oldPath}** → **{newPath}**",
+				ExpectedBehaviour = expectedBehaviour
+			};
+		}
+
 		public ReactiveToolResult RenameFile(
 			string oldPath,
 			string newPath,
-			bool overwrite = false)
+			bool overwrite = false,
+			[SharedContext] RenameFileContext? ctx = null)
 		{
 			try
 			{
-				var fullOldPath = _fileAccess.AccessPath(oldPath);
-				var fullNewPath = _fileAccess.AccessPath(newPath);
+				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath);
+				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
 
 				if (!File.Exists(fullOldPath))
 					return ReactiveToolResult.CreateError("Source file not found.");
@@ -476,15 +751,67 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
+		public class MoveDirectoryContext
+		{
+			public required string FullOldPath { get; init; }
+			public required string FullNewPath { get; init; }
+		}
+
+		public PreviewToolExecutionResult PreviewMoveDirectory(
+			string oldPath,
+			string newPath,
+			[SharedContext] out MoveDirectoryContext? ctx,
+			bool overwrite = false)
+		{
+			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, out var isOldAccessed);
+			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
+			ctx = new MoveDirectoryContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
+
+			var expectedBehaviour = ToolBehaviour.DirectoryEdit |
+				(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
+
+			if (!Directory.Exists(fullOldPath))
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FolderQuestion,
+					StatusTitle = $"**{oldPath}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Source directory not found."
+				};
+			}
+
+			if (Directory.Exists(fullNewPath) && !overwrite)
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.Folder,
+					StatusTitle = $"**{oldPath}** → **{newPath}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Destination directory already exists."
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = Material.Icons.MaterialIconKind.Folder,
+				StatusTitle = $"**{oldPath}** → **{newPath}**",
+				ExpectedBehaviour = expectedBehaviour
+			};
+		}
+
 		public ReactiveToolResult MoveDirectory(
 			string oldPath,
 			string newPath,
-			bool overwrite = false)
+			bool overwrite = false,
+			[SharedContext] MoveDirectoryContext? ctx = null)
 		{
 			try
 			{
-				var fullOldPath = _fileAccess.AccessPath(oldPath);
-				var fullNewPath = _fileAccess.AccessPath(newPath);
+				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath);
+				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
 
 				if (!Directory.Exists(fullOldPath))
 					return ReactiveToolResult.CreateError("Source directory not found.");
@@ -510,15 +837,67 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
+		public class CopyFileContext
+		{
+			public required string FullOldPath { get; init; }
+			public required string FullNewPath { get; init; }
+		}
+
+		public PreviewToolExecutionResult PreviewCopyFile(
+			string oldPath,
+			string newPath,
+			[SharedContext] out CopyFileContext? ctx,
+			bool overwrite = false)
+		{
+			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, out var isOldAccessed);
+			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
+			ctx = new CopyFileContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
+
+			var expectedBehaviour = ToolBehaviour.FileDirectoryCreate |
+				(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
+
+			if (!File.Exists(fullOldPath))
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
+					StatusTitle = $"**{oldPath}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Source file not found."
+				};
+			}
+
+			if (File.Exists(fullNewPath) && !overwrite)
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+					StatusTitle = $"**{oldPath}** → **{newPath}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Destination file already exists."
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+				StatusTitle = $"**{oldPath}** → **{newPath}**",
+				ExpectedBehaviour = expectedBehaviour
+			};
+		}
+
 		public ReactiveToolResult CopyFile(
 			string oldPath,
 			string newPath,
-			bool overwrite = false)
+			bool overwrite = false,
+			[SharedContext] CopyFileContext? ctx = null)
 		{
 			try
 			{
-				var fullOldPath = _fileAccess.AccessPath(oldPath);
-				var fullNewPath = _fileAccess.AccessPath(newPath);
+				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath);
+				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
 
 				if (!File.Exists(fullOldPath))
 					return ReactiveToolResult.CreateError("Source file not found.");
@@ -546,15 +925,67 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
+		public class CopyDirectoryContext
+		{
+			public required string FullOldPath { get; init; }
+			public required string FullNewPath { get; init; }
+		}
+
+		public PreviewToolExecutionResult PreviewCopyDirectory(
+			string oldPath,
+			string newPath,
+			[SharedContext] out CopyDirectoryContext? ctx,
+			bool overwrite = false)
+		{
+			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, out var isOldAccessed);
+			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
+			ctx = new CopyDirectoryContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
+
+			var expectedBehaviour = ToolBehaviour.FileDirectoryCreate |
+				(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
+
+			if (!Directory.Exists(fullOldPath))
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.FolderQuestion,
+					StatusTitle = $"**{oldPath}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Source directory not found."
+				};
+			}
+
+			if (Directory.Exists(fullNewPath) && !overwrite)
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+					StatusTitle = $"**{oldPath}** → **{newPath}**",
+					ExpectedBehaviour = expectedBehaviour,
+					InterruptingSuccess = false,
+					InterruptingContent = "Destination directory already exists."
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+				StatusTitle = $"**{oldPath}** → **{newPath}**",
+				ExpectedBehaviour = expectedBehaviour
+			};
+		}
+
 		public ReactiveToolResult CopyDirectory(
 			string oldPath,
 			string newPath,
-			bool overwrite = false)
+			bool overwrite = false,
+			[SharedContext] CopyDirectoryContext? ctx = null)
 		{
 			try
 			{
-				var fullOldPath = _fileAccess.AccessPath(oldPath);
-				var fullNewPath = _fileAccess.AccessPath(newPath);
+				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath);
+				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
 
 				if (!Directory.Exists(fullOldPath))
 					return ReactiveToolResult.CreateError("Source directory not found.");

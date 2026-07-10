@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.Services.Instances
 			return fullPath;
 		}
 
-		public string ForceAccessPath(string path, out bool isAccessed)
+		public string CheckedAccessPath(string path, out bool isAccessed)
 		{
 			var baseDir = Path.GetFullPath(chat.Settings.Environment.GetWorkingDirectory());
 			if (string.IsNullOrWhiteSpace(path) || path == ".")

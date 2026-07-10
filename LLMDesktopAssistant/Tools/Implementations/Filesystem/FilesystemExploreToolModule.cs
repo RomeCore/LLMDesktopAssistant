@@ -52,12 +52,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		}
 
 		public PreviewToolExecutionResult? ExplorePreview(string path,
+			[SharedContext] out string? fullPath,
 			int startLine = 0, int endLine = 0, int maxLineLength = 2000,
 			[Inject] DetectSecretsSharp.Core.Scanner scanner = default!)
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
+				fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
 				var entryName = Path.GetFileName(fullPath);
 
 				bool fileExists = File.Exists(fullPath);
@@ -95,7 +96,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 							StatusIcon = directoryExists ? MaterialIconKind.FileEye : MaterialIconKind.FileCode,
 							StatusTitle = LocalizationManager.LocalizeStaticFormat("file_contains_secrets", $"**{path}**"),
 							ExpectedBehaviour = ToolBehaviour.ReadSecrets | ToolBehaviour.FileRead |
-								(directoryExists ? ToolBehaviour.DirectoryRead : 0)
+								(directoryExists ? ToolBehaviour.DirectoryRead : 0) |
+								(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 						};
 					}
 
@@ -103,7 +105,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					{
 						StatusIcon = directoryExists ? MaterialIconKind.FileEye : MaterialIconKind.FileCode,
 						StatusTitle = $"**{path}**",
-						ExpectedBehaviour = ToolBehaviour.FileRead | (directoryExists ? ToolBehaviour.DirectoryRead : 0)
+						ExpectedBehaviour = ToolBehaviour.FileRead |
+							(directoryExists ? ToolBehaviour.DirectoryRead : 0) |
+							(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 					};
 				}
 
@@ -113,7 +117,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					{
 						StatusIcon = MaterialIconKind.Folder,
 						StatusTitle = $"**{path}**",
-						ExpectedBehaviour = ToolBehaviour.DirectoryRead
+						ExpectedBehaviour = ToolBehaviour.DirectoryRead |
+							(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 					};
 				}
 
@@ -128,6 +133,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 			catch (Exception ex)
 			{
+				fullPath = null;
 				return new PreviewToolExecutionResult
 				{
 					InterruptingContent = $"Error reading file: {ex.Message}",
@@ -138,7 +144,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 		public async Task<ReactiveToolResult> Explore(
 			[Description("The path of the entry to read. Leave empty to read the current working directory.")]
-			string path,
+			string path, [SharedContext] string? fullPath,
 			[Description("The 1-based index of the first line to read. Only for files.")]
 			int startLine = 0,
 			[Description("The 1-based index of the last line to read. Only for files.")]
@@ -167,7 +173,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				try
 				{
-					var fullPath = _fileAccess.AccessPath(path);
+					fullPath ??= _fileAccess.AccessPath(path);
 					var entryName = Path.GetFileName(fullPath);
 
 					bool fileExists = File.Exists(fullPath);

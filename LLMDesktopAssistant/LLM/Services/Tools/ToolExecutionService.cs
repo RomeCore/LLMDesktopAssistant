@@ -96,16 +96,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				cancellationToken.ThrowIfCancellationRequested();
 
 				JsonNode? parsedArgs = null;
-				var previewToolExecutionContext = new ToolExecutionContext
-				{
-					Chat = chat,
-					Message = message,
-					Call = toolCall,
-					Info = toolInfo,
-					SharedContext = sharedContext,
-					RunningInUI = true,
-					PolicyDecision = ToolPolicyDecision.None
-				};
 				toolCall.ExpectedBehaviour = toolInfo.DefaultExpectedBehaviour;
 				var toolHandledDecisions = toolInfo.DefaultSelfHandledDecisions;
 
@@ -113,9 +103,21 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				{
 					try
 					{
+						var previewToolExecutionContext = new ToolExecutionContext
+						{
+							Chat = chat,
+							Message = message,
+							Call = toolCall,
+							Info = toolInfo,
+							SharedContext = sharedContext,
+							RunningInUI = true,
+							PolicyDecision = ToolPolicyDecision.None
+						};
+
 						parsedArgs = TolerantJsonParser.Parse(toolCall.Arguments) ?? throw new InvalidOperationException("Invalid JSON format for tool arguments.");
 						toolCall.Status = ToolStatus.PreExecuting;
 						var preExecutionResult = await toolInfo.PreviewExecutor(parsedArgs, previewToolExecutionContext, cancellationToken);
+						sharedContext = previewToolExecutionContext.SharedContext;
 						toolCall.StatusTitle = preExecutionResult.StatusTitle;
 						toolCall.StatusIcon = preExecutionResult.StatusIcon;
 
