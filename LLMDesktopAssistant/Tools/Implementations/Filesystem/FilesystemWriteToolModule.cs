@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	/// of the changes using a pure C# LCS-based algorithm (no git dependency).
 	/// </summary>
 	[ToolModule]
-	public class FilesystemWriteToolModule : ToolModule
+	public class FilesystemWriteToolModule : FileSystemEditBaseToolModule
 	{
 		private readonly WorkingDirectoryAccessService _fileAccess;
 
@@ -25,7 +25,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-write_file",
 					Description = "Writes text content to a file inside working directory.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate,
+					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
+					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
 				});
 		}
 
@@ -50,11 +52,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		public PreviewToolExecutionResult? WriteFilePreview(
 			string path,
 			string content,
+			[SharedContext] out string? fullPath,
 			bool append = false)
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
+				fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
 				var fileExisted = File.Exists(fullPath);
 
 				if (fileExisted)
@@ -69,25 +72,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 								StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
 								StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
 								InterruptingSuccess = true,
-								InterruptingContent = $"File **{path}** already contains the same content.",
-								ExpectedBehaviour = ToolBehaviour.None
+								InterruptingContent = $"File **{path}** already contains the same content."
 							};
 						}
 
-						var diff = UnifiedDiff.Compute(oldContent, content, contextLines: 0);
-						int removed = 0, added = 0;
-						foreach (var group in diff)
-						{
-							if (group.OldCount != -1)
-								removed += group.OldCount;
-							if (group.NewCount != -1)
-								added += group.NewCount;
-						}
 						return new PreviewToolExecutionResult
 						{
 							StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
-							StatusTitle = $"**{path}** *(-{removed} +{added})*",
-							ExpectedBehaviour = ToolBehaviour.FileEdit
+							StatusTitle = $"**{path}**",
+							ExpectedBehaviour = ToolBehaviour.FileEdit |
+								(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 						};
 					}
 					catch
@@ -100,11 +94,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
 					StatusTitle = $"**{path}**",
-					ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate
+					ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate |
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None),
+					SelfHandledDecisions = ToolPolicyDecision.None
 				};
 			}
 			catch (Exception ex)
 			{
+				fullPath = null;
 				return new PreviewToolExecutionResult
 				{
 					InterruptingContent = $"Error writing file: {ex.Message}",
@@ -113,14 +110,17 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public ReactiveToolResult WriteFile(
+		public async Task WriteFile(
 			string path,
 			string content,
+			ToolExecutionContext ctx,
+			ReactiveToolResult result,
+			[SharedContext] string? fullPath,
 			bool append = false)
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path);
 				var dir = Path.GetDirectoryName(fullPath);
 
 				if (!Directory.Exists(dir))
@@ -129,31 +129,36 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var fileExisted = File.Exists(fullPath);
 				string? oldContent = null;
 
-				// Capture old content before overwriting (for diff)
-				if (!append && fileExisted)
+				if (fileExisted)
+					oldContent = File.ReadAllText(fullPath);
+				if (append && fileExisted)
+					content = oldContent + content;
+
+				if (fileExisted)
 				{
-					try { oldContent = File.ReadAllText(fullPath); }
-					catch { /* Best-effort: skip diff if unreadable */ }
-				}
+					var postProcessResult = await PostProcessDiffAsync(fullPath, oldContent!, content, ctx);
+					if (postProcessResult == null)
+					{
+						result.StatusIcon = Material.Icons.MaterialIconKind.FileDiscard;
+						result.StatusTitle = $"**{path}**";
+						result.ResultContent = "User has rejected the changes, none has applied.";
+						result.CompleteWithSuccess();
+						return;
+					}
 
-				if (append)
-					File.AppendAllText(fullPath, content);
-				else
-					File.WriteAllText(fullPath, content);
+					File.WriteAllText(fullPath, postProcessResult.NewContent);
 
-				var fileInfo = new FileInfo(fullPath);
-				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
+					var fileInfo = new FileInfo(fullPath);
+					var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
 
-				var output = new StringBuilder();
-				output.AppendLine($"File: {path}");
-				output.AppendLine($"Operation: {(append ? "Append" : fileExisted ? "Overwrite" : "Write")}");
-				output.AppendLine($"New size: {fileInfo.Length} bytes ~ ({size})");
+					var output = new StringBuilder();
+					output.AppendLine($"File: {path}");
+					output.AppendLine($"Operation: {(append ? "Append" : "Write")}");
+					output.AppendLine($"New size: {fileInfo.Length} bytes ~ ({size})");
 
-				// Compute and show diff for overwritten files
-				string changesTitlePostfix = string.Empty;
-				if (!append && fileExisted && oldContent != null)
-				{
-					var diff = UnifiedDiff.Compute(oldContent, content);
+					// Compute and show diff for overwritten files
+					string changesTitlePostfix = string.Empty;
+					var diff = postProcessResult.AppliedDiff;
 					if (diff.HasGroups)
 					{
 						output.AppendLine();
@@ -163,22 +168,37 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						var (removed, added) = diff.GetChangeCounts();
 						changesTitlePostfix = $" *(-{removed} +{added})*";
 					}
+
+					result.StatusIcon = append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck;
+					result.StatusTitle = $"**{path}**{changesTitlePostfix}";
+					result.ResultContent = output.ToString();
+					result.CompleteWithSuccess();
+				}
+				else
+				{
+					File.WriteAllText(fullPath, content);
+
+					var fileInfo = new FileInfo(fullPath);
+					var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
+
+					var output = new StringBuilder();
+					output.AppendLine($"File: {path}");
+					output.AppendLine($"Operation: Write");
+					output.AppendLine($"Size: {fileInfo.Length} bytes ~ ({size})");
+
+					result.StatusIcon = Material.Icons.MaterialIconKind.FilePlus;
+					result.StatusTitle = $"**{path}**";
+					result.ResultContent = output.ToString();
+					result.CompleteWithSuccess();
 				}
 
-				var result = new ReactiveToolResult
-				{
-					StatusIcon = fileExisted ?
-						(append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck) :
-						Material.Icons.MaterialIconKind.FilePlus,
-					StatusTitle = $"**{path}**{changesTitlePostfix}",
-					ResultContent = output.ToString()
-				};
-
-				return result.Complete(true);
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error writing file: {ex.Message}");
+				result.StatusIcon = Material.Icons.MaterialIconKind.FileAlert;
+				result.StatusTitle = $"**{path}**";
+				result.ResultContent = $"Error writing file: {ex.Message}";
+				result.CompleteWithError();
 			}
 		}
 	}

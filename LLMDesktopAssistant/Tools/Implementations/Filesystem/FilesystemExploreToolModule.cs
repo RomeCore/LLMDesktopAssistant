@@ -124,7 +124,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = MaterialIconKind.FileDiscard,
+					StatusIcon = MaterialIconKind.FileTextError,
 					StatusTitle = $"**{path}**",
 					InterruptingContent = $"No such file or directory found: '{path}'.",
 					InterruptingSuccess = false,

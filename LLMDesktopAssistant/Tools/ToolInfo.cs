@@ -89,6 +89,11 @@ namespace LLMDesktopAssistant.Tools
 		public required Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor { get; init; }
 
 		/// <summary>
+		/// Gets or sets a synchronization group for the tool. Used for executing multiple tools in same group one-by-one. This is useful for tools that should not run at the same time (e.g. file editing tools).
+		/// </summary>
+		public string? SynchronizationGroup { get; init; }
+
+		/// <summary>
 		/// Gets or sets the user-friendly display name of the tool. If not set, the tool's name will be used as the display name.
 		/// </summary>
 		public string? DisplayName { get; init; }
@@ -143,10 +148,11 @@ namespace LLMDesktopAssistant.Tools
 				ArgumentSchema = argSchema,
 				OutputSchema = info.OutputSchema,
 				StreamingArgumentsAnalyser = _streamingAnalyzer,
+				PreviewExecutor = _previewExecutor,
 				DefaultExpectedBehaviour = info.DefaultExpectedBehaviour,
 				DefaultSelfHandledDecisions = info.DefaultSelfHandledDecisions,
-				PreviewExecutor = _previewExecutor,
 				Executor = _executor,
+				SynchronizationGroup = info.SynchronizationGroup,
 				DisplayName = info.DisplayName,
 				Category = info.Category,
 				ApprovalLevel = info.ApprovalLevel,

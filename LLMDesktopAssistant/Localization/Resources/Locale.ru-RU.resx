@@ -2028,4 +2028,17 @@
   <data name="model_capability_unknown" xml:space="preserve">
     <value>Неизвестно</value>
   </data>
+  <data name="fs-diff_confirm" xml:space="preserve">
+    <value>Применить</value>
+  </data>
+  <data name="fs-diff_decline" xml:space="preserve">
+    <value>Отклонить</value>
+  </data>
+  <data name="fs-diff_accepted" xml:space="preserve">
+    <value>Принято</value>
+  </data>
+  <data name="fs-diff_declined" xml:space="preserve">
+    <value>Отклонено</value>
+  </data>
+
 </root>

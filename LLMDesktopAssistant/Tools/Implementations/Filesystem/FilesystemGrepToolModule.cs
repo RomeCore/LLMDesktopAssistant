@@ -120,10 +120,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						else if (dirExists)
 						{
 							var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-							var allFiles = Directory.GetFiles(fullPath, "*", searchOption);
+							var allFiles = Directory.EnumerateFiles(fullPath, "*", searchOption);
 
 							foreach (var file in allFiles)
 							{
+								cancellationToken.ThrowIfCancellationRequested();
+
 								var ext = Path.GetExtension(file);
 								if (!allowedExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
 									continue;

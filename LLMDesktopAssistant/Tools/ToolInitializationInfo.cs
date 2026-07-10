@@ -45,6 +45,11 @@ namespace LLMDesktopAssistant.Tools
 		public ToolPolicyDecision DefaultSelfHandledDecisions { get; init; }
 
 		/// <summary>
+		/// Gets or sets a synchronization group for the tool. Used for executing multiple tools in same group one-by-one. This is useful for tools that should not run at the same time (e.g. file editing tools).
+		/// </summary>
+		public string? SynchronizationGroup { get; init; }
+
+		/// <summary>
 		/// Gets or sets a JSON object that defines the schema of the structured output for the tool.
 		/// Can be null if tool does not produces structured output.
 		/// </summary>

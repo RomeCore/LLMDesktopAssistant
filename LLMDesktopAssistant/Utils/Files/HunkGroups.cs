@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Text;
 
 namespace LLMDesktopAssistant.Utils.Files
@@ -53,6 +53,72 @@ namespace LLMDesktopAssistant.Utils.Files
 			return sb.ToString();
 		}
 
+		/// <summary>
+		/// Applies this diff to the original text and returns the modified text.
+		/// Only changes from the included groups are applied; context lines are preserved.
+		/// The diff groups must be in order and non-overlapping (as produced by <see cref="UnifiedDiff.Compute"/>).
+		/// </summary>
+		/// <param name="originalText">The original text to apply changes to.</param>
+		/// <returns>The modified text after applying all diff groups.</returns>
+		public readonly string ApplyToText(string originalText)
+		{
+			if (Groups is null || Groups.Count == 0)
+				return originalText;
+
+			var originalLines = SplitLines(originalText);
+			var resultLines = new List<string>(originalLines);
+
+			// Apply chunks from last to first to preserve line indices
+			for (int g = Groups.Count - 1; g >= 0; g--)
+			{
+				var group = Groups[g];
+				int oldStart = group.OldStart - 1; // convert to 0-based
+				int oldCount = group.OldCount;
+
+				// Collect new lines from the group (context + additions)
+				var newLines = new List<string>();
+				foreach (var line in group.Lines)
+				{
+					if (line.Kind is ' ' or '+')
+						newLines.Add(line.Content);
+				}
+
+				// Replace the range in original lines
+				resultLines.RemoveRange(oldStart, oldCount);
+				resultLines.InsertRange(oldStart, newLines);
+			}
+
+			return string.Join(Environment.NewLine, resultLines);
+		}
+
+		private static List<string> SplitLines(string text)
+		{
+			if (string.IsNullOrEmpty(text))
+				return [];
+
+			var lines = new List<string>();
+			int start = 0;
+			for (int i = 0; i < text.Length; i++)
+			{
+				if (text[i] == '\r' || text[i] == '\n')
+				{
+					int end = i;
+					if (text[i] == '\r' && i + 1 < text.Length && text[i + 1] == '\n')
+						i++;
+					lines.Add(text[start..end]);
+					start = i + 1;
+				}
+			}
+			if (start < text.Length)
+				lines.Add(text[start..]);
+			else if (text.Length > 0 && (text[^1] == '\r' || text[^1] == '\n'))
+				lines.Add(string.Empty);
+
+			return lines;
+		}
+
+		/// <summary>
+		/// Returns the total number of lines
 		/// <summary>
 		/// Returns the total number of lines that have been removed and added across all hunk groups.
 		/// </summary>

@@ -6,11 +6,12 @@ using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
 	[ToolModule]
-	public class FilesystemApplyDiffToolModule : ToolModule
+	public class FilesystemApplyDiffToolModule : FileSystemEditBaseToolModule
 	{
 		private readonly WorkingDirectoryAccessService _fileAccess;
 
@@ -41,7 +42,69 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				});
 		}
 
-		public ReactiveToolResult ApplyDiff(
+		public class FSApplyDiffSharedContext
+		{
+			public required string Path { get; init; }
+			public required string NewContent { get; init; }
+		}
+
+		public StreamingToolArgumentsAnalysisResult ApplyDiffStreaming(
+			string? path)
+		{
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.FileDocumentEdit,
+				StatusTitle = $"**{path}**"
+			};
+		}
+
+		public PreviewToolExecutionResult ApplyDiffPreview(
+			[SharedContext] ref FSApplyDiffSharedContext? sharedCtx,
+			string path, string? deleteLines = null, string? insertBeforeLine = null, string? insertText = null)
+		{
+			var fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+
+			var originalContent = File.ReadAllText(fullPath!);
+			var (newContent, errorMessage) = Edit(originalContent, deleteLines, insertBeforeLine, insertText);
+
+			if (newContent == null || newContent == originalContent)
+			{
+				sharedCtx = new FSApplyDiffSharedContext
+				{
+					Path = fullPath!,
+					NewContent = originalContent
+				};
+
+				return new PreviewToolExecutionResult
+				{
+					InterruptingSuccess = true,
+					InterruptingContent = errorMessage ?? "No changes were made to the file. The specified match was not found.",
+					StatusIcon = MaterialIconKind.FileQuestion,
+					StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
+					ExpectedBehaviour = ToolBehaviour.None |
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+				};
+			}
+
+			sharedCtx = new FSApplyDiffSharedContext
+			{
+				Path = fullPath!,
+				NewContent = newContent
+			};
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.FileDocumentEdit,
+				StatusTitle = $"**{path}**",
+				ExpectedBehaviour = ToolBehaviour.FileEdit |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+			};
+		}
+
+		public async Task ApplyDiff(
+			[SharedContext] FSApplyDiffSharedContext? sharedCtx,
+			ReactiveToolResult result,
+			ToolExecutionContext ctx,
 			string path,
 			[Description("Range of lines to delete, e.g. '10-20' or '10'. If not specified, no lines will be deleted.")]
 			string? deleteLines = null,
@@ -55,134 +118,175 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var fullPath = _fileAccess.AccessPath(path);
 
 				if (!File.Exists(fullPath))
-					return ReactiveToolResult.CreateError("File not found.");
+				{
+					result.StatusIcon = MaterialIconKind.FileAlert;
+					result.StatusTitle = $"**{path}**";
+					result.ResultContent = $"File '{path}' not found.";
+					result.CompleteWithError();
+					return;
+				}
 
 				if (FileUtils.IsBinaryFile(fullPath))
-					return ReactiveToolResult.CreateError("Cannot apply diff to binary files.");
-
-				int? _insertBeforeLine = null;
-				if (insertBeforeLine != null)
 				{
-					if (int.TryParse(insertBeforeLine, out var ibl))
-						_insertBeforeLine = ibl;
-					else
-						return ReactiveToolResult.CreateError($"Invalid line number for insertion: {insertBeforeLine}.");
+					result.StatusIcon = MaterialIconKind.FileAlert;
+					result.StatusTitle = $"**{path}**";
+					result.ResultContent = "Cannot apply diff to binary files.";
+					result.CompleteWithError();
+					return;
 				}
 
 				var originalContent = File.ReadAllText(fullPath);
-				var lines = originalContent.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
-				var beforeDeletionLines = lines.ToList();
-				var beforeInsertionLines = beforeDeletionLines;
-
-				int deletedStartLine = -1;
-				int deletedEndLine = -1;
-				List<string> deletedContent = [];
-
-				int insertedStartLine = -1;
-				int insertedEndLine = -1;
-				List<string> insertedContent = [];
-
-				if (!string.IsNullOrEmpty(deleteLines))
+				var newContent = sharedCtx?.NewContent;
+				if (newContent == null)
 				{
-					var (startLine, endLine) = ParseLineRange(deleteLines);
+					var edited = Edit(originalContent, deleteLines, insertBeforeLine, insertText);
 
-					if (startLine < 1 || startLine > lines.Count)
-						return ReactiveToolResult.CreateError($"Start line {startLine} is out of range. File has {lines.Count} lines.");
-
-					if (endLine < startLine)
-						return ReactiveToolResult.CreateError($"End line {endLine} must be greater than or equal to start line {startLine}");
-
-					if (endLine > lines.Count)
-						return ReactiveToolResult.CreateError($"End line {endLine} is out of range. File has {lines.Count} lines.");
-				}
-
-				if (insertBeforeLine != null && insertText != null)
-				{
-					if (_insertBeforeLine < 1)
-						return ReactiveToolResult.CreateError($"Line number {insertBeforeLine} must be at least 1");
-
-					if (_insertBeforeLine > lines.Count + 1)
-						return ReactiveToolResult.CreateError(
-							$"Line number {insertBeforeLine} is out of range. File has {lines.Count} lines. " +
-							$"Max insert position is {lines.Count + 1}");
-				}
-				else if (insertBeforeLine != null && insertText == null && deleteLines == null)
-				{
-					return ReactiveToolResult.CreateError("either insertText or deleteLines parameters are required when insertBeforeLine is specified");
-				}
-				else if (insertText != null && insertBeforeLine == null)
-				{
-					return ReactiveToolResult.CreateError("insertBeforeLine parameter is required when insertText is specified");
-				}
-
-				if (!string.IsNullOrEmpty(deleteLines))
-				{
-					var (startLine, endLine) = ParseLineRange(deleteLines);
-
-					deletedStartLine = startLine;
-					deletedEndLine = endLine;
-					deletedContent = lines.Skip(startLine - 1).Take(endLine - startLine + 1).ToList();
-					insertText ??= string.Join(Environment.NewLine, deletedContent);
-
-					int startIndex = startLine - 1;
-					int countToRemove = endLine - startLine + 1;
-					lines.RemoveRange(startIndex, countToRemove);
-
-					if (_insertBeforeLine != null && _insertBeforeLine > startLine)
+					if (edited.Item2 != null)
 					{
-						if (_insertBeforeLine < startLine + countToRemove)
-						{
-							_insertBeforeLine = startLine;
-						}
-						else
-						{
-							_insertBeforeLine -= countToRemove;
-						}
+						result.StatusIcon = MaterialIconKind.FileAlert;
+						result.StatusTitle = $"**{path}**";
+						result.ResultContent = edited.Item2;
+						result.CompleteWithError();
+						return;
 					}
+
+					newContent = edited.Item1!;
 				}
 
-				if (_insertBeforeLine != null && insertText != null)
-				{
-					beforeInsertionLines = lines.ToList();
-					insertedStartLine = _insertBeforeLine.Value;
-					var insertLinesList = insertText.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
-					insertedContent = insertLinesList;
-					insertedEndLine = _insertBeforeLine.Value + insertLinesList.Count - 1;
-
-					int insertPosition = _insertBeforeLine.Value - 1;
-					lines.InsertRange(insertPosition, insertLinesList);
-				}
-
-				var newContent = string.Join(Environment.NewLine, lines);
 				if (newContent == originalContent)
 				{
-					var noChangeResult = new ReactiveToolResult
-					{
-						StatusIcon = Material.Icons.MaterialIconKind.Information,
-						StatusTitle = $"**{path}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*",
-						ResultContent = "No changes applied to the file."
-					};
-					return noChangeResult.Complete(true);
+					result.StatusIcon = MaterialIconKind.FileQuestion;
+					result.StatusTitle = $"**{path}** *({LocalizationManager.LocalizeStatic("fs-changes_none")})*";
+					result.ResultContent = "No changes applied to the file.";
+					result.CompleteWithSuccess();
+					return;
 				}
 
-				File.WriteAllText(fullPath, newContent);
+				var postProcessResult = await PostProcessDiffAsync(fullPath, originalContent, newContent, ctx);
+				if (postProcessResult == null)
+				{
+					result.StatusIcon = MaterialIconKind.FileDiscard;
+					result.StatusTitle = $"**{path}**";
+					result.ResultContent = "User has rejected the changes, none has applied.";
+					result.CompleteWithSuccess();
+					return;
+				}
 
-				var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 10);
+				File.WriteAllText(fullPath!, postProcessResult.NewContent);
+
+				var diff = postProcessResult.AppliedDiff;
 				var (removed, added) = diff.GetChangeCounts();
 
-				var result = new ReactiveToolResult
-				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit,
-					StatusTitle = $"**{path}** *(-{removed} +{added})*",
-					ResultContent = diff.ToString()
-				};
-
-				return result.Complete(true);
+				result.StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit;
+				result.StatusTitle = $"**{path}** *(-{removed} +{added})*";
+				result.ResultContent = diff.ToString();
+				result.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error applying diff: {ex.Message}");
+				result.StatusIcon = MaterialIconKind.FileAlert;
+				result.StatusTitle = $"**{path}**";
+				result.ResultContent = $"Error applying diff: {ex.Message}";
+				result.CompleteWithError();
 			}
+		}
+
+		private static (string?, string?) Edit(string originalContent,
+			string? deleteLines = null, string? insertBeforeLine = null, string? insertText = null)
+		{
+			int? _insertBeforeLine = null;
+			if (insertBeforeLine != null)
+			{
+				if (int.TryParse(insertBeforeLine, out var ibl))
+					_insertBeforeLine = ibl;
+				else
+					return (null, $"Invalid line number for insertion: {insertBeforeLine}.");
+			}
+
+			var lines = originalContent.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
+			var beforeDeletionLines = lines.ToList();
+			var beforeInsertionLines = beforeDeletionLines;
+
+			int deletedStartLine = -1;
+			int deletedEndLine = -1;
+			List<string> deletedContent = [];
+
+			int insertedStartLine = -1;
+			int insertedEndLine = -1;
+			List<string> insertedContent = [];
+
+			if (!string.IsNullOrEmpty(deleteLines))
+			{
+				var (startLine, endLine) = ParseLineRange(deleteLines);
+
+				if (startLine < 1 || startLine > lines.Count)
+					return (null, $"Start line {startLine} is out of range. File has {lines.Count} lines.");
+
+				if (endLine < startLine)
+					return (null, $"End line {endLine} must be greater than or equal to start line {startLine}");
+
+				if (endLine > lines.Count)
+					return (null, $"End line {endLine} is out of range. File has {lines.Count} lines.");
+			}
+
+			if (insertBeforeLine != null && insertText != null)
+			{
+				if (_insertBeforeLine < 1)
+					return (null, $"Line number {insertBeforeLine} must be at least 1");
+
+				if (_insertBeforeLine > lines.Count + 1)
+					return (null,
+						$"Line number {insertBeforeLine} is out of range. File has {lines.Count} lines. " +
+						$"Max insert position is {lines.Count + 1}");
+			}
+			else if (insertBeforeLine != null && insertText == null && deleteLines == null)
+			{
+				return (null, "either insertText or deleteLines parameters are required when insertBeforeLine is specified");
+			}
+			else if (insertText != null && insertBeforeLine == null)
+			{
+				return (null, "insertBeforeLine parameter is required when insertText is specified");
+			}
+
+			if (!string.IsNullOrEmpty(deleteLines))
+			{
+				var (startLine, endLine) = ParseLineRange(deleteLines);
+
+				deletedStartLine = startLine;
+				deletedEndLine = endLine;
+				deletedContent = lines.Skip(startLine - 1).Take(endLine - startLine + 1).ToList();
+				insertText ??= string.Join(Environment.NewLine, deletedContent);
+
+				int startIndex = startLine - 1;
+				int countToRemove = endLine - startLine + 1;
+				lines.RemoveRange(startIndex, countToRemove);
+
+				if (_insertBeforeLine != null && _insertBeforeLine > startLine)
+				{
+					if (_insertBeforeLine < startLine + countToRemove)
+					{
+						_insertBeforeLine = startLine;
+					}
+					else
+					{
+						_insertBeforeLine -= countToRemove;
+					}
+				}
+			}
+
+			if (_insertBeforeLine != null && insertText != null)
+			{
+				beforeInsertionLines = lines.ToList();
+				insertedStartLine = _insertBeforeLine.Value;
+				var insertLinesList = insertText.Split(["\r\n", "\n", "\r"], StringSplitOptions.None).ToList();
+				insertedContent = insertLinesList;
+				insertedEndLine = _insertBeforeLine.Value + insertLinesList.Count - 1;
+
+				int insertPosition = _insertBeforeLine.Value - 1;
+				lines.InsertRange(insertPosition, insertLinesList);
+			}
+
+			return (string.Join(Environment.NewLine, lines), null);
 		}
 
 		private static (int startLine, int endLine) ParseLineRange(string lineRange)

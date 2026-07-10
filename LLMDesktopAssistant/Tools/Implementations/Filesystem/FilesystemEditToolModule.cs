@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	/// and regex-based editing. Combines capabilities of the old fs-replace and fs-edit.
 	/// </summary>
 	[ToolModule]
-	public class FilesystemEditToolModule : ToolModule
+	public class FilesystemEditToolModule : FileSystemEditBaseToolModule
 	{
 		private static readonly Parser _regexReplaceTextParser;
 
@@ -79,7 +79,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						  fs-edit(path: "file.cs", match: "Console\.WriteLine", operation: "delete", useRegex: true)
 						""",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit,
+					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
+					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
 				});
 		}
 
@@ -104,7 +106,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			public required string Path { get; init; }
 			public required string NewContent { get; init; }
-			public required HunkGroups Diff { get; init; }
 		}
 
 		public StreamingToolArgumentsAnalysisResult EditStreaming(
@@ -123,7 +124,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			int occurrence = 0, bool ignoreWhitespace = true, bool ignoreCase = false,
 			CancellationToken cancellationToken = default)
 		{
-			var fullPath = _fileAccess.TryAccessPath(path);
+			var fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
 			var error = CheckArgs(path, fullPath, operation, useRegex, match, text);
 			if (error != null)
 			{
@@ -155,8 +156,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				sharedCtx = new FSWriteSharedContext
 				{
 					Path = fullPath!,
-					NewContent = originalContent,
-					Diff = new HunkGroups { Groups = [] }
+					NewContent = originalContent
 				};
 
 				return new PreviewToolExecutionResult
@@ -165,30 +165,30 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					InterruptingContent = errorMessage ?? "No changes were made to the file. The specified match was not found.",
 					StatusIcon = MaterialIconKind.FileQuestion,
 					StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
-					ExpectedBehaviour = ToolBehaviour.None
+					ExpectedBehaviour = ToolBehaviour.None |
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 				};
 			}
-
-			var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 5);
-			var (removed, added) = diff.GetChangeCounts();
 
 			sharedCtx = new FSWriteSharedContext
 			{
 				Path = fullPath!,
-				NewContent = newContent,
-				Diff = diff
+				NewContent = newContent
 			};
 
 			return new PreviewToolExecutionResult
 			{
 				StatusIcon = MaterialIconKind.FileDocumentEdit,
-				StatusTitle = $"**{path}** *(-{removed} +{added})*",
-				ExpectedBehaviour = ToolBehaviour.FileEdit
+				StatusTitle = $"**{path}**",
+				ExpectedBehaviour = ToolBehaviour.FileEdit |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 
-		public ReactiveToolResult Edit(
+		public async Task Edit(
 			[SharedContext] FSWriteSharedContext? sharedCtx,
+			ReactiveToolResult result,
+			ToolExecutionContext ctx,
 			[Description("The path to the file to edit.")]
 			string path,
 			[Description("The operation: 'replace', 'insert_before', 'insert_after', or 'delete'.")]
@@ -209,29 +209,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				if (sharedCtx != null)
-				{
-					File.WriteAllText(sharedCtx.Path, sharedCtx.NewContent);
-					var (_removed, _added) = sharedCtx.Diff.GetChangeCounts();
-					return new ReactiveToolResult
-					{
-						StatusIcon = MaterialIconKind.FileDocumentEdit,
-						StatusTitle = $"**{path}** *(-{_removed} +{_added})*",
-						ResultContent = sharedCtx.Diff.ToString()
-					}.CompleteWithSuccess();
-				}
-
-				var fullPath = _fileAccess.TryAccessPath(path);
+				var fullPath = sharedCtx?.Path ?? _fileAccess.AccessPath(path);
 				var error = CheckArgs(path, fullPath, operation, useRegex, match, text);
 
 				if (error != null)
 				{
-					return new ReactiveToolResult
-					{
-						StatusIcon = MaterialIconKind.FileAlert,
-						StatusTitle = $"**{path}**",
-						ResultContent = error
-					}.CompleteWithError();
+					result.StatusIcon = MaterialIconKind.FileAlert;
+					result.StatusTitle = $"**{path}**";
+					result.ResultContent = error;
+					result.CompleteWithError();
+					return;
 				}
 
 				if (operation is "delete")
@@ -241,41 +228,57 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var normalizedContent = NormalizeLineEndings(originalContent);
 				var fileLines = normalizedContent.Split('\n').ToList();
 
-				string? newContent, errorMessage;
-				if (useRegex)
-					(newContent, errorMessage) = EditWithRegex(match, text, operation, occurrence, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
-				else
-					(newContent, errorMessage) = EditWithString(match, text, operation, occurrence, ignoreWhitespace, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
+				string? newContent = sharedCtx?.NewContent, errorMessage = null;
+				if (newContent == null)
+				{
+					if (useRegex)
+						(newContent, errorMessage) = EditWithRegex(match, text, operation, occurrence, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
+					else
+						(newContent, errorMessage) = EditWithString(match, text, operation, occurrence, ignoreWhitespace, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
+				}
 
 				if (newContent == null || newContent == originalContent)
 				{
-					return new ReactiveToolResult
-					{
-						StatusIcon = MaterialIconKind.FileQuestion,
-						StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
-						ResultContent = errorMessage ?? "No changes were made to the file. The specified match was not found."
-					}.CompleteWithSuccess();
+					result.StatusIcon = MaterialIconKind.FileQuestion;
+					result.StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**");
+					result.ResultContent = errorMessage ?? "No changes were made to the file. The specified match was not found.";
+					result.CompleteWithSuccess();
+					return;
 				}
 
-				File.WriteAllText(fullPath!, newContent);
+				var postProcessResult = await PostProcessDiffAsync(fullPath, originalContent, newContent, ctx);
+				if (postProcessResult == null)
+				{
+					result.StatusIcon = MaterialIconKind.FileDiscard;
+					result.StatusTitle = $"**{path}**";
+					result.ResultContent = "User has rejected the changes, none has applied.";
+					result.CompleteWithSuccess();
+					return;
+				}
 
-				var diff = UnifiedDiff.Compute(originalContent, newContent, contextLines: 5);
+				File.WriteAllText(fullPath!, postProcessResult.NewContent);
+
+				var diff = postProcessResult.AppliedDiff;
 				var (removed, added) = diff.GetChangeCounts();
 
-				return new ReactiveToolResult
-				{
-					StatusIcon = MaterialIconKind.FileDocumentEdit,
-					StatusTitle = $"**{path}** *(-{removed} +{added})*",
-					ResultContent = diff.ToString()
-				}.CompleteWithSuccess();
+				result.StatusIcon = MaterialIconKind.FileDocumentEdit;
+				result.StatusTitle = $"**{path}** *(-{removed} +{added})*";
+				result.ResultContent = diff.ToString();
+				result.CompleteWithSuccess();
 			}
 			catch (OperationCanceledException)
 			{
-				return ReactiveToolResult.CreateError("Edit operation was cancelled.");
+				result.StatusIcon = MaterialIconKind.FileQuestion;
+				result.StatusTitle = $"**{path}**";
+				result.ResultContent = "Edit operation was cancelled.";
+				result.CompleteWithError();
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error editing file: {ex.Message}");
+				result.StatusIcon = MaterialIconKind.FileAlert;
+				result.StatusTitle = $"**{path}**";
+				result.ResultContent = $"Error editing file: {ex.Message}";
+				result.CompleteWithError();
 			}
 		}
 

@@ -14,4 +14,8 @@
 	<conv:EqualsConverter x:Key="EqualsConverter"/>
 	<conv:StringEqualsConverter x:Key="StringEqualsConverter"/>
 
+	<conv:DiffLineBackgroundConverter x:Key="DiffLineBackgroundConverter"/>
+	<conv:DiffLineForegroundConverter x:Key="DiffLineForegroundConverter"/>
+	
+
 </ResourceDictionary>

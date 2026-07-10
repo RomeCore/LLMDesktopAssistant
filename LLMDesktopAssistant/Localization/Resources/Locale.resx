@@ -2028,4 +2028,17 @@
   <data name="model_capability_unknown" xml:space="preserve">
     <value>Unknown</value>
   </data>
+  <data name="fs-diff_confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="fs-diff_decline" xml:space="preserve">
+    <value>Decline</value>
+  </data>
+  <data name="fs-diff_accepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="fs-diff_declined" xml:space="preserve">
+    <value>Declined</value>
+  </data>
+
 </root>
