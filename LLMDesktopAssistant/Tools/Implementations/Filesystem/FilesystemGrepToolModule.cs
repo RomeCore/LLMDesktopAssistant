@@ -15,9 +15,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	[ToolModule]
 	public class FilesystemGrepToolModule : ToolModule
 	{
-		private readonly FileAccessService _fileAccess;
+		private readonly WorkingDirectoryAccessService _fileAccess;
 
-		public FilesystemGrepToolModule(FileAccessService fileAccess)
+		public FilesystemGrepToolModule(WorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 

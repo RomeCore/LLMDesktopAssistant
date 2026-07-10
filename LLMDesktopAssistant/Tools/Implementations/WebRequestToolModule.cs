@@ -22,9 +22,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		};
 
 		private readonly HttpClient _httpClient, _httpInfiniteTimeoutClient;
-		private readonly FileAccessService _fileAccess;
+		private readonly WorkingDirectoryAccessService _fileAccess;
 
-		public WebRequestToolModule(FileAccessService fileAccess)
+		public WebRequestToolModule(WorkingDirectoryAccessService fileAccess)
 		{
 			_httpClient = CreateClient();
 			_httpInfiniteTimeoutClient = CreateClient();

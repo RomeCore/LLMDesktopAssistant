@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.Services.Instances
 	/// </summary>
 	/// <param name="chat">The current chat instance that contains environment settings.</param>
 	[ChatService]
-	public class FileAccessService(Chat chat)
+	public class WorkingDirectoryAccessService(Chat chat)
 	{
 		public string GetWorkingDirectory()
 		{

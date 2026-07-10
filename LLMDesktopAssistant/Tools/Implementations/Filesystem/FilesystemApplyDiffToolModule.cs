@@ -12,9 +12,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	[ToolModule]
 	public class FilesystemApplyDiffToolModule : ToolModule
 	{
-		private readonly FileAccessService _fileAccess;
+		private readonly WorkingDirectoryAccessService _fileAccess;
 
-		public FilesystemApplyDiffToolModule(FileAccessService fileAccess)
+		public FilesystemApplyDiffToolModule(WorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 

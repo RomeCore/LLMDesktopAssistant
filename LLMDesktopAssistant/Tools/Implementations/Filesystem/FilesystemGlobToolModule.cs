@@ -16,9 +16,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	[ToolModule]
 	public class FilesystemGlobToolModule : ToolModule
 	{
-		private readonly FileAccessService _fileAccess;
+		private readonly WorkingDirectoryAccessService _fileAccess;
 
-		public FilesystemGlobToolModule(FileAccessService fileAccess)
+		public FilesystemGlobToolModule(WorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 

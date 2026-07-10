@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	[LuaApi(chatScoped: true)]
 	public class LuaApiRoot : LuaApiBaseAsync
 	{
-		private readonly FileAccessService _fileAccess;
+		private readonly WorkingDirectoryAccessService _fileAccess;
 		private static readonly string _version = App.Version.ToString();
 
 		public override string? Namespace => "dass";
@@ -43,7 +43,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  dass.help()                  -- prints all available APIs
 			""";
 
-		public LuaApiRoot(FileAccessService fileAccess)
+		public LuaApiRoot(WorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 		}

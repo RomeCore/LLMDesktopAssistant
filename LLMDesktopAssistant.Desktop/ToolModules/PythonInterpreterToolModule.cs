@@ -28,9 +28,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	public class PythonInterpreterToolModule : TerminalBasedToolModule
 	{
 		private readonly Chat _chat;
-		private readonly FileAccessService _fileAccess;
+		private readonly WorkingDirectoryAccessService _fileAccess;
 
-		public PythonInterpreterToolModule(Chat chat, FileAccessService fileAccess)
+		public PythonInterpreterToolModule(Chat chat, WorkingDirectoryAccessService fileAccess)
 		{
 			_chat = chat;
 			_fileAccess = fileAccess;

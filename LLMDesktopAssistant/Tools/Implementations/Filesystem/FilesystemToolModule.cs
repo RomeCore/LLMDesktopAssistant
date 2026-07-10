@@ -10,10 +10,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	[ToolModule]
 	public class FilesystemToolModule : ToolModule
 	{
-		private readonly FileAccessService _fileAccess;
+		private readonly WorkingDirectoryAccessService _fileAccess;
 		private readonly IDocumentReadingService _documentReader;
 
-		public FilesystemToolModule(FileAccessService fileAccess, IDocumentReadingService documentReader)
+		public FilesystemToolModule(WorkingDirectoryAccessService fileAccess, IDocumentReadingService documentReader)
 		{
 			_fileAccess = fileAccess;
 			_documentReader = documentReader;

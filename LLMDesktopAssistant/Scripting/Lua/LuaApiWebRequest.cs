@@ -139,7 +139,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(r.status_code, r.content)
 			""";
 
-		private readonly FileAccessService _fileAccess;
+		private readonly WorkingDirectoryAccessService _fileAccess;
 		private readonly HttpClient _httpClient, _pureHttpClient, _infiniteTimeoutClient;
 		private static readonly Converter _mdConverter = new(
 			new Config
@@ -150,7 +150,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				Base64Images = Config.Base64ImageHandling.Skip
 			});
 
-		public LuaApiWebRequest(FileAccessService fileAccess)
+		public LuaApiWebRequest(WorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 			_httpClient = CreateClient(timeoutSeconds: 30);
