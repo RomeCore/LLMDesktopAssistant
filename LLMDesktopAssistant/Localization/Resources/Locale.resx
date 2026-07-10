@@ -1806,8 +1806,11 @@
   <data name="approval_level_policyaskordisallow" xml:space="preserve">
     <value>Policy: never auto-approve</value>
   </data>
-  <data name="approval_level_policyapproveordisallow" xml:space="preserve">
-    <value>Policy: never ask</value>
+  <data name="approval_level_policyautoapproveunlessdisallowed" xml:space="preserve">
+    <value>Policy: auto-approve unless disallowed</value>
+  </data>
+  <data name="approval_level_policyautodisallowunlessapproved" xml:space="preserve">
+    <value>Policy: auto-disallow unless approved</value>
   </data>
   <data name="approval_level_policyapproveorask" xml:space="preserve">
     <value>Policy: never disallow</value>

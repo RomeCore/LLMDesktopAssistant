@@ -188,7 +188,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 						case ToolApprovalLevel.PolicyBased:
 						case ToolApprovalLevel.PolicyApproveOrAsk:
-						case ToolApprovalLevel.PolicyApproveOrDisallow:
+						case ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed:
+						case ToolApprovalLevel.PolicyAutoDisallowUnlessApproved:
 						case ToolApprovalLevel.PolicyAskOrDisallow:
 
 							var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
@@ -216,8 +217,12 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 									disallow = false;
 									break;
 
-								case ToolApprovalLevel.PolicyApproveOrDisallow:
+								case ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed:
 									autoApprove = true;
+									break;
+
+								case ToolApprovalLevel.PolicyAutoDisallowUnlessApproved:
+									disallow = !autoApprove;
 									break;
 
 								case ToolApprovalLevel.PolicyAskOrDisallow:

@@ -35,26 +35,35 @@ public enum ToolApprovalLevel
 	/// Defer to the agent's policy settings, but never prompt the user and auto-approve
 	/// unless explicitly disallowed by the agent (see <see cref="AgentToolSettings.DisallowBehaviours"/>).
 	/// So, the <see cref="AgentToolSettings.AutoApproveBehaviours"/> setting is ignored.
+	/// Approve-first approach: execute unless explicitly disallowed.
 	/// </summary>
-	PolicyApproveOrDisallow = 3,
+	PolicyAutoApproveUnlessDisallowed = 3,
+
+	/// <summary>
+	/// Defer to the agent's policy settings, but never prompt the user and auto-disallow
+	/// unless explicitly approved by the agent (see <see cref="AgentToolSettings.AutoApproveBehaviours"/>).
+	/// So, the <see cref="AgentToolSettings.DisallowBehaviours"/> setting is ignored.
+	/// Disallow-first approach: reject unless explicitly auto-approved.
+	/// </summary>
+	PolicyAutoDisallowUnlessApproved = 4,
 
 	/// <summary>
 	/// Execute the tool immediately without any user interaction.
 	/// This bypasses all agent-level policy checks.
 	/// Use for trivially safe operations (math, random, time).
 	/// </summary>
-	AlwaysApprove = 4,
+	AlwaysApprove = 5,
 
 	/// <summary>
 	/// Always prompt the user for confirmation before executing the tool,
 	/// regardless of the agent's <see cref="AgentToolSettings.AutoApproveBehaviours"/>.
 	/// Use for high-impact operations like file deletion or code execution.
 	/// </summary>
-	AlwaysAsk = 5,
+	AlwaysAsk = 6,
 
 	/// <summary>
 	/// Always reject the tool call without executing it, regardless of the agent's policy settings.
 	/// This explicitly notifies agents that they are not allowed to execute this tool upon trying to do so.
 	/// </summary>
-	AlwaysDisallow = 6,
+	AlwaysDisallow = 7,
 }

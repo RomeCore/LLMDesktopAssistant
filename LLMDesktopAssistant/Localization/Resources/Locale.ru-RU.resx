@@ -1806,8 +1806,11 @@
   <data name="approval_level_policyaskordisallow" xml:space="preserve">
     <value>Политика: никогда не одобрять автоматически</value>
   </data>
-  <data name="approval_level_policyapproveordisallow" xml:space="preserve">
-    <value>Политика: никогда не спрашивать</value>
+  <data name="approval_level_policyautoapproveunlessdisallowed" xml:space="preserve">
+    <value>Политика: одобрять если не запрещено</value>
+  </data>
+  <data name="approval_level_policyautodisallowunlessapproved" xml:space="preserve">
+    <value>Политика: запрещать если не одобрено</value>
   </data>
   <data name="approval_level_policyapproveorask" xml:space="preserve">
     <value>Политика: никогда не запрещать</value>

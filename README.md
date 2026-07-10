@@ -20,6 +20,8 @@
 - **Mathematics** — execute mathematical calculations
 - **Random** — dice rolls, random numbers, GUIDs, list shuffling
 - **Human-in-the-Loop** — file pickers, confirmation dialogs, choice selection
+
+- **Interactive diff confirmation** — preview file changes with color-coded diffs, accept or decline individual edits directly in the chat
 - **Time utilities** — get current time, wait/delays
 - **Python execution** — Python execution in isolated or shared environments
 - **Lua scripting** — scriptable via AsyncLua (async/await Lua interpreter with full dASS API bindings)
