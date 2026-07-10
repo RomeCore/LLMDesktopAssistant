@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using LiteDB;
 
-namespace LLMDesktopAssistant.Tools.Forms;
+namespace LLMDesktopAssistant.Tools.MVVM;
 
 public class ChoiceOption : NotifyPropertyChanged
 {

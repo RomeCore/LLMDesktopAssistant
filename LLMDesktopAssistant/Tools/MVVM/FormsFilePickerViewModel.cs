@@ -5,7 +5,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Tools.Forms;
+namespace LLMDesktopAssistant.Tools.MVVM;
 
 public enum FilePickerMode
 {

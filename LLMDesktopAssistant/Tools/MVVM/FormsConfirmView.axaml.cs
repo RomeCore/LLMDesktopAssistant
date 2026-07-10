@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 
-namespace LLMDesktopAssistant.Tools.Forms;
+namespace LLMDesktopAssistant.Tools.MVVM;
 
 public partial class FormsConfirmView : UserControl
 {

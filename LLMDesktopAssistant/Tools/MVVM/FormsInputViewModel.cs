@@ -1,11 +1,9 @@
-using Avalonia.Animation;
 using CommunityToolkit.Mvvm.Input;
 using LiteDB;
-using LLMDesktopAssistant.Converters;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Localization;
 
-namespace LLMDesktopAssistant.Tools.Forms;
+namespace LLMDesktopAssistant.Tools.MVVM;
 
 public class InputField : NotifyPropertyChanged
 {

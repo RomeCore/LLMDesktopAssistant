@@ -2,13 +2,12 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
-			 xmlns:local="using:LLMDesktopAssistant.Tools.Forms"
+			 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
+			 xmlns:local="using:LLMDesktopAssistant.Tools.MVVM"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
-			 x:Class="LLMDesktopAssistant.Tools.Forms.FormsChoiceView"
-			 x:DataType="local:FormsChoiceViewModel"
-			 x:Name="Form">
+			 x:Class="LLMDesktopAssistant.Tools.MVVM.FormsInputView"
+			 x:DataType="local:FormsInputViewModel">
 
 	<Border Background="{DynamicResource CardBackground}"
 			BorderBrush="{DynamicResource CardBorderBrush}"
@@ -35,49 +34,59 @@
 					   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
 					   Opacity="0.8"/>
 
-			<!-- Selection hint -->
-			<TextBlock FontSize="11" Opacity="0.5"
-					   IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}">
-				<Run Text="{loc:Loc forms_make_selection}"/>
-			</TextBlock>
-
-			<ItemsControl ItemsSource="{Binding Options}"
+			<!-- Form fields -->
+			<ItemsControl ItemsSource="{Binding Fields}"
 						  IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<StackPanel Orientation="Vertical" Spacing="4"/>
+						<StackPanel Orientation="Vertical" Spacing="8"/>
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<ToggleButton Content="{Binding Label}"
-								Command="{Binding #Form.DataContext.ToggleCommand}"
-								CommandParameter="{Binding}"
-								HorizontalAlignment="Stretch"
-								IsChecked="{Binding IsSelected}"
-								Classes="ChoiceOption"/>
+						<StackPanel Orientation="Vertical" Spacing="2">
+							<StackPanel Orientation="Horizontal" Spacing="4">
+								<TextBlock Text="{Binding Label}"
+										   FontSize="13"
+										   TextWrapping="Wrap"
+										   VerticalAlignment="Center"/>
+								<TextBlock Text="*"
+										   Foreground="Red"
+											 VerticalAlignment="Bottom"
+										   IsVisible="{Binding IsRequired}"/>
+							</StackPanel>
+
+							<!-- Field input: uses AcceptsReturn only for multiline type -->
+							<TextBox Text="{Binding Value}"
+									 PlaceholderText="{Binding Placeholder}"
+									 MinLines="3"
+									 MaxLines="8"
+									 AcceptsReturn="{Binding FieldType, Converter={StaticResource StringEqualsConverter}, ConverterParameter=multiline}"/>
+
+							<!-- Error -->
+							<TextBlock Text="{Binding Error}"
+									   Foreground="Red"
+									   FontSize="11"
+									   IsVisible="{Binding Error, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+						</StackPanel>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 
-			<Panel IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}">
-				<TextBox Text="{Binding CustomInput}"
-						 PlaceholderText="{loc:Loc forms_custom_option}"
-						 IsVisible="{Binding AllowCustom}"/>
-			</Panel>
-
+			<!-- Submit button -->
 			<Button Content="{loc:Loc ok}"
 					Command="{Binding SubmitCommand}"
 					HorizontalAlignment="Right"
 					MinWidth="80"
 					IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}"/>
 
+			<!-- Result -->
 			<StackPanel Orientation="Horizontal" Spacing="4"
 						IsVisible="{Binding IsResultSet}">
 				<ico:MaterialIcon Kind="CheckCircle"
 								  Width="20" Height="20"
 								  Foreground="{DynamicResource SuccessColor}"/>
-				<TextBlock Text="{loc:Loc forms_selection_confirmed}" FontSize="13" Opacity="0.7"/>
+				<TextBlock Text="{loc:Loc forms_form_submitted}" FontSize="13" Opacity="0.7"/>
 			</StackPanel>
 
 		</StackPanel>

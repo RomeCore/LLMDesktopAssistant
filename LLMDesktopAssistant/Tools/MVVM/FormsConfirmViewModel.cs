@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.Input;
 using LiteDB;
 using LLMDesktopAssistant.LLM.Domain;
 
-namespace LLMDesktopAssistant.Tools.Forms;
+namespace LLMDesktopAssistant.Tools.MVVM;
 
 [ViewModelFor(typeof(FormsConfirmView))]
 public class FormsConfirmViewModel : AdditionalMessageViewModel

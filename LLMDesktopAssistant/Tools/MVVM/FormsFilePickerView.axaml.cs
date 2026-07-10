@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace LLMDesktopAssistant.Tools.Forms;
+namespace LLMDesktopAssistant.Tools.MVVM;
 
 public partial class FormsFilePickerView : UserControl
 {

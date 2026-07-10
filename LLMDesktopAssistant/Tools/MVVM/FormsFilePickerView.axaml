@@ -3,10 +3,10 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
-			 xmlns:local="using:LLMDesktopAssistant.Tools.Forms"
+			 xmlns:local="using:LLMDesktopAssistant.Tools.MVVM"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
-			 x:Class="LLMDesktopAssistant.Tools.Forms.FormsFilePickerView"
+			 x:Class="LLMDesktopAssistant.Tools.MVVM.FormsFilePickerView"
 			 x:DataType="local:FormsFilePickerViewModel">
 
 	<Border Background="{DynamicResource CardBackground}"
