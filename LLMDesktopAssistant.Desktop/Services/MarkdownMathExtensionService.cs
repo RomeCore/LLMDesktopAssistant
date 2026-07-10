@@ -14,6 +14,7 @@ namespace LLMDesktopAssistant.Desktop.Services
 	{
 		public MarkdownMathExtensionService()
 		{
+			MarkdownRenderer.ConfigurePipeline += x => x.UseExtendedMathematics();
 			MarkdownNode.Register<MathInlineNode>();
 			MarkdownNode.Register<MathBlockNode>();
 		}

@@ -1,13 +1,7 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using LLMDesktopAssistant.LLM.Attachments;
-using LLMDesktopAssistant.LLM.MVVM;
-using LLMDesktopAssistant.LLM.Services.Attachments;
-using ReverseMarkdown.Converters;
 using Serilog;
 
 namespace LLMDesktopAssistant.LLM.MVVM;

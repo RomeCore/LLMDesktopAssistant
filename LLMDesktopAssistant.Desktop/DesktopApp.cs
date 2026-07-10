@@ -1,10 +1,11 @@
-﻿using LLMDesktopAssistant.Desktop.Utils;
+﻿using System;
+using Avalonia.Markup.Xaml.Styling;
 using LLMDesktopAssistant;
+using LLMDesktopAssistant.Blazor;
+using LLMDesktopAssistant.Desktop.Utils;
+using LLMDesktopAssistant.Utils;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-using System;
-using LLMDesktopAssistant.Utils;
-using LLMDesktopAssistant.Blazor;
 
 namespace LLMDesktopAssistant.Desktop
 {
@@ -22,6 +23,11 @@ namespace LLMDesktopAssistant.Desktop
 			// Load plugins only for desktops
 			PluginManager.LoadPluginsInto(AppDomain.CurrentDomain);
 			ReflectionUtility.AddAdditionalAssembly(typeof(ChatBlazorUIStarter).Assembly, observe: true);
+
+			Styles.Add(new StyleInclude(new Uri("avares://LiveMarkdown.Avalonia.Mermaid/Styles.axaml"))
+			{
+				Source = new Uri("avares://LiveMarkdown.Avalonia.Mermaid/Styles.axaml")
+			});
 
 			base.Initialize();
 		}
