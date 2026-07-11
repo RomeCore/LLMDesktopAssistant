@@ -13,10 +13,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			public required HunkGroups AppliedDiff { get; init; }
 
+			public required HunkGroups RejectedDiff { get; init; }
+
 			public required string NewContent { get; init; }
 		}
 
-		protected async Task<DiffPostProcessResult?> PostProcessDiffAsync(string filename, string oldContent, string newContent, ToolExecutionContext ctx)
+		protected async Task<DiffPostProcessResult> PostProcessDiffAsync(string filename, string oldContent, string newContent,
+			ToolExecutionContext ctx, CancellationToken cancellationToken)
 		{
 			var diff = UnifiedDiff.Compute(oldContent, newContent, contextLines: 3);
 
@@ -25,6 +28,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					Diff = diff,
 					AppliedDiff = diff,
+					RejectedDiff = new HunkGroups { Groups = [] },
 					NewContent = newContent
 				};
 
@@ -38,18 +42,30 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				diffVM.LoadFromHunkGroups(diff);
 				ctx.Message.AdditionalViewModels.Add(diffVM);
 
+				using var reg = cancellationToken.Register(() =>
+				{
+					diffVM.Decline();
+				});
+
 				var accepted = await diffVM.ConfirmationTask;
 				if (accepted)
 				{
 					return new DiffPostProcessResult
 					{
 						Diff = diff,
-						AppliedDiff = diffVM.BuildHunkGroups(),
+						AppliedDiff = diffVM.BuildEnabledHunkGroups(),
+						RejectedDiff = diffVM.BuildDisabledHunkGroups(),
 						NewContent = diffVM.ApplyToText(oldContent)
 					};
 				}
 
-				return null;
+				return new DiffPostProcessResult
+				{
+					Diff = diff,
+					AppliedDiff = new HunkGroups { Groups = [] },
+					RejectedDiff = diff,
+					NewContent = diffVM.ApplyToText(oldContent)
+				};
 			}
 			else
 			{
@@ -63,6 +79,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					Diff = diff,
 					AppliedDiff = diff,
+					RejectedDiff = new HunkGroups { Groups = [] },
 					NewContent = newContent
 				};
 			}

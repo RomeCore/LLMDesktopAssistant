@@ -1,8 +1,11 @@
 ﻿using Avalonia.Threading;
+using LiteDB;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace LLMDesktopAssistant.Utils
 {
@@ -24,31 +27,49 @@ namespace LLMDesktopAssistant.Utils
 		/// <summary>
 		/// Gets the number of elements contained in the <see cref="RangeObservableCollection{T}"/>.
 		/// </summary>
+		[BsonIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
 		public int Count => _count;
 
 		/// <summary>
 		/// Gets a value indicating whether the collection contains any items.
 		/// </summary>
+		[BsonIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
 		public bool Any => _count > 0;
 
 		/// <summary>
 		/// Gets a value indicating whether the <see cref="RangeObservableCollection{T}"/> is read-only.
 		/// </summary>
+		[BsonIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
 		public bool IsReadOnly => false;
 
 		/// <summary>
 		/// Gets a value indicating whether the <see cref="RangeObservableCollection{T}"/> has a fixed size.
 		/// </summary>
+		[BsonIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
 		public bool IsFixedSize => false;
 
 		/// <summary>
 		/// Gets a value indicating whether access to the <see cref="RangeObservableCollection{T}"/> is synchronized (thread-safe).
 		/// </summary>
+		[BsonIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
 		public bool IsSynchronized => true;
 
 		/// <summary>
 		/// Gets an object that can be used to synchronize access to the <see cref="RangeObservableCollection{T}"/>.
 		/// </summary>
+		[BsonIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
 		public object SyncRoot => _lock;
 
 		/// <summary>

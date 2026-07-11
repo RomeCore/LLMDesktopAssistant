@@ -2044,4 +2044,14 @@
     <value>Отклонено</value>
   </data>
 
+  <data name="fs-diff_toggle_chunk" xml:space="preserve">
+    <value>Включить/выключить этот блок изменений</value>
+  </data>
+  <data name="fs-diff_enable_all" xml:space="preserve">
+    <value>Включить все</value>
+  </data>
+  <data name="fs-diff_disable_all" xml:space="preserve">
+    <value>Отключить все</value>
+  </data>
+
 </root>

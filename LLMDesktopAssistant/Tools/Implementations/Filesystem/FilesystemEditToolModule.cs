@@ -189,6 +189,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[SharedContext] FSWriteSharedContext? sharedCtx,
 			ReactiveToolResult result,
 			ToolExecutionContext ctx,
+			CancellationToken cancellationToken,
 			[Description("The path to the file to edit.")]
 			string path,
 			[Description("The operation: 'replace', 'insert_before', 'insert_after', or 'delete'.")]
@@ -204,8 +205,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[Description("If true (plain text mode only), leading/trailing whitespace and line endings are ignored. Dedent is applied.")]
 			bool ignoreWhitespace = true,
 			[Description("If true, case is ignored when matching.")]
-			bool ignoreCase = false,
-			CancellationToken cancellationToken = default)
+			bool ignoreCase = false)
 		{
 			try
 			{
@@ -246,12 +246,18 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					return;
 				}
 
-				var postProcessResult = await PostProcessDiffAsync(fullPath, originalContent, newContent, ctx);
-				if (postProcessResult == null)
+				var postProcessResult = await PostProcessDiffAsync(fullPath, originalContent, newContent, ctx, cancellationToken);
+				if (!postProcessResult.AppliedDiff.HasGroups)
 				{
 					result.StatusIcon = MaterialIconKind.FileDiscard;
 					result.StatusTitle = $"**{path}**";
-					result.ResultContent = "User has rejected the changes, none has applied.";
+					result.ResultContent = postProcessResult.RejectedDiff.HasGroups ?
+						$"""
+						User has rejected the changes, none has applied.
+						[REJECTED CHANGES BY THE USER]
+						{postProcessResult.RejectedDiff}
+						""" :
+						"User has rejected the changes, none has applied.";
 					result.CompleteWithSuccess();
 					return;
 				}
@@ -263,7 +269,19 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				result.StatusIcon = MaterialIconKind.FileDocumentEdit;
 				result.StatusTitle = $"**{path}** *(-{removed} +{added})*";
-				result.ResultContent = diff.ToString();
+				result.ResultContent = postProcessResult.RejectedDiff.HasGroups ?
+					$"""
+					File edited successfully. *(-{removed} +{added})*
+					[APPLIED CHANGES]
+					{diff}
+					[REJECTED CHANGES BY THE USER]
+					{postProcessResult.RejectedDiff}
+					""" :
+					$"""
+					File edited successfully. *(-{removed} +{added})*
+					[APPLIED CHANGES]
+					{diff}
+					""";
 				result.CompleteWithSuccess();
 			}
 			catch (OperationCanceledException)

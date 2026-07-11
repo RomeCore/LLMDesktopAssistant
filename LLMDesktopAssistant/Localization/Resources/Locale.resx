@@ -2044,4 +2044,14 @@
     <value>Declined</value>
   </data>
 
+  <data name="fs-diff_toggle_chunk" xml:space="preserve">
+    <value>Toggle this change chunk</value>
+  </data>
+  <data name="fs-diff_enable_all" xml:space="preserve">
+    <value>Enable All</value>
+  </data>
+  <data name="fs-diff_disable_all" xml:space="preserve">
+    <value>Disable All</value>
+  </data>
+
 </root>

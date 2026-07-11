@@ -50,9 +50,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		}
 
 		public PreviewToolExecutionResult? WriteFilePreview(
+			[SharedContext] out string? fullPath,
 			string path,
 			string content,
-			[SharedContext] out string? fullPath,
 			bool append = false)
 		{
 			try
@@ -111,11 +111,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		}
 
 		public async Task WriteFile(
+			[SharedContext] string? fullPath,
+			ReactiveToolResult result,
+			ToolExecutionContext ctx,
+			CancellationToken cancellationToken,
 			string path,
 			string content,
-			ToolExecutionContext ctx,
-			ReactiveToolResult result,
-			[SharedContext] string? fullPath,
 			bool append = false)
 		{
 			try
@@ -136,8 +137,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				if (fileExisted)
 				{
-					var postProcessResult = await PostProcessDiffAsync(fullPath, oldContent!, content, ctx);
-					if (postProcessResult == null)
+					var postProcessResult = await PostProcessDiffAsync(fullPath, oldContent!, content, ctx, cancellationToken);
+					if (postProcessResult == null || !postProcessResult.AppliedDiff.HasGroups)
 					{
 						result.StatusIcon = Material.Icons.MaterialIconKind.FileDiscard;
 						result.StatusTitle = $"**{path}**";
@@ -161,12 +162,21 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					var diff = postProcessResult.AppliedDiff;
 					if (diff.HasGroups)
 					{
-						output.AppendLine();
-						output.AppendLine("Changes:");
+						var (removed, added) = diff.GetChangeCounts();
+
+						output.AppendLine("[CHANGES]");
 						output.AppendLine(diff.ToString());
 
-						var (removed, added) = diff.GetChangeCounts();
 						changesTitlePostfix = $" *(-{removed} +{added})*";
+					}
+					if (postProcessResult.RejectedDiff.HasGroups)
+					{
+						output.AppendLine("[REJECTED CHANGES BY THE USER]");
+						output.AppendLine(postProcessResult.RejectedDiff.ToString());
+					}
+					if (!postProcessResult.Diff.HasGroups)
+					{
+						output.AppendLine("No changes has been applied.");
 					}
 
 					result.StatusIcon = append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck;

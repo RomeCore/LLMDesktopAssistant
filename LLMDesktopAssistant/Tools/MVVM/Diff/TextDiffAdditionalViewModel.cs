@@ -1,8 +1,8 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using LiteDB;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Utils;
-
 using LLMDesktopAssistant.Utils.Files;
 
 namespace LLMDesktopAssistant.Tools.MVVM.Diff
@@ -45,22 +45,24 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 		public bool IsReadOnly
 		{
 			get => _isReadOnly;
-			set => SetProperty(ref _isReadOnly, value);
+			set
+			{
+				if (SetProperty(ref _isReadOnly, value))
+					RaisePropertyChanged(nameof(AreCheckboxesInteractive));
+			}
 		}
 
+		private readonly RangeObservableCollection<HunkGroupViewModel> _chunkViewModels = [];
 		/// <summary>
-		/// Gets or sets the list of diff chunks (hunks).
-		/// This is the serialized form of the diff, compatible with BSON.
-		/// Each <see cref="HunkGroup"/> contains a header and a list of <see cref="HunkLine"/>.
+		/// Gets the observable collection of chunk view models used for UI binding.
+		/// Each wrapper provides an <see cref="HunkGroupViewModel.IsEnabled"/> property
+		/// for toggling individual chunks on/off.
 		/// </summary>
-		public List<HunkGroup> Chunks { get; set; } = [];
-
-		/// <summary>
-		/// Gets or sets the enabled state for each chunk index.
-		/// If <see langword="null"/>, all chunks are considered enabled.
-		/// Used in confirmation mode to track per-chunk checkbox state.
-		/// </summary>
-		public List<bool>? EnabledStates { get; set; }
+		public RangeObservableCollection<HunkGroupViewModel> ChunkViewModels
+		{
+			get => _chunkViewModels;
+			set => _chunkViewModels.Reset(value);
+		}
 
 		private bool? _isConfirmed;
 		/// <summary>
@@ -77,6 +79,7 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 					RaisePropertyChanged(nameof(IsPending));
 					RaisePropertyChanged(nameof(IsAccepted));
 					RaisePropertyChanged(nameof(IsDeclined));
+					RaisePropertyChanged(nameof(AreCheckboxesInteractive));
 				}
 			}
 		}
@@ -86,6 +89,14 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 		/// </summary>
 		[BsonIgnore]
 		public bool IsPending => _isConfirmed == null;
+
+		/// <summary>
+		/// Gets whether the checkboxes are interactive.
+		/// In read-only mode or after confirmation/decline, checkboxes are disabled
+		/// to prevent changing already-applied decisions.
+		/// </summary>
+		[BsonIgnore]
+		public bool AreCheckboxesInteractive => !IsReadOnly && IsPending;
 
 		/// <summary>
 		/// Gets whether the changes were accepted.
@@ -101,6 +112,7 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 
 		/// <summary>
 		/// Gets the total number of removed lines across all chunks.
+		/// Uses <see cref="ChunkViewModels"/> if available, otherwise falls back to <see cref="Chunks"/>.
 		/// </summary>
 		[BsonIgnore]
 		public int TotalRemoved
@@ -108,15 +120,17 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 			get
 			{
 				int count = 0;
-				foreach (var chunk in Chunks)
-					foreach (var line in chunk.Lines)
-						if (line.Kind == '-') count++;
+				foreach (var chunk in ChunkViewModels)
+					if (chunk.IsEnabled)
+						foreach (var line in chunk.Group.Lines)
+							if (line.Kind == '-') count++;
 				return count;
 			}
 		}
 
 		/// <summary>
 		/// Gets the total number of added lines across all chunks.
+		/// Uses <see cref="ChunkViewModels"/> if available, otherwise falls back to <see cref="Chunks"/>.
 		/// </summary>
 		[BsonIgnore]
 		public int TotalAdded
@@ -124,15 +138,17 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 			get
 			{
 				int count = 0;
-				foreach (var chunk in Chunks)
-					foreach (var line in chunk.Lines)
-						if (line.Kind == '+') count++;
+				foreach (var chunk in ChunkViewModels)
+					if (chunk.IsEnabled)
+						foreach (var line in chunk.Group.Lines)
+							if (line.Kind == '+') count++;
 				return count;
 			}
 		}
 
 		/// <summary>
 		/// Gets the total number of chunks that have changes.
+		/// Uses <see cref="ChunkViewModels"/> if available, otherwise falls back to <see cref="Chunks"/>.
 		/// </summary>
 		[BsonIgnore]
 		public int ChangedChunksCount
@@ -140,7 +156,7 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 			get
 			{
 				int count = 0;
-				foreach (var chunk in Chunks)
+				foreach (var chunk in ChunkViewModels.Select(vm => vm.Group))
 				{
 					bool hasChanges = false;
 					foreach (var line in chunk.Lines)
@@ -157,9 +173,7 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 			}
 		}
 
-		[BsonIgnore]
 		private TaskCompletionSource<bool>? _confirmationTcs;
-
 		/// <summary>
 		/// Gets the confirmation task that completes when the user accepts or declines the changes.
 		/// Returns <see langword="true"/> if accepted, <see langword="false"/> if declined.
@@ -184,32 +198,36 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 		/// Command to accept all changes (confirmation mode).
 		/// </summary>
 		[BsonIgnore]
-		public IRelayCommand? ConfirmCommand { get; private set; }
+		[ChangeTracker.Untracked]
+		public IRelayCommand ConfirmCommand { get; private set; }
 
 		/// <summary>
 		/// Command to decline all changes (confirmation mode).
 		/// </summary>
 		[BsonIgnore]
-		public IRelayCommand? DeclineCommand { get; private set; }
+		[ChangeTracker.Untracked]
+		public IRelayCommand DeclineCommand { get; private set; }
 
 		/// <summary>
 		/// Command to enable all chunks (confirmation mode).
 		/// </summary>
 		[BsonIgnore]
-		public IRelayCommand? EnableAllCommand { get; private set; }
+		[ChangeTracker.Untracked]
+		public IRelayCommand EnableAllCommand { get; private set; }
 
 		/// <summary>
 		/// Command to disable all chunks (confirmation mode).
 		/// </summary>
 		[BsonIgnore]
-		public IRelayCommand? DisableAllCommand { get; private set; }
+		[ChangeTracker.Untracked]
+		public IRelayCommand DisableAllCommand { get; private set; }
 
 		public TextDiffAdditionalViewModel()
 		{
 			ConfirmCommand = new RelayCommand(Confirm);
 			DeclineCommand = new RelayCommand(Decline);
-			EnableAllCommand = new RelayCommand(EnableAll);
-			DisableAllCommand = new RelayCommand(DisableAll);
+			EnableAllCommand = new RelayCommand(EnableAll, () => ChunkViewModels.Any(vm => !vm.IsEnabled));
+			DisableAllCommand = new RelayCommand(DisableAll, () => ChunkViewModels.Any(vm => vm.IsEnabled));
 		}
 
 		/// <summary>
@@ -235,9 +253,8 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 		/// </summary>
 		public void EnableAll()
 		{
-			if (EnabledStates == null) return;
-			for (int i = 0; i < EnabledStates.Count; i++)
-				EnabledStates[i] = true;
+			foreach (var vm in ChunkViewModels)
+				vm.IsEnabled = true;
 		}
 
 		/// <summary>
@@ -245,28 +262,19 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 		/// </summary>
 		public void DisableAll()
 		{
-			if (EnabledStates == null) return;
-			for (int i = 0; i < EnabledStates.Count; i++)
-				EnabledStates[i] = false;
+			foreach (var vm in ChunkViewModels)
+				vm.IsEnabled = false;
 		}
-
+		
 		/// <summary>
-		/// Ensures that <see cref="EnabledStates"/> list is initialized with the same count as <see cref="Chunks"/>.
-		/// Call this after setting <see cref="Chunks"/> if you plan to use confirmation mode.
+		/// Called when a chunk's <see cref="HunkGroupViewModel.IsEnabled"/> changes.
 		/// </summary>
-		public void EnsureEnabledStates()
+		public void OnChunkIsEnabledChanged()
 		{
-			EnabledStates = [];
-			for (int i = 0; i < Chunks.Count; i++)
-				EnabledStates.Add(true);
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether a specific chunk is enabled.
-		/// </summary>
-		public bool IsChunkEnabled(int index)
-		{
-			return EnabledStates == null || (index >= 0 && index < EnabledStates.Count && EnabledStates[index]);
+			EnableAllCommand.NotifyCanExecuteChanged();
+			DisableAllCommand.NotifyCanExecuteChanged();
+			RaisePropertyChanged(nameof(TotalAdded));
+			RaisePropertyChanged(nameof(TotalRemoved));
 		}
 
 		/// <summary>
@@ -275,36 +283,42 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 		/// <param name="groups">The diff groups to load.</param>
 		public void LoadFromHunkGroups(HunkGroups groups)
 		{
-			Chunks = groups.Groups ?? [];
-			EnsureEnabledStates();
+			var vms = groups.Groups.Select(g => new HunkGroupViewModel(g, isEnabled: true)).ToList();
+			foreach (var vm in vms)
+				vm.PropertyChanged += OnHunkGroupViewModelPropertyChanged;
+			ChunkViewModels = [..vms];
+		}
+
+		private void OnHunkGroupViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof(HunkGroupViewModel.IsEnabled))
+				OnChunkIsEnabledChanged();
 		}
 
 		/// <summary>
 		/// Builds a <see cref="HunkGroups"/> from the (enabled) chunks for further processing.
 		/// </summary>
 		/// <returns>A <see cref="HunkGroups"/> containing only the enabled chunks.</returns>
-		public HunkGroups BuildHunkGroups()
+		public HunkGroups BuildEnabledHunkGroups()
 		{
 			var result = new List<HunkGroup>();
-			for (int i = 0; i < Chunks.Count; i++)
-			{
-				if (IsChunkEnabled(i))
-					result.Add(Chunks[i]);
-			}
+			foreach (var chunk in ChunkViewModels)
+				if (chunk.IsEnabled)
+					result.Add(chunk.Group);
 			return new HunkGroups { Groups = result };
 		}
 
 		/// <summary>
-		/// Returns the full diff text representation.
+		/// Builds a <see cref="HunkGroups"/> from the (enabled) chunks for further processing.
 		/// </summary>
-		public string BuildDiffText()
+		/// <returns>A <see cref="HunkGroups"/> containing only the enabled chunks.</returns>
+		public HunkGroups BuildDisabledHunkGroups()
 		{
-			var sb = new System.Text.StringBuilder();
-			foreach (var chunk in Chunks)
-			{
-				sb.AppendLine(chunk.ToString());
-			}
-			return sb.ToString();
+			var result = new List<HunkGroup>();
+			foreach (var chunk in ChunkViewModels)
+				if (!chunk.IsEnabled)
+					result.Add(chunk.Group);
+			return new HunkGroups { Groups = result };
 		}
 
 		/// <summary>
@@ -314,7 +328,7 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 		/// <returns>The modified text after applying all enabled diff chunks.</returns>
 		public string ApplyToText(string originalText)
 		{
-			return BuildHunkGroups().ApplyToText(originalText);
+			return BuildEnabledHunkGroups().ApplyToText(originalText);
 		}
 	}
 }

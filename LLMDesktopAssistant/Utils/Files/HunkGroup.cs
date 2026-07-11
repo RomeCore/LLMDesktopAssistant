@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace LLMDesktopAssistant.Utils.Files
 {
@@ -44,6 +45,26 @@ namespace LLMDesktopAssistant.Utils.Files
 					sb.AppendLine(line.ToString());
 			}
 			return sb.ToString();
+		}
+
+		/// <summary>
+		/// Returns the total number of lines
+		/// <summary>
+		/// Returns the total number of lines that have been removed and added across all hunk groups.
+		/// </summary>
+		public (int Removed, int Added) GetChangeCounts()
+		{
+			int removed = 0, added = 0;
+
+			foreach (var line in Lines)
+			{
+				if (line.Kind == '-')
+					removed++;
+				else if (line.Kind == '+')
+					added++;
+			}
+
+			return (removed, added);
 		}
 	}
 }

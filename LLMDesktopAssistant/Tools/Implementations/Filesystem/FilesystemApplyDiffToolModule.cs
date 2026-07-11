@@ -105,6 +105,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[SharedContext] FSApplyDiffSharedContext? sharedCtx,
 			ReactiveToolResult result,
 			ToolExecutionContext ctx,
+			CancellationToken cancellationToken,
 			string path,
 			[Description("Range of lines to delete, e.g. '10-20' or '10'. If not specified, no lines will be deleted.")]
 			string? deleteLines = null,
@@ -115,7 +116,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
+				var fullPath = sharedCtx?.Path ?? _fileAccess.AccessPath(path);
 
 				if (!File.Exists(fullPath))
 				{
@@ -162,12 +163,18 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					return;
 				}
 
-				var postProcessResult = await PostProcessDiffAsync(fullPath, originalContent, newContent, ctx);
-				if (postProcessResult == null)
+				var postProcessResult = await PostProcessDiffAsync(fullPath, originalContent, newContent, ctx, cancellationToken);
+				if (!postProcessResult.AppliedDiff.HasGroups)
 				{
 					result.StatusIcon = MaterialIconKind.FileDiscard;
 					result.StatusTitle = $"**{path}**";
-					result.ResultContent = "User has rejected the changes, none has applied.";
+					result.ResultContent = postProcessResult.RejectedDiff.HasGroups ?
+						$"""
+						User has rejected the changes, none has applied.
+						[REJECTED CHANGES BY THE USER]
+						{postProcessResult.RejectedDiff}
+						""" :
+						"User has rejected the changes, none has applied.";
 					result.CompleteWithSuccess();
 					return;
 				}
@@ -179,7 +186,19 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				result.StatusIcon = Material.Icons.MaterialIconKind.FileDocumentEdit;
 				result.StatusTitle = $"**{path}** *(-{removed} +{added})*";
-				result.ResultContent = diff.ToString();
+				result.ResultContent = postProcessResult.RejectedDiff.HasGroups ?
+					$"""
+					File edited successfully. *(-{removed} +{added})*
+					[APPLIED CHANGES]
+					{diff}
+					[REJECTED CHANGES BY THE USER]
+					{postProcessResult.RejectedDiff}
+					""" :
+					$"""
+					File edited successfully. *(-{removed} +{added})*
+					[APPLIED CHANGES]
+					{diff}
+					""";
 				result.CompleteWithSuccess();
 			}
 			catch (Exception ex)
