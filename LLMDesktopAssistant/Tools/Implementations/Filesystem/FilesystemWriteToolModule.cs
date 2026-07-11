@@ -128,7 +128,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Directory.CreateDirectory(dir!);
 
 				var fileExisted = File.Exists(fullPath);
-				string? oldContent = null;
+				string oldContent = string.Empty;
 
 				if (fileExisted)
 					oldContent = File.ReadAllText(fullPath);
@@ -137,8 +137,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				if (fileExisted)
 				{
-					var postProcessResult = await PostProcessDiffAsync(fullPath, oldContent!, content, ctx, cancellationToken);
-					if (postProcessResult == null || !postProcessResult.AppliedDiff.HasGroups)
+					var postProcessResult = await PostProcessDiffAsync(fullPath, oldContent, content, ctx, cancellationToken);
+					if (!postProcessResult.AppliedDiff.HasGroups)
 					{
 						result.StatusIcon = Material.Icons.MaterialIconKind.FileDiscard;
 						result.StatusTitle = $"**{path}**";
@@ -163,15 +163,15 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					if (diff.HasGroups)
 					{
 						var (removed, added) = diff.GetChangeCounts();
+						changesTitlePostfix = $" *(-{removed} +{added})*";
 
+						output.AppendLine($"File edited successfully. *(-{removed} +{added})*");
 						output.AppendLine("[CHANGES]");
 						output.AppendLine(diff.ToString());
-
-						changesTitlePostfix = $" *(-{removed} +{added})*";
 					}
 					if (postProcessResult.RejectedDiff.HasGroups)
 					{
-						output.AppendLine("[REJECTED CHANGES BY THE USER]");
+						output.AppendLine("[REJECTED CHANGES BY THE USER, THESE ARE NOT APPLIED]");
 						output.AppendLine(postProcessResult.RejectedDiff.ToString());
 					}
 					if (!postProcessResult.Diff.HasGroups)

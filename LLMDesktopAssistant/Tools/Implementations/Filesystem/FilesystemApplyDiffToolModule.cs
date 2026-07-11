@@ -171,7 +171,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					result.ResultContent = postProcessResult.RejectedDiff.HasGroups ?
 						$"""
 						User has rejected the changes, none has applied.
-						[REJECTED CHANGES BY THE USER]
+						[REJECTED CHANGES BY THE USER, THESE ARE NOT APPLIED]
 						{postProcessResult.RejectedDiff}
 						""" :
 						"User has rejected the changes, none has applied.";
@@ -191,7 +191,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					File edited successfully. *(-{removed} +{added})*
 					[APPLIED CHANGES]
 					{diff}
-					[REJECTED CHANGES BY THE USER]
+					[REJECTED CHANGES BY THE USER, THESE ARE NOT APPLIED]
 					{postProcessResult.RejectedDiff}
 					""" :
 					$"""

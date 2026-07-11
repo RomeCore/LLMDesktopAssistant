@@ -2043,7 +2043,6 @@
   <data name="fs-diff_declined" xml:space="preserve">
     <value>Отклонено</value>
   </data>
-
   <data name="fs-diff_toggle_chunk" xml:space="preserve">
     <value>Включить/выключить этот блок изменений</value>
   </data>
@@ -2053,5 +2052,22 @@
   <data name="fs-diff_disable_all" xml:space="preserve">
     <value>Отключить все</value>
   </data>
-
+  <data name="tool-approve-with-notes" xml:space="preserve">
+    <value>Подтвердить с пояснением</value>
+  </data>
+  <data name="tool-cancel-with-wait-hint" xml:space="preserve">
+    <value>Отменить и попросить подождать</value>
+  </data>
+  <data name="tool-cancel-with-reason" xml:space="preserve">
+    <value>Отменить с пояснением</value>
+  </data>
+  <data name="tool-commit-notes" xml:space="preserve">
+    <value>Отправить</value>
+  </data>
+  <data name="tool-notes-placeholder" xml:space="preserve">
+    <value>Введите причину/пояснение...</value>
+  </data>
+  <data name="tool-approve-with-wait-hint" xml:space="preserve">
+    <value>Подтвердить и попросить подождать</value>
+  </data>
 </root>

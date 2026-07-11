@@ -2043,7 +2043,6 @@
   <data name="fs-diff_declined" xml:space="preserve">
     <value>Declined</value>
   </data>
-
   <data name="fs-diff_toggle_chunk" xml:space="preserve">
     <value>Toggle this change chunk</value>
   </data>
@@ -2053,5 +2052,22 @@
   <data name="fs-diff_disable_all" xml:space="preserve">
     <value>Disable All</value>
   </data>
-
+  <data name="tool-approve-with-notes" xml:space="preserve">
+    <value>Approve with notes</value>
+  </data>
+  <data name="tool-cancel-with-wait-hint" xml:space="preserve">
+    <value>Cancel and ask agent to wait</value>
+  </data>
+  <data name="tool-cancel-with-reason" xml:space="preserve">
+    <value>Cancel with reason</value>
+  </data>
+  <data name="tool-commit-notes" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="tool-notes-placeholder" xml:space="preserve">
+    <value>Enter note/reason...</value>
+  </data>
+  <data name="tool-approve-with-wait-hint" xml:space="preserve">
+    <value>Approve and ask agent to wait</value>
+  </data>
 </root>

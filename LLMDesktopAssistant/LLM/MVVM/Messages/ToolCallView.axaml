@@ -332,59 +332,81 @@
 				</ItemsControl>
 
 			</StackPanel>
-
-			<StackPanel IsVisible="{Binding StatusTitle, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-									Orientation="Horizontal"
-									Spacing="4">
-
-				<GridSplitter Width="2" MinWidth="2" ResizeDirection="Columns" IsEnabled="False"/>
+			
+			<GridSplitter Width="2" MinWidth="2" ResizeDirection="Columns" IsEnabled="False"
+										IsVisible="{Binding StatusTitle, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 				
-				<ctrl:MarkdownControl MarkdownText="{Binding StatusTitle}"
-															Margin="2,3"
-															VerticalAlignment="Bottom"/>
-
-			</StackPanel>
-
+			<ctrl:MarkdownControl MarkdownText="{Binding StatusTitle}"
+														Margin="2,3"
+														VerticalAlignment="Bottom"
+														IsVisible="{Binding StatusTitle, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+			
+			<GridSplitter Width="2" MinWidth="2" ResizeDirection="Columns" IsEnabled="False"
+										IsVisible="{Binding UserAsked}"/>
+			
 			<StackPanel IsVisible="{Binding UserAsked}"
 									Orientation="Horizontal"
 									Spacing="4">
-							
-				<GridSplitter Width="2" MinWidth="2" ResizeDirection="Columns" IsEnabled="False"/>
+
+				<Button Classes="MidIconButton"
+								Command="{Binding ApproveCommand}"
+								ToolTip.Tip="{loc:Loc approve}">
+					<ico:MaterialIcon Kind="Check"/>
+				</Button>
 				
 				<Button Classes="MidIconButton"
-								Command="{Binding ApproveCommand}">
-					<ico:MaterialIcon Kind="Check"/>
+								Command="{Binding ApproveWithWaitHintCommand}"
+								ToolTip.Tip="{loc:Loc tool-approve-with-wait-hint}">
+					<ico:MaterialIcon Kind="ClockCheckOutline"/>
 				</Button>
 
 				<Button Classes="MidIconButton"
-								Command="{Binding CancelCommand}">
+								Command="{Binding ApproveWithNotesCommand}"
+								ToolTip.Tip="{loc:Loc tool-approve-with-notes}">
+					<ico:MaterialIcon Kind="TextBoxCheckOutline"/>
+				</Button>
+
+				<Button Classes="MidIconButton"
+								Command="{Binding CancelCommand}"
+								ToolTip.Tip="{loc:Loc cancel-tool}">
 					<ico:MaterialIcon Kind="Close"/>
 				</Button>
 
 				<Button Classes="MidIconButton"
-								Command="{Binding CancelWithReasonBeginCommand}">
+								Command="{Binding CancelWithWaitHintCommand}"
+								ToolTip.Tip="{loc:Loc tool-cancel-with-wait-hint}">
+					<ico:MaterialIcon Kind="ClockRemoveOutline"/>
+				</Button>
+
+				<Button Classes="MidIconButton"
+								Command="{Binding CancelWithReasonCommand}"
+								ToolTip.Tip="{loc:Loc tool-cancel-with-reason}">
 					<ico:MaterialIcon Kind="TextBoxRemoveOutline"/>
 				</Button>
 
 			</StackPanel>
 				
-			<StackPanel IsVisible="{Binding WritingReason}"
+			<GridSplitter Width="2" MinWidth="2" ResizeDirection="Columns" IsEnabled="False"
+										IsVisible="{Binding WritingNotes}"/>
+				
+			<StackPanel IsVisible="{Binding WritingNotes}"
 									Orientation="Horizontal"
 									Spacing="4">
-							
-				<GridSplitter Width="2" MinWidth="2" ResizeDirection="Columns" IsEnabled="False"/>
-				
-				<TextBox x:Name="ReasonTextBox2"
-									KeyDown="ReasonTextBox_KeyDown"/>
+
+				<TextBox x:Name="NotesTextBox2"
+								 KeyDown="NotesTextBox_KeyDown"
+								 PlaceholderText="{loc:Loc tool-notes-placeholder}"/>
 
 				<Button Classes="MidIconButton"
-								Command="{Binding CancelWithReasonEndCommand}"
-								CommandParameter="{Binding #ReasonTextBox2.Text}">
+								Command="{Binding CommitNotesCommand}"
+								CommandParameter="{Binding #NotesTextBox2.Text}"
+								ToolTip.Tip="{loc:Loc tool-commit-notes}">
 					<ico:MaterialIcon Kind="Check"/>
 				</Button>
 
 				<Button Classes="MidIconButton"
-								Command="{Binding CancelWithReasonBackCommand}">
+								Command="{Binding CancelNotesCommand}"
+								ToolTip.Tip="{loc:Loc cancel-tool}">
 					<ico:MaterialIcon Kind="Close"/>
 				</Button>
 

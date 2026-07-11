@@ -14,7 +14,7 @@ public partial class ToolCallView : UserControl
 		InitializeComponent();
 	}
 
-	private void ReasonTextBox_KeyDown(object? sender, KeyEventArgs e)
+	private void NotesTextBox_KeyDown(object? sender, KeyEventArgs e)
 	{
 		if (e.Key != Key.Enter ||
 			sender is not TextBox tb ||
@@ -22,6 +22,6 @@ public partial class ToolCallView : UserControl
 			return;
 
 		App.MainTopLevel.FocusManager.Focus(null);
-		vm.CancelWithReasonEndCommand.Execute(tb.Text);
+		vm.CommitNotes(tb.Text);
 	}
 }

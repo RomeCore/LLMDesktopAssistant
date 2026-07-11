@@ -349,20 +349,29 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Policy: never ask.
-        /// </summary>
-        public static string approval_level_policyapproveordisallow {
-            get {
-                return ResourceManager.GetString("approval_level_policyapproveordisallow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Policy: never auto-approve.
         /// </summary>
         public static string approval_level_policyaskordisallow {
             get {
                 return ResourceManager.GetString("approval_level_policyaskordisallow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Policy: auto-approve unless disallowed.
+        /// </summary>
+        public static string approval_level_policyautoapproveunlessdisallowed {
+            get {
+                return ResourceManager.GetString("approval_level_policyautoapproveunlessdisallowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Policy: auto-disallow unless approved.
+        /// </summary>
+        public static string approval_level_policyautodisallowunlessapproved {
+            get {
+                return ResourceManager.GetString("approval_level_policyautodisallowunlessapproved", resourceCulture);
             }
         }
         
@@ -1668,6 +1677,69 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string fs_deleted {
             get {
                 return ResourceManager.GetString("fs-deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Accepted.
+        /// </summary>
+        public static string fs_diff_accepted {
+            get {
+                return ResourceManager.GetString("fs-diff_accepted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Confirm.
+        /// </summary>
+        public static string fs_diff_confirm {
+            get {
+                return ResourceManager.GetString("fs-diff_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Decline.
+        /// </summary>
+        public static string fs_diff_decline {
+            get {
+                return ResourceManager.GetString("fs-diff_decline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Declined.
+        /// </summary>
+        public static string fs_diff_declined {
+            get {
+                return ResourceManager.GetString("fs-diff_declined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Disable All.
+        /// </summary>
+        public static string fs_diff_disable_all {
+            get {
+                return ResourceManager.GetString("fs-diff_disable_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable All.
+        /// </summary>
+        public static string fs_diff_enable_all {
+            get {
+                return ResourceManager.GetString("fs-diff_enable_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Toggle this change chunk.
+        /// </summary>
+        public static string fs_diff_toggle_chunk {
+            get {
+                return ResourceManager.GetString("fs-diff_toggle_chunk", resourceCulture);
             }
         }
         
@@ -5056,6 +5128,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Approve with notes.
+        /// </summary>
+        public static string tool_approve_with_notes {
+            get {
+                return ResourceManager.GetString("tool-approve-with-notes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Approve and ask agent to wait.
+        /// </summary>
+        public static string tool_approve_with_wait_hint {
+            get {
+                return ResourceManager.GetString("tool-approve-with-wait-hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Tool arguments:.
         /// </summary>
         public static string tool_arguments {
@@ -5479,6 +5569,33 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancel with reason.
+        /// </summary>
+        public static string tool_cancel_with_reason {
+            get {
+                return ResourceManager.GetString("tool-cancel-with-reason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancel and ask agent to wait.
+        /// </summary>
+        public static string tool_cancel_with_wait_hint {
+            get {
+                return ResourceManager.GetString("tool-cancel-with-wait-hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Submit.
+        /// </summary>
+        public static string tool_commit_notes {
+            get {
+                return ResourceManager.GetString("tool-commit-notes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Executing....
         /// </summary>
         public static string tool_executing {
@@ -5493,6 +5610,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string tool_name_suffix_hint {
             get {
                 return ResourceManager.GetString("tool_name_suffix_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter note/reason....
+        /// </summary>
+        public static string tool_notes_placeholder {
+            get {
+                return ResourceManager.GetString("tool-notes-placeholder", resourceCulture);
             }
         }
         

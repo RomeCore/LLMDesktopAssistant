@@ -1,16 +1,11 @@
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
+using System.ComponentModel;
 using Avalonia.Input.Platform;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
-using System.ComponentModel;
-using System.Text.Json.Nodes;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.Messages
 {
@@ -209,19 +204,26 @@ namespace LLMDesktopAssistant.LLM.Messages
 			{
 				ToolStatus.WaitingForApproval => true,
 				_ => false
-			} && !WritingReason;
+			} && !WritingNotes;
 
-		private bool _writingReason = false;
-		public bool WritingReason
+		private bool _writingNotes = false;
+		public bool WritingNotes
 		{
-			get => _writingReason;
+			get => _writingNotes;
 			set
 			{
-				if (SetProperty(ref _writingReason, value))
+				if (SetProperty(ref _writingNotes, value))
 				{
 					RaisePropertyChanged(nameof(UserAsked));
 				}
 			}
+		}
+
+		private bool _isAccepting = false;
+		public bool IsApproving
+		{
+			get => _isAccepting;
+			set => SetProperty(ref _isAccepting, value);
 		}
 
 
@@ -229,30 +231,74 @@ namespace LLMDesktopAssistant.LLM.Messages
 		public ICommand ApproveCommand { get; }
 		public void Approve()
 		{
-			toolCall.UserConfirmationSource?.TrySetResult(null);
+			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
+			{
+				IsApproved = true,
+				Notes = null
+			});
+		}
+
+		public ICommand ApproveWithWaitHintCommand { get; }
+		public void ApproveWithWaitHint()
+		{
+			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
+			{
+				IsApproved = true,
+				HintAgentForWaiting = true,
+				Notes = null
+			});
+		}
+
+		public ICommand ApproveWithNotesCommand { get; }
+		public void ApproveWithNotes()
+		{
+			WritingNotes = true;
+			IsApproving = true;
 		}
 
 		public ICommand CancelCommand { get; }
 		public void Cancel()
 		{
-			toolCall.UserConfirmationSource?.TrySetResult(string.Empty);
+			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
+			{
+				IsApproved = false,
+				Notes = null
+			});
 		}
 
-		public ICommand CancelWithReasonBeginCommand { get; }
-		public ICommand CancelWithReasonEndCommand { get; }
-		public ICommand CancelWithReasonBackCommand { get; }
+		public ICommand CancelWithWaitHintCommand { get; }
+		public void CancelWithWaitHint()
+		{
+			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
+			{
+				IsApproved = false,
+				HintAgentForWaiting = true,
+				Notes = null
+			});
+		}
+
+		public ICommand CancelWithReasonCommand { get; }
 		public void CancelWithReason()
 		{
-			WritingReason = true;
+			WritingNotes = true;
+			IsApproving = false;
 		}
-		public void CancelWithReason(string? reason)
+
+		public ICommand CommitNotesCommand { get; }
+		public void CommitNotes(string? reason)
 		{
-			WritingReason = false;
-			toolCall.UserConfirmationSource?.TrySetResult(reason ?? string.Empty);
+			WritingNotes = false;
+			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
+			{
+				IsApproved = IsApproving,
+				Notes = reason
+			});
 		}
-		public void CancelWithReasonBack()
+
+		public ICommand CancelNotesCommand { get; }
+		public void CancelNotes()
 		{
-			WritingReason = false;
+			WritingNotes = false;
 		}
 
 		public ICommand CopyArgumentsCommand { get; }
@@ -305,10 +351,13 @@ namespace LLMDesktopAssistant.LLM.Messages
 			UseMarkdown = toolCall.UseMarkdown;
 
 			ApproveCommand = new RelayCommand(Approve);
+			ApproveWithWaitHintCommand = new RelayCommand(ApproveWithWaitHint);
+			ApproveWithNotesCommand = new RelayCommand(ApproveWithNotes);
 			CancelCommand = new RelayCommand(Cancel);
-			CancelWithReasonBeginCommand = new RelayCommand(CancelWithReason);
-			CancelWithReasonEndCommand = new RelayCommand<string?>(CancelWithReason);
-			CancelWithReasonBackCommand = new RelayCommand(CancelWithReasonBack);
+			CancelWithWaitHintCommand = new RelayCommand(CancelWithWaitHint);
+			CancelWithReasonCommand = new RelayCommand(CancelWithReason);
+			CommitNotesCommand = new RelayCommand<string?>(CommitNotes);
+			CancelNotesCommand = new RelayCommand(CancelNotes);
 			CopyArgumentsCommand = new RelayCommand(CopyArguments);
 			CopyResultCommand = new RelayCommand(CopyResult);
 

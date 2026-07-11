@@ -106,14 +106,14 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => _attachments.Reset(value);
 		}
 
-		private TaskCompletionSource<string?>? _userConfirmationSource;
+		private TaskCompletionSource<ToolConsentResult>? _userConfirmationSource;
 		/// <summary>
 		/// Gets or sets the task completion source for user interaction.
 		/// The result is null when user confirms this tool call, and this should be executed.
 		/// The result is empty when user cancels tool call without a reason.
 		/// The result is non-empty when user cancels tool call with a reason (and reason is provided as the result).
 		/// </summary>
-		public TaskCompletionSource<string?>? UserConfirmationSource
+		public TaskCompletionSource<ToolConsentResult>? UserConfirmationSource
 		{
 			get => _userConfirmationSource;
 			set => SetProperty(ref _userConfirmationSource, value);

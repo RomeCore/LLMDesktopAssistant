@@ -247,9 +247,12 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							break;
 					}
 
+					string? additionalNotes = null;
+					bool hintAgentForWait = false;
+
 					if (requireConfirmation && !toolHandledDecisions.HasFlag(ToolPolicyDecision.Ask))
 					{
-						var tcs = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
+						var tcs = new TaskCompletionSource<ToolConsentResult>(TaskCreationOptions.RunContinuationsAsynchronously);
 						toolCall.ExpectedBehaviour ??= toolInfo.DefaultExpectedBehaviour;
 						toolCall.UserConfirmationSource = tcs;
 						toolCall.Status = ToolStatus.WaitingForApproval;
@@ -259,15 +262,22 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							tcs.TrySetCanceled(cancellationToken);
 						});
 
-						string? confirmation = await tcs.Task;
-						if (confirmation != null)
+						var consentResult = await tcs.Task;
+						hintAgentForWait = consentResult.HintAgentForWaiting;
+						if (consentResult.IsApproved)
+						{
+							additionalNotes = consentResult.Notes;
+						}
+						else
 						{
 							toolCall.Status = ToolStatus.Cancelled;
-							if (string.IsNullOrWhiteSpace(confirmation))
+							if (string.IsNullOrWhiteSpace(consentResult.Notes))
 								toolCall.ResultContent = "User has cancelled the tool execution without a reason. " +
-									"Maybe it can be dangerous or unwanted to proceed. Please wait for user message for explanations.";
+									"Maybe it can be dangerous or unwanted to proceed." +
+									(hintAgentForWait ? " Please wait for user message for explanations." : "");
 							else
-								toolCall.ResultContent = $"User has cancelled the tool execution with a reason: {confirmation}.";
+								toolCall.ResultContent = $"User has cancelled the tool execution with a reason: {consentResult.Notes}." +
+									(hintAgentForWait ? " Please wait for user message." : "");
 							return;
 						}
 					}
@@ -323,7 +333,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					reactiveResult.PropertyChanged += OnReactiveResultChanged;
 					reactiveResult.ResultContentLines.CollectionChanged += OnReactiveResultContentChanged;
 
-					bool success;
+					bool success = false;
 					try
 					{
 						success = await reactiveResult.Completion;
@@ -334,32 +344,31 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						// Update again, because tool can be TOO FAST
 						toolCall.StatusIcon = reactiveResult.StatusIcon;
 						toolCall.StatusTitle = reactiveResult.StatusTitle;
-						toolCall.StructuredResult = reactiveResult.StructuredResult;
-						toolCall.ResultContent = reactiveResult.ResultContent;
+
+						if (string.IsNullOrEmpty(toolCall.ResultContent))
+						{
+							switch (toolCall.Status)
+							{
+								default:
+									if (success)
+										toolCall.ResultContent = "Tool successfully returned no result.";
+									else
+										toolCall.ResultContent = "Tool failed with no result.";
+									break;
+								case ToolStatus.Cancelled:
+									toolCall.ResultContent = "Tool execution was cancelled.";
+									break;
+							}
+						}
+
+						toolCall.ResultContent = reactiveResult.ResultContent +
+							(additionalNotes != null ? $"\n\nAdditional notes from user: {additionalNotes}" : "") +
+							(hintAgentForWait ? "\n\nPlease wait for user message." : "");
 						toolCall.UseMarkdown = reactiveResult.UseMarkdown;
+						toolCall.StructuredResult = reactiveResult.StructuredResult;
 
 						reactiveResult.PropertyChanged -= OnReactiveResultChanged;
 						reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultContentChanged;
-					}
-
-					toolCall.ResultContent = reactiveResult.ResultContent;
-					toolCall.Status = cancellationToken.IsCancellationRequested ? ToolStatus.Cancelled :
-						(success ? ToolStatus.Success : ToolStatus.Error);
-
-					if (string.IsNullOrEmpty(toolCall.ResultContent))
-					{
-						switch (toolCall.Status)
-						{
-							default:
-								if (success)
-									toolCall.ResultContent = "Tool successfully returned no result.";
-								else
-									toolCall.ResultContent = "Tool failed with no result.";
-								break;
-							case ToolStatus.Cancelled:
-								toolCall.ResultContent = "Tool execution was cancelled.";
-								break;
-						}
 					}
 
 					return;
