@@ -1,11 +1,12 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.Tools;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {
@@ -18,23 +19,61 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(OpenFile,
+			AddTool(OpenFile, OpenFileStreaming, OpenFilePreview,
 				new ToolInitializationInfo
 				{
 					Name = "fs-open_file",
 					Description = "Opens a file from the working directory with its default application.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.FileRead
+					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.FileRead |
+						ToolBehaviour.AccessOutsideWorkdir
 				});
 		}
 
-		public ReactiveToolResult OpenFile(string path)
+		public StreamingToolArgumentsAnalysisResult OpenFileStreaming(
+			string? path)
+		{
+			path ??= "?";
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.OpenInNew,
+				StatusTitle = $"**{path}**"
+			};
+		}
+
+		public PreviewToolExecutionResult OpenFilePreview(
+			string path, [SharedContext] out string fullPath)
+		{
+			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+
+			if (!File.Exists(fullPath))
+			{
+				new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.OpenInNew,
+					StatusTitle = $"**{path}**",
+					InterruptingSuccess = false,
+					InterruptingContent = $"File not found: {path}"
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.OpenInNew,
+				StatusTitle = $"**{path}**",
+				ExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.FileRead |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : 0)
+			};
+		}
+
+		public ReactiveToolResult OpenFile(
+			[SharedContext] string? fullPath,
+			string path)
 		{
 			try
 			{
 				var workingDirectory = _fileAccess.GetWorkingDirectory();
-				var fullPath = _fileAccess.AccessPath(path);
-				var fileName = Path.GetFileName(fullPath);
+				fullPath ??= _fileAccess.AccessPath(path);
 
 				if (!File.Exists(fullPath))
 				{
@@ -52,14 +91,12 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					process.Start();
 				}
 
-				var result = new ReactiveToolResult
+				return new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.OpenInNew,
-					StatusTitle = $"**{fileName}**",
+					StatusIcon = MaterialIconKind.OpenInNew,
+					StatusTitle = $"**{path}**",
 					ResultContent = $"Successfully opened: {path}"
-				};
-
-				return result.Complete(true);
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{

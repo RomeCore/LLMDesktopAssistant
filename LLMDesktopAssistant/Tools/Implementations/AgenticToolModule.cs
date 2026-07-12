@@ -154,7 +154,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			path ??= "?";
 			return new StreamingToolArgumentsAnalysisResult
 			{
-				StatusIcon = MaterialIconKind.FileSearch,
+				StatusIcon = MaterialIconKind.Image,
 				StatusTitle = $"**{path}**"
 			};
 		}
@@ -198,6 +198,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			if (string.IsNullOrEmpty(modelName))
 			{
 				result.ResultContent = $"No vision model selected. Say user to select a vision model first.";
+				result.CompleteWithError();
+				return;
+			}
+
+			if (!File.Exists(fullPath))
+			{
+				result.ResultContent = $"File not found: {path}";
 				result.CompleteWithError();
 				return;
 			}
