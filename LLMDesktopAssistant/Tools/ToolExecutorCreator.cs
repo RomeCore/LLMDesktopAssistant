@@ -180,6 +180,7 @@ namespace LLMDesktopAssistant.Tools
 						try
 						{
 							await task;
+							preparedResult.TryCompleteWithSuccess();
 						}
 						catch (Exception ex)
 						{

@@ -2053,7 +2053,7 @@
     <value>Отключить все</value>
   </data>
   <data name="tool-approve-with-notes" xml:space="preserve">
-    <value>Подтвердить с пояснением</value>
+    <value>Подтвердить с примечанием</value>
   </data>
   <data name="tool-cancel-with-wait-hint" xml:space="preserve">
     <value>Отменить и попросить подождать</value>

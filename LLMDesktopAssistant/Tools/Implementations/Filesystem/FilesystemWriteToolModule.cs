@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-write_file",
 					Description = "Writes text content to a file inside working directory.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate,
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir,
 					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
 					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
 				});
@@ -36,6 +36,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			string? content,
 			bool append = false)
 		{
+			path ??= "?";
+
 			int lines = 0;
 			if (content != null)
 				foreach (var line in content.EnumerateLines())

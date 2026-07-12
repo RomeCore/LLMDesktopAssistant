@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						Note: Works best if you know line numbers when looking file with fs-explore(showLineNumbers = true)
 						""",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}
 
@@ -51,6 +51,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		public StreamingToolArgumentsAnalysisResult ApplyDiffStreaming(
 			string? path)
 		{
+			path ??= "?";
 			return new StreamingToolArgumentsAnalysisResult
 			{
 				StatusIcon = MaterialIconKind.FileDocumentEdit,

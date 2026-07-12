@@ -37,13 +37,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						If both exists, it will do both actions.
 						""",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.DirectoryRead
+					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.DirectoryRead | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}
 
 		public StreamingToolArgumentsAnalysisResult ExploreStreaming(
 			string? path)
 		{
+			path ??= "?";
 			return new StreamingToolArgumentsAnalysisResult
 			{
 				StatusIcon = MaterialIconKind.File,

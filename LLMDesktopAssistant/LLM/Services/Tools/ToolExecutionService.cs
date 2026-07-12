@@ -367,6 +367,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						toolCall.UseMarkdown = reactiveResult.UseMarkdown;
 						toolCall.StructuredResult = reactiveResult.StructuredResult;
 
+						toolCall.Status = cancellationToken.IsCancellationRequested ? ToolStatus.Cancelled :
+							(success ? ToolStatus.Success : ToolStatus.Error);
+
 						reactiveResult.PropertyChanged -= OnReactiveResultChanged;
 						reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultContentChanged;
 					}

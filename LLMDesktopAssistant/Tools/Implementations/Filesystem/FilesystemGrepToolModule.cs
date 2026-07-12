@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(Grep, GrepStreaming, null,
+			AddTool(Grep, GrepStreaming, GrepPreview,
 				new ToolInitializationInfo
 				{
 					Name = "fs-grep",
@@ -30,13 +30,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						Use this tool with care, as it can be slow and resource-intensive.
 						""",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.DirectoryRead | ToolBehaviour.FileRead
+					DefaultExpectedBehaviour = ToolBehaviour.DirectoryRead | ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}
 
 		public StreamingToolArgumentsAnalysisResult GrepStreaming(
 			string? path, string? pattern)
 		{
+			path ??= "?";
 			return new StreamingToolArgumentsAnalysisResult
 			{
 				StatusIcon = MaterialIconKind.FileSearch,
@@ -44,7 +45,36 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
+		public PreviewToolExecutionResult GrepPreview(
+			string path, string pattern, [SharedContext] out string fullPath)
+		{
+			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			bool fileExists = File.Exists(fullPath);
+			bool dirExists = Directory.Exists(fullPath);
+
+			if (!fileExists && !dirExists)
+			{
+				new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.FileSearch,
+					StatusTitle = $"**{path}** → `{pattern}`",
+					InterruptingSuccess = false,
+					InterruptingContent = $"File or directory not found: {path}"
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.FileSearch,
+				StatusTitle = $"**{path}** → `{pattern}`",
+				ExpectedBehaviour = ToolBehaviour.FileRead |
+					(dirExists ? ToolBehaviour.DirectoryRead : 0) |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : 0)
+			};
+		}
+
 		public ReactiveToolResult Grep(
+			[SharedContext] string? fullPath,
 			[Description("The path where to search, can be file or directory path.")]
 			string path,
 			[Description("The .NET regex pattern to search for.")]
@@ -82,7 +112,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var workingDirectory = _fileAccess.GetWorkingDirectory();
-				var fullPath = _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path);
 				var regexIgnoreCaseOptions = ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
 				var regex = new Regex(pattern, regexIgnoreCaseOptions | RegexOptions.Compiled);
 

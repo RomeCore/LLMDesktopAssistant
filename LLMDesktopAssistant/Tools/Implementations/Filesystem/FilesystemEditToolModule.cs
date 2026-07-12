@@ -79,7 +79,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						  fs-edit(path: "file.cs", match: "Console\.WriteLine", operation: "delete", useRegex: true)
 						""",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit,
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,
 					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
 					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
 				});
@@ -111,6 +111,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		public StreamingToolArgumentsAnalysisResult EditStreaming(
 			string? path)
 		{
+			path ??= "?";
 			return new StreamingToolArgumentsAnalysisResult
 			{
 				StatusIcon = MaterialIconKind.FileDocumentEdit,

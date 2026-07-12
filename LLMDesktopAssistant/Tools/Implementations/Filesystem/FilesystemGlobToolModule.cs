@@ -4,8 +4,10 @@ using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
+using Material.Icons;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+using ModelContextProtocol.Protocol;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -22,7 +24,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(Glob,
+			AddTool(Glob, GlobStreaming, GlobPreview,
 				new ToolInitializationInfo
 				{
 					Name = "fs-glob",
@@ -47,11 +49,48 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						- `{include,src}/**/*.h`  - header files in 'include' or 'src' directories
 						""",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.DirectoryRead
+					DefaultExpectedBehaviour = ToolBehaviour.DirectoryRead | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}
 
+		public StreamingToolArgumentsAnalysisResult GlobStreaming(
+			string? path, string? pattern)
+		{
+			path ??= "?";
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.FileSearch,
+				StatusTitle = pattern != null ? $"**{path}** → `{pattern.Replace("*", "\\*")}`" : $"**{path}**"
+			};
+		}
+
+		public PreviewToolExecutionResult GlobPreview(
+			string path, string pattern, [SharedContext] out string fullPath)
+		{
+			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+
+			if (!Directory.Exists(fullPath))
+			{
+				new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.FolderSearch,
+					StatusTitle = $"**{path}** → `{pattern.Replace("*", "\\*")}`",
+					InterruptingSuccess = false,
+					InterruptingContent = $"Directory not found: {path}"
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.FolderSearch,
+				StatusTitle = $"**{path}** → **{pattern.Replace("*", "\\*")}**",
+				ExpectedBehaviour = ToolBehaviour.DirectoryRead |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : 0)
+			};
+		}
+
 		public ReactiveToolResult Glob(
+			[SharedContext] string? fullPath,
 			[Description("The glob pattern to search for, e.g. '**/*.cs' or '*.txt'")]
 			string pattern,
 			[Description("The starting directory path. If empty or '.', uses the current working directory.")]
@@ -70,8 +109,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(path);
-				var workingDirectory = _fileAccess.GetWorkingDirectory();
+				fullPath ??= _fileAccess.AccessPath(path);
 
 				var result = new ReactiveToolResult();
 
@@ -79,7 +117,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					try
 					{
-						result.StatusIcon = Material.Icons.MaterialIconKind.FolderSearch;
+						result.StatusIcon = MaterialIconKind.FolderSearch;
 						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-glob_searching"), pattern.Replace("*", "\\*"));
 
 						var matcher = new Matcher();
@@ -110,11 +148,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 								{
 									var metrics = FileUtils.GetFileMetrics(filePath);
 									var lines = metrics.LineCount != null ? $"{metrics.LineCount} lines" : "binary";
-									var displayPath = relativePaths
-										? Path.GetRelativePath(workingDirectory, filePath)
-										: filePath;
 
-									matchingFiles.Add($"[FILE] {displayPath} ({FileUtils.BytesToDisplaySize(metrics.Size)}, {lines}, {metrics.Modified:yyyy-MM-dd HH:mm})");
+									matchingFiles.Add($"[FILE] {path} ({FileUtils.BytesToDisplaySize(metrics.Size)}, {lines}, {metrics.Modified:yyyy-MM-dd HH:mm})");
 
 									result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-glob_found_count"), matchingFiles.Count + matchingDirectories.Count);
 
@@ -166,11 +201,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 										items = 0;
 									}
 
-									var displayPath = relativePaths
-										? Path.GetRelativePath(workingDirectory, dir)
-										: dir;
-
-									matchingDirectories.Add($"[DIR] {displayPath} ({items} items, {dirInfo.LastWriteTime:yyyy-MM-dd HH:mm})");
+									matchingDirectories.Add($"[DIR] {path} ({items} items, {dirInfo.LastWriteTime:yyyy-MM-dd HH:mm})");
 
 									result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-glob_found_count"), matchingFiles.Count + matchingDirectories.Count);
 

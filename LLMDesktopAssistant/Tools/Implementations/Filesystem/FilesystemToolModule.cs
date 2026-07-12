@@ -23,7 +23,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-get_file_info",
 					Description = "Returns file information including type classification.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileRead
+					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
 				});
 
 			AddTool(ReadBinaryFile, null, PreviewReadBinaryFile,
@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-read_binary_file",
 					Description = "Reads binary file content as hex dump from the working directory.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileRead
+					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
 				});
 
 			AddTool(ReadDocumentFile, null, PreviewReadDocumentFile,
@@ -41,7 +41,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-read_document_file",
 					Description = "Reads complex documents (DOCX, PPTX, PDF) by pages from the working directory. Supported extensions: .pdf, .docx, .pptx. This is not suitable for general text or code files, such as .txt, .py, .md, .cs, .js, etc.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileRead
+					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
 				});
 
 			AddTool(WriteBinaryFile, null, PreviewWriteBinaryFile,
@@ -50,7 +50,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-write_binary_file",
 					Description = "Writes binary content to a file inside working directory.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit
+					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
 				});
 
 			AddTool(CreateDirectory, null, PreviewCreateDirectory,
@@ -59,7 +59,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-create_directory",
 					Description = "Creates a new directory inside working directory path.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate
+					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
 				});
 
 			AddTool(DeleteFile, null, PreviewDeleteFile,
@@ -68,7 +68,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-delete_file",
 					Description = "Deletes a file inside working directory.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileDelete
+					DefaultExpectedBehaviour = ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir
 				});
 
 			AddTool(DeleteDirectory, null, PreviewDeleteDirectory,
@@ -77,7 +77,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-delete_directory",
 					Description = "Deletes a directory (empty or with contents) from the working directory.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete
+					DefaultExpectedBehaviour = ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir
 				});
 
 			AddTool(CopyFile, null, PreviewCopyFile,
@@ -86,7 +86,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-copy_file",
 					Description = "Copies a file within the working directory.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate
+					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
 				});
 
 			AddTool(CopyDirectory, null, PreviewCopyDirectory,
@@ -95,7 +95,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-copy_directory",
 					Description = "Copies a directory and all its contents to a new location within the working directory.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate
+					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
 				});
 
 			AddTool(RenameFile, null, PreviewRenameFile,
@@ -104,7 +104,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-rename_file",
 					Description = "Renames or moves a file within the working directory.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
 				});
 
 			AddTool(MoveDirectory, null, PreviewMoveDirectory,
@@ -113,7 +113,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Name = "fs-move_directory",
 					Description = "Moves a directory and all its contents to a new location within the working directory.",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.DirectoryEdit
+					DefaultExpectedBehaviour = ToolBehaviour.DirectoryEdit | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}
 

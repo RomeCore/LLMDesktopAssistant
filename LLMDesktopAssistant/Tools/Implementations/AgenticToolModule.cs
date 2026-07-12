@@ -10,8 +10,10 @@ using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using LLTSharp;
+using Material.Icons;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
@@ -25,17 +27,20 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	{
 		private readonly Chat _chat;
 		private readonly TemplateLibrary _templateLibrary;
+		private readonly WorkingDirectoryAccessService _fileAccess;
 		private readonly IToolsetBuildingService _toolsetBuildingService;
 		private readonly IModelManager _modelManager;
 
-		public AgenticToolModule(Chat chat, TemplateLibrary templateLibrary, IToolsetBuildingService toolsetBuildingService, IModelManager modelManager)
+		public AgenticToolModule(Chat chat, TemplateLibrary templateLibrary, WorkingDirectoryAccessService fileAccess,
+			IToolsetBuildingService toolsetBuildingService,IModelManager modelManager)
 		{
 			_chat = chat;
 			_templateLibrary = templateLibrary;
+			_fileAccess = fileAccess;
 			_toolsetBuildingService = toolsetBuildingService;
 			_modelManager = modelManager;
 
-			AddTool(AskQuestionAsync,
+			AddTool(AskQuestion,
 				new ToolInitializationInfo
 				{
 					Name = "agent-ask_question",
@@ -44,7 +49,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
 				});
 
-			AddTool(CallAgentAsync,
+			AddTool(CallAgent,
 				new ToolInitializationInfo
 				{
 					Name = "agent-call",
@@ -53,31 +58,18 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
 				});
 
-			AddTool(DescribeImageAsync,
+			AddTool(DescribeImage, DescribeImageStreaming, DescribeImagePreview,
 				new ToolInitializationInfo
 				{
 					Name = "agent-describe_image",
 					Description = "Describes an image using another LLM agent.",
 					Category = "agents",
-					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask | ToolBehaviour.FileRead
+					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask |
+						ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}
 
-		private string ResolvePath(string path)
-		{
-			var baseDir = Path.GetFullPath(_chat.Settings.Environment.GetWorkingDirectory());
-			if (string.IsNullOrWhiteSpace(path) || path == ".")
-				return baseDir;
-
-			var fullPath = Path.GetFullPath(Path.Combine(baseDir, path));
-
-			if (!fullPath.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase))
-				throw new AccessViolationException("Access outside working directory is not allowed.");
-
-			return fullPath;
-		}
-
-		public Task<ToolResult> AskQuestionAsync(
+		public Task<ToolResult> AskQuestion(
 			[Description("The question to ask")] string question,
 			[Description("A list of tool names that can be used to answer the question.")]
 			string[] allowedTools,
@@ -85,10 +77,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			CancellationToken cancellationToken = default)
 		{
 			var systemPrompt = $"You are an agent designed to answer questions using tools.";
-			return CallAgentAsync(systemPrompt, question, allowedTools, ctx, cancellationToken);
+			return CallAgent(systemPrompt, question, allowedTools, ctx, cancellationToken);
 		}
 
-		public async Task<ToolResult> CallAgentAsync(
+		public async Task<ToolResult> CallAgent(
 			[Description("The system prompt to use in the agent's context")] string systemPrompt,
 			[Description("The user message to send to the agent")] string userMessage,
 			[Description("A list of tool names that can be used to answer the question.")]
@@ -156,13 +148,59 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public async Task<ReactiveToolResult> DescribeImageAsync(
+		public StreamingToolArgumentsAnalysisResult DescribeImageStreaming(
+			string? path)
+		{
+			path ??= "?";
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.FileSearch,
+				StatusTitle = $"**{path}**"
+			};
+		}
+
+		public PreviewToolExecutionResult DescribeImagePreview(
+			string path, [SharedContext] out string fullPath)
+		{
+			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+
+			if (!File.Exists(fullPath))
+			{
+				new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.Image,
+					StatusTitle = $"**{path}**",
+					InterruptingSuccess = false,
+					InterruptingContent = $"File not found: {path}"
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.Image,
+				StatusTitle = $"**{path}**",
+				ExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask | ToolBehaviour.FileRead |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : 0)
+			};
+		}
+
+		public async Task DescribeImage(
+			[SharedContext] string? fullPath,
+			ReactiveToolResult result,
 			[Description("The path to the image file to describe")] string path,
 			CancellationToken cancellationToken = default)
 		{
+			result.StatusIcon = MaterialIconKind.Image;
+			result.StatusTitle = $"**{path}**";
+			result.UseMarkdown = true;
+
 			var modelName = _chat.Settings.Models.VisionModel;
 			if (string.IsNullOrEmpty(modelName))
-				return ReactiveToolResult.CreateError("No vision model selected. Say user to select a vision model first.");
+			{
+				result.ResultContent = $"No vision model selected. Say user to select a vision model first.";
+				result.CompleteWithError();
+				return;
+			}
 
 			LLModel llm;
 			try
@@ -171,14 +209,15 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Vision model '{modelName}' is not available: {ex.Message}");
+				result.ResultContent = $"Vision model '{modelName}' is not available: {ex.Message}";
+				result.CompleteWithError();
+				return;
 			}
 
 			try
 			{
-				path = ResolvePath(path);
+				fullPath ??= _fileAccess.AccessPath(path);
 				var attachment = new SerializableImageAttachment(path);
-				var result = new ReactiveToolResult();
 
 				var messages = new List<IMessage>
 				{
@@ -187,46 +226,32 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						[ attachment ])
 				};
 
-				_ = Task.Run(async () =>
+				var response = await llm.ChatStreamingAsync(messages, cancellationToken: cancellationToken);
+
+				result.ResultContent = response.Content;
+
+				int tokenCounter = 0;
+				void Message_PartAdded(object? sender, AssistantMessageDelta e)
 				{
-					try
-					{
-						var response = await llm.ChatStreamingAsync(messages, cancellationToken: cancellationToken);
+					result.ResultContent = response.Content;
+					tokenCounter++;
 
-						result.UseMarkdown = true;
-						result.ResultContent = response.Content;
-						result.StatusIcon = Material.Icons.MaterialIconKind.Image;
+					if (tokenCounter > 1)
+						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("image_describer_status"), tokenCounter);
+				}
+				response.Message.PartAdded += Message_PartAdded;
 
-						int tokenCounter = 0;
-						void Message_PartAdded(object? sender, AssistantMessageDelta e)
-						{
-							result.ResultContent = response.Content;
-							tokenCounter++;
+				await response;
+				response.Message.PartAdded -= Message_PartAdded;
 
-							if (tokenCounter > 1)
-								result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("image_describer_status"), tokenCounter);
-						}
-						response.Message.PartAdded += Message_PartAdded;
-
-						await response;
-						response.Message.PartAdded -= Message_PartAdded;
-
-						result.StatusTitle = null;
-						result.CompleteWithSuccess();
-					}
-					catch (Exception ex)
-					{
-						result.ResultContentLines.Add($"Got error: {ex.Message}. " +
-							$"May be the model is not a vision model or API is down. Please try again later.");
-						result.CompleteWithError();
-					}
-				}, CancellationToken.None);
-
-				return result;
+				result.StatusTitle = null;
+				result.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error during agentic image description: {ex.Message}");
+				result.ResultContentLines.Add($"Got error: {ex.Message}. " +
+					$"May be the model is not a vision model or API is down. Please try again later.");
+				result.CompleteWithError();
 			}
 		}
 	}
