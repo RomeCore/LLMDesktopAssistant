@@ -21,27 +21,25 @@ namespace LLMDesktopAssistant.Markdown
 			_chatOperator = chatOperator;
 			_userManager = userManager;
 
-			QuickActionUiNode.OnActionClicked += OnActionClicked;
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-
-			if (disposing)
-				QuickActionUiNode.OnActionClicked -= OnActionClicked;
-		}
-
-		private void OnActionClicked(string action, Chat chat)
-		{
-			if (_chat != chat)
-				return;
-
-			_ = _chatOperator.SendUserInputAsync(new UserInput
+			var thisRef = new WeakReference<QuickActionService>(this);
+			void OnActionClicked(string action, Chat chat)
 			{
-				Content = action,
-				SenderLogin = _userManager.GetLocalUsers().FirstOrDefault()?.Login ?? "user"
-			}, generate: true);
+				if (!thisRef.TryGetTarget(out var @this))
+				{
+					QuickActionUiNode.OnActionClicked -= OnActionClicked;
+					return;
+				}
+
+				if (@this._chat != chat)
+					return;
+
+				_ = @this._chatOperator.SendUserInputAsync(new UserInput
+				{
+					Content = action,
+					SenderLogin = @this._userManager.GetLocalUsers().FirstOrDefault()?.Login ?? "user"
+				}, generate: true);
+			}
+			QuickActionUiNode.OnActionClicked += OnActionClicked;
 		}
 	}
 }
