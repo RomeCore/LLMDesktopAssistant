@@ -28,6 +28,48 @@
 					MaxHeight="200"
 					ScrollViewer.VerticalScrollBarVisibility="Auto"
 					PlaceholderText="{loc:Loc prompt_system_prompt_placeholder}"/>
+		
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"
+							 Margin="0,5"/>
+
+		<!-- Components -->
+		<TextBlock Text="{loc:Loc prompt_components}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,0"/>
+
+		<TextBlock Text="{loc:Loc prompt_components_hint}"
+					  Opacity="0.6"
+					  TextWrapping="Wrap"/>
+		
+		<TreeView ItemsSource="{Binding ComponentCategories}"
+					BorderThickness="0">
+
+			<TreeView.DataTemplates>
+
+				<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
+									ItemsSource="{Binding Components}">
+
+					<TextBlock Text="{Binding CategoryName}"
+									FontWeight="Bold"
+									Margin="0,2"/>
+
+				</TreeDataTemplate>
+
+				<DataTemplate DataType="local:ComponentItemViewModel">
+
+					<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+								Content="{Binding Component.Name}"
+								Margin="16,1,0,1"/>
+
+				</DataTemplate>
+
+			</TreeView.DataTemplates>
+
+		</TreeView>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
@@ -257,48 +299,6 @@
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
-
-		<!-- Separator -->
-		<Rectangle Height="1"
-								Fill="{DynamicResource DefaultForeground}"
-							  Opacity="0.2"
-							  Margin="0,5"/>
-
-		<!-- Components -->
-		<TextBlock Text="{loc:Loc prompt_components}"
-					  FontWeight="Bold"
-					  FontSize="{DynamicResource FontSizeL}"
-					  Margin="0,5,0,0"/>
-
-		<TextBlock Text="{loc:Loc prompt_components_hint}"
-					  Opacity="0.6"
-					  TextWrapping="Wrap"/>
-		
-		<TreeView ItemsSource="{Binding ComponentCategories}"
-					BorderThickness="0">
-
-			<TreeView.DataTemplates>
-
-				<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
-									ItemsSource="{Binding Components}">
-
-					<TextBlock Text="{Binding CategoryName}"
-									FontWeight="Bold"
-									Margin="0,2"/>
-
-				</TreeDataTemplate>
-
-				<DataTemplate DataType="local:ComponentItemViewModel">
-
-					<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-								Content="{Binding Component.Name}"
-								Margin="16,1,0,1"/>
-
-				</DataTemplate>
-
-			</TreeView.DataTemplates>
-
-		</TreeView>
 
 	</StackPanel>
 

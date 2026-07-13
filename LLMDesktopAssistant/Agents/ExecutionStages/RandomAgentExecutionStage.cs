@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 	{
 		private readonly Random _random = new();
 
-		protected override async Task<Guid?> SelectNextAgentAsync(List<AgentInstance> selectFrom, AgentPreExecutionContext context, CancellationToken cancellationToken = default)
+		protected override async Task<Guid?> SelectNextAgentAsync(List<ChatAgentInstance> selectFrom, AgentPreExecutionContext context, CancellationToken cancellationToken = default)
 		{
 			if (await base.SelectNextAgentAsync(selectFrom, context, cancellationToken) is Guid nextAgent)
 				return nextAgent;

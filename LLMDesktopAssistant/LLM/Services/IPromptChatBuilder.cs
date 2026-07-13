@@ -25,6 +25,6 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// </summary>
 		/// <param name="agent">The agent to build the message list for.</param>
 		/// <returns>A list of messages for the LLM chat input.</returns>
-		IEnumerable<IMessage> Build(AgentDescriptor agent);
+		IEnumerable<IMessage> Build(ChatAgentDescriptor agent);
 	}
 }

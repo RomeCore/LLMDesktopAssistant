@@ -19,6 +19,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	[ToolModule]
 	public class FilesystemExploreToolModule : ToolModule
 	{
+		private const int DefaultLinesToDisplay = 500;
+		private const int DefaultCharactersPerLineToDisplay = 2000;
+
 		private readonly WorkingDirectoryAccessService _fileAccess;
 
 		public FilesystemExploreToolModule(WorkingDirectoryAccessService fileAccess)
@@ -54,7 +57,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 		public PreviewToolExecutionResult? ExplorePreview(string path,
 			[SharedContext] out string? fullPath,
-			int startLine = 0, int endLine = 0, int maxLineLength = 2000,
+			int startLine = 0, int endLine = 0, int maxLineLength = 0,
 			[Inject] DetectSecretsSharp.Core.Scanner scanner = default!)
 		{
 			try
@@ -70,7 +73,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					if (startLine < 1)
 						startLine = 1;
 					if (endLine < startLine)
-						endLine = startLine + 199;
+						endLine = startLine + DefaultLinesToDisplay - 1;
 
 					var (lines, totalLines) = FileUtils.ReadLinesChunk(
 						fullPath,
@@ -151,7 +154,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[Description("The 1-based index of the last line to read. Only for files.")]
 			int endLine = 0,
 			[Description("The maximum length of each line to read. Only for files.")]
-			int maxLineLength = 2000,
+			int maxLineLength = 0,
 			[Description("Whether to include line numbers before every line in format '   1: *line content*'. Only for files.")]
 			bool showLineNumbers = false,
 			[Description("The maximum depth of directories to include in the listing. 1 = current directory only. Only for directories.")]
@@ -187,9 +190,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						if (startLine < 1)
 							startLine = 1;
 						if (endLine < startLine)
-							endLine = startLine + 199;
+							endLine = startLine + DefaultLinesToDisplay - 1;
 						if (maxLineLength <= 0)
-							maxLineLength = 2000; // Дипсик ебалай, любит указывать нулевую длину и удивляться "а хули я нихуя не вижу???"
+							maxLineLength = DefaultCharactersPerLineToDisplay;
 
 						var (lines, totalLines) = FileUtils.ReadLinesChunk(
 							fullPath,

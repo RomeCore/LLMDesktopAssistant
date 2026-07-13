@@ -75,7 +75,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	public class AgentFilterItem : ObservableObject
 	{
 		private readonly AgentReadSettingsViewModel _parent;
-		public AgentDescriptor Agent { get; }
+		public ChatAgentDescriptor Agent { get; }
 		public string DisplayName => Agent.Info.Name ?? "Unnamed Agent";
 		public bool IsGlobal { get; }
 
@@ -95,7 +95,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 		}
 
-		public AgentFilterItem(AgentReadSettingsViewModel parent, AgentDescriptor agent, bool isGlobal, bool isSelected)
+		public AgentFilterItem(AgentReadSettingsViewModel parent, ChatAgentDescriptor agent, bool isGlobal, bool isSelected)
 		{
 			_parent = parent;
 			Agent = agent;
@@ -107,7 +107,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	[ViewModelFor(typeof(AgentReadSettingsView))]
 	public class AgentReadSettingsViewModel : ViewModelBase
 	{
-		private readonly ICollection<AgentDescriptor> _chatAgents;
+		private readonly ICollection<ChatAgentDescriptor> _chatAgents;
 		private readonly Guid _agentId;
 
 		public AgentReadSettings ReadSettings { get; }
@@ -145,7 +145,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public ICommand DeselectAllAgentsCommand { get; }
 
 		public AgentReadSettingsViewModel(AgentReadSettings settings,
-			ICollection<AgentDescriptor> chatAgents, Guid agentId)
+			ICollection<ChatAgentDescriptor> chatAgents, Guid agentId)
 		{
 			ReadSettings = settings;
 			_chatAgents = chatAgents;
@@ -261,7 +261,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			var globalConfig = SettingsManager.Get<AgentsConfiguration>();
 
 			// Combine global + chat-local agents, deduplicate by ID
-			var allAgents = new List<(AgentDescriptor Descriptor, bool IsGlobal)>();
+			var allAgents = new List<(ChatAgentDescriptor Descriptor, bool IsGlobal)>();
 
 			foreach (var agent in globalConfig.Agents)
 				allAgents.Add((agent, true));

@@ -8,8 +8,8 @@ namespace LLMDesktopAssistant.Agents
 {
 	public class AgentsConfiguration : SettingsObject
 	{
-		private RangeObservableCollection<AgentDescriptor> _agents = [];
-		public RangeObservableCollection<AgentDescriptor> Agents
+		private RangeObservableCollection<ChatAgentDescriptor> _agents = [];
+		public RangeObservableCollection<ChatAgentDescriptor> Agents
 		{
 			get => _agents;
 			set => _agents.Reset(value);

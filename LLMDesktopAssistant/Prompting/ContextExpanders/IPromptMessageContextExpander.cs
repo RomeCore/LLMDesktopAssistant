@@ -15,6 +15,6 @@ namespace LLMDesktopAssistant.Prompting.ContextExpanders
 		/// <param name="message">The chat message that is rendeing now.</param>
 		/// <param name="agent">The agent that the prompt is rendered for. Can be null if no specific agent is associated with the prompt.</param>
 		/// <param name="context">The current prompt context as a dictionary.</param>
-		void ExpandPromptContext(BranchedMessage message, AgentDescriptor? agent, Dictionary<string, object?> context);
+		void ExpandPromptContext(BranchedMessage message, ChatAgentDescriptor? agent, Dictionary<string, object?> context);
 	}
 }

@@ -54,5 +54,5 @@ public interface IPromptInjector
 	/// The agent that will receive this context.
 	/// Can be used to filter or customize injected content per agent.
 	/// </param>
-	void Inject(List<BranchedMessage> messages, AgentDescriptor agent);
+	void Inject(List<BranchedMessage> messages, ChatAgentDescriptor agent);
 }

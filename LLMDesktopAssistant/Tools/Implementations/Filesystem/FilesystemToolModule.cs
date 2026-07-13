@@ -609,7 +609,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				StatusIcon = MaterialIconKind.Delete,
 				StatusTitle = $"**{path}**",
-				ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None
+				ExpectedBehaviour = ToolBehaviour.FileDelete |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 

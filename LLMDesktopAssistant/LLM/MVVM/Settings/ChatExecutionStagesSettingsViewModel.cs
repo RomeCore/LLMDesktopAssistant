@@ -66,7 +66,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			var agents = GetAllAgents().ToList();
 			if (agents.Count > 0)
 			{
-				stage.AgentInstances.Add(new AgentInstance
+				stage.AgentInstances.Add(new ChatAgentInstance
 				{
 					AgentId = agents[0].Id,
 					Enabled = true
@@ -77,7 +77,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 			Stages.Add(CreateContainer(stage));
 		}
 
-		public IEnumerable<AgentDescriptor> GetAllAgents()
+		public IEnumerable<ChatAgentDescriptor> GetAllAgents()
 		{
 			return AgentManager.ListAgents().Select(a => a.Agent);
 		}

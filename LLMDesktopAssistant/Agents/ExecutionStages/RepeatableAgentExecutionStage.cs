@@ -47,7 +47,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			set => SetProperty(ref _stopChance, value);
 		}
 
-		protected abstract Task<Guid?> SelectNextAgentAsync(List<AgentInstance> selectFrom,
+		protected abstract Task<Guid?> SelectNextAgentAsync(List<ChatAgentInstance> selectFrom,
 			AgentPreExecutionContext context, CancellationToken cancellationToken = default);
 
 		public override Task<Guid?> GetNextAgentAsync(AgentPreExecutionContext context,

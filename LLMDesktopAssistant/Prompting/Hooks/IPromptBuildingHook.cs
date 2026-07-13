@@ -72,7 +72,7 @@ public interface IPromptBuildingHook
 	/// to remove the message from the context entirely.
 	/// If no modification is needed, return <paramref name="message"/> unchanged.
 	/// </returns>
-	BranchedMessage? Modify(BranchedMessage message, AgentDescriptor agent) => message;
+	BranchedMessage? Modify(BranchedMessage message, ChatAgentDescriptor agent) => message;
 
 	/// <summary>
 	/// Allows final modifications to the complete list of LLM-native messages
@@ -92,5 +92,5 @@ public interface IPromptBuildingHook
 	/// <returns>
 	/// A modified enumerable of messages, or <c>null</c> to keep the list unchanged.
 	/// </returns>
-	IEnumerable<IMessage>? ModifyFinalContext(IEnumerable<IMessage> messages, BranchedMessage message, AgentDescriptor agent) => null;
+	IEnumerable<IMessage>? ModifyFinalContext(IEnumerable<IMessage> messages, BranchedMessage message, ChatAgentDescriptor agent) => null;
 }

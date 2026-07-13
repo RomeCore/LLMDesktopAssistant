@@ -208,7 +208,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// </summary>
 		public ObservableCollection<BehaviorSliderItemViewModel> SliderItems { get; } = new();
 
-
 		public AgentPromptSettingsViewModel(AgentPromptSettings settings, IPromptRegistry promptRegistry)
 		{
 			PromptSettings = settings;

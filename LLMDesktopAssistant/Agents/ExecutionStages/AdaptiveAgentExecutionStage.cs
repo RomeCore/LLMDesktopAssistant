@@ -46,7 +46,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			set => SetProperty(ref _enforceRouterSelection, value);
 		}
 
-		protected override async Task<Guid?> SelectNextAgentAsync(List<AgentInstance> selectFrom,
+		protected override async Task<Guid?> SelectNextAgentAsync(List<ChatAgentInstance> selectFrom,
 			AgentPreExecutionContext context, CancellationToken cancellationToken = default)
 		{
 			if (await base.SelectNextAgentAsync(selectFrom, context, cancellationToken) is Guid nextAgent)

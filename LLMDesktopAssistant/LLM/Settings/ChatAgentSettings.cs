@@ -6,11 +6,11 @@ namespace LLMDesktopAssistant.LLM.Settings
 {
 	public class ChatAgentSettings : ChatSettingsCategoryBase
 	{
-		private RangeObservableCollection<AgentDescriptor> _agents = [];
+		private RangeObservableCollection<ChatAgentDescriptor> _agents = [];
 		/// <summary>
 		/// The list of chat-specific agents (local to this chat session).
 		/// </summary>
-		public RangeObservableCollection<AgentDescriptor> ChatAgents
+		public RangeObservableCollection<ChatAgentDescriptor> ChatAgents
 		{
 			get => _agents;
 			set => _agents.Reset(value);
@@ -35,7 +35,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			// If no agents at all, create a default one
 			if (ChatAgents.Count == 0)
 			{
-				var defaultAgent = new AgentDescriptor();
+				var defaultAgent = new ChatAgentDescriptor();
 				defaultAgent.Info.Name = "Default Assistant";
 				ChatAgents.Add(defaultAgent);
 			}
@@ -44,7 +44,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			if (ExecutionStages.Count == 0)
 			{
 				var sequentialStage = new SequentialAgentExecutionStage();
-				sequentialStage.AgentInstances.Add(new AgentInstance
+				sequentialStage.AgentInstances.Add(new ChatAgentInstance
 				{
 					AgentId = ChatAgents[0].Id,
 					Enabled = true

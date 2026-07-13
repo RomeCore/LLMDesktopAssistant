@@ -5,7 +5,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 	/// cycling through all enabled agents sequentially and wrapping around
 	/// when the end of the list is reached. Supports minimum/maximum number
 	/// of full cycles with an optional stop chance after each completed cycle.
-	/// When <see cref="CanAgentsBeSkipped"/> is enabled, each agent's <see cref="AgentInstance.Weight"/>
+	/// When <see cref="CanAgentsBeSkipped"/> is enabled, each agent's <see cref="ChatAgentInstance.Weight"/>
 	/// is used as the probability of being selected (skip chance = 1 - weight).
 	/// </summary>
 	public class RoundRobinAgentExecutionStage : AgentExecutionStage
@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 
 		private bool _canAgentsBeSkipped = false;
 		/// <summary>
-		/// Whether agents can be skipped based on their <see cref="AgentInstance.Weight"/>.
+		/// Whether agents can be skipped based on their <see cref="ChatAgentInstance.Weight"/>.
 		/// When enabled, an agent's weight represents the probability of being selected
 		/// (0 = always skipped, 1 = never skipped).
 		/// </summary>

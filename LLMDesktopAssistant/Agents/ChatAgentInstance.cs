@@ -1,6 +1,6 @@
 namespace LLMDesktopAssistant.Agents
 {
-	public class AgentInstance : NotifyPropertyChanged
+	public class ChatAgentInstance : NotifyPropertyChanged
 	{
 		private Guid _agentId;
 		public Guid AgentId

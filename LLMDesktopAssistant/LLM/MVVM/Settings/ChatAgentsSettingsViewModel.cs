@@ -80,7 +80,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 
 		private void AddAgent()
 		{
-			var newAgent = new AgentDescriptor();
+			var newAgent = new ChatAgentDescriptor();
 			newAgent.Info.Name = $"Agent {AgentSettings.ChatAgents.Count + 1}";
 			AgentSettings.ChatAgents.Add(newAgent);
 
@@ -176,7 +176,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings
 
 	public class AgentOptionViewModel : NotifyPropertyChanged
 	{
-		public required AgentDescriptor Agent { get; init; }
+		public required ChatAgentDescriptor Agent { get; init; }
 		public required bool IsGlobal { get; init; }
 	}
 }

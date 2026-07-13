@@ -58,7 +58,7 @@ public class RoundRobinStageViewModel : StageViewModelBase
 		}
 	}
 
-	private AgentDescriptor? FindAgentDescriptor(Guid agentId)
+	private ChatAgentDescriptor? FindAgentDescriptor(Guid agentId)
 	{
 		return AgentManager.TryGetAgentDescriptor(agentId);
 	}
@@ -72,7 +72,7 @@ public class RoundRobinStageViewModel : StageViewModelBase
 		if (available.Count == 0) return;
 
 		var agent = available[0];
-		var instance = new AgentInstance
+		var instance = new ChatAgentInstance
 		{
 			AgentId = agent.Id,
 			Enabled = true

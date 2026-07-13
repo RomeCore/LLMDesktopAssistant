@@ -70,7 +70,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			return new LanguageMetadata(new LanguageCode(CultureInfo.CurrentCulture));
 		}
 
-		private bool IsUserMessageVisibleToAgent(BranchedMessage message, AgentDescriptor agent)
+		private bool IsUserMessageVisibleToAgent(BranchedMessage message, ChatAgentDescriptor agent)
 		{
 			var userMessage = message.AsUserMessage();
 			var permissions = agent.Read.ReadPermissions;
@@ -97,7 +97,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			return true;
 		}
 
-		private bool IsAssistantMessageVisibleToAgent(BranchedMessage message, AgentDescriptor agent)
+		private bool IsAssistantMessageVisibleToAgent(BranchedMessage message, ChatAgentDescriptor agent)
 		{
 			var assistantMessage = message.AsAssistantMessage();
 			var messageAgentId = assistantMessage.SenderAgentId;
@@ -138,7 +138,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		}
 
 		private string BuildSystemPrompt(string? summaryOfPrevMessages,
-			AgentDescriptor agent, TemplateFunctionSet functions)
+			ChatAgentDescriptor agent, TemplateFunctionSet functions)
 		{
 			var language = GetCurrentLanguageMetadata();
 			var template = templates.TryRetrieveBestAllWithFallback("system_prompt", language)?.LastOrDefault() as ITextTemplate;
@@ -202,7 +202,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		}
 
 		private RCLargeLanguageModels.Messages.UserMessage BuildUserMessageForAgent(BranchedMessage message,
-			AgentDescriptor agent, TemplateFunctionSet functions)
+			ChatAgentDescriptor agent, TemplateFunctionSet functions)
 		{
 			var userMessage = message.AsUserMessage();
 			var language = GetCurrentLanguageMetadata();
@@ -229,7 +229,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		}
 
 		private RCLargeLanguageModels.Messages.UserMessage BuildForeignAgentMessageText(BranchedMessage message,
-			AgentDescriptor agent, TemplateFunctionSet functions)
+			ChatAgentDescriptor agent, TemplateFunctionSet functions)
 		{
 			var assistantMessage = message.AsAssistantMessage();
 			var senderDescriptor = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
@@ -307,7 +307,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		}
 
 		private IEnumerable<IMessage> ConvertMessageForAgent(BranchedMessage message,
-			AgentDescriptor agent, TemplateFunctionSet functions)
+			ChatAgentDescriptor agent, TemplateFunctionSet functions)
 		{
 			if (message.Message is Domain.UserMessage)
 			{
@@ -351,7 +351,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
-				return BuildForeignAgentMessageText(assistantMessage, new AgentDescriptor
+				return BuildForeignAgentMessageText(assistantMessage, new ChatAgentDescriptor
 				{
 					Read = new AgentReadSettings
 					{
@@ -410,7 +410,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		public IEnumerable<IMessage> Build(AgentDescriptor agent)
+		public IEnumerable<IMessage> Build(ChatAgentDescriptor agent)
 		{
 			var readSettings = agent.Read;
 			int maxRounds = readSettings.MaxVisibleRounds;

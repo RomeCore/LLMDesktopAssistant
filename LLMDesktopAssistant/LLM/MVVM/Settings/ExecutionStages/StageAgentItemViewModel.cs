@@ -7,8 +7,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages;
 
 public abstract class StageAgentItemViewModelBase : NotifyPropertyChanged
 {
-	public required AgentDescriptor Agent { get; init; }
-	public required AgentInstance Instance { get; init; }
+	public required ChatAgentDescriptor Agent { get; init; }
+	public required ChatAgentInstance Instance { get; init; }
 }
 
 /// <summary>

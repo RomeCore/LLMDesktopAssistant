@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			set => SetProperty(ref _enableMentions, value);
 		}
 
-		protected virtual Task<Guid?> DetectMentionAsync(List<AgentInstance> selectFrom,
+		protected virtual Task<Guid?> DetectMentionAsync(List<ChatAgentInstance> selectFrom,
 			AgentPreExecutionContext context, CancellationToken cancellationToken = default)
 		{
 			if (context.PreviousAgentExecuted.HasValue && 
@@ -46,7 +46,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			return Task.FromResult(agentId);
 		}
 
-		protected override async Task<Guid?> SelectNextAgentAsync(List<AgentInstance> selectFrom,
+		protected override async Task<Guid?> SelectNextAgentAsync(List<ChatAgentInstance> selectFrom,
 			AgentPreExecutionContext context, CancellationToken cancellationToken = default)
 		{
 			if (EnableMentions)

@@ -27,8 +27,8 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			set => SetProperty(ref _enabled, value);
 		}
 
-		private RangeObservableCollection<AgentInstance> _agentInstances = [];
-		public RangeObservableCollection<AgentInstance> AgentInstances
+		private RangeObservableCollection<ChatAgentInstance> _agentInstances = [];
+		public RangeObservableCollection<ChatAgentInstance> AgentInstances
 		{
 			get => _agentInstances;
 			set => _agentInstances.Reset(value);

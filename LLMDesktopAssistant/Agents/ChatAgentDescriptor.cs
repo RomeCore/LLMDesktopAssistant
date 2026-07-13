@@ -8,7 +8,7 @@ namespace LLMDesktopAssistant.Agents
 	/// <summary>
 	/// The descriptor for an agent, containing all the necessary information to configure and execute it.
 	/// </summary>
-	public class AgentDescriptor : NotifyPropertyChanged
+	public class ChatAgentDescriptor : NotifyPropertyChanged
 	{
 		private static readonly JsonSerializerOptions _cloneOptions = new JsonSerializerOptions
 		{
@@ -91,10 +91,10 @@ namespace LLMDesktopAssistant.Agents
 		/// <summary>
 		/// Creates a deep clone of this agent descriptor via JSON serialization.
 		/// </summary>
-		public AgentDescriptor Clone()
+		public ChatAgentDescriptor Clone()
 		{
 			var json = JsonSerializer.Serialize(this, _cloneOptions);
-			var clone = JsonSerializer.Deserialize<AgentDescriptor>(json, _cloneOptions);
+			var clone = JsonSerializer.Deserialize<ChatAgentDescriptor>(json, _cloneOptions);
 			clone!._id = Guid.NewGuid();
 			return clone;
 		}

@@ -16,20 +16,20 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 			return chatAgents.Concat(agents).Select(a => a.Id);
 		}
 
-		public IEnumerable<(AgentDescriptor Agent, bool IsGlobal)> ListAgents()
+		public IEnumerable<(ChatAgentDescriptor Agent, bool IsGlobal)> ListAgents()
 		{
 			var agents = SettingsManager.Get<AgentsConfiguration>().Agents;
 			var chatAgents = chat.Settings.Agents.ChatAgents;
 			return chatAgents.Select(a => (a, false)).Concat(agents.Select(a => (a, true)));
 		}
 
-		public AgentDescriptor GetAgentDescriptor(Guid agentId)
+		public ChatAgentDescriptor GetAgentDescriptor(Guid agentId)
 		{
 			return TryGetAgentDescriptor(agentId) ?? 
 				throw new KeyNotFoundException($"Agent with id '{agentId}' not found.");
 		}
 
-		public AgentDescriptor? TryGetAgentDescriptor(Guid agentId)
+		public ChatAgentDescriptor? TryGetAgentDescriptor(Guid agentId)
 		{
 			var agents = SettingsManager.Get<AgentsConfiguration>().Agents;
 			var chatAgents = chat.Settings.Agents.ChatAgents;
