@@ -58,6 +58,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.FileSearch,
 					StatusTitle = $"**{path}** → `{pattern}`",
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = $"File or directory not found: {path}"
 				};
@@ -68,8 +69,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				StatusIcon = MaterialIconKind.FileSearch,
 				StatusTitle = $"**{path}** → `{pattern}`",
 				ExpectedBehaviour = ToolBehaviour.FileRead |
-					(dirExists ? ToolBehaviour.DirectoryRead : 0) |
-					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : 0)
+					(dirExists ? ToolBehaviour.DirectoryRead : ToolBehaviour.None) |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 

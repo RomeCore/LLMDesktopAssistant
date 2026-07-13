@@ -132,6 +132,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							toolCall.StatusTitle = preExecutionResult.StatusTitle;
 							toolCall.StatusIcon = preExecutionResult.StatusIcon;
 
+							if (preExecutionResult.ExpectedBehaviour != null)
+								toolCall.ExpectedBehaviour = preExecutionResult.ExpectedBehaviour.Value;
+							if (preExecutionResult.SelfHandledDecisions != null)
+								toolHandledDecisions = preExecutionResult.SelfHandledDecisions.Value;
+
 							if (preExecutionResult.InterruptingSuccess != null)
 							{
 								toolCall.Status = preExecutionResult.InterruptingSuccess.Value ? ToolStatus.Success : ToolStatus.Error;
@@ -146,11 +151,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 								}
 								return;
 							}
-
-							if (preExecutionResult.ExpectedBehaviour != null)
-								toolCall.ExpectedBehaviour = preExecutionResult.ExpectedBehaviour.Value;
-							if (preExecutionResult.SelfHandledDecisions != null)
-								toolHandledDecisions = preExecutionResult.SelfHandledDecisions.Value;
 						}
 						catch (Exception ex)
 						{

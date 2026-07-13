@@ -75,6 +75,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.FolderSearch,
 					StatusTitle = $"**{path}** → `{pattern.Replace("*", "\\*")}`",
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = $"Directory not found: {path}"
 				};
@@ -85,7 +86,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				StatusIcon = MaterialIconKind.FolderSearch,
 				StatusTitle = $"**{path}** → **{pattern.Replace("*", "\\*")}**",
 				ExpectedBehaviour = ToolBehaviour.DirectoryRead |
-					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : 0)
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 
@@ -110,6 +111,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				fullPath ??= _fileAccess.AccessPath(path);
+				var workingDirectory = _fileAccess.GetWorkingDirectory();
 
 				var result = new ReactiveToolResult();
 
@@ -149,7 +151,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 									var metrics = FileUtils.GetFileMetrics(filePath);
 									var lines = metrics.LineCount != null ? $"{metrics.LineCount} lines" : "binary";
 
-									matchingFiles.Add($"[FILE] {path} ({FileUtils.BytesToDisplaySize(metrics.Size)}, {lines}, {metrics.Modified:yyyy-MM-dd HH:mm})");
+									var displayPath = relativePaths
+										? Path.GetRelativePath(workingDirectory, filePath)
+										: filePath;
+
+									matchingFiles.Add($"[FILE] {displayPath} ({FileUtils.BytesToDisplaySize(metrics.Size)}, {lines}, {metrics.Modified:yyyy-MM-dd HH:mm})");
 
 									result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-glob_found_count"), matchingFiles.Count + matchingDirectories.Count);
 
@@ -201,7 +207,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 										items = 0;
 									}
 
-									matchingDirectories.Add($"[DIR] {path} ({items} items, {dirInfo.LastWriteTime:yyyy-MM-dd HH:mm})");
+									var displayPath = relativePaths
+										? Path.GetRelativePath(workingDirectory, dir)
+										: dir;
+
+									matchingDirectories.Add($"[DIR] {displayPath} ({items} items, {dirInfo.LastWriteTime:yyyy-MM-dd HH:mm})");
 
 									result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-glob_found_count"), matchingFiles.Count + matchingDirectories.Count);
 

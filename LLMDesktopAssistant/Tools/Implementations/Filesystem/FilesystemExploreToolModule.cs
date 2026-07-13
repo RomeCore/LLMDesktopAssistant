@@ -127,9 +127,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.FileTextError,
 					StatusTitle = $"**{path}**",
-					InterruptingContent = $"No such file or directory found: '{path}'.",
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
-					ExpectedBehaviour = ToolBehaviour.None // Will do nothing
+					InterruptingContent = $"No such file or directory found: '{path}'."
 				};
 			}
 			catch (Exception ex)
@@ -137,8 +137,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				fullPath = null;
 				return new PreviewToolExecutionResult
 				{
-					InterruptingContent = $"Error reading file: {ex.Message}",
-					InterruptingSuccess = false
+					InterruptingSuccess = false,
+					InterruptingContent = $"Error reading file: {ex.Message}"
 				};
 			}
 		}

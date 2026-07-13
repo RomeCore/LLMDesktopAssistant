@@ -3,6 +3,8 @@ using System.Text.RegularExpressions;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
+using Material.Icons;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -121,21 +123,33 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
 
+			if (!File.Exists(fullPath))
+			{
+				new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.FileQuestion,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					InterruptingSuccess = false,
+					InterruptingContent = $"File not found: {path}"
+				};
+			}
+
 			var metrics = FileUtils.GetFileMetrics(fullPath);
 			return new PreviewToolExecutionResult
 			{
 				StatusIcon = metrics.Type switch
 				{
-					FileType.Binary => Material.Icons.MaterialIconKind.File,
-					FileType.Text => Material.Icons.MaterialIconKind.FileText,
-					FileType.Code => Material.Icons.MaterialIconKind.FileCode,
-					FileType.Image => Material.Icons.MaterialIconKind.FileImage,
-					FileType.Audio => Material.Icons.MaterialIconKind.FileMusic,
-					FileType.Video => Material.Icons.MaterialIconKind.FileVideo,
-					FileType.Executable => Material.Icons.MaterialIconKind.Application,
-					FileType.Archive => Material.Icons.MaterialIconKind.Archive,
-					FileType.Document => Material.Icons.MaterialIconKind.FileDocument,
-					_ => Material.Icons.MaterialIconKind.FileQuestion
+					FileType.Binary => MaterialIconKind.File,
+					FileType.Text => MaterialIconKind.FileText,
+					FileType.Code => MaterialIconKind.FileCode,
+					FileType.Image => MaterialIconKind.FileImage,
+					FileType.Audio => MaterialIconKind.FileMusic,
+					FileType.Video => MaterialIconKind.FileVideo,
+					FileType.Executable => MaterialIconKind.Application,
+					FileType.Archive => MaterialIconKind.Archive,
+					FileType.Document => MaterialIconKind.FileDocument,
+					_ => MaterialIconKind.FileQuestion
 				},
 				StatusTitle = $"**{path}** *({FileUtils.BytesToDisplaySize(metrics.Size)})*",
 				ExpectedBehaviour = ToolBehaviour.FileRead | (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
@@ -153,16 +167,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = metrics.Type switch
 					{
-						FileType.Binary => Material.Icons.MaterialIconKind.File,
-						FileType.Text => Material.Icons.MaterialIconKind.FileText,
-						FileType.Code => Material.Icons.MaterialIconKind.FileCode,
-						FileType.Image => Material.Icons.MaterialIconKind.FileImage,
-						FileType.Audio => Material.Icons.MaterialIconKind.FileMusic,
-						FileType.Video => Material.Icons.MaterialIconKind.FileVideo,
-						FileType.Executable => Material.Icons.MaterialIconKind.Application,
-						FileType.Archive => Material.Icons.MaterialIconKind.Archive,
-						FileType.Document => Material.Icons.MaterialIconKind.FileDocument,
-						_ => Material.Icons.MaterialIconKind.FileQuestion
+						FileType.Binary => MaterialIconKind.File,
+						FileType.Text => MaterialIconKind.FileText,
+						FileType.Code => MaterialIconKind.FileCode,
+						FileType.Image => MaterialIconKind.FileImage,
+						FileType.Audio => MaterialIconKind.FileMusic,
+						FileType.Video => MaterialIconKind.FileVideo,
+						FileType.Executable => MaterialIconKind.Application,
+						FileType.Archive => MaterialIconKind.Archive,
+						FileType.Document => MaterialIconKind.FileDocument,
+						_ => MaterialIconKind.FileQuestion
 					},
 					StatusTitle = $"**{path}** *({FileUtils.BytesToDisplaySize(metrics.Size)})*"
 				};
@@ -197,26 +211,25 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
 
-			var fileExists = File.Exists(fullPath);
-			var expectedBehaviour = ToolBehaviour.FileRead | (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
-
-			PreviewToolExecutionResult result;
-			if (!fileExists)
+			if (!File.Exists(fullPath))
 			{
-				result = new PreviewToolExecutionResult
+				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
+					StatusIcon = MaterialIconKind.FileQuestion,
 					StatusTitle = $"**{path}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
-					InterruptingContent = "File not found."
+					InterruptingContent = $"File not found: {path}"
 				};
 			}
-			else if (endByte < startByte)
+
+			var expectedBehaviour = ToolBehaviour.FileRead | (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
+
+			if (endByte < startByte)
 			{
-				result = new PreviewToolExecutionResult
+				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileCode,
+					StatusIcon = MaterialIconKind.FileCode,
 					StatusTitle = $"**{path}**",
 					ExpectedBehaviour = expectedBehaviour,
 					InterruptingSuccess = false,
@@ -227,17 +240,15 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				var fileInfo = new FileInfo(fullPath);
 				var totalBytes = fileInfo.Length;
-				result = new PreviewToolExecutionResult
+				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileCode,
+					StatusIcon = MaterialIconKind.FileCode,
 					StatusTitle = startByte == 1 && endByte >= totalBytes
 						? $"**{path}**"
 						: $"**{path}** *({startByte}~{Math.Min(endByte, totalBytes)} / {totalBytes})*",
 					ExpectedBehaviour = expectedBehaviour
 				};
 			}
-
-			return result;
 		}
 
 		public ReactiveToolResult ReadBinaryFile(
@@ -268,7 +279,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				var result = new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileCode,
+					StatusIcon = MaterialIconKind.FileCode,
 					StatusTitle = endShown == totalBytes ?
 						(startByte == 1 ? $"**{path}**" : $"**{path}** *({startByte}~{endShown})*") :
 						$"**{path}** *({startByte}~{endShown} / {totalBytes})*"
@@ -304,26 +315,25 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
 
-			var fileExists = File.Exists(fullPath);
-			var expectedBehaviour = ToolBehaviour.FileRead | (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
-
-			if (!fileExists)
+			if (!File.Exists(fullPath))
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
+					StatusIcon = MaterialIconKind.FileQuestion,
 					StatusTitle = $"**{path}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
-					InterruptingContent = "File not found."
+					InterruptingContent = $"File not found: {path}"
 				};
 			}
+
+			var expectedBehaviour = ToolBehaviour.FileRead | (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
 
 			if (endPage < startPage)
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileDocument,
+					StatusIcon = MaterialIconKind.FileDocument,
 					StatusTitle = $"**{path}**",
 					ExpectedBehaviour = expectedBehaviour,
 					InterruptingSuccess = false,
@@ -333,7 +343,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			return new PreviewToolExecutionResult
 			{
-				StatusIcon = Material.Icons.MaterialIconKind.FileDocument,
+				StatusIcon = MaterialIconKind.FileDocument,
 				StatusTitle = $"**{path}** *({startPage}~{endPage})*",
 				ExpectedBehaviour = expectedBehaviour
 			};
@@ -364,7 +374,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				var result = new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileDocument,
+					StatusIcon = MaterialIconKind.FileDocument,
 					StatusTitle = $"**{path}** *({startPage}~{endPage})*"
 				};
 
@@ -432,8 +442,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				return new PreviewToolExecutionResult
 				{
 					StatusIcon = fileExisted ?
-						(append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck) :
-						Material.Icons.MaterialIconKind.FilePlus,
+						(append ? MaterialIconKind.FileEdit : MaterialIconKind.FileCheck) :
+						MaterialIconKind.FilePlus,
 					StatusTitle = $"**{path}**",
 					ExpectedBehaviour = (fileExisted ? ToolBehaviour.FileEdit : ToolBehaviour.FileDirectoryCreate) |
 						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
@@ -444,10 +454,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				ctx = null;
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileDocumentError,
+					StatusIcon = MaterialIconKind.FileDocumentError,
 					StatusTitle = $"**{path}**",
-					ExpectedBehaviour = (fileExisted ? ToolBehaviour.FileEdit : ToolBehaviour.FileDirectoryCreate) |
-						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None),
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = $"Error writing binary file: {ex.Message}"
 				};
@@ -497,8 +506,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				return new ReactiveToolResult
 				{
 					StatusIcon = fileExisted ?
-						(append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck) :
-						Material.Icons.MaterialIconKind.FilePlus,
+						(append ? MaterialIconKind.FileEdit : MaterialIconKind.FileCheck) :
+						MaterialIconKind.FilePlus,
 					StatusTitle = $"**{path}**",
 					ResultContent = $"""
 						File: {path}
@@ -510,7 +519,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error writing binary file: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.FileDocumentError,
+					StatusTitle = $"**{path}**",
+					ResultContent = $"Error writing binary file: {ex.Message}"
+				}.CompleteWithError();
 			}
 		}
 
@@ -518,9 +532,21 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
 
+			if (Directory.Exists(fullPath))
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.FolderQuestion,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					InterruptingSuccess = true,
+					InterruptingContent = "Directory already exists."
+				};
+			}
+
 			return new PreviewToolExecutionResult
 			{
-				StatusIcon = Material.Icons.MaterialIconKind.FolderPlus,
+				StatusIcon = MaterialIconKind.FolderPlus,
 				StatusTitle = $"**{path}**",
 				ExpectedBehaviour = (!Directory.Exists(fullPath) ? ToolBehaviour.FileDirectoryCreate : ToolBehaviour.None) |
 					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
@@ -534,25 +560,32 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				fullPath ??= _fileAccess.AccessPath(path);
 
 				if (Directory.Exists(fullPath))
+				{
 					return new ReactiveToolResult
 					{
-						StatusIcon = Material.Icons.MaterialIconKind.FolderQuestion,
+						StatusIcon = MaterialIconKind.FolderQuestion,
 						StatusTitle = $"**{path}**",
-						ResultContent = $"Directory already exists."
+						ResultContent = "Directory already exists."
 					}.CompleteWithSuccess();
+				}
 
 				Directory.CreateDirectory(fullPath);
 
 				return new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FolderPlus,
+					StatusIcon = MaterialIconKind.FolderPlus,
 					StatusTitle = $"**{path}**",
 					ResultContent = $"Directory '{path}' created successfully."
 				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error creating directory: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.FolderPlus,
+					StatusTitle = $"**{path}**",
+					ResultContent = $"Error creating directory: {ex.Message}"
+				}.CompleteWithError();
 			}
 		}
 
@@ -560,12 +593,23 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
 
+			if (!File.Exists(fullPath))
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.FileQuestion,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					InterruptingSuccess = false,
+					InterruptingContent = $"File not found: {path}"
+				};
+			}
+
 			return new PreviewToolExecutionResult
 			{
-				StatusIcon = Material.Icons.MaterialIconKind.Delete,
+				StatusIcon = MaterialIconKind.Delete,
 				StatusTitle = $"**{path}**",
-				ExpectedBehaviour = (File.Exists(fullPath) ? ToolBehaviour.FileDelete : ToolBehaviour.None) |
-					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+				ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None
 			};
 		}
 
@@ -576,25 +620,35 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				fullPath ??= _fileAccess.AccessPath(path);
 
 				if (!File.Exists(fullPath))
-					return ReactiveToolResult.CreateError("File not found.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FileQuestion,
+						StatusTitle = $"**{path}**",
+						ResultContent = $"File not found: {path}"
+					}.CompleteWithSuccess();
+				}
 
 				var fileInfo = new FileInfo(fullPath);
 				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
 
 				File.Delete(fullPath);
 
-				var result = new ReactiveToolResult
+				return new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.Delete,
+					StatusIcon = MaterialIconKind.Delete,
 					StatusTitle = $"**{path}**",
 					ResultContent = $"File '{path}' deleted successfully."
-				};
-
-				return result.Complete(true);
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error deleting file: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.FileDocumentError,
+					StatusTitle = $"**{path}**",
+					ResultContent = $"Error deleting file: {ex.Message}"
+				}.CompleteWithError();
 			}
 		}
 
@@ -608,26 +662,37 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			var fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
 			ctx = new DeleteDirectoryContext { FullPath = fullPath };
 
-			var expectedBehaviour = (Directory.Exists(fullPath) ? ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete : ToolBehaviour.None) |
-				(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
-
 			if (path == "." || path == "" || path == "/")
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FolderRemove,
+					StatusIcon = MaterialIconKind.FolderRemove,
 					StatusTitle = $"**{path}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = "Cannot delete the root working directory."
 				};
 			}
 
+			if (!Directory.Exists(fullPath))
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.FolderQuestion,
+					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					InterruptingSuccess = false,
+					InterruptingContent = $"Directory not found: {path}"
+				};
+			}
+
 			return new PreviewToolExecutionResult
 			{
-				StatusIcon = Material.Icons.MaterialIconKind.FolderRemove,
+				StatusIcon = MaterialIconKind.FolderRemove,
 				StatusTitle = $"**{path}**",
-				ExpectedBehaviour = expectedBehaviour
+				ExpectedBehaviour = ToolBehaviour.DirectoryDelete |
+					(Directory.GetFileSystemEntries(fullPath).Length > 0 ? ToolBehaviour.FileDelete : ToolBehaviour.None) |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 
@@ -637,29 +702,46 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				// Prevent deleting the root working directory
 				if (path == "." || path == "" || path == "/")
-					return ReactiveToolResult.CreateError("Cannot delete the root working directory.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FolderRemove,
+						StatusTitle = $"**{path}**",
+						ResultContent = "Cannot delete the root working directory."
+					}.CompleteWithError();
+				}
 
 				var fullPath = ctx?.FullPath ?? _fileAccess.AccessPath(path);
 
 				if (!Directory.Exists(fullPath))
-					return ReactiveToolResult.CreateError("Directory not found.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FolderQuestion,
+						StatusTitle = $"**{path}**",
+						ResultContent = $"Directory not found: {path}"
+					}.CompleteWithSuccess();
+				}
 
 				var dirInfo = new DirectoryInfo(fullPath);
 
 				Directory.Delete(fullPath, recursive: true);
 
-				var result = new ReactiveToolResult
+				return new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FolderRemove,
+					StatusIcon = MaterialIconKind.FolderRemove,
 					StatusTitle = $"**{path}**",
 					ResultContent = $"Directory '{path}' deleted successfully."
-				};
-
-				return result.Complete(true);
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error deleting directory: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.FolderRemove,
+					StatusTitle = $"**{path}**",
+					ResultContent = $"Error deleting directory: {ex.Message}"
+				}.CompleteWithError();
 			}
 		}
 
@@ -679,16 +761,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
 			ctx = new RenameFileContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
 
-			var expectedBehaviour = ToolBehaviour.FileEdit |
-				(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
-
 			if (!File.Exists(fullOldPath))
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
+					StatusIcon = MaterialIconKind.FileQuestion,
 					StatusTitle = $"**{oldPath}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = "Source file not found."
 				};
@@ -698,9 +777,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.Pencil,
+					StatusIcon = MaterialIconKind.PencilRemove,
 					StatusTitle = $"**{oldPath}** → **{newPath}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = "Destination file already exists."
 				};
@@ -708,9 +787,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			return new PreviewToolExecutionResult
 			{
-				StatusIcon = Material.Icons.MaterialIconKind.Pencil,
+				StatusIcon = MaterialIconKind.Pencil,
 				StatusTitle = $"**{oldPath}** → **{newPath}**",
-				ExpectedBehaviour = expectedBehaviour
+				ExpectedBehaviour = ToolBehaviour.FileEdit |
+					(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 
@@ -726,28 +806,45 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
 
 				if (!File.Exists(fullOldPath))
-					return ReactiveToolResult.CreateError("Source file not found.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FileQuestion,
+						StatusTitle = $"**{oldPath}** → **{newPath}**",
+						ResultContent = $"Source file not found: {oldPath}"
+					}.CompleteWithError();
+				}
 
 				if (File.Exists(fullNewPath) && !overwrite)
-					return ReactiveToolResult.CreateError("Destination file already exists.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.PencilRemove,
+						StatusTitle = $"**{oldPath}** → **{newPath}**",
+						ResultContent = $"Destination file already exists: {newPath}"
+					}.CompleteWithError();
+				}
 
 				if (Path.GetDirectoryName(fullNewPath) is string dir)
 					Directory.CreateDirectory(dir);
 
 				File.Move(fullOldPath, fullNewPath, overwrite);
 
-				var result = new ReactiveToolResult
+				return new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.Pencil,
+					StatusIcon = MaterialIconKind.Pencil,
 					StatusTitle = $"**{oldPath}** → **{newPath}**",
 					ResultContent = $"File renamed from '{oldPath}' to '{newPath}'."
-				};
-
-				return result.Complete(true);
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error renaming file: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.PencilRemove,
+					StatusTitle = $"**{oldPath}** → **{newPath}**",
+					ResultContent = $"Error renaming file: {ex.Message}"
+				}.CompleteWithError();
 			}
 		}
 
@@ -767,16 +864,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
 			ctx = new MoveDirectoryContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
 
-			var expectedBehaviour = ToolBehaviour.DirectoryEdit |
-				(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
-
 			if (!Directory.Exists(fullOldPath))
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FolderQuestion,
+					StatusIcon = MaterialIconKind.FolderQuestion,
 					StatusTitle = $"**{oldPath}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = "Source directory not found."
 				};
@@ -786,9 +880,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.Folder,
+					StatusIcon = MaterialIconKind.PencilRemove,
 					StatusTitle = $"**{oldPath}** → **{newPath}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = "Destination directory already exists."
 				};
@@ -796,9 +890,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			return new PreviewToolExecutionResult
 			{
-				StatusIcon = Material.Icons.MaterialIconKind.Folder,
+				StatusIcon = MaterialIconKind.Folder,
 				StatusTitle = $"**{oldPath}** → **{newPath}**",
-				ExpectedBehaviour = expectedBehaviour
+				ExpectedBehaviour = ToolBehaviour.DirectoryEdit |
+				(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 
@@ -814,26 +909,43 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
 
 				if (!Directory.Exists(fullOldPath))
-					return ReactiveToolResult.CreateError("Source directory not found.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FolderQuestion,
+						StatusTitle = $"**{oldPath}** → **{newPath}**",
+						ResultContent = $"Source directory not found: {oldPath}"
+					}.CompleteWithError();
+				}
 
 				if (Directory.Exists(fullNewPath) && !overwrite)
-					return ReactiveToolResult.CreateError("Destination directory already exists.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.PencilRemove,
+						StatusTitle = $"**{oldPath}** → **{newPath}**",
+						ResultContent = $"Destination directory already exists: {newPath}"
+					}.CompleteWithError();
+				}
 
 				Directory.CreateDirectory(Path.GetDirectoryName(fullNewPath)!);
 				Directory.Move(fullOldPath, fullNewPath);
 
-				var result = new ReactiveToolResult
+				return new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.Folder,
+					StatusIcon = MaterialIconKind.Folder,
 					StatusTitle = $"**{oldPath}** → **{newPath}**",
 					ResultContent = $"Directory moved from '{oldPath}' to '{newPath}'."
-				};
-
-				return result.Complete(true);
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error moving directory: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.PencilRemove,
+					StatusTitle = $"**{oldPath}** → **{newPath}**",
+					ResultContent = $"Error moving directory: {ex.Message}"
+				}.CompleteWithError();
 			}
 		}
 
@@ -853,16 +965,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
 			ctx = new CopyFileContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
 
-			var expectedBehaviour = ToolBehaviour.FileDirectoryCreate |
-				(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
-
 			if (!File.Exists(fullOldPath))
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
+					StatusIcon = MaterialIconKind.FileQuestion,
 					StatusTitle = $"**{oldPath}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = "Source file not found."
 				};
@@ -872,9 +981,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+					StatusIcon = MaterialIconKind.ContentCopy,
 					StatusTitle = $"**{oldPath}** → **{newPath}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = "Destination file already exists."
 				};
@@ -882,9 +991,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			return new PreviewToolExecutionResult
 			{
-				StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+				StatusIcon = MaterialIconKind.ContentCopy,
 				StatusTitle = $"**{oldPath}** → **{newPath}**",
-				ExpectedBehaviour = expectedBehaviour
+				ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate |
+					(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 
@@ -900,28 +1010,45 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
 
 				if (!File.Exists(fullOldPath))
-					return ReactiveToolResult.CreateError("Source file not found.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FileQuestion,
+						StatusTitle = $"**{oldPath}** → **{newPath}**+",
+						ResultContent = $"Source file not found: {oldPath}"
+					}.CompleteWithError();
+				}
 
 				if (File.Exists(fullNewPath) && !overwrite)
-					return ReactiveToolResult.CreateError("Destination file already exists.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FileQuestion,
+						StatusTitle = $"**{oldPath}** → **{newPath}**+",
+						ResultContent = $"Destination file already exists: {newPath}"
+					}.CompleteWithError();
+				}
 
 				if (Path.GetDirectoryName(fullNewPath) is string dir)
 					Directory.CreateDirectory(dir);
 
 				File.Copy(fullOldPath, fullNewPath, overwrite);
 
-				var result = new ReactiveToolResult
+				return new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
-					StatusTitle = $"**{oldPath}** → **{newPath}**",
+					StatusIcon = MaterialIconKind.ContentCopy,
+					StatusTitle = $"**{oldPath}** → **{newPath}**+",
 					ResultContent = $"File copied from '{oldPath}' to '{newPath}'."
-				};
-
-				return result.Complete(true);
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error copying file: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.FileDocumentError,
+					StatusTitle = $"**{oldPath}** → **{newPath}**+",
+					ResultContent = $"Error copying file: {ex.Message}"
+				}.CompleteWithError();
 			}
 		}
 
@@ -941,16 +1068,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
 			ctx = new CopyDirectoryContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
 
-			var expectedBehaviour = ToolBehaviour.FileDirectoryCreate |
-				(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None);
-
 			if (!Directory.Exists(fullOldPath))
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.FolderQuestion,
+					StatusIcon = MaterialIconKind.FolderQuestion,
 					StatusTitle = $"**{oldPath}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = "Source directory not found."
 				};
@@ -960,9 +1084,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+					StatusIcon = MaterialIconKind.ContentCopy,
 					StatusTitle = $"**{oldPath}** → **{newPath}**",
-					ExpectedBehaviour = expectedBehaviour,
+					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = "Destination directory already exists."
 				};
@@ -970,9 +1094,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			return new PreviewToolExecutionResult
 			{
-				StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
+				StatusIcon = MaterialIconKind.ContentCopy,
 				StatusTitle = $"**{oldPath}** → **{newPath}**",
-				ExpectedBehaviour = expectedBehaviour
+				ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate |
+					(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 
@@ -988,10 +1113,24 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
 
 				if (!Directory.Exists(fullOldPath))
-					return ReactiveToolResult.CreateError("Source directory not found.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FolderQuestion,
+						StatusTitle = $"**{oldPath}** → **{newPath}**+",
+						ResultContent = $"Source directory not found: {oldPath}"
+					}.CompleteWithError();
+				}
 
 				if (Directory.Exists(fullNewPath) && !overwrite)
-					return ReactiveToolResult.CreateError("Destination directory already exists.");
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FolderAlert,
+						StatusTitle = $"**{oldPath}** → **{newPath}**+",
+						ResultContent = $"Destination directory already exists: {newPath}"
+					}.CompleteWithError();
+				}
 
 				Directory.CreateDirectory(fullNewPath);
 
@@ -1003,18 +1142,21 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					File.Copy(file, destFile, overwrite);
 				}
 
-				var result = new ReactiveToolResult
+				return new ReactiveToolResult
 				{
-					StatusIcon = Material.Icons.MaterialIconKind.ContentCopy,
-					StatusTitle = $"**{oldPath}** → **{newPath}**",
+					StatusIcon = MaterialIconKind.ContentCopy,
+					StatusTitle = $"**{oldPath}** → **{newPath}**+",
 					ResultContent = $"Directory copied from '{oldPath}' to '{newPath}'."
-				};
-
-				return result.Complete(true);
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error copying directory: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.FolderAlert,
+					StatusTitle = $"**{oldPath}** → **{newPath}**+",
+					ResultContent = $"Error copying directory: {ex.Message}"
+				}.CompleteWithError();
 			}
 		}
 	}

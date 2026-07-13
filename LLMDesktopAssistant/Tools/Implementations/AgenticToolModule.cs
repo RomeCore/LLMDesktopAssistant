@@ -170,6 +170,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					StatusIcon = MaterialIconKind.Image,
 					StatusTitle = $"**{path}**",
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = $"File not found: {path}"
 				};
@@ -180,7 +181,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				StatusIcon = MaterialIconKind.Image,
 				StatusTitle = $"**{path}**",
 				ExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask | ToolBehaviour.FileRead |
-					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : 0)
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
 		}
 

@@ -131,11 +131,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				return new PreviewToolExecutionResult
 				{
-					InterruptingSuccess = false,
-					InterruptingContent = error,
 					StatusIcon = MaterialIconKind.FileAlert,
 					StatusTitle = $"**{path}**",
-					ExpectedBehaviour = ToolBehaviour.None
+					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					InterruptingSuccess = false,
+					InterruptingContent = error
 				};
 			}
 

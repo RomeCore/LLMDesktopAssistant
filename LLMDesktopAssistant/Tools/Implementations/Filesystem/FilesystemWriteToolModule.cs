@@ -73,6 +73,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 							{
 								StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
 								StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
+								ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 								InterruptingSuccess = true,
 								InterruptingContent = $"File **{path}** already contains the same content."
 							};
