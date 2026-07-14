@@ -4,7 +4,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Settings;
 using Serilog;
 
-namespace LLMDesktopAssistant.WebUI
+namespace LLMDesktopAssistant.Users
 {
 	[ChatService(typeof(IUserManagementService))]
 	public class UserManagementService(

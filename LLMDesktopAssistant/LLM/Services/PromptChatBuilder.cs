@@ -8,7 +8,7 @@ using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Hooks;
 using LLMDesktopAssistant.Prompting.Injectors;
 using LLMDesktopAssistant.Prompting.Plugins;
-using LLMDesktopAssistant.WebUI;
+using LLMDesktopAssistant.Users;
 using LLTSharp;
 using LLTSharp.DataAccessors;
 using LLTSharp.Locale;

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LLMDesktopAssistant.WebUI
+namespace LLMDesktopAssistant.Users
 {
 	public class WebUIStartupSettings : SettingsObject
 	{

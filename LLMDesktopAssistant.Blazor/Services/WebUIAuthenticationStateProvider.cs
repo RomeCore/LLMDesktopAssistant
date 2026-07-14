@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using LLMDesktopAssistant.WebUI;
+using LLMDesktopAssistant.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;

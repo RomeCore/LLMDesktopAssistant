@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LLMDesktopAssistant.WebUI
+namespace LLMDesktopAssistant.Users
 {
 	/// <summary>
 	/// Configuration for remote users that funtions as database for remote users that connects to Blazor WebUI.

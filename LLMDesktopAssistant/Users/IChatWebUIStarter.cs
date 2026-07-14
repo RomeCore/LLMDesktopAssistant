@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace LLMDesktopAssistant.WebUI
+namespace LLMDesktopAssistant.Users
 {
 	public interface IChatWebUIStarter : INotifyPropertyChanged
 	{

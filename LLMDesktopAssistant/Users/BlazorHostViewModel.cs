@@ -8,7 +8,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings;
 
-namespace LLMDesktopAssistant.WebUI
+namespace LLMDesktopAssistant.Users
 {
 	[ViewModelFor(typeof(BlazorHostView))]
 	public class BlazorHostViewModel : ViewModelBase

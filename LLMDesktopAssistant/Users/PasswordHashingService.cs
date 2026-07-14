@@ -1,7 +1,7 @@
 ﻿using LLMDesktopAssistant.Services;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace LLMDesktopAssistant.WebUI
+namespace LLMDesktopAssistant.Users
 {
 	[Service(typeof(IPasswordHashingService))]
 	public class PasswordHashingService : IPasswordHashingService

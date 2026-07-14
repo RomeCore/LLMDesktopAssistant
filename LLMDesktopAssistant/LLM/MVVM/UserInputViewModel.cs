@@ -9,7 +9,7 @@ using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using Serilog;
-using LLMDesktopAssistant.WebUI;
+using LLMDesktopAssistant.Users;
 using LLMDesktopAssistant.Controls.Dialogs;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;

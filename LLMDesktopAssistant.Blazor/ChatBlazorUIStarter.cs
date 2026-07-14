@@ -2,7 +2,7 @@ using LLMDesktopAssistant.Blazor.Services;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.WebUI;
+using LLMDesktopAssistant.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;

@@ -4,7 +4,7 @@ using System.Text;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Markdown.UINodes;
-using LLMDesktopAssistant.WebUI;
+using LLMDesktopAssistant.Users;
 
 namespace LLMDesktopAssistant.Markdown
 {

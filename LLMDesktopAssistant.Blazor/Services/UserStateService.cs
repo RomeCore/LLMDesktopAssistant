@@ -1,5 +1,5 @@
 using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.WebUI;
+using LLMDesktopAssistant.Users;
 using System.Security.Claims;
 
 namespace LLMDesktopAssistant.Blazor.Services

@@ -6,7 +6,7 @@ using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.UIExtensions.MessageExtensions;
 using LLMDesktopAssistant.Utils;
-using LLMDesktopAssistant.WebUI;
+using LLMDesktopAssistant.Users;
 
 namespace LLMDesktopAssistant.LLM.Messages
 {

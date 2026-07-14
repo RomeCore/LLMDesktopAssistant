@@ -39,7 +39,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						Note: Works best if you know line numbers when looking file with fs-explore(showLineNumbers = true)
 						""",
 					Category = "filesystem",
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
+					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,
+					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
+					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
 				});
 		}
 

@@ -10,7 +10,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.WebUI;
+using LLMDesktopAssistant.Users;
 using Serilog;
 
 namespace LLMDesktopAssistant.LLM.MVVM
