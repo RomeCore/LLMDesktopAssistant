@@ -169,12 +169,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						changesTitlePostfix = $" *(-{removed} +{added})*";
 
 						output.AppendLine($"File edited successfully. *(-{removed} +{added})*");
-						output.AppendLine("[CHANGES]");
+						output.AppendLine("[CHANGES]:");
 						output.AppendLine(diff.ToString());
 					}
 					if (postProcessResult.RejectedDiff.HasGroups)
 					{
-						output.AppendLine("[REJECTED CHANGES BY THE USER, THESE ARE NOT APPLIED]");
+						output.AppendLine("[REJECTED CHANGES BY THE USER, THESE ARE NOT APPLIED]:");
 						output.AppendLine(postProcessResult.RejectedDiff.ToString());
 					}
 					if (!postProcessResult.Diff.HasGroups)

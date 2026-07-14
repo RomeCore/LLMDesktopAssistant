@@ -35,7 +35,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "web-search",
 					DescriptionGetter = () => $"""
-						Search through the web using query. Returns results from multiple search engines (Google, Bing, etc.).
+						Search through the web using SearXNG and web scraping techniques. Returns results from multiple search engines (Google, Bing, etc.).
 						The available search engines are: {string.Join(", ", searchManager.Engines.Select(engine => $"'{engine.Name}'"))}.
 						""",
 					Category = "web",
@@ -66,15 +66,17 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Enum(["none", "moderate", "strict"])] string safeSearch = "none",
 			[Description("Search category.")]
 			[Enum(["all", "web", "images", "videos", "news", "science", "it", "files", "socialmedia", "music", "map", "repos", "packages"])] string category = "web",
-			[Description("The engines to use for the search. If null, all available engines are used.")] string[]? engines = null,
+			[Description("The engines to use for the search. If null, all available engines are used. It's not recommended to limit engines to a few amount, as this can lead to incomplete results.")] string[]? engines = null,
 			[Description("Maximum number of results (per engine) to return"), Range(1, 50)] int maxResults = 10,
 			CancellationToken ct = default)
 		{
 			var result = new ReactiveToolResult
 			{
 				StatusIcon = MaterialIconKind.Search,
-				StatusTitle = $"{query}"
+				StatusTitle = $"{query}",
+				UseMarkdown = true
 			};
+
 			_ = Task.Run(async () =>
 			{
 				try
@@ -93,120 +95,134 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						return;
 					}
 
-					var sb = new StringBuilder();
-					var engineInfo = resultList.EngineTimings.Count > 0
-						? string.Join(", ", resultList.EngineTimings.Select(t => $"{t.Engine} ({t.TotalTime}ms)"))
-						: "N/A";
+					var allEngines = resultList.Results.SelectMany(r => r.Engines.Count > 0 ? r.Engines : [r.Engine])
+						.Concat(resultList.EngineTimings.Select(e => e.Engine)).Distinct().ToList();
+					var engineResults = resultList.Results.SelectMany(r => r.Engines.Count > 0 ?
+						r.Engines.Select(e => (r, e)) : [(r, r.Engine)]).GroupBy(r => r.r.Engine).ToDictionary(k => k.Key, v => v.Count());
+					var engineTimings = resultList.EngineTimings.ToDictionary(e => e.Engine, e => e.TotalTime);
+					var engineInfos = allEngines.Select(e =>
+					{
+						if (!engineResults.TryGetValue(e, out var resultCount))
+							resultCount = 0;
+						if (!engineTimings.TryGetValue(e, out var totalTime))
+							totalTime = double.NaN;
+						return (e, resultCount, totalTime);
+					}).OrderByDescending(t => t.Item2);
 
-					sb.AppendLine($"**Search results for \"{query}\"** (engines: {engineInfo})");
+					var sb = new StringBuilder();
+					var enginesInfo = string.Join(", ", engineInfos.Select(t => $"{t.Item1} ({t.Item2} results, {t.Item3}ms)"));
+
+					sb.AppendLine($"**Search results for \"{query}\"** (engines: {enginesInfo})");
 					sb.AppendLine();
 
 					var count = 0;
-
 					IEnumerable<SearchResult> results = resultList.Results;
-
 					if (searchQuery.Category != SearchCategory.General)
 						results = results.OrderBy(r => r.Category == searchQuery.Category ? 0 : 1);
-
-					results = results.Take(maxResults * 3);
 
 					foreach (var result in results)
 					{
 						count++;
 						sb.AppendLine($"**{count}. [{result.Title}]({result.Url})**");
+						if (count > maxResults * 3)
+							continue;
 
 						// Engine(s)
-						if (result.Engines.Count > 0)
-							sb.AppendLine($"   *Engines: {string.Join(", ", result.Engines)}*");
-						else if (!string.IsNullOrEmpty(result.Engine))
-							sb.AppendLine($"   *Engine: {result.Engine}*");
+						var engine = result.Engines.Count > 0 ? result.Engines.First() : result.Engine;
+						if (result.Engines.Count > 1)
+							sb.AppendLine($"  *Engines: {string.Join(", ", result.Engines)}*");
+						else if (!string.IsNullOrEmpty(engine))
+							sb.AppendLine($"  *Engine: {engine}*");
 
 						// Content
 						if (!string.IsNullOrEmpty(result.Content))
-							sb.AppendLine($"   {result.Content.Truncate(500)}");
+							sb.AppendLine($"  {result.Content.Truncate(500)}");
 
 						// Source & Metadata
 						if (!string.IsNullOrEmpty(result.Source))
-							sb.AppendLine($"   *Source: {result.Source}*");
+							sb.AppendLine($"  *Source: {result.Source}*");
 						if (!string.IsNullOrEmpty(result.Metadata))
-							sb.AppendLine($"   *Metadata: {result.Metadata}*");
+							sb.AppendLine($"  *Metadata: {result.Metadata}*");
 
 						// Author
 						if (!string.IsNullOrEmpty(result.Author))
-							sb.AppendLine($"   *Author: {result.Author}*");
+							sb.AppendLine($"  *Author: {result.Author}*");
 
 						// Published date
 						if (result.PublishedDate.HasValue)
-							sb.AppendLine($"   *Published: {result.PublishedDate:yyyy-MM-dd}*");
+							sb.AppendLine($"  *Published: {result.PublishedDate:yyyy-MM-dd}*");
 
 						// Duration (video/audio)
 						if (result.Duration.HasValue && result.Duration.Value > TimeSpan.Zero)
-							sb.AppendLine($"   *Duration: {result.Duration:hh\\:mm\\:ss}*");
+							sb.AppendLine($"  *Duration: {result.Duration:hh\\:mm\\:ss}*");
 
 						// Image fields
 						if (!string.IsNullOrEmpty(result.ImgSrc))
-							sb.AppendLine($"   *Image URL: {result.ImgSrc}*");
+							sb.AppendLine($"  *Image URL: {result.ImgSrc}*");
 						if (!string.IsNullOrEmpty(result.Thumbnail))
-							sb.AppendLine($"   *Thumbnail: {result.Thumbnail}*");
+							sb.AppendLine($"  *Thumbnail: {result.Thumbnail}*");
 						if (!string.IsNullOrEmpty(result.Resolution))
-							sb.AppendLine($"   *Resolution: {result.Resolution}*");
+							sb.AppendLine($"  *Resolution: {result.Resolution}*");
 
 						// Embedded content
 						if (!string.IsNullOrEmpty(result.IframeSrc))
-							sb.AppendLine($"   *Iframe: {result.IframeSrc}*");
+							sb.AppendLine($"  *Iframe: {result.IframeSrc}*");
 						if (!string.IsNullOrEmpty(result.AudioSrc))
-							sb.AppendLine($"   *Audio: {result.AudioSrc}*");
+							sb.AppendLine($"  *Audio: {result.AudioSrc}*");
 
 						// Views
 						if (result.Views.HasValue && result.Views.Value > 0)
-							sb.AppendLine($"   *Views: {result.Views:N0}*");
+							sb.AppendLine($"  *Views: {result.Views:N0}*");
 
 						// Torrent fields
 						if (result.Seed > 0)
-							sb.AppendLine($"   *Seed: {result.Seed}*");
+							sb.AppendLine($"  *Seed: {result.Seed}*");
 						if (result.Leech > 0)
-							sb.AppendLine($"   *Leech: {result.Leech}*");
+							sb.AppendLine($"  *Leech: {result.Leech}*");
 						if (!string.IsNullOrEmpty(result.MagnetLink))
-							sb.AppendLine($"   *Magnet: {result.MagnetLink}*");
+							sb.AppendLine($"  *Magnet: {result.MagnetLink}*");
 
 						// Paper fields
 						if (!string.IsNullOrEmpty(result.Doi))
-							sb.AppendLine($"   *DOI: {result.Doi}*");
+							sb.AppendLine($"  *DOI: {result.Doi}*");
 						if (result.Authors is { Count: > 0 })
-							sb.AppendLine($"   *Authors: {string.Join(", ", result.Authors)}*");
+							sb.AppendLine($"  *Authors: {string.Join(", ", result.Authors)}*");
 						if (!string.IsNullOrEmpty(result.Journal))
-							sb.AppendLine($"   *Journal: {result.Journal}*");
+							sb.AppendLine($"  *Journal: {result.Journal}*");
 						if (result.Tags is { Count: > 0 })
-							sb.AppendLine($"   *Tags: {string.Join(", ", result.Tags)}*");
+							sb.AppendLine($"  *Tags: {string.Join(", ", result.Tags)}*");
 						if (!string.IsNullOrEmpty(result.Comments))
-							sb.AppendLine($"   *Comments: {result.Comments}*");
+							sb.AppendLine($"  *Comments: {result.Comments}*");
 						if (!string.IsNullOrEmpty(result.PdfUrl))
-							sb.AppendLine($"   *PDF: {result.PdfUrl}*");
+							sb.AppendLine($"  *PDF: {result.PdfUrl}*");
 						if (!string.IsNullOrEmpty(result.Number))
-							sb.AppendLine($"   *Number: {result.Number}*");
+							sb.AppendLine($"  *Number: {result.Number}*");
 						if (!string.IsNullOrEmpty(result.Pages))
-							sb.AppendLine($"   *Pages: {result.Pages}*");
+							sb.AppendLine($"  *Pages: {result.Pages}*");
 						if (!string.IsNullOrEmpty(result.Volume))
-							sb.AppendLine($"   *Volume: {result.Volume}*");
+							sb.AppendLine($"  *Volume: {result.Volume}*");
 
 						// Geo fields
 						if (Math.Abs(result.Latitude) > 0.001 || Math.Abs(result.Longitude) > 0.001)
-							sb.AppendLine($"   *Location: {result.Latitude}, {result.Longitude}*");
+							sb.AppendLine($"  *Location: {result.Latitude}, {result.Longitude}*");
 
 						// Score & Position
 						if (result.Score > 0)
-							sb.AppendLine($"   *Score: {result.Score:F2}*");
+							sb.AppendLine($"  *Score: {result.Score:F2}*");
 						if (result.Position > 0)
-							sb.AppendLine($"   *Position: {result.Position}*");
+							sb.AppendLine($"  *Position: {result.Position}*");
 
 						// Type & Category
 						if (result.Type != SearchResultType.Default)
-							sb.AppendLine($"   *Type: {result.Type}*");
+							sb.AppendLine($"  *Type: {result.Type}*");
 						if (result.Category != SearchCategory.General)
-							sb.AppendLine($"   *Category: {result.Category}*");
+							sb.AppendLine($"  *Category: {result.Category}*");
 
 						sb.AppendLine();
 					}
+
+					if (count > maxResults * 3)
+						sb.AppendLine();
 
 					// Suggestions
 					if (resultList.Suggestions.Count > 0)
@@ -255,7 +271,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					// Unresponsive engines
 					if (resultList.UnresponsiveEngines.Count > 0)
 					{
-						sb.AppendLine($"*Note: {resultList.UnresponsiveEngines.Count} engine(s) did not respond*");
+						sb.AppendLine($"*Note: some engines ({string.Join(", ", resultList.UnresponsiveEngines.Select(e => e.Engine))}) did not respond*");
+					}
+
+					// Fewer results than expected
+					if (resultList.Results.Count < maxResults * 2)
+					{
+						sb.AppendLine("*Note: fewer results than expected. Consider change the category (some categories have few number of engines and low quality for results, especially 'news' or 'it'), using more engines (at least 7-8), or using 'auto' language if needed.*");
 					}
 
 					result.StatusTitle = LocalizationManager.LocalizeStaticFormat("web_search_results", $"{query}", resultList.TotalResults ?? 0);

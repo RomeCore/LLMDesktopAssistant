@@ -107,7 +107,7 @@ namespace LLMDesktopAssistant.Services.Configurators
 					SearchEngines.Reddit(logger),
 					SearchEngines.Mastodon(logger),
 					SearchEngines.Lemmy(logger),
-					SearchEngines.Discourse(logger),
+					// SearchEngines.Discourse(logger),
 
 					// Shopping / Entertainment
 					SearchEngines.Imdb(logger),
