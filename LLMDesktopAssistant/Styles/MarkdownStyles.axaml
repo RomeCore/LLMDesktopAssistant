@@ -17,7 +17,7 @@
 		<Style Selector="^ StackPanel">
 			<Setter Property="Spacing" Value="16"/>
 		</Style>
-
+		
 	</Style>
 	
 	<Style Selector="md|CodeBlock">

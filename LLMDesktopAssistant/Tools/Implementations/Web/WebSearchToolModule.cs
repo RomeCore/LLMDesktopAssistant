@@ -9,7 +9,7 @@ using RCLargeLanguageModels.Tools;
 using SearXSharp;
 using SearXSharp.Models;
 
-namespace LLMDesktopAssistant.Tools.Implementations
+namespace LLMDesktopAssistant.Tools.Implementations.Web
 {
 	/// <summary>
 	/// Tool module that provides web search capabilities to the AI assistant
