@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Services.Configurators
 				manager.RegisterEngines(
 				[
 					// External API-based engines (can be configured via settings later)
-					new AnySearchEngine(),
+					new AnySearchEngine(Environment.GetEnvironmentVariable("ANYSEARCH_API_KEY")),
 
 					// Web
 					SearchEngines.Google(logger),
