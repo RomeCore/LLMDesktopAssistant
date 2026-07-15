@@ -1,6 +1,6 @@
 ﻿namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
-	public class MentionOnlyAgentExecutionStage : MentionableAgentExecutionStage
+	public class MentionOnlyAgentExecutionStage : MentionableBaseAgentExecutionStage
 	{
 	}
 }

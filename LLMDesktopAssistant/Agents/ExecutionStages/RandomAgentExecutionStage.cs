@@ -3,7 +3,7 @@ using ModelContextProtocol.Protocol;
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
-	public class RandomAgentExecutionStage : MentionableAgentExecutionStage
+	public class RandomAgentExecutionStage : MentionableBaseAgentExecutionStage
 	{
 		private readonly Random _random = new();
 

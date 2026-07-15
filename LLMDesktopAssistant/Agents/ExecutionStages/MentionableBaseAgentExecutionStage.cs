@@ -2,7 +2,7 @@
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
-	public abstract class MentionableAgentExecutionStage : RepeatableAgentExecutionStage
+	public abstract class MentionableBaseAgentExecutionStage : RepeatableBaseAgentExecutionStage
 	{
 		private bool _enableMentions = true;
 		public bool EnableMentions

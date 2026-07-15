@@ -11,7 +11,7 @@ using System.Text;
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
-	public class AdaptiveAgentExecutionStage : MentionableAgentExecutionStage
+	public class AdaptiveAgentExecutionStage : MentionableBaseAgentExecutionStage
 	{
 		private readonly Random _random = new();
 

@@ -149,8 +149,8 @@ public class StageContainerViewModel : ViewModelBase
 	private void OnTypeChanged()
 	{
 		var prevStage = Stage;
-		var prevRepeatable = prevStage as RepeatableAgentExecutionStage;
-		var prevMentionable = prevStage as MentionableAgentExecutionStage;
+		var prevRepeatable = prevStage as RepeatableBaseAgentExecutionStage;
+		var prevMentionable = prevStage as MentionableBaseAgentExecutionStage;
 		var prevIndex = _parent.AgentSettings.ExecutionStages.IndexOf(prevStage);
 
 		if (SelectedType.StageType == typeof(SequentialAgentExecutionStage))

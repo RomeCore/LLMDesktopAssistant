@@ -3,7 +3,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 	/// <summary>
 	/// The abstract/base class for execution stages where agents are executed multiple times.
 	/// </summary>
-	public abstract class RepeatableAgentExecutionStage : AgentExecutionStage
+	public abstract class RepeatableBaseAgentExecutionStage : AgentExecutionStage
 	{
 		private readonly Random _random = new();
 
