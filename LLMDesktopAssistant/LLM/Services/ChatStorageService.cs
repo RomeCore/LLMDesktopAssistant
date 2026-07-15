@@ -424,7 +424,12 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			// Select another sibling
 			List<BranchedMessage> subsequentMessages = [];
-			if (siblings.Count > 1)
+			siblings = database.MessageNodes
+				.Find(n => n.ParentId == currentNode.ParentId &&
+						   n.IsRootNode == currentNode.IsRootNode)
+				.OrderBy(n => n.Id)
+				.ToList();
+			if (siblings.Count > 0)
 			{
 				siblingIndex--;
 				if (siblingIndex < 0)
