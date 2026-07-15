@@ -134,24 +134,24 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			{
 				try
 				{
-					var html = await HtmlContentFetcher.FetchContent(url);
+					var html = await HtmlContentFetcher.FetchContentAsync(url);
 					var parser = new HtmlParser();
 					var document = await parser.ParseDocumentAsync(html);
 					var elements = document.QuerySelectorAll(selector);
 					var contents = elements.Select(m => m.TextContent);
 
 					var parsedHtml = string.Join("\n\n", contents);
-					start = Math.Max(Math.Min(start, html.Length), 0);
-					count = Math.Min(count, html.Length - start);
+					start = Math.Max(Math.Min(start, parsedHtml.Length), 0);
+					count = Math.Min(count, parsedHtml.Length - start);
 					int end = start + count;
-					var slice = html.Substring(start, count);
+					var slice = parsedHtml.Substring(start, count);
 
-					string afterTip = end < html.Length ? $"\n*Can read {end - start} more characters. Call tool again with same arguments (but with new `start` and `count` values) to read more.*" : "";
+					string afterTip = end < parsedHtml.Length ? $"\n*Can read {end - start} more characters. Call tool again with same arguments (but with new `start` and `count` values) to read more.*" : "";
 
 					result.ResultContent = $"""
 						**Url**: *{url}*
 						**Selector**: *{selector}*
-						**Showing slice**: *{start}-{start + count}* from *{html.Length}*
+						**Showing slice**: *{start}-{start + count}* from *{parsedHtml.Length}*
 						[CONTENT START]
 						{slice}
 						[CONTENT END]{afterTip}
@@ -177,7 +177,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 		private readonly AsyncCache<(string, string), string> _fetchContentCache = new(
 			async ((string url, string contentType) args, CancellationToken cancellationToken) =>
 			{
-				var content = await HtmlContentFetcher.FetchContent(args.url, cancellationToken);
+				var content = await HtmlContentFetcher.FetchContentAsync(args.url, cancellationToken);
 				switch (args.contentType)
 				{
 					case "sanitized_html":

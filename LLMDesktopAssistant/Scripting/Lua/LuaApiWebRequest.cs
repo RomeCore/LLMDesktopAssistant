@@ -321,7 +321,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			try
 			{
-				string content = await HtmlContentFetcher.FetchContent(urlVal.Value);
+				string content = await HtmlContentFetcher.FetchContentAsync(urlVal.Value);
 
 				switch (contentType)
 				{
@@ -360,7 +360,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			try
 			{
-				var html = await HtmlContentFetcher.FetchContent(urlVal.Value);
+				var html = await HtmlContentFetcher.FetchContentAsync(urlVal.Value);
 				var parser = new HtmlParser();
 				var document = await parser.ParseDocumentAsync(html);
 				var elements = document.QuerySelectorAll(selectorVal.Value);
