@@ -30,11 +30,11 @@ namespace LLMDesktopAssistant.Utils
 
 		public int Count => GetItems().Count;
 
-		public bool IsFixedSize => false;
+		public bool IsFixedSize => (_items as IList)?.IsFixedSize ?? false;
 
-		public bool IsSynchronized => false;
+		public bool IsSynchronized => (_items as ICollection)?.IsSynchronized ?? false;
 
-		public object SyncRoot => new object();
+		public object SyncRoot => (_items as ICollection)?.SyncRoot ?? this;
 
 		public event NotifyCollectionChangedEventHandler? CollectionChanged
 		{

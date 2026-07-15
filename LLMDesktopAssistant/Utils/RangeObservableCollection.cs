@@ -8,7 +8,6 @@ using System.Text.Json.Serialization;
 
 namespace LLMDesktopAssistant.Utils
 {
-
 	/// <summary>
 	/// A thread-safe ObservableCollection that notifies when a range of items is added or removed.
 	/// </summary>
