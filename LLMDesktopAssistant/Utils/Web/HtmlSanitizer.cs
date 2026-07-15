@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 using Ganss.Xss;
 using RCParsing;
 
-namespace LLMDesktopAssistant.Utils
+namespace LLMDesktopAssistant.Utils.Web
 {
-	public static class HtmlUtils
+	public static class HtmlSanitizer
 	{
-		private static readonly HtmlSanitizer _sanitizer;
+		private static readonly Ganss.Xss.HtmlSanitizer _sanitizer;
 		private static readonly Parser _postSanitizer;
 
-		static HtmlUtils()
+		static HtmlSanitizer()
 		{
-			_sanitizer = new HtmlSanitizer();
+			_sanitizer = new Ganss.Xss.HtmlSanitizer();
 			_sanitizer.AllowedTags.Remove("script");
 
 			var postSanitizerBuilder = new ParserBuilder();
@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.Utils
 					{
 						if (v.Span.ContainsAny("\r\n"))
 							return "\n";
-						return "";
+						return " ";
 					});
 
 			_postSanitizer = postSanitizerBuilder.Build();

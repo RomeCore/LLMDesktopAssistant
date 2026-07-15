@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using AngleSharp;
+using AngleSharp.Html.Parser;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Utils.Web;
 using Material.Icons;
 using RCLargeLanguageModels.Json.Schema;
 
@@ -74,15 +76,19 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				{
 					var content = await _fetchContentCache.GetAsync((url, contentType), cancellationToken);
 
-					var actualCount = Math.Min(count, content.Length - start);
-					var slice = content.Substring(start, actualCount);
+					start = Math.Max(Math.Min(start, content.Length), 0);
+					count = Math.Min(count, content.Length - start);
+					int end = start + count;
+					var slice = content.Substring(start, count);
+
+					string afterTip = end < content.Length ? $"\n*Can read {end - start} more characters. Call tool again with same arguments (but with new `start` and `count` values) to read more.*" : "";
 
 					result.ResultContent = $"""
-						Url: {url}
-						Total content length: {content.Length}
-						Showing slice: {start}-{start + actualCount}
-						Content slice:
+						**Url**: *{url}*
+						**Showing slice**: *{start}-{start + count}* from *{content.Length}*
+						[CONTENT START]
 						{slice}
+						[CONTENT END]{afterTip}
 						""";
 
 					result.CompleteWithSuccess();
@@ -128,20 +134,27 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			{
 				try
 				{
-					var config = Configuration.Default.WithDefaultLoader();
-					var context = BrowsingContext.New(config);
-					var document = await context.OpenAsync(url, cancellationToken);
+					var html = await HtmlContentFetcher.FetchContent(url);
+					var parser = new HtmlParser();
+					var document = await parser.ParseDocumentAsync(html);
 					var elements = document.QuerySelectorAll(selector);
 					var contents = elements.Select(m => m.TextContent);
 
-					var html = string.Join("\n\n", contents);
-					var actualCount = Math.Min(count, html.Length - start);
-					var slice = html.Substring(start, actualCount);
+					var parsedHtml = string.Join("\n\n", contents);
+					start = Math.Max(Math.Min(start, html.Length), 0);
+					count = Math.Min(count, html.Length - start);
+					int end = start + count;
+					var slice = html.Substring(start, count);
+
+					string afterTip = end < html.Length ? $"\n*Can read {end - start} more characters. Call tool again with same arguments (but with new `start` and `count` values) to read more.*" : "";
 
 					result.ResultContent = $"""
-						```html
+						**Url**: *{url}*
+						**Selector**: *{selector}*
+						**Showing slice**: *{start}-{start + count}* from *{html.Length}*
+						[CONTENT START]
 						{slice}
-						```
+						[CONTENT END]{afterTip}
 						""";
 					result.CompleteWithSuccess();
 				}
@@ -161,43 +174,22 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			_httpInfiniteTimeoutClient.Dispose();
 		}
 
-		private static readonly ReverseMarkdown.Converter _mdConverter = new(CreateMdConfig());
-
-		private static ReverseMarkdown.Config CreateMdConfig()
-		{
-			var result = new ReverseMarkdown.Config
-			{
-				GithubFlavored = true,
-			};
-
-			result.Tags.Unknown = ReverseMarkdown.Config.UnknownTagsOption.Drop;
-			result.Formatting.RemoveComments = true;
-			result.Images.Base64Handling = ReverseMarkdown.Config.Base64ImageHandling.Skip;
-
-			return result;
-		}
-
 		private readonly AsyncCache<(string, string), string> _fetchContentCache = new(
-			async ((string url, string contentType) args) =>
+			async ((string url, string contentType) args, CancellationToken cancellationToken) =>
 			{
-				var config = Configuration.Default.WithDefaultLoader();
-				var context = BrowsingContext.New(config);
-				var document = await context.OpenAsync(args.url);
-
-				var content = document.Body?.OuterHtml ?? string.Empty;
+				var content = await HtmlContentFetcher.FetchContent(args.url, cancellationToken);
 				switch (args.contentType)
 				{
 					case "sanitized_html":
-						content = HtmlUtils.Sanitize(content);
+						content = HtmlSanitizer.Sanitize(content);
 						break;
 
 					case "markdown":
-						content = _mdConverter.Convert(content);
+						content = HtmlToMarkdownConverter.Convert(content);
 						break;
 				}
-
 				return content;
-			}, slidingExpirationTime: TimeSpan.FromMinutes(5));
+			}, slidingExpirationTime: TimeSpan.FromMinutes(15));
 
 		private static HttpClient CreateClient()
 		{

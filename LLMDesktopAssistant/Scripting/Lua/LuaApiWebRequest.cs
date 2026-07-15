@@ -1,11 +1,13 @@
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using AngleSharp;
+using AngleSharp.Html.Parser;
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Utils.Web;
 using ReverseMarkdown;
 
 namespace LLMDesktopAssistant.Scripting.Lua
@@ -141,14 +143,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		private readonly WorkingDirectoryAccessService _fileAccess;
 		private readonly HttpClient _httpClient, _pureHttpClient, _infiniteTimeoutClient;
-		private static readonly Converter _mdConverter = new(
-			new Config
-			{
-				UnknownTags = Config.UnknownTagsOption.Drop,
-				RemoveComments = true,
-				GithubFlavored = true,
-				Base64Images = Config.Base64ImageHandling.Skip
-			});
 
 		public LuaApiWebRequest(WorkingDirectoryAccessService fileAccess)
 		{
@@ -262,56 +256,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 		}
 
-		private async Task<LuaTuple> FetchAsync(LuaCallingContext ctx, LuaValue[] args)
-		{
-			if (args.Length < 1)
-				throw new LuaRuntimeException("web.fetch(url, [contentType]): at least 1 argument expected.");
-
-			if (args[0] is not LuaString urlVal)
-				throw new LuaRuntimeException("First argument must be a string (URL).");
-
-			string contentType = "markdown";
-			if (args.Length > 1 && args[1] is LuaString ctVal)
-				contentType = ctVal.Value;
-
-			try
-			{
-				var config = Configuration.Default.WithDefaultLoader();
-				var context = BrowsingContext.New(config);
-				var document = await context.OpenAsync(urlVal.Value);
-
-				var bodyHtml = document.Body?.OuterHtml ?? string.Empty;
-				string content;
-
-				switch (contentType)
-				{
-					case "sanitized_html":
-						content = HtmlUtils.Sanitize(bodyHtml);
-						break;
-					case "markdown":
-						content = _mdConverter.Convert(bodyHtml);
-						break;
-					case "html":
-					default:
-						content = bodyHtml;
-						break;
-				}
-
-				var result = new LuaTable();
-				result["url"] = new LuaString(urlVal.Value);
-				result["content_type"] = new LuaString(contentType);
-				result["content_length"] = new LuaNumber(content.Length);
-				result["content"] = new LuaString(content);
-
-				return new LuaTuple(result);
-			}
-			catch (LuaRuntimeException) { throw; }
-			catch (Exception ex)
-			{
-				throw new LuaRuntimeException($"Web fetch failed: {ex.Message}");
-			}
-		}
-
 		private async Task<LuaTuple> StatusAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
 			if (args.Length < 1)
@@ -363,6 +307,47 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 		}
 
+		private async Task<LuaTuple> FetchAsync(LuaCallingContext ctx, LuaValue[] args)
+		{
+			if (args.Length < 1)
+				throw new LuaRuntimeException("web.fetch(url, [contentType]): at least 1 argument expected.");
+
+			if (args[0] is not LuaString urlVal)
+				throw new LuaRuntimeException("First argument must be a string (URL).");
+
+			string contentType = "markdown";
+			if (args.Length > 1 && args[1] is LuaString ctVal)
+				contentType = ctVal.Value;
+
+			try
+			{
+				string content = await HtmlContentFetcher.FetchContent(urlVal.Value);
+
+				switch (contentType)
+				{
+					case "sanitized_html":
+						content = HtmlSanitizer.Sanitize(content);
+						break;
+					case "markdown":
+						content = HtmlToMarkdownConverter.Convert(content);
+						break;
+				}
+
+				var result = new LuaTable();
+				result["url"] = new LuaString(urlVal.Value);
+				result["content_type"] = new LuaString(contentType);
+				result["content_length"] = new LuaNumber(content.Length);
+				result["content"] = new LuaString(content);
+
+				return new LuaTuple(result);
+			}
+			catch (LuaRuntimeException) { throw; }
+			catch (Exception ex)
+			{
+				throw new LuaRuntimeException($"Web fetch failed: {ex.Message}");
+			}
+		}
+
 		private async Task<LuaTuple> ParseAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
 			if (args.Length < 2)
@@ -375,9 +360,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			try
 			{
-				var config = Configuration.Default.WithDefaultLoader();
-				var context = BrowsingContext.New(config);
-				var document = await context.OpenAsync(urlVal.Value);
+				var html = await HtmlContentFetcher.FetchContent(urlVal.Value);
+				var parser = new HtmlParser();
+				var document = await parser.ParseDocumentAsync(html);
 				var elements = document.QuerySelectorAll(selectorVal.Value);
 
 				var result = new LuaTable();
