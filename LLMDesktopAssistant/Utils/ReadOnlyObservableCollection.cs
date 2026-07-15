@@ -69,6 +69,14 @@ namespace LLMDesktopAssistant.Utils
 			}
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ReadOnlyObservableCollection{T}"/> class.
+		/// </summary>
+		/// <param name="items">
+		/// The list of items to wrap. Can be <see cref="IReadOnlyList{T}"/>,
+		/// <see cref="INotifyCollectionChanged"/>, or <see cref="INotifyPropertyChanged"/>
+		/// to provide read-only functionality of each type.
+		/// </param>
 		public ReadOnlyObservableCollection(object items)
 		{
 			_items = items as IReadOnlyList<T>;
