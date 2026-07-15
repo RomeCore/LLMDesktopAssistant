@@ -10,7 +10,10 @@ namespace LLMDesktopAssistant.Blazor.Services
 			var webUIServices = ReflectionUtility.GetTypesWithAttribute<WebUIServiceAttribute>().ToList();
 			foreach (var service in webUIServices)
 			{
-				services.AddScoped(service.Attribute.ServiceType ?? service.Type, service.Type);
+				if (service.Attribute.IsScoped)
+					services.AddScoped(service.Attribute.ServiceType ?? service.Type, service.Type);
+				else
+					services.AddSingleton(service.Attribute.ServiceType ?? service.Type, service.Type);
 			}
 		}
 	}

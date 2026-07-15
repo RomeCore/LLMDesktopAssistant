@@ -84,7 +84,6 @@ namespace LLMDesktopAssistant.Blazor
 
 				// Register WebUI authentication services
 				builder.Services.AddAuthorization();
-				builder.Services.AddScoped<UserStateService>();
 				builder.Services.AddScoped<WebUIAuthenticationStateProvider>();
 				builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
 					sp.GetRequiredService<WebUIAuthenticationStateProvider>());

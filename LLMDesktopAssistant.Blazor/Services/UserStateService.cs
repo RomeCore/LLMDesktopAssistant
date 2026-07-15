@@ -4,6 +4,7 @@ using System.Security.Claims;
 
 namespace LLMDesktopAssistant.Blazor.Services
 {
+	[WebUIService(IsScoped = true)]
 	public class UserStateService
 	{
 		private readonly IUserManagementService _userManager;
