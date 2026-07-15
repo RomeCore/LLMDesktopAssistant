@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// </summary>
 	public class ChatSummarizationSettings : ChatSettingsCategoryBase
 	{
-		private bool _summarizationEnabled = true;
+		private bool _summarizationEnabled = false;
 		/// <summary>
 		/// Whether auto-summarization is enabled.
 		/// Auto summarization triggers when total usage tokens exceeds a certain threshold (<see cref="SummarizationTriggerTokens"/>).
