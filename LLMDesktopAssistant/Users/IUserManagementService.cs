@@ -1,10 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Settings;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Users
+﻿namespace LLMDesktopAssistant.Users
 {
 	/// <summary>
 	/// Provides methods for managing user information.
