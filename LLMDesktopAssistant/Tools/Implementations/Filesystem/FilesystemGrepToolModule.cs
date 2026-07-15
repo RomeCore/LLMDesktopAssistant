@@ -54,7 +54,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			if (!fileExists && !dirExists)
 			{
-				new PreviewToolExecutionResult
+				return new PreviewToolExecutionResult
 				{
 					StatusIcon = MaterialIconKind.FileSearch,
 					StatusTitle = $"**{path}** → `{pattern}`",

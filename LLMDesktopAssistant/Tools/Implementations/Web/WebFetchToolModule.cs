@@ -81,7 +81,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 					int end = start + count;
 					var slice = content.Substring(start, count);
 
-					string afterTip = end < content.Length ? $"\n*Can read {end - start} more characters. Call tool again with same arguments (but with new `start` and `count` values) to read more.*" : "";
+					string afterTip = end < content.Length ? $"\n*Can read {content.Length - end} more characters. Call tool again with same arguments (but with new `start` and `count` values) to read more.*" : "";
 
 					result.ResultContent = $"""
 						**Url**: *{url}*
@@ -140,18 +140,18 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 					var elements = document.QuerySelectorAll(selector);
 					var contents = elements.Select(m => m.TextContent);
 
-					var parsedHtml = string.Join("\n\n", contents);
-					start = Math.Max(Math.Min(start, parsedHtml.Length), 0);
-					count = Math.Min(count, parsedHtml.Length - start);
+					var content = string.Join("\n\n", contents);
+					start = Math.Max(Math.Min(start, content.Length), 0);
+					count = Math.Min(count, content.Length - start);
 					int end = start + count;
-					var slice = parsedHtml.Substring(start, count);
+					var slice = content.Substring(start, count);
 
-					string afterTip = end < parsedHtml.Length ? $"\n*Can read {end - start} more characters. Call tool again with same arguments (but with new `start` and `count` values) to read more.*" : "";
+					string afterTip = end < content.Length ? $"\n*Can read {content.Length - end} more characters. Call tool again with same arguments (but with new `start` and `count` values) to read more.*" : "";
 
 					result.ResultContent = $"""
 						**Url**: *{url}*
 						**Selector**: *{selector}*
-						**Showing slice**: *{start}-{start + count}* from *{parsedHtml.Length}*
+						**Showing slice**: *{start}-{start + count}* from *{content.Length}*
 						[CONTENT START]
 						{slice}
 						[CONTENT END]{afterTip}
