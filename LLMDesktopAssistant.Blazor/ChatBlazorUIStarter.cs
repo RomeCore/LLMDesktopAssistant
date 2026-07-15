@@ -1,13 +1,14 @@
+using System.Reflection;
 using LLMDesktopAssistant.Blazor.Services;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Users;
+using LLMDesktopAssistant.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Serilog;
-using System.Reflection;
 
 namespace LLMDesktopAssistant.Blazor
 {
@@ -87,6 +88,13 @@ namespace LLMDesktopAssistant.Blazor
 				builder.Services.AddScoped<WebUIAuthenticationStateProvider>();
 				builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
 					sp.GetRequiredService<WebUIAuthenticationStateProvider>());
+
+				// Register WebUI-scoped App services
+				foreach (var configurator in ReflectionUtility.GetTypesWithAttribute<ServiceConfigurator, ServiceConfiguratorAttribute>())
+				{
+					if (configurator.Attribute.Scope == ServiceScope.WebUI)
+						configurator.Type.Instantiate<ServiceConfigurator>().Configure(builder.Services);
+				}
 
 				// Add Cookie authentication scheme
 				var authBuilder = builder.Services.AddAuthentication(opts =>

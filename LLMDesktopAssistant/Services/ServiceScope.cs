@@ -10,6 +10,11 @@
 		/// <summary>
 		/// Service is scoped to the chat.
 		/// </summary>
-		Chat
+		Chat,
+
+		/// <summary>
+		/// Service is scoped to the Blazor WebUI page
+		/// </summary>
+		WebUI
 	}
 }
