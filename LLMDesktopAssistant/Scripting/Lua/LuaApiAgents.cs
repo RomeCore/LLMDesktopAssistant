@@ -393,8 +393,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			};
 
 			// Resolve model name and LLM.
-			var modelName = parameters.Get("model")?.TryToString();
-			if (string.IsNullOrEmpty(modelName))
+			var modelNameParam = parameters.Get("model");
+			var modelName = modelNameParam.TryToString();
+			if (modelNameParam is LuaNil || string.IsNullOrEmpty(modelName))
 				modelName = _chat.Settings.Models.AgenticToolsModel;
 
 			if (string.IsNullOrEmpty(modelName))
