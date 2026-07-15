@@ -1,0 +1,17 @@
+﻿using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Utils;
+
+namespace LLMDesktopAssistant.Blazor.Services
+{
+	public class WebUIServicesConfigurator : ServiceConfigurator
+	{
+		public override void Configure(IServiceCollection services)
+		{
+			var webUIServices = ReflectionUtility.GetTypesWithAttribute<WebUIServiceAttribute>().ToList();
+			foreach (var service in webUIServices)
+			{
+				services.AddScoped(service.Attribute.ServiceType ?? service.Type, service.Type);
+			}
+		}
+	}
+}
