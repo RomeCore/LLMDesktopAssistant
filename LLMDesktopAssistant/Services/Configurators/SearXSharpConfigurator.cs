@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using LLMDesktopAssistant.Utils;
 using SearXSharp;
+using LLMDesktopAssistant.Utils.Web;
 
 namespace LLMDesktopAssistant.Services.Configurators
 {
@@ -22,6 +23,9 @@ namespace LLMDesktopAssistant.Services.Configurators
 
 				manager.RegisterEngines(
 				[
+					// External API-based engines (can be configured via settings later)
+					new AnySearchEngine(),
+
 					// Web
 					SearchEngines.Google(logger),
 					SearchEngines.Bing(logger),
