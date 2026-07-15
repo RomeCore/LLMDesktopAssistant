@@ -2070,4 +2070,7 @@
   <data name="tool-approve-with-wait-hint" xml:space="preserve">
     <value>Approve and ask agent to wait</value>
   </data>
+  <data name="web-search_get_engines" xml:space="preserve">
+    <value>Get avaliable web-search engines</value>
+  </data>
 </root>

@@ -2070,4 +2070,7 @@
   <data name="tool-approve-with-wait-hint" xml:space="preserve">
     <value>Подтвердить и попросить подождать</value>
   </data>
+  <data name="web-search_get_engines" xml:space="preserve">
+    <value>Получить список доступных движков веб-поиска</value>
+  </data>
 </root>

@@ -5893,6 +5893,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Get avaliable web-search engines.
+        /// </summary>
+        public static string web_search_get_engines {
+            get {
+                return ResourceManager.GetString("web-search_get_engines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на {0} *({1} results)*.
         /// </summary>
         public static string web_search_results {

@@ -30,17 +30,57 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 		{
 			_searchManager = searchManager;
 
+			AddTool(GetEngines, null, null,
+				new ToolInitializationInfo
+				{
+					Name = "web-search_get_engines",
+					Description = """
+						Gets list of available search engines that can be used in `web-search`.
+						""",
+					Category = "web",
+					DefaultExpectedBehaviour = ToolBehaviour.None
+				});
+
 			AddTool(Search, SearchStreaming, null,
 				new ToolInitializationInfo
 				{
 					Name = "web-search",
-					DescriptionGetter = () => $"""
-						Search through the web using SearXNG and web scraping techniques. Returns results from multiple search engines (Google, Bing, etc.).
-						The available search engines are: {string.Join(", ", searchManager.Engines.Select(engine => $"'{engine.Name}'"))}.
+					Description = """
+						Search through the web using SearXNG and web scraping techniques.
+						Returns results from multiple search engines (Google, Bing, etc.).
 						""",
 					Category = "web",
 					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
+		}
+
+		public ReactiveToolResult GetEngines()
+		{
+			var result = new ReactiveToolResult
+			{
+				StatusIcon = MaterialIconKind.SearchExpand,
+				UseMarkdown = true
+			};
+
+			var sb = new StringBuilder();
+			int counter = 0;
+			foreach (var engine in _searchManager.Engines)
+			{
+				counter++;
+				sb.AppendLine($"{counter}. **{engine.Name}**: *{engine.DisplayName}*");
+				sb.AppendLine($"  Supported categories: {string.Join(", ",
+					engine.SupportedCategories.Select(c => c.ToString().ToLower().Replace("general", "all")))}");
+				if (engine.SupportsPaging)
+					sb.AppendLine($"  Supports paging, max pages: {(engine.MaxPages == 0 ? "unlimited" : engine.MaxPages)}");
+				if (engine.SupportsSafeSearch)
+					sb.AppendLine($"  Supports safe search");
+				if (engine.SupportsTimeRange)
+					sb.AppendLine($"  Supports time range");
+				sb.AppendLine();
+			}
+			result.ResultContent = sb.ToString();
+
+			return result.CompleteWithSuccess();
 		}
 
 		public StreamingToolArgumentsAnalysisResult SearchStreaming(string? query)
@@ -127,6 +167,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 						if (count > maxResults * 3)
 							continue;
 
+						// Content
+						if (!string.IsNullOrEmpty(result.Content))
+							sb.AppendLine($"  {result.Content.Truncate(500)}");
+
 						// Engine(s)
 						var engine = result.Engines.Count > 0 ? result.Engines.First() : result.Engine;
 						if (result.Engines.Count > 1)
@@ -134,89 +178,85 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 						else if (!string.IsNullOrEmpty(engine))
 							sb.AppendLine($"  *Engine: {engine}*");
 
-						// Content
-						if (!string.IsNullOrEmpty(result.Content))
-							sb.AppendLine($"  {result.Content.Truncate(500)}");
-
 						// Source & Metadata
 						if (!string.IsNullOrEmpty(result.Source))
-							sb.AppendLine($"  *Source: {result.Source}*");
+							sb.AppendLine($"  Source: {result.Source}");
 						if (!string.IsNullOrEmpty(result.Metadata))
-							sb.AppendLine($"  *Metadata: {result.Metadata}*");
+							sb.AppendLine($"  Metadata: {result.Metadata}");
 
 						// Author
 						if (!string.IsNullOrEmpty(result.Author))
-							sb.AppendLine($"  *Author: {result.Author}*");
+							sb.AppendLine($"  Author: {result.Author}");
 
 						// Published date
 						if (result.PublishedDate.HasValue)
-							sb.AppendLine($"  *Published: {result.PublishedDate:yyyy-MM-dd}*");
+							sb.AppendLine($"  Published: {result.PublishedDate:yyyy-MM-dd}");
 
 						// Duration (video/audio)
 						if (result.Duration.HasValue && result.Duration.Value > TimeSpan.Zero)
-							sb.AppendLine($"  *Duration: {result.Duration:hh\\:mm\\:ss}*");
+							sb.AppendLine($"  Duration: {result.Duration:hh\\:mm\\:ss}");
 
 						// Image fields
 						if (!string.IsNullOrEmpty(result.ImgSrc))
-							sb.AppendLine($"  *Image URL: {result.ImgSrc}*");
+							sb.AppendLine($"  Image URL: {result.ImgSrc}");
 						if (!string.IsNullOrEmpty(result.Thumbnail))
-							sb.AppendLine($"  *Thumbnail: {result.Thumbnail}*");
+							sb.AppendLine($"  Thumbnail: {result.Thumbnail}");
 						if (!string.IsNullOrEmpty(result.Resolution))
-							sb.AppendLine($"  *Resolution: {result.Resolution}*");
+							sb.AppendLine($"  Resolution: {result.Resolution}");
 
 						// Embedded content
 						if (!string.IsNullOrEmpty(result.IframeSrc))
-							sb.AppendLine($"  *Iframe: {result.IframeSrc}*");
+							sb.AppendLine($"  Iframe: {result.IframeSrc}");
 						if (!string.IsNullOrEmpty(result.AudioSrc))
-							sb.AppendLine($"  *Audio: {result.AudioSrc}*");
+							sb.AppendLine($"  Audio: {result.AudioSrc}");
 
 						// Views
 						if (result.Views.HasValue && result.Views.Value > 0)
-							sb.AppendLine($"  *Views: {result.Views:N0}*");
+							sb.AppendLine($"  Views: {result.Views:N0}");
 
 						// Torrent fields
 						if (result.Seed > 0)
-							sb.AppendLine($"  *Seed: {result.Seed}*");
+							sb.AppendLine($"  Seed: {result.Seed}");
 						if (result.Leech > 0)
-							sb.AppendLine($"  *Leech: {result.Leech}*");
+							sb.AppendLine($"  Leech: {result.Leech}");
 						if (!string.IsNullOrEmpty(result.MagnetLink))
-							sb.AppendLine($"  *Magnet: {result.MagnetLink}*");
+							sb.AppendLine($"  Magnet: {result.MagnetLink}");
 
 						// Paper fields
 						if (!string.IsNullOrEmpty(result.Doi))
-							sb.AppendLine($"  *DOI: {result.Doi}*");
+							sb.AppendLine($"  DOI: {result.Doi}");
 						if (result.Authors is { Count: > 0 })
-							sb.AppendLine($"  *Authors: {string.Join(", ", result.Authors)}*");
+							sb.AppendLine($"  Authors: {string.Join(", ", result.Authors)}");
 						if (!string.IsNullOrEmpty(result.Journal))
-							sb.AppendLine($"  *Journal: {result.Journal}*");
+							sb.AppendLine($"  Journal: {result.Journal}");
 						if (result.Tags is { Count: > 0 })
-							sb.AppendLine($"  *Tags: {string.Join(", ", result.Tags)}*");
+							sb.AppendLine($"  Tags: {string.Join(", ", result.Tags)}");
 						if (!string.IsNullOrEmpty(result.Comments))
-							sb.AppendLine($"  *Comments: {result.Comments}*");
+							sb.AppendLine($"  Comments: {result.Comments}");
 						if (!string.IsNullOrEmpty(result.PdfUrl))
-							sb.AppendLine($"  *PDF: {result.PdfUrl}*");
+							sb.AppendLine($"  PDF: {result.PdfUrl}");
 						if (!string.IsNullOrEmpty(result.Number))
-							sb.AppendLine($"  *Number: {result.Number}*");
+							sb.AppendLine($"  Number: {result.Number}");
 						if (!string.IsNullOrEmpty(result.Pages))
-							sb.AppendLine($"  *Pages: {result.Pages}*");
+							sb.AppendLine($"  Pages: {result.Pages}");
 						if (!string.IsNullOrEmpty(result.Volume))
-							sb.AppendLine($"  *Volume: {result.Volume}*");
+							sb.AppendLine($"  Volume: {result.Volume}");
 
 						// Geo fields
 						if (Math.Abs(result.Latitude) > 0.001 || Math.Abs(result.Longitude) > 0.001)
-							sb.AppendLine($"  *Location: {result.Latitude}, {result.Longitude}*");
+							sb.AppendLine($"  Location: {result.Latitude}, {result.Longitude}");
 
 						// Score & Position
 						if (result.Score > 0)
-							sb.AppendLine($"  *Score: {result.Score:F2}*");
+							sb.AppendLine($"  Score: {result.Score:F2}");
 						if (result.Position > 0)
-							sb.AppendLine($"  *Position: {result.Position}*");
+							sb.AppendLine($"  Position: {result.Position}");
 
 						// Type & Category
 						if (result.Type != SearchResultType.Default)
-							sb.AppendLine($"  *Type: {result.Type}*");
+							sb.AppendLine($"  Type: {result.Type}");
 						if (result.Category != SearchCategory.General)
-							sb.AppendLine($"  *Category: {result.Category}*");
+							sb.AppendLine($"  Category: {result.Category}");
 
 						sb.AppendLine();
 					}
