@@ -97,7 +97,18 @@
 	private string _inputText = string.Empty;
 	private bool _isGenerating = false;
 	private bool _showProfileOverlay = false;
-	private CancellationTokenSource? _autoScrollCts;
+
+	/// <summary>
+	/// When <see langword="true"/>, the MutationObserver on JS side will auto-scroll
+	/// as new content arrives.
+	/// </summary>
+	private bool _autoScrollEnabled = false;
+
+	/// <summary>
+	/// When <see langword="true"/>, the next render will scroll to bottom.
+	/// Used after sending a message (without generation) to ensure the new message is visible.
+	/// </summary>
+	private bool _pendingScroll = false;
 
 	private MessageVisibility _selectedVisibility = MessageVisibility.Always;
 	private Dictionary<MessageVisibility, string> _visibilityOptions = new()
@@ -107,8 +118,6 @@
 		{ MessageVisibility.OnlyUsers, LocalizationManager.LocalizeStatic("message_visibility_only_users") },
 		{ MessageVisibility.OnlyAgents, LocalizationManager.LocalizeStatic("message_visibility_only_agents") },
 	};
-
-	// Chat Status
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -123,13 +132,25 @@
 	{
 		await base.OnAfterRenderAsync(firstRender);
 
-		// await ScrollToBottom();
+		if (firstRender)
+		{
+			// Set up the observer once on first render — it will watch for DOM changes
+			await JS.InvokeVoidAsync("ChatScroll.init", "messages-container");
+			await ScrollToBottom(true);
+		}
+		else if (_pendingScroll)
+		{
+			_pendingScroll = false;
+			await ScrollToBottom(true);
+		}
 	}
 
 	private async void MessagesChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 	{
 		await InvokeAsync(StateHasChanged);
-		await ScrollToBottom();
+
+		// JS observer handles auto-scroll when _autoScrollEnabled is active.
+		// No need to call JS interop here for every change.
 	}
 
 	private void ChatPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -155,33 +176,19 @@
 
 	private void StartAutoScroll()
 	{
-		StopAutoScroll();
+		_autoScrollEnabled = true;
 
-		_autoScrollCts = new CancellationTokenSource();
-		var token = _autoScrollCts.Token;
-
-		_ = Task.Run(async () =>
-		{
-			using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
-			try
-			{
-				while (await timer.WaitForNextTickAsync(token))
-				{
-					await InvokeAsync(async () =>
-					{
-						await ScrollToBottom();
-					});
-				}
-			}
-			catch (OperationCanceledException) { }
-		}, token);
+		// Enable the JS observer and scroll to bottom immediately
+		_ = JS.InvokeVoidAsync("ChatScroll.enable");
 	}
 
 	private void StopAutoScroll()
 	{
-		_autoScrollCts?.Cancel();
-		_autoScrollCts?.Dispose();
-		_autoScrollCts = null;
+		_autoScrollEnabled = false;
+
+		// Disable the JS observer and do one final smooth scroll
+		_ = JS.InvokeVoidAsync("ChatScroll.disable");
+		_ = ScrollToBottom(true);
 	}
 
 	private async Task HandleKeyDown(KeyboardEventArgs e)
@@ -216,6 +223,9 @@
 				Visibility = _selectedVisibility,
 				VisibleTo = []
 			}, generate);
+
+			// Mark for scroll on next render so the sent message is visible
+			_pendingScroll = true;
 		}
 		catch (Exception ex)
 		{
@@ -238,11 +248,11 @@
 		}
 	}
 
-	private async Task ScrollToBottom()
+	private async Task ScrollToBottom(bool smooth = true)
 	{
 		try
 		{
-			await JS.InvokeVoidAsync("scrollToBottomIfNeeded", "messages-container");
+			await JS.InvokeVoidAsync("ChatScroll.scrollToBottom", smooth);
 		}
 		catch { }
 	}
@@ -253,6 +263,6 @@
 	public void Dispose()
 	{
 		chat.Messages.CollectionChanged -= MessagesChanged;
-		StopAutoScroll();
+		_ = JS.InvokeVoidAsync("ChatScroll.destroy");
 	}
 }
