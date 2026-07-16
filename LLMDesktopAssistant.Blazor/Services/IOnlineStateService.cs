@@ -4,7 +4,7 @@ namespace LLMDesktopAssistant.Blazor.Services
 {
 	public interface IOnlineStateService
 	{
-		ReadOnlyObservableCollection<string> OnlinePlayers { get; }
+		ReadOnlyObservableCollection<string> OnlineUsers { get; }
 
 		void EnterSession(string login);
 		void LeaveSession(string login);

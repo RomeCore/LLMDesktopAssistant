@@ -3,6 +3,7 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Blazor.Services
 {
+	[ServiceConfigurator(ServiceScope.WebUI)]
 	public class WebUIServicesConfigurator : ServiceConfigurator
 	{
 		public override void Configure(IServiceCollection services)

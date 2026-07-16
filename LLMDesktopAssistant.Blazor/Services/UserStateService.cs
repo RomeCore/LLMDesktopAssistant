@@ -4,8 +4,8 @@ using System.Security.Claims;
 
 namespace LLMDesktopAssistant.Blazor.Services
 {
-	[WebUIService(IsScoped = true)]
-	public class UserStateService
+	[WebUIService(typeof(IUserStateService), IsScoped = true)]
+	public class UserStateService : IUserStateService
 	{
 		private readonly IUserManagementService _userManager;
 		private readonly IHttpContextAccessor _httpContextAccessor;

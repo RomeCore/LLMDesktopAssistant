@@ -10,11 +10,11 @@ namespace LLMDesktopAssistant.Blazor.Services
 		private readonly Dictionary<string, int> _sessionCounters = [];
 
 		private readonly RangeObservableCollection<string> _onlinePlayers = [];
-		public ReadOnlyObservableCollection<string> OnlinePlayers { get; }
+		public ReadOnlyObservableCollection<string> OnlineUsers { get; }
 
 		public OnlineStateService()
 		{
-			OnlinePlayers = new(_onlinePlayers);
+			OnlineUsers = new(_onlinePlayers);
 		}
 
 		public void EnterSession(string login)

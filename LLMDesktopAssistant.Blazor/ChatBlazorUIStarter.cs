@@ -135,6 +135,9 @@ namespace LLMDesktopAssistant.Blazor
 
 				app.RunAsync(settings.EndpointUrl);
 
+				// Activate the services
+				app.Services.GetRequiredService<IGenerationReadinessService>();
+
 				IsRunning = true;
 			}
 			catch (Exception ex)
