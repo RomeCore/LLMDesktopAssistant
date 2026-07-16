@@ -1,0 +1,44 @@
+.readiness-panel {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 0 12px;
+	margin-right: 4px;
+	border-right: 1px solid rgba(128, 128, 128, 0.15);
+	height: 28px;
+}
+
+.readiness-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	cursor: pointer;
+	user-select: none;
+	font-size: 13px;
+	color: #555;
+	transition: color 0.15s;
+}
+
+.readiness-checkbox:hover {
+	color: #1a1a1a;
+}
+
+.readiness-checkbox input[type="checkbox"] {
+	margin: 0;
+	cursor: pointer;
+	width: 14px;
+	height: 14px;
+	accent-color: #0078d4;
+}
+
+.readiness-checkbox-label {
+	font-size: 13px;
+	line-height: 1;
+}
+
+.readiness-count {
+	font-size: 12px;
+	font-weight: 500;
+	color: #888;
+	white-space: nowrap;
+}

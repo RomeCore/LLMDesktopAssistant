@@ -48,12 +48,14 @@ namespace LLMDesktopAssistant.Blazor.Services
 				Login = login
 			};
 			result.PropertyChanged += UserReadinessPropertyChanged;
+			_userReadinessStates[login] = result;
 			return result;
 		}
 
 		private void UserReadinessPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == nameof(UserReadinessState.IsReady) && _onlineState.OnlineUsers.Contains(sender))
+			var userReadiness = (UserReadinessState)sender!;
+			if (e.PropertyName == nameof(UserReadinessState.IsReady) && _onlineState.OnlineUsers.Contains(userReadiness.Login))
 			{
 				UpdateReadyCount();
 			}
@@ -95,9 +97,9 @@ namespace LLMDesktopAssistant.Blazor.Services
 
 		private void TryGenerate()
 		{
-			if (_chat.GenerationCts != null || _chat.Messages[^1].Message is AssistantMessage)
+			if (_chat.GenerationCts != null || _chat.Messages.Count == 0 || _chat.Messages[^1].Message is AssistantMessage)
 				return;
-			if (ReadyCount < TotalCount)
+			if (ReadyCount < TotalCount || TotalCount == 0)
 				return;
 
 			_chatOperator.ContinueGenerationAsync();

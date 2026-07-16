@@ -15,11 +15,19 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		private void ClearCTS()
 		{
-			chat.GenerationCts?.Cancel();
-			chat.GenerationCts?.Dispose();
+			try
+			{
+				chat.GenerationCts?.Cancel();
+				chat.GenerationCts?.Dispose();
+			}
+			catch { }
 			chat.GenerationCts = null;
-			_cts?.Cancel();
-			_cts?.Dispose();
+			try
+			{
+				_cts?.Cancel();
+				_cts?.Dispose();
+			}
+			catch { }
 			_cts = null;
 		}
 
@@ -50,26 +58,42 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public async Task SendUserInputAsync(UserInput userInput, bool generate, CancellationToken cancellationToken = default)
 		{
-			cancellationToken = UpdateCTS(cancellationToken);
-			try
+			if (generate)
 			{
+				cancellationToken = UpdateCTS(cancellationToken);
+				try
+				{
+					storage.AppendMessage(new UserMessage
+					{
+						CreatedAt = DateTime.Now,
+						Content = userInput.Content,
+						SenderLogin = userInput.SenderLogin,
+						Attachments = [.. userInput.Attachments],
+						Visibility = userInput.Visibility,
+						VisibleTo = userInput.VisibleTo,
+						IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
+					});
+
+					await executor.GenerateResponseAsync(cancellationToken);
+				}
+				finally
+				{
+					ClearCTS();
+				}
+			}
+			else
+			{
+				ClearCTS();
 				storage.AppendMessage(new UserMessage
 				{
 					CreatedAt = DateTime.Now,
 					Content = userInput.Content,
 					SenderLogin = userInput.SenderLogin,
-					Attachments = [..userInput.Attachments],
+					Attachments = [.. userInput.Attachments],
 					Visibility = userInput.Visibility,
 					VisibleTo = userInput.VisibleTo,
-					IsVisibleToWhiteList = false
+					IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
 				});
-
-				if (generate)
-					await executor.GenerateResponseAsync(cancellationToken);
-			}
-			finally
-			{
-				ClearCTS();
 			}
 		}
 
@@ -78,9 +102,32 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (messageIndex < 0 || messageIndex >= chat.Messages.Count)
 				throw new ArgumentOutOfRangeException(nameof(messageIndex));
 
-			cancellationToken = UpdateCTS(cancellationToken);
-			try
+			if (generate)
 			{
+				cancellationToken = UpdateCTS(cancellationToken);
+				try
+				{
+					storage.EditMessage(messageIndex, new UserMessage
+					{
+						CreatedAt = DateTime.Now,
+						Content = userInput.Content,
+						SenderLogin = userInput.SenderLogin,
+						Attachments = [.. userInput.Attachments],
+						Visibility = userInput.Visibility,
+						VisibleTo = userInput.VisibleTo,
+						IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
+					});
+
+					await executor.GenerateResponseAsync(cancellationToken);
+				}
+				finally
+				{
+					ClearCTS();
+				}
+			}
+			else
+			{
+				ClearCTS();
 				storage.EditMessage(messageIndex, new UserMessage
 				{
 					CreatedAt = DateTime.Now,
@@ -89,15 +136,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					Attachments = [.. userInput.Attachments],
 					Visibility = userInput.Visibility,
 					VisibleTo = userInput.VisibleTo,
-					IsVisibleToWhiteList = false
+					IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
 				});
-
-				if (generate)
-					await executor.GenerateResponseAsync(cancellationToken);
-			}
-			finally
-			{
-				ClearCTS();
 			}
 		}
 

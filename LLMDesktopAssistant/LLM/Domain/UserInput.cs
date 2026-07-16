@@ -32,5 +32,10 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// If empty, it means that the message is visible to all.
 		/// </summary>
 		public ImmutableList<string> VisibleTo { get; init; } = [];
+
+		/// <summary>
+		/// Gets or sets a value indicating whether a <see cref="VisibleTo"/> is a whitelist filter.
+		/// </summary>
+		public bool IsVisibleToWhiteList { get; init; }
 	}
 }

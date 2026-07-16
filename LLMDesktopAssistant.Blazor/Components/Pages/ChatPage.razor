@@ -26,7 +26,7 @@
 	<div class="chat-topbar">
 		<div class="chat-topbar-left">
 			<MaterialIconComponent Kind="@MaterialIconKind.ShieldAccount" Size="20" Color="#0078d4" />
-			<span class="chat-topbar-user">@(UserState.GetCurrentUser()?.Name ?? "Anonymous")</span>
+			<span class="chat-topbar-user">@(UserState.GetCurrentUser()?.Name ?? "Анонимус")</span>
 		</div>
 		<div class="chat-topbar-right">
 			<button class="chat-topbar-profile-btn" @onclick="ToggleProfileOverlay" title="Настройки профиля">
@@ -72,6 +72,12 @@
 					<MaterialIconComponent Kind="@MaterialIconKind.Send" Size="18" Color="white" />
 				</button>
 			}
+		</div>
+
+		<div class="chat-input-row">
+
+			<ReadinessPanel />
+
 		</div>
 	</div>
 </div>
