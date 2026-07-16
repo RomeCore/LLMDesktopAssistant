@@ -1,14 +1,17 @@
 @using System.ComponentModel
+@using LLMDesktopAssistant.Blazor.Services
 @using LLMDesktopAssistant.LLM.Domain
 @using LLMDesktopAssistant.LLM.Services
+@using LLMDesktopAssistant.Localization
 @using LLMDesktopAssistant.Users
 @using Material.Icons
 @implements IDisposable
 @rendermode InteractiveServer
 
 @inject IUserManagementService UserManager
+@inject IUserStateService UserState
 
-<div class="message-row user-message-row">
+<div class="message-row user-message-row @(_isHidden ? "message-hidden" : "")">
 	@if (_showAvatar)
 	{
 		<div class="message-header user-message-header">
@@ -28,37 +31,49 @@
 		</div>
 	}
 
-	<div class="message-body user-message-body">
-		<div class="message-bubble user-bubble">
-			@Message.Content
+	@if (_isHidden)
+	{
+		<div class="message-body user-message-body message-hidden-body">
+			<div class="message-bubble user-bubble hidden-bubble">
+				<MaterialIconComponent Kind="@MaterialIconKind.EyeOff" Size="16" Color="#888" />
+				<span class="hidden-text">@LocalizationManager.LocalizeStatic("user_message_hidden")</span>
+			</div>
 		</div>
-	</div>
+	}
+	else
+	{
+		<div class="message-body user-message-body">
+			<div class="message-bubble user-bubble">
+				@Message.Content
+			</div>
+		</div>
 
-	<div class="message-actions user-message-actions">
-		@* Resend *@
-		<button class="msg-action-btn" title="Resend" @onclick="ResendMessage">
-			<MaterialIconComponent Kind="@MaterialIconKind.ArrowUDownLeft" Size="18" />
-		</button>
-
-		@* Edit *@
-		<button class="msg-action-btn" title="Edit" @onclick="EditMessage">
-			<MaterialIconComponent Kind="@MaterialIconKind.Edit" Size="18" />
-		</button>
-
-		@* Branching *@
-		@if (BranchedMessage.AvailableBranchesCount > 1)
-		{
-			<button class="msg-action-btn" title="Previous branch" @onclick="PreviousBranch" disabled="@(BranchedMessage.SelectedBranchIndex <= 0)">
-				<MaterialIconComponent Kind="@MaterialIconKind.ChevronLeft" Size="18" />
+		<div class="message-actions user-message-actions">
+			@* Resend *@
+			<button class="msg-action-btn" title="Resend" @onclick="ResendMessage">
+				<MaterialIconComponent Kind="@MaterialIconKind.ArrowUDownLeft" Size="18" />
 			</button>
 
-			<span class="branch-indicator">@(BranchedMessage.SelectedBranchIndex + 1) / @BranchedMessage.AvailableBranchesCount</span>
-
-			<button class="msg-action-btn" title="Next branch" @onclick="NextBranch" disabled="@(BranchedMessage.SelectedBranchIndex >= BranchedMessage.AvailableBranchesCount - 1)">
-				<MaterialIconComponent Kind="@MaterialIconKind.ChevronRight" Size="18" />
+			@* Edit *@
+			<button class="msg-action-btn" title="Edit" @onclick="EditMessage">
+				<MaterialIconComponent Kind="@MaterialIconKind.Edit" Size="18" />
 			</button>
-		}
-	</div>
+
+			@* Branching *@
+			@if (BranchedMessage.AvailableBranchesCount > 1)
+			{
+				<button class="msg-action-btn" title="Previous branch" @onclick="PreviousBranch" disabled="@(BranchedMessage.SelectedBranchIndex <= 0)">
+					<MaterialIconComponent Kind="@MaterialIconKind.ChevronLeft" Size="18" />
+				</button>
+
+				<span class="branch-indicator">@(BranchedMessage.SelectedBranchIndex + 1) / @BranchedMessage.AvailableBranchesCount</span>
+
+				<button class="msg-action-btn" title="Next branch" @onclick="NextBranch" disabled="@(BranchedMessage.SelectedBranchIndex >= BranchedMessage.AvailableBranchesCount - 1)">
+					<MaterialIconComponent Kind="@MaterialIconKind.ChevronRight" Size="18" />
+				</button>
+			}
+		</div>
+	}
 </div>
 
 @code {
@@ -77,13 +92,33 @@
 	private bool _showAvatar = true;
 	private string _avatarBase64 = string.Empty;
 	private string _senderName = string.Empty;
+	private bool _isHidden;
 
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
+		UpdateHiddenState();
 		LoadAvatar();
 		Message.PropertyChanged += MessagePropertyChanged;
+	}
+
+	private void UpdateHiddenState()
+	{
+		// Always show the message to the sender (author)
+		var currentUser = UserState.GetCurrentUser();
+		if (currentUser?.Login == Message.SenderLogin)
+		{
+			_isHidden = false;
+			return;
+		}
+
+		_isHidden = Message.Visibility switch
+		{
+			MessageVisibility.OnlyAgents => true,
+			MessageVisibility.RevealAfterSend => !Message.IsRevealed,
+			_ => false
+		};
 	}
 
 	private void LoadAvatar()
@@ -110,6 +145,10 @@
 
 	private void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
+		if (e.PropertyName == nameof(UserMessage.IsRevealed))
+		{
+			UpdateHiddenState();
+		}
 		InvokeAsync(StateHasChanged);
 	}
 

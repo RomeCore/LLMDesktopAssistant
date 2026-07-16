@@ -2073,4 +2073,8 @@
   <data name="web-search_get_engines" xml:space="preserve">
     <value>Получить список доступных движков веб-поиска</value>
   </data>
+  <data name="user_message_hidden" xml:space="preserve">
+    <value>Сообщение скрыто</value>
+  </data>
+
 </root>

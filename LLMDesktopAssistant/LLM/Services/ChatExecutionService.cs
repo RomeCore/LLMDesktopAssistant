@@ -32,6 +32,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IAgentOrderingService agentOrderer,
 		IAgentManagementService agentManager,
 		IChatStorageService storage,
+		IMessageRevealService messageRevealer,
 		IPromptChatBuilder promptBuilder,
 		IToolExecutionService toolExecutor,
 		ILLMPropertiesBuilder propertiesBuilder,
@@ -151,6 +152,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				toolsetCache.Invalidate(agentId);
 				// Lul, provider caching is fixed now!
 				var toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
+				// Reveal messages that are marked with 'RevealAfterSend' visibility
+				messageRevealer.RevealMessages();
 				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				var responseMessage = response.Message;
 

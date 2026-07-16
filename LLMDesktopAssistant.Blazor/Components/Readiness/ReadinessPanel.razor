@@ -5,19 +5,21 @@
 @inject IUserStateService UserState
 
 <div class="readiness-panel">
-	<label class="readiness-checkbox" title="Mark yourself as ready for generation">
-		<input type="checkbox"
-			   checked="@_isReady"
-			   @onchange="OnIsReadyChanged" />
-		<span class="readiness-checkbox-label">Готов</span>
-	</label>
+	@if (_state != null)
+	{
+		<label class="readiness-checkbox" title="Ты готов?">
+			<input type="checkbox"
+				   @bind="@_state.IsReady"
+				   disabled="@_state.IsAlwaysReady" />
+			<span class="readiness-checkbox-label">Готов</span>
+		</label>
 
-	<label class="readiness-checkbox" title="Automatically mark as ready after each generation">
-		<input type="checkbox"
-			   checked="@_isAlwaysReady"
-			   @onchange="OnIsAlwaysReadyChanged" />
-		<span class="readiness-checkbox-label">Всегда готов</span>
-	</label>
+		<label class="readiness-checkbox" title="Автоматически готовиться">
+			<input type="checkbox"
+				   @bind="@_state.IsAlwaysReady" />
+			<span class="readiness-checkbox-label">Всегда готов</span>
+		</label>
+	}
 
 	<span class="readiness-count" title="Готовых / Онлайн">
 		@ReadinessService.ReadyCount / @ReadinessService.TotalCount
@@ -26,8 +28,6 @@
 
 @code {
 	private UserReadinessState? _state;
-	private bool _isReady;
-	private bool _isAlwaysReady;
 
 	/// <inheritdoc />
 	protected override void OnInitialized()
@@ -36,8 +36,6 @@
 		if (user != null)
 		{
 			_state = ReadinessService.GetReadinessState(user.Login);
-			_isReady = _state.IsReady;
-			_isAlwaysReady = _state.IsAlwaysReady;
 			_state.PropertyChanged += OnStatePropertyChanged;
 		}
 
@@ -46,15 +44,7 @@
 
 	private void OnStatePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 	{
-		if (_state is null)
-			return;
-
-		InvokeAsync(() =>
-		{
-			_isReady = _state.IsReady;
-			_isAlwaysReady = _state.IsAlwaysReady;
-			StateHasChanged();
-		});
+		InvokeAsync(StateHasChanged);
 	}
 
 	private void OnReadinessServicePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -67,7 +57,6 @@
 		if (_state is not null && e.Value is bool val)
 		{
 			_state.IsReady = val;
-			_isReady = val;
 		}
 	}
 
@@ -76,12 +65,10 @@
 		if (_state is not null && e.Value is bool val)
 		{
 			_state.IsAlwaysReady = val;
-			if (val && !_isReady)
+			if (val && !_state.IsReady)
 			{
 				_state.IsReady = true;
-				_isReady = true;
 			}
-			_isAlwaysReady = val;
 		}
 	}
 

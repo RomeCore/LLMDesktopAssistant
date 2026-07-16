@@ -669,6 +669,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				async void MessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 				{
 					model.Content = userMessage.Content;
+					model.IsRevealed = userMessage.IsRevealed;
 
 					database.Messages.Update(model);
 				}
@@ -776,6 +777,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					Content = userMessage.Content,
 					Sender = userMessage.SenderLogin,
 					Visibility = userMessage.Visibility,
+					IsRevealed = userMessage.IsRevealed,
 					VisibleTo = userMessage.VisibleTo,
 					IsVisibleToWhiteList = userMessage.IsVisibleToWhiteList,
 					Role = RoleModel.User
@@ -875,6 +877,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					Attachments = [.. attachments],
 					SenderLogin = messageModel.Sender,
 					Visibility = messageModel.Visibility,
+					IsRevealed = messageModel.IsRevealed,
 					VisibleTo = messageModel.VisibleTo,
 					IsVisibleToWhiteList = messageModel.IsVisibleToWhiteList
 				};

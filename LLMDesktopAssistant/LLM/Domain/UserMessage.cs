@@ -18,6 +18,16 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// </summary>
 		public required MessageVisibility Visibility { get; init; }
 
+		private bool _isRevealed = false;
+		/// <summary>
+		/// Indicates whether the message has been revealed to all users in the chat.
+		/// </summary>
+		public bool IsRevealed
+		{
+			get => _isRevealed;
+			set => SetProperty(ref _isRevealed, value);
+		}
+
 		/// <summary>
 		/// The collection of users (logins) or agents (guids) to whom the message is visible.
 		/// If empty, it means that the message is visible to all users and agents.

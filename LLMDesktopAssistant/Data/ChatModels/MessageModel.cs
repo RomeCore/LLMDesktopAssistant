@@ -50,6 +50,11 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		public MessageVisibility Visibility { get; set; } = MessageVisibility.Always;
 
 		/// <summary>
+		/// Gets or sets whether the message has been revealed to all users in the chat.
+		/// </summary>
+		public bool IsRevealed { get; set; }
+
+		/// <summary>
 		/// Gets or sets a list of users/agents that this message is visible to.
 		/// </summary>
 		public ImmutableList<string> VisibleTo { get; set; } = [];

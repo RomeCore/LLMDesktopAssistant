@@ -4,6 +4,7 @@
 @using LLMDesktopAssistant.Blazor.Services
 @using LLMDesktopAssistant.LLM.Domain
 @using LLMDesktopAssistant.LLM.Services
+@using LLMDesktopAssistant.Localization
 @using LLMDesktopAssistant.Users
 @using Material.Icons
 @using Microsoft.AspNetCore.Authorization
@@ -74,10 +75,17 @@
 			}
 		</div>
 
-		<div class="chat-input-row">
+		<div class="chat-input-row chat-input-tools">
+			<select class="chat-visibility-select"
+					@bind="_selectedVisibility"
+					title="@LocalizationManager.LocalizeStatic("user_message_visibility_hint")">
+				@foreach (var vis in _visibilityOptions)
+				{
+					<option value="@vis.Key">@vis.Value</option>
+				}
+			</select>
 
 			<ReadinessPanel />
-
 		</div>
 	</div>
 </div>
@@ -91,6 +99,15 @@
 	private bool _isGenerating = false;
 	private bool _showProfileOverlay = false;
 	private CancellationTokenSource? _autoScrollCts;
+
+	private MessageVisibility _selectedVisibility = MessageVisibility.Always;
+	private Dictionary<MessageVisibility, string> _visibilityOptions = new()
+	{
+		{ MessageVisibility.Always, LocalizationManager.LocalizeStatic("message_visibility_always") },
+		{ MessageVisibility.RevealAfterSend, LocalizationManager.LocalizeStatic("message_visibility_reveal_after_send") },
+		{ MessageVisibility.OnlyUsers, LocalizationManager.LocalizeStatic("message_visibility_only_users") },
+		{ MessageVisibility.OnlyAgents, LocalizationManager.LocalizeStatic("message_visibility_only_agents") },
+	};
 
 	// Chat Status
 
@@ -172,7 +189,7 @@
 	{
 		if (e.Key == "Enter" && !e.ShiftKey)
 		{
-			await SendMessage(generate: true);
+			await SendMessage(generate: false);
 		}
 	}
 
@@ -197,7 +214,7 @@
 				Content = text,
 				SenderLogin = senderLogin,
 				Attachments = [],
-				Visibility = MessageVisibility.Always,
+				Visibility = _selectedVisibility,
 				VisibleTo = []
 			}, generate);
 		}
