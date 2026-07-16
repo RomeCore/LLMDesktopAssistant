@@ -19,8 +19,8 @@
 			<div class="auth-icon">
 				<MaterialIconComponent Kind="@MaterialIconKind.ShieldAccount" Size="48" Color="#0078d4" />
 			</div>
-			<h1 class="auth-title">dASS WebUI</h1>
-			<p class="auth-subtitle">Войдите в аккаунт</p>
+			<h1 class="auth-title">@LocalizationManager.LocalizeStatic("webui_chat_title")</h1>
+			<p class="auth-subtitle">@LocalizationManager.LocalizeStatic("webui_login_title")</p>
 		</div>
 
 		@if (_errorMessage != null)
@@ -33,25 +33,25 @@
 
 		<div class="auth-form">
 			<div class="auth-field">
-				<label for="login-input">Логин</label>
+				<label for="login-input">@LocalizationManager.LocalizeStatic("webui_login_label")</label>
 				<input id="login-input"
 					   type="text"
 					   @bind="_login"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="Введите логин..."
+					   placeholder="@LocalizationManager.LocalizeStatic("webui_login_placeholder")"
 					   disabled="@_isLoading"
 					   @onkeydown="HandleKeyDown" />
 			</div>
 
 			<div class="auth-field">
-				<label for="password-input">Пароль</label>
+				<label for="password-input">@LocalizationManager.LocalizeStatic("webui_password_label")</label>
 				<input id="password-input"
 					   type="password"
 					   @bind="_password"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="Введите пароль..."
+					   placeholder="@LocalizationManager.LocalizeStatic("webui_password_placeholder")"
 					   disabled="@_isLoading"
 					   @onkeydown="HandleKeyDown" />
 			</div>
@@ -59,13 +59,13 @@
 			@if (Settings.PasswordHash != null)
 			{
 				<div class="auth-field">
-					<label for="master-password-input">Пароль для входа в чат</label>
+					<label for="master-password-input">@LocalizationManager.LocalizeStatic("webui_master_password_label")</label>
 					<input id="master-password-input"
 						   type="password"
 						   @bind="_masterPassword"
 						   @bind:event="oninput"
 						   class="auth-input"
-						   placeholder="Введите мастер-пароль..."
+						   placeholder="@LocalizationManager.LocalizeStatic("webui_master_password_placeholder")"
 						   disabled="@_isLoading"
 						   @onkeydown="HandleKeyDown" />
 				</div>
@@ -77,18 +77,18 @@
 				@if (_isLoading)
 				{
 					<span class="auth-spinner"></span>
-					<span>Signing in...</span>
+					<span>@LocalizationManager.LocalizeStatic("webui_login_loading")</span>
 				}
 				else
 				{
 					<MaterialIconComponent Kind="@MaterialIconKind.Login" Size="18" Color="white" />
-					<span>Войти</span>
+					<span>@LocalizationManager.LocalizeStatic("webui_login_btn")</span>
 				}
 			</button>
 
 			<div class="auth-footer">
-				<span>Нет аккаунта?</span>
-				<a href="/register" class="auth-link">Создать</a>
+				<span>@LocalizationManager.LocalizeStatic("webui_login_no_account")</span>
+				<a href="/register" class="auth-link">@LocalizationManager.LocalizeStatic("webui_login_create")</a>
 			</div>
 		</div>
 	</div>
@@ -145,7 +145,7 @@
 			}
 			else
 			{
-				_errorMessage = "Некорректный логин или пароль. Попробуйте снова.";
+				_errorMessage = LocalizationManager.LocalizeStatic("webui_login_error");
 			}
 		}
 		catch (Exception ex)

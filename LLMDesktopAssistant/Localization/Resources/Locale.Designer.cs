@@ -5731,6 +5731,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Message hidden.
+        /// </summary>
+        public static string user_message_hidden {
+            get {
+                return ResourceManager.GetString("user_message_hidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Visibility:.
         /// </summary>
         public static string user_message_visibility_hint {
@@ -5916,6 +5925,519 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string web_status {
             get {
                 return ResourceManager.GetString("web-status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Anonymous.
+        /// </summary>
+        public static string webui_anonymous {
+            get {
+                return ResourceManager.GetString("webui_anonymous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Assistant.
+        /// </summary>
+        public static string webui_assistant {
+            get {
+                return ResourceManager.GetString("webui_assistant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter message....
+        /// </summary>
+        public static string webui_chat_input_placeholder {
+            get {
+                return ResourceManager.GetString("webui_chat_input_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на dASS WebUI.
+        /// </summary>
+        public static string webui_chat_title {
+            get {
+                return ResourceManager.GetString("webui_chat_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete.
+        /// </summary>
+        public static string webui_delete {
+            get {
+                return ResourceManager.GetString("webui_delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit.
+        /// </summary>
+        public static string webui_edit {
+            get {
+                return ResourceManager.GetString("webui_edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Sign in.
+        /// </summary>
+        public static string webui_login_btn {
+            get {
+                return ResourceManager.GetString("webui_login_btn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Create.
+        /// </summary>
+        public static string webui_login_create {
+            get {
+                return ResourceManager.GetString("webui_login_create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Invalid login or password. Please try again..
+        /// </summary>
+        public static string webui_login_error {
+            get {
+                return ResourceManager.GetString("webui_login_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Login.
+        /// </summary>
+        public static string webui_login_label {
+            get {
+                return ResourceManager.GetString("webui_login_label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Signing in....
+        /// </summary>
+        public static string webui_login_loading {
+            get {
+                return ResourceManager.GetString("webui_login_loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Don&apos;t have an account?.
+        /// </summary>
+        public static string webui_login_no_account {
+            get {
+                return ResourceManager.GetString("webui_login_no_account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter login....
+        /// </summary>
+        public static string webui_login_placeholder {
+            get {
+                return ResourceManager.GetString("webui_login_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Sign in.
+        /// </summary>
+        public static string webui_login_title {
+            get {
+                return ResourceManager.GetString("webui_login_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Chat master password.
+        /// </summary>
+        public static string webui_master_password_label {
+            get {
+                return ResourceManager.GetString("webui_master_password_label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter master password....
+        /// </summary>
+        public static string webui_master_password_placeholder {
+            get {
+                return ResourceManager.GetString("webui_master_password_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Next branch.
+        /// </summary>
+        public static string webui_next_branch {
+            get {
+                return ResourceManager.GetString("webui_next_branch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Password.
+        /// </summary>
+        public static string webui_password_label {
+            get {
+                return ResourceManager.GetString("webui_password_label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enter password....
+        /// </summary>
+        public static string webui_password_placeholder {
+            get {
+                return ResourceManager.GetString("webui_password_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Previous branch.
+        /// </summary>
+        public static string webui_previous_branch {
+            get {
+                return ResourceManager.GetString("webui_previous_branch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Avatar updated!.
+        /// </summary>
+        public static string webui_profile_avatar_updated {
+            get {
+                return ResourceManager.GetString("webui_profile_avatar_updated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Profile.
+        /// </summary>
+        public static string webui_profile_btn {
+            get {
+                return ResourceManager.GetString("webui_profile_btn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancel.
+        /// </summary>
+        public static string webui_profile_cancel {
+            get {
+                return ResourceManager.GetString("webui_profile_cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Close.
+        /// </summary>
+        public static string webui_profile_close {
+            get {
+                return ResourceManager.GetString("webui_profile_close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Description.
+        /// </summary>
+        public static string webui_profile_description {
+            get {
+                return ResourceManager.GetString("webui_profile_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Description for agents....
+        /// </summary>
+        public static string webui_profile_description_placeholder {
+            get {
+                return ResourceManager.GetString("webui_profile_description_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Logout.
+        /// </summary>
+        public static string webui_profile_logout {
+            get {
+                return ResourceManager.GetString("webui_profile_logout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Name.
+        /// </summary>
+        public static string webui_profile_name {
+            get {
+                return ResourceManager.GetString("webui_profile_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Save.
+        /// </summary>
+        public static string webui_profile_save {
+            get {
+                return ResourceManager.GetString("webui_profile_save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Saved!.
+        /// </summary>
+        public static string webui_profile_saved {
+            get {
+                return ResourceManager.GetString("webui_profile_saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Saving....
+        /// </summary>
+        public static string webui_profile_saving {
+            get {
+                return ResourceManager.GetString("webui_profile_saving", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Profile settings.
+        /// </summary>
+        public static string webui_profile_title {
+            get {
+                return ResourceManager.GetString("webui_profile_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Profile settings.
+        /// </summary>
+        public static string webui_profile_title_attr {
+            get {
+                return ResourceManager.GetString("webui_profile_title_attr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Always ready.
+        /// </summary>
+        public static string webui_readiness_always_ready {
+            get {
+                return ResourceManager.GetString("webui_readiness_always_ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ready / Online.
+        /// </summary>
+        public static string webui_readiness_count_title {
+            get {
+                return ResourceManager.GetString("webui_readiness_count_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ready.
+        /// </summary>
+        public static string webui_readiness_ready {
+            get {
+                return ResourceManager.GetString("webui_readiness_ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Auto-ready.
+        /// </summary>
+        public static string webui_readiness_title_auto {
+            get {
+                return ResourceManager.GetString("webui_readiness_title_auto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Are you ready?.
+        /// </summary>
+        public static string webui_readiness_title_ready {
+            get {
+                return ResourceManager.GetString("webui_readiness_title_ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Reasoning.
+        /// </summary>
+        public static string webui_reasoning {
+            get {
+                return ResourceManager.GetString("webui_reasoning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Regenerate.
+        /// </summary>
+        public static string webui_regenerate {
+            get {
+                return ResourceManager.GetString("webui_regenerate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Register.
+        /// </summary>
+        public static string webui_register_btn {
+            get {
+                return ResourceManager.GetString("webui_register_btn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на A user with this login already exists..
+        /// </summary>
+        public static string webui_register_error_exists {
+            get {
+                return ResourceManager.GetString("webui_register_error_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Passwords do not match!.
+        /// </summary>
+        public static string webui_register_error_password_mismatch {
+            get {
+                return ResourceManager.GetString("webui_register_error_password_mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Password is too short! Minimum 4 characters..
+        /// </summary>
+        public static string webui_register_error_password_short {
+            get {
+                return ResourceManager.GetString("webui_register_error_password_short", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Already have an account?.
+        /// </summary>
+        public static string webui_register_have_account {
+            get {
+                return ResourceManager.GetString("webui_register_have_account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Registering....
+        /// </summary>
+        public static string webui_register_loading {
+            get {
+                return ResourceManager.GetString("webui_register_loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Sign in.
+        /// </summary>
+        public static string webui_register_login_link {
+            get {
+                return ResourceManager.GetString("webui_register_login_link", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Repeat password....
+        /// </summary>
+        public static string webui_register_placeholder_confirm {
+            get {
+                return ResourceManager.GetString("webui_register_placeholder_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Choose a login....
+        /// </summary>
+        public static string webui_register_placeholder_login {
+            get {
+                return ResourceManager.GetString("webui_register_placeholder_login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Your name.
+        /// </summary>
+        public static string webui_register_placeholder_name {
+            get {
+                return ResourceManager.GetString("webui_register_placeholder_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Choose a password....
+        /// </summary>
+        public static string webui_register_placeholder_password {
+            get {
+                return ResourceManager.GetString("webui_register_placeholder_password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Create an account.
+        /// </summary>
+        public static string webui_register_subtitle {
+            get {
+                return ResourceManager.GetString("webui_register_subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Account created! You can now sign in..
+        /// </summary>
+        public static string webui_register_success {
+            get {
+                return ResourceManager.GetString("webui_register_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Register.
+        /// </summary>
+        public static string webui_register_title {
+            get {
+                return ResourceManager.GetString("webui_register_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Resend.
+        /// </summary>
+        public static string webui_resend {
+            get {
+                return ResourceManager.GetString("webui_resend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Result.
+        /// </summary>
+        public static string webui_result {
+            get {
+                return ResourceManager.GetString("webui_result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Stop generation.
+        /// </summary>
+        public static string webui_stop_generation {
+            get {
+                return ResourceManager.GetString("webui_stop_generation", resourceCulture);
             }
         }
         

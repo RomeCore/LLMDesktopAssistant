@@ -4,7 +4,6 @@
 @using LLMDesktopAssistant.Blazor.Services
 @using LLMDesktopAssistant.LLM.Domain
 @using LLMDesktopAssistant.LLM.Services
-@using LLMDesktopAssistant.Localization
 @using LLMDesktopAssistant.Users
 @using Material.Icons
 @using Microsoft.AspNetCore.Authorization
@@ -27,12 +26,12 @@
 	<div class="chat-topbar">
 		<div class="chat-topbar-left">
 			<MaterialIconComponent Kind="@MaterialIconKind.ShieldAccount" Size="20" Color="#0078d4" />
-			<span class="chat-topbar-user">@(UserState.GetCurrentUser()?.Name ?? "Анонимус")</span>
+			<span class="chat-topbar-user">@(UserState.GetCurrentUser()?.Name ?? LocalizationManager.LocalizeStatic("webui_anonymous"))</span>
 		</div>
 		<div class="chat-topbar-right">
-			<button class="chat-topbar-profile-btn" @onclick="ToggleProfileOverlay" title="Настройки профиля">
+			<button class="chat-topbar-profile-btn" @onclick="ToggleProfileOverlay" title="@LocalizationManager.LocalizeStatic("webui_profile_title_attr")">
 				<MaterialIconComponent Kind="@MaterialIconKind.AccountSettings" Size="18" Color="#666" />
-				<span>Профиль</span>
+				<span>@LocalizationManager.LocalizeStatic("webui_profile_btn")</span>
 			</button>
 		</div>
 	</div>
@@ -47,7 +46,7 @@
 				   @bind="_inputText"
 				   @bind:event="oninput"
 				   @onkeydown="HandleKeyDown"
-				   placeholder="Введите сообщение..."
+				   placeholder="@LocalizationManager.LocalizeStatic("webui_chat_input_placeholder")"
 				   disabled="@_isGenerating" />
 
 			@* Send message without generation *@
@@ -60,7 +59,7 @@
 			@if (_isGenerating)
 			{
 				@* Stop / Cancel generation *@
-				<button class="chat-stop-btn" title="Stop generation" @onclick="StopGeneration">
+				<button class="chat-stop-btn" title="@LocalizationManager.LocalizeStatic("webui_stop_generation")" @onclick="StopGeneration">
 					<MaterialIconComponent Kind="@MaterialIconKind.Stop" Size="20" Color="white" />
 				</button>
 			}

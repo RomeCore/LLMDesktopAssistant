@@ -2,8 +2,10 @@
 @using LLMDesktopAssistant.Blazor.Services
 @using LLMDesktopAssistant.Users
 @using Material.Icons
+
 @inject IUserManagementService UserManager
 @inject NavigationManager Navigation
+
 @rendermode InteractiveServer
 
 <div class="auth-page">
@@ -12,8 +14,8 @@
 			<div class="auth-icon">
 				<MaterialIconComponent Kind="@MaterialIconKind.AccountPlus" Size="48" Color="#0078d4" />
 			</div>
-			<h1 class="auth-title">Регистрация</h1>
-			<p class="auth-subtitle">Создай аккаунт</p>
+			<h1 class="auth-title">@LocalizationManager.LocalizeStatic("webui_register_title")</h1>
+			<p class="auth-subtitle">@LocalizationManager.LocalizeStatic("webui_register_subtitle")</p>
 		</div>
 
 		@if (_errorMessage != null)
@@ -34,46 +36,46 @@
 
 		<div class="auth-form">
 			<div class="auth-field">
-				<label for="reg-login">Логин</label>
+				<label for="reg-login">@LocalizationManager.LocalizeStatic("webui_login_label")</label>
 				<input id="reg-login"
 					   type="text"
 					   @bind="_login"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="Придумай логин..."
+					   placeholder="@LocalizationManager.LocalizeStatic("webui_register_placeholder_login")"
 					   disabled="@_isLoading" />
 			</div>
 
 			<div class="auth-field">
-				<label for="reg-name">Имя</label>
+				<label for="reg-name">@LocalizationManager.LocalizeStatic("webui_profile_name")</label>
 				<input id="reg-name"
 					   type="text"
 					   @bind="_name"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="Твоё имя"
+					   placeholder="@LocalizationManager.LocalizeStatic("webui_register_placeholder_name")"
 					   disabled="@_isLoading" />
 			</div>
 
 			<div class="auth-field">
-				<label for="reg-password">Пароль</label>
+				<label for="reg-password">@LocalizationManager.LocalizeStatic("webui_password_label")</label>
 				<input id="reg-password"
 					   type="password"
 					   @bind="_password"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="Придумай пароль..."
+					   placeholder="@LocalizationManager.LocalizeStatic("webui_register_placeholder_password")"
 					   disabled="@_isLoading" />
 			</div>
 
 			<div class="auth-field">
-				<label for="reg-password-confirm">Подтверди пароль</label>
+				<label for="reg-password-confirm">@LocalizationManager.LocalizeStatic("webui_register_placeholder_confirm")</label>
 				<input id="reg-password-confirm"
 					   type="password"
 					   @bind="_passwordConfirm"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="Повтори пароль..."
+					   placeholder="@LocalizationManager.LocalizeStatic("webui_register_placeholder_confirm")"
 					   disabled="@_isLoading" />
 			</div>
 
@@ -82,18 +84,18 @@
 				@if (_isLoading)
 				{
 					<span class="auth-spinner"></span>
-					<span>Идет регистрация...</span>
+					<span>@LocalizationManager.LocalizeStatic("webui_register_loading")</span>
 				}
 				else
 				{
 					<MaterialIconComponent Kind="@MaterialIconKind.AccountPlus" Size="18" Color="white" />
-					<span>Зарегистрироваться</span>
+					<span>@LocalizationManager.LocalizeStatic("webui_register_btn")</span>
 				}
 			</button>
 
 			<div class="auth-footer">
-				<span>Уже есть аккаунт?</span>
-				<a href="/login" class="auth-link">Войти</a>
+				<span>@LocalizationManager.LocalizeStatic("webui_register_have_account")</span>
+				<a href="/login" class="auth-link">@LocalizationManager.LocalizeStatic("webui_register_login_link")</a>
 			</div>
 		</div>
 	</div>
@@ -114,13 +116,13 @@
 
 		if (_password != _passwordConfirm)
 		{
-			_errorMessage = "Пароли не совпадают!";
+			_errorMessage = LocalizationManager.LocalizeStatic("webui_register_error_password_mismatch");
 			return;
 		}
 
 		if (_password.Length < 4)
 		{
-			_errorMessage = "Пароль слишком короткий! Минимум 4 символа.";
+			_errorMessage = LocalizationManager.LocalizeStatic("webui_register_error_password_short");
 			return;
 		}
 
@@ -140,14 +142,14 @@
 
 			if (registeredUser != null)
 			{
-				_successMessage = "Аккаунт создан! Теперь можно войти";
+				_successMessage = LocalizationManager.LocalizeStatic("webui_register_success");
 				_login = string.Empty;
 				_password = string.Empty;
 				_passwordConfirm = string.Empty;
 			}
 			else
 			{
-				_errorMessage = "Пользователь с таким логином уже существует";
+				_errorMessage = LocalizationManager.LocalizeStatic("webui_register_error_exists");
 			}
 		}
 		catch (Exception ex)

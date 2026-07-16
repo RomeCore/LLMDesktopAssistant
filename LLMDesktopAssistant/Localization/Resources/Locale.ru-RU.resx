@@ -2076,5 +2076,175 @@
   <data name="user_message_hidden" xml:space="preserve">
     <value>Сообщение скрыто</value>
   </data>
-
+  <data name="webui_chat_title" xml:space="preserve">
+    <value>dASS WebUI</value>
+  </data>
+  <data name="webui_anonymous" xml:space="preserve">
+    <value>Анонимус</value>
+  </data>
+  <data name="webui_profile_btn" xml:space="preserve">
+    <value>Профиль</value>
+  </data>
+  <data name="webui_profile_title_attr" xml:space="preserve">
+    <value>Настройки профиля</value>
+  </data>
+  <data name="webui_chat_input_placeholder" xml:space="preserve">
+    <value>Введите сообщение...</value>
+  </data>
+  <data name="webui_stop_generation" xml:space="preserve">
+    <value>Остановить генерацию</value>
+  </data>
+  <data name="webui_login_title" xml:space="preserve">
+    <value>Войдите в аккаунт</value>
+  </data>
+  <data name="webui_login_label" xml:space="preserve">
+    <value>Логин</value>
+  </data>
+  <data name="webui_login_placeholder" xml:space="preserve">
+    <value>Введите логин...</value>
+  </data>
+  <data name="webui_password_label" xml:space="preserve">
+    <value>Пароль</value>
+  </data>
+  <data name="webui_password_placeholder" xml:space="preserve">
+    <value>Введите пароль...</value>
+  </data>
+  <data name="webui_master_password_label" xml:space="preserve">
+    <value>Пароль для входа в чат</value>
+  </data>
+  <data name="webui_master_password_placeholder" xml:space="preserve">
+    <value>Введите мастер-пароль...</value>
+  </data>
+  <data name="webui_login_btn" xml:space="preserve">
+    <value>Войти</value>
+  </data>
+  <data name="webui_login_loading" xml:space="preserve">
+    <value>Вход в систему...</value>
+  </data>
+  <data name="webui_login_error" xml:space="preserve">
+    <value>Некорректный логин или пароль. Попробуйте снова.</value>
+  </data>
+  <data name="webui_login_no_account" xml:space="preserve">
+    <value>Нет аккаунта?</value>
+  </data>
+  <data name="webui_login_create" xml:space="preserve">
+    <value>Создать</value>
+  </data>
+  <data name="webui_register_title" xml:space="preserve">
+    <value>Регистрация</value>
+  </data>
+  <data name="webui_register_subtitle" xml:space="preserve">
+    <value>Создай аккаунт</value>
+  </data>
+  <data name="webui_register_btn" xml:space="preserve">
+    <value>Зарегистрироваться</value>
+  </data>
+  <data name="webui_register_loading" xml:space="preserve">
+    <value>Идет регистрация...</value>
+  </data>
+  <data name="webui_register_success" xml:space="preserve">
+    <value>Аккаунт создан! Теперь можно войти</value>
+  </data>
+  <data name="webui_register_error_exists" xml:space="preserve">
+    <value>Пользователь с таким логином уже существует</value>
+  </data>
+  <data name="webui_register_error_password_mismatch" xml:space="preserve">
+    <value>Пароли не совпадают!</value>
+  </data>
+  <data name="webui_register_error_password_short" xml:space="preserve">
+    <value>Пароль слишком короткий! Минимум 4 символа.</value>
+  </data>
+  <data name="webui_register_have_account" xml:space="preserve">
+    <value>Уже есть аккаунт?</value>
+  </data>
+  <data name="webui_register_login_link" xml:space="preserve">
+    <value>Войти</value>
+  </data>
+  <data name="webui_register_placeholder_login" xml:space="preserve">
+    <value>Придумай логин...</value>
+  </data>
+  <data name="webui_register_placeholder_name" xml:space="preserve">
+    <value>Твоё имя</value>
+  </data>
+  <data name="webui_register_placeholder_password" xml:space="preserve">
+    <value>Придумай пароль...</value>
+  </data>
+  <data name="webui_register_placeholder_confirm" xml:space="preserve">
+    <value>Повтори пароль...</value>
+  </data>
+  <data name="webui_profile_title" xml:space="preserve">
+    <value>Настройки профиля</value>
+  </data>
+  <data name="webui_profile_close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="webui_profile_name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="webui_profile_description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="webui_profile_description_placeholder" xml:space="preserve">
+    <value>Описание для агентов...</value>
+  </data>
+  <data name="webui_profile_save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="webui_profile_saving" xml:space="preserve">
+    <value>Сохранение...</value>
+  </data>
+  <data name="webui_profile_cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="webui_profile_logout" xml:space="preserve">
+    <value>Выйти</value>
+  </data>
+  <data name="webui_profile_saved" xml:space="preserve">
+    <value>Сохранено!</value>
+  </data>
+  <data name="webui_profile_avatar_updated" xml:space="preserve">
+    <value>Аватарка обновлена!</value>
+  </data>
+  <data name="webui_edit" xml:space="preserve">
+    <value>Редактировать</value>
+  </data>
+  <data name="webui_previous_branch" xml:space="preserve">
+    <value>Предыдущая ветка</value>
+  </data>
+  <data name="webui_next_branch" xml:space="preserve">
+    <value>Следующая ветка</value>
+  </data>
+  <data name="webui_regenerate" xml:space="preserve">
+    <value>Перегенерировать</value>
+  </data>
+  <data name="webui_resend" xml:space="preserve">
+    <value>Отправить заново</value>
+  </data>
+  <data name="webui_reasoning" xml:space="preserve">
+    <value>Рассуждения</value>
+  </data>
+  <data name="webui_result" xml:space="preserve">
+    <value>Результат</value>
+  </data>
+  <data name="webui_assistant" xml:space="preserve">
+    <value>Ассистент</value>
+  </data>
+  <data name="webui_readiness_ready" xml:space="preserve">
+    <value>Готов</value>
+  </data>
+  <data name="webui_readiness_always_ready" xml:space="preserve">
+    <value>Всегда готов</value>
+  </data>
+  <data name="webui_readiness_title_ready" xml:space="preserve">
+    <value>Ты готов?</value>
+  </data>
+  <data name="webui_readiness_title_auto" xml:space="preserve">
+    <value>Автоматически готовиться</value>
+  </data>
+  <data name="webui_readiness_count_title" xml:space="preserve">
+    <value>Готовых / Онлайн</value>
+  </data>
+  <data name="webui_delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
 </root>

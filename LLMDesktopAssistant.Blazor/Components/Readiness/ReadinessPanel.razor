@@ -1,27 +1,28 @@
 @using LLMDesktopAssistant.Blazor.Services
-@implements IDisposable
 
 @inject IGenerationReadinessService ReadinessService
 @inject IUserStateService UserState
 
+@implements IDisposable
+
 <div class="readiness-panel">
 	@if (_state != null)
 	{
-		<label class="readiness-checkbox" title="Ты готов?">
+		<label class="readiness-checkbox" title='@LocalizationManager.LocalizeStatic("webui_readiness_title_ready")'>
 			<input type="checkbox"
 				   @bind="@_state.IsReady"
 				   disabled="@_state.IsAlwaysReady" />
-			<span class="readiness-checkbox-label">Готов</span>
+			<span class="readiness-checkbox-label">@LocalizationManager.LocalizeStatic("webui_readiness_ready")</span>
 		</label>
 
-		<label class="readiness-checkbox" title="Автоматически готовиться">
+		<label class="readiness-checkbox" title='@LocalizationManager.LocalizeStatic("webui_readiness_title_auto")'>
 			<input type="checkbox"
 				   @bind="@_state.IsAlwaysReady" />
-			<span class="readiness-checkbox-label">Всегда готов</span>
+			<span class="readiness-checkbox-label">@LocalizationManager.LocalizeStatic("webui_readiness_always_ready")</span>
 		</label>
 	}
 
-	<span class="readiness-count" title="Готовых / Онлайн">
+	<span class="readiness-count" title="@LocalizationManager.LocalizeStatic("webui_readiness_count_title")">
 		@ReadinessService.ReadyCount / @ReadinessService.TotalCount
 	</span>
 </div>
@@ -44,32 +45,20 @@
 
 	private void OnStatePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 	{
+		if (e.PropertyName == nameof(_state.IsAlwaysReady))
+		{
+			if (_state!.IsAlwaysReady && !_state.IsReady)
+			{
+				_state.IsReady = true;
+			}
+		}
+
 		InvokeAsync(StateHasChanged);
 	}
 
 	private void OnReadinessServicePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 	{
 		InvokeAsync(StateHasChanged);
-	}
-
-	private void OnIsReadyChanged(ChangeEventArgs e)
-	{
-		if (_state is not null && e.Value is bool val)
-		{
-			_state.IsReady = val;
-		}
-	}
-
-	private void OnIsAlwaysReadyChanged(ChangeEventArgs e)
-	{
-		if (_state is not null && e.Value is bool val)
-		{
-			_state.IsAlwaysReady = val;
-			if (val && !_state.IsReady)
-			{
-				_state.IsReady = true;
-			}
-		}
 	}
 
 	/// <inheritdoc />

@@ -2076,5 +2076,175 @@
   <data name="user_message_hidden" xml:space="preserve">
     <value>Message hidden</value>
   </data>
-
+  <data name="webui_chat_title" xml:space="preserve">
+    <value>dASS WebUI</value>
+  </data>
+  <data name="webui_anonymous" xml:space="preserve">
+    <value>Anonymous</value>
+  </data>
+  <data name="webui_profile_btn" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="webui_profile_title_attr" xml:space="preserve">
+    <value>Profile settings</value>
+  </data>
+  <data name="webui_chat_input_placeholder" xml:space="preserve">
+    <value>Enter message...</value>
+  </data>
+  <data name="webui_stop_generation" xml:space="preserve">
+    <value>Stop generation</value>
+  </data>
+  <data name="webui_login_title" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="webui_login_label" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="webui_login_placeholder" xml:space="preserve">
+    <value>Enter login...</value>
+  </data>
+  <data name="webui_password_label" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="webui_password_placeholder" xml:space="preserve">
+    <value>Enter password...</value>
+  </data>
+  <data name="webui_master_password_label" xml:space="preserve">
+    <value>Chat master password</value>
+  </data>
+  <data name="webui_master_password_placeholder" xml:space="preserve">
+    <value>Enter master password...</value>
+  </data>
+  <data name="webui_login_btn" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="webui_login_loading" xml:space="preserve">
+    <value>Signing in...</value>
+  </data>
+  <data name="webui_login_error" xml:space="preserve">
+    <value>Invalid login or password. Please try again.</value>
+  </data>
+  <data name="webui_login_no_account" xml:space="preserve">
+    <value>Don't have an account?</value>
+  </data>
+  <data name="webui_login_create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="webui_register_title" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="webui_register_subtitle" xml:space="preserve">
+    <value>Create an account</value>
+  </data>
+  <data name="webui_register_btn" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="webui_register_loading" xml:space="preserve">
+    <value>Registering...</value>
+  </data>
+  <data name="webui_register_success" xml:space="preserve">
+    <value>Account created! You can now sign in.</value>
+  </data>
+  <data name="webui_register_error_exists" xml:space="preserve">
+    <value>A user with this login already exists.</value>
+  </data>
+  <data name="webui_register_error_password_mismatch" xml:space="preserve">
+    <value>Passwords do not match!</value>
+  </data>
+  <data name="webui_register_error_password_short" xml:space="preserve">
+    <value>Password is too short! Minimum 4 characters.</value>
+  </data>
+  <data name="webui_register_have_account" xml:space="preserve">
+    <value>Already have an account?</value>
+  </data>
+  <data name="webui_register_login_link" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="webui_register_placeholder_login" xml:space="preserve">
+    <value>Choose a login...</value>
+  </data>
+  <data name="webui_register_placeholder_name" xml:space="preserve">
+    <value>Your name</value>
+  </data>
+  <data name="webui_register_placeholder_password" xml:space="preserve">
+    <value>Choose a password...</value>
+  </data>
+  <data name="webui_register_placeholder_confirm" xml:space="preserve">
+    <value>Repeat password...</value>
+  </data>
+  <data name="webui_profile_title" xml:space="preserve">
+    <value>Profile settings</value>
+  </data>
+  <data name="webui_profile_close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="webui_profile_name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="webui_profile_description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="webui_profile_description_placeholder" xml:space="preserve">
+    <value>Description for agents...</value>
+  </data>
+  <data name="webui_profile_save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="webui_profile_saving" xml:space="preserve">
+    <value>Saving...</value>
+  </data>
+  <data name="webui_profile_cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="webui_profile_logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="webui_profile_saved" xml:space="preserve">
+    <value>Saved!</value>
+  </data>
+  <data name="webui_profile_avatar_updated" xml:space="preserve">
+    <value>Avatar updated!</value>
+  </data>
+  <data name="webui_edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="webui_previous_branch" xml:space="preserve">
+    <value>Previous branch</value>
+  </data>
+  <data name="webui_next_branch" xml:space="preserve">
+    <value>Next branch</value>
+  </data>
+  <data name="webui_regenerate" xml:space="preserve">
+    <value>Regenerate</value>
+  </data>
+  <data name="webui_resend" xml:space="preserve">
+    <value>Resend</value>
+  </data>
+  <data name="webui_reasoning" xml:space="preserve">
+    <value>Reasoning</value>
+  </data>
+  <data name="webui_result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="webui_assistant" xml:space="preserve">
+    <value>Assistant</value>
+  </data>
+  <data name="webui_readiness_ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="webui_readiness_always_ready" xml:space="preserve">
+    <value>Always ready</value>
+  </data>
+  <data name="webui_readiness_title_ready" xml:space="preserve">
+    <value>Are you ready?</value>
+  </data>
+  <data name="webui_readiness_title_auto" xml:space="preserve">
+    <value>Auto-ready</value>
+  </data>
+  <data name="webui_readiness_count_title" xml:space="preserve">
+    <value>Ready / Online</value>
+  </data>
+  <data name="webui_delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
 </root>

@@ -1,10 +1,11 @@
 @using System.ComponentModel
 @using LLMDesktopAssistant.LLM.Domain
 @using LLMDesktopAssistant.LLM.Messages
-@using LLMDesktopAssistant.Localization
 @using LLMDesktopAssistant.Utils
 @using Material.Icons
+
 @implements IDisposable
+
 @rendermode InteractiveServer
 
 <div class="toolcall-item" data-status="@ToolCall.Status">
@@ -58,7 +59,7 @@
 		<details class="toolcall-result-details">
 			<summary class="toolcall-result-summary">
 				<MaterialIconComponent Kind="@MaterialIconKind.CodeBraces" Size="14" Color="rgba(0,0,0,0.5)" AdditionalStyle="margin-right: 4px;" />
-				Result
+				@LocalizationManager.LocalizeStatic("webui_result")
 			</summary>
 			<div class="toolcall-result-content">
 				<pre><code>@ToolCall.ResultContent</code></pre>

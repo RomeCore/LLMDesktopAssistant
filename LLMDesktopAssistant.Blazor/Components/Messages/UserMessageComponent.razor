@@ -2,14 +2,15 @@
 @using LLMDesktopAssistant.Blazor.Services
 @using LLMDesktopAssistant.LLM.Domain
 @using LLMDesktopAssistant.LLM.Services
-@using LLMDesktopAssistant.Localization
 @using LLMDesktopAssistant.Users
 @using Material.Icons
+
 @implements IDisposable
-@rendermode InteractiveServer
 
 @inject IUserManagementService UserManager
 @inject IUserStateService UserState
+
+@rendermode InteractiveServer
 
 <div class="message-row user-message-row @(_isHidden ? "message-hidden" : "")">
 	@if (_showAvatar)
@@ -50,25 +51,30 @@
 
 		<div class="message-actions user-message-actions">
 			@* Resend *@
-			<button class="msg-action-btn" title="Resend" @onclick="ResendMessage">
+			<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_resend")" @onclick="ResendMessage">
 				<MaterialIconComponent Kind="@MaterialIconKind.ArrowUDownLeft" Size="18" />
 			</button>
 
 			@* Edit *@
-			<button class="msg-action-btn" title="Edit" @onclick="EditMessage">
+			<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_edit")" @onclick="EditMessage">
 				<MaterialIconComponent Kind="@MaterialIconKind.Edit" Size="18" />
+			</button>
+
+			@* Delete *@
+			<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_delete")" @onclick="DeleteMessage">
+				<MaterialIconComponent Kind="@MaterialIconKind.Delete" Size="18" />
 			</button>
 
 			@* Branching *@
 			@if (BranchedMessage.AvailableBranchesCount > 1)
 			{
-				<button class="msg-action-btn" title="Previous branch" @onclick="PreviousBranch" disabled="@(BranchedMessage.SelectedBranchIndex <= 0)">
+				<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_previous_branch")" @onclick="PreviousBranch" disabled="@(BranchedMessage.SelectedBranchIndex <= 0)">
 					<MaterialIconComponent Kind="@MaterialIconKind.ChevronLeft" Size="18" />
 				</button>
 
 				<span class="branch-indicator">@(BranchedMessage.SelectedBranchIndex + 1) / @BranchedMessage.AvailableBranchesCount</span>
 
-				<button class="msg-action-btn" title="Next branch" @onclick="NextBranch" disabled="@(BranchedMessage.SelectedBranchIndex >= BranchedMessage.AvailableBranchesCount - 1)">
+				<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_next_branch")" @onclick="NextBranch" disabled="@(BranchedMessage.SelectedBranchIndex >= BranchedMessage.AvailableBranchesCount - 1)">
 					<MaterialIconComponent Kind="@MaterialIconKind.ChevronRight" Size="18" />
 				</button>
 			}
@@ -161,6 +167,18 @@
 		catch (Exception ex)
 		{
 			Console.Error.WriteLine($"Failed to resend: {ex.Message}");
+		}
+	}
+
+	private void DeleteMessage()
+	{
+		try
+		{
+			ChatOperation.DeleteMessageWithDescendants(BranchedMessage.MessageIndex);
+		}
+		catch (Exception ex)
+		{
+			Console.Error.WriteLine($"Failed to delete: {ex.Message}");
 		}
 	}
 

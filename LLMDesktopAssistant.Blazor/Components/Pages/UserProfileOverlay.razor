@@ -1,12 +1,11 @@
-@using LLMDesktopAssistant.Localization
 @using LLMDesktopAssistant.Users
 @using Material.Icons
 
 <div class="user-profile-overlay @(_isVisible ? "visible" : "")" @onclick="HandleOverlayClick">
 	<div class="user-profile-panel" @onclick:stopPropagation>
 		<div class="user-profile-header">
-			<h3>Настройки профиля</h3>
-			<button class="user-profile-close-btn" @onclick="Close" title="Закрыть">
+			<h3>@LocalizationManager.LocalizeStatic("webui_profile_title")</h3>
+			<button class="user-profile-close-btn" @onclick="Close" title="@LocalizationManager.LocalizeStatic("webui_profile_close")">
 				<MaterialIconComponent Kind="@MaterialIconKind.Close" Size="20" Color="#666" />
 			</button>
 		</div>
@@ -33,18 +32,18 @@
 
 			@* Fields *@
 			<div class="user-profile-field">
-				<label class="user-profile-label">Логин</label>
+				<label class="user-profile-label">@LocalizationManager.LocalizeStatic("webui_login_label")</label>
 				<input class="user-profile-input" @bind="_editLogin" placeholder="user_login" disabled="@_isDisabled" />
 			</div>
 
 			<div class="user-profile-field">
-				<label class="user-profile-label">Имя</label>
+				<label class="user-profile-label">@LocalizationManager.LocalizeStatic("webui_profile_name")</label>
 				<input class="user-profile-input" @bind="_editName" placeholder="User" />
 			</div>
 
 			<div class="user-profile-field">
-				<label class="user-profile-label">Описание</label>
-				<textarea class="user-profile-textarea" @bind="_editDescription" placeholder="Описание для агентов..." rows="4"></textarea>
+				<label class="user-profile-label">@LocalizationManager.LocalizeStatic("webui_profile_description")</label>
+				<textarea class="user-profile-textarea" @bind="_editDescription" placeholder="@LocalizationManager.LocalizeStatic("webui_profile_description_placeholder")" rows="4"></textarea>
 			</div>
 
 			@if (!string.IsNullOrEmpty(_statusMessage))
@@ -59,19 +58,19 @@
 			<div class="user-profile-footer-left">
 				<button class="user-profile-logout-btn" @onclick="Logout">
 					<MaterialIconComponent Kind="@MaterialIconKind.Logout" Size="16" Color="#d32f2f" />
-					<span>Выйти</span>
+					<span>@LocalizationManager.LocalizeStatic("webui_profile_logout")</span>
 				</button>
 			</div>
 			<div class="user-profile-footer-right">
-				<button class="user-profile-cancel-btn" @onclick="Close">Отмена</button>
+				<button class="user-profile-cancel-btn" @onclick="Close">@LocalizationManager.LocalizeStatic("webui_profile_cancel")</button>
 				<button class="user-profile-save-btn" @onclick="Save" disabled="@_isSaving">
 					@if (_isSaving)
 					{
-						<span>Сохранение...</span>
+						<span>@LocalizationManager.LocalizeStatic("webui_profile_saving")</span>
 					}
 					else
 					{
-						<span>Сохранить</span>
+						<span>@LocalizationManager.LocalizeStatic("webui_profile_save")</span>
 					}
 				</button>
 			</div>
@@ -134,7 +133,7 @@
 			_user.Name = _editName;
 			_user.Description = _editDescription;
 
-			_statusMessage = "Сохранено!";
+			_statusMessage = LocalizationManager.LocalizeStatic("webui_profile_saved");
 			_statusIsError = false;
 		}
 		catch (Exception ex)
@@ -171,7 +170,7 @@
 				_user.Base64ProfileImage = base64;
 				StateHasChanged();
 
-				_statusMessage = "Аватарка обновлена!";
+				_statusMessage = LocalizationManager.LocalizeStatic("webui_profile_avatar_updated");
 				_statusIsError = false;
 			}
 		}
