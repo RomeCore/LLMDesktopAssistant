@@ -2247,4 +2247,17 @@
   <data name="webui_delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="webui_avatar_delete_title" xml:space="preserve">
+    <value>Delete avatar</value>
+  </data>
+  <data name="webui_avatar_deleted" xml:space="preserve">
+    <value>Avatar removed</value>
+  </data>
+  
+  <data name="webui_avatar_timeout" xml:space="preserve">
+    <value>Image selection timed out. Please try again.</value>
+  </data>
+  <data name="webui_avatar_error" xml:space="preserve">
+    <value>Failed to load image</value>
+  </data>
 </root>

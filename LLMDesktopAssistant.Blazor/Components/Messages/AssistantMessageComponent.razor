@@ -70,7 +70,7 @@
 		</div>
 	}
 
-	@if (Message.IsCompleted)
+	@if (Message.IsCompleted && false)
 	{
 		<div class="message-actions">
 			@* Regenerate *@
@@ -110,12 +110,6 @@
 					<MaterialIconComponent Kind="@MaterialIconKind.ChevronRight" Size="18" />
 				</button>
 			}
-		</div>
-	}
-	else
-	{
-		<div class="message-progress">
-			<div class="progress-bar"></div>
 		</div>
 	}
 </div>

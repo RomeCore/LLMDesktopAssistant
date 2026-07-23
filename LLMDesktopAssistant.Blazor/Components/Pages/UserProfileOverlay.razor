@@ -25,9 +25,23 @@
 						<MaterialIconComponent Kind="@MaterialIconKind.AccountCircle" Size="64" Color="#888" />
 					</div>
 				}
-				<button class="user-profile-avatar-btn" @onclick="SelectImage">
-					<MaterialIconComponent Kind="@MaterialIconKind.Camera" Size="16" Color="white" />
-				</button>
+				<div class="user-profile-avatar-actions">
+					<button class="user-profile-avatar-btn"
+							@onclick="SelectImage"
+							disabled="@_isUploading"
+							title="Upload avatar">
+						<MaterialIconComponent Kind="@MaterialIconKind.Camera" Size="16" Color="white" />
+					</button>
+					@if (!string.IsNullOrEmpty(_user?.Base64ProfileImage))
+					{
+						<button class="user-profile-avatar-btn user-profile-avatar-delete-btn"
+								@onclick="DeleteAvatar"
+								disabled="@_isUploading"
+								title="@LocalizationManager.LocalizeStatic("webui_avatar_delete_title")">
+							<MaterialIconComponent Kind="@MaterialIconKind.Delete" Size="16" Color="#d32f2f" />
+						</button>
+					}
+				</div>
 			</div>
 
 			@* Fields *@
@@ -97,6 +111,8 @@
 	private bool _isVisible;
 	private bool _isSaving;
 	private bool _isDisabled;
+	private bool _isUploading;
+	private CancellationTokenSource? _imageCts;
 	private string? _statusMessage;
 	private bool _statusIsError;
 
@@ -160,25 +176,54 @@
 
 	private async Task SelectImage()
 	{
-		if (_user == null) return;
+		if (_user == null || _isUploading) return;
+
+		_isUploading = true;
+		_imageCts = new CancellationTokenSource(TimeSpan.FromSeconds(65));
+		_statusMessage = null;
 
 		try
 		{
-			var base64 = await JS.InvokeAsync<string>("selectProfileImage");
+			var base64 = await JS.InvokeAsync<string>("selectProfileImage", _imageCts.Token);
 			if (!string.IsNullOrEmpty(base64))
 			{
 				_user.Base64ProfileImage = base64;
-				StateHasChanged();
-
 				_statusMessage = LocalizationManager.LocalizeStatic("webui_profile_avatar_updated");
 				_statusIsError = false;
 			}
+			else
+			{
+				// User cancelled or the operation was aborted — no feedback needed
+			}
+		}
+		catch (OperationCanceledException)
+		{
+			// JS interop timed out — user likely walked away with the dialog open
+			_statusMessage = LocalizationManager.LocalizeStatic("webui_avatar_timeout");
+			_statusIsError = true;
 		}
 		catch (Exception ex)
 		{
-			_statusMessage = $"Ошибка загрузки: {ex.Message}";
+			_statusMessage = $"{LocalizationManager.LocalizeStatic("webui_avatar_error")}: {ex.Message}";
 			_statusIsError = true;
 		}
+		finally
+		{
+			_isUploading = false;
+			_imageCts?.Dispose();
+			_imageCts = null;
+		}
+	}
+
+
+	private void DeleteAvatar()
+	{
+		if (_user == null || string.IsNullOrEmpty(_user.Base64ProfileImage))
+			return;
+
+		_user.Base64ProfileImage = string.Empty;
+		_statusMessage = LocalizationManager.LocalizeStatic("webui_avatar_deleted");
+		_statusIsError = false;
 	}
 
 	private void HandleOverlayClick()

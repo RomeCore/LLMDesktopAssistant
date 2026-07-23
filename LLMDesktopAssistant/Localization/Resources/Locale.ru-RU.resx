@@ -2247,4 +2247,18 @@
   <data name="webui_delete" xml:space="preserve">
     <value>Удалить</value>
   </data>
+  <data name="webui_avatar_delete_title" xml:space="preserve">
+    <value>Удалить аватарку</value>
+  </data>
+  <data name="webui_avatar_deleted" xml:space="preserve">
+    <value>Аватарка удалена</value>
+  </data>
+
+  
+  <data name="webui_avatar_timeout" xml:space="preserve">
+    <value>Время выбора изображения истекло. Попробуйте снова.</value>
+  </data>
+  <data name="webui_avatar_error" xml:space="preserve">
+    <value>Не удалось загрузить изображение</value>
+  </data>
 </root>

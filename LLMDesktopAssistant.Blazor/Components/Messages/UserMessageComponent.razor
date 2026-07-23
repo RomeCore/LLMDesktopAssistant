@@ -49,36 +49,39 @@
 			</div>
 		</div>
 
-		<div class="message-actions user-message-actions">
-			@* Resend *@
-			<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_resend")" @onclick="ResendMessage">
-				<MaterialIconComponent Kind="@MaterialIconKind.ArrowUDownLeft" Size="18" />
-			</button>
-
-			@* Edit *@
-			<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_edit")" @onclick="EditMessage">
-				<MaterialIconComponent Kind="@MaterialIconKind.Edit" Size="18" />
-			</button>
-
-			@* Delete *@
-			<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_delete")" @onclick="DeleteMessage">
-				<MaterialIconComponent Kind="@MaterialIconKind.Delete" Size="18" />
-			</button>
-
-			@* Branching *@
-			@if (BranchedMessage.AvailableBranchesCount > 1)
-			{
-				<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_previous_branch")" @onclick="PreviousBranch" disabled="@(BranchedMessage.SelectedBranchIndex <= 0)">
-					<MaterialIconComponent Kind="@MaterialIconKind.ChevronLeft" Size="18" />
+		@if (false)
+		{
+			<div class="message-actions user-message-actions">
+				@* Resend *@
+				<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_resend")" @onclick="ResendMessage">
+					<MaterialIconComponent Kind="@MaterialIconKind.ArrowUDownLeft" Size="18" />
 				</button>
 
-				<span class="branch-indicator">@(BranchedMessage.SelectedBranchIndex + 1) / @BranchedMessage.AvailableBranchesCount</span>
-
-				<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_next_branch")" @onclick="NextBranch" disabled="@(BranchedMessage.SelectedBranchIndex >= BranchedMessage.AvailableBranchesCount - 1)">
-					<MaterialIconComponent Kind="@MaterialIconKind.ChevronRight" Size="18" />
+				@* Edit *@
+				<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_edit")" @onclick="EditMessage">
+					<MaterialIconComponent Kind="@MaterialIconKind.Edit" Size="18" />
 				</button>
-			}
-		</div>
+
+				@* Delete *@
+				<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_delete")" @onclick="DeleteMessage">
+					<MaterialIconComponent Kind="@MaterialIconKind.Delete" Size="18" />
+				</button>
+
+				@* Branching *@
+				@if (BranchedMessage.AvailableBranchesCount > 1)
+				{
+					<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_previous_branch")" @onclick="PreviousBranch" disabled="@(BranchedMessage.SelectedBranchIndex <= 0)">
+						<MaterialIconComponent Kind="@MaterialIconKind.ChevronLeft" Size="18" />
+					</button>
+
+					<span class="branch-indicator">@(BranchedMessage.SelectedBranchIndex + 1) / @BranchedMessage.AvailableBranchesCount</span>
+
+					<button class="msg-action-btn" title="@LocalizationManager.LocalizeStatic("webui_next_branch")" @onclick="NextBranch" disabled="@(BranchedMessage.SelectedBranchIndex >= BranchedMessage.AvailableBranchesCount - 1)">
+						<MaterialIconComponent Kind="@MaterialIconKind.ChevronRight" Size="18" />
+					</button>
+				}
+			</div>
+		}
 	}
 </div>
 
