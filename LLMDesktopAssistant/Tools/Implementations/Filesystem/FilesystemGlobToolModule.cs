@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text;
 using LLMDesktopAssistant.LLM.Services.Attachments;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
@@ -67,7 +68,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		public PreviewToolExecutionResult GlobPreview(
 			string path, string pattern, [SharedContext] out string fullPath)
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Read, out var isAccessed);
 
 			if (!Directory.Exists(fullPath))
 			{
@@ -110,7 +111,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Read);
 				var workingDirectory = _fileAccess.GetWorkingDirectory();
 
 				var result = new ReactiveToolResult();

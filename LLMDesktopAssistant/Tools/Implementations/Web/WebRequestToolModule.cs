@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
@@ -218,7 +219,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 		{
 			try
 			{
-				var fullPath = _fileAccess.AccessPath(savePath);
+				var fullPath = _fileAccess.AccessPath(savePath, DirectoryAccessMode.Write);
 				var fileExisted = File.Exists(fullPath);
 
 				if (fileExisted)
@@ -266,7 +267,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				long? totalBytes = null;
 				try
 				{
-					var fullSavePath = _fileAccess.AccessPath(savePath);
+					var fullSavePath = _fileAccess.AccessPath(savePath, DirectoryAccessMode.Write);
 					using var fileStream = File.Create(fullSavePath);
 					using var request = new HttpRequestMessage(HttpMethod.Get, url);
 

@@ -1195,6 +1195,168 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Active.
+        /// </summary>
+        public static string env_active {
+            get {
+                return ResourceManager.GetString("env_active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Add access rule.
+        /// </summary>
+        public static string env_add_access_rule {
+            get {
+                return ResourceManager.GetString("env_add_access_rule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Add working directory.
+        /// </summary>
+        public static string env_add_working_directory {
+            get {
+                return ResourceManager.GetString("env_add_working_directory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Browse....
+        /// </summary>
+        public static string env_browse {
+            get {
+                return ResourceManager.GetString("env_browse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Directory Access Rules.
+        /// </summary>
+        public static string env_directory_access_rules {
+            get {
+                return ResourceManager.GetString("env_directory_access_rules", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enabled.
+        /// </summary>
+        public static string env_enabled {
+            get {
+                return ResourceManager.GetString("env_enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move down.
+        /// </summary>
+        public static string env_move_down {
+            get {
+                return ResourceManager.GetString("env_move_down", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Move up.
+        /// </summary>
+        public static string env_move_up {
+            get {
+                return ResourceManager.GetString("env_move_up", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Name.
+        /// </summary>
+        public static string env_name {
+            get {
+                return ResourceManager.GetString("env_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Open in explorer.
+        /// </summary>
+        public static string env_open_in_explorer {
+            get {
+                return ResourceManager.GetString("env_open_in_explorer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Path.
+        /// </summary>
+        public static string env_path {
+            get {
+                return ResourceManager.GetString("env_path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Python Environments.
+        /// </summary>
+        public static string env_python_environments {
+            get {
+                return ResourceManager.GetString("env_python_environments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Path to activate.bat (optional).
+        /// </summary>
+        public static string env_python_meta_venv_hint {
+            get {
+                return ResourceManager.GetString("env_python_meta_venv_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Python meta-tools venv activate script.
+        /// </summary>
+        public static string env_python_meta_venv_script {
+            get {
+                return ResourceManager.GetString("env_python_meta_venv_script", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Path to activate.bat.
+        /// </summary>
+        public static string env_python_venv_hint {
+            get {
+                return ResourceManager.GetString("env_python_venv_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Python venv activate script.
+        /// </summary>
+        public static string env_python_venv_script {
+            get {
+                return ResourceManager.GetString("env_python_venv_script", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Remove.
+        /// </summary>
+        public static string env_remove {
+            get {
+                return ResourceManager.GetString("env_remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select script.
+        /// </summary>
+        public static string env_select_script {
+            get {
+                return ResourceManager.GetString("env_select_script", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Error: {0}.
         /// </summary>
         public static string error_model {
@@ -5821,6 +5983,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на List working directories.
+        /// </summary>
+        public static string wd_list {
+            get {
+                return ResourceManager.GetString("wd-list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Switch working directory.
+        /// </summary>
+        public static string wd_switch {
+            get {
+                return ResourceManager.GetString("wd-switch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Web.
         /// </summary>
         public static string web {
@@ -5943,6 +6123,42 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string webui_assistant {
             get {
                 return ResourceManager.GetString("webui_assistant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete avatar.
+        /// </summary>
+        public static string webui_avatar_delete_title {
+            get {
+                return ResourceManager.GetString("webui_avatar_delete_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Avatar removed.
+        /// </summary>
+        public static string webui_avatar_deleted {
+            get {
+                return ResourceManager.GetString("webui_avatar_deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Failed to load image.
+        /// </summary>
+        public static string webui_avatar_error {
+            get {
+                return ResourceManager.GetString("webui_avatar_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Image selection timed out. Please try again..
+        /// </summary>
+        public static string webui_avatar_timeout {
+            get {
+                return ResourceManager.GetString("webui_avatar_timeout", resourceCulture);
             }
         }
         
@@ -6438,6 +6654,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string webui_stop_generation {
             get {
                 return ResourceManager.GetString("webui_stop_generation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Working directories.
+        /// </summary>
+        public static string workdir {
+            get {
+                return ResourceManager.GetString("workdir", resourceCulture);
             }
         }
         

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using LLMDesktopAssistant.LLM.Services.Attachments;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
@@ -48,7 +49,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		public PreviewToolExecutionResult GrepPreview(
 			string path, string pattern, [SharedContext] out string fullPath)
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Read, out var isAccessed);
 			bool fileExists = File.Exists(fullPath);
 			bool dirExists = Directory.Exists(fullPath);
 
@@ -113,7 +114,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var workingDirectory = _fileAccess.GetWorkingDirectory();
-				fullPath ??= _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Read);
 				var regexIgnoreCaseOptions = ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
 				var regex = new Regex(pattern, regexIgnoreCaseOptions | RegexOptions.Compiled);
 

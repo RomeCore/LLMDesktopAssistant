@@ -343,7 +343,7 @@
     <value>Включить MCP</value>
   </data>
   <data name="working_directory_hint" xml:space="preserve">
-    <value>Рабочая папка</value>
+    <value>Рабочая директория</value>
   </data>
   <data name="select_working_directory" xml:space="preserve">
     <value>Выберите рабочую папку</value>
@@ -2253,12 +2253,86 @@
   <data name="webui_avatar_deleted" xml:space="preserve">
     <value>Аватарка удалена</value>
   </data>
-
-  
   <data name="webui_avatar_timeout" xml:space="preserve">
     <value>Время выбора изображения истекло. Попробуйте снова.</value>
   </data>
   <data name="webui_avatar_error" xml:space="preserve">
     <value>Не удалось загрузить изображение</value>
+  </data>
+  <data name="wd-list" xml:space="preserve">
+    <value>Получить список рабочих директорий</value>
+  </data>
+  <data name="wd-switch" xml:space="preserve">
+    <value>Сменить рабочую директорию</value>
+  </data>
+  <data name="workdir" xml:space="preserve">
+    <value>Рабочие директории</value>
+  </data>
+  <data name="env_name" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="env_path" xml:space="preserve">
+    <value>Путь</value>
+  </data>
+  <data name="env_enabled" xml:space="preserve">
+    <value>Включено</value>
+  </data>
+  <data name="env_active" xml:space="preserve">
+    <value>Активна</value>
+  </data>
+  <data name="env_directory_access_rules" xml:space="preserve">
+    <value>Правила доступа к директориям</value>
+  </data>
+  <data name="env_add_working_directory" xml:space="preserve">
+    <value>Добавить рабочую директорию</value>
+  </data>
+  <data name="env_add_access_rule" xml:space="preserve">
+    <value>Добавить правило доступа</value>
+  </data>
+  <data name="env_move_up" xml:space="preserve">
+    <value>Вверх</value>
+  </data>
+  <data name="env_move_down" xml:space="preserve">
+    <value>Вниз</value>
+  </data>
+  <data name="env_remove" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="env_browse" xml:space="preserve">
+    <value>Обзор...</value>
+  </data>
+  <data name="env_python_environments" xml:space="preserve">
+    <value>Python окружения</value>
+  </data>
+  <data name="env_python_venv_script" xml:space="preserve">
+    <value>Скрипт активации Python venv</value>
+  </data>
+  <data name="env_python_meta_venv_script" xml:space="preserve">
+    <value>Скрипт активации Python venv для мета-инструментов</value>
+  </data>
+  <data name="env_python_venv_hint" xml:space="preserve">
+    <value>Путь к activate.bat</value>
+  </data>
+  <data name="env_python_meta_venv_hint" xml:space="preserve">
+    <value>Путь к activate.bat (опционально)</value>
+  </data>
+  <data name="env_open_in_explorer" xml:space="preserve">
+    <value>Открыть в проводнике</value>
+  </data>
+  <data name="env_read" xml:space="preserve">
+    <value>Чтение</value>
+  </data>
+  <data name="env_write" xml:space="preserve">
+    <value>Запись</value>
+  </data>
+  <data name="env_execute" xml:space="preserve">
+    <value>Выполнение</value>
+  </data>
+  <data name="env_access_denied" xml:space="preserve">
+    <value>Доступ запрещён</value>
+  </data>
+
+  <data name="env_select_script" xml:space="preserve">
+    <value>Выбрать скрипт</value>
   </data>
 </root>

@@ -134,9 +134,6 @@ public partial class MarkdownControl : UserControl
 
 	private void EnvSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName != nameof(ChatEnvironmentSettings.WorkingDirectory))
-			return;
-
 		var envSettings = (ChatEnvironmentSettings)sender!;
 		MarkdownRenderer.ImageBasePath = envSettings.GetWorkingDirectory();
 	}

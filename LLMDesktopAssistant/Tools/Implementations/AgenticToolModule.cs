@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LLMDesktopAssistant.Attachments;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
@@ -162,7 +163,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		public PreviewToolExecutionResult DescribeImagePreview(
 			string path, [SharedContext] out string fullPath)
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Read, out var isAccessed);
 
 			if (!File.Exists(fullPath))
 			{
@@ -224,7 +225,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Read);
 				var attachment = new SerializableImageAttachment(path);
 
 				var messages = new List<IMessage>

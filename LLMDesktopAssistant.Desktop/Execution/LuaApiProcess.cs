@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 
 namespace LLMDesktopAssistant.Scripting.Lua
@@ -215,7 +216,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			foreach (var arg in cmdArgs)
 				psi.ArgumentList.Add(arg);
 
-			cwd = _fileAccess.TryAccessPath(cwd ?? "");
+			cwd = _fileAccess.TryAccessPath(cwd ?? "", DirectoryAccessMode.Execute);
 			if (string.IsNullOrEmpty(cwd))
 				throw new LuaRuntimeException("process.exec(): unable to access working directory.");
 			if (!Directory.Exists(cwd))

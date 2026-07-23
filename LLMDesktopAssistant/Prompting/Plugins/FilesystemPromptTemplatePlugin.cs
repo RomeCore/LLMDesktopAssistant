@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 using LLTSharp;
 using LLTSharp.DataAccessors;
@@ -29,7 +30,7 @@ namespace LLMDesktopAssistant.Prompting.Plugins
 				throw new TemplateRuntimeException("fileExists(path): Invalid arguments. Expected at least one argument: file path.");
 
 			var path = args[0].ToString();
-			var fullPath = fileAccess.TryAccessPath(path);
+			var fullPath = fileAccess.TryAccessPath(path, DirectoryAccessMode.Read);
 
 			if (fullPath == null)
 				return new TemplateBooleanAccessor(false);
@@ -50,7 +51,7 @@ namespace LLMDesktopAssistant.Prompting.Plugins
 				throw new TemplateRuntimeException("directoryExists(path): Invalid arguments. Expected at least one argument: directory path.");
 
 			var path = args[0].ToString();
-			var fullPath = fileAccess.TryAccessPath(path);
+			var fullPath = fileAccess.TryAccessPath(path, DirectoryAccessMode.Read);
 
 			if (fullPath == null)
 				return new TemplateBooleanAccessor(false);
@@ -71,7 +72,7 @@ namespace LLMDesktopAssistant.Prompting.Plugins
 				throw new TemplateRuntimeException("readFile(path): Invalid arguments. Expected at least one argument: file path.");
 			
 			var path = args[0].ToString();
-			var fullPath = fileAccess.TryAccessPath(path);
+			var fullPath = fileAccess.TryAccessPath(path, DirectoryAccessMode.Read);
 
 			if (fullPath == null)
 				throw new TemplateRuntimeException($"readFile({path}): File cannot be accessed.");
@@ -95,7 +96,7 @@ namespace LLMDesktopAssistant.Prompting.Plugins
 				throw new TemplateRuntimeException("listFiles(path): Invalid arguments. Expected at least one argument: directory path.");
 
 			var path = args[0].ToString();
-			var fullPath = fileAccess.TryAccessPath(path);
+			var fullPath = fileAccess.TryAccessPath(path, DirectoryAccessMode.Read);
 
 			if (fullPath == null)
 				throw new TemplateRuntimeException($"listFiles({path}): Directory cannot be accessed.");
@@ -120,7 +121,7 @@ namespace LLMDesktopAssistant.Prompting.Plugins
 				throw new TemplateRuntimeException("listDirectories(path): Invalid arguments. Expected at least one argument: directory path.");
 
 			var path = args[0].ToString();
-			var fullPath = fileAccess.TryAccessPath(path);
+			var fullPath = fileAccess.TryAccessPath(path, DirectoryAccessMode.Read);
 
 			if (fullPath == null)
 				throw new TemplateRuntimeException($"listDirectories({path}): Directory cannot be accessed.");

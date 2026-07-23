@@ -1,4 +1,5 @@
 using System.Text;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
@@ -59,7 +60,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+				fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.ReadWrite, out var isAccessed);
 				var fileExisted = File.Exists(fullPath);
 
 				if (fileExisted)
@@ -124,7 +125,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.ReadWrite);
 				var dir = Path.GetDirectoryName(fullPath);
 
 				if (!Directory.Exists(dir))

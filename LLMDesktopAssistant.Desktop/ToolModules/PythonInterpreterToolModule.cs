@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
@@ -107,7 +108,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			if (!python.Contains('\n') && !python.Contains('\r') && python.EndsWith(".py"))
 			{
 				// Treat as a file path
-				pyFile = _fileAccess.AccessPath(python);
+				pyFile = _fileAccess.AccessPath(python, DirectoryAccessMode.Execute);
 				python = File.ReadAllText(pyFile);
 
 				// Ensure the script is UTF-8 encoded

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 
 namespace LLMDesktopAssistant.Scripting.Lua
@@ -304,7 +305,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				throw new LuaRuntimeException("fs.exists(path): at least 1 argument expected.");
 			if (args[0] is not LuaString pathVal)
 				throw new LuaRuntimeException("fs.exists(): first argument must be a string.");
-			var fullPath = _fileAccess.TryAccessPath(pathVal.Value);
+			var fullPath = _fileAccess.TryAccessPath(pathVal.Value, DirectoryAccessMode.Read);
 			return new LuaTuple(LuaBoolean.FromBoolean(fullPath != null && (File.Exists(fullPath) || Directory.Exists(fullPath))));
 		}
 
@@ -314,7 +315,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				throw new LuaRuntimeException("fs.is_file(path): at least 1 argument expected.");
 			if (args[0] is not LuaString pathVal)
 				throw new LuaRuntimeException("fs.is_file(): first argument must be a string.");
-			var fullPath = _fileAccess.TryAccessPath(pathVal.Value);
+			var fullPath = _fileAccess.TryAccessPath(pathVal.Value, DirectoryAccessMode.Read);
 			return new LuaTuple(LuaBoolean.FromBoolean(fullPath != null && File.Exists(fullPath)));
 		}
 
@@ -324,14 +325,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				throw new LuaRuntimeException("fs.is_dir(path): at least 1 argument expected.");
 			if (args[0] is not LuaString pathVal)
 				throw new LuaRuntimeException("fs.is_dir(): first argument must be a string.");
-			var fullPath = _fileAccess.TryAccessPath(pathVal.Value);
+			var fullPath = _fileAccess.TryAccessPath(pathVal.Value, DirectoryAccessMode.Read);
 			return new LuaTuple(LuaBoolean.FromBoolean(fullPath != null && Directory.Exists(fullPath)));
 		}
 
 		private LuaTuple List(LuaCallingContext ctx, LuaValue[] args)
 		{
 			var path = args.Length > 0 && args[0] is LuaString pathStr ? pathStr.Value : ".";
-			var fullPath = _fileAccess.TryAccessPath(path);
+			var fullPath = _fileAccess.TryAccessPath(path, DirectoryAccessMode.Read);
 			if (fullPath == null)
 				throw new LuaRuntimeException($"fs.list(): path '{path}' is outside working directory.");
 			if (!Directory.Exists(fullPath))
@@ -350,7 +351,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				throw new LuaRuntimeException("fs.detail(path): at least 1 argument expected.");
 			if (args[0] is not LuaString pathVal)
 				throw new LuaRuntimeException("fs.detail(): first argument must be a string.");
-			var fullPath = _fileAccess.TryAccessPath(pathVal.Value);
+			var fullPath = _fileAccess.TryAccessPath(pathVal.Value, DirectoryAccessMode.Read);
 			if (fullPath == null)
 				return new LuaTuple(LuaNil.Instance);
 
@@ -393,7 +394,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				throw new LuaRuntimeException("fs.size(path): at least 1 argument expected.");
 			if (args[0] is not LuaString pathVal)
 				throw new LuaRuntimeException("fs.size(): first argument must be a string.");
-			var fullPath = _fileAccess.TryAccessPath(pathVal.Value);
+			var fullPath = _fileAccess.TryAccessPath(pathVal.Value, DirectoryAccessMode.Read);
 			if (fullPath == null || !File.Exists(fullPath))
 				return new LuaTuple(LuaNil.Instance);
 			return new LuaTuple(new LuaNumber(new FileInfo(fullPath).Length));
@@ -503,7 +504,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				throw new LuaRuntimeException("fs.abs(path): at least 1 argument expected.");
 			if (args[0] is not LuaString pathVal)
 				throw new LuaRuntimeException("fs.abs(): first argument must be a string.");
-			var full = _fileAccess.TryAccessPath(pathVal.Value);
+			var full = _fileAccess.TryAccessPath(pathVal.Value, DirectoryAccessMode.Read);
 			if (full == null)
 				return new LuaTuple(LuaNil.Instance);
 			return new LuaTuple(new LuaString(full));
@@ -515,7 +516,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		{
 			if (args[index] is not LuaString pathVal)
 				throw new LuaRuntimeException($"Argument {index + 1} must be a string (path).");
-			return _fileAccess.AccessPath(pathVal.Value);
+			return _fileAccess.AccessPath(pathVal.Value, DirectoryAccessMode.Read);
 		}
 
 		private static void CopyDirectoryRecursive(string source, string dest)

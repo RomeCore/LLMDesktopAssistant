@@ -9,30 +9,31 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// </summary>
 	public class ChatEnvironmentSettings : ChatSettingsCategoryBase
 	{
-		private string? _workingDirectory;
+		private readonly RangeObservableCollection<WorkingDirectorySetting> _workingDirectories = [];
 		/// <summary>
-		/// The working directory for the chatbot. This can be used to store files and execute commands, python scripts etc.
+		/// The list of working directories that can be used by the agent.
 		/// </summary>
-		public string? WorkingDirectory
+		public RangeObservableCollection<WorkingDirectorySetting> WorkingDirectories
 		{
-			get => _workingDirectory;
-			set => SetProperty(ref _workingDirectory, value);
+			get => _workingDirectories;
+			set => _workingDirectories.Reset(value);
+		}
+
+		private readonly RangeObservableCollection<DirectoryAccessSetting> _directoryAccessRules = [];
+		/// <summary>
+		/// The list of directory access rules.
+		/// </summary>
+		public RangeObservableCollection<DirectoryAccessSetting> DirectoryAccessRules
+		{
+			get => _directoryAccessRules;
+			set => _directoryAccessRules.Reset(value);
 		}
 
 		/// <summary>
 		/// Returns the working directory for the chatbot. If no working directory is specified, returns the default directory.
 		/// </summary>
-		public string GetWorkingDirectory() => WorkingDirectory ?? Path.GetFullPath(Directories.DefaultWorkingDirectory);
-
-		private bool _allowFSOutsideWorkDir = false;
-		/// <summary>
-		/// Whether the <see cref="FilesystemToolModule"/> is allowed to access files outside of the working directory.
-		/// </summary>
-		public bool AllowFSOutsideWorkDir
-		{
-			get => _allowFSOutsideWorkDir;
-			set => SetProperty(ref _allowFSOutsideWorkDir, value);
-		}
+		public string GetWorkingDirectory() => WorkingDirectories.FirstOrDefault(w => w.IsEnabled && w.IsActive)?.Path
+			?? Path.GetFullPath(Directories.DefaultWorkingDirectory);
 
 		private string? _pythonVenvActivateScriptPath;
 		/// <summary>

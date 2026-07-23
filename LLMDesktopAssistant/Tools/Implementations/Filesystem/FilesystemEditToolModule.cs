@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
@@ -125,7 +126,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			int occurrence = 0, bool ignoreWhitespace = true, bool ignoreCase = false,
 			CancellationToken cancellationToken = default)
 		{
-			var fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.ReadWrite, out var isAccessed);
 			var error = CheckArgs(path, fullPath, operation, useRegex, match, text);
 			if (error != null)
 			{
@@ -210,7 +211,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				var fullPath = sharedCtx?.Path ?? _fileAccess.AccessPath(path);
+				var fullPath = sharedCtx?.Path ?? _fileAccess.AccessPath(path, DirectoryAccessMode.ReadWrite);
 				var error = CheckArgs(path, fullPath, operation, useRegex, match, text);
 
 				if (error != null)

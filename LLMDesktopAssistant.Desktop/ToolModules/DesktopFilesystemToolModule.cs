@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
@@ -44,7 +45,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		public PreviewToolExecutionResult OpenFilePreview(
 			string path, [SharedContext] out string fullPath)
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Execute, out var isAccessed);
 
 			if (!File.Exists(fullPath))
 			{
@@ -73,7 +74,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			try
 			{
 				var workingDirectory = _fileAccess.GetWorkingDirectory();
-				fullPath ??= _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Execute);
 
 				if (!File.Exists(fullPath))
 				{

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using LLMDesktopAssistant.LLM.Services.Attachments;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
@@ -121,7 +122,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 		public PreviewToolExecutionResult PreviewGetFileInfo(string path, [SharedContext] out string fullPath)
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Read, out var isAccessed);
 
 			if (!File.Exists(fullPath))
 			{
@@ -160,7 +161,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Read);
 				var metrics = FileUtils.GetFileMetrics(fullPath);
 
 				var result = new ReactiveToolResult
@@ -209,7 +210,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			int startByte = 1,
 			int endByte = 4096)
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Read, out var isAccessed);
 
 			if (!File.Exists(fullPath))
 			{
@@ -260,7 +261,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Read);
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -313,7 +314,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			int startPage = 1,
 			int endPage = 30)
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Read, out var isAccessed);
 
 			if (!File.Exists(fullPath))
 			{
@@ -359,7 +360,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Read);
 
 				if (!File.Exists(fullPath))
 					return ReactiveToolResult.CreateError("File not found.");
@@ -428,7 +429,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		public PreviewToolExecutionResult PreviewWriteBinaryFile(string path, string hex,
 			[SharedContext] out WriteBinaryFileContext? ctx, bool append = false)
 		{
-			var fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
 			bool fileExisted = File.Exists(fullPath);
 
 			try
@@ -481,7 +482,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				}
 				else
 				{
-					fullPath = _fileAccess.AccessPath(path);
+					fullPath = _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
 					bytes = ParseHex(hex);
 				}
 
@@ -530,7 +531,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 		public PreviewToolExecutionResult PreviewCreateDirectory(string path, [SharedContext] out string fullPath)
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
 
 			if (Directory.Exists(fullPath))
 			{
@@ -557,7 +558,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
 
 				if (Directory.Exists(fullPath))
 				{
@@ -591,7 +592,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 		public PreviewToolExecutionResult PreviewDeleteFile(string path, [SharedContext] out string? fullPath)
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
 
 			if (!File.Exists(fullPath))
 			{
@@ -618,7 +619,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path);
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
 
 				if (!File.Exists(fullPath))
 				{
@@ -660,7 +661,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 		public PreviewToolExecutionResult PreviewDeleteDirectory(string path, [SharedContext] out DeleteDirectoryContext? ctx)
 		{
-			var fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
 			ctx = new DeleteDirectoryContext { FullPath = fullPath };
 
 			if (path == "." || path == "" || path == "/")
@@ -712,7 +713,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					}.CompleteWithError();
 				}
 
-				var fullPath = ctx?.FullPath ?? _fileAccess.AccessPath(path);
+				var fullPath = ctx?.FullPath ?? _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
 
 				if (!Directory.Exists(fullPath))
 				{
@@ -758,8 +759,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[SharedContext] out RenameFileContext? ctx,
 			bool overwrite = false)
 		{
-			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, out var isOldAccessed);
-			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
+			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, DirectoryAccessMode.Write, out var isOldAccessed);
+			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, DirectoryAccessMode.Write, out var isNewAccessed);
 			ctx = new RenameFileContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
 
 			if (!File.Exists(fullOldPath))
@@ -803,8 +804,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath);
-				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
+				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath, DirectoryAccessMode.Write);
+				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath, DirectoryAccessMode.Write);
 
 				if (!File.Exists(fullOldPath))
 				{
@@ -861,8 +862,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[SharedContext] out MoveDirectoryContext? ctx,
 			bool overwrite = false)
 		{
-			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, out var isOldAccessed);
-			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
+			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, DirectoryAccessMode.Write, out var isOldAccessed);
+			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, DirectoryAccessMode.Write, out var isNewAccessed);
 			ctx = new MoveDirectoryContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
 
 			if (!Directory.Exists(fullOldPath))
@@ -906,8 +907,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath);
-				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
+				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath, DirectoryAccessMode.Write);
+				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath, DirectoryAccessMode.Write);
 
 				if (!Directory.Exists(fullOldPath))
 				{
@@ -962,8 +963,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[SharedContext] out CopyFileContext? ctx,
 			bool overwrite = false)
 		{
-			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, out var isOldAccessed);
-			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
+			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, DirectoryAccessMode.Write, out var isOldAccessed);
+			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, DirectoryAccessMode.Write, out var isNewAccessed);
 			ctx = new CopyFileContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
 
 			if (!File.Exists(fullOldPath))
@@ -1007,8 +1008,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath);
-				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
+				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath, DirectoryAccessMode.Write);
+				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath, DirectoryAccessMode.Write);
 
 				if (!File.Exists(fullOldPath))
 				{
@@ -1065,8 +1066,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[SharedContext] out CopyDirectoryContext? ctx,
 			bool overwrite = false)
 		{
-			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, out var isOldAccessed);
-			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, out var isNewAccessed);
+			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, DirectoryAccessMode.Write, out var isOldAccessed);
+			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, DirectoryAccessMode.Write, out var isNewAccessed);
 			ctx = new CopyDirectoryContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
 
 			if (!Directory.Exists(fullOldPath))
@@ -1110,8 +1111,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath);
-				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath);
+				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath, DirectoryAccessMode.Write);
+				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath, DirectoryAccessMode.Write);
 
 				if (!Directory.Exists(fullOldPath))
 				{

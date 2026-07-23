@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using LLMDesktopAssistant.LLM.Services.Attachments;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
@@ -66,7 +67,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			[SharedContext] ref FSApplyDiffSharedContext? sharedCtx,
 			string path, string? deleteLines = null, string? insertBeforeLine = null, string? insertText = null)
 		{
-			var fullPath = _fileAccess.CheckedAccessPath(path, out var isAccessed);
+			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.ReadWrite, out var isAccessed);
 
 			if (!File.Exists(fullPath))
 			{
@@ -131,7 +132,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				var fullPath = sharedCtx?.Path ?? _fileAccess.AccessPath(path);
+				var fullPath = sharedCtx?.Path ?? _fileAccess.AccessPath(path, DirectoryAccessMode.ReadWrite);
 
 				if (!File.Exists(fullPath))
 				{

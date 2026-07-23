@@ -1,109 +1,332 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
-			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 xmlns:ico="using:Material.Icons.Avalonia"
-			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Controls"
-			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatEnvironmentSettingsView"
-			 x:DataType="local:ChatEnvironmentSettingsViewModel">
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+						 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 x:Class="LLMDesktopAssistant.LLM.Settings.ChatEnvironmentSettingsView"
+						 x:DataType="local:ChatEnvironmentSettingsViewModel">
 
-	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Orientation="Vertical"
-								Margin="10"
-								Spacing="10">
+	<ScrollViewer Margin="8">
+		<StackPanel Spacing="16">
 
-			<!-- Working directory -->
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="Auto"/>
-				</Grid.ColumnDefinitions>
-
-				<TextBox Text="{Binding EnvironmentSettings.WorkingDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-						 PlaceholderText="{loc:Loc working_directory_hint}"
-						 UseFloatingPlaceholder="True"
-						 VerticalContentAlignment="Center"/>
+			<!-- ============================================================ -->
+			<!-- WORKING DIRECTORIES -->
+			<!-- ============================================================ -->
+			<Grid ColumnDefinitions="*,Auto">
+				<TextBlock Grid.Column="0"
+									 Text="{loc:Loc workdir}"
+									 FontSize="{DynamicResource FontSizeL}"
+									 FontWeight="Bold"
+									 VerticalAlignment="Center"/>
 
 				<Button Grid.Column="1"
-						Margin="8,0,0,0"
-						Classes="IconButton"
-						Command="{Binding SelectWorkingDirectoryCommand}">
-
-					<ico:MaterialIcon Kind="FolderOpen" />
-				</Button>
-
-				<Button Grid.Column="2"
-						Margin="8,0,0,0"
-						Classes="IconButton"
-						Command="{Binding OpenWorkingDirectoryCommand}">
-					
-					<ico:MaterialIcon Kind="OpenInNew" />
+								Command="{Binding AddWorkingDirectoryCommand}"
+								Classes="IconButton"
+								ToolTip.Tip="{loc:Loc env_add_working_directory}">
+					<ico:MaterialIcon Kind="Plus"/>
 				</Button>
 			</Grid>
-			
+
+			<ItemsControl ItemsSource="{Binding EnvironmentSettings.WorkingDirectories}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate DataType="local:WorkingDirectorySetting">
+						<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+										BorderThickness="1"
+										CornerRadius="4"
+										Padding="8"
+										Margin="0,0,0,8">
+							<StackPanel Spacing="6">
+								<!-- Header row: Active | Name | buttons -->
+								<Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto">
+
+									<!-- Active radio -->
+									<RadioButton Grid.Column="0"
+															 IsChecked="{Binding IsActive}"
+															 GroupName="ActiveWorkDir"
+															 VerticalAlignment="Center"
+															 Margin="0,0,6,0"
+															 ToolTip.Tip="{loc:Loc env_active}"/>
+
+									<!-- Name -->
+									<TextBox Grid.Column="1"
+													 Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+													 PlaceholderText="{loc:Loc env_name}"
+													 UseFloatingPlaceholder="True"
+													 VerticalContentAlignment="Center"
+													 MinWidth="120"
+													 Margin="0,0,6,0"/>
+									
+									<!-- Enabled checkbox -->
+									<CheckBox Grid.Column="2"
+														IsChecked="{Binding IsEnabled}"
+														Content="{loc:Loc env_enabled}"/>
+
+									<!-- Move up -->
+									<Button Grid.Column="4"
+													Command="{Binding $parent[ItemsControl].DataContext.MoveWorkingDirectoryUpCommand}"
+													CommandParameter="{Binding}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc env_move_up}">
+										<ico:MaterialIcon Kind="ChevronUp"/>
+									</Button>
+
+									<!-- Move down -->
+									<Button Grid.Column="5"
+													Command="{Binding $parent[ItemsControl].DataContext.MoveWorkingDirectoryDownCommand}"
+													CommandParameter="{Binding}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc env_move_down}">
+										<ico:MaterialIcon Kind="ChevronDown"/>
+									</Button>
+
+									<!-- Delete -->
+									<Button Grid.Column="6"
+													Command="{Binding $parent[ItemsControl].DataContext.RemoveWorkingDirectoryCommand}"
+													CommandParameter="{Binding}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc env_remove}">
+										<ico:MaterialIcon Kind="Delete"/>
+									</Button>
+								</Grid>
+
+								<!-- Path row + Browse button -->
+								<Grid ColumnDefinitions="*,Auto,Auto" IsEnabled="{Binding IsEnabled}">
+									<TextBox Grid.Column="0"
+													 Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+													 PlaceholderText="{loc:Loc env_path}"
+													 UseFloatingPlaceholder="True"
+													 VerticalContentAlignment="Center"/>
+
+									<Button Grid.Column="1"
+													Margin="6,0,0,0"
+													Command="{Binding $parent[ItemsControl].DataContext.BrowseWorkingDirectoryPathCommand}"
+													CommandParameter="{Binding}"
+													Classes="IconButton"
+													ToolTip.Tip="{loc:Loc env_browse}">
+										<ico:MaterialIcon Kind="FolderOpen"/>
+									</Button>
+									
+									<Button Grid.Column="2"
+													Command="{Binding $parent[ItemsControl].DataContext.OpenDirectoryCommand}"
+													CommandParameter="{Binding Path}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc env_open_in_explorer}">
+										<ico:MaterialIcon Kind="OpenInNew"/>
+									</Button>
+
+								</Grid>
+							</StackPanel>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+			<!-- ============================================================ -->
+			<!-- DIRECTORY ACCESS RULES -->
+			<!-- ============================================================ -->
+			<Grid ColumnDefinitions="*,Auto">
+				<TextBlock Grid.Column="0"
+									 Text="{loc:Loc env_directory_access_rules}"
+									 FontSize="{DynamicResource FontSizeL}"
+									 FontWeight="Bold"
+									 VerticalAlignment="Center"/>
+
+				<Button Grid.Column="1"
+								Command="{Binding AddDirectoryAccessRuleCommand}"
+								Classes="IconButton"
+								ToolTip.Tip="{loc:Loc env_add_access_rule}">
+					<ico:MaterialIcon Kind="Plus"/>
+				</Button>
+			</Grid>
+
+			<ItemsControl ItemsSource="{Binding EnvironmentSettings.DirectoryAccessRules}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate DataType="local:DirectoryAccessSetting">
+						<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+										BorderThickness="1"
+										CornerRadius="4"
+										Padding="8"
+										Margin="0,0,0,8">
+							<StackPanel Spacing="6">
+								<!-- Header row: Active | Name | buttons -->
+								<Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+									
+									<!-- Enabled checkbox -->
+									<CheckBox Grid.Column="0"
+														IsChecked="{Binding IsEnabled}"
+														Content="{loc:Loc env_enabled}"/>
+
+									<!-- Move up -->
+									<Button Grid.Column="2"
+													Command="{Binding $parent[ItemsControl].DataContext.MoveDirectoryAccessRuleUpCommand}"
+													CommandParameter="{Binding}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc env_move_up}">
+										<ico:MaterialIcon Kind="ChevronUp"/>
+									</Button>
+
+									<!-- Move down -->
+									<Button Grid.Column="3"
+													Command="{Binding $parent[ItemsControl].DataContext.MoveDirectoryAccessRuleDownCommand}"
+													CommandParameter="{Binding}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc env_move_down}">
+										<ico:MaterialIcon Kind="ChevronDown"/>
+									</Button>
+
+									<!-- Delete -->
+									<Button Grid.Column="4"
+													Command="{Binding $parent[ItemsControl].DataContext.RemoveDirectoryAccessRuleCommand}"
+													CommandParameter="{Binding}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc env_remove}">
+										<ico:MaterialIcon Kind="Delete"/>
+									</Button>
+								</Grid>
+
+								<!-- Path + Browse + Delete -->
+								<Grid ColumnDefinitions="*,Auto,Auto">
+									<TextBox Grid.Column="0"
+													 Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+													 PlaceholderText="{loc:Loc env_path}"
+													 UseFloatingPlaceholder="True"
+													 VerticalContentAlignment="Center"/>
+
+									<Button Grid.Column="1"
+													Margin="6,0,0,0"
+													Command="{Binding $parent[ItemsControl].DataContext.BrowseDirectoryAccessRulePathCommand}"
+													CommandParameter="{Binding}"
+													Classes="IconButton"
+													VerticalAlignment="Center"
+													ToolTip.Tip="{loc:Loc env_browse}">
+										<ico:MaterialIcon Kind="FolderOpen"/>
+									</Button>
+
+									<Button Grid.Column="2"
+													Margin="6,0,0,0"
+													Command="{Binding $parent[ItemsControl].DataContext.OpenDirectoryCommand}"
+													CommandParameter="{Binding Path}"
+													Classes="IconButton"
+													VerticalAlignment="Center"
+													ToolTip.Tip="{loc:Loc env_open_in_explorer}">
+										<ico:MaterialIcon Kind="OpenInNew"/>
+									</Button>
+								</Grid>
+								
+								<!-- Access mode checkboxes -->
+								<StackPanel Orientation="Horizontal" Spacing="12" IsEnabled="{Binding IsEnabled}">
+									<CheckBox IsChecked="{Binding IsRead}"
+													  Content="{loc:Loc env_read}"/>
+									<CheckBox IsChecked="{Binding IsWrite}"
+													  Content="{loc:Loc env_write}"/>
+									<CheckBox IsChecked="{Binding IsExecute}"
+													  Content="{loc:Loc env_execute}"/>
+
+									<!-- Access denied hint -->
+									<TextBlock Text="{loc:Loc env_access_denied}"
+														 IsEnabled="{Binding IsEnabled}"
+														 IsVisible="{Binding IsAccessDenied}"
+														 FontStyle="Italic"
+														 Opacity="0.6"
+														 Foreground="{DynamicResource ErrorBrush}"
+														 VerticalAlignment="Center"
+														 ClipToBounds="False"/>
+								</StackPanel>
+
+							</StackPanel>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+			<!-- ============================================================ -->
+			<!-- PYTHON ENVIRONMENTS -->
+			<!-- ============================================================ -->
+			<TextBlock Text="{loc:Loc env_python_environments}"
+								 FontSize="{DynamicResource FontSizeL}"
+								 FontWeight="Bold"/>
+
 			<!-- Python venv path -->
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="Auto"/>
-				</Grid.ColumnDefinitions>
+			<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+							BorderThickness="1"
+							CornerRadius="4"
+							Padding="8"
+							Margin="0,0,0,8">
+				<StackPanel Spacing="6">
+					<TextBlock Text="{loc:Loc env_python_venv_script}"
+										 FontWeight="Medium"
+										 Margin="0,0,0,2"/>
+					<Grid ColumnDefinitions="*,Auto,Auto">
+						<TextBox Grid.Column="0"
+										 Text="{Binding EnvironmentSettings.PythonVenvActivateScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+										 PlaceholderText="{loc:Loc env_python_venv_hint}"
+										 UseFloatingPlaceholder="True"
+										 VerticalContentAlignment="Center"/>
 
-				<TextBox Text="{Binding EnvironmentSettings.PythonVenvActivateScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-						 PlaceholderText="{loc:Loc python_venv_activate_script_path_hint}"
-						 UseFloatingPlaceholder="True"
-						 VerticalContentAlignment="Center"/>
+						<Button Grid.Column="1"
+										Margin="8,0,0,0"
+										Classes="IconButton"
+										Command="{Binding SelectPythonVenvActivateScriptPathCommand}"
+										ToolTip.Tip="{loc:Loc env_select_script}">
+							<ico:MaterialIcon Kind="FolderOpen"/>
+						</Button>
 
-				<Button Grid.Column="1"
-						Margin="8,0,0,0"
-						Classes="IconButton"
-						Command="{Binding SelectPythonVenvActivateScriptPathCommand}">
+						<Button Grid.Column="2"
+										Margin="8,0,0,0"
+										Classes="IconButton"
+										Command="{Binding OpenPythonVenvActivateScriptPathCommand}"
+										ToolTip.Tip="{loc:Loc env_open_in_explorer}">
+							<ico:MaterialIcon Kind="OpenInNew"/>
+						</Button>
+					</Grid>
+				</StackPanel>
+			</Border>
 
-					<ico:MaterialIcon Kind="FolderOpen" />
-				</Button>
-
-				<Button Grid.Column="2"
-						Margin="8,0,0,0"
-						Classes="IconButton"
-						Command="{Binding OpenPythonVenvActivateScriptPathCommand}">
-					
-					<ico:MaterialIcon Kind="OpenInNew" />
-				</Button>
-			</Grid>
-			
 			<!-- Python meta venv path -->
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="Auto"/>
-				</Grid.ColumnDefinitions>
+			<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+							BorderThickness="1"
+							CornerRadius="4"
+							Padding="8"
+							Margin="0,0,0,8">
+				<StackPanel Spacing="6">
+					<TextBlock Text="{loc:Loc env_python_meta_venv_script}"
+										 FontWeight="Medium"
+										 Margin="0,0,0,2"/>
+					<Grid ColumnDefinitions="*,Auto,Auto">
+						<TextBox Grid.Column="0"
+										 Text="{Binding EnvironmentSettings.PythonMetaVenvActivateScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+										 PlaceholderText="{loc:Loc env_python_meta_venv_hint}"
+										 UseFloatingPlaceholder="True"
+										 VerticalContentAlignment="Center"/>
 
-				<TextBox Text="{Binding EnvironmentSettings.PythonMetaVenvActivateScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-						 PlaceholderText="{loc:Loc python_meta_venv_activate_script_path_hint}"
-						 UseFloatingPlaceholder="True"
-						 VerticalContentAlignment="Center"/>
+						<Button Grid.Column="1"
+										Margin="8,0,0,0"
+										Classes="IconButton"
+										Command="{Binding SelectPythonMetaVenvActivateScriptPathCommand}"
+										ToolTip.Tip="{loc:Loc env_select_script}">
+							<ico:MaterialIcon Kind="FolderOpen"/>
+						</Button>
 
-				<Button Grid.Column="1"
-						Margin="8,0,0,0"
-						Classes="IconButton"
-						Command="{Binding SelectPythonMetaVenvActivateScriptPathCommand}">
-
-					<ico:MaterialIcon Kind="FolderOpen" />
-				</Button>
-
-				<Button Grid.Column="2"
-						Margin="8,0,0,0"
-						Classes="IconButton"
-						Command="{Binding OpenPythonMetaVenvActivateScriptPathCommand}">
-					
-					<ico:MaterialIcon Kind="OpenInNew" />
-				</Button>
-			</Grid>
+						<Button Grid.Column="2"
+										Margin="8,0,0,0"
+										Classes="IconButton"
+										Command="{Binding OpenPythonMetaVenvActivateScriptPathCommand}"
+										ToolTip.Tip="{loc:Loc env_open_in_explorer}">
+							<ico:MaterialIcon Kind="OpenInNew"/>
+						</Button>
+					</Grid>
+				</StackPanel>
+			</Border>
 
 		</StackPanel>
 	</ScrollViewer>

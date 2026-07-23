@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AsyncLua.Values;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
@@ -60,7 +61,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// </summary>
 		public static LuaImage Load(WorkingDirectoryAccessService fileAccess, string path)
 		{
-			var fullPath = fileAccess.AccessPath(path);
+			var fullPath = fileAccess.AccessPath(path, DirectoryAccessMode.Read);
 			var image = Image.Load(fullPath);
 			var format = Path.GetExtension(fullPath)?.TrimStart('.').ToLowerInvariant();
 			return new LuaImage(fileAccess, image, format);
@@ -164,7 +165,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// </summary>
 		public void Save(string path, LuaTable? optionsTable = null)
 		{
-			var fullPath = _fileAccess.AccessPath(path);
+			var fullPath = _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
 
 			var opts = optionsTable != null ? OptionsFromTable(optionsTable) : new ImageSaveOptions();
 			EnsureNotDisposed();

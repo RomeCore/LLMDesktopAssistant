@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 using SixLabors.ImageSharp;
 
@@ -285,7 +286,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				if (args[0] is not LuaString pathVal)
 					throw new LuaRuntimeException("image.info(): first argument must be a string (path).");
 
-				var fullPath = _fileAccess.AccessPath(pathVal.Value);
+				var fullPath = _fileAccess.AccessPath(pathVal.Value, DirectoryAccessMode.Read);
 				var info = LuaImage.GetInfo(fullPath);
 				return new LuaTuple(info);
 			}

@@ -74,7 +74,7 @@ public enum ToolBehaviour
 
 	/// <summary>
 	/// The tool accesses locations outside the configured working directory
-	/// (e.g., system paths, user home, temporary folders, environment variables).
+	/// (e.g., system paths, user home, temporary folders).
 	/// This may indicate potential sandbox escape or unintended data exposure.
 	/// </summary>
 	AccessOutsideWorkdir = 1 << 8,
