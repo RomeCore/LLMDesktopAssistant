@@ -249,7 +249,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 								return;
 
 							var entries = Directory.GetFileSystemEntries(currentPath)
-								.OrderBy(e => Directory.Exists(e) ? 0 : 1)
+								.OrderBy(e => File.Exists(e) ? 0 : 1)
 								.ThenBy(e => e);
 
 							foreach (var entry in entries)
