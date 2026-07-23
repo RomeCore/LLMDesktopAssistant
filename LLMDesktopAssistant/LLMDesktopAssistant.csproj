@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
-		<Version>0.1.0</Version>
+		<Version>0.2.0</Version>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
@@ -17,22 +17,6 @@
 	  <EmbeddedResource Remove="Styles\Avalonia.Themes.Fluent\**" />
 	  <None Remove="Settings\Objects\**" />
 	  <None Remove="Styles\Avalonia.Themes.Fluent\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Remove="Assets\Fonts\Inter.ttf" />
-		<None Remove="Assets\Fonts\JetBrains Mono.ttf" />
-		<None Remove="Assets\Fonts\Segoe Fluent Icons.ttf" />
-		<None Remove="Assets\icon.ico" />
-		<None Remove="Prompting\Resources\components.llt" />
-		<None Remove="Prompting\Resources\foreign_assistant_prompt.llt" />
-		<None Remove="Prompting\Resources\naming.llt" />
-		<None Remove="Prompting\Resources\personas.llt" />
-		<None Remove="Prompting\Resources\router.llt" />
-		<None Remove="Prompting\Resources\ru-RU\sliders.llt" />
-		<None Remove="Prompting\Resources\sliders.llt" />
-		<None Remove="Prompting\Resources\specializations.llt" />
-		<None Remove="Scripting\ut3jur2e.ix0~" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -58,8 +42,10 @@
 	<ItemGroup>
 		<PackageReference Include="AsyncLua" Version="0.4.2" />
 		<PackageReference Include="Avalonia" Version="12.1.0" />
+		<PackageReference Include="Avalonia.AvaloniaEdit" Version="12.0.0" />
 		<PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.0" />
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.0" />
+		<PackageReference Include="AvaloniaEdit.TextMate" Version="12.0.0" />
 		<PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
 			<IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
 			<PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
@@ -213,102 +199,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="App.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="Controls\LLModelSelectorControl.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="Controls\MarkdownControl.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Attachments\AttachmentsManagerView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Attachments\AttachmentView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\ChatManagerView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\ChatView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Messages\AssistantMessageReasoningPartView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Messages\AssistantMessageTextPartView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Messages\AssistantMessageToolPartView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Messages\AssistantMessageView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Messages\MessageSequenceView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Messages\ToolCallView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Messages\UserMessageView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Settings\ChatGeneralSettingsView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Settings\ChatMCPSettingsView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Settings\ChatPromptSettingsView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Settings\ChatSettingsView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\Settings\ChatToolSettingsView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="LLM\MVVM\UserInputView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="MCP\MCPManagerView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="MVVM\MainView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="MVVM\MainWindow.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="Prompting\PromptManagerView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="Settings\SettingsCategoryView.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="Styles\ButtonsIcons.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="Styles\Converters.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="Styles\MarkdownResources.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="Styles\MarkdownStyles.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	  <None Update="Styles\Resources.axaml">
-		<SubType>Designer</SubType>
-	  </None>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Markdown\Nodes\" />
-	  <Folder Include="Markdown\UINodes\" />
-	  <Folder Include="Markdown\Parsers\" />
+	  <Folder Include="Agents\Tasks\" />
 	</ItemGroup>
 
 </Project>
