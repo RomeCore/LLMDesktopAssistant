@@ -9,7 +9,7 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentPromptSettingsView"
 			 x:DataType="local:AgentPromptSettingsViewModel">
 
-	<StackPanel Margin="10" Spacing="8">
+	<StackPanel Margin="8" Spacing="8">
 
 		<!-- System Prompt -->
 		<TextBlock Text="{loc:Loc prompt_system_prompt}"

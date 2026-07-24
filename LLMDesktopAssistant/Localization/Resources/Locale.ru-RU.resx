@@ -2271,9 +2271,6 @@
   <data name="wd-switch" xml:space="preserve">
     <value>Сменить рабочую директорию</value>
   </data>
-  <data name="workdir" xml:space="preserve">
-    <value>Рабочие директории</value>
-  </data>
   <data name="env_workdir_hint" xml:space="preserve">
     <value>Рабочие директории определяют папки, к которым ассистент имеет доступ. Активная директория (выбранная радиокнопкой) используется как корень для относительных путей — все файловые операции используют эту директорию как базовую. Можно добавить несколько директорий; агент может переключаться между ними автоматически с помощью своих инструментов.</value>
   </data>
@@ -2283,7 +2280,6 @@
   <data name="env_python_hint" xml:space="preserve">
     <value>Настройте виртуальные окружения Python для выполнения скриптов. Основное venv используется для запуска Python-скриптов. Отдельное окружение для мета-инструментов можно указать опционально.</value>
   </data>
-
   <data name="env_name" xml:space="preserve">
     <value>Название</value>
   </data>
@@ -2347,8 +2343,28 @@
   <data name="env_access_denied" xml:space="preserve">
     <value>Доступ запрещён</value>
   </data>
-
   <data name="env_select_script" xml:space="preserve">
     <value>Выбрать скрипт</value>
+  </data>
+  <data name="workdir" xml:space="preserve">
+    <value>Рабочие директории</value>
+  </data>
+  <data name="tool_behaviour_policy_default" xml:space="preserve">
+    <value>По умолчанию</value>
+  </data>
+  <data name="tool_behaviour_policy_auto_approve" xml:space="preserve">
+    <value>Авто-одобрение</value>
+  </data>
+  <data name="tool_behaviour_policy_disallowed" xml:space="preserve">
+    <value>Запрещено</value>
+  </data>
+  <data name="tool_behaviour_policy" xml:space="preserve">
+    <value>Политика поведения</value>
+  </data>
+  <data name="policy" xml:space="preserve">
+    <value>Политика</value>
+  </data>
+  <data name="tool_settings" xml:space="preserve">
+    <value>Настройки инструментов</value>
   </data>
 </root>

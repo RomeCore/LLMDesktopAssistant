@@ -12,7 +12,7 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentGenerationSettingsView"
 			 x:DataType="local:AgentGenerationSettingsViewModel">
 
-	<StackPanel Orientation="Vertical" Margin="10" Spacing="8">
+	<StackPanel Orientation="Vertical" Margin="8" Spacing="8">
 			
 		<!-- Custom Model -->
 		<TextBlock Text="{loc:Loc settings-llm_custom_model}"

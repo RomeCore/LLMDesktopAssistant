@@ -9,54 +9,89 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ChatToolsSettingsView"
 			 x:DataType="local:ChatToolsSettingsViewModel">
 
-	<StackPanel Margin="10">
+	<StackPanel Margin="8" Spacing="8">
 
 		<!-- Enable tools checkbox -->
 		<CheckBox IsChecked="{Binding ToolSettings.EnableTools}"
 							Content="{loc:Loc settings-use_tools}"/>
 
-		<!-- Auto-Approve Behaviours section -->
-		<Expander DockPanel.Dock="Top"
-							Header="{loc:Loc tools_auto_approve_behaviours}"
-							IsExpanded="True"
-							Margin="0,4,0,4">
-			<ItemsControl ItemsSource="{Binding AutoApproveBehaviourItems}">
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<WrapPanel MaxWidth="600"/>
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="local:ToolBehaviourItem">
-						<CheckBox IsChecked="{Binding IsEnabled}"
-											Content="{Binding DisplayName}"
-											ToolTip.Tip="{Binding Description}"
-											Margin="4,2"/>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-		</Expander>
+		<!-- ============================================================ -->
+		<!-- BEHAVIOUR POLICY -->
+		<!-- ============================================================ -->
+		<TextBlock Text="{loc:Loc tool_behaviour_policy}"
+							 FontSize="{DynamicResource FontSizeL}"
+							 IsEnabled="{Binding ToolSettings.EnableTools}"
+							 FontWeight="Bold"/>
 
-		<!-- Disallowed Behaviours section -->
-		<Expander Header="{loc:Loc tools_disallowed_behaviours}"
-							IsExpanded="False"
-							Margin="0,4,0,4">
-			<ItemsControl ItemsSource="{Binding DisallowedBehaviourItems}">
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<WrapPanel MaxWidth="600"/>
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="local:ToolBehaviourItem">
-						<CheckBox IsChecked="{Binding IsEnabled}"
-											Content="{Binding DisplayName}"
-											ToolTip.Tip="{Binding Description}"
-											Margin="4,2"/>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-		</Expander>
+		<!-- Column headers -->
+		<Grid ColumnDefinitions="*,Auto"
+					IsEnabled="{Binding ToolSettings.EnableTools}">
+
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc name}"
+								 FontWeight="Bold"
+								 Margin="5,0,0,0"/>
+
+			<TextBlock Grid.Column="1"
+								 Text="{loc:Loc policy}"
+								 FontWeight="Bold"
+								 Margin="8,0,8,0"/>
+		</Grid>
+
+		<ItemsControl ItemsSource="{Binding PolicyBehaviourItems}"
+									IsVisible="{Binding ToolSettings.EnableTools}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="local:ToolBehaviourPolicyItem">
+					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+									BorderThickness="1"
+									CornerRadius="4"
+									Padding="8"
+									Margin="0,0,0,8">
+						<Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">
+
+							<!-- Row 0: Icon + Name + ComboBox -->
+							<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+
+								<ico:MaterialIcon Grid.Column="0"
+																	Kind="{Binding Icon}"
+																	Foreground="{Binding Color}"
+																	Width="20" Height="20"
+																	VerticalAlignment="Center"
+																	Margin="0,0,8,0"/>
+
+								<TextBlock Grid.Column="1"
+													 Text="{Binding DisplayName}"
+													 FontWeight="Medium"
+													 TextTrimming="CharacterEllipsis"
+													 VerticalAlignment="Center"/>
+
+								<ComboBox Grid.Column="2"
+													ItemsSource="{Binding PolicyModes}"
+													SelectedItem="{Binding PolicyMode, Mode=TwoWay}"
+													MinWidth="140"
+													Margin="8,0,0,0">
+									<ComboBox.ItemTemplate>
+										<DataTemplate x:DataType="local:PolicyModeItem">
+											<TextBlock Text="{Binding DisplayName}"/>
+										</DataTemplate>
+									</ComboBox.ItemTemplate>
+								</ComboBox>
+							</Grid>
+
+							<!-- Row 1: Description -->
+							<TextBlock Grid.Row="1"
+												 Text="{Binding Description}"
+												 Opacity="0.6"
+												 FontSize="12"
+												 TextWrapping="Wrap"
+												 Margin="28,4,0,0"
+												 IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
 
 	</StackPanel>
 

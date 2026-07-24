@@ -1,6 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
+using Avalonia.Media;
+using LLMDesktopAssistant.LLM.Messages;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
@@ -18,6 +21,17 @@ public class ToolBehaviourItem : NotifyPropertyChanged
 	/// The tool behaviour flag this item represents.
 	/// </summary>
 	public ToolBehaviour Flag => _flag;
+
+
+	/// <summary>
+	/// Gets the icon associated with this behaviour flag.
+	/// </summary>
+	public MaterialIconKind Icon { get; }
+
+	/// <summary>
+	/// Gets the color associated with this behaviour flag.
+	/// </summary>
+	public IBrush Color { get; }
 
 	/// <summary>
 	/// Localized display name of the behaviour.
@@ -67,5 +81,8 @@ public class ToolBehaviourItem : NotifyPropertyChanged
 		DisplayName = displayName;
 		Description = description;
 		_isEnabled = getCurrentValue().HasFlag(flag);
+		var flagInfo = ToolBehaviourFlagInfo.Create(flag);
+		Icon = flagInfo.Icon;
+		Color = flagInfo.Color;
 	}
 }

@@ -21,14 +21,14 @@
 			<TreeView.DataTemplates>
 
 				<TreeDataTemplate DataType="local:SettingsParentNode"
-									ItemsSource="{Binding Children}">
+													ItemsSource="{Binding Children}">
 					<StackPanel Orientation="Horizontal" Spacing="6" Margin="4,3">
 						<ico:MaterialIcon Kind="{Binding Icon}"
-											Width="18" Height="18"
-											VerticalAlignment="Center"/>
+															Width="18" Height="18"
+															VerticalAlignment="Center"/>
 						<TextBlock Text="{Binding DisplayName}"
-										FontWeight="Bold"
-										VerticalAlignment="Center"/>
+											 FontWeight="Bold"
+											 VerticalAlignment="Center"/>
 					</StackPanel>
 				</TreeDataTemplate>
 				
@@ -55,8 +55,8 @@
 																Width="18" Height="18"
 																VerticalAlignment="Center"/>
 							<TextBlock Text="{Binding Info.Name}"
-													FontWeight="Bold"
-													VerticalAlignment="Center"/>
+												 FontWeight="Bold"
+												 VerticalAlignment="Center"/>
 						</StackPanel>
 
 					</Panel>
@@ -67,11 +67,11 @@
 				<DataTemplate DataType="local:SettingsLeafNode">
 					<StackPanel Orientation="Horizontal" Spacing="6" Margin="4,3">
 						<ico:MaterialIcon Kind="{Binding Icon}"
-											Width="16" Height="16"
-											VerticalAlignment="Center"
-											Opacity="0.8"/>
+															Width="16" Height="16"
+															VerticalAlignment="Center"
+															Opacity="0.8"/>
 						<TextBlock Text="{Binding DisplayName}"
-										VerticalAlignment="Center"/>
+											 VerticalAlignment="Center"/>
 					</StackPanel>
 				</DataTemplate>
 
@@ -89,10 +89,10 @@
 
 			<!-- Content title -->
 			<Border DockPanel.Dock="Top"
-					BorderBrush="{DynamicResource SecondaryAccentBrush}"
-					BorderThickness="0,0,0,1"
-					Padding="8,6"
-					IsVisible="{Binding SelectedNode.DisplayName, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+							BorderBrush="{DynamicResource SecondaryAccentBrush}"
+							BorderThickness="0,0,0,1"
+							Padding="8,6"
+							IsVisible="{Binding SelectedNode.DisplayName, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
 				<TextBlock Text="{Binding SelectedNode.DisplayName}"
 						   FontWeight="Bold"
 						   FontSize="{DynamicResource FontSizeL}"/>
@@ -101,8 +101,8 @@
 			<!-- Content area -->
 			<ScrollViewer VerticalScrollBarVisibility="Auto">
 				<ContentControl Content="{Binding SelectedNode.ViewModel}"
-								HorizontalContentAlignment="Stretch"
-								VerticalContentAlignment="Stretch"/>
+												HorizontalContentAlignment="Stretch"
+												VerticalContentAlignment="Stretch"/>
 			</ScrollViewer>
 
 		</DockPanel>

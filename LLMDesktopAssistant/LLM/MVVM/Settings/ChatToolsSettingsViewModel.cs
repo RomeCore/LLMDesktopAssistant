@@ -16,14 +16,9 @@ public class ChatToolsSettingsViewModel : ViewModelBase
 	public ChatToolsSettings ToolSettings { get; }
 
 	/// <summary>
-	/// List of ToolBehaviour flags for Auto-Approve configuration.
+	/// List of ToolBehaviour flags with combined Auto-Approve / Disallowed policy toggles.
 	/// </summary>
-	public ObservableCollection<ToolBehaviourItem> AutoApproveBehaviourItems { get; } = [];
-
-	/// <summary>
-	/// List of ToolBehaviour flags for Disallowed configuration.
-	/// </summary>
-	public ObservableCollection<ToolBehaviourItem> DisallowedBehaviourItems { get; } = [];
+	public ObservableCollection<ToolBehaviourPolicyItem> PolicyBehaviourItems { get; } = [];
 
 	public ChatToolsSettingsViewModel(ChatToolsSettings settings)
 	{
@@ -33,8 +28,7 @@ public class ChatToolsSettingsViewModel : ViewModelBase
 
 	private void InitializeBehaviourItems()
 	{
-		AutoApproveBehaviourItems.Clear();
-		DisallowedBehaviourItems.Clear();
+		PolicyBehaviourItems.Clear();
 
 		foreach (var flag in GetBehaviourFlags())
 		{
@@ -48,14 +42,9 @@ public class ChatToolsSettingsViewModel : ViewModelBase
 			if (description == $"{key}_hint" || string.IsNullOrEmpty(description))
 				description = string.Empty;
 
-			AutoApproveBehaviourItems.Add(new ToolBehaviourItem(
+			PolicyBehaviourItems.Add(new ToolBehaviourPolicyItem(
 				() => ToolSettings.AutoApproveBehaviours,
 				v => ToolSettings.AutoApproveBehaviours = v,
-				flag,
-				displayName,
-				description));
-
-			DisallowedBehaviourItems.Add(new ToolBehaviourItem(
 				() => ToolSettings.DisallowedBehaviours,
 				v => ToolSettings.DisallowedBehaviours = v,
 				flag,

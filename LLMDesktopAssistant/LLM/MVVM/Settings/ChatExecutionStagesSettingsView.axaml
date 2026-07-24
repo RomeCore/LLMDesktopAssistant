@@ -25,87 +25,85 @@
 		</Border>
 
 		<!-- Stages list -->
-		<ScrollViewer Margin="8">
-			<ItemsControl ItemsSource="{Binding Stages}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate DataType="stages:StageContainerViewModel">
-						<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-								BorderThickness="1"
-								CornerRadius="4"
-								Padding="8"
-								Margin="0,0,0,8">
-							<StackPanel>
-								<!-- Stage Header -->
-								<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-										BorderThickness="0,0,0,1"
-										Padding="0,0,0,6"
-										Margin="0,0,0,6">
-									<Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
+		<ItemsControl ItemsSource="{Binding Stages}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate DataType="stages:StageContainerViewModel">
+					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+									BorderThickness="1"
+									CornerRadius="4"
+									Padding="8"
+									Margin="0,0,0,8">
+						<StackPanel>
+							<!-- Stage Header -->
+							<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+											BorderThickness="0,0,0,1"
+											Padding="0,0,0,6"
+											Margin="0,0,0,6">
+								<Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
 
-										<!-- Enabled checkbox -->
-										<CheckBox Grid.Column="0"
-															IsChecked="{Binding Stage.Enabled}"/>
+									<!-- Enabled checkbox -->
+									<CheckBox Grid.Column="0"
+														IsChecked="{Binding Stage.Enabled}"/>
 
-										<!-- Type selector -->
-										<ComboBox Grid.Column="1"
-												  ItemsSource="{Binding AvailableStageTypes}"
-												  SelectedItem="{Binding SelectedType}"
-												  Width="180"
-												  Margin="0,0,8,0">
+									<!-- Type selector -->
+									<ComboBox Grid.Column="1"
+														ItemsSource="{Binding AvailableStageTypes}"
+														SelectedItem="{Binding SelectedType}"
+														Width="180"
+														Margin="0,0,8,0">
 										
-											<ComboBox.ItemTemplate>
-												<DataTemplate DataType="stages:StageTypeOption">
-													<TextBlock Text="{Binding DisplayName}"/>
-												</DataTemplate>
-											</ComboBox.ItemTemplate>
-										</ComboBox>
+										<ComboBox.ItemTemplate>
+											<DataTemplate DataType="stages:StageTypeOption">
+												<TextBlock Text="{Binding DisplayName}"/>
+											</DataTemplate>
+										</ComboBox.ItemTemplate>
+									</ComboBox>
 
-										<!-- Move up -->
-										<Button Grid.Column="3"
-												Command="{Binding MoveUpCommand}"
-												Classes="IconButton"
-												Margin="2,0"
-												ToolTip.Tip="{loc:Loc settings_move_stage_up}">
-											<ico:MaterialIcon Kind="ChevronUp"/>
-										</Button>
+									<!-- Move up -->
+									<Button Grid.Column="3"
+													Command="{Binding MoveUpCommand}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc settings_move_stage_up}">
+										<ico:MaterialIcon Kind="ChevronUp"/>
+									</Button>
 
-										<!-- Move down -->
-										<Button Grid.Column="4"
-												Command="{Binding MoveDownCommand}"
-												Classes="IconButton"
-												Margin="2,0"
-												ToolTip.Tip="{loc:Loc settings_move_stage_down}">
-											<ico:MaterialIcon Kind="ChevronDown"/>
-										</Button>
+									<!-- Move down -->
+									<Button Grid.Column="4"
+													Command="{Binding MoveDownCommand}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc settings_move_stage_down}">
+										<ico:MaterialIcon Kind="ChevronDown"/>
+									</Button>
 
-										<!-- Clone -->
-										<Button Grid.Column="5"
-												Command="{Binding CloneCommand}"
-												Classes="IconButton"
-												Margin="2,0"
-												ToolTip.Tip="{loc:Loc settings_clone_stage}">
-											<ico:MaterialIcon Kind="ContentCopy"/>
-										</Button>
+									<!-- Clone -->
+									<Button Grid.Column="5"
+													Command="{Binding CloneCommand}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc settings_clone_stage}">
+										<ico:MaterialIcon Kind="ContentCopy"/>
+									</Button>
 
-										<!-- Delete -->
-										<Button Grid.Column="6"
-												Command="{Binding DeleteCommand}"
-												Classes="IconButton"
-												Margin="2,0"
-												ToolTip.Tip="{loc:Loc settings_remove_stage}">
-											<ico:MaterialIcon Kind="Delete"/>
-										</Button>
-									</Grid>
-								</Border>
+									<!-- Delete -->
+									<Button Grid.Column="6"
+													Command="{Binding DeleteCommand}"
+													Classes="IconButton"
+													Margin="2,0"
+													ToolTip.Tip="{loc:Loc settings_remove_stage}">
+										<ico:MaterialIcon Kind="Delete"/>
+									</Button>
+								</Grid>
+							</Border>
 
-								<!-- Stage Body - content depends on type -->
-								<ContentControl Content="{Binding StageVM}"/>
-							</StackPanel>
-						</Border>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-		</ScrollViewer>
+							<!-- Stage Body - content depends on type -->
+							<ContentControl Content="{Binding StageVM}"/>
+						</StackPanel>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
 	</DockPanel>
 
 </UserControl>

@@ -93,6 +93,7 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.DirectoryDelete => MaterialIconKind.FolderRemove,
 		ToolBehaviour.ReadSecrets => MaterialIconKind.Key,
 		ToolBehaviour.AccessOutsideWorkdir => MaterialIconKind.ExitRun,
+		ToolBehaviour.WorkdirChange => MaterialIconKind.FolderArrowRight,
 		ToolBehaviour.ClipboardWrite => MaterialIconKind.ClipboardPlus,
 		ToolBehaviour.ClipboardRead => MaterialIconKind.ClipboardText,
 		ToolBehaviour.MCP => MaterialIconKind.Server,
@@ -105,6 +106,7 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.UserInteraction => MaterialIconKind.Account,
 		ToolBehaviour.AgentExecution => MaterialIconKind.Robot,
 		ToolBehaviour.ScriptAccess => MaterialIconKind.Tools,
+
 		_ => MaterialIconKind.HelpCircle
 	};
 
@@ -127,6 +129,7 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.DirectoryEdit => Brushes.Orange,
 		ToolBehaviour.InternetAccess => Brushes.Orange,
 		ToolBehaviour.RunTerminal => Brushes.Orange,
+		ToolBehaviour.WorkdirChange => Brushes.Orange,
 		ToolBehaviour.AccessOutsideWorkdir => Brushes.Orange,
 
 		// Info (blue/cyan)

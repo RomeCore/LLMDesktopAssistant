@@ -9,8 +9,7 @@
 			 x:DataType="local:AgentExecutionConditionsSettingsViewModel">
 
 	<StackPanel Orientation="Vertical"
-				Margin="10"
-				Spacing="10">
+							Margin="8" Spacing="8">
 
 		<!-- Can be mentioned -->
 		<CheckBox IsChecked="{Binding ExecutionConditionsSettings.CanBeMentioned, Mode=TwoWay}"

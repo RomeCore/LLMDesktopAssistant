@@ -9,7 +9,7 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentInfoSettingsView"
 			 x:DataType="local:AgentInfoSettingsViewModel">
 
-	<StackPanel Margin="10" Spacing="12">
+	<StackPanel Margin="8" Spacing="8">
 
 		<!-- ===================== Name ===================== -->
 		<TextBlock Text="{loc:Loc name}"

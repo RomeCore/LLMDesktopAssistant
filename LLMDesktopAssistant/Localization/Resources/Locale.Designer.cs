@@ -1195,6 +1195,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Access denied.
+        /// </summary>
+        public static string env_access_denied {
+            get {
+                return ResourceManager.GetString("env_access_denied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Access rules override default permissions for specific directories. More specific rules (longer paths) take precedence over broader ones. To deny access to a directory, uncheck all permissions (Read, Write, Execute) for that rule..
+        /// </summary>
+        public static string env_access_rules_hint {
+            get {
+                return ResourceManager.GetString("env_access_rules_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Active.
         /// </summary>
         public static string env_active {
@@ -1245,6 +1263,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string env_enabled {
             get {
                 return ResourceManager.GetString("env_enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute.
+        /// </summary>
+        public static string env_execute {
+            get {
+                return ResourceManager.GetString("env_execute", resourceCulture);
             }
         }
         
@@ -1303,6 +1330,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Configure Python virtual environments for script execution. The main venv is used for running Python scripts. An optional separate environment can be specified for meta-tools..
+        /// </summary>
+        public static string env_python_hint {
+            get {
+                return ResourceManager.GetString("env_python_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Path to activate.bat (optional).
         /// </summary>
         public static string env_python_meta_venv_hint {
@@ -1339,6 +1375,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Read.
+        /// </summary>
+        public static string env_read {
+            get {
+                return ResourceManager.GetString("env_read", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Remove.
         /// </summary>
         public static string env_remove {
@@ -1353,6 +1398,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string env_select_script {
             get {
                 return ResourceManager.GetString("env_select_script", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Working directories define folders the assistant can access. The active directory (selected via radio button) serves as the root for relative paths — all file operations use this directory as the base. You can add multiple directories; the agent can switch between them automatically using its tools..
+        /// </summary>
+        public static string env_workdir_hint {
+            get {
+                return ResourceManager.GetString("env_workdir_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Write.
+        /// </summary>
+        public static string env_write {
+            get {
+                return ResourceManager.GetString("env_write", resourceCulture);
             }
         }
         
@@ -3099,6 +3162,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string personality_hint {
             get {
                 return ResourceManager.GetString("personality_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Policy.
+        /// </summary>
+        public static string policy {
+            get {
+                return ResourceManager.GetString("policy", resourceCulture);
             }
         }
         
@@ -5641,6 +5713,42 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Behaviour policy.
+        /// </summary>
+        public static string tool_behaviour_policy {
+            get {
+                return ResourceManager.GetString("tool_behaviour_policy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Auto-approve.
+        /// </summary>
+        public static string tool_behaviour_policy_auto_approve {
+            get {
+                return ResourceManager.GetString("tool_behaviour_policy_auto_approve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Default.
+        /// </summary>
+        public static string tool_behaviour_policy_default {
+            get {
+                return ResourceManager.GetString("tool_behaviour_policy_default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Disallowed.
+        /// </summary>
+        public static string tool_behaviour_policy_disallowed {
+            get {
+                return ResourceManager.GetString("tool_behaviour_policy_disallowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Potentially unexpected actions.
         /// </summary>
         public static string tool_behaviour_possiblyunexpected {
@@ -5731,6 +5839,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Change working directory.
+        /// </summary>
+        public static string tool_behaviour_workdirchange {
+            get {
+                return ResourceManager.GetString("tool_behaviour_workdirchange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool switches the active working directory, affecting the base for all relative file operations..
+        /// </summary>
+        public static string tool_behaviour_workdirchange_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_workdirchange_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Cancel with reason.
         /// </summary>
         public static string tool_cancel_with_reason {
@@ -5799,6 +5925,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string tool_result {
             get {
                 return ResourceManager.GetString("tool-result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tools settings.
+        /// </summary>
+        public static string tool_settings {
+            get {
+                return ResourceManager.GetString("tool_settings", resourceCulture);
             }
         }
         

@@ -230,15 +230,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public AgentToolSettings ToolSettings { get; }
 
 
-		/// <summary>
-		/// List of ToolBehaviour flags for Auto-Approve configuration.
-		/// </summary>
-		public ObservableCollection<ToolBehaviourItem> AutoApproveBehaviourItems { get; } = [];
-
-		/// <summary>
-		/// List of ToolBehaviour flags for Disallowed configuration.
-		/// </summary>
-		public ObservableCollection<ToolBehaviourItem> DisallowedBehaviourItems { get; } = [];
+	/// <summary>
+	/// List of ToolBehaviour flags with combined Auto-Approve / Disallowed policy toggles.
+	/// </summary>
+	public ObservableCollection<ToolBehaviourPolicyItem> PolicyBehaviourItems { get; } = [];
 
 		/// <summary>
 		/// Whether to override the global tool policy for this agent.
@@ -275,10 +270,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			UpdateTools();
 		}
 
-		private void InitializeBehaviourItems()
+	private void InitializeBehaviourItems()
 		{
-			AutoApproveBehaviourItems.Clear();
-			DisallowedBehaviourItems.Clear();
+			PolicyBehaviourItems.Clear();
 
 			foreach (var flag in GetBehaviourFlags())
 			{
@@ -292,14 +286,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				if (description == $"{key}_hint" || string.IsNullOrEmpty(description))
 					description = string.Empty;
 
-				AutoApproveBehaviourItems.Add(new ToolBehaviourItem(
+				PolicyBehaviourItems.Add(new ToolBehaviourPolicyItem(
 					() => ToolSettings.AutoApproveBehaviours,
 					v => ToolSettings.AutoApproveBehaviours = v,
-					flag,
-					displayName,
-					description));
-
-				DisallowedBehaviourItems.Add(new ToolBehaviourItem(
 					() => ToolSettings.DisallowedBehaviours,
 					v => ToolSettings.DisallowedBehaviours = v,
 					flag,

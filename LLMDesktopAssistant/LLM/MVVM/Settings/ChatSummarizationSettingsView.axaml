@@ -10,26 +10,24 @@
 			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatSummarizationSettingsView"
 			 x:DataType="local:ChatSummarizationSettingsViewModel">
 
-	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Orientation="Vertical" Margin="10">
+	<StackPanel Orientation="Vertical" Margin="8" Spacing="8">
 
-			<CheckBox Content="{loc:Loc settings-summarization_enabled}"
-					  IsChecked="{Binding SummarizationSettings.AutoSummarizationEnabled, Mode=TwoWay}"/>
+		<CheckBox Content="{loc:Loc settings-summarization_enabled}"
+					IsChecked="{Binding SummarizationSettings.AutoSummarizationEnabled, Mode=TwoWay}"/>
 
-			<TextBlock Text="{loc:Loc settings-summarization_trigger_tokens_hint}"
-					   Margin="0,15,0,2"/>
-			<NumericUpDown Value="{Binding SummarizationSettings.SummarizationTriggerTokens, Mode=TwoWay}"
-						   Minimum="1024"
-						   Maximum="1024000"
-							 Increment="1024"
-						   FormatString="N0"
-						   HorizontalAlignment="Stretch"/>
+		<TextBlock Text="{loc:Loc settings-summarization_trigger_tokens_hint}"
+					  Margin="0,2"/>
+		<NumericUpDown Value="{Binding SummarizationSettings.SummarizationTriggerTokens, Mode=TwoWay}"
+						  Minimum="1024"
+						  Maximum="1024000"
+							Increment="1024"
+						  FormatString="N0"
+						  HorizontalAlignment="Stretch"/>
 
-			<TextBlock Text="{loc:Loc settings-summarizer_model_hint}"
-					   Margin="0,15,0,2"/>
-			<ctrl:ModelSelectorControl SelectedModel="{Binding SummarizationSettings.SummarizerModel, Mode=TwoWay}"/>
+		<TextBlock Text="{loc:Loc settings-summarizer_model_hint}"
+					  Margin="0,2"/>
+		<ctrl:ModelSelectorControl SelectedModel="{Binding SummarizationSettings.SummarizerModel, Mode=TwoWay}"/>
 
-		</StackPanel>
-	</ScrollViewer>
+	</StackPanel>
 
 </UserControl>

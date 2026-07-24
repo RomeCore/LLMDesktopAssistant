@@ -10,8 +10,7 @@
 			 x:DataType="local:AgentReadSettingsViewModel">
 
 	<StackPanel Orientation="Vertical"
-							Margin="10"
-							Spacing="10">
+							Margin="8" Spacing="8">
 
 		<!-- ===================== Read Permissions ===================== -->
 		<TextBlock Text="{loc:Loc settings_read_permissions}"

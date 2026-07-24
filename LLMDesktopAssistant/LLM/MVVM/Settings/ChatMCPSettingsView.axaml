@@ -12,56 +12,50 @@
 			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatMCPSettingsView"
 			 x:DataType="local:ChatMCPSettingsViewModel">
 
-	<ScrollViewer VerticalScrollBarVisibility="Auto">
+	<StackPanel Margin="8">
 
-		<StackPanel Margin="10">
+		<CheckBox IsChecked="{Binding McpSettings.EnableMcp}"
+							Content="{loc:Loc settings-use_mcp}"/>
 
-			<CheckBox IsChecked="{Binding McpSettings.EnableMcp}"
-					  Content="{loc:Loc settings-use_mcp}"/>
+		<ListBox ItemsSource="{Binding McpServers}"
+						 IsEnabled="{Binding McpSettings.EnableMcp}">
 
-			<ListBox ItemsSource="{Binding McpServers}"
-						  IsEnabled="{Binding McpSettings.EnableMcp}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
 
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<StackPanel/>
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
 
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
+					<Border Margin="0,0,0,8" Padding="10">
 
-						<Border Margin="0,0,0,8"
-								Padding="10"
-								>
+						<StackPanel>
 
-							<StackPanel>
+							<CheckBox Content="{Binding Name}"
+												IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+												FontWeight="Bold"
+												FontSize="14"/>
 
-								<CheckBox Content="{Binding Name}"
-										  IsChecked="{Binding IsEnabled, Mode=TwoWay}"
-										  FontWeight="Bold"
-										  FontSize="14"/>
+							<TextBlock Text="{Binding Endpoint}"
+												 FontSize="12"
+												 Opacity="0.7"
+												 TextTrimming="CharacterEllipsis"/>
 
-								<TextBlock Text="{Binding Endpoint}"
-										   FontSize="12"
-										   Opacity="0.7"
-										   TextTrimming="CharacterEllipsis"/>
+							<TextBlock Text="{Binding ConnectionType}"
+												 FontSize="11"
+												 Opacity="0.5"/>
 
-								<TextBlock Text="{Binding ConnectionType}"
-										   FontSize="11"
-										   Opacity="0.5"/>
+						</StackPanel>
 
-							</StackPanel>
+					</Border>
 
-						</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
 
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
+		</ListBox>
 
-			</ListBox>
-
-		</StackPanel>
-
-	</ScrollViewer>
+	</StackPanel>
 
 </UserControl>
