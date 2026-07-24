@@ -1776,6 +1776,12 @@
   <data name="tool_behaviour_clipboardread_hint" xml:space="preserve">
     <value>The tool reads text data from the clipboard.</value>
   </data>
+  <data name="tool_behaviour_workdirchange" xml:space="preserve">
+    <value>Change working directory</value>
+  </data>
+  <data name="tool_behaviour_workdirchange_hint" xml:space="preserve">
+    <value>The tool switches the active working directory, affecting the base for all relative file operations.</value>
+  </data>
   <data name="tool_behaviour_mcp" xml:space="preserve">
     <value>MCP (external server)</value>
   </data>
@@ -2265,6 +2271,16 @@
   <data name="wd-switch" xml:space="preserve">
     <value>Switch working directory</value>
   </data>
+  <data name="env_workdir_hint" xml:space="preserve">
+    <value>Working directories define folders the assistant can access. The active directory (selected via radio button) serves as the root for relative paths — all file operations use this directory as the base. You can add multiple directories; the agent can switch between them automatically using its tools.</value>
+  </data>
+  <data name="env_access_rules_hint" xml:space="preserve">
+    <value>Access rules override default permissions for specific directories. More specific rules (longer paths) take precedence over broader ones. To deny access to a directory, uncheck all permissions (Read, Write, Execute) for that rule.</value>
+  </data>
+  <data name="env_python_hint" xml:space="preserve">
+    <value>Configure Python virtual environments for script execution. The main venv is used for running Python scripts. An optional separate environment can be specified for meta-tools.</value>
+  </data>
+
   <data name="env_name" xml:space="preserve">
     <value>Name</value>
   </data>

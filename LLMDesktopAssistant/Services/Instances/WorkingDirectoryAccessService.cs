@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using System;
@@ -46,7 +46,7 @@ namespace LLMDesktopAssistant.Services.Instances
 			// Any of working directories are allowed to access.
 			foreach (var wd in chat.Settings.Environment.WorkingDirectories)
 			{
-				if (wd.IsEnabled && !string.IsNullOrEmpty(wd.Path) && fullPath.StartsWith(wd.Path))
+				if (wd.IsEnabled && !string.IsNullOrEmpty(wd.Path) && IsSubdirectoryOf(wd.Path, fullPath))
 				{
 					isAccessed = true;
 					break;
@@ -57,7 +57,7 @@ namespace LLMDesktopAssistant.Services.Instances
 			// then calculate by access mode with overrides.
 			foreach (var access in chat.Settings.Environment.DirectoryAccessRules.OrderBy(a => a.Path?.Length ?? 0))
 			{
-				if (string.IsNullOrEmpty(access.Path) || !access.IsEnabled || !fullPath.StartsWith(access.Path))
+				if (!access.IsEnabled || string.IsNullOrEmpty(access.Path) || !IsSubdirectoryOf(access.Path, fullPath))
 					continue;
 
 				if (access.AccessMode == DirectoryAccessMode.None)
@@ -67,10 +67,30 @@ namespace LLMDesktopAssistant.Services.Instances
 					continue;
 				}
 
-				isAccessed = isAccessed || (access.AccessMode & mode) != 0;
+				isAccessed = (access.AccessMode & mode) != 0;
 			}
 
 			return fullPath;
+		}
+
+		private static readonly StringComparison _pathComparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+		private static bool IsSubdirectoryOf(string baseDir, string fullPath)
+		{
+			// Normalize both paths to absolute, canonical form.
+			// This resolves relative segments (., ..) and standardizes separators.
+			var normalizedBase = Path.GetFullPath(baseDir).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+			var normalizedFull = Path.GetFullPath(fullPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+			// Exact match — accessing the root itself.
+			if (string.Equals(normalizedBase, normalizedFull, _pathComparison))
+				return true;
+
+			// Check that fullPath starts with baseDir followed by a separator.
+			// This prevents partial-name collisions like "C:\Projects" matching "C:\ProjectsSomething".
+			return normalizedFull.StartsWith(
+				normalizedBase + Path.DirectorySeparatorChar,
+				_pathComparison);
 		}
 	}
 }

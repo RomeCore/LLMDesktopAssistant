@@ -1776,6 +1776,12 @@
   <data name="tool_behaviour_clipboardread_hint" xml:space="preserve">
     <value>Инструмент читает текстовые данные из буфера обмена.</value>
   </data>
+  <data name="tool_behaviour_workdirchange" xml:space="preserve">
+    <value>Смена рабочей директории</value>
+  </data>
+  <data name="tool_behaviour_workdirchange_hint" xml:space="preserve">
+    <value>Инструмент переключает активную рабочую директорию, изменяя базу для всех относительных файловых операций.</value>
+  </data>
   <data name="tool_behaviour_mcp" xml:space="preserve">
     <value>MCP (внешний сервер)</value>
   </data>
@@ -2268,6 +2274,16 @@
   <data name="workdir" xml:space="preserve">
     <value>Рабочие директории</value>
   </data>
+  <data name="env_workdir_hint" xml:space="preserve">
+    <value>Рабочие директории определяют папки, к которым ассистент имеет доступ. Активная директория (выбранная радиокнопкой) используется как корень для относительных путей — все файловые операции используют эту директорию как базовую. Можно добавить несколько директорий; агент может переключаться между ними автоматически с помощью своих инструментов.</value>
+  </data>
+  <data name="env_access_rules_hint" xml:space="preserve">
+    <value>Правила доступа переопределяют стандартные разрешения для конкретных директорий. Более специфичные правила (с более длинным путём) имеют приоритет над общими. Чтобы запретить доступ к директории, снимите все разрешения (Чтение, Запись, Выполнение) для этого правила.</value>
+  </data>
+  <data name="env_python_hint" xml:space="preserve">
+    <value>Настройте виртуальные окружения Python для выполнения скриптов. Основное venv используется для запуска Python-скриптов. Отдельное окружение для мета-инструментов можно указать опционально.</value>
+  </data>
+
   <data name="env_name" xml:space="preserve">
     <value>Название</value>
   </data>

@@ -73,24 +73,29 @@ public enum ToolBehaviour
 	ReadSecrets = 1 << 7,
 
 	/// <summary>
-	/// The tool accesses locations outside the configured working directory
+	/// The tool accesses locations outside the configured working directory (including rules)
 	/// (e.g., system paths, user home, temporary folders).
 	/// This may indicate potential sandbox escape or unintended data exposure.
 	/// </summary>
 	AccessOutsideWorkdir = 1 << 8,
 
 	/// <summary>
+	/// The tool changes the current working directory from the list of allowed paths.
+	/// </summary>
+	WorkdirChange = 1 << 9,
+
+	/// <summary>
 	/// The tool writes text data to the clipboard.
 	/// Examples: <c>clipboard-copy</c>.
 	/// </summary>
-	ClipboardWrite = 1 << 9,
+	ClipboardWrite = 1 << 10,
 
 	/// <summary>
 	/// The tool reads text data from the clipboard.
 	/// This may involve reading sensitive data (passwords, tokens, etc.).
 	/// Examples: <c>clipboard-read</c>.
 	/// </summary>
-	ClipboardRead = 1 << 10,
+	ClipboardRead = 1 << 11,
 
 	// ────────────────────────────── Network ─────────────────────────────────
 
@@ -99,7 +104,7 @@ public enum ToolBehaviour
 	/// Includes HTTP requests, web searches, file downloads, and webhook calls.
 	/// Examples: <c>web-fetch</c>, <c>web-search</c>, <c>web-download</c>.
 	/// </summary>
-	InternetAccess = 1 << 11,
+	InternetAccess = 1 << 12,
 
 	// ────────────────────────────── Performance ─────────────────────────────
 
@@ -109,7 +114,7 @@ public enum ToolBehaviour
 	/// or network latency. Examples: <c>fs-grep</c> on large codebase,
 	/// large file downloads, AI model inference (image description).
 	/// </summary>
-	LongRunningTask = 1 << 12,
+	LongRunningTask = 1 << 13,
 
 	// ────────────────────────────── Execution ───────────────────────────────
 
@@ -118,13 +123,13 @@ public enum ToolBehaviour
 	/// This includes running shell commands, scripts, or binaries.
 	/// Examples: <c>execute-shell</c>, <c>execute-python</c>.
 	/// </summary>
-	ExecuteExternalProcess = 1 << 13,
+	ExecuteExternalProcess = 1 << 14,
 
 	/// <summary>
 	/// The tool may perform actions that are potentially unexpected or uncontrollable,
 	/// such as executing scripts that is not analyzed yet.
 	/// </summary>
-	PossiblyUnexpected = 1 << 14,
+	PossiblyUnexpected = 1 << 15,
 
 	/// <summary>
 	/// The tool runs commands in an embedded terminal emulator with
@@ -132,7 +137,7 @@ public enum ToolBehaviour
 	/// and potential for arbitrary command execution.
 	/// Examples: <c>execute-shell</c> with <c>runTerminal: true</c>.
 	/// </summary>
-	RunTerminal = 1 << 15,
+	RunTerminal = 1 << 16,
 
 	// ────────────────────────────── User Interaction ────────────────────────
 
@@ -140,7 +145,7 @@ public enum ToolBehaviour
 	/// The tool requires special user input, such as prompts for confirmation, various forms,
 	/// file uploads, or custom UI elements. Examples: <c>forms-input</c>, <c>forms-submit</c>.
 	/// </summary>
-	UserInteraction = 1 << 16,
+	UserInteraction = 1 << 17,
 
 	// ────────────────────────────── Agents ──────────────────────────────────
 
@@ -150,7 +155,7 @@ public enum ToolBehaviour
 	/// carefully monitored to prevent runaway agent loops.
 	/// Examples: <c>agent-describe_image</c>, agent delegation calls.
 	/// </summary>
-	AgentExecution = 1 << 17,
+	AgentExecution = 1 << 18,
 
 	// ────────────────────────────── Meta ────────────────────────────────────
 
@@ -161,7 +166,7 @@ public enum ToolBehaviour
 	/// it can alter the assistant's capabilities on the fly.
 	/// Examples: <c>metatools-create_or_update</c>, <c>metatools-delete</c>, <c>lua-register_or_update_script</c>.
 	/// </summary>
-	ScriptAccess = 1 << 18,
+	ScriptAccess = 1 << 19,
 
 	// ────────────────────────────── Source ─────────────────────────────────
 

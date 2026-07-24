@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using LLMDesktopAssistant.LLM.Domain;
 using Material.Icons;
 
@@ -26,7 +26,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "wd-switch",
 					Description = "Switches the working directory for the current chat session.",
-					Category = "workdir"
+					Category = "workdir",
+					DefaultExpectedBehaviour = ToolBehaviour.WorkdirChange,
+					SynchronizationGroup = "wd-switch" // Prevent parallel execution of this tool
 				});
 		}
 
