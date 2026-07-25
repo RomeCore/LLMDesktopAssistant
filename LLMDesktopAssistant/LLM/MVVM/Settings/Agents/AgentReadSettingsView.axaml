@@ -14,25 +14,25 @@
 
 		<!-- ===================== Read Permissions ===================== -->
 		<TextBlock Text="{loc:Loc settings_read_permissions}"
-					  FontWeight="Bold"
-					  FontSize="{DynamicResource FontSizeL}"
-					  Margin="0,5,0,0"/>
+							 FontWeight="Bold"
+							 FontSize="{DynamicResource FontSizeL}"
+							 Margin="0,5,0,0"/>
 
 		<TextBlock Text="{loc:Loc settings_read_permissions_hint}"
-					  Opacity="0.6"
-					  TextWrapping="Wrap"/>
+							 Opacity="0.6"
+							 TextWrapping="Wrap"/>
 
 		<ItemsControl ItemsSource="{Binding ReadPermissionItems}">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate x:DataType="local:ReadPermissionItem">
 					<StackPanel Orientation="Vertical" Margin="0,2">
 						<CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"
-									Content="{Binding DisplayName}"/>
+											Content="{Binding DisplayName}"/>
 						<TextBlock Text="{Binding Description}"
-									  Opacity="0.5"
-									  FontSize="11"
-									  Margin="24,0,0,4"
-									  TextWrapping="Wrap"/>
+											 Opacity="0.5"
+											 FontSize="11"
+											 Margin="24,0,0,4"
+											 TextWrapping="Wrap"/>
 					</StackPanel>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
@@ -40,31 +40,31 @@
 
 		<!-- Separator -->
 		<Rectangle Height="1"
-					  Fill="{DynamicResource DefaultForeground}"
-					  Opacity="0.2"
-					  Margin="0,10"/>
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"
+							 Margin="0,10"/>
 
 		<!-- ===================== Exposure Mode ===================== -->
 		<TextBlock Text="{loc:Loc settings_exposure_mode}"
-					  FontWeight="Bold"
-					  FontSize="{DynamicResource FontSizeL}"
-					  Margin="0,5,0,0"/>
+							 FontWeight="Bold"
+							 FontSize="{DynamicResource FontSizeL}"
+							 Margin="0,5,0,0"/>
 
 		<TextBlock Text="{loc:Loc settings_exposure_mode_hint}"
-					  Opacity="0.6"
-					  TextWrapping="Wrap"/>
+							 Opacity="0.6"
+							 TextWrapping="Wrap"/>
 
 		<ItemsControl ItemsSource="{Binding ExposureModeItems}">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate x:DataType="local:ExposureModeItem">
 					<StackPanel Orientation="Vertical" Margin="0,2">
 						<CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"
-									Content="{Binding DisplayName}"/>
+											Content="{Binding DisplayName}"/>
 						<TextBlock Text="{Binding Description}"
-									  Opacity="0.5"
-									  FontSize="11"
-									  Margin="24,0,0,4"
-									  TextWrapping="Wrap"/>
+											 Opacity="0.5"
+											 FontSize="11"
+											 Margin="24,0,0,4"
+											 TextWrapping="Wrap"/>
 					</StackPanel>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
@@ -72,19 +72,19 @@
 
 		<!-- Separator -->
 		<Rectangle Height="1"
-					  Fill="{DynamicResource DefaultForeground}"
-					  Opacity="0.2"
-					  Margin="0,10"/>
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"
+							 Margin="0,10"/>
 
 		<!-- ===================== Agent Filter ===================== -->
 		<TextBlock Text="{loc:Loc settings_agent_read_filter}"
-					  FontWeight="Bold"
-					  FontSize="{DynamicResource FontSizeL}"
-					  Margin="0,5,0,0"/>
+							 FontWeight="Bold"
+							 FontSize="{DynamicResource FontSizeL}"
+							 Margin="0,5,0,0"/>
 
 		<TextBlock Text="{loc:Loc settings_agent_read_filter_hint}"
-					  Opacity="0.6"
-					  TextWrapping="Wrap"/>
+							 Opacity="0.6"
+							 TextWrapping="Wrap"/>
 
 		<DockPanel>
 				
@@ -96,14 +96,14 @@
 				</Grid.ColumnDefinitions>
 
 				<TextBlock Grid.Column="0"
-								Text="{loc:Loc settings_filter_mode}"
-								VerticalAlignment="Center"
-								Margin="0,0,8,0"/>
+									 Text="{loc:Loc settings_filter_mode}"
+									 VerticalAlignment="Center"
+									 Margin="0,0,8,0"/>
 
 				<ComboBox Grid.Column="1"
-							SelectedIndex="{Binding FilterModeIndex, Mode=TwoWay}"
-							Width="160"
-							HorizontalAlignment="Left">
+									SelectedIndex="{Binding FilterModeIndex, Mode=TwoWay}"
+									Width="160"
+									HorizontalAlignment="Left">
 					<ComboBox.Items>
 						<ComboBoxItem Content="{loc:Loc settings_filter_whitelist}"/>
 						<ComboBoxItem Content="{loc:Loc settings_filter_blacklist}"/>
@@ -114,13 +114,13 @@
 			<!-- Select / Deselect all buttons -->
 			<StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Left" DockPanel.Dock="Left">
 				<Button Command="{Binding SelectAllAgentsCommand}"
-						Classes="IconButton"
-						ToolTip.Tip="{loc:Loc settings_select_all}">
+								Classes="IconButton"
+								ToolTip.Tip="{loc:Loc settings_select_all}">
 					<ico:MaterialIcon Kind="CheckAll"/>
 				</Button>
 				<Button Command="{Binding DeselectAllAgentsCommand}"
-						Classes="IconButton"
-						ToolTip.Tip="{loc:Loc settings_deselect_all}">
+								Classes="IconButton"
+								ToolTip.Tip="{loc:Loc settings_deselect_all}">
 					<ico:MaterialIcon Kind="CloseBoxMultiple"/>
 				</Button>
 			</StackPanel>
@@ -129,10 +129,10 @@
 
 		<!-- Agent filter list -->
 		<Border BorderBrush="{DynamicResource DefaultForeground}"
-				BorderThickness="1"
-				CornerRadius="4"
-				Padding="6"
-				MaxHeight="250">
+						BorderThickness="1"
+						CornerRadius="4"
+						Padding="6"
+						MaxHeight="250">
 			<ScrollViewer VerticalScrollBarVisibility="Auto">
 				<ItemsControl ItemsSource="{Binding AgentFilterItems}">
 					<ItemsControl.ItemTemplate>
@@ -165,9 +165,9 @@
 
 		<!-- ===================== Context ===================== -->
 		<TextBlock Text="{loc:Loc settings_context}"
-					  FontWeight="Bold"
-					  FontSize="{DynamicResource FontSizeL}"
-					  Margin="0,5,0,0"/>
+							 FontWeight="Bold"
+							 FontSize="{DynamicResource FontSizeL}"
+							 Margin="0,5,0,0"/>
 
 		<Grid>
 			<Grid.ColumnDefinitions>
@@ -176,40 +176,40 @@
 			</Grid.ColumnDefinitions>
 
 			<TextBlock Grid.Column="0"
-						  Text="{loc:Loc settings_max_visible_rounds}"
-						  VerticalAlignment="Center"
-						  Margin="0,0,8,0"/>
+								 Text="{loc:Loc settings_max_visible_rounds}"
+								 VerticalAlignment="Center"
+								 Margin="0,0,8,0"/>
 
 			<NumericUpDown Grid.Column="1"
-							Value="{Binding ReadSettings.MaxVisibleRounds, Mode=TwoWay}"
-							Minimum="0"
-							Maximum="999"
-							Width="120"
-							HorizontalAlignment="Left"/>
+										 Value="{Binding ReadSettings.MaxVisibleRounds, Mode=TwoWay}"
+										 Minimum="0"
+										 Maximum="999"
+										 Width="120"
+										 HorizontalAlignment="Left"/>
 		</Grid>
 			
 		<TextBlock Text="{loc:Loc settings_max_visible_rounds_hint}"
-					  Opacity="0.5"
-					  FontSize="11"
-					  Margin="24,0,0,4"/>
+							 Opacity="0.5"
+							 FontSize="11"
+							 Margin="24,0,0,4"/>
 
 		<CheckBox IsChecked="{Binding ReadSettings.AllowContextShields, Mode=TwoWay}"
-					Content="{loc:Loc settings_allow_context_shields}"
-					Margin="0,2"/>
+							Content="{loc:Loc settings_allow_context_shields}"
+							Margin="0,2"/>
 		<TextBlock Text="{loc:Loc settings_allow_context_shields_hint}"
-					  Opacity="0.5"
-					  FontSize="11"
-					  Margin="24,0,0,4"
-					  TextWrapping="Wrap"/>
+							 Opacity="0.5"
+							 FontSize="11"
+							 Margin="24,0,0,4"
+							 TextWrapping="Wrap"/>
 
 		<CheckBox IsChecked="{Binding ReadSettings.AllowSummaries, Mode=TwoWay}"
-					Content="{loc:Loc settings_allow_summaries}"
-					Margin="0,2"/>
+							Content="{loc:Loc settings_allow_summaries}"
+							Margin="0,2"/>
 		<TextBlock Text="{loc:Loc settings_allow_summaries_hint}"
-					  Opacity="0.5"
-					  FontSize="11"
-					  Margin="24,0,0,4"
-					  TextWrapping="Wrap"/>
+							 Opacity="0.5"
+							 FontSize="11"
+							 Margin="24,0,0,4"
+							 TextWrapping="Wrap"/>
 
 	</StackPanel>
 

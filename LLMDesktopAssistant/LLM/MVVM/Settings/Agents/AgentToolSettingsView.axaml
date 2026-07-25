@@ -19,6 +19,11 @@
 		<CheckBox IsChecked="{Binding ToolSettings.EnableTools}"
 							Content="{loc:Loc settings-use_tools}"/>
 		
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"/>
+
 		<TextBlock Text="{loc:Loc tool_behaviour_policy}"
 							 FontSize="{DynamicResource FontSizeL}"
 							 FontWeight="Bold"/>
@@ -103,6 +108,11 @@
 
 		</StackPanel>
 		
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"/>
+
 		<TextBlock Text="{loc:Loc tool_settings}"
 							 FontSize="{DynamicResource FontSizeL}"
 							 FontWeight="Bold"/>

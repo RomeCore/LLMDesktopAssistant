@@ -11,7 +11,8 @@
 			 x:Name="AgentsView"
 			 x:DataType="local:ChatAgentsSettingsViewModel">
 
-	<StackPanel Orientation="Vertical">
+	<StackPanel Orientation="Vertical" Spacing="8">
+
 		<!-- Toolbar -->
 		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
 						BorderThickness="0,0,0,1"
