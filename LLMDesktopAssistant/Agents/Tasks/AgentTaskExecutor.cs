@@ -1,10 +1,20 @@
-﻿using LLMDesktopAssistant.Services;
+﻿using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Providers;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Utils;
+using RCLargeLanguageModels;
+using RCLargeLanguageModels.Messages;
+using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Tasks;
+using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {
 	[Service(typeof(IAgentTaskExecutor))]
-	public class AgentTaskExecutor : IAgentTaskExecutor
+	public class AgentTaskExecutor(
+		IModelManager modelManager
+	) : IAgentTaskExecutor
 	{
 		public AgentTask Execute(AgentTaskLaunchParameters parameters, CancellationToken cancellationToken = default)
 		{
@@ -18,25 +28,370 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			};
 			task.Messages.AddRange(parameters.InitialMessages);
 
+			var model = modelManager.GetModel(parameters.ModelName)
+				.WithTools(parameters.Tools.Select(t => new FunctionTool(t.Name, t.Description, t.ArgumentSchema,
+					(_, _) => throw new Exception("This tool is not expected to be invoked directly."))));
+
+			var tools = parameters.Tools.ToImmutableDictionary(k => k.Name);
+
+			var nativeMessages = new List<IMessage>();
+			foreach (var message in task.Messages)
+				nativeMessages.AddRange(ConvertMessageFromAgent(message));
+
 			Task.Run(async () =>
 			{
 				try
 				{
-					// TODO: Implement task execution logic here.
-
+					await ExecuteAsync(task, model, tools, nativeMessages);
 					completionSource.Complete();
 				}
 				catch (Exception ex)
 				{
 					completionSource.Fail(ex);
 				}
-				finally
-				{
-
-				}
 			}, CancellationToken.None);
 
 			return task;
+		}
+
+		private async Task ExecuteAsync(AgentTask task, LLModel model,
+			ImmutableDictionary<string, AgentTool> tools, List<IMessage> nativeMessages)
+		{
+			var cancellationToken = task.CancellationTokenSource.Token;
+
+			while (true)
+			{
+				var response = await model.ChatStreamingAsync(nativeMessages);
+				var responseMessage = response.Message;
+				nativeMessages.Add(responseMessage);
+
+				var agentMessage = new AgentAssistantMessage
+				{
+					ReasoningContent = responseMessage.ReasoningContent,
+					Content = responseMessage.Content
+				};
+				agentMessage.Attachments.AddRange(responseMessage.Attachments
+					.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
+				var toolCallTasks = responseMessage.ToolCalls.Select(tc =>
+					ExecuteToolAsync(tc, agentMessage, task, tools, cancellationToken)).ToList();
+				task.Messages.Add(agentMessage);
+
+				void PartAdded(object? sender, AssistantMessageDelta delta)
+				{
+					if (delta.DeltaReasoningContent != null)
+						agentMessage.ReasoningContent = responseMessage.ReasoningContent;
+
+					if (delta.DeltaContent != null)
+						agentMessage.Content = responseMessage.Content;
+
+					if (delta.NewAttachments != null)
+						agentMessage.Attachments.AddRange(delta.NewAttachments
+							.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
+
+					if (delta.NewToolCalls != null)
+						foreach (var toolCall in delta.NewToolCalls)
+							toolCallTasks.Add(ExecuteToolAsync(toolCall, agentMessage, task, tools, cancellationToken));
+				}
+				responseMessage.PartAdded += PartAdded;
+
+				try
+				{
+					await responseMessage;
+					nativeMessages.AddRange(await Task.WhenAll(toolCallTasks));
+				}
+				finally
+				{
+					responseMessage.PartAdded -= PartAdded;
+				}
+
+				if (agentMessage.ToolCalls.Count == 0)
+					break;
+			}
+		}
+
+		private async Task<IToolMessage> ExecuteToolAsync(IToolCall toolCall, AgentAssistantMessage message,
+			AgentTask task, ImmutableDictionary<string, AgentTool> tools, CancellationToken cancellationToken = default)
+		{
+			if (toolCall is not IFunctionToolCall functionCall)
+				throw new ArgumentException($"Tool call '{toolCall}' is not a function tool call.");
+
+			var agentToolCall = new AgentToolCall
+			{
+				Status = AgentToolCallStatus.Pending,
+				ToolCallId = toolCall.Id,
+				ToolName = toolCall.ToolName,
+				Arguments = functionCall.Args,
+				Result = null
+			};
+			message.ToolCalls.Add(agentToolCall);
+
+			if (functionCall is PartialFunctionToolCall partialFunctionCall)
+			{
+				void ArgsPartAdded(object? sender, string e)
+				{
+					agentToolCall.Arguments = functionCall.Args;
+				}
+				partialFunctionCall.ArgsPartAdded += ArgsPartAdded;
+
+				try
+				{
+					await partialFunctionCall;
+				}
+				finally
+				{
+					partialFunctionCall.ArgsPartAdded -= ArgsPartAdded;
+				}
+			}
+
+			if (!tools.TryGetValue(toolCall.ToolName, out var tool))
+			{
+				agentToolCall.Result = new AgentToolCallResult
+				{
+					Success = false,
+					Content = $"Tool '{toolCall.ToolName}' not found."
+				};
+				agentToolCall.Status = AgentToolCallStatus.Failed;
+				return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
+					toolCall.Id, toolCall.ToolName);
+			}
+
+			JsonNode? args;
+			try
+			{
+				args = TolerantJsonParser.Parse(functionCall.Args);
+			}
+			catch (Exception ex)
+			{
+				agentToolCall.Result = new AgentToolCallResult
+				{
+					Success = false,
+					Content = $"Failed to parse args: " + ex.Message
+				};
+				agentToolCall.Status = AgentToolCallStatus.Failed;
+				return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
+					toolCall.Id, toolCall.ToolName);
+			}
+
+			agentToolCall.Status = AgentToolCallStatus.PreExecuting;
+			try
+			{
+				var previewResult = await tool.PreExecuteAsync(args, cancellationToken);
+
+				if (previewResult.InterruptingSuccess != null)
+				{
+					agentToolCall.Result = new AgentToolCallResult
+					{
+						Success = previewResult.InterruptingSuccess.Value,
+						Content = string.IsNullOrEmpty(previewResult.InterruptingContent) ?
+							(previewResult.InterruptingSuccess.Value ? "Tool execution completed." : "Tool execution failed.")
+							: previewResult.InterruptingContent,
+						Attachments = previewResult.InterruptingAttachments
+					};
+					agentToolCall.Status = previewResult.InterruptingSuccess.Value ? AgentToolCallStatus.Success : AgentToolCallStatus.Failed;
+					return new ToolMessage(new ToolResult(previewResult.InterruptingSuccess.Value ? ToolResultStatus.Success : ToolResultStatus.Error,
+						agentToolCall.Result.Content, agentToolCall.Result.Attachments.Select(ConvertAttachmentFromAgent)), toolCall.Id, toolCall.ToolName);
+				}
+
+				var approvalLevel = tool.ApprovalLevel;
+				bool requireConfirmation, disallow = false;
+				switch (approvalLevel)
+				{
+					case ToolApprovalLevel.AlwaysApprove:
+						requireConfirmation = false;
+						break;
+
+					case ToolApprovalLevel.AlwaysAsk:
+						requireConfirmation = true;
+						break;
+
+					case ToolApprovalLevel.AlwaysDisallow:
+						agentToolCall.Result = new AgentToolCallResult
+						{
+							Success = false,
+							Content = "The tool execution is disallowed by the tool's approval policy."
+						};
+						agentToolCall.Status = AgentToolCallStatus.Failed;
+						return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
+							toolCall.Id, toolCall.ToolName);
+
+					default:
+						throw new ArgumentOutOfRangeException(nameof(approvalLevel), $"Invalid approval level for a tool: {approvalLevel}");
+
+					case ToolApprovalLevel.PolicyBased:
+					case ToolApprovalLevel.PolicyApproveOrAsk:
+					case ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed:
+					case ToolApprovalLevel.PolicyAutoDisallowUnlessApproved:
+					case ToolApprovalLevel.PolicyAskOrDisallow:
+
+						ToolBehaviour autoApproveBehaviours = task.LaunchParameters.AutoApproveBehaviours,
+							disallowedBehaviours = task.LaunchParameters.DisallowedBehaviours;
+
+						disallow = (disallowedBehaviours & previewResult.ExpectedBehaviour) != 0;
+						bool autoApprove = (autoApproveBehaviours & previewResult.ExpectedBehaviour) == previewResult.ExpectedBehaviour;
+
+						switch (approvalLevel)
+						{
+							case ToolApprovalLevel.PolicyApproveOrAsk:
+								disallow = false;
+								break;
+
+							case ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed:
+								autoApprove = true;
+								break;
+
+							case ToolApprovalLevel.PolicyAutoDisallowUnlessApproved:
+								disallow = !autoApprove;
+								break;
+
+							case ToolApprovalLevel.PolicyAskOrDisallow:
+								autoApprove = false;
+								break;
+						}
+
+						if (disallow)
+						{
+							agentToolCall.Result = new AgentToolCallResult
+							{
+								Success = false,
+								Content = $"The tool execution is disallowed by the agent's settings policy. " +
+									$"Policy disallows: {disallowedBehaviours}; the tool expected behaviour: {previewResult.ExpectedBehaviour}."
+							};
+							agentToolCall.Status = AgentToolCallStatus.Failed;
+							return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
+								toolCall.Id, toolCall.ToolName);
+						}
+
+						requireConfirmation = !autoApprove;
+						break;
+				}
+
+				string? additionalNotes = null;
+
+				if (requireConfirmation)
+				{
+					var request = new AgentToolCallConfirmationRequest
+					{
+						ToolCall = agentToolCall,
+						ConfirmationSource = new TaskCompletionSource<ToolConsentResult>()
+					};
+
+					task.ToolCallConfirmationRequests.Add(request);
+					try
+					{
+						var confirmationResult = await request.ConfirmationSource.Task.WaitAsync(cancellationToken);
+
+						if (!confirmationResult.IsApproved)
+						{
+							agentToolCall.Result = new AgentToolCallResult
+							{
+								Success = false,
+								Content = string.IsNullOrEmpty(confirmationResult.Notes) ?
+									$"User denied the tool execution. Reason: {confirmationResult.Notes}." :
+									"User denied the tool execution without the reason."
+							};
+							agentToolCall.Status = AgentToolCallStatus.Failed;
+							return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
+								toolCall.Id, toolCall.ToolName);
+						}
+
+						additionalNotes = confirmationResult.Notes;
+					}
+					finally
+					{
+						task.ToolCallConfirmationRequests.Remove(request);
+					}
+				}
+
+				var result = await tool.ExecuteAsync(args, previewResult.SharedContext, cancellationToken);
+
+				agentToolCall.Result = new AgentToolCallResult
+				{
+					Success = result.Success,
+					Content = string.IsNullOrEmpty(additionalNotes) ?
+						$"{result.Content}\nUser has provided additional notes: {additionalNotes}." :
+						result.Content,
+					Attachments = result.Attachments
+				};
+				agentToolCall.Status = result.Success ? AgentToolCallStatus.Success : AgentToolCallStatus.Failed;
+				return new ToolMessage(new ToolResult(result.Success ? ToolResultStatus.Success : ToolResultStatus.Error,
+					agentToolCall.Result.Content, agentToolCall.Result.Attachments.Select(ConvertAttachmentFromAgent)), toolCall.Id, toolCall.ToolName);
+			}
+			catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
+			{
+				throw;
+			}
+			catch (OperationCanceledException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				agentToolCall.Result = new AgentToolCallResult
+				{
+					Success = false,
+					Content = $"Tool execution failed: " + ex.Message
+				};
+				agentToolCall.Status = AgentToolCallStatus.Failed;
+				return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
+					toolCall.Id, toolCall.ToolName);
+			}
+		}
+
+		private static IEnumerable<IMessage> ConvertMessageFromAgent(AgentChatMessage agentMessage)
+		{
+			switch (agentMessage)
+			{
+				case AgentSystemMessage systemMessage:
+					return [new SystemMessage(systemMessage.Content ?? string.Empty)];
+
+				case AgentUserMessage userMessage:
+					return [new UserMessage(Senders.User, userMessage.Content ?? string.Empty,
+						userMessage.Attachments.Select(ConvertAttachmentFromAgent))];
+
+				case AgentAssistantMessage assistantMessage:
+
+					var toolCalls = new List<IToolCall>();
+					var toolMessages = new List<IMessage>();
+
+					foreach (var toolCall in assistantMessage.ToolCalls)
+					{
+						toolCalls.Add(new FunctionToolCall(toolCall.ToolCallId, toolCall.ToolName, toolCall.Arguments));
+						toolMessages.Add(new ToolMessage(ConvertToolResultFromAgent(toolCall.Result), toolCall.ToolCallId, toolCall.ToolName));
+					}
+
+					var nativeAssistantMessage = new AssistantMessage(assistantMessage.Content, assistantMessage.ReasoningContent,
+						toolCalls, assistantMessage.Attachments.Select(ConvertAttachmentFromAgent));
+
+					return [nativeAssistantMessage, ..toolMessages];
+
+				default:
+					throw new ArgumentOutOfRangeException(nameof(agentMessage), $"Unknown message type: {agentMessage.GetType()}");
+			}
+		}
+
+		private static ToolResult ConvertToolResultFromAgent(AgentToolCallResult? agentToolResult)
+		{
+			if (agentToolResult == null)
+				return new ToolResult(ToolResultStatus.NoResult, "Tool call has given no result.");
+
+			var status = agentToolResult.Success ? ToolResultStatus.Success : ToolResultStatus.Error;
+			return new ToolResult(status, agentToolResult.Content, agentToolResult.Attachments.Select(ConvertAttachmentFromAgent));
+		}
+
+		private static IAttachment ConvertAttachmentFromAgent(AgentAttachment agentAttachment)
+		{
+			switch (agentAttachment.Type)
+			{
+				case AgentAttachmentType.Image:
+					return new ImageAttachment(agentAttachment.Url);
+				case AgentAttachmentType.Audio:
+					return new AudioAttachment(agentAttachment.Url);
+				case AgentAttachmentType.Video:
+					return new VideoAttachment(agentAttachment.Url);
+
+				default:
+					throw new ArgumentOutOfRangeException(nameof(agentAttachment), $"Unknown attachment type: {agentAttachment.Type}");
+			}
 		}
 	}
 }

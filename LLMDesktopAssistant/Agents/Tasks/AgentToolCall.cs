@@ -15,31 +15,21 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			set => SetProperty(ref _status, value);
 		}
 
-		private string _toolCallId = string.Empty;
 		/// <summary>
 		/// The tool call ID. This is a unique identifier for the tool call.
 		/// </summary>
-		public string ToolCallId
-		{
-			get => _toolCallId;
-			set => SetProperty(ref _toolCallId, value);
-		}
+		public required string ToolCallId { get; init; }
 
-		private string _toolName = string.Empty;
 		/// <summary>
 		/// The name/identifier of the tool being called.
 		/// </summary>
-		public string ToolName
-		{
-			get => _toolName;
-			set => SetProperty(ref _toolName, value);
-		}
+		public required string ToolName { get; init; }
 
-		private string? _arguments;
+		private string _arguments = string.Empty;
 		/// <summary>
 		/// The arguments passed to the tool.
 		/// </summary>
-		public string? Arguments
+		public string Arguments
 		{
 			get => _arguments;
 			set => SetProperty(ref _arguments, value);

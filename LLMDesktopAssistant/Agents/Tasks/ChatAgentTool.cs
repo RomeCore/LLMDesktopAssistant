@@ -24,6 +24,8 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 		public override string Description => ChatToolInfo.DescriptionGetter();
 
+		public override JsonObject ArgumentSchema => ChatToolInfo.ArgumentSchema;
+
 		private ToolExecutionContext CreateContext()
 		{
 			if (ExecutionContext != null)
@@ -70,31 +72,9 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			};
 		}
 
-		private static AgentAttachment? TryConvertAttachment(Attachment attachment)
+		private static AgentAttachment? TryConvertAttachment(Attachment? attachment)
 		{
-			switch (attachment.NativeAttachment)
-			{
-				case IImageAttachment imageAttachment:
-					return new AgentAttachment
-					{
-						Type = AgentAttachmentType.Image,
-						Url = imageAttachment.Url
-					};
-				case IAudioAttachment audioAttachment:
-					return new AgentAttachment
-					{
-						Type = AgentAttachmentType.Audio,
-						Url = audioAttachment.Url
-					};
-				case IVideoAttachment videoAttachment:
-					return new AgentAttachment
-					{
-						Type = AgentAttachmentType.Video,
-						Url = videoAttachment.Url
-					};
-			}
-
-			return null;
+			return AgentAttachment.TryConvertFromNativeAttachment(attachment?.NativeAttachment);
 		}
 
 		public override async Task<AgentToolCallPreResult> PreExecuteAsync(JsonNode? arguments, CancellationToken cancellationToken = default)

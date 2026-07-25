@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {
@@ -13,6 +14,16 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// A brief description of what the tool does. This should be helpful for agents to understand how to use the tool.
 		/// </summary>
 		public abstract string Description { get; }
+
+		/// <summary>
+		/// A JSON schema describing the expected arguments for the tool.
+		/// </summary>
+		public abstract JsonObject ArgumentSchema { get; }
+
+		/// <summary>
+		/// The level of approval required for this tool to be executed.
+		/// </summary>
+		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.PolicyBased;
 
 		/// <summary>
 		/// Preview-executes the tool with the provided arguments to determine it's behaviour or interrupt the execution.

@@ -20,6 +20,11 @@ public enum ToolBehaviour
 	/// </summary>
 	None = 0,
 
+	/// <summary>
+	/// All behaviour flags combined.
+	/// </summary>
+	All = 0x7FFFFFFF,
+
 	// ────────────────────────────── Filesystem ──────────────────────────────
 
 	/// <summary>

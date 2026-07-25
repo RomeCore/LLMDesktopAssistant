@@ -38,10 +38,10 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// </summary>
 		public RangeObservableCollection<AgentChatMessage> Messages => _messages;
 
-		private readonly RangeObservableCollection<AgentToolCall> _confirmationToolCalls = [];
+		private readonly RangeObservableCollection<AgentToolCallConfirmationRequest> _toolCallConfirmationRequests = [];
 		/// <summary>
 		/// A collection of tool calls that require user confirmation before execution.
 		/// </summary>
-		public RangeObservableCollection<AgentToolCall> ConfirmationToolCalls => _confirmationToolCalls;
+		public RangeObservableCollection<AgentToolCallConfirmationRequest> ToolCallConfirmationRequests => _toolCallConfirmationRequests;
 	}
 }
