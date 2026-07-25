@@ -1,25 +1,18 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.Attachments;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Tools;
 using LLTSharp;
 using Material.Icons;
 using RCLargeLanguageModels;
-using RCLargeLanguageModels.Agents;
 using RCLargeLanguageModels.Messages;
-using RCLargeLanguageModels.Messages.Attachments;
-using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -29,15 +22,20 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly Chat _chat;
 		private readonly TemplateLibrary _templateLibrary;
 		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IAgentManagementService _agentManager;
+		private readonly IAgentTaskExecutor _agentTaskExecutor;
 		private readonly IToolsetBuildingService _toolsetBuildingService;
 		private readonly IModelManager _modelManager;
 
 		public AgenticToolModule(Chat chat, TemplateLibrary templateLibrary, WorkingDirectoryAccessService fileAccess,
-			IToolsetBuildingService toolsetBuildingService,IModelManager modelManager)
+			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor,
+			IToolsetBuildingService toolsetBuildingService, IModelManager modelManager)
 		{
 			_chat = chat;
 			_templateLibrary = templateLibrary;
 			_fileAccess = fileAccess;
+			_agentManager = agentManager;
+			_agentTaskExecutor = agentTaskExecutor;
 			_toolsetBuildingService = toolsetBuildingService;
 			_modelManager = modelManager;
 
@@ -70,7 +68,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				});
 		}
 
-		public Task<ToolResult> AskQuestion(
+		public Task<ReactiveToolResult> AskQuestion(
 			[Description("The question to ask")] string question,
 			[Description("A list of tool names that can be used to answer the question.")]
 			string[] allowedTools,
@@ -81,7 +79,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			return CallAgent(systemPrompt, question, allowedTools, ctx, cancellationToken);
 		}
 
-		public async Task<ToolResult> CallAgent(
+		public async Task<ReactiveToolResult> CallAgent(
 			[Description("The system prompt to use in the agent's context")] string systemPrompt,
 			[Description("The user message to send to the agent")] string userMessage,
 			[Description("A list of tool names that can be used to answer the question.")]
@@ -91,7 +89,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			var modelName = _chat.Settings.Models.AgenticToolsModel;
 			if (string.IsNullOrEmpty(modelName))
-				return new ToolResult(ToolResultStatus.Error, "No agentic model selected. Say user to select an agentic model first.");
+				return new ReactiveToolResult
+				{
+					ResultContent = "No agentic model selected. Say user to select an agentic model first."
+				}.CompleteWithError();
 
 			LLModel llm;
 			try
@@ -100,52 +101,69 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Agentic model '{modelName}' is not available: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					ResultContent = $"Agentic model '{modelName}' is not available: {ex.Message}"
+				}.CompleteWithError();
 			}
 
-			// Pass empty agent ID for the toolset builder to use all available tools (not filtered by agent)
-			var toolMap = _toolsetBuildingService.BuildTools(Guid.Empty).ToDictionary(t => t.Tool.Name);
-			var tools = new ToolSet();
+			var agentToolSettings = _agentManager.TryGetAgentDescriptor(ctx.Message.SenderAgentId)?.Tools;
+			var toolMap = _toolsetBuildingService.BuildTools(ctx.Message.SenderAgentId).ToDictionary(t => t.Tool.Name);
+			var tools = ImmutableList.CreateBuilder<AgentTool>();
 			var errorSb = new StringBuilder();
 
 			foreach (var allowedTool in allowedTools.Distinct())
 			{
 				if (toolMap.TryGetValue(allowedTool, out var toolInfo))
 				{
-					tools.Add(toolInfo.GetExecutableTool(ctx));
+					tools.Add(new ChatAgentTool
+					{
+						ChatToolInfo = toolInfo,
+						ApprovalLevel = toolInfo.ApprovalLevel,
+					});
 				}
 				else
 				{
-					errorSb.AppendLine("Invalid tool name: " + allowedTool);
+					errorSb.AppendLine("Tool was not found: " + allowedTool);
 				}
 			}
 
 			if (errorSb.Length > 0)
 			{
 				errorSb.Append("Valid tool names: " + string.Join(", ", toolMap.Keys));
-				return new ToolResult(ToolResultStatus.Error, errorSb.ToString());
+				return new ReactiveToolResult
+				{
+					ResultContent = errorSb.ToString()
+				}.CompleteWithError();
 			}
 
-			llm = llm.WithTools(tools);
-			var executor = new LLMToolExecutor
+			var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 			{
-				LLMProvider = llm,
-				Memory = new SlidingChatMemory
-				{
-					SystemInstructions = systemPrompt
-				}
-			};
+				TaskName = "AskQuestion",
+				Tools = tools.ToImmutableList(),
+				InitialMessages = [
+					new AgentSystemMessage { Content = systemPrompt },
+					new AgentUserMessage { Content = userMessage }
+				],
+				AutoApproveBehaviours = agentToolSettings?.AutoApproveBehaviours ?? ToolBehaviour.None,
+				DisallowedBehaviours = agentToolSettings?.DisallowedBehaviours ?? ToolBehaviour.None
+			}, cancellationToken);
 
 			try
 			{
-				var responseMessage = await executor.GenerateResponseAsync(
-					new RCLargeLanguageModels.Messages.UserMessage(userMessage), cancellationToken);
+				await agentTask;
 
-				return new ToolResult(ToolResultStatus.Success, $"Agent responded with: {responseMessage.Content}.");
+				return new ReactiveToolResult
+				{
+					ResultContent = $"Agent responded with: " + agentTask.LastGeneratedContent
+				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
-				return new ToolResult(ToolResultStatus.Error, $"Got error: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					ResultContent = "An error occurred while calling the agent: " + ex.Message
+				}.CompleteWithError();
 			}
 		}
 

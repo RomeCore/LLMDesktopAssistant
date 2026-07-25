@@ -1,9 +1,12 @@
+using System.ComponentModel;
 using System.Text;
 using Avalonia.Threading;
+using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Providers;
 using LLTSharp;
-using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Metadata;
 using Serilog;
 
@@ -12,14 +15,16 @@ namespace LLMDesktopAssistant.LLM.Services
 	[ChatService(typeof(IChatSummarizationService))]
 	public class ChatSummarizationService(
 		Chat chat,
-		ILLMBuildingService llmBuilder,
 		IPromptChatBuilder promptBuilder,
 		TemplateLibrary templates,
-		IUsageStatsCollector usageStatsCollector
+		IAgentTaskExecutor agentTaskExecutor,
+		IModelManager modelManager
 		) : IChatSummarizationService
 	{
 		public async Task TrySummarizeChatAsync(IUsageMetadata lastUsageMetadata, CancellationToken cancellationToken = default)
 		{
+			var summarizationLLM = modelManager.TryGetModel(chat.Settings.Summarization.SummarizerModel);
+
 			try
 			{
 				if (!chat.Settings.Summarization.AutoSummarizationEnabled)
@@ -29,7 +34,6 @@ namespace LLMDesktopAssistant.LLM.Services
 				if (totalTokensUsed < chat.Settings.Summarization.SummarizationTriggerTokens)
 					return;
 
-				var summarizationLLM = llmBuilder.BuildSummarizationLLM();
 				// If the summarization LLM is not available, do not summarize
 				if (summarizationLLM == null)
 					return;
@@ -47,25 +51,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			catch (Exception ex)
 			{
 				Log.Error(ex, "Failed to summarize chat: {Error}", ex.Message);
-
-				try
-				{
-					var summarizationLLM = llmBuilder.BuildSummarizationLLM();
-					if (summarizationLLM != null)
-					{
-						usageStatsCollector.RecordUsage(
-							model: summarizationLLM.LLM.Name,
-							inputTokens: 0,
-							outputTokens: 0,
-							durationMs: 0,
-							success: false,
-							errorMessage: ex.Message);
-					}
-				}
-				catch (Exception recordEx)
-				{
-					Log.Error(recordEx, "Failed to record usage statistics for failed summarization");
-				}
 			}
 		}
 
@@ -121,9 +106,10 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public async Task SummarizeMessageWithPreviousMessagesAsync(ChatMessage message, CancellationToken cancellationToken = default)
 		{
+			var summarizationLLM = modelManager.TryGetModel(chat.Settings.Summarization.SummarizerModel);
+
 			try
 			{
-				var summarizationLLM = llmBuilder.BuildSummarizationLLM();
 				// If the summarization LLM is not available, do not summarize
 				if (summarizationLLM == null)
 					return;
@@ -133,85 +119,41 @@ namespace LLMDesktopAssistant.LLM.Services
 				var summarizerTemplate = (ITextTemplate)templates.Retrieve("summarization_prompt")!;
 				var summarizerPrompt = summarizerTemplate.Render();
 				var summarizerInput = BuildSummarizerInput(message);
-				IMessage[] messages = [
-					new SystemMessage(summarizerPrompt),
-					new RCLargeLanguageModels.Messages.UserMessage(summarizerInput)
-				];
 
-				var timeRequested = DateTime.Now;
-				var summary = await summarizationLLM.LLM.ChatStreamingAsync(messages);
-				var timeFinished = DateTime.Now;
+				var summarizationTask = agentTaskExecutor.Execute(new AgentTaskLaunchParameters
+				{
+					TaskName = LocalizationManager.LocalizeStatic("summarize"),
+					TriggeredChat = chat,
+					Model = summarizationLLM,
+					InitialMessages = [
+						new AgentSystemMessage { Content = summarizerPrompt },
+						new AgentUserMessage { Content = summarizerInput }
+					]
+				}, cancellationToken);
 
 				var viewModel = new SummaryViewModel
 				{
-					Summary = summary.Content ?? string.Empty,
+					Summary = summarizationTask.LastGeneratedMessage!.Content ?? string.Empty,
 					Completed = false
 				};
 				message.AdditionalViewModels.TryReplace(viewModel);
-				EventHandler<AssistantMessageDelta> summaryPartAdded = (s, e) =>
+				PropertyChangedEventHandler summaryChanged = (s, e) =>
 				{
-					Dispatcher.UIThread.Post(() =>
-					{
-						viewModel.Summary = summary.Content ?? string.Empty;
-					});
+					if (e.PropertyName is nameof(summarizationTask.LastGeneratedContent))
+						Dispatcher.UIThread.Post(() =>
+						{
+							viewModel.Summary = summarizationTask.LastGeneratedContent ?? string.Empty;
+						});
 				};
-				summary.Message.PartAdded += summaryPartAdded;
+				summarizationTask.PropertyChanged += summaryChanged;
 
-				await summary;
-				summary.Message.PartAdded -= summaryPartAdded;
+				await summarizationTask;
+				summarizationTask.PropertyChanged -= summaryChanged;
 				viewModel.Completed = true;
-
-				var summaryUsageMetadata = summary.UsageMetadata;
-				if (summaryUsageMetadata != null)
-				{
-					if (summaryUsageMetadata is IUsageCacheMetadata usageCacheMetadata)
-					{
-						usageStatsCollector.RecordUsage(
-							model: summarizationLLM.LLM.Name,
-							inputTokens: summaryUsageMetadata.InputTokens,
-							outputTokens: summaryUsageMetadata.OutputTokens,
-							cacheHitTokens: usageCacheMetadata.InputCacheHitTokens,
-							cacheMissTokens: usageCacheMetadata.InputCacheMissTokens,
-							durationMs: (long)(timeFinished - timeRequested).TotalMilliseconds,
-							success: true);
-					}
-					else
-					{
-						usageStatsCollector.RecordUsage(
-							model: summarizationLLM.LLM.Name,
-							inputTokens: summaryUsageMetadata.InputTokens,
-							outputTokens: summaryUsageMetadata.OutputTokens,
-							durationMs: (long)(timeFinished - timeRequested).TotalMilliseconds,
-							success: true);
-					}
-				}
-
-
-				Log.Information("Chat summarized successfully. Summary length: {Length}, Summary: {Summary}",
-					summary.Content?.Length, summary.Content);
 			}
 			catch (Exception ex)
 			{
 				Log.Error(ex, "Failed to summarize chat: {Error}", ex.Message);
-
-				try
-				{
-					var summarizationLLM = llmBuilder.BuildSummarizationLLM();
-					if (summarizationLLM != null)
-					{
-						usageStatsCollector.RecordUsage(
-							model: summarizationLLM.LLM.Name,
-							inputTokens: 0,
-							outputTokens: 0,
-							durationMs: 0,
-							success: false,
-							errorMessage: ex.Message);
-					}
-				}
-				catch (Exception recordEx)
-				{
-					Log.Error(recordEx, "Failed to record usage statistics for failed summarization");
-				}
 			}
 		}
 

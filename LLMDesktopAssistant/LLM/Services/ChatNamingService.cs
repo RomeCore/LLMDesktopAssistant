@@ -1,6 +1,9 @@
 using System.Text;
+using LLMDesktopAssistant.Agents.Tasks;
+using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using RCLargeLanguageModels.Messages;
@@ -17,10 +20,10 @@ namespace LLMDesktopAssistant.LLM.Services
 	[ChatService(typeof(IChatNamingService))]
 	public class ChatNamingService(
 		Chat chat,
-		ILLMBuildingService llmBuilder,
+		IAgentTaskExecutor agentTaskExecutor,
+		IModelManager modelManager,
 		IPromptChatBuilder promptBuilder,
 		TemplateLibrary templates,
-		IUsageStatsCollector usageStatsCollector,
 		MessagesInterface messagesInterface
 		) : IChatNamingService
 	{
@@ -52,7 +55,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			
 			try
 			{
-				var namingLLM = llmBuilder.BuildSummarizationLLM();
+				var namingLLM = modelManager.TryGetModel(chat.Settings.Summarization.SummarizerModel);
 				if (namingLLM == null)
 				{
 					Log.Warning("Cannot name chat: no naming LLM available.");
@@ -62,16 +65,20 @@ namespace LLMDesktopAssistant.LLM.Services
 				var namingTemplate = (ITextTemplate)templates.Retrieve("naming_prompt")!;
 				var namingPrompt = namingTemplate.Render();
 				var namingInput = BuildNamingInput();
-				IMessage[] messages = [
-					new SystemMessage(namingPrompt),
-					new RCLargeLanguageModels.Messages.UserMessage(namingInput)
-				];
 
-				var timeRequested = DateTime.Now;
-				var result = await namingLLM.LLM.ChatAsync(messages);
-				var timeFinished = DateTime.Now;
+				var namingTask = agentTaskExecutor.Execute(new AgentTaskLaunchParameters
+				{
+					TaskName = LocalizationManager.LocalizeStatic("naming"),
+					TriggeredChat = chat,
+					Model = namingLLM,
+					InitialMessages = [
+						new AgentSystemMessage { Content = namingPrompt },
+						new AgentUserMessage { Content = namingInput }
+					]
+				});
+				await namingTask;
 
-				var content = MarkdownCodeBlockExtractor.TryExtract(result.Content ?? string.Empty);
+				var content = MarkdownCodeBlockExtractor.TryExtract(namingTask.LastGeneratedContent ?? string.Empty);
 				if (string.IsNullOrWhiteSpace(content))
 				{
 					Log.Warning("Chat naming returned empty result.");
@@ -107,41 +114,11 @@ namespace LLMDesktopAssistant.LLM.Services
 					chat.Topic = topic.Trim();
 				}
 
-				var usageMetadata = result.UsageMetadata;
-				if (usageMetadata != null)
-				{
-					usageStatsCollector.RecordUsage(
-						model: namingLLM.LLM.Name,
-						inputTokens: usageMetadata.InputTokens,
-						outputTokens: usageMetadata.OutputTokens,
-						durationMs: (long)(timeFinished - timeRequested).TotalMilliseconds,
-						success: true);
-				}
-
 				return true;
 			}
 			catch (Exception ex)
 			{
 				Log.Error(ex, "Failed to name chat: {Error}", ex.Message);
-
-				try
-				{
-					var namingLLM = llmBuilder.BuildSummarizationLLM();
-					if (namingLLM != null)
-					{
-						usageStatsCollector.RecordUsage(
-							model: namingLLM.LLM.Name,
-							inputTokens: 0,
-							outputTokens: 0,
-							durationMs: 0,
-							success: false,
-							errorMessage: ex.Message);
-					}
-				}
-				catch (Exception recordEx)
-				{
-					Log.Error(recordEx, "Failed to record usage statistics for failed naming");
-				}
 
 				return false;
 			}

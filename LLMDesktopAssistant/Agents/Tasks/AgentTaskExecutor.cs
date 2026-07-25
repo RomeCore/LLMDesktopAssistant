@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
@@ -8,7 +9,6 @@ using RCLargeLanguageModels;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Metadata;
-using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Agents.Tasks
@@ -18,13 +18,15 @@ namespace LLMDesktopAssistant.Agents.Tasks
 	{
 		private readonly RangeObservableCollection<AgentTask> _allTasks;
 		private readonly IModelManager _modelManager;
+		private readonly IUsageStatsCollector _usageStatsCollector;
 
 		public ReadOnlyObservableCollection<AgentTask> AllTasks { get; }
 
-		public AgentTaskExecutor(IModelManager modelManager)
+		public AgentTaskExecutor(IModelManager modelManager, IUsageStatsCollector usageStatsCollector)
 		{
 			_allTasks = [];
 			_modelManager = modelManager;
+			_usageStatsCollector = usageStatsCollector;
 
 			AllTasks = new ReadOnlyObservableCollection<AgentTask>(_allTasks);
 		}
@@ -36,11 +38,11 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			if (parameters.InitialMessages.IsEmpty)
 				throw new ArgumentException("Initial messages must be provided.");
 
-			var completionSource = new CompletionSource();
+			var completionSource = new TaskCompletionSource<AgentTask>();
 
 			var task = new AgentTask
 			{
-				Completion = completionSource.Token,
+				Completion = completionSource.Task,
 				CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken),
 				LaunchParameters = parameters
 			};
@@ -66,11 +68,19 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				try
 				{
 					await ExecuteAsync(task, model, tools, nativeMessages);
-					completionSource.Complete();
+					completionSource.SetResult(task);
+				}
+				catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
+				{
+					completionSource.SetCanceled(cancellationToken);
+				}
+				catch (OperationCanceledException)
+				{
+					completionSource.SetCanceled(cancellationToken);
 				}
 				catch (Exception ex)
 				{
-					completionSource.Fail(ex);
+					completionSource.SetException(ex);
 				}
 				finally
 				{
@@ -101,138 +111,164 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				Stopwatch messageExecutionTimer = new(), inferenceTimer = new();
 				messageExecutionTimer.Start();
 				inferenceTimer.Start();
-				TimeSpan? ttft = null;
-				TimeSpan inferenceTime = TimeSpan.Zero;
 
-				var response = await model.ChatStreamingAsync(nativeMessages);
-				IAssistantMessage responseMessage = response.Message;
-				nativeMessages.Add(responseMessage);
-
-				var agentMessage = new AgentAssistantMessage
+				try
 				{
-					ReasoningContent = responseMessage.ReasoningContent,
-					Content = responseMessage.Content
-				};
-				agentMessage.Attachments.AddRange(responseMessage.Attachments
-					.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
+					TimeSpan? ttft = null;
+					TimeSpan inferenceTime = TimeSpan.Zero;
 
-				async Task<IToolMessage> ProcessToolCall(IToolCall toolCall)
-				{
-					var toolExecutionTask = ExecuteToolAsync(toolCall, agentMessage, task, tools, cancellationToken);
+					var response = await model.ChatStreamingAsync(nativeMessages);
+					IAssistantMessage responseMessage = response.Message;
+					nativeMessages.Add(responseMessage);
 
-					await semaphore.WaitAsync(cancellationToken);
-					try
+					var agentMessage = new AgentAssistantMessage
 					{
-						return await toolExecutionTask;
-					}
-					finally
+						ReasoningContent = responseMessage.ReasoningContent,
+						Content = responseMessage.Content
+					};
+					agentMessage.Attachments.AddRange(responseMessage.Attachments
+						.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
+
+					async Task<IToolMessage> ProcessToolCall(IToolCall toolCall)
 					{
-						semaphore.Release();
+						var toolExecutionTask = ExecuteToolAsync(toolCall, agentMessage, task, tools, cancellationToken);
+
+						await semaphore.WaitAsync(cancellationToken);
+						try
+						{
+							return await toolExecutionTask;
+						}
+						finally
+						{
+							semaphore.Release();
+						}
 					}
+					List<Task<IToolMessage>> toolCallTasks = [];
+
+					for (int i = 0; i < responseMessage.ToolCalls.Count; i++)
+						toolCallTasks.Add(ProcessToolCall(responseMessage.ToolCalls[i]));
+
+					task.Messages.Add(agentMessage);
+					task.LastGeneratedMessage = agentMessage;
+					task.LastGeneratedContent = agentMessage.Content;
+
+					if (responseMessage is PartialAssistantMessage partialResponseMessage)
+					{
+						void PartAdded(object? sender, AssistantMessageDelta delta)
+						{
+							ttft ??= executionTimer.Elapsed;
+
+							if (delta.DeltaReasoningContent != null)
+								agentMessage.ReasoningContent = responseMessage.ReasoningContent;
+
+							if (delta.DeltaContent != null)
+							{
+								agentMessage.Content = responseMessage.Content;
+								task.LastGeneratedContent = responseMessage.Content;
+							}
+
+							if (delta.NewAttachments != null)
+								agentMessage.Attachments.AddRange(delta.NewAttachments
+									.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
+
+							if (delta.NewToolCalls != null)
+								foreach (var toolCall in delta.NewToolCalls)
+									toolCallTasks.Add(ProcessToolCall(toolCall));
+						}
+						partialResponseMessage.PartAdded += PartAdded;
+
+						try
+						{
+							inferenceTimer.Restart();
+							await partialResponseMessage;
+							inferenceTime = inferenceTimer.Elapsed;
+						}
+						finally
+						{
+							partialResponseMessage.PartAdded -= PartAdded;
+						}
+					}
+
+					ttft ??= TimeSpan.Zero;
+					inferenceTime = inferenceTimer.Elapsed;
+					totalTtft += ttft.Value;
+					totalInferenceTime += inferenceTime;
+
+					int inputTokens = 0, outputTokens = 0;
+					int cacheHitTokens = 0, cacheMissTokens = 0;
+
+					if (responseMessage.GetMetadata<IUsageMetadata>() is IUsageMetadata usageMetadata)
+					{
+						inputTokens = usageMetadata.InputTokens;
+						outputTokens = usageMetadata.OutputTokens;
+
+						if (usageMetadata is IUsageCacheMetadata cacheMetadata)
+						{
+							cacheHitTokens = cacheMetadata.InputCacheHitTokens;
+							cacheMissTokens = cacheMetadata.InputCacheMissTokens;
+
+							if (cacheHitTokens < 0) cacheHitTokens = 0;
+							if (cacheMissTokens < 0) cacheMissTokens = 0;
+						}
+
+						if (inputTokens < 0) inputTokens = 0;
+						if (outputTokens < 0) outputTokens = 0;
+					}
+
+					totalInputTokens += inputTokens;
+					totalOutputTokens += outputTokens;
+					totalCacheHitTokens += cacheHitTokens;
+					totalCacheMissTokens += cacheMissTokens;
+
+					agentMessage.UsageStatistics = new AgentUsageStatistics
+					{
+						InputTokens = inputTokens,
+						OutputTokens = outputTokens,
+						InputCacheHitTokens = cacheHitTokens,
+						InputCacheMissTokens = cacheMissTokens,
+						TimeToFirstToken = ttft.Value,
+						InferenceTime = inferenceTime,
+						ExecutionTime = messageExecutionTimer.Elapsed
+					};
+
+					task.UsageStatistics = new AgentUsageStatistics
+					{
+						InputTokens = totalInputTokens,
+						OutputTokens = totalOutputTokens,
+						InputCacheHitTokens = totalCacheHitTokens,
+						InputCacheMissTokens = totalCacheMissTokens,
+						TimeToFirstToken = totalTtft,
+						InferenceTime = totalInferenceTime,
+						ExecutionTime = executionTimer.Elapsed
+					};
+
+					_usageStatsCollector.RecordUsage(model.Descriptor.FullName,
+						inputTokens, outputTokens,
+						cacheHitTokens, cacheMissTokens,
+						messageExecutionTimer.ElapsedMilliseconds,
+						success: true);
+
+					nativeMessages.AddRange(await Task.WhenAll(toolCallTasks));
+
+					if (agentMessage.ToolCalls.Count == 0 || task.LaunchParameters.Behaviour
+						is AgentTaskExecutionBehaviour.ExecuteOnce or AgentTaskExecutionBehaviour.OnlyResponse)
+						break;
 				}
-				List<Task<IToolMessage>> toolCallTasks = [];
-
-				for (int i = 0; i < responseMessage.ToolCalls.Count; i++)
-					toolCallTasks.Add(ProcessToolCall(responseMessage.ToolCalls[i]));
-
-				task.Messages.Add(agentMessage);
-				task.LastGeneratedMessage = agentMessage;
-
-				if (responseMessage is PartialAssistantMessage partialResponseMessage)
+				catch (Exception ex)
 				{
-					void PartAdded(object? sender, AssistantMessageDelta delta)
-					{
-						ttft ??= executionTimer.Elapsed;
-
-						if (delta.DeltaReasoningContent != null)
-							agentMessage.ReasoningContent = responseMessage.ReasoningContent;
-
-						if (delta.DeltaContent != null)
-							agentMessage.Content = responseMessage.Content;
-
-						if (delta.NewAttachments != null)
-							agentMessage.Attachments.AddRange(delta.NewAttachments
-								.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
-
-						if (delta.NewToolCalls != null)
-							foreach (var toolCall in delta.NewToolCalls)
-								toolCallTasks.Add(ProcessToolCall(toolCall));
-					}
-					partialResponseMessage.PartAdded += PartAdded;
-
-					try
-					{
-						inferenceTimer.Restart();
-						await partialResponseMessage;
-						inferenceTime = inferenceTimer.Elapsed;
-					}
-					finally
-					{
-						partialResponseMessage.PartAdded -= PartAdded;
-					}
+					_usageStatsCollector.RecordUsage(model.Descriptor.FullName,
+						0, 0,
+						0, 0,
+						messageExecutionTimer.ElapsedMilliseconds,
+						success: false,
+						ex.Message);
+					throw;
 				}
-
-				messageExecutionTimer.Stop();
-				inferenceTimer.Stop();
-
-				ttft ??= TimeSpan.Zero;
-				inferenceTime = inferenceTimer.Elapsed;
-				totalTtft += ttft.Value;
-				totalInferenceTime += inferenceTime;
-
-				int inputTokens = 0, outputTokens = 0;
-				int cacheHitTokens = 0, cacheMissTokens = 0;
-
-				if (responseMessage.GetMetadata<IUsageMetadata>() is IUsageMetadata usageMetadata)
+				finally
 				{
-					inputTokens = usageMetadata.InputTokens;
-					outputTokens = usageMetadata.OutputTokens;
-
-					if (usageMetadata is IUsageCacheMetadata cacheMetadata)
-					{
-						cacheHitTokens = cacheMetadata.InputCacheHitTokens;
-						cacheMissTokens = cacheMetadata.InputCacheMissTokens;
-
-						if (cacheHitTokens < 0) cacheHitTokens = 0;
-						if (cacheMissTokens < 0) cacheMissTokens = 0;
-					}
-
-					if (inputTokens < 0) inputTokens = 0;
-					if (outputTokens < 0) outputTokens = 0;
+					messageExecutionTimer.Stop();
+					inferenceTimer.Stop();
 				}
-
-				totalInputTokens += inputTokens;
-				totalOutputTokens += outputTokens;
-				totalCacheHitTokens += cacheHitTokens;
-				totalCacheMissTokens += cacheMissTokens;
-
-				agentMessage.UsageStatistics = new AgentUsageStatistics
-				{
-					InputTokens = inputTokens,
-					OutputTokens = outputTokens,
-					InputCacheHitTokens = cacheHitTokens,
-					InputCacheMissTokens = cacheMissTokens,
-					TimeToFirstToken = ttft.Value,
-					InferenceTime = inferenceTime,
-					ExecutionTime = messageExecutionTimer.Elapsed
-				};
-
-				task.UsageStatistics = new AgentUsageStatistics
-				{
-					InputTokens = totalInputTokens,
-					OutputTokens = totalOutputTokens,
-					InputCacheHitTokens = totalCacheHitTokens,
-					InputCacheMissTokens = totalCacheMissTokens,
-					TimeToFirstToken = totalTtft,
-					InferenceTime = totalInferenceTime,
-					ExecutionTime = executionTimer.Elapsed
-				};
-
-				nativeMessages.AddRange(await Task.WhenAll(toolCallTasks));
-
-				if (agentMessage.ToolCalls.Count == 0 || task.LaunchParameters.Behaviour
-					is AgentTaskExecutionBehaviour.ExecuteOnce or AgentTaskExecutionBehaviour.OnlyResponse)
-					break;
 			}
 
 			executionTimer.Stop();

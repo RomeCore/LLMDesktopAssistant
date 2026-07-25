@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.LLM.Services.Tools;

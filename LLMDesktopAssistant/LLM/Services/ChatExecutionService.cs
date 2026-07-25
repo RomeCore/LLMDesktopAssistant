@@ -5,16 +5,19 @@ using System.Text.Json.Nodes;
 using DocumentFormat.OpenXml.VariantTypes;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Controls.Toasts;
+using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
+using RCLargeLanguageModels;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Metadata;
 using RCLargeLanguageModels.Tasks;
@@ -34,11 +37,11 @@ namespace LLMDesktopAssistant.LLM.Services
 		IChatStorageService storage,
 		IMessageRevealService messageRevealer,
 		IPromptChatBuilder promptBuilder,
+		IModelManager modelManager,
 		IToolExecutionService toolExecutor,
 		ILLMPropertiesBuilder propertiesBuilder,
 		IChatSummarizationService summarizer,
 		IChatNamingService namingService,
-		ILLMBuildingService llmBuilder,
 		IToolsetCacheService toolsetCache,
 		IMCPManagementService mcpManager,
 		IUsageStatsCollector usageStatsCollector,
@@ -122,15 +125,24 @@ namespace LLMDesktopAssistant.LLM.Services
 				_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 				cancellationToken = _cts.Token;
 
-				var llmInfo = llmBuilder.BuildChatLLM(agentId);
-				if (llmInfo == null)
+				var agent = agentManager.GetAgentDescriptor(agentId);
+
+				LLModel llm;
+				try
+				{
+					var settings = agent.Generation;
+					var modelName = settings.EnableCustomModel && !string.IsNullOrEmpty(settings.Model)
+						? settings.Model
+						: chat.Settings.Models.ChatModel;
+					llm = modelManager.GetModel(modelName);
+				}
+				catch
 				{
 					var toastTitle = LocalizationManager.LocalizeStatic("chat_toast_llm_not_configured");
 					var toastDesc = LocalizationManager.LocalizeStatic("chat_toast_llm_not_configured_desc");
 					toastService.ShowError(toastTitle, toastDesc);
 					throw new ToastedException(toastTitle, toastDesc);
 				}
-				var llm = llmInfo.LLM;
 				llm = llm.WithProperties(propertiesBuilder.BuildProperties(agentId));
 
 				if (mcpManager.HasMCPConnections())
@@ -147,7 +159,6 @@ namespace LLMDesktopAssistant.LLM.Services
 				chat.StatusIcon = MaterialIconKind.ChatProcessing;
 				chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
 
-				var agent = agentManager.GetAgentDescriptor(agentId);
 				var inputMessages = promptBuilder.Build(agent);
 				toolsetCache.Invalidate(agentId);
 				// Lul, provider caching is fixed now!
@@ -279,7 +290,7 @@ namespace LLMDesktopAssistant.LLM.Services
 								{
 									domainResponseMessage.AdditionalViewModels.Add(new TokenCostViewModel
 									{
-										ModelName = llmInfo.LLM.Descriptor.FullName,
+										ModelName = llm.Descriptor.FullName,
 										InputTokens = usageMetadata.InputTokens,
 										InputCacheHitTokens = usageCacheMetadata.InputCacheHitTokens,
 										InputCacheMissTokens = usageCacheMetadata.InputCacheMissTokens,
@@ -289,7 +300,7 @@ namespace LLMDesktopAssistant.LLM.Services
 									});
 
 									usageStatsCollector.RecordUsage(
-										model: llmInfo.LLM.Descriptor.FullName,
+										model: llm.Descriptor.FullName,
 										inputTokens: usageMetadata.InputTokens,
 										outputTokens: usageMetadata.OutputTokens,
 										cacheHitTokens: usageCacheMetadata.InputCacheHitTokens,
@@ -301,7 +312,7 @@ namespace LLMDesktopAssistant.LLM.Services
 								{
 									domainResponseMessage.AdditionalViewModels.Add(new TokenCostViewModel
 									{
-										ModelName = llmInfo.LLM.Descriptor.FullName,
+										ModelName = llm.Descriptor.FullName,
 										InputTokens = usageMetadata.InputTokens,
 										InputCacheHitTokens = null,
 										InputCacheMissTokens = null,
@@ -311,7 +322,7 @@ namespace LLMDesktopAssistant.LLM.Services
 									});
 
 									usageStatsCollector.RecordUsage(
-										model: llmInfo.LLM.Descriptor.FullName,
+										model: llm.Descriptor.FullName,
 										inputTokens: usageMetadata.InputTokens,
 										outputTokens: usageMetadata.OutputTokens,
 										durationMs: (long)(timeReponseFinished - timeRequested).TotalMilliseconds,
@@ -324,7 +335,7 @@ namespace LLMDesktopAssistant.LLM.Services
 							{
 								domainResponseMessage.AdditionalViewModels.Add(new TokenCostViewModel
 								{
-									ModelName = llmInfo.LLM.Descriptor.FullName,
+									ModelName = llm.Descriptor.FullName,
 									InputTokens = null,
 									InputCacheHitTokens = null,
 									InputCacheMissTokens = null,
@@ -340,20 +351,20 @@ namespace LLMDesktopAssistant.LLM.Services
 						catch (OperationCanceledException)
 						{
 							domainResponseMessage.Status = AssistantMessageStatus.Cancelled;
-							RecordFailedUsage(llmInfo, timeRequested, "Operation cancelled");
+							RecordFailedUsage(llm, timeRequested, "Operation cancelled");
 							throw;
 						}
 						catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
 						{
 							domainResponseMessage.Status = AssistantMessageStatus.Cancelled;
-							RecordFailedUsage(llmInfo, timeRequested, "Operation cancelled");
+							RecordFailedUsage(llm, timeRequested, "Operation cancelled");
 							throw;
 						}
 						catch (Exception ex)
 						{
 							domainResponseMessage.Error = ex.ToString();
 							domainResponseMessage.Status = AssistantMessageStatus.Error;
-							RecordFailedUsage(llmInfo, timeRequested, ex.Message);
+							RecordFailedUsage(llm, timeRequested, ex.Message);
 							throw;
 						}
 						finally
@@ -424,20 +435,17 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 		}
 
-		private void RecordFailedUsage(LLMInfo? llmInfo, DateTime timeRequested, string errorMessage)
+		private void RecordFailedUsage(LLModel llm, DateTime timeRequested, string errorMessage)
 		{
 			try
 			{
-				if (llmInfo != null)
-				{
-					usageStatsCollector.RecordUsage(
-						model: llmInfo.LLM.Descriptor.FullName,
-						inputTokens: 0,
-						outputTokens: 0,
-						durationMs: (long)(DateTime.Now - timeRequested).TotalMilliseconds,
-						success: false,
-						errorMessage: errorMessage);
-				}
+				usageStatsCollector.RecordUsage(
+					model: llm.Descriptor.FullName,
+					inputTokens: 0,
+					outputTokens: 0,
+					durationMs: (long)(DateTime.Now - timeRequested).TotalMilliseconds,
+					success: false,
+					errorMessage: errorMessage);
 			}
 			catch (Exception ex)
 			{

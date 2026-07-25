@@ -19,13 +19,11 @@ namespace LLMDesktopAssistant.LLM.Services
 		static ChatServices()
 		{
 			var database = new ChatDatabase(Path.Combine(Directories.Data, "chat.db"));
-			var usageDatabase = new UsageDatabase(Path.Combine(Directories.Data, "usage.db"));
 
 			var serviceBuilder = new ServiceCollection();
 			serviceBuilder.AddKeyedSingleton<IServiceCollection>(ServiceKeys.ChatServices, serviceBuilder);
 			serviceBuilder.AddAppServices();
 			serviceBuilder.AddSingleton(database);
-			serviceBuilder.AddSingleton(usageDatabase);
 			serviceBuilder.AddChatServices();
 			ServiceProvider = serviceBuilder.BuildServiceProvider();
 

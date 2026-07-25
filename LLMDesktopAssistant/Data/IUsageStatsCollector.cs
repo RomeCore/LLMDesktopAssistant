@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.Data
 {
 	/// <summary>
 	/// Interface for collecting usage statistics and storing them in a separate database.

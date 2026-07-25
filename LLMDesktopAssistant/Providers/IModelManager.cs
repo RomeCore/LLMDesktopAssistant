@@ -22,6 +22,13 @@ namespace LLMDesktopAssistant.Providers
 		LLModel GetModel(string fullName);
 
 		/// <summary>
+		/// Tries to get a model instance by its full name. The model is ready for running.
+		/// </summary>
+		/// <param name="fullName">The full name of the model in format {ClientName}${ModelName}, OpenAI$gpt-3.5-turbo for example.</param>
+		/// <returns>A model instance if available, otherwise null.</returns>
+		LLModel? TryGetModel(string fullName);
+
+		/// <summary>
 		/// Lists all models that are currently available.
 		/// </summary>
 		/// <returns>A collection of model items. Each item represents a model with its full name and other details.</returns>

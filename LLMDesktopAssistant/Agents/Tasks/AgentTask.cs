@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels.Tasks;
@@ -19,7 +20,8 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// <summary>
 		/// The completion token used to await the completion of this agentic task.
 		/// </summary>
-		public required CompletionToken Completion { get; init; }
+		public required Task<AgentTask> Completion { get; init; }
+		public TaskAwaiter<AgentTask> GetAwaiter() => Completion.GetAwaiter();
 
 		/// <summary>
 		/// The cancellation token source used to cancel this agentic task.
@@ -46,6 +48,16 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		{
 			get => _lastGeneratedMessage;
 			internal set => SetProperty(ref _lastGeneratedMessage, value);
+		}
+
+		private string? _lastGeneratedContent;
+		/// <summary>
+		/// The last generated message's content by the agent associated with this task.
+		/// </summary>
+		public string? LastGeneratedContent
+		{
+			get => _lastGeneratedContent;
+			internal set => SetProperty(ref _lastGeneratedContent, value);
 		}
 
 		private AgentUsageStatistics? _usageStatistics;

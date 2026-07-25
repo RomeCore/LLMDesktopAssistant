@@ -1,12 +1,13 @@
 using LiteDB;
-using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.UsageModels;
+using LLMDesktopAssistant.Services;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.Data
 {
 	/// <summary>
 	/// Implementation of the usage statistics collector that stores data in a separate LiteDB database.
 	/// </summary>
+	[Service(typeof(IUsageStatsCollector))]
 	public class UsageStatsCollector : IUsageStatsCollector
 	{
 		private readonly UsageDatabase _database;

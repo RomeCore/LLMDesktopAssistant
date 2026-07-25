@@ -38,6 +38,18 @@ namespace LLMDesktopAssistant.Providers
 			return new LLModel(client, modelName);
 		}
 
+		public LLModel? TryGetModel(string fullName)
+		{
+			try
+			{
+				return GetModel(fullName);
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
 		public IEnumerable<ModelItem> ListModels()
 		{
 			var cacheLookup = cache.Descriptors.ToDictionary(k => k.Name);
@@ -124,7 +136,10 @@ namespace LLMDesktopAssistant.Providers
 				throw new InvalidOperationException($"Provider '{provider.Name}' not found in the provider types map."
 					+ $"Expected one of: " + string.Join(", ", providerTypesMap.Keys));
 			var apiKey = apiKeyManager.GetTokenAccessor(provider.ApiKeyId);
-			return providerType.CreateClient(provider, apiKey);
+			var client = providerType.CreateClient(provider, apiKey);
+			client.Name = provider.Name;
+			client.DisplayName = provider.Name;
+			return client;
 		}
 
 		private static ModelDescriptor ConvertModelFromRCLLM(LLModelDescriptor descriptor)
