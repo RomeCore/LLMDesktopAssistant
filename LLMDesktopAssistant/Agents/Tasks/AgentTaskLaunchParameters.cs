@@ -1,9 +1,9 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Providers;
+using LLMDesktopAssistant.Scripting.Lua;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Implementations;
-using LLMDesktopAssistant.Scripting.Lua;
 using RCLargeLanguageModels;
-using LLMDesktopAssistant.Providers;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {

@@ -25,5 +25,15 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// A collection of tool calls associated with the assistant's message.
 		/// </summary>
 		public RangeObservableCollection<AgentToolCall> ToolCalls => _toolCalls;
+
+		private AgentUsageStatistics? _usageStatistics;
+		/// <summary>
+		/// The usage statistics for this assistant message.
+		/// </summary>
+		public AgentUsageStatistics? UsageStatistics
+		{
+			get => _usageStatistics;
+			set => SetProperty(ref _usageStatistics, value);
+		}
 	}
 }

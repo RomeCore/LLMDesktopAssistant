@@ -1,12 +1,11 @@
+using System.Text;
 using Avalonia.Threading;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLTSharp;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Metadata;
-using RCLargeLanguageModels.Statistics;
 using Serilog;
-using System.Text;
 
 namespace LLMDesktopAssistant.LLM.Services
 {

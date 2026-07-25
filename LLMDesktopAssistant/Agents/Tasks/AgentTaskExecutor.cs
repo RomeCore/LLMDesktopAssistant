@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Nodes;
-using AngleSharp.Io;
+﻿using System.Diagnostics;
+using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
@@ -7,12 +7,12 @@ using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Messages.Attachments;
+using RCLargeLanguageModels.Metadata;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {
-
 	[Service(typeof(IAgentTaskExecutor))]
 	public class AgentTaskExecutor : IAgentTaskExecutor
 	{
@@ -89,8 +89,21 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			var cancellationToken = task.CancellationTokenSource.Token;
 			var semaphore = new SemaphoreSlim(task.LaunchParameters.MaxParallelToolCalls, task.LaunchParameters.MaxParallelToolCalls);
 
+			var executionTimer = new Stopwatch();
+			executionTimer.Start();
+
+			int totalInputTokens = 0, totalOutputTokens = 0;
+			int totalCacheHitTokens = 0, totalCacheMissTokens = 0;
+			TimeSpan totalTtft = TimeSpan.Zero, totalInferenceTime = TimeSpan.Zero;
+
 			while (true)
 			{
+				Stopwatch messageExecutionTimer = new(), inferenceTimer = new();
+				messageExecutionTimer.Start();
+				inferenceTimer.Start();
+				TimeSpan? ttft = null;
+				TimeSpan inferenceTime = TimeSpan.Zero;
+
 				var response = await model.ChatStreamingAsync(nativeMessages);
 				IAssistantMessage responseMessage = response.Message;
 				nativeMessages.Add(responseMessage);
@@ -123,11 +136,14 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					toolCallTasks.Add(ProcessToolCall(responseMessage.ToolCalls[i]));
 
 				task.Messages.Add(agentMessage);
+				task.LastGeneratedMessage = agentMessage;
 
 				if (responseMessage is PartialAssistantMessage partialResponseMessage)
 				{
 					void PartAdded(object? sender, AssistantMessageDelta delta)
 					{
+						ttft ??= executionTimer.Elapsed;
+
 						if (delta.DeltaReasoningContent != null)
 							agentMessage.ReasoningContent = responseMessage.ReasoningContent;
 
@@ -146,7 +162,9 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 					try
 					{
+						inferenceTimer.Restart();
 						await partialResponseMessage;
+						inferenceTime = inferenceTimer.Elapsed;
 					}
 					finally
 					{
@@ -154,12 +172,70 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					}
 				}
 
+				messageExecutionTimer.Stop();
+				inferenceTimer.Stop();
+
+				ttft ??= TimeSpan.Zero;
+				inferenceTime = inferenceTimer.Elapsed;
+				totalTtft += ttft.Value;
+				totalInferenceTime += inferenceTime;
+
+				int inputTokens = 0, outputTokens = 0;
+				int cacheHitTokens = 0, cacheMissTokens = 0;
+
+				if (responseMessage.GetMetadata<IUsageMetadata>() is IUsageMetadata usageMetadata)
+				{
+					inputTokens = usageMetadata.InputTokens;
+					outputTokens = usageMetadata.OutputTokens;
+
+					if (usageMetadata is IUsageCacheMetadata cacheMetadata)
+					{
+						cacheHitTokens = cacheMetadata.InputCacheHitTokens;
+						cacheMissTokens = cacheMetadata.InputCacheMissTokens;
+
+						if (cacheHitTokens < 0) cacheHitTokens = 0;
+						if (cacheMissTokens < 0) cacheMissTokens = 0;
+					}
+
+					if (inputTokens < 0) inputTokens = 0;
+					if (outputTokens < 0) outputTokens = 0;
+				}
+
+				totalInputTokens += inputTokens;
+				totalOutputTokens += outputTokens;
+				totalCacheHitTokens += cacheHitTokens;
+				totalCacheMissTokens += cacheMissTokens;
+
+				agentMessage.UsageStatistics = new AgentUsageStatistics
+				{
+					InputTokens = inputTokens,
+					OutputTokens = outputTokens,
+					InputCacheHitTokens = cacheHitTokens,
+					InputCacheMissTokens = cacheMissTokens,
+					TimeToFirstToken = ttft.Value,
+					InferenceTime = inferenceTime,
+					ExecutionTime = messageExecutionTimer.Elapsed
+				};
+
+				task.UsageStatistics = new AgentUsageStatistics
+				{
+					InputTokens = totalInputTokens,
+					OutputTokens = totalOutputTokens,
+					InputCacheHitTokens = totalCacheHitTokens,
+					InputCacheMissTokens = totalCacheMissTokens,
+					TimeToFirstToken = totalTtft,
+					InferenceTime = totalInferenceTime,
+					ExecutionTime = executionTimer.Elapsed
+				};
+
 				nativeMessages.AddRange(await Task.WhenAll(toolCallTasks));
 
 				if (agentMessage.ToolCalls.Count == 0 || task.LaunchParameters.Behaviour
 					is AgentTaskExecutionBehaviour.ExecuteOnce or AgentTaskExecutionBehaviour.OnlyResponse)
 					break;
 			}
+
+			executionTimer.Stop();
 		}
 
 		private async Task<IToolMessage> ExecuteToolAsync(IToolCall toolCall, AgentAssistantMessage message,
@@ -222,7 +298,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				agentToolCall.Result = new AgentToolCallResult
 				{
 					Success = false,
-					Content = $"Failed to parse args: " + ex.Message
+					Content = $"Failed to parse args: " + ex.Message // Even with tolerant parser lol
 				};
 				agentToolCall.Status = AgentToolCallStatus.Failed;
 				return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),

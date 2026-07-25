@@ -38,6 +38,27 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// </summary>
 		public RangeObservableCollection<AgentChatMessage> Messages => _messages;
 
+		private AgentAssistantMessage? _lastGeneratedMessage;
+		/// <summary>
+		/// The last generated message by the agent associated with this task.
+		/// </summary>
+		public AgentAssistantMessage? LastGeneratedMessage
+		{
+			get => _lastGeneratedMessage;
+			internal set => SetProperty(ref _lastGeneratedMessage, value);
+		}
+
+		private AgentUsageStatistics? _usageStatistics;
+		/// <summary>
+		/// The usage statistics for this agentic task.
+		/// This is summary for all processed message's usage.
+		/// </summary>
+		public AgentUsageStatistics? UsageStatistics
+		{
+			get => _usageStatistics;
+			set => SetProperty(ref _usageStatistics, value);
+		}
+
 		private readonly RangeObservableCollection<AgentToolCallConfirmationRequest> _toolCallConfirmationRequests = [];
 		/// <summary>
 		/// A collection of tool calls that require user confirmation before execution.
