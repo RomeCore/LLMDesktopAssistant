@@ -154,7 +154,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				var ext = Path.GetExtension(file);
 				if (!_enginesByExtension.TryGetValue(ext, out var engine))
 					continue;
-
+				
 				try
 				{
 					var tool = DeserializeToolFile(file);
@@ -165,7 +165,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					{
 						Name = tool.Name,
 						DescriptionGetter = () => desc,
-						ArgumentSchema = tool.ArgumentSchema ?? new JsonObject(),
+						ArgumentSchema = tool.ArgumentSchema ?? [],
 						Executor = engine.CreateExecutor(tool),
 						DefaultExpectedBehaviour = ToolBehaviour.Meta,
 						DisplayName = tool.Title,

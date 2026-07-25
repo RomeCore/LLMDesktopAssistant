@@ -120,9 +120,9 @@ namespace LLMDesktopAssistant.Scripting
 				""";
 		}
 
-		public Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool)
+		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool)
 		{
-			return (JsonNode args, ToolExecutionContext context, CancellationToken cancellationToken) =>
+			return (JsonNode? args, ToolExecutionContext context, CancellationToken cancellationToken) =>
 			{
 				var reactiveResult = new ReactiveToolResult();
 

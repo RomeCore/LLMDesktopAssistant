@@ -198,8 +198,4 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Agents\Tasks\" />
-	</ItemGroup>
-
 </Project>

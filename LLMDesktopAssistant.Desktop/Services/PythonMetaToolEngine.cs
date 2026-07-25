@@ -135,9 +135,9 @@ namespace LLMDesktopAssistant.Desktop.Services
 				"""";
 		}
 
-		public Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool)
+		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool)
 		{
-			return async (JsonNode args, ToolExecutionContext context, CancellationToken cancellationToken) =>
+			return async (JsonNode? args, ToolExecutionContext context, CancellationToken cancellationToken) =>
 			{
 				try
 				{

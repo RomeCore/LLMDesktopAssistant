@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;
@@ -148,6 +149,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 								else
 									toolCall.ResultContent = "Tool failed with no result.";
 							}
+							toolCall.Attachments = [..preExecutionResult.InterruptingAttachments];
 							return;
 						}
 					}
@@ -317,20 +319,37 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				toolCall.StructuredResult = reactiveResult.StructuredResult;
 				toolCall.UseMarkdown = reactiveResult.UseMarkdown;
 				toolCall.ResultContent = reactiveResult.ResultContent;
+				toolCall.Attachments = reactiveResult.Attachments;
 
-				void OnReactiveResultChanged(object? sender, object? e)
+				void OnReactiveResultChanged(object? sender, PropertyChangedEventArgs e)
 				{
-					toolCall.StatusIcon = reactiveResult.StatusIcon;
-					toolCall.StatusTitle = reactiveResult.StatusTitle;
-					toolCall.StructuredResult = reactiveResult.StructuredResult;
-					toolCall.UseMarkdown = reactiveResult.UseMarkdown;
+					switch (e.PropertyName)
+					{
+						case nameof(reactiveResult.StatusIcon):
+							toolCall.StatusIcon = reactiveResult.StatusIcon;
+							break;
+						case nameof(reactiveResult.StatusTitle):
+							toolCall.StatusTitle = reactiveResult.StatusTitle;
+							break;
+						case nameof(reactiveResult.StructuredResult):
+							toolCall.StructuredResult = reactiveResult.StructuredResult;
+							break;
+						case nameof(reactiveResult.UseMarkdown):
+							toolCall.UseMarkdown = reactiveResult.UseMarkdown;
+							break;
+					}
 				}
 				void OnReactiveResultContentChanged(object? sender, object? e)
 				{
 					toolCall.ResultContent = reactiveResult.ResultContent;
 				}
+				void OnReactiveResultAttachmentsChanged(object? sender, object? e)
+				{
+					toolCall.Attachments = reactiveResult.Attachments;
+				}
 				reactiveResult.PropertyChanged += OnReactiveResultChanged;
 				reactiveResult.ResultContentLines.CollectionChanged += OnReactiveResultContentChanged;
+				reactiveResult.Attachments.CollectionChanged += OnReactiveResultAttachmentsChanged;
 
 				bool success = false;
 				try
@@ -340,9 +359,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				finally
 				{
 					toolCall.ReactiveToolResult = null;
+
 					// Update again, because tool can be TOO FAST
 					toolCall.StatusIcon = reactiveResult.StatusIcon;
 					toolCall.StatusTitle = reactiveResult.StatusTitle;
+					toolCall.Attachments = reactiveResult.Attachments;
 
 					if (string.IsNullOrEmpty(toolCall.ResultContent))
 					{
@@ -371,6 +392,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 					reactiveResult.PropertyChanged -= OnReactiveResultChanged;
 					reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultContentChanged;
+					reactiveResult.Attachments.CollectionChanged -= OnReactiveResultAttachmentsChanged;
 				}
 
 				return;

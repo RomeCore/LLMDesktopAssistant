@@ -66,12 +66,12 @@ namespace LLMDesktopAssistant.Tools
 		/// <summary>
 		/// Gets or sets a streaming arguments analyser function for the tool. This function is executed every update for streaming tool arguments.
 		/// </summary>
-		public Func<JsonNode, ToolExecutionContext, StreamingToolArgumentsAnalysisResult>? StreamingArgumentsAnalyser { get; init; }
+		public Func<JsonNode?, ToolExecutionContext, StreamingToolArgumentsAnalysisResult>? StreamingArgumentsAnalyser { get; init; }
 
 		/// <summary>
 		/// Gets or sets a pre-execution function for the tool. This function is responsible for performing any necessary checks or preparations before executing the tool.
 		/// </summary>
-		public Func<JsonNode, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>>? PreviewExecutor { get; init; }
+		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>>? PreviewExecutor { get; init; }
 
 		/// <summary>
 		/// Gets or sets the default expected behaviour of the tool.
@@ -86,7 +86,7 @@ namespace LLMDesktopAssistant.Tools
 		/// <summary>
 		/// Gets or sets the executor function for the tool. This function is responsible for executing the tool with the provided arguments and context.
 		/// </summary>
-		public required Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor { get; init; }
+		public required Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor { get; init; }
 
 		/// <summary>
 		/// Gets or sets a synchronization group for the tool. Used for executing multiple tools in same group one-by-one. This is useful for tools that should not run at the same time (e.g. file editing tools).

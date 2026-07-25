@@ -125,6 +125,11 @@ namespace LLMDesktopAssistant.Tools
 			set => SetProperty(ref _useMarkdown, value);
 		}
 
+		/// <summary>
+		/// The collection of attachments (images, videos, audios) to be provided to LLM with the tool result.
+		/// </summary>
+		public RangeObservableCollection<Attachment> Attachments { get; } = [];
+
 		private JsonNode? _structuredResult = null;
 		/// <summary>
 		/// Gets or sets the optional structured result. Usable for external APIs that calls tools, like MCP, Lua API, dASS RPC API (that used by external processes like Python).

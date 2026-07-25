@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.Tools
 	{
 		public static (
 			JsonObject ArgumentSchema,
-			Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor)
+			Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor)
 
 			Create(Delegate executor)
 		{
@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.Tools
 
 		public static (
 			JsonObject ArgumentSchema,
-			Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor)
+			Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor)
 
 			Create(object? target, MethodInfo method)
 		{
@@ -129,7 +129,7 @@ namespace LLMDesktopAssistant.Tools
 			if (requiredSchemaProperties.Count > 0)
 				argumentSchema["required"] = requiredSchemaProperties;
 
-			async Task<ReactiveToolResult> Func(JsonNode args, ToolExecutionContext context, CancellationToken cancellationToken)
+			async Task<ReactiveToolResult> Func(JsonNode? args, ToolExecutionContext context, CancellationToken cancellationToken)
 			{
 				var inParams = new object?[parameters.Length];
 				var objArgs = args as JsonObject ?? [];

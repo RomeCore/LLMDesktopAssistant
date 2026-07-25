@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.Tools
 		/// </summary>
 		/// <param name="preExecutor">The delegate to create a pre-executor from. Can be null.</param>
 		/// <returns>A function that takes JSON arguments, context, and cancellation token, and returns a pre-execution result. Null if the input delegate is null.</returns>
-		public static Func<JsonNode, ToolExecutionContext, StreamingToolArgumentsAnalysisResult> Create(Delegate preExecutor)
+		public static Func<JsonNode?, ToolExecutionContext, StreamingToolArgumentsAnalysisResult> Create(Delegate preExecutor)
 		{
 			if (preExecutor == null)
 				throw new ArgumentNullException(nameof(preExecutor));
@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.Tools
 		/// <param name="target">The target object on which the method is invoked. Null for static methods.</param>
 		/// <param name="method">The method to invoke.</param>
 		/// <returns>A function that takes JSON arguments, context, and cancellation token, and returns a pre-execution result.</returns>
-		public static Func<JsonNode, ToolExecutionContext, StreamingToolArgumentsAnalysisResult> Create(object? target, MethodInfo method)
+		public static Func<JsonNode?, ToolExecutionContext, StreamingToolArgumentsAnalysisResult> Create(object? target, MethodInfo method)
 		{
 			if (method == null)
 				throw new ArgumentNullException(nameof(method));
@@ -90,7 +90,7 @@ namespace LLMDesktopAssistant.Tools
 				}
 			}
 
-			StreamingToolArgumentsAnalysisResult Func(JsonNode args, ToolExecutionContext context)
+			StreamingToolArgumentsAnalysisResult Func(JsonNode? args, ToolExecutionContext context)
 			{
 				var inParams = new object?[parameters.Length];
 				var objArgs = args as JsonObject ?? [];

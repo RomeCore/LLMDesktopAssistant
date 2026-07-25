@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.LLM.Domain;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools
@@ -26,6 +27,11 @@ namespace LLMDesktopAssistant.Tools
 		/// Specifies the content to be put into result content of tool call. If specified, tool will not be executed and finished immediately.
 		/// </summary>
 		public string? InterruptingContent { get; init; }
+
+		/// <summary>
+		/// Specifies the attachments to be put into result content of tool call. If specified, tool will not be executed and finished immediately.
+		/// </summary>
+		public ImmutableList<Attachment> InterruptingAttachments { get; init; } = [];
 
 		/// <summary>
 		/// Whether use markdown rendering for <see cref="InterruptingContent"/>.

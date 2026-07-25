@@ -53,6 +53,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		/// </summary>
 		/// <param name="tool">The meta tool to create an executor for.</param>
 		/// <returns>A function that executes the tool with the given arguments and context.</returns>
-		Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool);
+		Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool);
 	}
 }
