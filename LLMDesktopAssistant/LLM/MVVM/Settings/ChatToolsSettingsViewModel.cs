@@ -56,7 +56,7 @@ public class ChatToolsSettingsViewModel : ViewModelBase
 	private static IEnumerable<ToolBehaviour> GetBehaviourFlags()
 	{
 		return Enum.GetValues<ToolBehaviour>()
-			.Where(v => v != ToolBehaviour.None);
+			.Where(v => v is not ToolBehaviour.None and not ToolBehaviour.All);
 	}
 
 	private static string SplitCamelCase(string input)

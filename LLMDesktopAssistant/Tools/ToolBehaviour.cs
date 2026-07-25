@@ -1,3 +1,6 @@
+using LLMDesktopAssistant.Agents.Tasks;
+using LLMDesktopAssistant.Scripting.Lua;
+
 namespace LLMDesktopAssistant.Tools;
 
 /// <summary>
@@ -6,8 +9,6 @@ namespace LLMDesktopAssistant.Tools;
 /// control over tool approval, security policies, and UI presentation.
 /// </summary>
 /// <remarks>
-/// Use this enum instead of the abstract <see cref="ToolDangerLevel"/> to
-/// provide concrete, actionable information about tool capabilities.
 /// Each flag represents a distinct category of filesystem, network, or
 /// system interaction that may require user awareness or consent.
 /// </remarks>
@@ -181,12 +182,19 @@ public enum ToolBehaviour
 	/// unpredictable behaviour. Treat MCP tools with caution as they
 	/// may access external systems or resources outside this application's control.
 	/// </summary>
-	MCP = 1 << 30,
+	MCP = 1 << 29,
 
 	/// <summary>
 	/// The tool is a meta-tool created at runtime by the LLM itself
 	/// (via Lua/Python scripting). Such tools can have arbitrary behaviour
 	/// defined by the LLM and should be carefully monitored.
 	/// </summary>
-	Meta = 1 << 31,
+	Meta = 1 << 30,
+
+	/// <summary>
+	/// The tool is an ad-hoc/specifically created tool for concrete task (for example, by ad-hoc
+	/// functions in <see cref="LuaApiAgents"/>). Mostly used for <see cref="IAgentTaskExecutor"/>
+	/// pipeline.
+	/// </summary>
+	AdHoc = 1 << 31
 }

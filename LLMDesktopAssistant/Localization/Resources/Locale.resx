@@ -2367,4 +2367,10 @@
   <data name="tool_settings" xml:space="preserve">
     <value>Tools settings</value>
   </data>
+  <data name="tool_behaviour_adhoc" xml:space="preserve">
+    <value>Ad-hoc (special tools)</value>
+  </data>
+  <data name="tool_behaviour_adhoc_hint" xml:space="preserve">
+    <value>Special tools created for disposable execution (scripted tools, for example)</value>
+  </data>
 </root>

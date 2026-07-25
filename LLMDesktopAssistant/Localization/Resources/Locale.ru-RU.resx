@@ -2367,4 +2367,10 @@
   <data name="tool_settings" xml:space="preserve">
     <value>Настройки инструментов</value>
   </data>
+  <data name="tool_behaviour_adhoc" xml:space="preserve">
+    <value>Специальные/одноразовые инструменты</value>
+  </data>
+  <data name="tool_behaviour_adhoc_hint" xml:space="preserve">
+    <value>Специальные инструменты, созданные для одноразового запуска (например, скриптов)</value>
+  </data>
 </root>

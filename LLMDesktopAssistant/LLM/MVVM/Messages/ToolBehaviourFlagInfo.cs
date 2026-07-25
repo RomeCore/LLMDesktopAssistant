@@ -66,12 +66,12 @@ public class ToolBehaviourFlagInfo
 		var result = ImmutableList.CreateBuilder<ToolBehaviourFlagInfo>();
 		foreach (var flag in Enum.GetValues<ToolBehaviour>())
 		{
-			if (flag != ToolBehaviour.None && flags.HasFlag(flag))
+			if (flag is not ToolBehaviour.None and not ToolBehaviour.All && flags.HasFlag(flag))
 			{
 				result.Add(Create(flag));
 			}
 		}
-		if (result.Count == 0 && flags == ToolBehaviour.None)
+		if (result.Count == 0 && (flags is ToolBehaviour.None or ToolBehaviour.All))
 		{
 			result.Add(Create(ToolBehaviour.None));
 		}
@@ -96,8 +96,6 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.WorkdirChange => MaterialIconKind.FolderArrowRight,
 		ToolBehaviour.ClipboardWrite => MaterialIconKind.ClipboardPlus,
 		ToolBehaviour.ClipboardRead => MaterialIconKind.ClipboardText,
-		ToolBehaviour.MCP => MaterialIconKind.Server,
-		ToolBehaviour.Meta => MaterialIconKind.AutoFix,
 		ToolBehaviour.InternetAccess => MaterialIconKind.Web,
 		ToolBehaviour.LongRunningTask => MaterialIconKind.TimerSand,
 		ToolBehaviour.ExecuteExternalProcess => MaterialIconKind.Console,
@@ -106,6 +104,9 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.UserInteraction => MaterialIconKind.Account,
 		ToolBehaviour.AgentExecution => MaterialIconKind.Robot,
 		ToolBehaviour.ScriptAccess => MaterialIconKind.Tools,
+		ToolBehaviour.MCP => MaterialIconKind.Server,
+		ToolBehaviour.Meta => MaterialIconKind.AutoFix,
+		ToolBehaviour.AdHoc => MaterialIconKind.LightbulbOn,
 
 		_ => MaterialIconKind.HelpCircle
 	};
@@ -144,6 +145,7 @@ public class ToolBehaviourFlagInfo
 		// External (purple)
 		ToolBehaviour.MCP => Brushes.MediumPurple,
 		ToolBehaviour.Meta => Brushes.MediumPurple,
+		ToolBehaviour.AdHoc => Brushes.MediumPurple,
 
 		// Safe (green)
 		ToolBehaviour.None => Brushes.LimeGreen,

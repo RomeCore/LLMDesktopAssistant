@@ -5407,6 +5407,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Ad-hoc (special tools).
+        /// </summary>
+        public static string tool_behaviour_adhoc {
+            get {
+                return ResourceManager.GetString("tool_behaviour_adhoc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Special tools created for disposable execution (scripted tools, for example).
+        /// </summary>
+        public static string tool_behaviour_adhoc_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_adhoc_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Agent execution.
         /// </summary>
         public static string tool_behaviour_agentexecution {
