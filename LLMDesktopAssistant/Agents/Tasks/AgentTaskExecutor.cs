@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using AngleSharp.Io;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
@@ -11,13 +12,30 @@ using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {
+
 	[Service(typeof(IAgentTaskExecutor))]
-	public class AgentTaskExecutor(
-		IModelManager modelManager
-	) : IAgentTaskExecutor
+	public class AgentTaskExecutor : IAgentTaskExecutor
 	{
+		private readonly RangeObservableCollection<AgentTask> _allTasks;
+		private readonly IModelManager _modelManager;
+
+		public ReadOnlyObservableCollection<AgentTask> AllTasks { get; }
+
+		public AgentTaskExecutor(IModelManager modelManager)
+		{
+			_allTasks = [];
+			_modelManager = modelManager;
+
+			AllTasks = new ReadOnlyObservableCollection<AgentTask>(_allTasks);
+		}
+
 		public AgentTask Execute(AgentTaskLaunchParameters parameters, CancellationToken cancellationToken = default)
 		{
+			if (string.IsNullOrEmpty(parameters.ModelName) && parameters.Model == null)
+				throw new ArgumentException("Model name or model must be provided.");
+			if (parameters.InitialMessages.IsEmpty)
+				throw new ArgumentException("Initial messages must be provided.");
+
 			var completionSource = new CompletionSource();
 
 			var task = new AgentTask
@@ -28,9 +46,10 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			};
 			task.Messages.AddRange(parameters.InitialMessages);
 
-			var model = modelManager.GetModel(parameters.ModelName)
-				.WithTools(parameters.Tools.Select(t => new FunctionTool(t.Name, t.Description, t.ArgumentSchema,
-					(_, _) => throw new Exception("This tool is not expected to be invoked directly."))));
+			var model = parameters.Model ?? _modelManager.GetModel(parameters.ModelName!);
+
+			model = model.WithTools(parameters.Tools.Select(t => new FunctionTool(t.Name, t.Description, t.ArgumentSchema,
+				(_, _) => throw new Exception("This tool is not expected to be invoked directly."))));
 
 			var tools = parameters.Tools.ToImmutableDictionary(k => k.Name);
 
@@ -40,6 +59,10 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 			Task.Run(async () =>
 			{
+				_allTasks.Add(task);
+				parameters.TriggeredChat?.AgentTasks.Add(task);
+				parameters.TriggeredMessage?.AgentTasks.Add(task);
+
 				try
 				{
 					await ExecuteAsync(task, model, tools, nativeMessages);
@@ -48,6 +71,12 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				catch (Exception ex)
 				{
 					completionSource.Fail(ex);
+				}
+				finally
+				{
+					_allTasks.Remove(task);
+					parameters.TriggeredChat?.AgentTasks.Remove(task);
+					parameters.TriggeredMessage?.AgentTasks.Remove(task);
 				}
 			}, CancellationToken.None);
 
@@ -58,11 +87,12 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			ImmutableDictionary<string, AgentTool> tools, List<IMessage> nativeMessages)
 		{
 			var cancellationToken = task.CancellationTokenSource.Token;
+			var semaphore = new SemaphoreSlim(task.LaunchParameters.MaxParallelToolCalls, task.LaunchParameters.MaxParallelToolCalls);
 
 			while (true)
 			{
 				var response = await model.ChatStreamingAsync(nativeMessages);
-				var responseMessage = response.Message;
+				IAssistantMessage responseMessage = response.Message;
 				nativeMessages.Add(responseMessage);
 
 				var agentMessage = new AgentAssistantMessage
@@ -72,39 +102,62 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				};
 				agentMessage.Attachments.AddRange(responseMessage.Attachments
 					.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
-				var toolCallTasks = responseMessage.ToolCalls.Select(tc =>
-					ExecuteToolAsync(tc, agentMessage, task, tools, cancellationToken)).ToList();
+
+				async Task<IToolMessage> ProcessToolCall(IToolCall toolCall)
+				{
+					var toolExecutionTask = ExecuteToolAsync(toolCall, agentMessage, task, tools, cancellationToken);
+
+					await semaphore.WaitAsync(cancellationToken);
+					try
+					{
+						return await toolExecutionTask;
+					}
+					finally
+					{
+						semaphore.Release();
+					}
+				}
+				List<Task<IToolMessage>> toolCallTasks = [];
+
+				for (int i = 0; i < responseMessage.ToolCalls.Count; i++)
+					toolCallTasks.Add(ProcessToolCall(responseMessage.ToolCalls[i]));
+
 				task.Messages.Add(agentMessage);
 
-				void PartAdded(object? sender, AssistantMessageDelta delta)
+				if (responseMessage is PartialAssistantMessage partialResponseMessage)
 				{
-					if (delta.DeltaReasoningContent != null)
-						agentMessage.ReasoningContent = responseMessage.ReasoningContent;
+					void PartAdded(object? sender, AssistantMessageDelta delta)
+					{
+						if (delta.DeltaReasoningContent != null)
+							agentMessage.ReasoningContent = responseMessage.ReasoningContent;
 
-					if (delta.DeltaContent != null)
-						agentMessage.Content = responseMessage.Content;
+						if (delta.DeltaContent != null)
+							agentMessage.Content = responseMessage.Content;
 
-					if (delta.NewAttachments != null)
-						agentMessage.Attachments.AddRange(delta.NewAttachments
-							.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
+						if (delta.NewAttachments != null)
+							agentMessage.Attachments.AddRange(delta.NewAttachments
+								.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
 
-					if (delta.NewToolCalls != null)
-						foreach (var toolCall in delta.NewToolCalls)
-							toolCallTasks.Add(ExecuteToolAsync(toolCall, agentMessage, task, tools, cancellationToken));
+						if (delta.NewToolCalls != null)
+							foreach (var toolCall in delta.NewToolCalls)
+								toolCallTasks.Add(ProcessToolCall(toolCall));
+					}
+					partialResponseMessage.PartAdded += PartAdded;
+
+					try
+					{
+						await partialResponseMessage;
+					}
+					finally
+					{
+						partialResponseMessage.PartAdded -= PartAdded;
+					}
 				}
-				responseMessage.PartAdded += PartAdded;
 
-				try
-				{
-					await responseMessage;
-					nativeMessages.AddRange(await Task.WhenAll(toolCallTasks));
-				}
-				finally
-				{
-					responseMessage.PartAdded -= PartAdded;
-				}
+				nativeMessages.AddRange(await Task.WhenAll(toolCallTasks));
 
-				if (agentMessage.ToolCalls.Count == 0)
+				if (agentMessage.ToolCalls.Count == 0 || task.LaunchParameters.Behaviour
+					is AgentTaskExecutionBehaviour.ExecuteOnce or AgentTaskExecutionBehaviour.OnlyResponse)
 					break;
 			}
 		}
@@ -112,6 +165,10 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		private async Task<IToolMessage> ExecuteToolAsync(IToolCall toolCall, AgentAssistantMessage message,
 			AgentTask task, ImmutableDictionary<string, AgentTool> tools, CancellationToken cancellationToken = default)
 		{
+			// Do not execute tool if the task is configured to only respond.
+			if (task.LaunchParameters.Behaviour is AgentTaskExecutionBehaviour.OnlyResponse)
+				return new ToolMessage(string.Empty, toolCall.Id, toolCall.ToolName);
+
 			if (toolCall is not IFunctionToolCall functionCall)
 				throw new ArgumentException($"Tool call '{toolCall}' is not a function tool call.");
 

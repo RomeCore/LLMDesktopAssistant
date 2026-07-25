@@ -1,5 +1,7 @@
-﻿using RCLargeLanguageModels.Tasks;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using LLMDesktopAssistant.Agents.Tasks;
+using LLMDesktopAssistant.Utils;
+using RCLargeLanguageModels.Tasks;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -52,6 +54,11 @@ namespace LLMDesktopAssistant.LLM.Domain
 			get => _error;
 			set => SetProperty(ref _error, value);
 		}
+
+		/// <summary>
+		/// Gets the collection of agent tasks associated with this message.
+		/// </summary>
+		public RangeObservableCollection<AgentTask> AgentTasks { get; } = [];
 
 		/// <summary>
 		/// Gets or sets the completion token associated with this message.

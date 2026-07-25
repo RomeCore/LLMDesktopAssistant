@@ -7,6 +7,7 @@ using LLMDesktopAssistant.LLM.Settings;
 using Material.Icons;
 using LLMDesktopAssistant.LLM.MVVM.ContextTabs;
 using LLMDesktopAssistant.Data;
+using LLMDesktopAssistant.Agents.Tasks;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -128,6 +129,11 @@ namespace LLMDesktopAssistant.LLM.Domain
 			get => _contextTabs;
 			set => _contextTabs.Reset(value);
 		}
+
+		/// <summary>
+		/// Gets the collection of agent tasks associated with this chat session.
+		/// </summary>
+		public RangeObservableCollection<AgentTask> AgentTasks { get; } = [];
 
 		/// <summary>
 		/// Gets or sets the list of tool modules that are available for use in the chat session.

@@ -1,18 +1,53 @@
-﻿using LLMDesktopAssistant.Tools;
+﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Implementations;
+using LLMDesktopAssistant.Scripting.Lua;
+using RCLargeLanguageModels;
+using LLMDesktopAssistant.Providers;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {
 	public class AgentTaskLaunchParameters
 	{
 		/// <summary>
-		/// The name of the task to be launched. Used for identifying by the user in the dispatcher.
+		/// The display name of the task to be launched. Used for identifying by the user in the dispatcher.
 		/// </summary>
 		public required string? TaskName { get; init; }
 
 		/// <summary>
-		/// The full name of the model to be used for the agent task.
+		/// The message that this task is associated with.
+		/// This could be a message containing the tool call that triggered this task
+		/// (via <see cref="AgenticToolModule"/> or <see cref="LuaApiAgents"/>).
 		/// </summary>
-		public required string ModelName { get; init; }
+		public AssistantMessage? TriggeredMessage { get; init; }
+
+		/// <summary>
+		/// The chat that this task is associated with.
+		/// </summary>
+		public Chat? TriggeredChat { get; init; }
+
+		/// <summary>
+		/// The full name of the model to be used for the agent task.
+		/// If provided, the model will be taken from <see cref="IModelManager"/>.
+		/// </summary>
+		public string? ModelName { get; init; }
+
+		/// <summary>
+		/// The model instance that will be used for the agent task.
+		/// This can be used for custom model configuration (but tools will be overriden) or other purposes.
+		/// If not provided, it will be loaded from the <see cref="ModelName"/> property.
+		/// </summary>
+		public LLModel? Model { get; init; }
+
+		/// <summary>
+		/// The execution behaviour of the agent task. This can affect how the task is executed.
+		/// </summary>
+		public AgentTaskExecutionBehaviour Behaviour { get; init; } = AgentTaskExecutionBehaviour.Normal;
+
+		/// <summary>
+		/// The maximum number of parallel tool calls that can be executed at once.
+		/// </summary>
+		public int MaxParallelToolCalls { get; init; } = 20;
 
 		/// <summary>
 		/// The initial set of chat messages to be used for the agent task.
@@ -25,12 +60,12 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public ImmutableList<AgentTool> Tools { get; init; } = [];
 
 		/// <summary>
-		/// The behavior of tools that are automatically approved.
+		/// The behaviour of tools that are automatically approved.
 		/// </summary>
 		public ToolBehaviour AutoApproveBehaviours { get; init; }
 
 		/// <summary>
-		/// The behavior of tools that are disallowed.
+		/// The behaviour of tools that are disallowed.
 		/// </summary>
 		public ToolBehaviour DisallowedBehaviours { get; init; }
 	}

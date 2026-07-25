@@ -1,11 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {
 	public interface IAgentTaskExecutor
 	{
+		/// <summary>
+		/// Gets all tasks that are currently being executed.
+		/// </summary>
+		ReadOnlyObservableCollection<AgentTask> AllTasks { get; }
+
+		/// <summary>
+		/// Launches a new task with the given parameters.
+		/// </summary>
+		/// <param name="parameters">The parameters for the task.</param>
+		/// <param name="cancellationToken">A token to cancel the task execution. </param>
+		/// <returns>The task that can be tracked and awaited.</returns>
 		AgentTask Execute(AgentTaskLaunchParameters parameters, CancellationToken cancellationToken = default);
 	}
 }
