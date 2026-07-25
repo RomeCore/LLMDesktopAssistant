@@ -28,6 +28,11 @@ namespace LLMDesktopAssistant.Tools
 		public string? InterruptingContent { get; init; }
 
 		/// <summary>
+		/// Whether use markdown rendering for <see cref="InterruptingContent"/>.
+		/// </summary>
+		public bool UseMarkdown { get; init; }
+
+		/// <summary>
 		/// Specifies whether the tool overrides the standard HITL pipeline with its own policy decisions.
 		/// When <see langword="null"/> the <see cref="ToolInfo.SelfHandledDecisions"/> will be used instead.
 		/// </summary>

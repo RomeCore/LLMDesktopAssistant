@@ -1,15 +1,9 @@
 using System.Collections.Concurrent;
-using System.Collections.Immutable;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
-using Microsoft.Extensions.DependencyInjection;
-using ModelContextProtocol.Protocol;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tools;
 using Serilog;
@@ -143,7 +137,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						{
 							toolCall.Status = preExecutionResult.InterruptingSuccess.Value ? ToolStatus.Success : ToolStatus.Error;
 							if (!string.IsNullOrEmpty(preExecutionResult.InterruptingContent))
+							{
 								toolCall.ResultContent = preExecutionResult.InterruptingContent;
+								toolCall.UseMarkdown = preExecutionResult.UseMarkdown;
+							}
 							else
 							{
 								if (preExecutionResult.InterruptingSuccess.Value)
