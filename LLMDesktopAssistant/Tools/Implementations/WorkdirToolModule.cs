@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Category = "workdir"
 				});
 
-			AddTool(SwitchWorkingDirectory,
+			AddTool(SwitchWorkingDirectory, null, SwitchWorkingDirectoryPreview,
 				new ToolInitializationInfo
 				{
 					Name = "wd-switch",
@@ -52,6 +52,27 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				ResultContent = sb.ToString(),
 				UseMarkdown = true
 			}.CompleteWithSuccess();
+		}
+
+		private PreviewToolExecutionResult SwitchWorkingDirectoryPreview(string name)
+		{
+			if (!_chat.Settings.Environment.WorkingDirectories.Any(wd => wd.Name == name && wd.IsEnabled))
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.FolderAlert,
+					StatusTitle = $"*{name}*",
+					InterruptingSuccess = false,
+					InterruptingContent = $"Working directory *{name}* not found or it's disabled.",
+					UseMarkdown = true
+				};
+			}
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.FolderArrowRight,
+				StatusTitle = $"*{name}*"
+			};
 		}
 
 		private ReactiveToolResult SwitchWorkingDirectory(string name)
