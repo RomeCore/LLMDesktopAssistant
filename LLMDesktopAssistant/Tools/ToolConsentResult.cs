@@ -11,6 +11,11 @@
 		public required bool IsApproved { get; init; }
 
 		/// <summary>
+		/// Gets or sets the memorization setting for the tool approval.
+		/// </summary>
+		public required ToolApprovalMemorization Memorization { get; init; }
+
+		/// <summary>
 		/// Gets or sets whether the agent should be hinted to wait for explanations when tool is rejected.
 		/// </summary>
 		public bool HintAgentForWaiting { get; init; }

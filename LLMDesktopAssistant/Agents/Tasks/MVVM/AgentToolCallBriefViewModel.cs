@@ -297,9 +297,10 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		private void ResolveConfirmation(bool approved, bool waitHint, string? notes)
 		{
 			var request = FindConfirmationRequest();
-			request?.ConfirmationSource.TrySetResult(new ToolConsentResult
+			request?.UserConfirmationSource.TrySetResult(new ToolConsentResult
 			{
 				IsApproved = approved,
+				Memorization = ToolApprovalMemorization.Once,
 				HintAgentForWaiting = waitHint,
 				Notes = notes
 			});

@@ -12,6 +12,6 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// <summary>
 		/// The source that will be used to confirm the tool call.
 		/// </summary>
-		public required TaskCompletionSource<ToolConsentResult> ConfirmationSource { get; init; }
+		public required TaskCompletionSource<ToolConsentResult> UserConfirmationSource { get; init; }
 	}
 }

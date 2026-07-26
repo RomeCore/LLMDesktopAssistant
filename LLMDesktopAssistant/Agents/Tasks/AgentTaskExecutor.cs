@@ -20,14 +20,17 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		private readonly AsyncLocal<AgentTask?> _currentTask = new();
 		private readonly RangeObservableCollection<AgentTask> _allTasks;
 		private readonly IModelManager _modelManager;
+		private readonly IToolApprovalService _toolApprovalService;
 		private readonly IUsageStatsCollector _usageStatsCollector;
 
 		public ReadOnlyObservableCollection<AgentTask> AllTasks { get; }
 
-		public AgentTaskExecutor(IModelManager modelManager, IUsageStatsCollector usageStatsCollector)
+		public AgentTaskExecutor(IModelManager modelManager, IToolApprovalService toolApprovalService,
+			IUsageStatsCollector usageStatsCollector)
 		{
 			_allTasks = [];
 			_modelManager = modelManager;
+			_toolApprovalService = toolApprovalService;
 			_usageStatsCollector = usageStatsCollector;
 
 			AllTasks = new ReadOnlyObservableCollection<AgentTask>(_allTasks);
@@ -394,102 +397,48 @@ namespace LLMDesktopAssistant.Agents.Tasks
 						agentToolCall.Result.Content, agentToolCall.Result.Attachments.Select(ConvertAttachmentFromAgent)), toolCall.Id, toolCall.ToolName);
 				}
 
-				var approvalLevel = tool.ApprovalLevel;
-				bool requireConfirmation, disallow = false;
-				switch (approvalLevel)
+				ToolBehaviour autoApproveBehaviours = task.LaunchParameters.AutoApproveBehaviours,
+					disallowedBehaviours = task.LaunchParameters.DisallowedBehaviours;
+
+				var (decision, decisionMessage) = _toolApprovalService.ApproveTool(task.LaunchParameters.TriggeredChat,
+					tool.ApprovalLevel, previewResult.ExpectedBehaviour, autoApproveBehaviours, disallowedBehaviours);
+
+				if (decision == ToolPolicyDecision.Disallow)
 				{
-					case ToolApprovalLevel.AlwaysApprove:
-						requireConfirmation = false;
-						break;
-
-					case ToolApprovalLevel.AlwaysAsk:
-						requireConfirmation = true;
-						break;
-
-					case ToolApprovalLevel.AlwaysDisallow:
-						agentToolCall.Result = new AgentToolCallResult
-						{
-							Success = false,
-							Content = "The tool execution is disallowed by the tool's approval policy."
-						};
-						agentToolCall.Status = AgentToolCallStatus.Failed;
-						return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
-							toolCall.Id, toolCall.ToolName);
-
-					default:
-						throw new ArgumentOutOfRangeException(nameof(approvalLevel), $"Invalid approval level for a tool: {approvalLevel}");
-
-					case ToolApprovalLevel.PolicyBased:
-					case ToolApprovalLevel.PolicyApproveOrAsk:
-					case ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed:
-					case ToolApprovalLevel.PolicyAutoDisallowUnlessApproved:
-					case ToolApprovalLevel.PolicyAskOrDisallow:
-
-						ToolBehaviour autoApproveBehaviours = task.LaunchParameters.AutoApproveBehaviours,
-							disallowedBehaviours = task.LaunchParameters.DisallowedBehaviours;
-
-						disallow = (disallowedBehaviours & previewResult.ExpectedBehaviour) != 0;
-						bool autoApprove = (autoApproveBehaviours & previewResult.ExpectedBehaviour) == previewResult.ExpectedBehaviour;
-
-						switch (approvalLevel)
-						{
-							case ToolApprovalLevel.PolicyApproveOrAsk:
-								disallow = false;
-								break;
-
-							case ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed:
-								autoApprove = true;
-								break;
-
-							case ToolApprovalLevel.PolicyAutoDisallowUnlessApproved:
-								disallow = !autoApprove;
-								break;
-
-							case ToolApprovalLevel.PolicyAskOrDisallow:
-								autoApprove = false;
-								break;
-						}
-
-						if (disallow)
-						{
-							agentToolCall.Result = new AgentToolCallResult
-							{
-								Success = false,
-								Content = $"The tool execution is disallowed by the agent's settings policy. " +
-									$"Policy disallows: {disallowedBehaviours}; the tool expected behaviour: {previewResult.ExpectedBehaviour}."
-							};
-							agentToolCall.Status = AgentToolCallStatus.Failed;
-							return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
-								toolCall.Id, toolCall.ToolName);
-						}
-
-						requireConfirmation = !autoApprove;
-						break;
+					agentToolCall.Result = new AgentToolCallResult
+					{
+						Success = false,
+						Content = decisionMessage
+					};
+					agentToolCall.Status = AgentToolCallStatus.Failed;
+					return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
+						toolCall.Id, toolCall.ToolName);
 				}
 
 				string? additionalNotes = null;
 
-				if (requireConfirmation)
+				if (decision == ToolPolicyDecision.Ask)
 				{
 					var request = new AgentToolCallConfirmationRequest
 					{
 						ToolCall = agentToolCall,
-						ConfirmationSource = new TaskCompletionSource<ToolConsentResult>()
+						UserConfirmationSource = new TaskCompletionSource<ToolConsentResult>()
 					};
 
 					task.ToolCallConfirmationRequests.Add(request);
 					try
 					{
 						agentToolCall.Status = AgentToolCallStatus.Confirming;
-						var confirmationResult = await request.ConfirmationSource.Task.WaitAsync(cancellationToken);
+						var consentResult = await request.UserConfirmationSource.Task.WaitAsync(cancellationToken);
+						_toolApprovalService.MemorizeConsent(consentResult);
 
-						if (!confirmationResult.IsApproved)
+						if (!consentResult.IsApproved)
 						{
 							agentToolCall.Result = new AgentToolCallResult
 							{
 								Success = false,
-								Content = string.IsNullOrEmpty(confirmationResult.Notes) ?
-									$"User denied the tool execution. Reason: {confirmationResult.Notes}." :
+								Content = !string.IsNullOrEmpty(consentResult.Notes) ?
+									$"User denied the tool execution. Reason: {consentResult.Notes}." :
 									"User denied the tool execution without the reason."
 							};
 							agentToolCall.Status = AgentToolCallStatus.Failed;
@@ -497,7 +446,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 								toolCall.Id, toolCall.ToolName);
 						}
 
-						additionalNotes = confirmationResult.Notes;
+						additionalNotes = consentResult.Notes;
 					}
 					finally
 					{

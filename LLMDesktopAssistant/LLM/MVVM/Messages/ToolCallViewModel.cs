@@ -234,6 +234,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
 			{
 				IsApproved = true,
+				Memorization = ToolApprovalMemorization.Once,
 				Notes = null
 			});
 		}
@@ -244,6 +245,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
 			{
 				IsApproved = true,
+				Memorization = ToolApprovalMemorization.Once,
 				HintAgentForWaiting = true,
 				Notes = null
 			});
@@ -262,6 +264,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
 			{
 				IsApproved = false,
+				Memorization = ToolApprovalMemorization.Once,
 				Notes = null
 			});
 		}
@@ -272,6 +275,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
 			{
 				IsApproved = false,
+				Memorization = ToolApprovalMemorization.Once,
 				HintAgentForWaiting = true,
 				Notes = null
 			});
@@ -291,6 +295,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
 			{
 				IsApproved = IsApproving,
+				Memorization = ToolApprovalMemorization.Once,
 				Notes = reason
 			});
 		}

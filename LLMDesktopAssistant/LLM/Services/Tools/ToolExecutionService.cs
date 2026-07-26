@@ -14,7 +14,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	[ChatService(typeof(IToolExecutionService))]
 	public class ToolExecutionService(
 		Chat chat,
-		IAgentManagementService agentManager
+		IAgentManagementService agentManager,
+		IToolApprovalService toolApprovalService
 	) : IToolExecutionService
 	{
 		private readonly ConcurrentDictionary<string, SemaphoreSlim> _synchronizationGroups = [];
@@ -161,109 +162,43 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 				cancellationToken.ThrowIfCancellationRequested();
 
-				var approvalLevel = toolInfo.ApprovalLevel;
-				bool requireConfirmation, disallow = false;
-				switch (approvalLevel)
+				var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
+				var agentToolSettings = senderAgent.Tools;
+				ToolBehaviour autoApproveBehaviours, disallowedBehaviours;
+				if (agentToolSettings.EnablePolicyOverride)
 				{
-					case ToolApprovalLevel.AlwaysApprove:
-						requireConfirmation = false;
-						break;
+					autoApproveBehaviours = agentToolSettings.AutoApproveBehaviours;
+					disallowedBehaviours = agentToolSettings.DisallowedBehaviours;
+				}
+				else
+				{
+					autoApproveBehaviours = chat.Settings.Tools.AutoApproveBehaviours;
+					disallowedBehaviours = chat.Settings.Tools.DisallowedBehaviours;
+				}
 
-					case ToolApprovalLevel.AlwaysAsk:
-						requireConfirmation = true;
-						break;
+				var approvalLevel = toolInfo.ApprovalLevel;
 
-					case ToolApprovalLevel.AlwaysDisallow:
-						if (toolHandledDecisions.HasFlag(ToolPolicyDecision.Disallow))
-						{
-							disallow = true;
-							requireConfirmation = false;
-							break;
-						}
-						toolCall.Status = ToolStatus.Error;
-						toolCall.ResultContent = $"The tool execution is disallowed by the agent's settings policy.";
-						return;
+				var (decision, decisionMessage) = toolApprovalService.ApproveTool(chat, approvalLevel,
+					toolCall.ExpectedBehaviour.Value, autoApproveBehaviours, disallowedBehaviours);
 
-					default:
-						throw new InvalidOperationException($"Invalid approval level for a tool: {approvalLevel}");
-
-					case ToolApprovalLevel.PolicyBased:
-					case ToolApprovalLevel.PolicyApproveOrAsk:
-					case ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed:
-					case ToolApprovalLevel.PolicyAutoDisallowUnlessApproved:
-					case ToolApprovalLevel.PolicyAskOrDisallow:
-
-						var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
-						var agentToolSettings = senderAgent.Tools;
-
-						ToolBehaviour autoApproveBehaviours, disallowedBehaviours;
-
-						if (agentToolSettings.EnablePolicyOverride)
-						{
-							autoApproveBehaviours = agentToolSettings.AutoApproveBehaviours;
-							disallowedBehaviours = agentToolSettings.DisallowedBehaviours;
-						}
-						else
-						{
-							autoApproveBehaviours = chat.Settings.Tools.AutoApproveBehaviours;
-							disallowedBehaviours = chat.Settings.Tools.DisallowedBehaviours;
-						}
-
-						disallow = (disallowedBehaviours & toolCall.ExpectedBehaviour) != 0;
-						bool autoApprove = (autoApproveBehaviours & toolCall.ExpectedBehaviour) == toolCall.ExpectedBehaviour;
-
-						switch (approvalLevel)
-						{
-							case ToolApprovalLevel.PolicyApproveOrAsk:
-								disallow = false;
-								break;
-
-							case ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed:
-								autoApprove = true;
-								break;
-
-							case ToolApprovalLevel.PolicyAutoDisallowUnlessApproved:
-								disallow = !autoApprove;
-								break;
-
-							case ToolApprovalLevel.PolicyAskOrDisallow:
-								autoApprove = false;
-								break;
-						}
-
-						if (disallow)
-						{
-							if (toolHandledDecisions.HasFlag(ToolPolicyDecision.Disallow))
-							{
-								requireConfirmation = !autoApprove;
-								break;
-							}
-							toolCall.Status = ToolStatus.Error;
-							toolCall.ResultContent = $"The tool execution is disallowed by the agent's settings policy. " +
-								$"Policy disallows: {disallowedBehaviours}; the tool expected behaviour: {toolCall.ExpectedBehaviour}.";
-							return;
-						}
-
-						requireConfirmation = !autoApprove;
-						break;
+				if (decision == ToolPolicyDecision.Disallow && !toolHandledDecisions.HasFlag(ToolPolicyDecision.Disallow))
+				{
+					toolCall.Status = ToolStatus.Error;
+					toolCall.ResultContent = decisionMessage;
+					return;
 				}
 
 				string? additionalNotes = null;
 				bool hintAgentForWait = false;
 
-				if (requireConfirmation && !toolHandledDecisions.HasFlag(ToolPolicyDecision.Ask))
+				if (decision == ToolPolicyDecision.Ask && !toolHandledDecisions.HasFlag(ToolPolicyDecision.Ask))
 				{
 					var tcs = new TaskCompletionSource<ToolConsentResult>(TaskCreationOptions.RunContinuationsAsynchronously);
-					toolCall.ExpectedBehaviour ??= toolInfo.DefaultExpectedBehaviour;
 					toolCall.UserConfirmationSource = tcs;
 					toolCall.Status = ToolStatus.WaitingForApproval;
 
-					using var ctr = cancellationToken.Register(() =>
-					{
-						tcs.TrySetCanceled(cancellationToken);
-					});
-
-					var consentResult = await tcs.Task;
+					var consentResult = await tcs.Task.WaitAsync(cancellationToken);
+					toolApprovalService.MemorizeConsent(consentResult);
 					hintAgentForWait = consentResult.HintAgentForWaiting;
 					if (consentResult.IsApproved)
 					{
@@ -307,9 +242,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					Info = toolInfo,
 					SharedContext = sharedContext,
 					RunningInUI = true,
-					PolicyDecision = requireConfirmation ? ToolPolicyDecision.Ask :
-									 disallow ? ToolPolicyDecision.Disallow :
-									 ToolPolicyDecision.None
+					PolicyDecision = decision
 				};
 				var reactiveResult = await toolInfo.Executor.Invoke(parsedArgs, toolExecutionContext, cancellationToken);
 
