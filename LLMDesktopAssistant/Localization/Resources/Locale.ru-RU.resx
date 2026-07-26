@@ -2382,4 +2382,22 @@
   <data name="clear_completed" xml:space="preserve">
     <value>Очистить завершённые</value>
   </data>
+  <data name="task_status_pending" xml:space="preserve">
+    <value>Ожидание</value>
+  </data>
+  <data name="task_status_executing" xml:space="preserve">
+    <value>Выполнение</value>
+  </data>
+  <data name="task_status_success" xml:space="preserve">
+    <value>Успешно</value>
+  </data>
+  <data name="task_status_failed" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="task_status_cancelled" xml:space="preserve">
+    <value>Отменено</value>
+  </data>
+  <data name="task_status_unknown" xml:space="preserve">
+    <value>Неизвестно</value>
+  </data>
 </root>

@@ -39,36 +39,50 @@
 							HorizontalAlignment="Right"
 							VerticalAlignment="Top"
 							Margin="32,16"
+							ClipToBounds="False"
 							ZIndex="10">
 
-				<ico:MaterialIcon Kind="TimerSandComplete"/>
-				
+				<Panel>
+					<ico:MaterialIcon Kind="{Binding AgentTaskIcon}"
+									  Width="32" Height="32"/>
+
+					<!-- Running task count badge -->
+					<Border IsVisible="{Binding HasRunningTasks}"
+							Background="#F44336"
+							CornerRadius="9"
+							HorizontalAlignment="Right"
+							VerticalAlignment="Top"
+							Padding="5,1"
+							Margin="0,-6,-6,0"
+							ZIndex="1">
+						<TextBlock Text="{Binding RunningTaskCount}"
+								   FontSize="10"
+								   Foreground="White"
+								   FontWeight="Bold"/>
+					</Border>
+				</Panel>
+
 				<!-- Agent Tasks Popup -->
 				<Button.Flyout>
 					<Flyout Placement="BottomEdgeAlignedRight"
 									HorizontalOffset="-16"
 									VerticalOffset="4">
 						
-						<DockPanel>
-							<Border Padding="8" CornerRadius="8"
-										Width="420" MaxHeight="500"
-										BoxShadow="0 4 16 rgba(0,0,0,0.3)">
-								<StackPanel DockPanel.Dock="Top"
-														Orientation="Horizontal"
-														Spacing="8"
-														Margin="0,0,0,8">
-									<ico:MaterialIcon Kind="TimerSandComplete"
-																		Width="18" Height="18"
-																		VerticalAlignment="Center"/>
-									<TextBlock Text="{loc:Loc agent_tasks}"
-															FontSize="15" FontWeight="Bold"
-															VerticalAlignment="Center"/>
-								</StackPanel>
-							</Border>
+						<StackPanel Spacing="4" Orientation="Vertical">
+							<StackPanel Orientation="Horizontal"
+													Spacing="8"
+													Margin="0,0,0,8">
+								<ico:MaterialIcon Kind="TimerSandComplete"
+																	Width="18" Height="18"
+																	VerticalAlignment="Center"/>
+								<TextBlock Text="{loc:Loc agent_tasks}"
+													 FontSize="15" FontWeight="Bold"
+													 VerticalAlignment="Center"/>
+							</StackPanel>
 							<ScrollViewer MaxHeight="450">
 								<ContentControl Content="{Binding AgentTaskList}"/>
 							</ScrollViewer>
-						</DockPanel>
+						</StackPanel>
 
 					</Flyout>
 				</Button.Flyout>

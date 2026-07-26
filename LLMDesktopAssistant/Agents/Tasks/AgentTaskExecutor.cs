@@ -6,6 +6,7 @@ using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
+using RCLargeLanguageModels.Completions;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Metadata;
@@ -210,6 +211,8 @@ namespace LLMDesktopAssistant.Agents.Tasks
 						{
 							inferenceTimer.Restart();
 							await partialResponseMessage;
+							if (response is PartialChatCompletionResult partialResponse)
+								await partialResponse;
 							inferenceTime = inferenceTimer.Elapsed;
 						}
 						finally

@@ -1,8 +1,9 @@
 using System.Collections.Specialized;
+using Avalonia.Threading;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Messages;
-using Material.Icons;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 
 namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 {
@@ -19,7 +20,7 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 	[MessageExtension(Targets = MessageExtensionTargets.Assistant)]
 	public class AgentTaskMessageExtension : MessageExtension
 	{
-		private AssistantMessage? _message;
+		private readonly AssistantMessage _message;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AgentTaskMessageExtension"/> class.
@@ -29,10 +30,7 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		{
 			IsVisible = false; // No toolbar button — inline cards only
 
-			if (viewModel is not AssistantMessageViewModel assistantVm)
-				return;
-
-			_message = assistantVm.AssistantMessage;
+			_message = ((AssistantMessageViewModel)viewModel).AssistantMessage;
 
 			// Add existing tasks
 			foreach (var task in _message.AgentTasks)
@@ -45,17 +43,21 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		private void OnAgentTasksChanged(object? sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (_message == null) return;
-			if (e.NewItems != null)
-			{
-				foreach (AgentTask task in e.NewItems)
-					AddTaskToAdditionalViewModels(task);
-			}
 
-			if (e.OldItems != null)
+			Dispatcher.UIThread.Post(() =>
 			{
-				foreach (AgentTask task in e.OldItems)
-					RemoveTaskViewModel(task);
-			}
+				if (e.NewItems != null)
+				{
+					foreach (AgentTask task in e.NewItems)
+						AddTaskToAdditionalViewModels(task);
+				}
+
+				if (e.OldItems != null)
+				{
+					foreach (AgentTask task in e.OldItems)
+						RemoveTaskViewModel(task);
+				}
+			});
 		}
 
 		private void AddTaskToAdditionalViewModels(AgentTask task)

@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.LLM.MVVM.ContextTabs;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;

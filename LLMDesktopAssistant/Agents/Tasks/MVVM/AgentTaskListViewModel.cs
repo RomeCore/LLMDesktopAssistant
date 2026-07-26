@@ -28,6 +28,26 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			private set => SetProperty(ref _hasTasks, value);
 		}
 
+		private int _runningTaskCount;
+		/// <summary>
+		/// The number of currently running (pending or executing) tasks.
+		/// </summary>
+		public int RunningTaskCount
+		{
+			get => _runningTaskCount;
+			private set => SetProperty(ref _runningTaskCount, value);
+		}
+
+		private bool _hasRunningTasks;
+		/// <summary>
+		/// Whether the list contains any running tasks.
+		/// </summary>
+		public bool HasRunningTasks
+		{
+			get => _hasRunningTasks;
+			private set => SetProperty(ref _hasRunningTasks, value);
+		}
+
 		private INotifyCollectionChanged? _sourceCollection;
 
 		/// <summary>
@@ -43,10 +63,15 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			if (source is IEnumerable<AgentTask> enumerable)
 			{
 				foreach (var task in enumerable)
-					_tasks.Add(new AgentTaskViewModel(task));
+				{
+					var vm = new AgentTaskViewModel(task);
+					vm.PropertyChanged += OnTaskViewModelPropertyChanged;
+					_tasks.Add(vm);
+				}
 			}
 
 			HasTasks = _tasks.Count > 0;
+			RecalculateRunningCount();
 			source.CollectionChanged += OnSourceCollectionChanged;
 		}
 
@@ -62,9 +87,14 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			}
 
 			foreach (var vm in _tasks)
+			{
+				vm.PropertyChanged -= OnTaskViewModelPropertyChanged;
 				vm.Dispose();
+			}
 			_tasks.Clear();
 			HasTasks = false;
+			RunningTaskCount = 0;
+			HasRunningTasks = false;
 		}
 
 		private void OnSourceCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -74,7 +104,11 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 				if (e.NewItems != null)
 				{
 					foreach (AgentTask task in e.NewItems)
-						_tasks.Add(new AgentTaskViewModel(task));
+					{
+						var vm = new AgentTaskViewModel(task);
+						vm.PropertyChanged += OnTaskViewModelPropertyChanged;
+						_tasks.Add(vm);
+					}
 				}
 
 				if (e.OldItems != null)
@@ -84,6 +118,7 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 						var toRemove = _tasks.FirstOrDefault(vm => vm.Task == task);
 						if (toRemove != null)
 						{
+							toRemove.PropertyChanged -= OnTaskViewModelPropertyChanged;
 							toRemove.Dispose();
 							_tasks.Remove(toRemove);
 						}
@@ -93,12 +128,29 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 				if (e.Action == NotifyCollectionChangedAction.Reset)
 				{
 					foreach (var vm in _tasks)
+					{
+						vm.PropertyChanged -= OnTaskViewModelPropertyChanged;
 						vm.Dispose();
+					}
 					_tasks.Clear();
 				}
 
 				HasTasks = _tasks.Count > 0;
+				RecalculateRunningCount();
 			});
+		}
+
+		private void OnTaskViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof(AgentTaskViewModel.IsRunning))
+				InvokeUI(RecalculateRunningCount);
+		}
+
+		private void RecalculateRunningCount()
+		{
+			var count = _tasks.Count(vm => vm.IsRunning);
+			RunningTaskCount = count;
+			HasRunningTasks = count > 0;
 		}
 
 		/// <inheritdoc />

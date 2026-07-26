@@ -2,6 +2,7 @@ using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.Agents.Tasks.MVVM;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -38,6 +39,36 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			private set => SetProperty(ref _agentTaskList, value);
 		}
 
+		private int _runningTaskCount;
+		/// <summary>
+		/// The number of currently running agent tasks in this chat.
+		/// </summary>
+		public int RunningTaskCount
+		{
+			get => _runningTaskCount;
+			private set => SetProperty(ref _runningTaskCount, value);
+		}
+
+		private bool _hasRunningTasks;
+		/// <summary>
+		/// Whether this chat has any running agent tasks.
+		/// </summary>
+		public bool HasRunningTasks
+		{
+			get => _hasRunningTasks;
+			private set => SetProperty(ref _hasRunningTasks, value);
+		}
+
+		private MaterialIconKind _agentTaskIcon = MaterialIconKind.TimerSand;
+		/// <summary>
+		/// The icon for the agent tasks button, reflecting whether tasks are running.
+		/// </summary>
+		public MaterialIconKind AgentTaskIcon
+		{
+			get => _agentTaskIcon;
+			private set => SetProperty(ref _agentTaskIcon, value);
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ChatViewModel"/> class.
 		/// </summary>
@@ -49,7 +80,27 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			MessageSequence = new MessageSequenceViewModel(this);
 
 			AgentTaskList = new AgentTaskListViewModel();
+			AgentTaskList.PropertyChanged += OnAgentTaskListPropertyChanged;
 			AgentTaskList.BindToSource(chat.AgentTasks);
+		}
+
+		private void OnAgentTaskListPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (AgentTaskList == null) return;
+
+			switch (e.PropertyName)
+			{
+				case nameof(AgentTaskListViewModel.RunningTaskCount):
+					RunningTaskCount = AgentTaskList.RunningTaskCount;
+					break;
+
+				case nameof(AgentTaskListViewModel.HasRunningTasks):
+					HasRunningTasks = AgentTaskList.HasRunningTasks;
+					AgentTaskIcon = AgentTaskList.HasRunningTasks
+						? MaterialIconKind.TimerSandComplete
+						: MaterialIconKind.TimerSand;
+					break;
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -58,6 +109,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 			if (disposing)
 			{
+				if (AgentTaskList != null)
+					AgentTaskList.PropertyChanged -= OnAgentTaskListPropertyChanged;
+
 				MessageSequence.Dispose();
 				UserInput.Dispose();
 				ChatStatus.Dispose();

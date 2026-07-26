@@ -124,7 +124,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					tools.Add(new ChatAgentTool
 					{
 						ChatToolInfo = toolInfo,
-						ApprovalLevel = toolInfo.ApprovalLevel,
+						ApprovalLevel = ToolApprovalLevel.AlwaysApprove,
 					});
 				}
 				else

@@ -1,8 +1,6 @@
-using Avalonia;
 using Avalonia.Controls;
-using LLMDesktopAssistant.MVVM;
 
-namespace LLMDesktopAssistant.LLM.Domain;
+namespace LLMDesktopAssistant.LLM.MVVM.Additional;
 
 /// <summary>
 /// View for <see cref="AgentTaskInlineViewModel"/> — delegates rendering to the embedded

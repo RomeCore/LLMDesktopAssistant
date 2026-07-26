@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.Agents.Tasks.MVVM;
+using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.LLM.Domain
+namespace LLMDesktopAssistant.LLM.MVVM.Additional
 {
 	/// <summary>
 	/// An <see cref="AdditionalMessageViewModel"/> that wraps an <see cref="AgentTaskViewModel"/>
@@ -11,7 +12,8 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// <summary>
 		/// The task view model to render inline.
 		/// </summary>
-		public AgentTaskViewModel? TaskViewModel { get; init; }
+		[ChangeTracker.Untracked]
+		public required AgentTaskViewModel TaskViewModel { get; init; }
 
 		/// <inheritdoc />
 		public override int Order => 200;
@@ -28,7 +30,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
-				TaskViewModel?.Dispose();
+				TaskViewModel.Dispose();
 
 			base.Dispose(disposing);
 		}

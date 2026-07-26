@@ -4,26 +4,40 @@
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 						 xmlns:local="using:LLMDesktopAssistant.Agents.Tasks.MVVM"
 						 xmlns:ico="using:Material.Icons.Avalonia"
+						 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
 						 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
 						 x:Class="LLMDesktopAssistant.Agents.Tasks.MVVM.AgentTaskView"
 						 x:DataType="local:AgentTaskViewModel">
 
 	<Border Padding="10,6" CornerRadius="6"
-					Margin="0,2">
+					Margin="0,2" MaxWidth="400"
+					Background="{Binding StatusBackground}">
 
 		<StackPanel>
 
-			<DockPanel>
+			<Grid ColumnDefinitions="Auto,*,Auto">
 
-				<!-- Status icon -->
-				<ico:MaterialIcon Kind="{Binding StatusIcon}"
-													Width="20" Height="20"
-													Margin="0,0,10,0"
-													VerticalAlignment="Center"
-													DockPanel.Dock="Left"/>
+				<!-- Status indicator: ProgressRing when running, icon otherwise -->
+				<Panel Width="20" Height="20"
+							 Margin="0,0,10,0"
+							 VerticalAlignment="Center"
+							 Grid.Column="0">
+
+					<ctrl:ProgressRing IsVisible="{Binding IsRunning}"
+														 IsIndeterminate="True"
+														 Width="20" Height="20"
+														 StrokeThickness="3"
+														 Foreground="{DynamicResource PrimaryAccentBrush}"/>
+
+					<ico:MaterialIcon Kind="{Binding StatusIcon}"
+														Width="20" Height="20"
+														IsVisible="{Binding IsRunning, Converter={StaticResource InverseBooleanConverter}}"/>
+
+				</Panel>
 
 				<!-- Main content -->
-				<StackPanel VerticalAlignment="Center">
+				<StackPanel VerticalAlignment="Center"
+										Grid.Column="1">
 
 					<!-- Task name -->
 					<TextBlock Text="{Binding TaskName, TargetNullValue='(unnamed task)'}"
@@ -48,10 +62,10 @@
 				</StackPanel>
 
 				<!-- Right side: summary + cancel + expand -->
-				<StackPanel DockPanel.Dock="Right"
-										Orientation="Horizontal"
+				<StackPanel Orientation="Horizontal"
 										VerticalAlignment="Center"
-										Spacing="6">
+										Spacing="6"
+										Grid.Column="2">
 
 					<TextBlock Text="{Binding Summary}"
 										 FontSize="11"
@@ -74,7 +88,7 @@
 
 				</StackPanel>
 
-			</DockPanel>
+			</Grid>
 
 			<!-- Sub-tasks (recursive) -->
 			<ItemsControl ItemsSource="{Binding SubTaskViewModels}"

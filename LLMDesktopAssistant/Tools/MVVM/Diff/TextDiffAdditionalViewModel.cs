@@ -1,7 +1,6 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using LiteDB;
-using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Files;
 

@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Utils;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 
-namespace LLMDesktopAssistant.LLM.Domain
+namespace LLMDesktopAssistant.LLM.MVVM.Additional
 {
 	public class AdditionalMessageViewModelCollection : RangeObservableOrderedCollection<AdditionalMessageViewModel>
 	{ 

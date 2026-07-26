@@ -1,8 +1,5 @@
 ﻿using LiteDB;
-using LLMDesktopAssistant.LLM.Domain;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 
 namespace LLMDesktopAssistant.Data.ChatModels
 {

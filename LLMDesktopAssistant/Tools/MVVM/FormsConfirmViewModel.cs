@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using LiteDB;
-using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 
 namespace LLMDesktopAssistant.Tools.MVVM;
 

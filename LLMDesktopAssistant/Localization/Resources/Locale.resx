@@ -2382,4 +2382,22 @@
   <data name="clear_completed" xml:space="preserve">
     <value>Clear completed</value>
   </data>
+  <data name="task_status_pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="task_status_executing" xml:space="preserve">
+    <value>Executing</value>
+  </data>
+  <data name="task_status_success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="task_status_failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="task_status_cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="task_status_unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
 </root>

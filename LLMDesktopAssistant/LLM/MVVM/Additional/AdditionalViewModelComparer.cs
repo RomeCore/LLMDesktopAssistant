@@ -1,4 +1,4 @@
-namespace LLMDesktopAssistant.LLM.Domain
+namespace LLMDesktopAssistant.LLM.MVVM.Additional
 {
 	public class AdditionalViewModelComparer : IComparer<AdditionalMessageViewModel>
 	{

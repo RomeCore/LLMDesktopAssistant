@@ -2,6 +2,8 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Utils;
+using Avalonia.Media;
+using LLMDesktopAssistant.Localization;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Agents.Tasks.MVVM
@@ -63,6 +65,16 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		{
 			get => _isCompleted;
 			private set => SetProperty(ref _isCompleted, value);
+		}
+
+		private IBrush? _statusBackground;
+		/// <summary>
+		/// Gets the background brush for the task card, based on its current status.
+		/// </summary>
+		public IBrush? StatusBackground
+		{
+			get => _statusBackground;
+			private set => SetProperty(ref _statusBackground, value);
 		}
 
 		private string? _summary;
@@ -191,14 +203,24 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			IsCompleted = _task.Completed;
 			IsRunning = _task.Status is AgentTaskStatus.Pending or AgentTaskStatus.Executing;
 
-			(StatusIcon, StatusText) = _task.Status switch
+			(StatusIcon, StatusText, StatusBackground) = _task.Status switch
 			{
-				AgentTaskStatus.Pending => (MaterialIconKind.ClockOutline, "Pending"),
-				AgentTaskStatus.Executing => (MaterialIconKind.TimerSandComplete, "Executing"),
-				AgentTaskStatus.Success => (MaterialIconKind.CheckCircle, "Success"),
-				AgentTaskStatus.Failed => (MaterialIconKind.AlertCircle, "Failed"),
-				AgentTaskStatus.Cancelled => (MaterialIconKind.Cancel, "Cancelled"),
-				_ => (MaterialIconKind.Help, "Unknown")
+				AgentTaskStatus.Pending => (MaterialIconKind.ClockOutline,
+					LocalizationManager.LocalizeStatic("task_status_pending"), (IBrush?)null),
+				AgentTaskStatus.Executing => (MaterialIconKind.TimerSandComplete,
+					LocalizationManager.LocalizeStatic("task_status_executing"),
+					new SolidColorBrush(Color.FromArgb(0x1A, 0x4C, 0xAF, 0x50))),
+				AgentTaskStatus.Success => (MaterialIconKind.CheckCircle,
+					LocalizationManager.LocalizeStatic("task_status_success"),
+					new SolidColorBrush(Color.FromArgb(0x0A, 0x4C, 0xAF, 0x50))),
+				AgentTaskStatus.Failed => (MaterialIconKind.AlertCircle,
+					LocalizationManager.LocalizeStatic("task_status_failed"),
+					new SolidColorBrush(Color.FromArgb(0x1A, 0xF4, 0x43, 0x36))),
+				AgentTaskStatus.Cancelled => (MaterialIconKind.Cancel,
+					LocalizationManager.LocalizeStatic("task_status_cancelled"),
+					new SolidColorBrush(Color.FromArgb(0x1A, 0xFF, 0x98, 0x00))),
+				_ => (MaterialIconKind.Help,
+					LocalizationManager.LocalizeStatic("task_status_unknown"), (IBrush?)null)
 			};
 		}
 

@@ -1,6 +1,6 @@
 using LiteDB;
 
-namespace LLMDesktopAssistant.LLM.Domain
+namespace LLMDesktopAssistant.LLM.MVVM.Additional
 {
 	/// <summary>
 	/// The base class for additional message view models.
