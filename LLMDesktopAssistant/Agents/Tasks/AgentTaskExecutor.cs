@@ -45,10 +45,13 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 			var completionSource = new TaskCompletionSource<AgentTask>();
 
+			CancellationToken timeoutCt = default;
+			if (parameters.TimeOut.HasValue && parameters.TimeOut.Value > TimeSpan.Zero)
+				timeoutCt = new CancellationTokenSource(parameters.TimeOut.Value).Token;
 			var task = new AgentTask
 			{
 				Completion = completionSource.Task,
-				CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken),
+				CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCt),
 				LaunchParameters = parameters
 			};
 			task.Messages.AddRange(parameters.InitialMessages);
@@ -68,6 +71,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 			Task.Run(async () =>
 			{
+				task.Status = AgentTaskStatus.Executing;
 				_allTasks.Add(task);
 				parentTask?.SubTasks.Add(task);
 				parameters.TriggeredChat?.AgentTasks.Add(task);
@@ -77,26 +81,39 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				try
 				{
 					await ExecuteAsync(task, model, tools, nativeMessages);
+					task.Status = AgentTaskStatus.Success;
 					completionSource.SetResult(task);
 				}
 				catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
 				{
+					task.Status = AgentTaskStatus.Cancelled;
 					completionSource.SetCanceled(cancellationToken);
 				}
 				catch (OperationCanceledException)
 				{
+					task.Status = AgentTaskStatus.Cancelled;
 					completionSource.SetCanceled(cancellationToken);
 				}
 				catch (Exception ex)
 				{
+					task.Status = AgentTaskStatus.Failed;
+					task.Exception = ex;
 					completionSource.SetException(ex);
 				}
 				finally
 				{
-					_allTasks.Remove(task);
-					parentTask?.SubTasks.Remove(task);
-					parameters.TriggeredChat?.AgentTasks.Remove(task);
-					parameters.TriggeredMessage?.AgentTasks.Remove(task);
+					task.Completed = true;
+
+					if (parameters.CompletionExpiryTime != null)
+					{
+						if (parameters.CompletionExpiryTime.Value > TimeSpan.Zero)
+							await Task.Delay(parameters.CompletionExpiryTime.Value);
+
+						_allTasks.Remove(task);
+						parentTask?.SubTasks.Remove(task);
+						parameters.TriggeredChat?.AgentTasks.Remove(task);
+						parameters.TriggeredMessage?.AgentTasks.Remove(task);
+					}
 				}
 			}, CancellationToken.None);
 
@@ -124,10 +141,12 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 				try
 				{
+					cancellationToken.ThrowIfCancellationRequested();
+
 					TimeSpan? ttft = null;
 					TimeSpan inferenceTime = TimeSpan.Zero;
 
-					var response = await model.ChatStreamingAsync(nativeMessages);
+					var response = await model.ChatStreamingAsync(nativeMessages, cancellationToken: cancellationToken);
 					IAssistantMessage responseMessage = response.Message;
 					nativeMessages.Add(responseMessage);
 
@@ -207,7 +226,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					int inputTokens = 0, outputTokens = 0;
 					int cacheHitTokens = 0, cacheMissTokens = 0;
 
-					if (responseMessage.GetMetadata<IUsageMetadata>() is IUsageMetadata usageMetadata)
+					if (response.UsageMetadata is IUsageMetadata usageMetadata)
 					{
 						inputTokens = usageMetadata.InputTokens;
 						outputTokens = usageMetadata.OutputTokens;
@@ -351,9 +370,9 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					toolCall.Id, toolCall.ToolName);
 			}
 
-			agentToolCall.Status = AgentToolCallStatus.PreExecuting;
 			try
 			{
+				agentToolCall.Status = AgentToolCallStatus.PreExecuting;
 				var previewResult = await tool.PreExecuteAsync(args, cancellationToken);
 
 				if (previewResult.InterruptingSuccess != null)
@@ -457,6 +476,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					task.ToolCallConfirmationRequests.Add(request);
 					try
 					{
+						agentToolCall.Status = AgentToolCallStatus.Confirming;
 						var confirmationResult = await request.ConfirmationSource.Task.WaitAsync(cancellationToken);
 
 						if (!confirmationResult.IsApproved)
@@ -481,6 +501,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					}
 				}
 
+				agentToolCall.Status = AgentToolCallStatus.Executing;
 				var result = await tool.ExecuteAsync(args, previewResult.SharedContext, cancellationToken);
 
 				agentToolCall.Result = new AgentToolCallResult
@@ -497,11 +518,25 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			}
 			catch (AggregateException aex) when (aex.InnerExceptions.Any(e => e is OperationCanceledException))
 			{
-				throw;
+				agentToolCall.Result = new AgentToolCallResult
+				{
+					Success = false,
+					Content = $"Tool execution was canceled."
+				};
+				agentToolCall.Status = AgentToolCallStatus.Cancelled;
+				return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
+					toolCall.Id, toolCall.ToolName);
 			}
 			catch (OperationCanceledException)
 			{
-				throw;
+				agentToolCall.Result = new AgentToolCallResult
+				{
+					Success = false,
+					Content = $"Tool execution was canceled."
+				};
+				agentToolCall.Status = AgentToolCallStatus.Cancelled;
+				return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
+					toolCall.Id, toolCall.ToolName);
 			}
 			catch (Exception ex)
 			{

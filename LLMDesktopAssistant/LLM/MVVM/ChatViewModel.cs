@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
+using LLMDesktopAssistant.Agents.Tasks.MVVM;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
@@ -27,6 +28,16 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		public UserInputViewModel UserInput { get; }
 
+		private AgentTaskListViewModel? _agentTaskList;
+		/// <summary>
+		/// Gets the view model for the list of agent tasks associated with this chat.
+		/// </summary>
+		public AgentTaskListViewModel? AgentTaskList
+		{
+			get => _agentTaskList;
+			private set => SetProperty(ref _agentTaskList, value);
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ChatViewModel"/> class.
 		/// </summary>
@@ -36,6 +47,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			UserInput = new UserInputViewModel(this);
 			ChatStatus = new ChatStatusViewModel(chat);
 			MessageSequence = new MessageSequenceViewModel(this);
+
+			AgentTaskList = new AgentTaskListViewModel();
+			AgentTaskList.BindToSource(chat.AgentTasks);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -47,7 +61,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				MessageSequence.Dispose();
 				UserInput.Dispose();
 				ChatStatus.Dispose();
-
+				AgentTaskList?.Dispose();
 			}
 		}
 	}

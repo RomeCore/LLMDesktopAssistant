@@ -184,7 +184,7 @@ namespace LLMDesktopAssistant.LLM.Attachments
 		public async void AcceptImage(Bitmap image)
 		{
 			var pathToSave = Path.Combine(Directories.TempFiles, $"cp_{Guid.NewGuid()}.png");
-			image.Save(pathToSave);
+			image.Save(pathToSave, new PngBitmapEncoderOptions());
 
 			var draft = new AttachmentDraftViewModel(this, new Uri("file:///" + pathToSave, UriKind.Absolute));
 			_drafts.Add(draft);

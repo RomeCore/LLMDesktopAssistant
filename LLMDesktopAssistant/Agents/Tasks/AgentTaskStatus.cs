@@ -1,18 +1,14 @@
 ﻿namespace LLMDesktopAssistant.Agents.Tasks
 {
-	public enum AgentToolCallStatus
+	public enum AgentTaskStatus
 	{
 		Pending,
 
-		PreExecuting,
-
-		Confirming,
-
 		Executing,
 
-		Failed,
-
 		Success,
+
+		Failed,
 
 		Cancelled
 	}

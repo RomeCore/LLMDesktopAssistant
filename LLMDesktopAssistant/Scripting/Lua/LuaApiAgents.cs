@@ -477,9 +477,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			async Task<LuaTable> ExecuteAgent()
 			{
+				var tec = ctx.TryGetToolExecutionContext();
 				var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
 					TaskName = "dass.agents.execute",
+					TriggeredChat = tec?.Chat,
+					TriggeredMessage = tec?.Message,
 					Model = llm,
 					InitialMessages = [..messages],
 					Tools = [..tools]
@@ -663,3 +666,4 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		}
 	}
 }
+// 666 строчек епта

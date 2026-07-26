@@ -2373,4 +2373,13 @@
   <data name="tool_behaviour_adhoc_hint" xml:space="preserve">
     <value>Специальные инструменты, созданные для одноразового запуска (например, внутри скриптов)</value>
   </data>
+  <data name="agent_tasks" xml:space="preserve">
+    <value>Задачи агентов</value>
+  </data>
+  <data name="only_running" xml:space="preserve">
+    <value>Только активные</value>
+  </data>
+  <data name="clear_completed" xml:space="preserve">
+    <value>Очистить завершённые</value>
+  </data>
 </root>

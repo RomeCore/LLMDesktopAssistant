@@ -2373,4 +2373,13 @@
   <data name="tool_behaviour_adhoc_hint" xml:space="preserve">
     <value>Special tools created for disposable execution (scripted tools, for example)</value>
   </data>
+  <data name="agent_tasks" xml:space="preserve">
+    <value>Agent Tasks</value>
+  </data>
+  <data name="only_running" xml:space="preserve">
+    <value>Only running</value>
+  </data>
+  <data name="clear_completed" xml:space="preserve">
+    <value>Clear completed</value>
+  </data>
 </root>

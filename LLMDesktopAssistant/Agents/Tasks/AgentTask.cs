@@ -60,6 +60,36 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			internal set => SetProperty(ref _lastGeneratedContent, value);
 		}
 
+		private AgentTaskStatus _status = AgentTaskStatus.Pending;
+		/// <summary>
+		/// The current status of this agentic task.
+		/// </summary>
+		public AgentTaskStatus Status
+		{
+			get => _status;
+			internal set => SetProperty(ref _status, value);
+		}
+
+		private bool _completed;
+		/// <summary>
+		/// Indicates whether this agentic task has completed.
+		/// </summary>
+		public bool Completed
+		{
+			get => _completed;
+			internal set => SetProperty(ref _completed, value);
+		}
+
+		private Exception? _exception;
+		/// <summary>
+		/// The exception that occurred during the execution of this agentic task.
+		/// </summary>
+		public Exception? Exception
+		{
+			get => _exception;
+			internal set => SetProperty(ref _exception, value);
+		}
+
 		private AgentUsageStatistics? _usageStatistics;
 		/// <summary>
 		/// The usage statistics for this agentic task.

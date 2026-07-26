@@ -1,8 +1,11 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
+using LLMDesktopAssistant.Agents.Tasks;
+using LLMDesktopAssistant.Agents.Tasks.MVVM;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using Material.Icons.Avalonia;
@@ -49,6 +52,7 @@ namespace LLMDesktopAssistant.MVVM
 		public ChatManagerViewModel ChatManager { get; }
 		public MCPManagerViewModel MCPManager { get; }
 		public PromptManagerViewModel PromptManager { get; }
+		public AgentTaskDispatcherViewModel AgentTaskDispatcher { get; }
 
 		public MainViewModel()
 		{
@@ -77,6 +81,15 @@ namespace LLMDesktopAssistant.MVVM
 				Icon = MaterialIconKind.Text,
 				Title = "prompt_manager_hint",
 				Content = PromptManager
+			});
+
+			AgentTaskDispatcher = new AgentTaskDispatcherViewModel(
+				ServiceRegistry.Provider.GetRequiredService<IAgentTaskExecutor>());
+			TopSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.TimerSandComplete,
+				Title = "agent_tasks",
+				Content = AgentTaskDispatcher
 			});
 
 			SelectedSidebarItem = TopSidebarItems[0];

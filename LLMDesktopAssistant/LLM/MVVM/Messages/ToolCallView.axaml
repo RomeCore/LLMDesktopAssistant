@@ -32,9 +32,7 @@
 			<Flyout Placement="BottomEdgeAlignedLeft"
 							ShowMode="Standard">
 
-				<Border Background="{DynamicResource CardBackground}"
-								BorderBrush="{DynamicResource CardBorderBrush}"
-								BorderThickness="1"
+				<Border BorderThickness="1"
 								MinWidth="500"
 								MaxWidth="750"
 								MinHeight="300"

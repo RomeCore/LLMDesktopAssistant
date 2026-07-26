@@ -145,6 +145,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 			{
 				TaskName = "AskQuestion",
+				TriggeredChat = ctx.Chat,
+				TriggeredMessage = ctx.Message,
+				Model = llm,
 				Tools = tools.ToImmutableList(),
 				InitialMessages = [
 					new AgentSystemMessage { Content = systemPrompt },
@@ -213,6 +216,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[SharedContext] string? fullPath,
 			ReactiveToolResult result,
 			[Description("The path to the image file to describe")] string path,
+			ToolExecutionContext ctx,
 			CancellationToken cancellationToken = default)
 		{
 			result.StatusIcon = MaterialIconKind.Image;
@@ -259,6 +263,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
 					TaskName = "AskQuestion",
+					TriggeredChat = ctx.Chat,
+					TriggeredMessage = ctx.Message,
+					Model = llm,
 					InitialMessages = [
 						new AgentSystemMessage { Content = _templateLibrary.Retrieve("image_describer_prompt").Render().ToString()! },
 						new AgentUserMessage {

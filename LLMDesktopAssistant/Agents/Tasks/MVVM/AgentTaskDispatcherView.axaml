@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="using:LLMDesktopAssistant.Agents.Tasks.MVVM"
+             xmlns:loc="using:LLMDesktopAssistant.Localization"
+             xmlns:ico="using:Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="380" d:DesignHeight="500"
+             x:Class="LLMDesktopAssistant.Agents.Tasks.MVVM.AgentTaskDispatcherView"
+             x:DataType="local:AgentTaskDispatcherViewModel">
+
+    <DockPanel>
+
+        <!-- Header + filters -->
+        <StackPanel DockPanel.Dock="Top" Margin="8" Spacing="8">
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <ico:MaterialIcon Kind="TimerSandComplete" Width="22" Height="22"
+                                  VerticalAlignment="Center"/>
+                <TextBlock Text="{loc:Loc agent_tasks}"
+                           FontSize="18" FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <TextBox Text="{Binding SearchText, Mode=TwoWay}"
+                     PlaceholderText="{loc:Loc search}"
+                     Classes="SearchTextBox"/>
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <CheckBox IsChecked="{Binding ShowOnlyRunning, Mode=TwoWay}"
+                          Content="{loc:Loc only_running}"
+                          VerticalAlignment="Center"/>
+
+                <Button Command="{Binding ClearCompletedCommand}"
+                        Classes="SmallButton"
+                        Content="{loc:Loc clear_completed}"
+                        HorizontalAlignment="Right"/>
+            </StackPanel>
+
+        </StackPanel>
+
+        <!-- Separator -->
+        <Border DockPanel.Dock="Top"
+                Height="1"
+                Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                Margin="8,0"/>
+
+        <!-- Task list -->
+        <ContentControl Content="{Binding AllTasks}"/>
+
+    </DockPanel>
+
+</UserControl>

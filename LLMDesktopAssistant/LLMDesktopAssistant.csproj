@@ -198,4 +198,8 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Agents\Tasks\MVVM\" />
+	</ItemGroup>
+
 </Project>

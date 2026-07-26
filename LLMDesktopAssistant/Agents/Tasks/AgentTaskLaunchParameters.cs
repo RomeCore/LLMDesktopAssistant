@@ -68,5 +68,16 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// The behaviour of tools that are disallowed.
 		/// </summary>
 		public ToolBehaviour DisallowedBehaviours { get; init; }
+
+		/// <summary>
+		/// The time span after which the task should be terminated if it has not completed.
+		/// </summary>
+		public TimeSpan? TimeOut { get; init; } = TimeSpan.FromMinutes(30);
+
+		/// <summary>
+		/// The time span after which the task should be removed from the dispatcher.
+		/// If null - it will not be removed. If zero - it will be removed immediately upon completion.
+		/// </summary>
+		public TimeSpan? CompletionExpiryTime { get; init; } = TimeSpan.FromMinutes(5);
 	}
 }
