@@ -13,6 +13,11 @@ namespace LLMDesktopAssistant.Agents.Tasks
 	public class AgentTask : NotifyPropertyChanged
 	{
 		/// <summary>
+		/// The unique identifier for this agentic task.
+		/// </summary>
+		public required Guid Id { get; init; }
+
+		/// <summary>
 		/// The parameters used to launch this agentic task.
 		/// </summary>
 		public required AgentTaskLaunchParameters LaunchParameters { get; init; }

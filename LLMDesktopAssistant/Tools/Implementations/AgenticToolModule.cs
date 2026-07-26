@@ -44,22 +44,24 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			_toolsetBuildingService = toolsetBuildingService;
 			_modelManager = modelManager;
 
-			AddTool(AskQuestion,
-				new ToolInitializationInfo
-				{
-					Name = "agent-ask_question",
-					Description = "Asks a question using another LLM agent. This tool is useful in general chats between LLM and user, to prevent storing excessive tool calls and token consumption in main user chat.",
-					Category = "agents",
-					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
-				});
-
 			AddTool(CallAgent,
 				new ToolInitializationInfo
 				{
 					Name = "agent-call",
-					Description = "Calls another LLM agent with provided system message and user message with set of allowed tools.",
+					Description = "Calls another LLM agent with provided system message and user message with set of allowed tools. " +
+						"Waits for end of execution and returns the contents of last message.",
 					Category = "agents",
 					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
+				});
+
+			AddTool(LaunchAgent,
+				new ToolInitializationInfo
+				{
+					Name = "agent-launch",
+					Description = "Calls another LLM agent with provided system message and user message with set of allowed tools. " +
+						"Launches the agent and returns agent task ID immediately. The agent will continue to run in the background.",
+					Category = "agents",
+					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution
 				});
 
 			AddTool(DescribeImage, DescribeImageStreaming, DescribeImagePreview,
@@ -73,23 +75,33 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				});
 		}
 
-		public Task<ReactiveToolResult> AskQuestion(
-			[Description("The title of the agent call to be visible in UI")] string? callTitle,
-			[Description("The question to ask")] string question,
-			[Description("A list of tool names that can be used to answer the question.")]
-			string[] allowedTools,
-			ToolExecutionContext ctx,
-			CancellationToken cancellationToken = default)
-		{
-			var systemPrompt = $"You are an agent designed to answer questions using tools.";
-			return CallAgent(callTitle, systemPrompt, question, allowedTools, ctx, cancellationToken);
-		}
-
 		public async Task<ReactiveToolResult> CallAgent(
 			[Description("The title of the agent call to be visible in UI")] string? callTitle,
 			[Description("The system prompt to use in the agent's context")] string systemPrompt,
 			[Description("The user message to send to the agent")] string userMessage,
-			[Description("A list of tool names that can be used to answer the question.")]
+			[Description("A list of tool names that can be used by agent.")] string[] allowedTools,
+			ToolExecutionContext ctx,
+			CancellationToken cancellationToken = default)
+		{
+			return await ExecuteAgent(true, callTitle, systemPrompt, userMessage, allowedTools, ctx, cancellationToken);
+		}
+
+		public async Task<ReactiveToolResult> LaunchAgent(
+			[Description("The title of the agent call to be visible in UI")] string? callTitle,
+			[Description("The system prompt to use in the agent's context")] string systemPrompt,
+			[Description("The user message to send to the agent")] string userMessage,
+			[Description("A list of tool names that can be used by agent.")] string[] allowedTools,
+			ToolExecutionContext ctx,
+			CancellationToken cancellationToken = default)
+		{
+			return await ExecuteAgent(false, callTitle, systemPrompt, userMessage, allowedTools, ctx, cancellationToken);
+		}
+
+		private async Task<ReactiveToolResult> ExecuteAgent(
+			bool wait,
+			string? callTitle,
+			string systemPrompt,
+			string userMessage,
 			string[] allowedTools,
 			ToolExecutionContext ctx,
 			CancellationToken cancellationToken = default)
@@ -152,31 +164,41 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				disallowedBehaviours = agentToolSettings.DisallowedBehaviours;
 			}
 
-			var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
-			{
-				TaskName = callTitle,
-				TriggeredChat = ctx.Chat,
-				TriggeredMessage = ctx.Message,
-				Model = llm,
-				Tools = tools.ToImmutableList(),
-				InitialMessages = [
-					new AgentSystemMessage { Content = systemPrompt },
-					new AgentUserMessage { Content = userMessage }
-				],
-				AutoApproveBehaviours = autoApproveBehaviours,
-				DisallowedBehaviours = disallowedBehaviours
-			}, cancellationToken);
-
 			try
 			{
-				await agentTask;
-
-				return new ReactiveToolResult
+				var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
-					ResultContent = string.IsNullOrWhiteSpace(agentTask.LastGeneratedContent) ?
-						"Agent did not generate any content." : agentTask.LastGeneratedContent,
-					UseMarkdown = true
-				}.CompleteWithSuccess();
+					TaskName = callTitle,
+					TriggeredChat = ctx.Chat,
+					TriggeredMessage = ctx.Message,
+					Model = llm,
+					Tools = tools.ToImmutableList(),
+					InitialMessages = [
+						new AgentSystemMessage { Content = systemPrompt },
+					new AgentUserMessage { Content = userMessage }
+					],
+					AutoApproveBehaviours = autoApproveBehaviours,
+					DisallowedBehaviours = disallowedBehaviours
+				}, cancellationToken);
+
+				if (wait)
+				{
+					await agentTask;
+
+					return new ReactiveToolResult
+					{
+						ResultContent = string.IsNullOrWhiteSpace(agentTask.LastGeneratedContent) ?
+							"Agent did not generate any content." : agentTask.LastGeneratedContent,
+						UseMarkdown = true
+					}.CompleteWithSuccess();
+				}
+				else
+				{
+					return new ReactiveToolResult
+					{
+						ResultContent = $"Agent launched with task ID {agentTask.Id}."
+					}.CompleteWithSuccess();
+				}
 			}
 			catch (Exception ex)
 			{

@@ -187,6 +187,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Launch agent.
+        /// </summary>
+        public static string agent_launch {
+            get {
+                return ResourceManager.GetString("agent-launch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent Tasks.
+        /// </summary>
+        public static string agent_tasks {
+            get {
+                return ResourceManager.GetString("agent_tasks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Agents.
         /// </summary>
         public static string agents {
@@ -646,6 +664,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancel task.
+        /// </summary>
+        public static string cancel_task {
+            get {
+                return ResourceManager.GetString("cancel_task", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Cancel tool.
         /// </summary>
         public static string cancel_tool {
@@ -997,6 +1024,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Clear completed.
+        /// </summary>
+        public static string clear_completed {
+            get {
+                return ResourceManager.GetString("clear_completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy to clipboard.
         /// </summary>
         public static string clipboard_copy {
@@ -1038,6 +1074,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string coin_tails {
             get {
                 return ResourceManager.GetString("coin_tails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на ⚠ CONFIRMATION NEEDED.
+        /// </summary>
+        public static string confirmation_needed {
+            get {
+                return ResourceManager.GetString("confirmation_needed", resourceCulture);
             }
         }
         
@@ -2955,6 +3000,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string ok {
             get {
                 return ResourceManager.GetString("ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Only running.
+        /// </summary>
+        public static string only_running {
+            get {
+                return ResourceManager.GetString("only_running", resourceCulture);
             }
         }
         
@@ -5290,6 +5344,60 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancelled.
+        /// </summary>
+        public static string task_status_cancelled {
+            get {
+                return ResourceManager.GetString("task_status_cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Executing.
+        /// </summary>
+        public static string task_status_executing {
+            get {
+                return ResourceManager.GetString("task_status_executing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Failed.
+        /// </summary>
+        public static string task_status_failed {
+            get {
+                return ResourceManager.GetString("task_status_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Pending.
+        /// </summary>
+        public static string task_status_pending {
+            get {
+                return ResourceManager.GetString("task_status_pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Success.
+        /// </summary>
+        public static string task_status_success {
+            get {
+                return ResourceManager.GetString("task_status_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Unknown.
+        /// </summary>
+        public static string task_status_unknown {
+            get {
+                return ResourceManager.GetString("task_status_unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на temporary.
         /// </summary>
         public static string temporary_chat {
@@ -5358,6 +5466,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string toggle_context_shield {
             get {
                 return ResourceManager.GetString("toggle_context_shield", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Toggle sub-tasks.
+        /// </summary>
+        public static string toggle_subtasks {
+            get {
+                return ResourceManager.GetString("toggle_subtasks", resourceCulture);
             }
         }
         
@@ -5875,6 +5992,78 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Cancelled.
+        /// </summary>
+        public static string tool_call_status_cancelled {
+            get {
+                return ResourceManager.GetString("tool_call_status_cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Confirmation needed.
+        /// </summary>
+        public static string tool_call_status_confirming {
+            get {
+                return ResourceManager.GetString("tool_call_status_confirming", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Executing....
+        /// </summary>
+        public static string tool_call_status_executing {
+            get {
+                return ResourceManager.GetString("tool_call_status_executing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Failed.
+        /// </summary>
+        public static string tool_call_status_failed {
+            get {
+                return ResourceManager.GetString("tool_call_status_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Pending.
+        /// </summary>
+        public static string tool_call_status_pending {
+            get {
+                return ResourceManager.GetString("tool_call_status_pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Analyzing....
+        /// </summary>
+        public static string tool_call_status_pre_executing {
+            get {
+                return ResourceManager.GetString("tool_call_status_pre_executing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Success.
+        /// </summary>
+        public static string tool_call_status_success {
+            get {
+                return ResourceManager.GetString("tool_call_status_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Unknown.
+        /// </summary>
+        public static string tool_call_status_unknown {
+            get {
+                return ResourceManager.GetString("tool_call_status_unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Cancel with reason.
         /// </summary>
         public static string tool_cancel_with_reason {
@@ -5997,6 +6186,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string tools_hint {
             get {
                 return ResourceManager.GetString("tools_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на (unnamed task).
+        /// </summary>
+        public static string unnamed_task {
+            get {
+                return ResourceManager.GetString("unnamed_task", resourceCulture);
             }
         }
         

@@ -11,6 +11,6 @@ namespace LLMDesktopAssistant.Tools
 			ToolBehaviour autoApproveBehaviours,
 			ToolBehaviour disallowedBehaviours);
 
-		void MemorizeConsent(ToolConsentResult consentResult);
+		void MemorizeConsent(Chat? chat, ToolConsentResult consentResult);
 	}
 }

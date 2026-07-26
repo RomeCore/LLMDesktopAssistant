@@ -54,9 +54,10 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				timeoutCt = new CancellationTokenSource(parameters.TimeOut.Value).Token;
 			var task = new AgentTask
 			{
+				Id = Guid.NewGuid(),
+				LaunchParameters = parameters,
 				Completion = completionSource.Task,
-				CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCt),
-				LaunchParameters = parameters
+				CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCt)
 			};
 			task.Messages.AddRange(parameters.InitialMessages);
 
@@ -164,12 +165,10 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 					async Task<IToolMessage> ProcessToolCall(IToolCall toolCall)
 					{
-						var toolExecutionTask = ExecuteToolAsync(toolCall, agentMessage, task, tools, cancellationToken);
-
 						await semaphore.WaitAsync(cancellationToken);
 						try
 						{
-							return await toolExecutionTask;
+							return await ExecuteToolAsync(toolCall, agentMessage, task, tools, cancellationToken);
 						}
 						finally
 						{
@@ -430,7 +429,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					{
 						agentToolCall.Status = AgentToolCallStatus.Confirming;
 						var consentResult = await request.UserConfirmationSource.Task.WaitAsync(cancellationToken);
-						_toolApprovalService.MemorizeConsent(consentResult);
+						_toolApprovalService.MemorizeConsent(task.LaunchParameters.TriggeredChat, consentResult);
 
 						if (!consentResult.IsApproved)
 						{

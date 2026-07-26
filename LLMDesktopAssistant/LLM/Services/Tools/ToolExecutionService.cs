@@ -187,7 +187,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					toolCall.ResultContent = decisionMessage;
 					return;
 				}
-
+				
 				string? additionalNotes = null;
 				bool hintAgentForWait = false;
 
@@ -198,7 +198,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					toolCall.Status = ToolStatus.WaitingForApproval;
 
 					var consentResult = await tcs.Task.WaitAsync(cancellationToken);
-					toolApprovalService.MemorizeConsent(consentResult);
+					toolApprovalService.MemorizeConsent(chat, consentResult);
 					hintAgentForWait = consentResult.HintAgentForWaiting;
 					if (consentResult.IsApproved)
 					{

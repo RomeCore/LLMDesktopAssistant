@@ -1,8 +1,10 @@
 using System.Text.Json.Nodes;
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Tools;
@@ -30,6 +32,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			  PARAMETERS:
 			    Each argument is a property table with the following fields:
+
+			    - task_title: string (optional) — Title of the task used for UI display.
 
 			    - messages: table (required) — Array of message tables.
 			      The LAST message MUST be a "user" message.
@@ -137,6 +141,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			  -- Simple greeting
 			  local r = await dass.agents.execute({
+			    task_title = "Greeting",
 			    messages = {
 			      { role = "system", content = "You are a helpful assistant." },
 			      { role = "user", content = "Say hello!" }
@@ -146,6 +151,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			  -- With custom model and tools
 			  local r = await dass.agents.execute({
+			    task_title = "Calculation",
 			    messages = {
 			      { role = "system", content = "You can use tools." },
 			      { role = "user", content = "What is 2+2?" }
@@ -161,6 +167,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    { role = "user", content = "Search for latest news about AI" }
 			  }
 			  local r = await dass.agents.execute({
+			    task_title = "Finding news",
 			    messages = messages,
 			    tools = { "web-search" }
 			  })
@@ -180,6 +187,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			
 			  table.insert(messages, { role = "user", content = "Okay, now search for tasty breakfast recipes" })
 			  r = await dass.agents.execute({
+			    task_title = "Finding breakfast recipes",
 			    messages = messages,
 			    tools = { "web-search" }
 			  })
@@ -187,6 +195,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			  -- Image attachment
 			  local r = await dass.agents.execute({
+			    task_title = "Image description",
 			    messages = {
 			      { role = "system", content = "You are image description assistant." },
 			      { role = "user", content = "Describe this image.", attachments = { image.load("image.png") } }
@@ -198,6 +207,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  -- Safe execution with try-catch
 			  try
 			    local result = await dass.agents.execute({
+			      task_title = "Math question",
 			      messages = {
 			        { role = "system", content = "You are an expert." },
 			        { role = "user", content = "What is 2+2?" }
@@ -210,6 +220,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			  -- Custom callback tool
 			  local r = await dass.agents.execute({
+			    task_title = "Custom callback tool example",
 			    messages = {
 			      { role = "system", content = "Use the calculator tool for math." },
 			      { role = "user", content = "What is 123 * 456?" }
@@ -238,18 +249,21 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  -- Batch execution: run multiple agents concurrently
 			  local results = await dass.agents.execute(
 			    {
+			      task_title = "Poet",
 			      messages = {
 			        { role = "system", content = "You are a poet." },
 			        { role = "user", content = "Write a haiku about coding." }
 			      }
 			    },
 			    {
+			      task_title = "Comedian",
 			      messages = {
 			        { role = "system", content = "You are a comedian." },
 			        { role = "user", content = "Tell me a programming joke." }
 			      }
 			    },
 			    {
+			      task_title = "Error test",
 			      messages = {
 			        { role = "system", content = "You are a helpful assistant." },
 			        { role = "user", content = "This one will fail!" }
@@ -297,14 +311,17 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private readonly Chat _chat;
 		private readonly IAgentTaskExecutor _agentTaskExecutor;
 		private readonly IModelManager _modelManager;
+		private readonly IAgentManagementService _agentManager;
 		private readonly IToolsetCacheService _toolsetCache;
 		private LuaService _luaService = null!;
 
-		public LuaApiAgents(Chat chat, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager, IToolsetCacheService toolsetCache)
+		public LuaApiAgents(Chat chat, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
+			IAgentManagementService agentManager, IToolsetCacheService toolsetCache)
 		{
 			_chat = chat;
 			_agentTaskExecutor = agentTaskExecutor;
 			_modelManager = modelManager;
+			_agentManager = agentManager;
 			_toolsetCache = toolsetCache;
 		}
 
@@ -455,8 +472,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						if (!_toolsetCache.AvailableTools.TryGetValue(toolValueString.Value, out var tool))
 							throw new Exception($"tool '{toolValueString.Value}' is not available.");
 
-						tools.Add(new ChatAgentTool { ChatToolInfo = tool, ApprovalLevel = ToolApprovalLevel.AlwaysApprove });
-						// TODO: change ApprovalLevel when Agent Tasks UI is done
+						tools.Add(new ChatAgentTool { ChatToolInfo = tool, ApprovalLevel = tool.ApprovalLevel });
 					}
 					else if (toolValue is LuaTable toolValueTable)
 					{
@@ -470,22 +486,40 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						if (callback is not LuaFunction func)
 							throw new Exception($"callback tool '{name}': 'callback' must be a function.");
 
-						tools.Add(new LuaAdHocAgentTool(name, desc, schema as JsonObject ?? [], ctx, func));
+						tools.Add(new LuaAdHocAgentTool(name, desc, schema as JsonObject ?? [], ctx, func)
+						{
+							ApprovalLevel = ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed
+						});
 					}
 				}
 			}
 
+			var taskTitle = parameters.Get("task_title") is LuaString taskTitleStr ? taskTitleStr.Value : null;
+
 			async Task<LuaTable> ExecuteAgent()
 			{
 				var tec = ctx.TryGetToolExecutionContext();
+				var agentToolSettings = tec != null ? _agentManager.TryGetAgentDescriptor(tec.Message.SenderAgentId)?.Tools : null;
+
+				ToolBehaviour autoApproveBehaviours = _chat.Settings.Tools.AutoApproveBehaviours,
+					disallowedBehaviours = _chat.Settings.Tools.DisallowedBehaviours;
+				if (agentToolSettings != null && agentToolSettings.EnablePolicyOverride)
+				{
+					autoApproveBehaviours = agentToolSettings.AutoApproveBehaviours;
+					disallowedBehaviours = agentToolSettings.DisallowedBehaviours;
+				}
+
 				var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
-					TaskName = "dass.agents.execute",
+					TaskName = taskTitle,
 					TriggeredChat = tec?.Chat,
 					TriggeredMessage = tec?.Message,
 					Model = llm,
 					InitialMessages = [..messages],
-					Tools = [..tools]
+					Tools = [..tools],
+					AutoApproveBehaviours = autoApproveBehaviours,
+					DisallowedBehaviours = disallowedBehaviours
+
 				});
 				await agentTask;
 

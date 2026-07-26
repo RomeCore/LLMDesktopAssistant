@@ -66,7 +66,7 @@ namespace LLMDesktopAssistant.Tools
 			}
 		}
 
-		public void MemorizeConsent(ToolConsentResult consentResult)
+		public void MemorizeConsent(Chat? chat, ToolConsentResult consentResult)
 		{
 			
 		}

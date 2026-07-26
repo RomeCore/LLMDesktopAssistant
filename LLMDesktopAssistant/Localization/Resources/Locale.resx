@@ -2436,4 +2436,7 @@
   <data name="task_status_unknown" xml:space="preserve">
     <value>Unknown</value>
   </data>
+  <data name="agent-launch" xml:space="preserve">
+    <value>Launch agent</value>
+  </data>
 </root>
