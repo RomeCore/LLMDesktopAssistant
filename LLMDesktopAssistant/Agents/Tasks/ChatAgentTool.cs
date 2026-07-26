@@ -2,7 +2,6 @@
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
-using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 

@@ -1,18 +1,13 @@
-using System.Text;
 using System.Text.Json.Nodes;
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
-using RCLargeLanguageModels.Agents;
-using RCLargeLanguageModels.Messages;
-using RCLargeLanguageModels.Messages.Attachments;
-using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -33,229 +28,279 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			--- async dass.agents.execute(properties...)
 			  Executes one or more LLM agents with the given conversations and returns their responses.
 
-			  Supports BATCH EXECUTION: pass multiple property tables to run multiple agents
-			  concurrently. Each agent executes independently and the results are returned
-			  as an array of response messages. If any of agent execution failed, the failed 
-			  agent's response returns error string instead of response messages.
+			  PARAMETERS:
+			    Each argument is a property table with the following fields:
 
-			  Parameters:
-				- properties: table (required for each call) — Contains:
-				  - messages: table (required) — Array of message tables (see format below).
-					The LAST message MUST be a "user" message.
-					Multiple "system" messages are concatenated.
-			
-					Each message table has a "role" field:
-					role = "system":
-					  - content: string — system instruction
-			
-					role = "user":
-					  - content: string — user message text
-					  - attachments: table (optional) — array of attachment objects (see format below)
-			
-					role = "assistant":
-					  - content: string — assistant response text
-					  - reasoning_content: string (optional) — reasoning/thinking text
-					  - tool_calls: table (optional) — array of tool call tables
-					  Each tool call:
-						- tool_name: string
-						- tool_call_id: string
-						- arguments: table — arguments matching the tool's schema
-						- content: string (optional) — tool output text
-			
-				  - model: string (optional) — Name of the model to use.
-					If omitted, the chat's "AgenticToolsModel" is used.
-				  - tools: table (optional) — Mixed array of tool names (strings) and/or
-					callback tool definitions (tables). If omitted, no tools are available.
+			    - messages: table (required) — Array of message tables.
+			      The LAST message MUST be a "user" message.
 
-					String entries reference registered tools by name:
-					  { "web-search", "fs-read_entry" }
+			      Each message table has a "role" field:
 
-					Table entries define ad-hoc Lua callback tools:
-					  {
-						name = "my_tool",
-						description = "Does something useful.",
-						parameters = {
-						  type = "object",
-						  properties = {
-							x = { type = "number" },
-							y = { type = "number" }
-						  },
-						  required = { "x", "y" }
-						},
-						callback = function(args)
-						  return "Result: " .. (args.x + args.y)
-						end
-					  }
+			      role = "system":
+			        - content: string — system instruction
 
-					Mixed example: { "web-search", { name = "calc", ... } }
+			      role = "user":
+			        - content: string — user message text
+			        - attachments: table (optional) — array of attachment objects
+			          Currently supports images via `image.load()` / `image.create()`:
+			          { image.load("path.png") }
 
-			  Returns:
-				- If a single property table is passed: table — array of response messages
-				  (same format as input messages).
-				- If multiple property tables are passed (batch): table — array of response arrays,
-				  one per input property table.
+			      role = "assistant":
+			        - content: string — assistant response text
+			        - reasoning_content: string (optional) — reasoning/thinking text
+			        - tool_calls: table (optional) — array of tool call tables
+			          Each tool call:
+			          - tool_name: string
+			          - tool_call_id: string
+			          - arguments: table — arguments matching the tool's schema
+			          - result_success: boolean (optional) — whether the tool execution succeeded
+			          - result_content: string (optional) — tool output text
+			          - result_attachments: table (optional) — array of attachment objects
+			        - attachments: table (optional) — array of attachment objects produced by the assistant
 
-			  Throws an error if:
-				- the agentic model is not configured or the specified model is not found
-				- the last message is not a "user" message
-				- any message has an unknown role
-				- any of the property tables is invalid (in batch mode, all errors are collected)
+			    - model: string (optional) — Name of the model to use.
+			      If omitted, the chat's "AgenticToolsModel" is used.
 
-			  Use pcall() for safe error handling.
+			    - tools: table (optional) — Mixed array of tool names (strings) and/or
+			      callback tool definitions (tables). If omitted, no tools are available.
+
+			      String entries reference registered tools by name:
+			        { "web-search", "fs-read_entry" }
+
+			      Table entries define ad-hoc Lua callback tools:
+			        {
+			          name = "my_tool",
+			          description = "Does something useful.",
+			          parameters = {
+			            type = "object",
+			            properties = {
+			              x = { type = "number" },
+			              y = { type = "number" }
+			            },
+			            required = { "x", "y" }
+			          },
+			          callback = function(args)
+			            return "Result: " .. (args.x + args.y)
+			          end
+			        }
+
+			      Mixed example: { "web-search", { name = "calc", ... } }
+
+			  RETURNS:
+			    - If a single property table is passed: table — array of response messages
+			      (same format as input messages, excluding the input messages themselves).
+			    - If multiple property tables are passed (batch): table — array of response arrays,
+			      one per input property table. If an individual agent fails, its entry
+			      is an error string instead of a response array.
+
+			  THROWS an error if:
+			    - the agentic model is not configured or the specified model is not found
+			    - the last message is not a "user" message
+			    - any message has an unknown role
+			    - any of the property tables is invalid (in batch mode, all errors are collected)
+
+			  Use pcall() / try-catch for safe error handling.
+
+			  BATCH EXECUTION:
+			    Pass multiple property tables as separate arguments:
+			      dass.agents.execute(batch1, batch2, batch3, ...)
+
+			    Or pass an array of property tables as a single argument:
+			      dass.agents.execute({ batch1, batch2, batch3, ... })
+
+			    Each agent executes independently and concurrently. Errors in one
+			    do not affect others. The function throws only when there's an error
+			    in agent parameters; runtime errors are returned as strings in the result.
+
+			MESSAGES:
+			  Input messages use the format described above.
+
+			  Output messages have the same structure:
+			    - "system" messages: { role = "system", content = "..." }
+			    - "user" messages: { role = "user", content = "...", attachments = {...} }
+			    - "assistant" messages:
+			      { role = "assistant", content = "...", reasoning_content = "...",
+			        tool_calls = { { tool_name, tool_call_id, arguments, result_success, result_content, result_attachments }, ... },
+			        attachments = {...},
+			        usage = { input_tokens, output_tokens, input_cache_hit_tokens,
+			          input_cache_miss_tokens, time_to_first_token (ms),
+			          inference_time (ms), execution_time (ms) } }
+
+			  Note: tool results are embedded directly in the tool_call table
+			  (result_success, result_content, result_attachments), NOT as separate
+			  "tool" role messages. This differs from OpenAI's API convention.
 
 			EXAMPLES:
 
 			  -- Simple greeting
 			  local r = await dass.agents.execute({
-				messages = {
-				  { role = "system", content = "You are a helpful assistant." },
-				  { role = "user", content = "Say hello!" }
-				}
+			    messages = {
+			      { role = "system", content = "You are a helpful assistant." },
+			      { role = "user", content = "Say hello!" }
+			    }
 			  })
 			  print(table.last(r).content)
 
 			  -- With custom model and tools
 			  local r = await dass.agents.execute({
-				messages = {
-				  { role = "system", content = "You can use tools." },
-				  { role = "user", content = "What is 2+2?" }
-				},
-				model = "openrouter$google/gemini-3.5-flash",
-				tools = { "math-calculate" }
+			    messages = {
+			      { role = "system", content = "You can use tools." },
+			      { role = "user", content = "What is 2+2?" }
+			    },
+			    model = "openrouter$google/gemini-3.5-flash",
+			    tools = { "math-calculate" }
 			  })
 			  print(table.last(r).content)
 
-			  -- Multi-turn with tools
+			  -- Multi-turn with tools (iterate through all messages)
+			  local messages = {
+			    { role = "system", content = "You can use web-search." },
+			    { role = "user", content = "Search for latest news about AI" }
+			  }
 			  local r = await dass.agents.execute({
-				messages = {
-				  { role = "system", content = "You can use web-search." },
-				  { role = "user", content = "Search for latest news about AI" }
-				},
-				tools = { "web-search" }
+			    messages = messages,
+			    tools = { "web-search" }
 			  })
 			  for _, msg in ipairs(r) do
-				if msg.role == "assistant" then
-				  print("AI:", msg.content)
-				  if msg.tool_calls then
-					for _, tc in ipairs(msg.tool_calls) do
-					  print("  -> tool:", tc.tool_name)
-					end
-				  end
-				elseif msg.role == "tool" then
-				  print("  result:", msg.content:sub(1, 100))
-				end
+			    table.insert(messages, msg)
+			    if msg.role == "assistant" then
+			      print("AI:", msg.content)
+			      if msg.tool_calls then
+			        for _, tc in ipairs(msg.tool_calls) do
+			          print("  -> tool:", tc.tool_name)
+			          print("  -> success:", tc.result_success)
+			          print("  -> result:", tc.result_content:sub(1, 100))
+			        end
+			      end
+			    end
 			  end
+			
+			  table.insert(messages, { role = "user", content = "Okay, now search for tasty breakfast recipes" })
+			  r = await dass.agents.execute({
+			    messages = messages,
+			    tools = { "web-search" }
+			  })
+			  -- Process messages again...
 
-			  -- Attachments with image description
+			  -- Image attachment
 			  local r = await dass.agents.execute({
-				messages = {
-				  { role = "system", content = "You are image description assistant." },
-				  { role = "user", content = "Describe this image.", attachments = { image.load("image.png") } }
-				},
-				model = "openrouter$google/gemini-3.5-flash" -- Use a vision model
+			    messages = {
+			      { role = "system", content = "You are image description assistant." },
+			      { role = "user", content = "Describe this image.", attachments = { image.load("image.png") } }
+			    },
+			    model = "openrouter$google/gemini-3.5-flash"  -- Use a vision model
 			  })
 			  print(table.last(r).content)
 
 			  -- Safe execution with try-catch
 			  try
-				local result = await dass.agents.execute({
-				  messages = {
-					{ role = "system", content = "You are an expert." },
-					{ role = "user", content = "What is 2+2?" }
-				  }
-				})
-				print("Answer:", table.last(r).content)
+			    local result = await dass.agents.execute({
+			      messages = {
+			        { role = "system", content = "You are an expert." },
+			        { role = "user", content = "What is 2+2?" }
+			      }
+			    })
+			    print("Answer:", table.last(result).content)
 			  catch error do
-				print("Failed:", error)
+			    print("Failed:", error)
 			  end
 
 			  -- Custom callback tool
 			  local r = await dass.agents.execute({
-				messages = {
-				  { role = "system", content = "Use the calculator tool for math." },
-				  { role = "user", content = "What is 123 * 456?" }
-				},
-				tools = {
-				  {
-					name = "calculator",
-					description = "Multiplies two integers.",
-					parameters = {
-					  type = "object",
-					  properties = {
-						a = { type = "number", description = "First number" },
-						b = { type = "number", description = "Second number" }
-					  },
-					  required = { "a", "b" }
-					},
-					callback = function(args)
-					  local result = args.a * args.b
-					  return tostring(result)
-					end
-				  }
-				}
+			    messages = {
+			      { role = "system", content = "Use the calculator tool for math." },
+			      { role = "user", content = "What is 123 * 456?" }
+			    },
+			    tools = {
+			      {
+			        name = "calculator",
+			        description = "Multiplies two integers.",
+			        parameters = {
+			          type = "object",
+			          properties = {
+			            a = { type = "number", description = "First number" },
+			            b = { type = "number", description = "Second number" }
+			          },
+			          required = { "a", "b" }
+			        },
+			        callback = function(args)
+			          local result = args.a * args.b
+			          return tostring(result)
+			        end
+			      }
+			    }
 			  })
 			  print(table.last(r).content)  -- "123 * 456 = 56088"
 
 			  -- Batch execution: run multiple agents concurrently
 			  local results = await dass.agents.execute(
-				{
-				  messages = {
-					{ role = "system", content = "You are a poet." },
-					{ role = "user", content = "Write a haiku about coding." }
-				  }
-				},
-				{
-				  messages = {
-					{ role = "system", content = "You are a comedian." },
-					{ role = "user", content = "Tell me a programming joke." }
-				  }
-				},
-				{
-				  messages = {
-					{ role = "system", content = "You are a helpful assistant." },
-					{ role = "user", content = "Your response will be failed!" }
-				  }
-				}
+			    {
+			      messages = {
+			        { role = "system", content = "You are a poet." },
+			        { role = "user", content = "Write a haiku about coding." }
+			      }
+			    },
+			    {
+			      messages = {
+			        { role = "system", content = "You are a comedian." },
+			        { role = "user", content = "Tell me a programming joke." }
+			      }
+			    },
+			    {
+			      messages = {
+			        { role = "system", content = "You are a helpful assistant." },
+			        { role = "user", content = "This one will fail!" }
+			      }
+			    }
 			  )
-			  -- results[1] is the poet's response array, results[2] is the comedian's, and results[3] contain the error message as a string
+			  -- results[1] is the poet's response array, results[2] is the comedian's,
+			  -- and results[3] contains an error message as a string
 			  print("Haiku:", table.last(results[1]).content)
 			  print("Joke:", table.last(results[2]).content)
-			  print("Failed:", results[3]) -- Error message
-			  
-			  -- Note: arguments for batch execution can be passed in two ways:
-			  -- 1. As separate arguments:
-			  dass.agents.execute(batch1, batch2, batch3, ...)
-			  -- 2. As an array of tables:
-			  dass.agents.execute({batch1, batch2, batch3, ...})
+			  print("Failed:", results[3])  -- Error message
+
+			  -- Batch via array
+			  local results = await dass.agents.execute({
+			    { messages = { ... } },
+			    { messages = { ... } }
+			  })
 
 			NOTES:
 			  - By default, the agent uses the chat's "AgenticToolsModel" setting.
-			  - You can override the model by passing a "model" field in options.
+			  - You can override the model by passing a "model" field.
 			  - No tools are available by default; you must explicitly pass them using the "tools" field.
-			  - Use `table.last` to access the last message in a response array,
-				so you can ignore useless messages with tool calls.
+			  - Use `table.last(response)` to get the final assistant message, skipping intermediate tool calls.
 			  - CALLBACK TOOLS: pass table entries in the "tools" array with:
-				name (string), description (string), parameters (JSON Schema table),
-				and callback (function). The callback receives a table of arguments
-				matching the schema and should return a string. Callbacks can use the full Lua API (fs, web,
-				dass.*, etc.).
-			  - Image attachments can be applied via `image` API (see manuals for details).
-			  - Returns the full conversation history produced by the agent,
-				including all intermediate tool calls and their results.
+			    name (string), description (string), parameters (JSON Schema table),
+			    and callback (function). The callback receives a table of arguments
+			    matching the schema and should return a string. Callbacks can use the full
+			    Lua API (fs, web, dass.*, etc.). Callbacks can be async.
+			  - Image attachments: use `image.load(path)` or `image.create(width, height)`
+			    to create attachment objects.
+			  - Returns the full conversation history produced by the agent AFTER the input
+			    messages, including all intermediate assistant messages with tool calls.
+			  - Tool call results are embedded directly in the tool_call table
+			    (result_success, result_content, result_attachments), not as separate messages.
+			  - Assistant messages may include a "usage" table with token counts and timing
+			    information: input_tokens, output_tokens, input_cache_hit_tokens,
+			    input_cache_miss_tokens, time_to_first_token (ms), inference_time (ms),
+			    execution_time (ms).
 			  - BATCH EXECUTION: pass multiple property tables to `execute()` to run
-				multiple agents concurrently. Each call is independent and errors
-				in one do not affect others. The function will throw exception only when
-				there's error in agent's parameters, the runtime errors just returns strings.
+			    multiple agents concurrently. Each call is independent and errors
+			    in one do not affect others. The function throws an exception only when
+			    there's an error in agent's parameters; runtime errors are returned as strings.
 			""";
 
 		private readonly Chat _chat;
+		private readonly IAgentTaskExecutor _agentTaskExecutor;
 		private readonly IModelManager _modelManager;
 		private readonly IToolsetCacheService _toolsetCache;
 		private LuaService _luaService = null!;
 
-		public LuaApiAgents(Chat chat, IModelManager modelManager, IToolsetCacheService toolsetCache)
+		public LuaApiAgents(Chat chat, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager, IToolsetCacheService toolsetCache)
 		{
 			_chat = chat;
+			_agentTaskExecutor = agentTaskExecutor;
 			_modelManager = modelManager;
 			_toolsetCache = toolsetCache;
 		}
@@ -286,7 +331,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					{
 						try
 						{
-							var executionFunction = PrepareExecutionFunction(ctx, arg);
+							var executionFunction = PrepareExecutionFunction(ctx, (LuaTable)item);
 							executionFunctions.Add(executionFunction);
 							exceptions.Add(null);
 						}
@@ -363,30 +408,18 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			if (messagesArg is not LuaTable messagesTable)
 				throw new Exception("'messages' must be a table.");
 
-			var systemMessageBuilder = new StringBuilder();
-			var messages = new List<IMessage>();
+			var messages = new List<AgentChatMessage>();
 
 			for (int i = 1; i <= messagesTable.Length; i++)
 			{
 				var _messageTable = messagesTable.Get(i);
 				if (_messageTable is not LuaTable messageTable)
 					throw new Exception("each message must be a table.");
-				var message = ConvertMessageFromLua(messageTable);
-				if (message is ISystemMessage systemMessage)
-					systemMessageBuilder.AppendLine(systemMessage.Content);
-				else
-					messages.Add(message);
+				messages.Add(ConvertMessageFromLua(messageTable));
 			}
 
-			if (messages.Count == 0 || messages[^1] is not RCLargeLanguageModels.Messages.IUserMessage)
+			if (messages.Count == 0 || messages[^1] is not AgentUserMessage)
 				throw new Exception("last message must be an user message.");
-
-			var memory = new SlidingChatMemory
-			{
-				ReturnLastNMessages = -1,
-				SystemInstructions = systemMessageBuilder.ToString().Trim(),
-				Messages = messages.Take(messages.Count - 1).ToList(),
-			};
 
 			// Resolve model name and LLM.
 			var modelNameParam = parameters.Get("model");
@@ -408,143 +441,57 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			}
 
 			// Resolve tools: mixed array of strings (registered tools) and tables (callback tools)
-			HashSet<string>? toolFilter = null;
-			List<(string Name, string Description, JsonNode? Schema, LuaFunction Callback)> callbackToolDefs = [];
+			var tools = new List<AgentTool>();
 			var toolsOption = parameters.Get("tools");
 			if (toolsOption is LuaTable toolsOptionTable)
 			{
-				toolFilter = new HashSet<string>();
 				foreach (var toolValue in toolsOptionTable.Values)
 				{
 					if (toolValue is LuaString toolValueString)
 					{
-						toolFilter.Add(toolValueString.Value);
+						if (!_toolsetCache.AvailableTools.TryGetValue(toolValueString.Value, out var tool))
+							throw new Exception($"tool '{toolValueString.Value}' is not available.");
+
+						tools.Add(new ChatAgentTool { ChatToolInfo = tool, ApprovalLevel = ToolApprovalLevel.AlwaysApprove });
+						// TODO: change ApprovalLevel when Agent Tasks UI is done
 					}
 					else if (toolValue is LuaTable toolValueTable)
 					{
-						var cbName = toolValueTable.Get("name").ToString();
-						var cbDesc = toolValueTable.Get("description").ToString();
-						var cbSchema = StructuredLuaConverter.LuaValueToJsonNode(toolValueTable.Get("parameters"));
-						var cbCallback = toolValueTable.Get("callback");
+						var name = toolValueTable.Get("name").ToString();
+						var desc = toolValueTable.Get("description").ToString();
+						var schema = StructuredLuaConverter.LuaValueToJsonNode(toolValueTable.Get("parameters"));
+						var callback = toolValueTable.Get("callback");
 
-						if (string.IsNullOrEmpty(cbName))
+						if (string.IsNullOrEmpty(name))
 							throw new Exception("callback tool definition: 'name' is required.");
-						if (cbCallback is not LuaFunction cbFunc)
-							throw new Exception($"callback tool '{cbName}': 'callback' must be a function.");
+						if (callback is not LuaFunction func)
+							throw new Exception($"callback tool '{name}': 'callback' must be a function.");
 
-						callbackToolDefs.Add((cbName, cbDesc ?? cbName, cbSchema, cbFunc));
+						tools.Add(new LuaAdHocAgentTool(name, desc, schema as JsonObject ?? [], ctx, func));
 					}
 				}
 			}
 
-			var tools = new List<ITool>();
-
-			// Registered tools (filtered)
-			foreach (var (_, tool) in _toolsetCache.AvailableTools)
-			{
-				if (toolFilter == null || !toolFilter.Contains(tool.Name))
-					continue;
-
-				var _tool = tool;
-				tools.Add(new FunctionTool(_tool.Name, _tool.DescriptionGetter(), _tool.ArgumentSchema, async (args, ct) =>
-				{
-					try
-					{
-						var dummyCtx = ToolExecutionContext.CreateDummy(_tool, args, _chat);
-						var result = await _tool.Executor(args, dummyCtx, ct);
-						var success = await result.Completion;
-						var content = result.ResultContent;
-						if (string.IsNullOrEmpty(content))
-							content = "Tool did not returned any result.";
-						return new ToolResult(success ? ToolResultStatus.Success : ToolResultStatus.Error, content);
-					}
-					catch (Exception ex)
-					{
-						return new ToolResult(ToolResultStatus.Error, $"Error occured while executing tool: " + ex.Message);
-					}
-				}));
-			}
-
-			// Callback tools (Lua functions)
-			foreach (var (cbName, cbDesc, cbSchema, cbCallback) in callbackToolDefs)
-			{
-				var capturedName = cbName;
-				var capturedDesc = cbDesc;
-				var capturedSchema = cbSchema;
-				var capturedCallback = cbCallback;
-
-				tools.Add(new FunctionTool(capturedName, capturedDesc, capturedSchema?.AsObject() ?? new JsonObject(),
-					async (jsonArgs, ct) =>
-				{
-					try
-					{
-						// Convert JSON args → Lua table
-						var luaArgs = StructuredLuaConverter.JsonNodeToLuaValue(jsonArgs);
-
-						LuaValue luaResult;
-						try
-						{
-							luaResult = await capturedCallback.InvokeAsync(ctx, luaArgs);
-						}
-						catch (Exception ex)
-						{
-							return new ToolResult(ToolResultStatus.Error, $"Error occured while executing callback tool '{capturedName}': " + ex.Message);
-						}
-
-						string content;
-						if (luaResult is LuaString str)
-							content = str.Value;
-						else if (luaResult is LuaNil)
-							content = string.Empty;
-						else
-							content = luaResult.ToString();
-
-						if (string.IsNullOrEmpty(content))
-							content = "Tool executed successfully.";
-
-						return new ToolResult(ToolResultStatus.Success, content);
-					}
-					catch (Exception ex)
-					{
-						return new ToolResult(ToolResultStatus.Error, $"Error in callback tool '{capturedName}': {ex.Message}");
-					}
-				}));
-			}
-
-			var toolExecutor = new LLMToolExecutor
-			{
-				Memory = memory,
-				LLMProvider = llm.WithTools(tools),
-				MaxParallelToolExecutions = -1,
-				MaxToolCycles = -1,
-				MaxToolCalls = -1
-			};
-
-			var userMessage = (RCLargeLanguageModels.Messages.IUserMessage)messages[^1];
-
 			async Task<LuaTable> ExecuteAgent()
 			{
-				var reseivedMessages = new List<IMessage>();
-				toolExecutor.MessageReceived += (_, msg) =>
+				var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
-					if (msg != userMessage)
-						reseivedMessages.Add(msg);
-				};
-				await toolExecutor.GenerateResponseAsync(userMessage);
+					TaskName = "dass.agents.execute",
+					InitialMessages = [..messages],
+					Tools = [..tools]
+				});
+				await agentTask;
 
 				var resultTable = new LuaTable();
-
-				int im = 1;
-				foreach (var message in reseivedMessages)
-					resultTable.Set(im++, ConvertMessageToLua(message));
-
+				foreach (var message in agentTask.Messages.Skip(messages.Count))
+					resultTable.Append(ConvertMessageToLua(message));
 				return resultTable;
 			}
 
 			return ExecuteAgent;
 		}
 
-		private static IMessage ConvertMessageFromLua(LuaTable messageTable)
+		private static AgentChatMessage ConvertMessageFromLua(LuaTable messageTable)
 		{
 			var role = messageTable.Get("role").ToString();
 			var content = messageTable.Get("content").ToString();
@@ -552,109 +499,162 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			switch (role)
 			{
 				case "system":
-					return new RCLargeLanguageModels.Messages.SystemMessage(content);
+					return new AgentSystemMessage { Content = content };
 
 				case "user":
 					var attachmentsTable = messageTable.Get("attachments");
-					var attachments = new List<IAttachment>();
+					var attachments = new List<AgentAttachment>();
 					foreach (var attachmentValue in (attachmentsTable as LuaTable)?.Values ?? [])
-					{
-						if ((attachmentValue as LuaUserData)?.Target is LuaImage image)
-							attachments.Add(new ImageBase64Attachment(image.Format, image.ToBase64()));
-					}
-					return new RCLargeLanguageModels.Messages.UserMessage(Senders.User, content, attachments);
+						attachments.Add(ConvertAttachmentFromLua(attachmentValue));
+					return new AgentUserMessage { Content = content, Attachments = [..attachments] };
 
 				case "assistant":
 					var reasoningContent = messageTable.Get("reasoning_content").ToString();
 
 					var toolCallsTable = messageTable.Get("tool_calls");
-					var toolCalls = new List<IToolCall>();
+					var toolCalls = new List<AgentToolCall>();
 					foreach (var toolCallTable in (toolCallsTable as LuaTable)?.Values ?? [])
 						toolCalls.Add(ConvertToolCallFromLua((LuaTable)toolCallTable));
 
 					attachmentsTable = messageTable.Get("attachments");
-					attachments = new List<IAttachment>();
+					attachments = new List<AgentAttachment>();
 					foreach (var attachmentValue in (attachmentsTable as LuaTable)?.Values ?? [])
+						attachments.Add(ConvertAttachmentFromLua(attachmentValue));
+
+					return new AgentAssistantMessage
 					{
-						if ((attachmentValue as LuaUserData)?.Target is LuaImage image)
-							attachments.Add(new ImageBase64Attachment(image.Format, image.ToBase64()));
-					}
-
-					return new RCLargeLanguageModels.Messages.AssistantMessage(content, reasoningContent, toolCalls, attachments);
-
-				case "tool":
-					var toolName = messageTable.Get("tool_name").ToString();
-					var toolCallId = messageTable.Get("tool_call_id").ToString();
-
-					attachmentsTable = messageTable.Get("attachments");
-					attachments = new List<IAttachment>();
-					foreach (var attachmentValue in (attachmentsTable as LuaTable)?.Values ?? [])
-					{
-						if ((attachmentValue as LuaUserData)?.Target is LuaImage image)
-							attachments.Add(new ImageBase64Attachment(image.Format, image.ToBase64()));
-					}
-
-					return new RCLargeLanguageModels.Messages.ToolMessage(content, toolCallId, toolName, attachments);
+						ReasoningContent = reasoningContent,
+						Content = content,
+						Attachments = [.. attachments],
+						ToolCalls = [.. toolCalls]
+					};
 
 				default:
 					throw new LuaRuntimeException($"dass.agents.execute(): unknown role '{role}'.");
 			}
 		}
 
-		private static IToolCall ConvertToolCallFromLua(LuaTable toolCallTable)
+		private static AgentAttachment ConvertAttachmentFromLua(LuaValue attachmentValue)
+		{
+			if (attachmentValue is LuaUserData userData)
+			{
+				if (userData.Target is LuaImage image)
+				{
+					return AgentAttachment.FromBase64(AgentAttachmentType.Image, image.Format, image.ToBase64(), image);
+				}
+			}
+			throw new Exception("Unsupported attachment value: " + attachmentValue.ToString());
+		}
+
+		private static LuaValue? TryConvertAttachmentToLua(AgentAttachment attachment)
+		{
+			switch (attachment.Type)
+			{
+				case AgentAttachmentType.Image:
+
+					// Convert back
+					if (attachment.Source is LuaImage luaImage)
+						return LuaValueConverter.ToLuaValue(luaImage);
+
+					break;
+			}
+
+			return null;
+		}
+
+		private static AgentToolCall ConvertToolCallFromLua(LuaTable toolCallTable)
 		{
 			var toolName = toolCallTable.Get("tool_name").ToString();
 			var toolCallId = toolCallTable.Get("tool_call_id").ToString();
 			var arguments = StructuredLuaConverter.LuaValueToJsonNode(toolCallTable.Get("arguments"));
-			return new FunctionToolCall(toolCallId, toolName, arguments?.ToJsonString() ?? "{}");
+
+			var resultSuccess = toolCallTable.Get("result_success");
+			var resultContent = toolCallTable.Get("result_content").ToString();
+			var attachmentsTable = toolCallTable.Get("result_attachments");
+			var attachments = new List<AgentAttachment>();
+			foreach (var attachmentValue in (attachmentsTable as LuaTable)?.Values ?? [])
+				attachments.Add(ConvertAttachmentFromLua(attachmentValue));
+
+			return new AgentToolCall
+			{
+				ToolCallId = toolCallId,
+				ToolName = toolName,
+				Arguments = arguments?.ToJsonString() ?? "{}",
+				Result = new AgentToolCallResult
+				{
+					Success = resultSuccess is LuaNil || resultSuccess.ToBoolean(),
+					Content = resultContent
+				}
+			};
 		}
 
-		private static LuaTable ConvertMessageToLua(IMessage message)
+		private static LuaTable ConvertMessageToLua(AgentChatMessage message)
 		{
 			switch (message)
 			{
-				case IUserMessage userMessage:
+				case AgentSystemMessage systemMessage:
+					var systemMessageTable = new LuaTable();
+					systemMessageTable.Set("role", "system");
+					systemMessageTable.Set("content", systemMessage.Content);
+					return systemMessageTable;
+
+				case AgentUserMessage userMessage:
 					var userMessageTable = new LuaTable();
 					userMessageTable.Set("role", "user");
 					userMessageTable.Set("content", userMessage.Content);
+					var attachmentsTable = new LuaTable();
+					foreach (var attachment in userMessage.Attachments)
+						if (TryConvertAttachmentToLua(attachment) is LuaValue attachmentValue)
+							attachmentsTable.Append(attachmentValue);
+					userMessageTable["attachments"] = attachmentsTable;
 					return userMessageTable;
 
-				case IAssistantMessage assistantMessage:
+				case AgentAssistantMessage assistantMessage:
 					var assistantMessageTable = new LuaTable();
 					assistantMessageTable.Set("role", "assistant");
 					assistantMessageTable.Set("reasoning_content", assistantMessage.ReasoningContent);
 					assistantMessageTable.Set("content", assistantMessage.Content);
-
-					int i = 1;
+					attachmentsTable = new LuaTable();
+					foreach (var attachment in assistantMessage.Attachments)
+						if (TryConvertAttachmentToLua(attachment) is LuaValue attachmentValue)
+							attachmentsTable.Append(attachmentValue);
+					assistantMessageTable["attachments"] = attachmentsTable;
 					var toolCallsTable = new LuaTable();
 					foreach (var toolCall in assistantMessage.ToolCalls)
-						toolCallsTable.Set(i++, ConvertToolCallToLua(toolCall));
+						toolCallsTable.Append(ConvertToolCallToLua(toolCall));
 					assistantMessageTable["tool_calls"] = toolCallsTable;
-
+					if (assistantMessage.UsageStatistics != null)
+					{
+						var usageTable = new LuaTable();
+						usageTable.Set("input_tokens", assistantMessage.UsageStatistics.InputTokens);
+						usageTable.Set("output_tokens", assistantMessage.UsageStatistics.OutputTokens);
+						usageTable.Set("input_cache_hit_tokens", assistantMessage.UsageStatistics.InputCacheHitTokens);
+						usageTable.Set("input_cache_miss_tokens", assistantMessage.UsageStatistics.InputCacheMissTokens);
+						usageTable.Set("time_to_first_token", assistantMessage.UsageStatistics.TimeToFirstToken.TotalMilliseconds);
+						usageTable.Set("inference_time", assistantMessage.UsageStatistics.InferenceTime.TotalMilliseconds);
+						usageTable.Set("execution_time", assistantMessage.UsageStatistics.ExecutionTime.TotalMilliseconds);
+						assistantMessageTable["usage"] = usageTable;
+					}
 					return assistantMessageTable;
-
-				case IToolMessage toolMessage:
-					var toolMessageTable = new LuaTable();
-					toolMessageTable.Set("role", "tool");
-					toolMessageTable.Set("tool_name", toolMessage.ToolName);
-					toolMessageTable.Set("tool_call_id", toolMessage.ToolCallId);
-					toolMessageTable.Set("content", toolMessage.Content);
-					return toolMessageTable;
 
 				default:
 					throw new LuaRuntimeException($"dass.agents.execute(): unknown message '{message}'.");
 			}
 		}
 
-		private static LuaTable ConvertToolCallToLua(IToolCall toolCall)
+		private static LuaTable ConvertToolCallToLua(AgentToolCall toolCall)
 		{
-			if (toolCall is not FunctionToolCall functionCall)
-				throw new LuaRuntimeException($"dass.agents.execute(): tool call is not function tool call: '{toolCall}'.");
-
 			var resultTable = new LuaTable();
-			resultTable.Set("tool_name", functionCall.ToolName);
-			resultTable.Set("tool_call_id", functionCall.Id);
-			resultTable.Set("arguments", StructuredLuaConverter.JsonNodeToLuaValue(TolerantJsonParser.Parse(functionCall.Args)));
+			resultTable.Set("tool_call_id", toolCall.ToolCallId);
+			resultTable.Set("tool_name", toolCall.ToolName);
+			resultTable.Set("arguments", StructuredLuaConverter.JsonNodeToLuaValue(TolerantJsonParser.Parse(toolCall.Arguments)));
+			resultTable.Set("result_success", toolCall.Result?.Success ?? true);
+			resultTable.Set("result_content", toolCall.Result?.Content ?? "");
+			var attachmentsTable = new LuaTable();
+			foreach (var attachment in toolCall.Result?.Attachments ?? [])
+				if (TryConvertAttachmentToLua(attachment) is LuaValue attachmentValue)
+					attachmentsTable.Append(attachmentValue);
+			resultTable["result_attachments"] = attachmentsTable;
 			return resultTable;
 		}
 	}

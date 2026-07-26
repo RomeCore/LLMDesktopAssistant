@@ -18,13 +18,21 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// <summary>
 		/// A collection of attachments associated with the assistant's message.
 		/// </summary>
-		public RangeObservableCollection<AgentAttachment> Attachments => _attachments;
+		public RangeObservableCollection<AgentAttachment> Attachments
+		{
+			get => _attachments;
+			set => _attachments.Reset(value);
+		}
 
 		private RangeObservableCollection<AgentToolCall> _toolCalls = [];
 		/// <summary>
 		/// A collection of tool calls associated with the assistant's message.
 		/// </summary>
-		public RangeObservableCollection<AgentToolCall> ToolCalls => _toolCalls;
+		public RangeObservableCollection<AgentToolCall> ToolCalls
+		{
+			get => _toolCalls;
+			set => _toolCalls.Reset(value);
+		}
 
 		private AgentUsageStatistics? _usageStatistics;
 		/// <summary>
