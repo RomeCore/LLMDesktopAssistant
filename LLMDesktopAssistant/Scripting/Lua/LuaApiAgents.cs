@@ -49,7 +49,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			        - content: string — assistant response text
 			        - reasoning_content: string (optional) — reasoning/thinking text
 			        - tool_calls: table (optional) — array of tool call tables
-			          Each tool call:
+			          Each tool call (table):
 			          - tool_name: string
 			          - tool_call_id: string
 			          - arguments: table — arguments matching the tool's schema
@@ -126,9 +126,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			          input_cache_miss_tokens, time_to_first_token (ms),
 			          inference_time (ms), execution_time (ms) } }
 
-			  Note: tool results are embedded directly in the tool_call table
-			  (result_success, result_content, result_attachments), NOT as separate
-			  "tool" role messages. This differs from OpenAI's API convention.
+			  Notes:
+			  - tool results are embedded directly in the tool_call table
+			    (result_success, result_content, result_attachments), NOT as separate
+			    "tool" role messages. This differs from OpenAI's API convention.
+			  - assistant messages can include "usage" table with usage statistics,
+			    which is not required for input messages.
 
 			EXAMPLES:
 
@@ -284,7 +287,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  - Assistant messages may include a "usage" table with token counts and timing
 			    information: input_tokens, output_tokens, input_cache_hit_tokens,
 			    input_cache_miss_tokens, time_to_first_token (ms), inference_time (ms),
-			    execution_time (ms).
+			    execution_time (ms). Each property can be 0 if unknown.
 			  - BATCH EXECUTION: pass multiple property tables to `execute()` to run
 			    multiple agents concurrently. Each call is independent and errors
 			    in one do not affect others. The function throws an exception only when
@@ -477,6 +480,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
 					TaskName = "dass.agents.execute",
+					Model = llm,
 					InitialMessages = [..messages],
 					Tools = [..tools]
 				});

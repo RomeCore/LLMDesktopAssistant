@@ -137,7 +137,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 						Content = responseMessage.Content
 					};
 					agentMessage.Attachments.AddRange(responseMessage.Attachments
-						.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
+						.Select(a => AgentAttachment.TryConvertFromNativeAttachment(a)).Where(a => a != null)!);
 
 					async Task<IToolMessage> ProcessToolCall(IToolCall toolCall)
 					{
@@ -179,7 +179,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 							if (delta.NewAttachments != null)
 								agentMessage.Attachments.AddRange(delta.NewAttachments
-									.Select(AgentAttachment.TryConvertFromNativeAttachment).Where(a => a != null)!);
+									.Select(a => AgentAttachment.TryConvertFromNativeAttachment(a)).Where(a => a != null)!);
 
 							if (delta.NewToolCalls != null)
 								foreach (var toolCall in delta.NewToolCalls)

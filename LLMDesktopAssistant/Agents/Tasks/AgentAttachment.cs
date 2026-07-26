@@ -48,9 +48,19 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// Attempts to convert a native attachment to an <see cref="AgentAttachment"/>. Returns null if the conversion is not possible.
 		/// </summary>
 		/// <param name="attachment">The native attachment to convert.</param>
+		/// <returns>The converted <see cref="AgentAttachment"/>, or null if the conversion is not possible.</returns>
+		public static AgentAttachment? TryConvertFromNativeAttachment(IAttachment? attachment)
+		{
+			return TryConvertFromNativeAttachment(attachment, null);
+		}
+
+		/// <summary>
+		/// Attempts to convert a native attachment to an <see cref="AgentAttachment"/>. Returns null if the conversion is not possible.
+		/// </summary>
+		/// <param name="attachment">The native attachment to convert.</param>
 		/// <param name="source">The source of the attachment, if applicable.</param>
 		/// <returns>The converted <see cref="AgentAttachment"/>, or null if the conversion is not possible.</returns>
-		public static AgentAttachment? TryConvertFromNativeAttachment(IAttachment? attachment, object? source = null)
+		public static AgentAttachment? TryConvertFromNativeAttachment(IAttachment? attachment, object? source)
 		{
 			switch (attachment)
 			{
