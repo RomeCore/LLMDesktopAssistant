@@ -5632,7 +5632,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на The tool reads the contents of files or directories..
+        ///   Ищет локализованную строку, похожую на The tool reads the contents of files..
         /// </summary>
         public static string tool_behaviour_fileread_hint {
             get {

@@ -8,6 +8,10 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// <summary>
 		/// A collection of attachments associated with the user's message.
 		/// </summary>
-		public RangeObservableCollection<AgentAttachment> Attachments => _attachments;
+		public RangeObservableCollection<AgentAttachment> Attachments
+		{
+			get => _attachments;
+			set => _attachments.Reset(value);
+		}
 	}
 }

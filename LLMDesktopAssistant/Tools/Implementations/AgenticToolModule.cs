@@ -1,5 +1,8 @@
+using System.Buffers.Text;
 using System.ComponentModel;
 using System.Text;
+using AngleSharp.Io;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.Attachments;
 using LLMDesktopAssistant.LLM.Domain;
@@ -11,8 +14,10 @@ using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services.Instances;
 using LLTSharp;
 using Material.Icons;
+using ModelContextProtocol.Protocol;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Messages;
+using SixLabors.ImageSharp;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -244,32 +249,50 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			try
 			{
 				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Read);
-				var attachment = new SerializableImageAttachment(path);
+				var image = Image.Load(fullPath);
+				using var memstream = new MemoryStream();
+				image.SaveAsPng(memstream);
+				var format = "png";
+				var base64 = Convert.ToBase64String(memstream.ToArray());
+				var url = "data:image/" + format + ";base64," + base64;
 
-				var messages = new List<IMessage>
+				var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
-					new SystemMessage(_templateLibrary.Retrieve("image_describer_prompt").Render().ToString()!),
-					new RCLargeLanguageModels.Messages.UserMessage(Senders.User, "Please describe the image.",
-						[ attachment ])
-				};
+					TaskName = "AskQuestion",
+					InitialMessages = [
+						new AgentSystemMessage { Content = _templateLibrary.Retrieve("image_describer_prompt").Render().ToString()! },
+						new AgentUserMessage {
+							Content = "Please describe the image.",
+							Attachments = [new AgentAttachment
+							{
+								Type = AgentAttachmentType.Image,
+								Url = url
+							}]
+						}
+					]
+				}, cancellationToken);
 
-				var response = await llm.ChatStreamingAsync(messages, cancellationToken: cancellationToken);
-
-				result.ResultContent = response.Content;
+				result.ResultContent = agentTask.LastGeneratedContent ?? string.Empty;
 
 				int tokenCounter = 0;
-				void Message_PartAdded(object? sender, AssistantMessageDelta e)
+				void LastResponseChanged(object? sender, PropertyChangedEventArgs e)
 				{
-					result.ResultContent = response.Content;
+					result.ResultContent = agentTask.LastGeneratedContent ?? string.Empty;
 					tokenCounter++;
 
 					if (tokenCounter > 1)
 						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("image_describer_status"), tokenCounter);
 				}
-				response.Message.PartAdded += Message_PartAdded;
+				agentTask.PropertyChanged += LastResponseChanged;
 
-				await response;
-				response.Message.PartAdded -= Message_PartAdded;
+				try
+				{
+					await agentTask;
+				}
+				finally
+				{
+					agentTask.PropertyChanged -= LastResponseChanged;
+				}
 
 				result.StatusTitle = null;
 				result.CompleteWithSuccess();

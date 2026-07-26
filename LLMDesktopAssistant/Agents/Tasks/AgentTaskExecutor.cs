@@ -16,6 +16,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 	[Service(typeof(IAgentTaskExecutor))]
 	public class AgentTaskExecutor : IAgentTaskExecutor
 	{
+		private readonly AsyncLocal<AgentTask?> _currentTask = new();
 		private readonly RangeObservableCollection<AgentTask> _allTasks;
 		private readonly IModelManager _modelManager;
 		private readonly IUsageStatsCollector _usageStatsCollector;
@@ -36,7 +37,11 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			if (string.IsNullOrEmpty(parameters.ModelName) && parameters.Model == null)
 				throw new ArgumentException("Model name or model must be provided.");
 			if (parameters.InitialMessages.IsEmpty)
-				throw new ArgumentException("Initial messages must be provided.");
+				throw new ArgumentException("Initial messages must be provided.", nameof(parameters.InitialMessages));
+			if (parameters.MaxParallelToolCalls < 1)
+				throw new ArgumentException("Max parallel tool calls must be greater than 0.", nameof(parameters.MaxParallelToolCalls));
+			if (!Enum.IsDefined(parameters.Behaviour))
+				throw new ArgumentException("Invalid behaviour value.", nameof(parameters.Behaviour));
 
 			var completionSource = new TaskCompletionSource<AgentTask>();
 
@@ -59,11 +64,15 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			foreach (var message in task.Messages)
 				nativeMessages.AddRange(ConvertMessageFromAgent(message));
 
+			var parentTask = _currentTask.Value;
+
 			Task.Run(async () =>
 			{
 				_allTasks.Add(task);
+				parentTask?.SubTasks.Add(task);
 				parameters.TriggeredChat?.AgentTasks.Add(task);
 				parameters.TriggeredMessage?.AgentTasks.Add(task);
+				_currentTask.Value = task;
 
 				try
 				{
@@ -85,6 +94,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				finally
 				{
 					_allTasks.Remove(task);
+					parentTask?.SubTasks.Remove(task);
 					parameters.TriggeredChat?.AgentTasks.Remove(task);
 					parameters.TriggeredMessage?.AgentTasks.Remove(task);
 				}

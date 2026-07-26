@@ -1666,7 +1666,7 @@
     <value>Read files</value>
   </data>
   <data name="tool_behaviour_fileread_hint" xml:space="preserve">
-    <value>The tool reads the contents of files or directories.</value>
+    <value>The tool reads the contents of files.</value>
   </data>
   <data name="tool_behaviour_fileedit" xml:space="preserve">
     <value>Edit files</value>

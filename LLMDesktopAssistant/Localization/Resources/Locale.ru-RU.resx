@@ -1666,7 +1666,7 @@
     <value>Чтение файлов</value>
   </data>
   <data name="tool_behaviour_fileread_hint" xml:space="preserve">
-    <value>Инструмент читает содержимое файлов или директорий.</value>
+    <value>Инструмент читает содержимое файлов.</value>
   </data>
   <data name="tool_behaviour_fileedit" xml:space="preserve">
     <value>Редактирование файлов</value>
@@ -2371,6 +2371,6 @@
     <value>Специальные/одноразовые инструменты</value>
   </data>
   <data name="tool_behaviour_adhoc_hint" xml:space="preserve">
-    <value>Специальные инструменты, созданные для одноразового запуска (например, скриптов)</value>
+    <value>Специальные инструменты, созданные для одноразового запуска (например, внутри скриптов)</value>
   </data>
 </root>

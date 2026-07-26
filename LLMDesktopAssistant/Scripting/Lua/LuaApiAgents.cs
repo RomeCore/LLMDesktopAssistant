@@ -60,11 +60,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						- tool_name: string
 						- tool_call_id: string
 						- arguments: table — arguments matching the tool's schema
-			
-					role = "tool":
-					  - content: string — tool result text
-					  - tool_name: string
-					  - tool_call_id: string
+						- content: string (optional) — tool output text
 			
 				  - model: string (optional) — Name of the model to use.
 					If omitted, the chat's "AgenticToolsModel" is used.
