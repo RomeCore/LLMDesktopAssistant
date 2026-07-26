@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Providers;
@@ -377,6 +377,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			{
 				agentToolCall.Status = AgentToolCallStatus.PreExecuting;
 				var previewResult = await tool.PreExecuteAsync(args, cancellationToken);
+				agentToolCall.ExpectedBehaviour = previewResult.ExpectedBehaviour;
 
 				if (previewResult.InterruptingSuccess != null)
 				{

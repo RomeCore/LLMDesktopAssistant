@@ -1,4 +1,5 @@
-﻿using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {
@@ -43,6 +44,17 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		{
 			get => _result;
 			set => SetProperty(ref _result, value);
+		}
+
+		private ToolBehaviour _expectedBehaviour;
+		/// <summary>
+		/// The expected behaviour flags for this tool call, determined during pre-execution.
+		/// Used to display behaviour indicators in the confirmation UI.
+		/// </summary>
+		public ToolBehaviour ExpectedBehaviour
+		{
+			get => _expectedBehaviour;
+			set => SetProperty(ref _expectedBehaviour, value);
 		}
 	}
 }

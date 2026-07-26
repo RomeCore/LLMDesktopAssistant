@@ -74,6 +74,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		}
 
 		public Task<ReactiveToolResult> AskQuestion(
+			[Description("The title of the agent call to be visible in UI")] string? callTitle,
 			[Description("The question to ask")] string question,
 			[Description("A list of tool names that can be used to answer the question.")]
 			string[] allowedTools,
@@ -81,10 +82,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			CancellationToken cancellationToken = default)
 		{
 			var systemPrompt = $"You are an agent designed to answer questions using tools.";
-			return CallAgent(systemPrompt, question, allowedTools, ctx, cancellationToken);
+			return CallAgent(callTitle, systemPrompt, question, allowedTools, ctx, cancellationToken);
 		}
 
 		public async Task<ReactiveToolResult> CallAgent(
+			[Description("The title of the agent call to be visible in UI")] string? callTitle,
 			[Description("The system prompt to use in the agent's context")] string systemPrompt,
 			[Description("The user message to send to the agent")] string userMessage,
 			[Description("A list of tool names that can be used to answer the question.")]
@@ -124,7 +126,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					tools.Add(new ChatAgentTool
 					{
 						ChatToolInfo = toolInfo,
-						ApprovalLevel = ToolApprovalLevel.AlwaysApprove,
+						ApprovalLevel = toolInfo.ApprovalLevel,
 					});
 				}
 				else
@@ -142,9 +144,17 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}.CompleteWithError();
 			}
 
+			ToolBehaviour autoApproveBehaviours = ctx.Chat.Settings.Tools.AutoApproveBehaviours,
+				disallowedBehaviours = ctx.Chat.Settings.Tools.DisallowedBehaviours;
+			if (agentToolSettings != null && agentToolSettings.EnablePolicyOverride)
+			{
+				autoApproveBehaviours = agentToolSettings.AutoApproveBehaviours;
+				disallowedBehaviours = agentToolSettings.DisallowedBehaviours;
+			}
+
 			var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 			{
-				TaskName = "AskQuestion",
+				TaskName = callTitle,
 				TriggeredChat = ctx.Chat,
 				TriggeredMessage = ctx.Message,
 				Model = llm,
@@ -153,8 +163,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					new AgentSystemMessage { Content = systemPrompt },
 					new AgentUserMessage { Content = userMessage }
 				],
-				AutoApproveBehaviours = agentToolSettings?.AutoApproveBehaviours ?? ToolBehaviour.None,
-				DisallowedBehaviours = agentToolSettings?.DisallowedBehaviours ?? ToolBehaviour.None
+				AutoApproveBehaviours = autoApproveBehaviours,
+				DisallowedBehaviours = disallowedBehaviours
 			}, cancellationToken);
 
 			try
@@ -163,7 +173,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 				return new ReactiveToolResult
 				{
-					ResultContent = $"Agent responded with: " + agentTask.LastGeneratedContent
+					ResultContent = string.IsNullOrWhiteSpace(agentTask.LastGeneratedContent) ?
+						"Agent did not generate any content." : agentTask.LastGeneratedContent,
+					UseMarkdown = true
 				}.CompleteWithSuccess();
 			}
 			catch (Exception ex)
@@ -215,6 +227,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		public async Task DescribeImage(
 			[SharedContext] string? fullPath,
 			ReactiveToolResult result,
+			[Description("The title of the agent call to be visible in UI")] string? callTitle,
 			[Description("The path to the image file to describe")] string path,
 			ToolExecutionContext ctx,
 			CancellationToken cancellationToken = default)
@@ -262,7 +275,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 				var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
-					TaskName = "AskQuestion",
+					TaskName = callTitle,
 					TriggeredChat = ctx.Chat,
 					TriggeredMessage = ctx.Message,
 					Model = llm,

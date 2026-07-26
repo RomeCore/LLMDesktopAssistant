@@ -2397,6 +2397,42 @@
   <data name="task_status_cancelled" xml:space="preserve">
     <value>Отменено</value>
   </data>
+  <data name="tool_call_status_pending" xml:space="preserve">
+    <value>Ожидание</value>
+  </data>
+  <data name="tool_call_status_pre_executing" xml:space="preserve">
+    <value>Анализ...</value>
+  </data>
+  <data name="tool_call_status_confirming" xml:space="preserve">
+    <value>Требуется подтверждение</value>
+  </data>
+  <data name="tool_call_status_executing" xml:space="preserve">
+    <value>Выполнение...</value>
+  </data>
+  <data name="tool_call_status_success" xml:space="preserve">
+    <value>Успешно</value>
+  </data>
+  <data name="tool_call_status_failed" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="tool_call_status_cancelled" xml:space="preserve">
+    <value>Отменено</value>
+  </data>
+  <data name="tool_call_status_unknown" xml:space="preserve">
+    <value>Неизвестно</value>
+  </data>
+  <data name="confirmation_needed" xml:space="preserve">
+    <value>⚠ ТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ</value>
+  </data>
+  <data name="unnamed_task" xml:space="preserve">
+    <value>(безымянная задача)</value>
+  </data>
+  <data name="cancel_task" xml:space="preserve">
+    <value>Отменить задачу</value>
+  </data>
+  <data name="toggle_subtasks" xml:space="preserve">
+    <value>Показать/скрыть подзадачи</value>
+  </data>
   <data name="task_status_unknown" xml:space="preserve">
     <value>Неизвестно</value>
   </data>
