@@ -28,6 +28,12 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		/// </summary>
 		public string ToolName => _toolCall.ToolName;
 
+		/// <summary>
+		/// The display name of the tool being called.
+		/// </summary>
+		public string ToolDisplayName => _parentTask.LaunchParameters.Tools
+			.FirstOrDefault(t => t.Name == _toolCall.ToolName)?.DisplayName ?? ToolName;
+
 		private string _arguments = string.Empty;
 		/// <summary>
 		/// The formatted arguments of the tool call, ready for display.

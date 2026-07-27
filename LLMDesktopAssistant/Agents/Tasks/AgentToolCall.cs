@@ -3,7 +3,6 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {
-
 	public class AgentToolCall : NotifyPropertyChanged
 	{
 		private AgentToolCallStatus _status = AgentToolCallStatus.Pending;

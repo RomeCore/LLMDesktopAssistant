@@ -11,6 +11,11 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public abstract string Name { get; }
 
 		/// <summary>
+		/// The display name of the tool. This is used in user interfaces and should be human-readable.
+		/// </summary>
+		public abstract string DisplayName { get; }
+
+		/// <summary>
 		/// A brief description of what the tool does. This should be helpful for agents to understand how to use the tool.
 		/// </summary>
 		public abstract string Description { get; }

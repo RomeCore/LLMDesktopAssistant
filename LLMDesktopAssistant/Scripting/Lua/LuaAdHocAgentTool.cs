@@ -12,6 +12,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	public class LuaAdHocAgentTool : AgentTool
 	{
 		public override string Name { get; }
+		public override string DisplayName { get; }
 		public override string Description { get; }
 		public override JsonObject ArgumentSchema { get; }
 
@@ -29,13 +30,15 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// Initializes a new instance of the <see cref="LuaAdHocAgentTool"/> class.
 		/// </summary>
 		/// <param name="name">The name of the tool.</param>
+		/// <param name="displayName">The display name of the tool.</param>
 		/// <param name="description">The description of the tool.</param>
 		/// <param name="argumentSchema">The schema for the arguments to be passed to the tool.</param>
 		/// <param name="context">The calling context for the Lua script.</param>
 		/// <param name="function">The Lua function to be called.</param>
-		public LuaAdHocAgentTool(string name, string description, JsonObject argumentSchema, LuaCallingContext context, LuaFunction function)
+		public LuaAdHocAgentTool(string name, string displayName, string description, JsonObject argumentSchema, LuaCallingContext context, LuaFunction function)
 		{
 			Name = name;
+			DisplayName = displayName;
 			Description = description;
 			ArgumentSchema = argumentSchema;
 			Context = context;

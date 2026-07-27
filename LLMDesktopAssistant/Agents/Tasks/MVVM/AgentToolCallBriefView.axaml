@@ -28,7 +28,7 @@
                 </Panel>
 
                 <!-- Tool name -->
-                <TextBlock Text="{Binding ToolName}"
+                <TextBlock Text="{Binding ToolDisplayName}"
                            FontSize="12" FontWeight="Medium"
                            VerticalAlignment="Center"
                            TextTrimming="CharacterEllipsis"/>

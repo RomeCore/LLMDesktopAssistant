@@ -74,6 +74,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			      Table entries define ad-hoc Lua callback tools:
 			        {
 			          name = "my_tool",
+			          display_name = "My Tool", -- (optional) display name for UI
 			          description = "Does something useful.",
 			          parameters = {
 			            type = "object",
@@ -227,7 +228,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    },
 			    tools = {
 			      {
-			        name = "calculator",
+			        name = "calculate",
+			        display_name = "Calculator",  -- Optional, for UI display
 			        description = "Multiplies two integers.",
 			        parameters = {
 			          type = "object",
@@ -477,6 +479,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					else if (toolValue is LuaTable toolValueTable)
 					{
 						var name = toolValueTable.Get("name").ToString();
+						var displayName = (toolValueTable.Get("display_name") as LuaString)?.Value;
 						var desc = toolValueTable.Get("description").ToString();
 						var schema = StructuredLuaConverter.LuaValueToJsonNode(toolValueTable.Get("parameters"));
 						var callback = toolValueTable.Get("callback");
@@ -486,7 +489,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						if (callback is not LuaFunction func)
 							throw new Exception($"callback tool '{name}': 'callback' must be a function.");
 
-						tools.Add(new LuaAdHocAgentTool(name, desc, schema as JsonObject ?? [], ctx, func)
+						tools.Add(new LuaAdHocAgentTool(name, displayName ?? name, desc, schema as JsonObject ?? [], ctx, func)
 						{
 							ApprovalLevel = ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed
 						});
