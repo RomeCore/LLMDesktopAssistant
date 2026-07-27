@@ -11,12 +11,12 @@
              x:DataType="local:AgentTaskViewModel">
 
     <Border Padding="10,6" CornerRadius="6"
-            Margin="0,2" MaxWidth="400"
+            Margin="0,2"
             Background="{Binding StatusBackground}">
 
         <StackPanel>
 
-            <Grid ColumnDefinitions="Auto,*,Auto">
+            <Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Left" MaxWidth="400">
 
                 <!-- Status indicator: ProgressRing when running, icon otherwise -->
                 <Panel Width="20" Height="20"

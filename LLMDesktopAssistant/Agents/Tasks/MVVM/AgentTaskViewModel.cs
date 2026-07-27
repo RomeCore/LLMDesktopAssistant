@@ -98,7 +98,7 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			private set => SetProperty(ref _lastContent, value);
 		}
 
-		private bool _isExpanded;
+		private bool _isExpanded = true;
 		/// <summary>
 		/// Whether the sub-tasks tree is expanded in the UI.
 		/// </summary>
