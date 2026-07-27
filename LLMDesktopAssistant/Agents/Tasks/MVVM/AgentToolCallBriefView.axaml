@@ -1,139 +1,178 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="using:LLMDesktopAssistant.Agents.Tasks.MVVM"
-             xmlns:ico="using:Material.Icons.Avalonia"
-             xmlns:ctrl="using:LLMDesktopAssistant.Controls"
-             xmlns:loc="using:LLMDesktopAssistant.Localization"
-             xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
-             mc:Ignorable="d" d:DesignWidth="380" d:DesignHeight="60"
-             x:Class="LLMDesktopAssistant.Agents.Tasks.MVVM.AgentToolCallBriefView"
-             x:DataType="local:AgentToolCallBriefViewModel">
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 xmlns:local="using:LLMDesktopAssistant.Agents.Tasks.MVVM"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
+						 mc:Ignorable="d" d:DesignWidth="380" d:DesignHeight="60"
+						 x:Class="LLMDesktopAssistant.Agents.Tasks.MVVM.AgentToolCallBriefView"
+						 x:DataType="local:AgentToolCallBriefViewModel">
+	
+	<Border Padding="6,4" CornerRadius="4"
+					Margin="0,1"
+					IsVisible="{Binding !IsCompleted}"
+					Background="{DynamicResource SystemControlBackgroundAltMediumLowBrush}">
 
-    <Border Padding="6,4" CornerRadius="4"
-            Margin="0,1"
-            IsVisible="{Binding !IsCompleted}"
-            Background="{DynamicResource SystemControlBackgroundAltMediumLowBrush}">
+		<StackPanel Spacing="4">
 
-        <StackPanel Spacing="4">
+			<!-- Main row: icon + tool name + status + behaviour flags -->
+			<WrapPanel Orientation="Horizontal" ItemSpacing="4">
 
-            <!-- Main row: icon + tool name + status + behaviour flags -->
-            <WrapPanel Orientation="Horizontal" ItemSpacing="4">
+				<!-- Status icon -->
+				<Panel Width="18" Height="18" VerticalAlignment="Center">
+						<ico:MaterialIcon Kind="{Binding StatusIcon}"
+															Width="18" Height="18"/>
+				</Panel>
 
-                <!-- Status icon -->
-                <Panel Width="18" Height="18" VerticalAlignment="Center">
-                    <ico:MaterialIcon Kind="{Binding StatusIcon}"
-                                      Width="18" Height="18"/>
-                </Panel>
+				<!-- Tool name -->
+				<TextBlock Text="{loc:Loc {Binding ToolDisplayName}}"
+									 FontSize="12" FontWeight="Medium"
+									 VerticalAlignment="Center"
+									 TextTrimming="CharacterEllipsis"/>
 
-                <!-- Tool name -->
-                <TextBlock Text="{Binding ToolDisplayName}"
-                           FontSize="12" FontWeight="Medium"
-                           VerticalAlignment="Center"
-                           TextTrimming="CharacterEllipsis"/>
+				<!-- Status text -->
+				<TextBlock Text="{Binding StatusText}"
+									 FontSize="11"
+									 Opacity="0.55"
+									 VerticalAlignment="Center"/>
 
-                <!-- Status text -->
-                <TextBlock Text="{Binding StatusText}"
-                           FontSize="11"
-                           Opacity="0.55"
-                           VerticalAlignment="Center"/>
+				<!-- Behaviour flags (compact icons) -->
+				<ItemsControl ItemsSource="{Binding BehaviourFlags}"
+											IsVisible="{Binding IsConfirming}"
+											VerticalAlignment="Center">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<WrapPanel ItemSpacing="2"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="messages:ToolBehaviourFlagInfo">
+							<Panel ToolTip.Tip="{Binding DisplayName}">
+								<ico:MaterialIcon Kind="{Binding Icon}"
+																	Foreground="{Binding Color}"
+																	Width="12" Height="12"/>
+							</Panel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
 
-                <!-- Behaviour flags (compact icons) -->
-                <ItemsControl ItemsSource="{Binding BehaviourFlags}"
-                              IsVisible="{Binding IsConfirming}"
-                              VerticalAlignment="Center">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel ItemSpacing="2"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="messages:ToolBehaviourFlagInfo">
-                            <Panel ToolTip.Tip="{Binding DisplayName}">
-                                <ico:MaterialIcon Kind="{Binding Icon}"
-                                                  Foreground="{Binding Color}"
-                                                  Width="12" Height="12"/>
-                            </Panel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+			</WrapPanel>
 
-            </WrapPanel>
+			<!-- Arguments preview (compact, one line) -->
+			<DockPanel HorizontalSpacing="2"
+								 IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+			
+				<Button Classes="MiniIconButton"
+								DockPanel.Dock="Left">
 
-            <!-- Arguments preview (compact, one line) -->
-            <TextBlock Text="{Binding Arguments}"
-                       FontSize="11"
-                       Opacity="0.5"
-                       TextTrimming="CharacterEllipsis"
-                       MaxLines="1"
-                       IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+					<ico:MaterialIcon Kind="CodeBraces"/>
+					
+					<Button.Flyout>
+						<Flyout>
+							<ctrl:MarkdownControl MarkdownText="{Binding Arguments}"
+																		MaxWidth="540"
+																		Margin="10"/>
+						</Flyout>
+					</Button.Flyout>
 
-            <!-- Result preview (compact, one line) -->
-            <TextBlock Text="{Binding Result}"
-                       FontSize="11"
-                       Opacity="0.5"
-                       TextTrimming="CharacterEllipsis"
-                       MaxLines="1"
-                       IsVisible="{Binding HasResult}"/>
+				</Button>
+			
+				<TextBlock Text="{Binding Arguments}"
+									 FontSize="11"
+									 Opacity="0.5"
+									 TextTrimming="CharacterEllipsis"
+									 MaxLines="1"/>
+			
+			</DockPanel>
 
-            <!-- Confirmation buttons -->
-            <StackPanel Orientation="Horizontal"
-                        Spacing="4"
-                        IsVisible="{Binding ShowConfirmButtons}">
+			<!-- Result preview (compact, one line) -->
+			<DockPanel HorizontalSpacing="2"
+								 IsVisible="{Binding HasResult}">
+			
+				<Button Classes="MiniIconButton"
+								DockPanel.Dock="Left">
 
-                <Button Classes="SmallButton"
-                        Command="{Binding ApproveCommand}"
-                        ToolTip.Tip="{loc:Loc approve}">
-                    <ico:MaterialIcon Kind="Check" Width="14" Height="14"/>
-                </Button>
+					<ico:MaterialIcon Kind="CommentTextOutline"/>
+					
+					<Button.Flyout>
+						<Flyout>
+							<ctrl:MarkdownControl MarkdownText="{Binding Result}"
+																		UsePlaintext="True"
+																		MaxWidth="540"
+																		Margin="10"/>
+						</Flyout>
+					</Button.Flyout>
 
-                <Button Classes="SmallButton"
-                        Command="{Binding ApproveWithNotesCommand}"
-                        ToolTip.Tip="{loc:Loc tool-approve-with-notes}">
-                    <ico:MaterialIcon Kind="TextBoxCheckOutline" Width="14" Height="14"/>
-                </Button>
+				</Button>
+			
+				<TextBlock Text="{Binding Result}"
+									 FontSize="11"
+									 Opacity="0.5"
+									 TextTrimming="CharacterEllipsis"
+									 MaxLines="1"/>
+			
+			</DockPanel>
 
-                <Button Classes="SmallButton"
-                        Command="{Binding DenyCommand}"
-                        ToolTip.Tip="{loc:Loc cancel-tool}">
-                    <ico:MaterialIcon Kind="Close" Width="14" Height="14"/>
-                </Button>
+			<!-- Confirmation buttons -->
+			<StackPanel Orientation="Horizontal"
+								Spacing="4"
+								IsVisible="{Binding ShowConfirmButtons}">
 
-                <Button Classes="SmallButton"
-                        Command="{Binding DenyWithReasonCommand}"
-                        ToolTip.Tip="{loc:Loc tool-cancel-with-reason}">
-                    <ico:MaterialIcon Kind="TextBoxRemoveOutline" Width="14" Height="14"/>
-                </Button>
+				<Button Classes="SmallIconButton"
+								Command="{Binding ApproveCommand}"
+								ToolTip.Tip="{loc:Loc approve}">
+					<ico:MaterialIcon Kind="Check"/>
+				</Button>
 
-            </StackPanel>
+				<Button Classes="SmallIconButton"
+								Command="{Binding ApproveWithNotesCommand}"
+								ToolTip.Tip="{loc:Loc tool-approve-with-notes}">
+					<ico:MaterialIcon Kind="TextBoxCheckOutline"/>
+				</Button>
 
-            <!-- Notes input (when writing notes) -->
-            <StackPanel Orientation="Horizontal"
-                        Spacing="4"
-                        IsVisible="{Binding WritingNotes}">
+				<Button Classes="SmallIconButton"
+								Command="{Binding DenyCommand}"
+								ToolTip.Tip="{loc:Loc cancel-tool}">
+					<ico:MaterialIcon Kind="Close"/>
+				</Button>
 
-                <TextBox x:Name="NotesTextBox"
-                         PlaceholderText="{loc:Loc tool-notes-placeholder}"
-                         MinWidth="200"/>
+				<Button Classes="SmallIconButton"
+								Command="{Binding DenyWithReasonCommand}"
+								ToolTip.Tip="{loc:Loc tool-cancel-with-reason}">
+					<ico:MaterialIcon Kind="TextBoxRemoveOutline"/>
+				</Button>
 
-                <Button Classes="SmallButton"
-                        Command="{Binding CommitNotesCommand}"
-                        CommandParameter="{Binding #NotesTextBox.Text}"
-                        ToolTip.Tip="{loc:Loc tool-commit-notes}">
-                    <ico:MaterialIcon Kind="Check" Width="14" Height="14"/>
-                </Button>
+			</StackPanel>
 
-                <Button Classes="SmallButton"
-                        Command="{Binding CancelNotesCommand}"
-                        ToolTip.Tip="{loc:Loc cancel-tool}">
-                    <ico:MaterialIcon Kind="Close" Width="14" Height="14"/>
-                </Button>
+			<!-- Notes input (when writing notes) -->
+			<StackPanel Orientation="Horizontal"
+									Spacing="4"
+									IsVisible="{Binding WritingNotes}">
 
-            </StackPanel>
+				<TextBox x:Name="NotesTextBox"
+								 PlaceholderText="{loc:Loc tool-notes-placeholder}"
+								 MinWidth="200"/>
 
-        </StackPanel>
+				<Button Classes="SmallIconButton"
+								Command="{Binding CommitNotesCommand}"
+								CommandParameter="{Binding #NotesTextBox.Text}"
+								ToolTip.Tip="{loc:Loc tool-commit-notes}">
+					<ico:MaterialIcon Kind="Check"/>
+				</Button>
 
-    </Border>
+				<Button Classes="SmallIconButton"
+								Command="{Binding CancelNotesCommand}"
+								ToolTip.Tip="{loc:Loc cancel}">
+					<ico:MaterialIcon Kind="Close"/>
+				</Button>
+
+			</StackPanel>
+
+		</StackPanel>
+
+	</Border>
 
 </UserControl>

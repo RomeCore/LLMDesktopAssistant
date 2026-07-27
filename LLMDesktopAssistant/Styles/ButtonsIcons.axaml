@@ -58,6 +58,30 @@
 
 	
 	
+	<Style Selector="Button.MiniIconButton">
+		<Setter Property="Padding" Value="0"/>
+		<Setter Property="Width" Value="18"/>
+		<Setter Property="Height" Value="18"/>
+	</Style>
+	
+	<Style Selector="Button.MiniIconButton > ico|MaterialIcon">
+		<Setter Property="Width" Value="16"/>
+		<Setter Property="Height" Value="16"/>
+	</Style>
+	
+	<Style Selector="ToggleButton.MiniIconButton">
+		<Setter Property="Padding" Value="0"/>
+		<Setter Property="Width" Value="18"/>
+		<Setter Property="Height" Value="18"/>
+	</Style>
+	
+	<Style Selector="ToggleButton.MiniIconButton > ico|MaterialIcon">
+		<Setter Property="Width" Value="16"/>
+		<Setter Property="Height" Value="16"/>
+	</Style>
+	
+
+	
 	<Style Selector="Button.SmallIconButton">
 		<Setter Property="Padding" Value="0"/>
 		<Setter Property="Width" Value="24"/>
@@ -115,7 +139,12 @@
 		<Setter Property="Width" Value="28"/>
 		<Setter Property="Height" Value="28"/>
 	</Style>
-
+	
+	<Style Selector="ico|MaterialIcon.MiniIcon">
+		<Setter Property="Width" Value="16"/>
+		<Setter Property="Height" Value="16"/>
+	</Style>
+	
 	<Style Selector="ico|MaterialIcon.SmallIcon">
 		<Setter Property="Width" Value="24"/>
 		<Setter Property="Height" Value="24"/>

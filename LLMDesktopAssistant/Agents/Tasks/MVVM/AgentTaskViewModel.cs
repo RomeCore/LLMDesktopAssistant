@@ -108,16 +108,6 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			set => SetProperty(ref _isExpanded, value);
 		}
 
-		private bool _hasSubTasks;
-		/// <summary>
-		/// Whether the task contains any sub-tasks.
-		/// </summary>
-		public bool HasSubTasks
-		{
-			get => _hasSubTasks;
-			private set => SetProperty(ref _hasSubTasks, value);
-		}
-
 		/// <summary>
 		/// View models for the sub-tasks of this task.
 		/// </summary>
@@ -127,16 +117,6 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		/// View models for the tool calls associated with this task.
 		/// </summary>
 		public RangeObservableCollection<AgentToolCallBriefViewModel> ToolCallViewModels { get; } = [];
-
-		private bool _hasToolCalls;
-		/// <summary>
-		/// Whether the task has any visible tool calls.
-		/// </summary>
-		public bool HasToolCalls
-		{
-			get => _hasToolCalls;
-			private set => SetProperty(ref _hasToolCalls, value);
-		}
 
 		private bool _hasConfirmingToolCalls;
 		/// <summary>
@@ -222,8 +202,6 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 						}
 					}
 				}
-
-				HasSubTasks = SubTaskViewModels.Count > 0;
 			});
 		}
 
@@ -299,7 +277,6 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			vm.PropertyChanged += OnToolCallViewModelPropertyChanged;
 			ToolCallViewModels.Add(vm);
 
-			HasToolCalls = ToolCallViewModels.Count > 0;
 			UpdateConfirmingFlag();
 		}
 
@@ -313,7 +290,6 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 				ToolCallViewModels.Remove(toRemove);
 			}
 
-			HasToolCalls = ToolCallViewModels.Count > 0;
 			UpdateConfirmingFlag();
 		}
 
@@ -388,8 +364,6 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		{
 			foreach (var subTask in _task.SubTasks)
 				SubTaskViewModels.Add(new AgentTaskViewModel(subTask));
-
-			HasSubTasks = SubTaskViewModels.Count > 0;
 		}
 
 		private void UpdateCancelCommand()

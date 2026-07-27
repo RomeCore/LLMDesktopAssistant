@@ -404,7 +404,7 @@
 
 				<Button Classes="MidIconButton"
 								Command="{Binding CancelNotesCommand}"
-								ToolTip.Tip="{loc:Loc cancel-tool}">
+								ToolTip.Tip="{loc:Loc cancel}">
 					<ico:MaterialIcon Kind="Close"/>
 				</Button>
 

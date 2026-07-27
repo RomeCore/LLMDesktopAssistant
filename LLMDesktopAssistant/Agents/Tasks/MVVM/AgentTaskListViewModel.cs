@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using Avalonia.Layout;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2021.DocumentTasks;
 using LLMDesktopAssistant.MVVM;
@@ -20,6 +21,16 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		/// The observable collection of task view models.
 		/// </summary>
 		public RangeObservableCollection<AgentTaskViewModel> Tasks => _tasks;
+
+		private Orientation _orientation = Orientation.Vertical;
+		/// <summary>
+		/// The orientation of the list. Can be either vertical or horizontal.
+		/// </summary>
+		public Orientation Orientation
+		{
+			get => _orientation;
+			set => SetProperty(ref _orientation, value);
+		}
 
 		private bool _hasTasks;
 		/// <summary>

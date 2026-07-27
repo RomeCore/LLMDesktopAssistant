@@ -702,4 +702,4 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		}
 	}
 }
-// 666 строчек епта
+// 666 строчек епта (уже неактуально, но пусть будет)

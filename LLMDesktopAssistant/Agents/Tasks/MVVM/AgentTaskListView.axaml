@@ -11,12 +11,12 @@
 		<ItemsControl ItemsSource="{Binding Tasks}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
-					<StackPanel Orientation="Vertical" Spacing="2"/>
+					<WrapPanel Orientation="{Binding Orientation}" ItemSpacing="2"/>
 				</ItemsPanelTemplate>
 			</ItemsControl.ItemsPanel>
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
-					<ContentControl Content="{Binding}"/>
+					<ContentControl HorizontalAlignment="Left" VerticalAlignment="Top" Content="{Binding}"/>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>

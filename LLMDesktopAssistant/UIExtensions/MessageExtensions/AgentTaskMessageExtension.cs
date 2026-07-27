@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using Avalonia.Layout;
 using Avalonia.Threading;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.Agents.Tasks.MVVM;
@@ -32,7 +33,10 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 			IsVisible = false; // No toolbar button — inline cards only
 
 			_message = ((AssistantMessageViewModel)viewModel).AssistantMessage;
-			var taskListVm = new AgentTaskListViewModel();
+			var taskListVm = new AgentTaskListViewModel
+			{
+				Orientation = Orientation.Horizontal
+			};
 			taskListVm.BindToSource(_message.AgentTasks);
 			var additional = new AgentTaskListInlineViewModel
 			{

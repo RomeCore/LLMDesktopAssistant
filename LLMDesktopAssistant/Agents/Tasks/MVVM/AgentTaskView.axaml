@@ -1,140 +1,171 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="using:LLMDesktopAssistant.Agents.Tasks.MVVM"
-             xmlns:ico="using:Material.Icons.Avalonia"
-             xmlns:ctrl="using:LLMDesktopAssistant.Controls"
-             xmlns:loc="using:LLMDesktopAssistant.Localization"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
-             x:Class="LLMDesktopAssistant.Agents.Tasks.MVVM.AgentTaskView"
-             x:DataType="local:AgentTaskViewModel">
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 xmlns:local="using:LLMDesktopAssistant.Agents.Tasks.MVVM"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+						 xmlns:beh="using:LLMDesktopAssistant.Controls.Behaviours"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
+						 x:Class="LLMDesktopAssistant.Agents.Tasks.MVVM.AgentTaskView"
+						 x:DataType="local:AgentTaskViewModel">
+	
+	<UserControl.Styles>
+		<Style Selector="FlyoutPresenter">
+			<Setter Property="Padding" Value="0"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="MaxWidth" Value="755"/>
+			<Setter Property="MaxHeight" Value="655"/>
+			<Setter Property="MinWidth" Value="205"/>
+			<Setter Property="MinHeight" Value="105"/>
+		</Style>
+	</UserControl.Styles>
 
-    <Border Padding="10,6" CornerRadius="6"
-            Margin="0,2"
-            Background="{Binding StatusBackground}">
+	<Border Padding="10,6" CornerRadius="6"
+					Margin="0,2"
+					Background="{Binding StatusBackground}">
 
-        <StackPanel>
+		<StackPanel>
 
-            <Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Left" MaxWidth="400">
+			<Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Left" MaxWidth="400">
 
-                <!-- Status indicator: ProgressRing when running, icon otherwise -->
-                <Panel Width="20" Height="20"
-                       Margin="0,0,10,0"
-                       VerticalAlignment="Center"
-                       Grid.Column="0">
+				<!-- Status indicator: ProgressRing when running, icon otherwise -->
+				<Panel Width="20" Height="20"
+							 Margin="0,0,10,0"
+							 VerticalAlignment="Center"
+							 Grid.Column="0">
 
-                    <ctrl:ProgressRing IsVisible="{Binding IsRunning}"
-                                       IsIndeterminate="True"
-                                       Width="20" Height="20"
-                                       StrokeThickness="3"
-                                       Foreground="{DynamicResource PrimaryAccentBrush}"/>
+					<ctrl:ProgressRing IsVisible="{Binding IsRunning}"
+														 IsIndeterminate="True"
+														 Width="20" Height="20"
+														 StrokeThickness="3"
+														 Foreground="{DynamicResource PrimaryAccentBrush}"/>
 
-                    <ico:MaterialIcon Kind="{Binding StatusIcon}"
-                                      Width="20" Height="20"
-                                      IsVisible="{Binding !IsRunning}"/>
+					<ico:MaterialIcon Kind="{Binding StatusIcon}"
+														Width="20" Height="20"
+														IsVisible="{Binding !IsRunning}"/>
 
-                </Panel>
+				</Panel>
 
-                <!-- Main content -->
-                <StackPanel VerticalAlignment="Center"
-                            Grid.Column="1">
+				<!-- Main content -->
+				<StackPanel VerticalAlignment="Center"
+										Grid.Column="1">
 
-                    <!-- Task name -->
-                    <TextBlock Text="{Binding TaskName, TargetNullValue={loc:Loc unnamed_task}}"
-                               FontSize="13" FontWeight="Medium"
-                               TextTrimming="CharacterEllipsis"
-                               MaxLines="1"/>
+					<!-- Task name -->
+					<TextBlock Text="{Binding TaskName, TargetNullValue={loc:Loc unnamed_task}}"
+										 FontSize="13" FontWeight="Medium"
+										 TextTrimming="CharacterEllipsis"
+										 MaxLines="1"/>
 
-                    <!-- Status text + confirmation indicator -->
-                    <WrapPanel Orientation="Horizontal" ItemSpacing="4">
+					<!-- Status text + confirmation indicator -->
+					<WrapPanel Orientation="Horizontal" ItemSpacing="4">
 
-                        <TextBlock Text="{Binding StatusText}"
-                                   FontSize="11"
-                                   Opacity="0.6"
-                                   Margin="0,2,0,0"/>
+						<TextBlock Text="{Binding StatusText}"
+											 FontSize="11"
+											 Opacity="0.6"
+											 Margin="0,2,0,0"/>
 
-                        <!-- Confirmation needed indicator -->
-                        <Border IsVisible="{Binding HasConfirmingToolCalls}"
-                                Background="#F44336"
-                                CornerRadius="3"
-                                Padding="4,1"
-                                Margin="0,2,0,0">
-                            <TextBlock Text="{loc:Loc confirmation_needed}"
-                                       FontSize="10"
-                                       Foreground="White"
-                                       FontWeight="Bold"/>
-                        </Border>
+						<!-- Confirmation needed indicator -->
+						<Border IsVisible="{Binding HasConfirmingToolCalls}"
+										Background="#F44336"
+										CornerRadius="3"
+										Padding="4,1"
+										Margin="0,2,0,0">
+							<TextBlock Text="{loc:Loc confirmation_needed}"
+												 FontSize="10"
+												 Foreground="White"
+												 FontWeight="Bold"/>
+						</Border>
 
-                    </WrapPanel>
+					</WrapPanel>
+					
+					<!-- Last content preview -->
+					<DockPanel HorizontalSpacing="2"
+										 IsVisible="{Binding LastContent, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+		
+						<Button Classes="MiniIconButton"
+										DockPanel.Dock="Left">
 
-                    <!-- Last content preview -->
-                    <TextBlock Text="{Binding LastContent}"
-                               FontSize="11"
-                               Opacity="0.65"
-                               TextTrimming="CharacterEllipsis"
-                               MaxLines="1"
-                               IsVisible="{Binding LastContent, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+							<ico:MaterialIcon Kind="Info"/>
+			
+							<Button.Flyout>
+								<Flyout>
+									<ctrl:MarkdownControl MarkdownText="{Binding LastContent}"
+																				MaxWidth="540"
+																				Margin="10"/>
+								</Flyout>
+							</Button.Flyout>
 
-                </StackPanel>
+						</Button>
+		
+						<TextBlock Text="{Binding LastContent}"
+											 FontSize="11"
+											 Opacity="0.65"
+											 TextTrimming="CharacterEllipsis"
+											 MaxLines="1"
+											 IsVisible="{Binding LastContent, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+		
+					</DockPanel>
 
-                <!-- Right side: summary + cancel + expand -->
-                <StackPanel Orientation="Horizontal"
-                            VerticalAlignment="Center"
-                            Spacing="6"
-                            Grid.Column="2">
+				</StackPanel>
 
-                    <TextBlock Text="{Binding Summary}"
-                               FontSize="11"
-                               Opacity="0.55"
-                               VerticalAlignment="Center"/>
+				<!-- Right side: summary + cancel + expand -->
+				<StackPanel Orientation="Horizontal"
+										VerticalAlignment="Center"
+										Spacing="6"
+										Grid.Column="2">
 
-                    <Button Classes="SmallIconButton"
-                            Command="{Binding CancelCommand}"
-                            IsVisible="{Binding IsRunning}"
-                            ToolTip.Tip="{loc:Loc cancel_task}">
-                        <ico:MaterialIcon Kind="Stop" Width="14" Height="14"/>
-                    </Button>
+					<TextBlock Text="{Binding Summary}"
+										 FontSize="11"
+										 Opacity="0.55"
+										 VerticalAlignment="Center"/>
 
-                    <ToggleButton IsChecked="{Binding IsExpanded, Mode=TwoWay}"
-                                  IsVisible="{Binding HasSubTasks}"
-                                  Classes="SmallIconButton"
-                                  ToolTip.Tip="{loc:Loc toggle_subtasks}">
-                        <ico:MaterialIcon Kind="ChevronDown" Width="14" Height="14"/>
-                    </ToggleButton>
+					<Button Classes="SmallIconButton"
+									Command="{Binding CancelCommand}"
+									IsVisible="{Binding IsRunning}"
+									ToolTip.Tip="{loc:Loc cancel_task}">
+						<ico:MaterialIcon Kind="Stop" Width="14" Height="14"/>
+					</Button>
 
-                </StackPanel>
+					<ToggleButton IsChecked="{Binding IsExpanded, Mode=TwoWay}"
+												IsVisible="{Binding SubTaskViewModels.Any}"
+												Classes="SmallIconButton"
+												ToolTip.Tip="{loc:Loc toggle_subtasks}">
+						<ico:MaterialIcon Kind="ChevronDown" Width="14" Height="14"/>
+					</ToggleButton>
 
-            </Grid>
+				</StackPanel>
 
-            <!-- Tool calls -->
-            <ItemsControl ItemsSource="{Binding ToolCallViewModels}"
-                          IsVisible="{Binding HasToolCalls}"
-                          Margin="0,4,0,0">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical" Spacing="1"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl Content="{Binding}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+			</Grid>
 
-            <!-- Sub-tasks (recursive) -->
-            <ItemsControl ItemsSource="{Binding SubTaskViewModels}"
-                          IsVisible="{Binding IsExpanded}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl Content="{Binding}" Margin="20,0,0,0"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+			<!-- Tool calls -->
+			<ItemsControl ItemsSource="{Binding ToolCallViewModels}"
+										IsVisible="{Binding ToolCallViewModels.Any}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Vertical"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<ContentControl Content="{Binding}"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
 
-        </StackPanel>
+			<!-- Sub-tasks (recursive) -->
+			<ItemsControl ItemsSource="{Binding SubTaskViewModels}"
+										IsVisible="{Binding IsExpanded}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						 <ContentControl Content="{Binding}" Margin="20,0,0,0"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
 
-    </Border>
+		</StackPanel>
+
+	</Border>
 
 </UserControl>
