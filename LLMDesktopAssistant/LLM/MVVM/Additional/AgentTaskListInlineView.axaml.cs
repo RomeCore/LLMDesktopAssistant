@@ -6,10 +6,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional;
 /// View for <see cref="AgentTaskInlineViewModel"/> — delegates rendering to the embedded
 /// <see cref="AgentTaskViewModel"/> via a <see cref="ContentControl"/>.
 /// </summary>
-[ViewFor(typeof(AgentTaskInlineViewModel))]
-public partial class AgentTaskInlineView : UserControl
+[ViewFor(typeof(AgentTaskListInlineViewModel))]
+public partial class AgentTaskListInlineView : UserControl
 {
-	public AgentTaskInlineView()
+	public AgentTaskListInlineView()
 	{
 		InitializeComponent();
 	}

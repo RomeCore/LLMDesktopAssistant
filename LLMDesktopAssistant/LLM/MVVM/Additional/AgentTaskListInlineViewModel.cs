@@ -7,13 +7,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 	/// An <see cref="AdditionalMessageViewModel"/> that wraps an <see cref="AgentTaskViewModel"/>
 	/// for inline display below an assistant message inside <see cref="ChatMessage.AdditionalViewModels"/>.
 	/// </summary>
-	public class AgentTaskInlineViewModel : AdditionalMessageViewModel
+	public class AgentTaskListInlineViewModel : AdditionalMessageViewModel
 	{
 		/// <summary>
 		/// The task view model to render inline.
 		/// </summary>
 		[ChangeTracker.Untracked]
-		public required AgentTaskViewModel TaskViewModel { get; init; }
+		public required AgentTaskListViewModel TaskListViewModel { get; init; }
 
 		/// <inheritdoc />
 		public override int Order => 200;
@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AgentTaskInlineViewModel"/> class.
 		/// </summary>
-		public AgentTaskInlineViewModel()
+		public AgentTaskListInlineViewModel()
 		{
 			IsTemporary = true;
 		}
@@ -30,7 +30,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
-				TaskViewModel.Dispose();
+				TaskListViewModel.Dispose();
 
 			base.Dispose(disposing);
 		}

@@ -88,6 +88,9 @@
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
+		<Compile Update="LLM\MVVM\Additional\AgentTaskListInlineView.axaml.cs">
+		  <DependentUpon>AgentTaskListInlineView.axaml</DependentUpon>
+		</Compile>
 		<Compile Update="LLM\MVVM\Attachments\AttachmentsManagerView.axaml.cs">
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>

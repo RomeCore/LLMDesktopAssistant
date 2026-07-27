@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Additional"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="60"
-             x:Class="LLMDesktopAssistant.LLM.MVVM.Additional.AgentTaskInlineView"
-             x:DataType="local:AgentTaskInlineViewModel">
+             x:Class="LLMDesktopAssistant.LLM.MVVM.Additional.AgentTaskListInlineView"
+             x:DataType="local:AgentTaskListInlineViewModel">
 
-    <ContentControl Content="{Binding TaskViewModel}"
+    <ContentControl Content="{Binding TaskListViewModel}"
                     HorizontalAlignment="Left"/>
 
 </UserControl>
