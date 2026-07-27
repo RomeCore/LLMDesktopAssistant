@@ -522,8 +522,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					Tools = [..tools],
 					AutoApproveBehaviours = autoApproveBehaviours,
 					DisallowedBehaviours = disallowedBehaviours
-
-				});
+				}, ctx.CancellationToken);
 				await agentTask;
 
 				var resultTable = new LuaTable();

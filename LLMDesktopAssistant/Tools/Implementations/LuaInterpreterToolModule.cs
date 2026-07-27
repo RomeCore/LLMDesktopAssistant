@@ -110,7 +110,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		public ReactiveToolResult Execute(
 			string lua,
 			ToolExecutionContext context,
-			bool isolatedExecution = true)
+			bool isolatedExecution = true,
+			CancellationToken cancellationToken = default)
 		{
 			var reactiveResult = new ReactiveToolResult
 			{
@@ -129,7 +130,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						{
 							g[LuaVariables.ToolExecutionContext] = LuaValueConverter.ToLuaValue(context);
 							g[LuaVariables.ToolReactiveResult] = LuaValueConverter.ToLuaValue(reactiveResult);
-						});
+						}, cancellationToken);
 					}
 					else
 					{
@@ -137,7 +138,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						{
 							g[LuaVariables.ToolExecutionContext] = LuaValueConverter.ToLuaValue(context);
 							g[LuaVariables.ToolReactiveResult] = LuaValueConverter.ToLuaValue(reactiveResult);
-						});
+						}, cancellationToken);
 					}
 
 					reactiveResult.TryCompleteWithSuccess();

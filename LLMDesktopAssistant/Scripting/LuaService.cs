@@ -189,7 +189,8 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="lua">The Lua code to execute.</param>
 		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public LuaTuple Execute(string lua, Action<LuaTable>? modifyGlobals = null)
+		public LuaTuple Execute(string lua, Action<LuaTable>? modifyGlobals = null,
+			CancellationToken cancellationToken = default)
 		{
 			var globals = _lua.Globals;
 			if (modifyGlobals != null)
@@ -200,7 +201,7 @@ namespace LLMDesktopAssistant.Scripting
 			return _lua.Execute(lua, editContext: ctx =>
 			{
 				ctx.Globals = globals;
-			});
+			}, cancellationToken: cancellationToken);
 		}
 
 		/// <summary>
@@ -210,7 +211,8 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="printOutput">The list to capture output into.</param>
 		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public LuaTuple Execute(string lua, Action<string> printOutput, Action<LuaTable>? modifyGlobals = null)
+		public LuaTuple Execute(string lua, Action<string> printOutput, Action<LuaTable>? modifyGlobals = null,
+			CancellationToken cancellationToken = default)
 		{
 			var globals = _lua.Globals;
 			if (modifyGlobals != null)
@@ -222,7 +224,7 @@ namespace LLMDesktopAssistant.Scripting
 			{
 				ctx.Globals = globals;
 				ctx.Print = printOutput;
-			});
+			}, cancellationToken: cancellationToken);
 		}
 
 		/// <summary>
@@ -231,7 +233,8 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="lua">The Lua code to execute.</param>
 		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public Task<LuaTuple> ExecuteAsync(string lua, Action<LuaTable>? modifyGlobals = null)
+		public Task<LuaTuple> ExecuteAsync(string lua, Action<LuaTable>? modifyGlobals = null,
+			CancellationToken cancellationToken = default)
 		{
 			var globals = _lua.Globals;
 			if (modifyGlobals != null)
@@ -242,7 +245,7 @@ namespace LLMDesktopAssistant.Scripting
 			return _lua.ExecuteAsync(lua, editContext: ctx =>
 			{
 				ctx.Globals = globals;
-			});
+			}, cancellationToken: cancellationToken);
 		}
 
 		/// <summary>
@@ -252,7 +255,8 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="printOutput">The list to capture output into.</param>
 		/// <param name="modifyGlobals">Action used to modify cloned _G table. If not null, the globals will be cloned and passed to this action, then passed to Lua.</param>
 		/// <returns>The result of the Lua execution.</returns>
-		public Task<LuaTuple> ExecuteAsync(string lua, Action<string> printOutput, Action<LuaTable>? modifyGlobals = null)
+		public Task<LuaTuple> ExecuteAsync(string lua, Action<string> printOutput, Action<LuaTable>? modifyGlobals = null,
+			CancellationToken cancellationToken = default)
 		{
 			var globals = _lua.Globals;
 			if (modifyGlobals != null)
