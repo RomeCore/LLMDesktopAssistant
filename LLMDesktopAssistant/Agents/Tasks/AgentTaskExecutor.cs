@@ -48,31 +48,30 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				throw new ArgumentException("Invalid behaviour value.", nameof(parameters.Behaviour));
 
 			var completionSource = new TaskCompletionSource<AgentTask>();
-
 			CancellationToken timeoutCt = default;
 			if (parameters.TimeOut.HasValue && parameters.TimeOut.Value > TimeSpan.Zero)
 				timeoutCt = new CancellationTokenSource(parameters.TimeOut.Value).Token;
+
+			var parentTask = _currentTask.Value;
 			var task = new AgentTask
 			{
 				Id = Guid.NewGuid(),
+				Parent = parentTask,
 				LaunchParameters = parameters,
 				Completion = completionSource.Task,
 				CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCt)
 			};
+
 			task.Messages.AddRange(parameters.InitialMessages);
-
-			var model = parameters.Model ?? _modelManager.GetModel(parameters.ModelName!);
-
-			model = model.WithTools(parameters.Tools.Select(t => new FunctionTool(t.Name, t.Description, t.ArgumentSchema,
-				(_, _) => throw new Exception("This tool is not expected to be invoked directly."))));
-
-			var tools = parameters.Tools.ToImmutableDictionary(k => k.Name);
-
 			var nativeMessages = new List<IMessage>();
 			foreach (var message in task.Messages)
 				nativeMessages.AddRange(ConvertMessageFromAgent(message));
 
-			var parentTask = _currentTask.Value;
+			var model = parameters.Model ?? _modelManager.GetModel(parameters.ModelName!);
+			model = model.WithTools(parameters.Tools.Select(t => new FunctionTool(t.Name, t.Description, t.ArgumentSchema,
+				(_, _) => throw new Exception("This tool is not expected to be invoked directly."))));
+
+			var tools = parameters.Tools.ToImmutableDictionary(k => k.Name);
 
 			Task.Run(async () =>
 			{

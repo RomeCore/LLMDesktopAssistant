@@ -18,6 +18,11 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public required Guid Id { get; init; }
 
 		/// <summary>
+		/// The parent of this agentic task, if any.
+		/// </summary>
+		public required AgentTask? Parent { get; init; }
+
+		/// <summary>
 		/// The parameters used to launch this agentic task.
 		/// </summary>
 		public required AgentTaskLaunchParameters LaunchParameters { get; init; }
