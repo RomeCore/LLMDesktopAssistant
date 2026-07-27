@@ -1,4 +1,6 @@
 using System.Collections.Specialized;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Office2021.DocumentTasks;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Utils;
 
@@ -13,6 +15,7 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 	public class AgentTaskListViewModel : ViewModelBase
 	{
 		private readonly RangeObservableCollection<AgentTaskViewModel> _tasks = [];
+		private readonly Dictionary<AgentTask, AgentTaskViewModel> _taskMap = [];
 		/// <summary>
 		/// The observable collection of task view models.
 		/// </summary>
@@ -61,14 +64,8 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			_sourceCollection = source;
 
 			if (source is IEnumerable<AgentTask> enumerable)
-			{
 				foreach (var task in enumerable)
-				{
-					var vm = new AgentTaskViewModel(task);
-					vm.PropertyChanged += OnTaskViewModelPropertyChanged;
-					_tasks.Add(vm);
-				}
-			}
+					AddTask(task);
 
 			HasTasks = _tasks.Count > 0;
 			RecalculateRunningCount();
@@ -80,21 +77,50 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		/// </summary>
 		public void UnbindFromSource()
 		{
-			if (_sourceCollection != null)
-			{
-				_sourceCollection.CollectionChanged -= OnSourceCollectionChanged;
-				_sourceCollection = null;
-			}
+			_sourceCollection?.CollectionChanged -= OnSourceCollectionChanged;
+			_sourceCollection = null;
 
+			ClearTasks();
+
+			HasTasks = false;
+			RunningTaskCount = 0;
+			HasRunningTasks = false;
+		}
+
+		private void AddTask(AgentTask task)
+		{
+			// Do not add task if it has parent (already added to parent task view model)
+			if (task.Parent != null)
+				return;
+			if (_taskMap.ContainsKey(task))
+				return;
+
+			var vm = new AgentTaskViewModel(task);
+			vm.PropertyChanged += OnTaskViewModelPropertyChanged;
+			_taskMap[task] = vm;
+			_tasks.Add(vm);
+		}
+
+		private void RemoveTask(AgentTask task)
+		{
+			if (!_taskMap.TryGetValue(task, out var vm))
+				return;
+
+			vm.Dispose();
+			vm.PropertyChanged -= OnTaskViewModelPropertyChanged;
+			_taskMap.Remove(task);
+			_tasks.Remove(vm);
+		}
+
+		private void ClearTasks()
+		{
 			foreach (var vm in _tasks)
 			{
 				vm.PropertyChanged -= OnTaskViewModelPropertyChanged;
 				vm.Dispose();
 			}
+			_taskMap.Clear();
 			_tasks.Clear();
-			HasTasks = false;
-			RunningTaskCount = 0;
-			HasRunningTasks = false;
 		}
 
 		private void OnSourceCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -102,37 +128,20 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			InvokeUI(() =>
 			{
 				if (e.NewItems != null)
-				{
 					foreach (AgentTask task in e.NewItems)
-					{
-						var vm = new AgentTaskViewModel(task);
-						vm.PropertyChanged += OnTaskViewModelPropertyChanged;
-						_tasks.Add(vm);
-					}
-				}
+						AddTask(task);
 
 				if (e.OldItems != null)
-				{
 					foreach (AgentTask task in e.OldItems)
-					{
-						var toRemove = _tasks.FirstOrDefault(vm => vm.Task == task);
-						if (toRemove != null)
-						{
-							toRemove.PropertyChanged -= OnTaskViewModelPropertyChanged;
-							toRemove.Dispose();
-							_tasks.Remove(toRemove);
-						}
-					}
-				}
+						RemoveTask(task);
 
 				if (e.Action == NotifyCollectionChangedAction.Reset)
 				{
-					foreach (var vm in _tasks)
-					{
-						vm.PropertyChanged -= OnTaskViewModelPropertyChanged;
-						vm.Dispose();
-					}
-					_tasks.Clear();
+					ClearTasks();
+
+					if (_sourceCollection is IEnumerable<AgentTask> enumerable)
+						foreach (var task in enumerable)
+							AddTask(task);
 				}
 
 				HasTasks = _tasks.Count > 0;
