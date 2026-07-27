@@ -48,20 +48,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				new ToolInitializationInfo
 				{
 					Name = "agent-call",
-					Description = "Calls another LLM agent with provided system message and user message with set of allowed tools. " +
-						"Waits for end of execution and returns the contents of last message.",
+					Description = "Calls another LLM agent with provided system message and user message with set of allowed tools.",
 					Category = "agents",
 					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
-				});
-
-			AddTool(LaunchAgent,
-				new ToolInitializationInfo
-				{
-					Name = "agent-launch",
-					Description = "Calls another LLM agent with provided system message and user message with set of allowed tools. " +
-						"Launches the agent and returns agent task ID immediately. The agent will continue to run in the background.",
-					Category = "agents",
-					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution
 				});
 
 			AddTool(DescribeImage, DescribeImageStreaming, DescribeImagePreview,
@@ -81,29 +70,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Description("The user message to send to the agent")] string userMessage,
 			[Description("A list of tool names that can be used by agent.")] string[] allowedTools,
 			ToolExecutionContext ctx,
-			CancellationToken cancellationToken = default)
-		{
-			return await ExecuteAgent(true, callTitle, systemPrompt, userMessage, allowedTools, ctx, cancellationToken);
-		}
-
-		public async Task<ReactiveToolResult> LaunchAgent(
-			[Description("The title of the agent call to be visible in UI")] string? callTitle,
-			[Description("The system prompt to use in the agent's context")] string systemPrompt,
-			[Description("The user message to send to the agent")] string userMessage,
-			[Description("A list of tool names that can be used by agent.")] string[] allowedTools,
-			ToolExecutionContext ctx,
-			CancellationToken cancellationToken = default)
-		{
-			return await ExecuteAgent(false, callTitle, systemPrompt, userMessage, allowedTools, ctx, cancellationToken);
-		}
-
-		private async Task<ReactiveToolResult> ExecuteAgent(
-			bool wait,
-			string? callTitle,
-			string systemPrompt,
-			string userMessage,
-			string[] allowedTools,
-			ToolExecutionContext ctx,
+			[Description("""
+				If true - waits for end of execution and returns the contents of last message.
+				If false - returns agent task ID immediately, the agent will continue to run in the background.
+				""")] bool wait = true,
 			CancellationToken cancellationToken = default)
 		{
 			var modelName = _chat.Settings.Models.AgenticToolsModel;
@@ -166,6 +136,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 			try
 			{
+				var ct = wait ? cancellationToken : CancellationToken.None;
+
 				var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
 					TaskName = callTitle,
@@ -175,11 +147,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Tools = tools.ToImmutableList(),
 					InitialMessages = [
 						new AgentSystemMessage { Content = systemPrompt },
-					new AgentUserMessage { Content = userMessage }
+						new AgentUserMessage { Content = userMessage }
 					],
 					AutoApproveBehaviours = autoApproveBehaviours,
 					DisallowedBehaviours = disallowedBehaviours
-				}, cancellationToken);
+				}, ct);
 
 				if (wait)
 				{
