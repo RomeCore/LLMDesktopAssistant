@@ -133,7 +133,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				var viewModel = new SummaryViewModel
 				{
-					Summary = summarizationTask.LastGeneratedMessage!.Content ?? string.Empty,
+					Summary = summarizationTask.LastGeneratedContent ?? string.Empty,
 					Completed = false
 				};
 				message.AdditionalViewModels.TryReplace(viewModel);

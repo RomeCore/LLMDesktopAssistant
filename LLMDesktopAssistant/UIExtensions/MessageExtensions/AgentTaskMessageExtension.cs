@@ -35,6 +35,7 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 			_message = ((AssistantMessageViewModel)viewModel).AssistantMessage;
 			var taskListVm = new AgentTaskListViewModel
 			{
+				Filtering = AgentTaskListFiltering.Message,
 				Orientation = Orientation.Horizontal
 			};
 			taskListVm.BindToSource(_message.AgentTasks);

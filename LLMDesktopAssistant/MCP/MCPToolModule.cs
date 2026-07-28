@@ -93,10 +93,10 @@ namespace LLMDesktopAssistant.MCP
 			return toolInfo;
 		}
 
-		private static Func<JsonNode, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(
+		private static Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(
 			MCPConnection connection, McpClientTool mcpTool)
 		{
-			async Task<ReactiveToolResult> ExecuteFunction(JsonNode args, ToolExecutionContext context, CancellationToken cancellationToken)
+			async Task<ReactiveToolResult> ExecuteFunction(JsonNode? args, ToolExecutionContext context, CancellationToken cancellationToken)
 			{
 				var reactiveResult = new ReactiveToolResult
 				{

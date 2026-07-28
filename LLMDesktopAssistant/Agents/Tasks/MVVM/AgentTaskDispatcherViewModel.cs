@@ -55,7 +55,10 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		/// <param name="executor">The task executor whose global task list to display.</param>
 		public AgentTaskDispatcherViewModel(IAgentTaskExecutor executor)
 		{
-			AllTasks = new AgentTaskListViewModel();
+			AllTasks = new AgentTaskListViewModel
+			{
+				Filtering = AgentTaskListFiltering.AllNotParented
+			};
 			AllTasks.BindToSource(executor.AllTasks);
 
 			ClearCompletedCommand = new RelayCommand(ClearCompleted);

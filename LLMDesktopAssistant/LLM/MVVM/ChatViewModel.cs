@@ -79,7 +79,10 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			ChatStatus = new ChatStatusViewModel(chat);
 			MessageSequence = new MessageSequenceViewModel(this);
 
-			AgentTaskList = new AgentTaskListViewModel();
+			AgentTaskList = new AgentTaskListViewModel
+			{
+				Filtering = AgentTaskListFiltering.Chat
+			};
 			AgentTaskList.PropertyChanged += OnAgentTaskListPropertyChanged;
 			AgentTaskList.BindToSource(chat.AgentTasks);
 		}
