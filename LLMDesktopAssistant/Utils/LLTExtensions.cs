@@ -19,7 +19,6 @@ namespace LLMDesktopAssistant.Utils
 		public static IEnumerable<IMessage> RenderRCLLM(this IMessagesTemplate template, object? context)
 		{
 			var rendered = template.Render(context);
-
 			return rendered.ToRCLLM();
 		}
 

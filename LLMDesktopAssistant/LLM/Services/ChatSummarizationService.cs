@@ -122,7 +122,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				var summarizationTask = agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
-					TaskName = LocalizationManager.LocalizeStatic("summarize"),
+					TaskName = LocalizationManager.LocalizeStatic("chat_summarization_task"),
 					TriggeredChat = chat,
 					Model = summarizationLLM,
 					InitialMessages = [

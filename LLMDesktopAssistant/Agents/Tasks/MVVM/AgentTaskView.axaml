@@ -22,9 +22,10 @@
 		</Style>
 	</UserControl.Styles>
 
-	<Border Padding="10,6" CornerRadius="6"
+	<Button Padding="10,6" CornerRadius="6"
 					Margin="0,2"
-					Background="{Binding StatusBackground}">
+					Background="{Binding StatusBackground}"
+					BorderBrush="Transparent">
 
 		<StackPanel>
 
@@ -166,6 +167,6 @@
 
 		</StackPanel>
 
-	</Border>
+	</Button>
 
 </UserControl>

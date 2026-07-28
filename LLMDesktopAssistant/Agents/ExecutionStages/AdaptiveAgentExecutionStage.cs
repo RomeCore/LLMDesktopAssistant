@@ -1,4 +1,6 @@
+using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
@@ -68,6 +70,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			}
 
 			var templateLibrary = context.Services.GetRequiredService<TemplateLibrary>();
+			var agentTaskExecutor = context.Services.GetRequiredService<IAgentTaskExecutor>();
 
 			var agents = selectFrom
 				.Select(a => context.AgentManager.GetAgentDescriptor(a.AgentId))
@@ -79,7 +82,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			var agentNames = string.Join("\n", agents.Select(a => a.Info.Name));
 
 			var template = (IMessagesTemplate)templateLibrary.Retrieve("router_prompt");
-			var messages = template.RenderRCLLM(new
+			var messages = template.RenderToAgent(new
 			{
 				agents = agents.Select(a => new
 				{
@@ -89,10 +92,16 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 				enforce_selection = EnforceRouterSelection,
 				additional_prompt = AdditionalRouterPrompt,
 				context = SelectContext(context),
-			}).ToList();
+			});
 
-			var response = await llm.ChatAsync(messages, cancellationToken: cancellationToken);
-			var content = response.Message.Content?.TrimStart('@');
+			var task = await agentTaskExecutor.Execute(new AgentTaskLaunchParameters
+			{
+				TaskName = LocalizationManager.LocalizeStatic("agent_selection_task"),
+				InitialMessages = [..messages],
+				Model = llm,
+			}, cancellationToken);
+
+			var content = task.LastGeneratedContent?.TrimStart('@');
 			var selectedAgent = agents.FirstOrDefault(a => a.Info.Name == content)?.Id;
 
 			Log.Information("Router model selected next agent: {Content}", content);

@@ -2439,4 +2439,13 @@
   <data name="agent-launch" xml:space="preserve">
     <value>Запустить агента</value>
   </data>
+  <data name="agent_selection_task" xml:space="preserve">
+    <value>Выбор агента</value>
+  </data>
+  <data name="chat_naming_task" xml:space="preserve">
+    <value>Именование чата</value>
+  </data>
+  <data name="chat_summarization_task" xml:space="preserve">
+    <value>Суммаризация чата</value>
+  </data>
 </root>

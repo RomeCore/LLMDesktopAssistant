@@ -196,6 +196,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent selection.
+        /// </summary>
+        public static string agent_selection_task {
+            get {
+                return ResourceManager.GetString("agent_selection_task", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Agent Tasks.
         /// </summary>
         public static string agent_tasks {
@@ -754,6 +763,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Chat naming.
+        /// </summary>
+        public static string chat_naming_task {
+            get {
+                return ResourceManager.GetString("chat_naming_task", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Send message.
         /// </summary>
         public static string chat_send_button_hint {
@@ -921,6 +939,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string chat_stop_button_hint {
             get {
                 return ResourceManager.GetString("chat-stop_button_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Chat summarization.
+        /// </summary>
+        public static string chat_summarization_task {
+            get {
+                return ResourceManager.GetString("chat_summarization_task", resourceCulture);
             }
         }
         

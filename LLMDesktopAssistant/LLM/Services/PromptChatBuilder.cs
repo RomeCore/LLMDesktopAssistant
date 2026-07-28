@@ -1,8 +1,8 @@
+using System.Globalization;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLMDesktopAssistant.LLM.Services.Agents;
-using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Hooks;
@@ -10,18 +10,11 @@ using LLMDesktopAssistant.Prompting.Injectors;
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLMDesktopAssistant.Users;
 using LLTSharp;
-using LLTSharp.DataAccessors;
 using LLTSharp.Locale;
-using LLTSharp.Metadata;
 using LLTSharp.Metadata.Types;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Messages.Attachments;
-using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
-using Serilog;
-using System.Globalization;
-using System.Text;
-using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.LLM.Services
 {

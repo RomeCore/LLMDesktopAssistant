@@ -2439,4 +2439,13 @@
   <data name="agent-launch" xml:space="preserve">
     <value>Launch agent</value>
   </data>
+  <data name="agent_selection_task" xml:space="preserve">
+    <value>Agent selection</value>
+  </data>
+  <data name="chat_naming_task" xml:space="preserve">
+    <value>Chat naming</value>
+  </data>
+  <data name="chat_summarization_task" xml:space="preserve">
+    <value>Chat summarization</value>
+  </data>
 </root>
