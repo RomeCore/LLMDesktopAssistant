@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json.Nodes;
+using DocumentFormat.OpenXml.Spreadsheet;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
@@ -18,22 +19,18 @@ namespace LLMDesktopAssistant.Agents.Tasks
 	public class AgentTaskExecutor : IAgentTaskExecutor
 	{
 		private readonly AsyncLocal<AgentTask?> _currentTask = new();
-		private readonly RangeObservableCollection<AgentTask> _allTasks;
 		private readonly IModelManager _modelManager;
 		private readonly IToolApprovalService _toolApprovalService;
 		private readonly IUsageStatsCollector _usageStatsCollector;
-
-		public ReadOnlyObservableCollection<AgentTask> AllTasks { get; }
+		private readonly IAgentTaskDispatcher _dispatcher;
 
 		public AgentTaskExecutor(IModelManager modelManager, IToolApprovalService toolApprovalService,
-			IUsageStatsCollector usageStatsCollector)
+			IUsageStatsCollector usageStatsCollector, IAgentTaskDispatcher dispatcher)
 		{
-			_allTasks = [];
 			_modelManager = modelManager;
 			_toolApprovalService = toolApprovalService;
 			_usageStatsCollector = usageStatsCollector;
-
-			AllTasks = new ReadOnlyObservableCollection<AgentTask>(_allTasks);
+			_dispatcher = dispatcher;
 		}
 
 		public AgentTask Execute(AgentTaskLaunchParameters parameters, CancellationToken cancellationToken = default)
@@ -76,11 +73,8 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			Task.Run(async () =>
 			{
 				task.Status = AgentTaskStatus.Executing;
-				_allTasks.Add(task);
-				parentTask?.SubTasks.Add(task);
-				parameters.TriggeredChat?.AgentTasks.Add(task);
-				parameters.TriggeredMessage?.AgentTasks.Add(task);
 				_currentTask.Value = task;
+				_dispatcher.OnBeginTask(task);
 
 				try
 				{
@@ -107,17 +101,8 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				finally
 				{
 					task.Completed = true;
+					_dispatcher.OnEndTask(task);
 
-					if (parameters.CompletionExpiryTime != null)
-					{
-						if (parameters.CompletionExpiryTime.Value > TimeSpan.Zero)
-							await Task.Delay(parameters.CompletionExpiryTime.Value);
-
-						_allTasks.Remove(task);
-						parentTask?.SubTasks.Remove(task);
-						parameters.TriggeredChat?.AgentTasks.Remove(task);
-						parameters.TriggeredMessage?.AgentTasks.Remove(task);
-					}
 				}
 			}, CancellationToken.None);
 

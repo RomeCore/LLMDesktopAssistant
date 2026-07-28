@@ -1,25 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LLMDesktopAssistant.Utils;
-using LLTSharp;
-using Microsoft.Extensions.DependencyInjection;
+﻿using LLMDesktopAssistant.Utils;
 using Serilog;
 
 namespace LLMDesktopAssistant.Services
 {
-#pragma warning disable CS8631
-
-	public static class ServiceKeys
-	{
-		public static object? AppServices { get; } = "Main";
-		public static object? ChatServices { get; } = "Chat";
-	}
-
 	/// <summary>
 	/// The manager for application services. All services are statically registered and can be retrieved by their type.
 	/// </summary>

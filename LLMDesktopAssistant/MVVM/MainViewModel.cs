@@ -84,7 +84,7 @@ namespace LLMDesktopAssistant.MVVM
 			});
 
 			AgentTaskDispatcher = new AgentTaskDispatcherViewModel(
-				ServiceRegistry.Provider.GetRequiredService<IAgentTaskExecutor>());
+				ServiceRegistry.Provider.GetRequiredService<IAgentTaskDispatcher>());
 			TopSidebarItems.Add(new MainViewModelSidebarItemViewModel
 			{
 				Icon = MaterialIconKind.TimerSandComplete,

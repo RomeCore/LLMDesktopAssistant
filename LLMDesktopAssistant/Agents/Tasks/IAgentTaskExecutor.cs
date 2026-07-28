@@ -8,11 +8,6 @@ namespace LLMDesktopAssistant.Agents.Tasks
 	public interface IAgentTaskExecutor
 	{
 		/// <summary>
-		/// Gets all tasks that are currently being executed.
-		/// </summary>
-		ReadOnlyObservableCollection<AgentTask> AllTasks { get; }
-
-		/// <summary>
 		/// Launches a new task with the given parameters.
 		/// </summary>
 		/// <param name="parameters">The parameters for the task.</param>

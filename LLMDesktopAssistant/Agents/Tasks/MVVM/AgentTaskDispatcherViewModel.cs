@@ -52,14 +52,14 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AgentTaskDispatcherViewModel"/> class.
 		/// </summary>
-		/// <param name="executor">The task executor whose global task list to display.</param>
-		public AgentTaskDispatcherViewModel(IAgentTaskExecutor executor)
+		/// <param name="dispatcher">The task dispatcher whose global task list to display.</param>
+		public AgentTaskDispatcherViewModel(IAgentTaskDispatcher dispatcher)
 		{
 			AllTasks = new AgentTaskListViewModel
 			{
 				Filtering = AgentTaskListFiltering.AllNotParented
 			};
-			AllTasks.BindToSource(executor.AllTasks);
+			AllTasks.BindToSource(dispatcher.AllTasks);
 
 			ClearCompletedCommand = new RelayCommand(ClearCompleted);
 		}
