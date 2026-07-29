@@ -4,7 +4,6 @@ using Avalonia;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;

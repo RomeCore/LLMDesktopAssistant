@@ -2,7 +2,7 @@ using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using RCLargeLanguageModels.Messages;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
 	/// <summary>
 	/// Interface for prompt chat builder. This service is responsible for building the list of messages for the LLM chat input.

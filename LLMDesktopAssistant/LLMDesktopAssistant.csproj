@@ -201,4 +201,8 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Prompting\Skills\" />
+	</ItemGroup>
+
 </Project>

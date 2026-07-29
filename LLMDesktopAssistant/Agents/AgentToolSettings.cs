@@ -1,5 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Settings;
+﻿using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 

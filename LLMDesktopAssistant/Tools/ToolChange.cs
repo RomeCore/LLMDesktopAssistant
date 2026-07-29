@@ -1,6 +1,4 @@
-﻿using LLMDesktopAssistant.Tools;
-
-namespace LLMDesktopAssistant.LLM.Domain
+﻿namespace LLMDesktopAssistant.Tools
 {
 	/// <summary>
 	/// Represents a change to a tool, including enabled state and confirmation requirements.
