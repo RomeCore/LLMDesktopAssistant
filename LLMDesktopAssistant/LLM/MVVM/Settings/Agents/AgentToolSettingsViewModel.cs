@@ -1,14 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Text;
 using Avalonia;
-using Avalonia.Collections;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.Services.Tools;
-using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Tools;

@@ -1,7 +1,7 @@
-﻿using Avalonia;
+﻿using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Browser;
 using LLMDesktopAssistant;
-using System.Threading.Tasks;
 
 internal sealed partial class Program
 {

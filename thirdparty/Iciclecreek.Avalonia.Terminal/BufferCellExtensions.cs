@@ -1,5 +1,5 @@
-﻿using Avalonia.Media;
-using System;
+﻿using System;
+using Avalonia.Media;
 using XTerm.Buffer;
 
 namespace Iciclecreek.Avalonia.Terminal

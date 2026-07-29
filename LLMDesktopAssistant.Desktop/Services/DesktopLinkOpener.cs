@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using Serilog;

@@ -3,9 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
-using ModelContextProtocol.Protocol;
 using RCLargeLanguageModels.Json.Schema;
-using RCLargeLanguageModels.Tools;
 using SearXSharp;
 using SearXSharp.Models;
 

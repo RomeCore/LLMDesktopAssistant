@@ -1,7 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.Agents.ExecutionStages;
-using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages;
 

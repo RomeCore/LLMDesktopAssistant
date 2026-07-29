@@ -1,15 +1,11 @@
+using System.Text;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
-using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using RCLargeLanguageModels;
-using RCLargeLanguageModels.Messages;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {

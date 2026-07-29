@@ -1,10 +1,6 @@
-using System.Buffers.Text;
 using System.ComponentModel;
 using System.Text;
-using AngleSharp.Io;
-using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Tasks;
-using LLMDesktopAssistant.Attachments;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
@@ -14,9 +10,7 @@ using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services.Instances;
 using LLTSharp;
 using Material.Icons;
-using ModelContextProtocol.Protocol;
 using RCLargeLanguageModels;
-using RCLargeLanguageModels.Messages;
 using SixLabors.ImageSharp;
 
 namespace LLMDesktopAssistant.Tools.Implementations

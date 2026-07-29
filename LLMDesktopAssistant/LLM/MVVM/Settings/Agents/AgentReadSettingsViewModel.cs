@@ -1,11 +1,9 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {

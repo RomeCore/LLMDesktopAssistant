@@ -1,10 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.LLM.MVVM.ContextTabs
+﻿namespace LLMDesktopAssistant.LLM.MVVM.ContextTabs
 {
 	public class ChatContextTabViewModel : NotifyPropertyChanged
 	{

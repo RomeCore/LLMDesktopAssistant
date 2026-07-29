@@ -1,9 +1,6 @@
-﻿using LLMDesktopAssistant.Services;
+﻿using System.IO;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Scripting
 {

@@ -1,15 +1,11 @@
-﻿using Avalonia.Media.Imaging;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using Avalonia.Media.Imaging;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services.Agents;
-using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.UIExtensions.MessageExtensions;
-using Serilog;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Reflection;
-using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.LLM.Messages
 {

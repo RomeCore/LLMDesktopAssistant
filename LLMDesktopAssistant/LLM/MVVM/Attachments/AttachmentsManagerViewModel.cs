@@ -1,8 +1,4 @@
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using Avalonia.Collections;
-using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;

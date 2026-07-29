@@ -1,12 +1,9 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
-using Serilog;
 
 namespace LLMDesktopAssistant.Providers
 {

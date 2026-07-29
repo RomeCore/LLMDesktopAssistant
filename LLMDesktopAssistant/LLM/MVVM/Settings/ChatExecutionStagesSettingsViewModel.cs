@@ -5,7 +5,6 @@ using LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Utils;
-using System.Text.Json;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings
 {

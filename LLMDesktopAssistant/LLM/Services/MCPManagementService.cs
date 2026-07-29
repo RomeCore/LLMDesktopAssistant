@@ -1,9 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels;
-using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services
 {

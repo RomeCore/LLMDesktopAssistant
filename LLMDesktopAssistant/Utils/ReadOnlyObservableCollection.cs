@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace LLMDesktopAssistant.Utils
 {

@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.Agents.Tasks.MVVM;
 using LLMDesktopAssistant.LLM.MVVM;
@@ -8,7 +7,6 @@ using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
-using Material.Icons.Avalonia;
 
 namespace LLMDesktopAssistant.MVVM
 {

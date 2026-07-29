@@ -1,5 +1,4 @@
 using LiteDB;
-using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Additional.Context
 {

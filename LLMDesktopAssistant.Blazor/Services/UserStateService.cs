@@ -1,6 +1,4 @@
-using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Users;
-using System.Security.Claims;
 
 namespace LLMDesktopAssistant.Blazor.Services
 {

@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Threading;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using LLMDesktopAssistant.ApiKeys;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Controls.Dialogs;
+using LLMDesktopAssistant.Services;
 
 namespace LLMDesktopAssistant.Controls
 {

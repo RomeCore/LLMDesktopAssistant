@@ -1,5 +1,4 @@
 using LLMDesktopAssistant.Tools;
-using System.Collections.Immutable;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {

@@ -1,15 +1,9 @@
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Attachments;
-using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Prompting;
-using LLMDesktopAssistant.Scripting.Lua;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
-using LLTSharp;
-using LLTSharp.Locale;
-using Microsoft.Extensions.DependencyInjection;
 using RCLargeLanguageModels.Statistics;
 using Serilog;
 

@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 

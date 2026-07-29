@@ -1,13 +1,12 @@
-using System.Collections.ObjectModel;
+using LLMDesktopAssistant.Agents.Tasks;
+using LLMDesktopAssistant.Data;
+using LLMDesktopAssistant.LLM.MVVM.ContextTabs;
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.LLM.Settings;
 using Material.Icons;
-using LLMDesktopAssistant.LLM.MVVM.ContextTabs;
-using LLMDesktopAssistant.Data;
-using LLMDesktopAssistant.Agents.Tasks;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {

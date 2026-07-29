@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.LLM.MVVM.ContextTabs
+﻿namespace LLMDesktopAssistant.LLM.MVVM.ContextTabs
 {
 	[ViewModelFor(typeof(TestContextTabView))]
 	public class TestContextTabViewModel : ChatContextTabViewModel

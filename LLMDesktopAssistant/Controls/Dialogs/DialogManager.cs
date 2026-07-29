@@ -1,9 +1,4 @@
-﻿using Avalonia.Controls;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Controls.Dialogs
+﻿namespace LLMDesktopAssistant.Controls.Dialogs
 {
 	public static class DialogManager
 	{

@@ -1,13 +1,8 @@
-﻿using Avalonia;
+﻿using System.Globalization;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
-using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 
 namespace LLMDesktopAssistant.Localization
 {

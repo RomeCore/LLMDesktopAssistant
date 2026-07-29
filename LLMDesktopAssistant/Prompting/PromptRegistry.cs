@@ -1,17 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
-using LLTSharp.DataAccessors;
 using LLTSharp.Locale;
 using LLTSharp.Metadata;
 using LLTSharp.Metadata.Types;

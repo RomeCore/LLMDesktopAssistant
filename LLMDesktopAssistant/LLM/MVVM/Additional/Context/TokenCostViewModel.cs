@@ -1,7 +1,5 @@
-using System;
 using System.Globalization;
 using LiteDB;
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Additional.Context

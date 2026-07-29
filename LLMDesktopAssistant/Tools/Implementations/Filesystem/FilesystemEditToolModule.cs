@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
 using RCParsing;
 

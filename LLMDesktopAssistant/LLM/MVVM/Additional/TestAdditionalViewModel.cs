@@ -1,9 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.LLM.MVVM.Additional
+﻿namespace LLMDesktopAssistant.LLM.MVVM.Additional
 {
 	[ViewModelFor(typeof(TestAdditionalView))]
 	public class TestAdditionalViewModel : AdditionalMessageViewModel

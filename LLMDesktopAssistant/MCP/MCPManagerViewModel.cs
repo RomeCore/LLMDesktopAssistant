@@ -1,7 +1,6 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.MCP;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Input;
 using Serilog;
-using System.Collections.ObjectModel;
 
 namespace LLMDesktopAssistant.MCP
 {

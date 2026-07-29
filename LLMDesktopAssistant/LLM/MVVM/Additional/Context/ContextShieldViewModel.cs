@@ -1,5 +1,3 @@
-using LLMDesktopAssistant.LLM.Domain;
-
 namespace LLMDesktopAssistant.LLM.MVVM.Additional.Context
 {
 	[ViewModelFor(typeof(ContextShieldView))]

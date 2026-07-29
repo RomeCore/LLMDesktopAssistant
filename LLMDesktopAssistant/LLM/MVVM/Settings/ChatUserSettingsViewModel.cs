@@ -1,8 +1,8 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.Users;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Users;
 using LLMDesktopAssistant.Utils;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;

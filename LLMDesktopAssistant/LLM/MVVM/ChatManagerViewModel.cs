@@ -1,16 +1,10 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Reflection;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using DocumentFormat.OpenXml.EMMA;
-using LiveMarkdown.Avalonia;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Users;
 using Serilog;
 
 namespace LLMDesktopAssistant.LLM.MVVM
@@ -323,7 +317,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		// Утечки памяти вызваны Link.TagToLinkMap, который нихуя не чистится, я его там заменил на ConcurrentDict<WeakReference>
 		// Ждем
 		// PS: ПОЧИНЕНО! (на самом деле я не делал никаких PR по этим утечкам, я просто сделал PR,
-		// который добавляет возможность удалять built-in ноды)
+		// который добавляет возможность удалять built-in ноды, а утечки сам автор починил, приколист ебаный)
 	}
 
 	[ViewModelFor(typeof(ChatManagerView))]

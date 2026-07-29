@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using AsyncLua;
 using AsyncLua.Values;
 using Serilog;

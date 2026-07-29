@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Scripting
+﻿namespace LLMDesktopAssistant.Scripting
 {
 	/// <summary>
 	/// Represents different types of script languages that can be used in the application.

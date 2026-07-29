@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace LLMDesktopAssistant.MVVM
+﻿namespace LLMDesktopAssistant.MVVM
 {
 	/// <summary>
 	/// Specifies the view model associated with a View.

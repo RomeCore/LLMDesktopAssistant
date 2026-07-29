@@ -1,22 +1,12 @@
-using System;
 using System.ComponentModel;
 using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Scripting;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Utils;
 using Material.Icons;
-using RCLargeLanguageModels.Tools;
-using UglyToad.PdfPig.Graphics.Operations.PathPainting;
-using XTerm.Common;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {

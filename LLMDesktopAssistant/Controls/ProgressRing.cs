@@ -2,10 +2,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
-using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using Avalonia.Threading;
-using Serilog;
 
 namespace LLMDesktopAssistant.Controls;
 

@@ -1,10 +1,7 @@
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Presenters;
 using Avalonia.Layout;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Rendering.Composition;
 using Avalonia.Threading;
@@ -12,7 +9,6 @@ using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using Material.Icons.Avalonia;
-using Serilog;
 
 namespace LLMDesktopAssistant.Controls.Toasts;
 

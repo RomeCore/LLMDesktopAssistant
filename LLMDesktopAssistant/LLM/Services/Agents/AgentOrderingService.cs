@@ -1,6 +1,5 @@
 using LLMDesktopAssistant.Agents.ExecutionStages;
 using LLMDesktopAssistant.LLM.Domain;
-using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services.Agents
 {

@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;

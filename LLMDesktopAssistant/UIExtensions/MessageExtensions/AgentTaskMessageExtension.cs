@@ -1,7 +1,4 @@
-using System.Collections.Specialized;
 using Avalonia.Layout;
-using Avalonia.Threading;
-using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.Agents.Tasks.MVVM;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Messages;

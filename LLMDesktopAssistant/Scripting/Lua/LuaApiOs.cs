@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 using AsyncLua;
 using AsyncLua.Values;

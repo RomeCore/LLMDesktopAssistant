@@ -1,12 +1,10 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using System.Text;
+using CommunityToolkit.Mvvm.Input;
 using LiveMarkdown.Avalonia;
-using LLMDesktopAssistant.UIExtensions.CodeBlockExtensions;
-using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.UIExtensions.CodeBlockExtensions;
 using Material.Icons;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.Desktop.Execution
 {

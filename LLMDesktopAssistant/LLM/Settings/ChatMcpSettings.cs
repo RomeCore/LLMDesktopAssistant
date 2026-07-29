@@ -1,5 +1,4 @@
-﻿using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.Utils;
+﻿using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {

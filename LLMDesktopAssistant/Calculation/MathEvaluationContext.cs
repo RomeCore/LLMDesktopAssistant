@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Frozen;
-using System.Collections.Generic;
+﻿using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
-using System.Text;
 using LLMDesktopAssistant.Calculation.Ast;
 
 namespace LLMDesktopAssistant.Calculation

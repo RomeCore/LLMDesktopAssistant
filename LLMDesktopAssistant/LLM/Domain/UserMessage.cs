@@ -1,7 +1,4 @@
-﻿using LLMDesktopAssistant.Utils;
-using System.Collections.Immutable;
-
-namespace LLMDesktopAssistant.LLM.Domain
+﻿namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
 	/// Represents a user message in the chat session.

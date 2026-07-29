@@ -1,4 +1,3 @@
-using System;
 using AsyncLua;
 using AsyncLua.Values;
 

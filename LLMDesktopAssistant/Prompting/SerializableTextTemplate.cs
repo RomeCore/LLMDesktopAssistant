@@ -1,5 +1,5 @@
-using LLTSharp;
 using System.Text.Json.Serialization;
+using LLTSharp;
 
 namespace LLMDesktopAssistant.Prompting
 {

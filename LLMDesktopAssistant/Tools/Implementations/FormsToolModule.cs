@@ -1,9 +1,7 @@
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Tools.MVVM;
-using RCLargeLanguageModels.Json.Schema;
-using RCLargeLanguageModels.Tools;
 using System.ComponentModel;
 using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Tools.MVVM;
+using RCLargeLanguageModels.Json.Schema;
 
 namespace LLMDesktopAssistant.Tools.Implementations;
 

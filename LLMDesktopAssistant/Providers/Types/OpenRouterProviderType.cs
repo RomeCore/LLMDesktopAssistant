@@ -1,5 +1,4 @@
 ﻿using RCLargeLanguageModels;
-using RCLargeLanguageModels.Clients.OpenAI;
 using RCLargeLanguageModels.Clients.OpenRouter;
 using RCLargeLanguageModels.Security;
 

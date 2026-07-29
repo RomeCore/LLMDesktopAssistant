@@ -1,7 +1,6 @@
-using Avalonia.Input.Platform;
-using LLMDesktopAssistant.Services;
-using RCLargeLanguageModels.Tools;
 using System.ComponentModel;
+using Avalonia.Input.Platform;
+using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {

@@ -1,15 +1,9 @@
-﻿using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
+﻿using System.ComponentModel;
+using System.Runtime.InteropServices;
+using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
-using RCLargeLanguageModels.Tools;
-using System;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ModelContextProtocol.Client;
-
-namespace LLMDesktopAssistant.MCP
+﻿namespace LLMDesktopAssistant.MCP
 {
 	/// <summary>
 	/// Represents the configuration details for connecting to an MCP server, including the connection type, endpoint, and a user-friendly name for the configuration.

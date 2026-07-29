@@ -1,6 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
-using System.Collections;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 
 namespace LLMDesktopAssistant.Utils
 {

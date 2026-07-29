@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Controls.Toasts
+﻿namespace LLMDesktopAssistant.Controls.Toasts
 {
 	/// <summary>
 	/// Represents an exception that has been already shown as a toast message.

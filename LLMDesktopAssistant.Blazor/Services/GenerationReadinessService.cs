@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
-using Serilog;
 
 namespace LLMDesktopAssistant.Blazor.Services
 {

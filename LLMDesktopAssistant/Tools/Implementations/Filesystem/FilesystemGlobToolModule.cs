@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Text;
-using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
@@ -8,7 +7,6 @@ using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
-using ModelContextProtocol.Protocol;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {

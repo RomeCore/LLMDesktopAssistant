@@ -1,11 +1,8 @@
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Windows.Input;
 using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Controls.Dialogs;
-using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings;
 
 namespace LLMDesktopAssistant.Users

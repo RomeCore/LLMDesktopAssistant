@@ -1,6 +1,3 @@
-using System.Text;
-using LLMDesktopAssistant.LLM.Domain;
-
 namespace LLMDesktopAssistant.Utils.Files
 {
 	/// <summary>

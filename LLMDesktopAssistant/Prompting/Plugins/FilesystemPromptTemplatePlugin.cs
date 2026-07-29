@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
+﻿using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 using LLTSharp;

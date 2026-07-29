@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using Avalonia.Threading;
 using LLMDesktopAssistant.Controls.Toasts;
 

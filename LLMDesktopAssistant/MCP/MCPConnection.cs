@@ -1,5 +1,4 @@
-﻿using System.IO;
-using ModelContextProtocol.Client;
+﻿using ModelContextProtocol.Client;
 
 namespace LLMDesktopAssistant.MCP
 {

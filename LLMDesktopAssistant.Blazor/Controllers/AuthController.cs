@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using LLMDesktopAssistant.Users;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LLMDesktopAssistant.Blazor.Controllers;

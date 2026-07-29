@@ -1,8 +1,6 @@
 using AngleSharp.Dom;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 
 namespace LLMDesktopAssistant.LLM.Attachments;
 

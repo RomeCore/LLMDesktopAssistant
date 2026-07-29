@@ -1,9 +1,7 @@
+using System.Diagnostics;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Localization.Resources;
-using System.Diagnostics;
-using System.IO;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {

@@ -1,5 +1,4 @@
 using LLTSharp.Locale;
-using System.Text.Json.Serialization;
 
 namespace LLMDesktopAssistant.Prompting
 {

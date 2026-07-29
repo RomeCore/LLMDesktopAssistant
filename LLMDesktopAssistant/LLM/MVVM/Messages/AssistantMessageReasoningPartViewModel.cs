@@ -1,7 +1,7 @@
-using Avalonia.Threading;
-using LLMDesktopAssistant.LLM.Domain;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using Avalonia.Threading;
+using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.LLM.Messages
 {

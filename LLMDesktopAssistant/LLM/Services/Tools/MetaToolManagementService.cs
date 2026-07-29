@@ -1,8 +1,6 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {

@@ -1,8 +1,8 @@
+using System.Collections.ObjectModel;
+using System.Text;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
-using System.Collections.ObjectModel;
-using System.Text;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 

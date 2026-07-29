@@ -1,7 +1,6 @@
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.Tools;
-using Serilog;
 
 namespace LLMDesktopAssistant.Scripting
 {

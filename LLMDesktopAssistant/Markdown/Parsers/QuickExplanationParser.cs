@@ -1,7 +1,7 @@
+using LLMDesktopAssistant.Markdown.Nodes;
 using Markdig.Helpers;
 using Markdig.Parsers;
 using Markdig.Syntax;
-using LLMDesktopAssistant.Markdown.Nodes;
 
 namespace LLMDesktopAssistant.Markdown.Parsers;
 

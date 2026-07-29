@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace LLMDesktopAssistant.Utils.Files
 {

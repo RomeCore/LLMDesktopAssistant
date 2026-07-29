@@ -1,7 +1,5 @@
 ﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Speech;
 using LLMDesktopAssistant.Utils;
 using Serilog;

@@ -1,10 +1,7 @@
-﻿using LiteDB;
+﻿using System.Text.Json.Serialization;
+using LiteDB;
 using RCLargeLanguageModels.Messages.Attachments;
 using SixLabors.ImageSharp;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
 
 namespace LLMDesktopAssistant.Attachments
 {

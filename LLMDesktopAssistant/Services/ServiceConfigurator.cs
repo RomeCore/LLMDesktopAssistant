@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Services
+﻿namespace LLMDesktopAssistant.Services
 {
 	/// <summary>
 	/// Abstract base class for configuring services in an application.

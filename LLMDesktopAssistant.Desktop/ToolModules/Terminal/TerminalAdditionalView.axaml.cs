@@ -1,15 +1,11 @@
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Iciclecreek.Terminal;
-using System;
-using System.Linq;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Text;
-using System.Diagnostics;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 {

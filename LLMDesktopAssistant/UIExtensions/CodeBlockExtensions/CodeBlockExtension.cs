@@ -1,8 +1,4 @@
-﻿using LiveMarkdown.Avalonia;
-using Material.Icons;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Material.Icons;
 
 namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 {

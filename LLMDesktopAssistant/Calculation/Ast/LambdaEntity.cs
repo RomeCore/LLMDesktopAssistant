@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Calculation.Ast
+﻿namespace LLMDesktopAssistant.Calculation.Ast
 {
 	/// <summary>
 	/// Represents an universal mathematical entity that can be created from C# function.

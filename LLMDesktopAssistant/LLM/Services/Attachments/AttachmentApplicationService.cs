@@ -1,9 +1,6 @@
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Utils.Files;
 using LLMDesktopAssistant.Utils;
-using System.IO;
-using System.Net.Http;
-using System.Text;
+using LLMDesktopAssistant.Utils.Files;
 
 namespace LLMDesktopAssistant.LLM.Services.Attachments
 {

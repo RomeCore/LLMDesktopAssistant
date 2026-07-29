@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Settings;
-using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;

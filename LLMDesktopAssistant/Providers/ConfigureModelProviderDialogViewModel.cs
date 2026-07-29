@@ -1,14 +1,9 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.ApiKeys;
-using LLMDesktopAssistant.Controls;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
-
-using RCLargeLanguageModels;
 
 namespace LLMDesktopAssistant.Providers
 {

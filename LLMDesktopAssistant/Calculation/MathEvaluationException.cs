@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Calculation
+﻿namespace LLMDesktopAssistant.Calculation
 {
 	public class MathEvaluationException : Exception
 	{

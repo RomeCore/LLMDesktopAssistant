@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LLMDesktopAssistant.Data;
+﻿using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services

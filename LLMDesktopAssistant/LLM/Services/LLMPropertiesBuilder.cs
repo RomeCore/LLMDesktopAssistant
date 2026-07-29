@@ -1,9 +1,8 @@
+using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using RCLargeLanguageModels.Completions;
 using RCLargeLanguageModels.Completions.Properties;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace LLMDesktopAssistant.LLM.Services
 {

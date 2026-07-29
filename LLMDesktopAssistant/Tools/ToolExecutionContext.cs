@@ -1,8 +1,5 @@
 ﻿using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Scripting;
-using LLTSharp;
-using ModelContextProtocol.Protocol;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 

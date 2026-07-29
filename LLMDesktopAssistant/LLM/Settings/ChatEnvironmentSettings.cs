@@ -1,6 +1,4 @@
-using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
-using LLMDesktopAssistant.Tools.Implementations.Filesystem;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {

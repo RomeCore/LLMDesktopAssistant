@@ -1,19 +1,11 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.Utils;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq.Expressions;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading;
-using System.Threading.Tasks;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Utils;
+using Serilog;
 
 namespace LLMDesktopAssistant.Desktop.Execution.Python
 {

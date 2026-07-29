@@ -1,5 +1,3 @@
-using LLMDesktopAssistant.Settings;
-
 namespace LLMDesktopAssistant.LLM.Settings
 {
 	/// <summary>

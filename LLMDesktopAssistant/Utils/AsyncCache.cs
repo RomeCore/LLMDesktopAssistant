@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.Utils
 {

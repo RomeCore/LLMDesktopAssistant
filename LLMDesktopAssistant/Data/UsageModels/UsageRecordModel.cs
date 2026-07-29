@@ -1,4 +1,3 @@
-using System;
 using LiteDB;
 
 namespace LLMDesktopAssistant.Data.UsageModels

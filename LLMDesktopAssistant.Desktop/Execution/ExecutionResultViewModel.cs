@@ -1,9 +1,4 @@
-﻿using LLMDesktopAssistant.MVVM;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Desktop.Execution
+﻿namespace LLMDesktopAssistant.Desktop.Execution
 {
 	[ViewModelFor(typeof(ExecutionResultView))]
 	public class ExecutionResultViewModel : ViewModelBase

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DetectSecretsSharp.Plugins;
+﻿using DetectSecretsSharp.Plugins;
 
 namespace LLMDesktopAssistant.Services.Configurators
 {

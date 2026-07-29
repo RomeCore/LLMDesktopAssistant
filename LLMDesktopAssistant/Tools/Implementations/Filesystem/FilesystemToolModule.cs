@@ -5,7 +5,6 @@ using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {

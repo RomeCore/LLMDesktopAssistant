@@ -1,9 +1,9 @@
+using System.Security.Cryptography;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels.Security;
 using Serilog;
-using System.Security.Cryptography;
 
 namespace LLMDesktopAssistant.ApiKeys
 {

@@ -3,9 +3,7 @@ using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
-using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.UIExtensions.MessageExtensions;
-using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Users;
 
 namespace LLMDesktopAssistant.LLM.Messages

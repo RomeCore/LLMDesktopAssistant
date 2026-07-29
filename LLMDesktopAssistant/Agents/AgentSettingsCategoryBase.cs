@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Agents
+﻿namespace LLMDesktopAssistant.Agents
 {
 	/// <summary>
 	/// Base class for agent settings categories.

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using LLMDesktopAssistant.Scripting.Lua;
+﻿using LLMDesktopAssistant.Scripting.Lua;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using RCParsing;

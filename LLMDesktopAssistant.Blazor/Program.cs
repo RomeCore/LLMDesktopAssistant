@@ -1,5 +1,3 @@
-using LLMDesktopAssistant.Blazor.Components;
-
 namespace LLMDesktopAssistant.Blazor
 {
 	public class Program

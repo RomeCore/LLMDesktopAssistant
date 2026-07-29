@@ -1,6 +1,4 @@
-﻿using System;
-using Avalonia.Markup.Xaml.Styling;
-using LLMDesktopAssistant;
+﻿using Avalonia.Markup.Xaml.Styling;
 using LLMDesktopAssistant.Blazor;
 using LLMDesktopAssistant.Desktop.Utils;
 using LLMDesktopAssistant.Utils;

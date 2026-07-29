@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using LLMDesktopAssistant.LLM.Domain;
+﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 
 namespace LLMDesktopAssistant.Prompting.ContextExpanders

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LLMDesktopAssistant.LLM.Messages
+﻿namespace LLMDesktopAssistant.LLM.Messages
 {
 	/// <summary>
 	/// Enumerates the possible states of an <see cref="AssistantMessageViewModel"/>.

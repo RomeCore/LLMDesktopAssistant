@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Localization.Resources;
-using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Settings

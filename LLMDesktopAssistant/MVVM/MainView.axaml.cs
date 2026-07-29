@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using LLMDesktopAssistant.Controls.Toasts;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 

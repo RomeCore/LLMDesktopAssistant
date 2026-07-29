@@ -1,7 +1,6 @@
-﻿using LLMDesktopAssistant.Localization;
+﻿using System.ComponentModel;
+using LLMDesktopAssistant.Localization;
 using Material.Icons;
-using RCLargeLanguageModels.Tools;
-using System.ComponentModel;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {

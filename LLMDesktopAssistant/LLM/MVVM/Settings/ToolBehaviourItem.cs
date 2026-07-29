@@ -1,8 +1,6 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Tools;
 using Avalonia.Media;
 using LLMDesktopAssistant.LLM.Messages;
+using LLMDesktopAssistant.Tools;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;

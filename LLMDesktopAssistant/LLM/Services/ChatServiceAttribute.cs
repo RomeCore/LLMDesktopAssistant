@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LLMDesktopAssistant.LLM.Services
+﻿namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
 	/// The attribute to mark a class as a scoped chat service.

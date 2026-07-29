@@ -1,12 +1,8 @@
+using System.Collections.ObjectModel;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Settings;
 using Serilog;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Windows.Input;
 
 namespace LLMDesktopAssistant.Prompting
 {

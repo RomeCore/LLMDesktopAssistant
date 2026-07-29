@@ -1,6 +1,5 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;
-using LLTSharp;
 
 namespace LLMDesktopAssistant.Tools
 {

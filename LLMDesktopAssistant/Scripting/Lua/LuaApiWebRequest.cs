@@ -1,15 +1,10 @@
 using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using AngleSharp;
 using AngleSharp.Html.Parser;
 using AsyncLua;
 using AsyncLua.Values;
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Web;
-using ReverseMarkdown;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {

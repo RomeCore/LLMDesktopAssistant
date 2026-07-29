@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLMDesktopAssistant.LLM.Services;

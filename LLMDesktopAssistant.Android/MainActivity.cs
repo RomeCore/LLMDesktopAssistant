@@ -1,10 +1,7 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Avalonia.Android;
-using Avalonia.Controls.ApplicationLifetimes;
-using LLMDesktopAssistant.Android.Utils;
 using Serilog;
-using System;
 
 namespace LLMDesktopAssistant.Avalonia.Android
 {

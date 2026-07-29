@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Immutable;
 using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.LLM.Services

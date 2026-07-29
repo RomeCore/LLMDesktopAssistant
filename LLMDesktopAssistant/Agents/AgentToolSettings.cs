@@ -1,7 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
-using LLMDesktopAssistant.LLM.Settings;
 
 namespace LLMDesktopAssistant.Agents
 {

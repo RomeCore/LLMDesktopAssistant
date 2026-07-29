@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace LLMDesktopAssistant.Utils.Files
+﻿namespace LLMDesktopAssistant.Utils.Files
 {
 	public class FileMetrics
 	{

@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using LLMDesktopAssistant.Prompting;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {

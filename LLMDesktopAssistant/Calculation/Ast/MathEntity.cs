@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Calculation.Ast
+﻿namespace LLMDesktopAssistant.Calculation.Ast
 {
 	/// <summary>
 	/// Represents a mathematical entity that can be evaluated.

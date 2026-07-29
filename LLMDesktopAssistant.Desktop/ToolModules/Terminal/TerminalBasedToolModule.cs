@@ -1,11 +1,7 @@
-using LLMDesktopAssistant.Scripting;
-using LLMDesktopAssistant.Tools;
-using RCLargeLanguageModels.Tools;
-using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 {

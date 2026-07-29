@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using LLMDesktopAssistant.Utils;
-using SearXSharp;
 using LLMDesktopAssistant.Utils.Web;
+using SearXSharp;
 
 namespace LLMDesktopAssistant.Services.Configurators
 {

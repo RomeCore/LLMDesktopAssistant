@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LLMDesktopAssistant.Services;
-
-namespace LLMDesktopAssistant.Speech
+﻿namespace LLMDesktopAssistant.Speech
 {
 	/// <summary>
 	/// Interface for user speech provider.

@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using LLMDesktopAssistant.Desktop.Utils;
 using Serilog;
-using System;
 
 namespace LLMDesktopAssistant.Desktop
 {

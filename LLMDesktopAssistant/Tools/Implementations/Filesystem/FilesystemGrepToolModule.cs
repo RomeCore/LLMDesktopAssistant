@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 using System.Text.RegularExpressions;
-using LLMDesktopAssistant.LLM.Services.Attachments;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
-using ModelContextProtocol.Protocol;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {

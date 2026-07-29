@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using AsyncLua;
 using AsyncLua.Values;
-using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;

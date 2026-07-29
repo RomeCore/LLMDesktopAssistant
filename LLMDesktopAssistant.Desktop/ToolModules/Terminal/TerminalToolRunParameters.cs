@@ -1,5 +1,5 @@
-using Material.Icons;
 using LLMDesktopAssistant.Tools;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 {

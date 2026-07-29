@@ -1,6 +1,4 @@
-﻿using LLMDesktopAssistant.Services;
-
-namespace LLMDesktopAssistant.Speech
+﻿namespace LLMDesktopAssistant.Speech
 {
 	/// <summary>
 	/// Interface for speech recognizer.

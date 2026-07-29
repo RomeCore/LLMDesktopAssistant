@@ -1,9 +1,6 @@
 ﻿using Avalonia.Collections;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MCP;
-using LLMDesktopAssistant.Utils;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Immutable;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {

@@ -1,8 +1,5 @@
 ﻿using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LLMDesktopAssistant.Users
 {

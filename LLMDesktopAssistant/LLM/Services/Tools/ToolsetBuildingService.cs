@@ -1,11 +1,7 @@
 ﻿using AngleSharp.Common;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using System.Text.Json.Serialization.Metadata;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {

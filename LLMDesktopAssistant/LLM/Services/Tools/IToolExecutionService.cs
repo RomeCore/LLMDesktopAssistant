@@ -1,7 +1,6 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Tools;
-using System.Collections.Immutable;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {

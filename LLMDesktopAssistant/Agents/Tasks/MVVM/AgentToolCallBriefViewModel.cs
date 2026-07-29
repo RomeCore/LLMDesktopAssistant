@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;

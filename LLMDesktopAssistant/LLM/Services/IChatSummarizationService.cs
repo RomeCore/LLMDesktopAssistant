@@ -1,11 +1,6 @@
 ﻿using LLMDesktopAssistant.LLM.Domain;
-using RCLargeLanguageModels.Metadata;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
+using RCLargeLanguageModels.Metadata;
 
 namespace LLMDesktopAssistant.LLM.Services
 {

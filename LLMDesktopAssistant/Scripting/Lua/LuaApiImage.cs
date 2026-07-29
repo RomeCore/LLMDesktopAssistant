@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
-using SixLabors.ImageSharp;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {

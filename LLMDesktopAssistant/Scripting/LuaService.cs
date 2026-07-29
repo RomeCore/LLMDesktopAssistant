@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using AsyncLua;
 using AsyncLua.Values;
-using DocumentFormat.OpenXml.Office2016.Drawing.Charts;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting.Lua;
 using Serilog;

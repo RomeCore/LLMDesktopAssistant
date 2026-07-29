@@ -2,10 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using LiveMarkdown.Avalonia;
 using Material.Icons;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace LLMDesktopAssistant.UIExtensions.CodeBlockExtensions
 {

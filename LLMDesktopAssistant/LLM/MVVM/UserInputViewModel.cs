@@ -1,18 +1,16 @@
 using Avalonia.Collections;
 using Avalonia.Input;
-using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Attachments;
-using LLMDesktopAssistant.LLM.Settings;
-using LLMDesktopAssistant.MCP;
-using LLMDesktopAssistant.Prompting;
-using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
-using Serilog;
-using LLMDesktopAssistant.Users;
-using LLMDesktopAssistant.Controls.Dialogs;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Controls.Dialogs;
+using LLMDesktopAssistant.LLM.Attachments;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Users;
+using Serilog;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {

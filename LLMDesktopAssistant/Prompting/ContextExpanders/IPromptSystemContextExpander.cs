@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LLMDesktopAssistant.Prompting.ContextExpanders
+﻿namespace LLMDesktopAssistant.Prompting.ContextExpanders
 {
 	/// <summary>
 	/// Interface for expanding the system prompt context for rendering prompt templates.

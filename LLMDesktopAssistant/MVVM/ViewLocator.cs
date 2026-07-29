@@ -2,9 +2,6 @@
 using Avalonia.Controls.Templates;
 using LLMDesktopAssistant.Utils;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace LLMDesktopAssistant.MVVM
 {

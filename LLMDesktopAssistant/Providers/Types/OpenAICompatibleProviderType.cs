@@ -1,5 +1,4 @@
 ﻿using RCLargeLanguageModels;
-using RCLargeLanguageModels.Clients.Ollama;
 using RCLargeLanguageModels.Clients.OpenAI;
 using RCLargeLanguageModels.Security;
 

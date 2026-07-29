@@ -1,9 +1,7 @@
-using System.Runtime.CompilerServices;
 using AngleSharp.Common;
 using LLMDesktopAssistant.ApiKeys;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings;
-using Microsoft.Extensions.Logging.Abstractions;
 using RCLargeLanguageModels;
 using Serilog;
 

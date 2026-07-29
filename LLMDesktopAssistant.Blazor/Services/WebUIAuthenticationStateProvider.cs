@@ -1,8 +1,6 @@
 using System.Security.Claims;
 using LLMDesktopAssistant.Users;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.JSInterop;
 
 namespace LLMDesktopAssistant.Blazor.Services;
 

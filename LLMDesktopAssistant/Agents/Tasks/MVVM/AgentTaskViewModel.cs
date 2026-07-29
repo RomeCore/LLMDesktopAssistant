@@ -1,11 +1,9 @@
 using System.Collections.Specialized;
-using System.Windows.Input;
-using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.MVVM;
-using LLMDesktopAssistant.Utils;
 using Avalonia.Media;
+using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Agents.Tasks.MVVM

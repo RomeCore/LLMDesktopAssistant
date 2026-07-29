@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
-using LLMDesktopAssistant.LLM.Services.Attachments;
+﻿using System.ComponentModel;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {

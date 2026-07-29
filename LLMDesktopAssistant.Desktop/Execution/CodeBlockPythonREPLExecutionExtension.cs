@@ -1,12 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using LiveMarkdown.Avalonia;
-using LLMDesktopAssistant.UIExtensions.CodeBlockExtensions;
-using LLMDesktopAssistant.LLM.Domain;
-using Material.Icons;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using LLMDesktopAssistant.Desktop.Execution.Python;
-using System;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.UIExtensions.CodeBlockExtensions;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.Desktop.Execution
 {

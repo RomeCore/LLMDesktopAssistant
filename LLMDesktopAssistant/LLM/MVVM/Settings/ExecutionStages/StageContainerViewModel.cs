@@ -1,9 +1,7 @@
+using System.Text.Json;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.ExecutionStages;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Utils;
-using System.Text.Json;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.ExecutionStages;
 

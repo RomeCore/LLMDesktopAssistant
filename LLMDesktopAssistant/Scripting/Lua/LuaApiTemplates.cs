@@ -1,4 +1,3 @@
-using System.Linq;
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.Prompting.Plugins;
