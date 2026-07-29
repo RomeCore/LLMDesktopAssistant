@@ -13,6 +13,7 @@
 	<conv:NotnullToBooleanConverter Invert="True" x:Key="NotnullToBooleanConverterInverted"/>
 	<conv:EqualsConverter x:Key="EqualsConverter"/>
 	<conv:StringEqualsConverter x:Key="StringEqualsConverter"/>
+	<conv:JsonToMarkdownConverter x:Key="JsonToMarkdownConverter"/>
 
 	<conv:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter"/>
 	<conv:BooleanToOpacityConverter x:Key="BooleanToOpacityConverterDisabled" FalseOpacity="0.25"/>
