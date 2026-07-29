@@ -57,11 +57,11 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _environmentSettings, value);
 		}
 
-		private ChatToolsSettings _toolsSettings = new();
+		private ChatToolSettings _toolsSettings = new();
 		/// <summary>
 		/// Settings for tools and plugins used in the chat.
 		/// </summary>
-		public ChatToolsSettings Tools
+		public ChatToolSettings Tools
 		{
 			get => _toolsSettings;
 			set => SetProperty(ref _toolsSettings, value);

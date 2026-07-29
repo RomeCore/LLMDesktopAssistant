@@ -90,8 +90,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}.CompleteWithError();
 			}
 
-			var agentToolSettings = _agentManager.TryGetAgentDescriptor(ctx.Message.SenderAgentId)?.Tools;
-			var toolMap = _toolsetBuildingService.BuildTools(ctx.Message.SenderAgentId).ToDictionary(t => t.Tool.Name);
+			var agentDescriptor = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
+			var toolMap = _toolsetBuildingService.GetToolsForAgent(agentDescriptor).ToDictionary(t => t.Tool.Name);
 			var tools = ImmutableList.CreateBuilder<AgentTool>();
 			var errorSb = new StringBuilder();
 
@@ -122,10 +122,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 			ToolBehaviour autoApproveBehaviours = ctx.Chat.Settings.Tools.AutoApproveBehaviours,
 				disallowedBehaviours = ctx.Chat.Settings.Tools.DisallowedBehaviours;
-			if (agentToolSettings != null && agentToolSettings.EnablePolicyOverride)
+			if (agentDescriptor.Tools.EnablePolicyOverride)
 			{
-				autoApproveBehaviours = agentToolSettings.AutoApproveBehaviours;
-				disallowedBehaviours = agentToolSettings.DisallowedBehaviours;
+				autoApproveBehaviours = agentDescriptor.Tools.AutoApproveBehaviours;
+				disallowedBehaviours = agentDescriptor.Tools.DisallowedBehaviours;
 			}
 
 			try

@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents

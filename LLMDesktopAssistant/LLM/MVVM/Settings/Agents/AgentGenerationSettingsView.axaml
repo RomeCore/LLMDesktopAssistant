@@ -4,7 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
-			 xmlns:sett="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:agt="using:LLMDesktopAssistant.Agents"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
@@ -185,7 +185,7 @@
 			<ItemsControl ItemsSource="{Binding GenerationSettings.AdditionalParameters}">
 
 				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="sett:AdditionalParameter">
+					<DataTemplate x:DataType="agt:AdditionalParameter">
 						<Grid ColumnDefinitions="Auto,*,Auto,*,Auto,Auto"
 								RowDefinitions="Auto"
 								ColumnSpacing="6"

@@ -13,14 +13,14 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 [ViewModelFor(typeof(ChatToolsSettingsView))]
 public class ChatToolsSettingsViewModel : ViewModelBase
 {
-	public ChatToolsSettings ToolSettings { get; }
+	public ChatToolSettings ToolSettings { get; }
 
 	/// <summary>
 	/// List of ToolBehaviour flags with combined Auto-Approve / Disallowed policy toggles.
 	/// </summary>
 	public ObservableCollection<ToolBehaviourPolicyItem> PolicyBehaviourItems { get; } = [];
 
-	public ChatToolsSettingsViewModel(ChatToolsSettings settings)
+	public ChatToolsSettingsViewModel(ChatToolSettings settings)
 	{
 		ToolSettings = settings;
 		InitializeBehaviourItems();

@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Agents
 		/// <summary>
 		/// Whether to override the approval policy for tools.
 		/// When true, the <see cref="AutoApproveBehaviours"/> and <see cref="DisallowedBehaviours"/> 
-		/// will be used instead of policy specified in <see cref="ChatToolsSettings"/>.
+		/// will be used instead of policy specified in <see cref="ChatToolSettings"/>.
 		/// </summary>
 		public bool EnablePolicyOverride
 		{

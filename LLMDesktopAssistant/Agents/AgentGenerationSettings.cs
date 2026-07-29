@@ -1,4 +1,3 @@
-using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents
