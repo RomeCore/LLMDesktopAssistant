@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
 

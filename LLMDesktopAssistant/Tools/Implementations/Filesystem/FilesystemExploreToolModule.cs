@@ -1,10 +1,10 @@
 using System.ComponentModel;
 using System.IO.Enumeration;
 using System.Text;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;

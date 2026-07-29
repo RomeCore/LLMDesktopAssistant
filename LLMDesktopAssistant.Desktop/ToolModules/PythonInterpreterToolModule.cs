@@ -2,9 +2,9 @@ using System.ComponentModel;
 using System.IO;
 using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
 

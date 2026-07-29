@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
-using LLMDesktopAssistant.Services.Instances;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {

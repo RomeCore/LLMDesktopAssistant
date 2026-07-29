@@ -1,6 +1,5 @@
 ﻿using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
-using LLMDesktopAssistant.Services.Instances;
 using LLTSharp;
 using LLTSharp.DataAccessors;
 

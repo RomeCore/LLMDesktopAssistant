@@ -2,8 +2,8 @@ using System.Text;
 using AngleSharp.Html.Parser;
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
-using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Web;
 
 namespace LLMDesktopAssistant.Scripting.Lua

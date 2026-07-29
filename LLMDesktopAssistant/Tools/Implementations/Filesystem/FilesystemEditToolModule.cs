@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Services.Instances;
 using Material.Icons;
 using RCParsing;
 

@@ -1,5 +1,5 @@
 using AsyncLua.Values;
-using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Scripting.Lua

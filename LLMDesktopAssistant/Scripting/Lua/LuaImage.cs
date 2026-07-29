@@ -1,6 +1,6 @@
 using AsyncLua.Values;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
-using LLMDesktopAssistant.Services.Instances;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;

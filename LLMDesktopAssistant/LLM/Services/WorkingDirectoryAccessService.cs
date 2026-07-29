@@ -1,12 +1,7 @@
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
-using System;
-using System.Collections.Generic;
-using System.Net.WebSockets;
-using System.Text;
 
-namespace LLMDesktopAssistant.Services.Instances
+namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
 	/// The service for accessing files inside current working directory.

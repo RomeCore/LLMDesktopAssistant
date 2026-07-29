@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using System.Text;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
 using Microsoft.Extensions.FileSystemGlobbing;

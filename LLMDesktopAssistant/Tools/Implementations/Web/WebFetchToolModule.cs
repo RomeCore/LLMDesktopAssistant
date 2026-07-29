@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using AngleSharp.Html.Parser;
-using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Web;
 using Material.Icons;

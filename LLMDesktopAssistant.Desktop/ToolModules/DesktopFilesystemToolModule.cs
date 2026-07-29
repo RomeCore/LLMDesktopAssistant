@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
-using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
 
