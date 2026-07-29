@@ -1,4 +1,5 @@
 ﻿using AngleSharp.Common;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Tools;
@@ -12,16 +13,15 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	public class ToolsetBuildingService(
 		Chat chat,
 		IMCPManagementService mcpManager,
-		IAgentManagementService agentSettings,
 		IServiceProvider services
 		) : IToolsetBuildingService
 	{
-		public IEnumerable<ToolInfo> BuildTools(Guid agentId)
+		public IEnumerable<ToolInfo> GetToolsForAgent(ChatAgentDescriptor agent)
 		{
 			if (!chat.Settings.Tools.EnableTools)
 				return [];
 
-			var settings = agentSettings.GetAgentDescriptor(agentId).Tools;
+			var settings = agent.Tools;
 			if (!settings.EnableTools)
 				return [];
 

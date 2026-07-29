@@ -1,4 +1,5 @@
-﻿using LLMDesktopAssistant.Tools;
+﻿using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {
@@ -8,15 +9,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	public interface IToolsetBuildingService
 	{
 		/// <summary>
-		/// Builds a collection of tools based on the current configuration.
-		/// </summary>
-		/// <remarks>
-		/// These tools will be used directly for the LLM execution.
-		/// </remarks>
-		/// <returns>A collection of <see cref="ToolInfo"/> objects representing the tools to be used by the language model.</returns>
-		IEnumerable<ToolInfo> BuildTools(Guid agentId);
-
-		/// <summary>
 		/// Returns a collection of tools that are available for selection but not necessarily active in the current configuration.
 		/// </summary>
 		/// <remarks>
@@ -24,5 +16,14 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		/// </remarks>
 		/// <returns>A collection of <see cref="ToolInfo"/> objects representing the available tools.</returns>
 		IEnumerable<ToolInfo> GetAvailableTools();
+
+		/// <summary>
+		/// Builds a collection of tools based on the current configuration.
+		/// </summary>
+		/// <remarks>
+		/// These tools will be used directly for the LLM execution.
+		/// </remarks>
+		/// <returns>A collection of <see cref="ToolInfo"/> objects representing the tools to be used by the language model.</returns>
+		IEnumerable<ToolInfo> GetToolsForAgent(ChatAgentDescriptor agent);
 	}
 }

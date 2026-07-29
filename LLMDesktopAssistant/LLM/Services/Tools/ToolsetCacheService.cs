@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
@@ -16,11 +17,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 		public ImmutableDictionary<string, ToolInfo> ValidAliasedTools => _validAliasedTools;
 
-		public void Invalidate(Guid agentId)
+		public void Invalidate(ChatAgentDescriptor agent)
 		{
 			_availableTools = builder.GetAvailableTools().ToImmutableDictionary(t => t.Name);
-			_validTools = builder.BuildTools(agentId).ToImmutableDictionary(t => t.Name);
-			_validAliasedTools = BuildDictionaryWithAliases(builder.BuildTools(agentId));
+			_validTools = builder.GetToolsForAgent(agent).ToImmutableDictionary(t => t.Name);
+			_validAliasedTools = BuildDictionaryWithAliases(_validTools.Values);
 		}
 
 		/// <summary>

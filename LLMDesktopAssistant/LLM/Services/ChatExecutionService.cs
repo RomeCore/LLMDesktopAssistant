@@ -135,7 +135,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					toastService.ShowError(toastTitle, toastDesc);
 					throw new ToastedException(toastTitle, toastDesc);
 				}
-				llm = llm.WithProperties(propertiesBuilder.BuildProperties(agentId));
+				llm = llm.WithProperties(propertiesBuilder.BuildProperties(agent));
 
 				if (mcpManager.HasMCPConnections())
 				{
@@ -152,7 +152,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
 
 				var inputMessages = promptBuilder.Build(agent);
-				toolsetCache.Invalidate(agentId);
+				toolsetCache.Invalidate(agent);
 				// Lul, provider caching is fixed now!
 				var toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
 				// Reveal messages that are marked with 'RevealAfterSend' visibility
@@ -394,7 +394,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
 
 					inputMessages = promptBuilder.Build(agent);
-					toolsetCache.Invalidate(agentId);
+					toolsetCache.Invalidate(agent);
 					toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
 					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 					responseMessage = response.Message;

@@ -7,14 +7,12 @@ using RCLargeLanguageModels.Completions.Properties;
 namespace LLMDesktopAssistant.LLM.Services
 {
 	[ChatService(typeof(ILLMPropertiesBuilder))]
-	public class LLMPropertiesBuilder(
-		IAgentManagementService agentSettings
-	) : ILLMPropertiesBuilder
+	public class LLMPropertiesBuilder() : ILLMPropertiesBuilder
 	{
-		public IEnumerable<CompletionProperty> BuildProperties(Guid agentId)
+		public IEnumerable<CompletionProperty> BuildProperties(ChatAgentDescriptor agent)
 		{
 			var result = new List<CompletionProperty>();
-			var properties = agentSettings.GetAgentDescriptor(agentId).Generation;
+			var properties = agent.Generation;
 
 			if (properties.EnableReasoningSettings)
 			{

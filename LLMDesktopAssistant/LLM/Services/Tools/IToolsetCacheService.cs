@@ -1,4 +1,5 @@
-﻿using LLMDesktopAssistant.Tools;
+﻿using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {
@@ -25,7 +26,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		/// <summary>
 		/// Invalidates the cache and refreshes it.
 		/// </summary>
-		/// <param name="agentId">The ID of the agent for which to invalidate the cache.</param>
-		void Invalidate(Guid agentId);
+		/// <param name="agent">The agent for which to invalidate the cache.</param>
+		void Invalidate(ChatAgentDescriptor agent);
 	}
 }
