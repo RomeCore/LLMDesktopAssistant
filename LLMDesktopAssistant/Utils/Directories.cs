@@ -1,3 +1,5 @@
+using LLMDesktopAssistant.Localization;
+
 namespace LLMDesktopAssistant.Utils
 {
 	public static class Directories
@@ -66,6 +68,11 @@ namespace LLMDesktopAssistant.Utils
 		/// The default working directory for the application.
 		/// </summary>
 		public static string DefaultWorkingDirectory { get; }
+
+		/// <summary>
+		/// The localized name of the default working directory. Typically used for tools and UI.
+		/// </summary>
+		public static string DefaultWorkingDirectoryName => LocalizationManager.LocalizeStatic("default");
 
 		/// <summary>
 		/// The path where to store log files.

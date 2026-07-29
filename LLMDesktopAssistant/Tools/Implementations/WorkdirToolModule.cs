@@ -1,5 +1,6 @@
 using System.Text;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools.Implementations
@@ -36,6 +37,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			var sb = new StringBuilder();
 
+			if (_chat.Settings.Environment.IsDefaultWorkingDirectoryEnabled)
+				sb.AppendLine($"- *{Directories.DefaultWorkingDirectoryName}*: {Directories.DefaultWorkingDirectory}{(_chat.Settings.Environment.IsDefaultWorkingDirectoryActive ? " **(ACTIVE)**" : "")}");
+
 			foreach (var wd in _chat.Settings.Environment.WorkingDirectories)
 				if (wd.IsEnabled)
 					sb.AppendLine($"- *{wd.Name ?? "null"}*: {wd.Path}{(wd.IsActive ? " **(ACTIVE)**" : "")}");
@@ -56,6 +60,15 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private PreviewToolExecutionResult SwitchWorkingDirectoryPreview(string name)
 		{
+			if (name == Directories.DefaultWorkingDirectoryName && _chat.Settings.Environment.IsDefaultWorkingDirectoryEnabled)
+			{
+				return new PreviewToolExecutionResult
+				{
+					StatusIcon = MaterialIconKind.FolderArrowRight,
+					StatusTitle = $"*{name}*"
+				};
+			}
+
 			if (!_chat.Settings.Environment.WorkingDirectories.Any(wd => wd.Name == name && wd.IsEnabled))
 			{
 				return new PreviewToolExecutionResult
@@ -77,6 +90,21 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private ReactiveToolResult SwitchWorkingDirectory(string name)
 		{
+			if (name == Directories.DefaultWorkingDirectoryName && _chat.Settings.Environment.IsDefaultWorkingDirectoryEnabled)
+			{
+				_chat.Settings.Environment.IsDefaultWorkingDirectoryActive = true;
+				foreach (var wd in _chat.Settings.Environment.WorkingDirectories)
+					wd.IsActive = false;
+
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.FolderAlert,
+					StatusTitle = $"*{name}*",
+					ResultContent = $"Working directory *{name}* not found or it's disabled.",
+					UseMarkdown = true
+				}.CompleteWithSuccess();
+			}
+
 			if (!_chat.Settings.Environment.WorkingDirectories.Any(wd => wd.Name == name && wd.IsEnabled))
 			{
 				return new ReactiveToolResult
