@@ -1,6 +1,7 @@
 using System.Text;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
 using LLTSharp;

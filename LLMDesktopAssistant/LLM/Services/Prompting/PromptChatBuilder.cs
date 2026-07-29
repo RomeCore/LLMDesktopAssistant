@@ -16,7 +16,7 @@ using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Tools;
 
-namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
 	/// <summary>
 	/// Builds the prompt context for a given agent, respecting:

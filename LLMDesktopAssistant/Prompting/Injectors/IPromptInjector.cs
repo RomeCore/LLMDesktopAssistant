@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.Prompting.Injectors;
 
 /// <summary>
 /// Defines a mechanism for injecting virtual <see cref="RawUserMessage"/> instances
-/// into the message list used by <see cref="LLM.Services.PromptChatBuilder"/> when
+/// into the message list used by <see cref="LLM.Services.Prompting.PromptChatBuilder"/> when
 /// building the LLM context for a given agent.
 /// </summary>
 /// <remarks>

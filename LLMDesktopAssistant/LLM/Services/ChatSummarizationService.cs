@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
 using LLTSharp;
