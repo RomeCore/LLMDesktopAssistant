@@ -285,7 +285,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				_currentChatScope?.Dispose();
 				CurrentChat?.Dispose();
-				ChatCleanup();
 			}
 			catch (Exception ex)
 			{
@@ -310,7 +309,6 @@ namespace LLMDesktopAssistant.LLM.MVVM
 					_selectedAvailable?.IsSelected = false;
 					SelectedAvailable = null;
 					CurrentChat?.Dispose();
-					ChatCleanup();
 					_currentChatScope?.Dispose();
 					_currentChatScope = null;
 				}
@@ -321,33 +319,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			}
 		}
 
-		// TODO: Удалить это говно внизу когда автор LiveMarkdown.Avalonia соизволит рассмотреть мой Pull Request
+		// -TO-DO-: Удалить это говно внизу когда автор LiveMarkdown.Avalonia соизволит рассмотреть мой Pull Request
 		// Утечки памяти вызваны Link.TagToLinkMap, который нихуя не чистится, я его там заменил на ConcurrentDict<WeakReference>
 		// Ждем
-
-		private static readonly Dictionary<string, Link>? _tagToLinkMap;
-
-		static OpenedChatViewModel()
-		{
-			try
-			{
-				var linkType = typeof(Link);
-				var tagToLinkMapField = linkType.GetField("TagToLinkMap", BindingFlags.NonPublic | BindingFlags.Static);
-				_tagToLinkMap = tagToLinkMapField?.GetValue(null) as Dictionary<string, Link>;
-
-				if (_tagToLinkMap == null)
-					Log.Error("Failed to get LiveMarkdown.Avalonia.Link.TagToLinkMap field.");
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex, "Failed to get LiveMarkdown.Avalonia.Link.TagToLinkMap field: {Error}", ex.Message);
-			}
-		}
-
-		private void ChatCleanup()
-		{
-			_tagToLinkMap?.Clear();
-		}
+		// PS: ПОЧИНЕНО! (на самом деле я не делал никаких PR по этим утечкам, я просто сделал PR,
+		// который добавляет возможность удалять built-in ноды)
 	}
 
 	[ViewModelFor(typeof(ChatManagerView))]
