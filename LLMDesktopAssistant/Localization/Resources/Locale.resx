@@ -2448,4 +2448,67 @@
   <data name="chat_summarization_task" xml:space="preserve">
     <value>Chat summarization</value>
   </data>
+  <data name="task_details" xml:space="preserve">
+    <value>Task details</value>
+  </data>
+  <data name="task_detail_configuration" xml:space="preserve">
+    <value>Configuration</value>
+  </data>
+  <data name="task_detail_id" xml:space="preserve">
+    <value>Task ID</value>
+  </data>
+  <data name="task_detail_parent" xml:space="preserve">
+    <value>Parent task</value>
+  </data>
+  <data name="task_detail_behaviour" xml:space="preserve">
+    <value>Execution behaviour</value>
+  </data>
+  <data name="task_detail_max_parallel_tools" xml:space="preserve">
+    <value>Max parallel tools</value>
+  </data>
+  <data name="task_detail_timeout" xml:space="preserve">
+    <value>Timeout</value>
+  </data>
+  <data name="task_detail_tools_count" xml:space="preserve">
+    <value>Available tools</value>
+  </data>
+  <data name="task_detail_error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="task_detail_messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="task_detail_reasoning" xml:space="preserve">
+    <value>Reasoning</value>
+  </data>
+  <data name="task_detail_tool_calls" xml:space="preserve">
+    <value>Tool calls</value>
+  </data>
+  <data name="task_detail_subtasks" xml:space="preserve">
+    <value>Sub-tasks</value>
+  </data>
+  <data name="system_role" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="user_role" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="assistant_role" xml:space="preserve">
+    <value>Assistant</value>
+  </data>
+  <data name="task_detail_input_tokens" xml:space="preserve">
+    <value>in</value>
+  </data>
+  <data name="task_detail_input_cache_hit_tokens" xml:space="preserve">
+    <value>in cache</value>
+  </data>
+  <data name="task_detail_output_tokens" xml:space="preserve">
+    <value>out</value>
+  </data>
+  <data name="task_detail_time_to_first_token" xml:space="preserve">
+    <value>first token</value>
+  </data>
+  <data name="task_detail_inference_time" xml:space="preserve">
+    <value>inference</value>
+  </data>
 </root>

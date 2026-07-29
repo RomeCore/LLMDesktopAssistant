@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Utils;
 using Avalonia.Media;
+using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
 
@@ -129,6 +130,11 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		}
 
 		/// <summary>
+		/// Command to show the detailed task view dialog.
+		/// </summary>
+		public ICommand ShowDetailsCommand { get; }
+
+		/// <summary>
 		/// Command to cancel the task.
 		/// </summary>
 		public ICommand CancelCommand { get; }
@@ -141,6 +147,7 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		{
 			_task = task;
 			CancelCommand = new RelayCommand(() => _task.CancellationTokenSource.Cancel(), () => IsRunning);
+			ShowDetailsCommand = new AsyncRelayCommand(ShowDetails);
 
 			SyncStatus();
 			SyncSummary();
@@ -370,6 +377,13 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		{
 			InvokeUI(() => ((RelayCommand)CancelCommand).NotifyCanExecuteChanged());
 		}
+
+		private async Task ShowDetails()
+		{
+			var detailVm = new AgentTaskDetailViewModel(this);
+			await DialogManager.ShowDialogAsync(detailVm);
+		}
+
 
 		/// <inheritdoc />
 		protected override void Dispose(bool disposing)

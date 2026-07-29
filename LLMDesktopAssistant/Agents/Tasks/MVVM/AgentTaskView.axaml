@@ -22,10 +22,11 @@
 		</Style>
 	</UserControl.Styles>
 
-	<Button Padding="10,6" CornerRadius="6"
+		<Button Padding="10,6" CornerRadius="6"
 					Margin="0,2"
 					Background="{Binding StatusBackground}"
-					BorderBrush="Transparent">
+					BorderBrush="Transparent"
+					Command="{Binding ShowDetailsCommand}">
 
 		<StackPanel>
 

@@ -2448,4 +2448,67 @@
   <data name="chat_summarization_task" xml:space="preserve">
     <value>Суммаризация чата</value>
   </data>
+  <data name="task_details" xml:space="preserve">
+    <value>Детали задачи</value>
+  </data>
+  <data name="task_detail_configuration" xml:space="preserve">
+    <value>Конфигурация</value>
+  </data>
+  <data name="task_detail_id" xml:space="preserve">
+    <value>ID задачи</value>
+  </data>
+  <data name="task_detail_parent" xml:space="preserve">
+    <value>Родительская задача</value>
+  </data>
+  <data name="task_detail_behaviour" xml:space="preserve">
+    <value>Режим выполнения</value>
+  </data>
+  <data name="task_detail_max_parallel_tools" xml:space="preserve">
+    <value>Макс. параллельных тулов</value>
+  </data>
+  <data name="task_detail_timeout" xml:space="preserve">
+    <value>Таймаут</value>
+  </data>
+  <data name="task_detail_tools_count" xml:space="preserve">
+    <value>Доступно инструментов</value>
+  </data>
+  <data name="task_detail_error" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="task_detail_messages" xml:space="preserve">
+    <value>Сообщения</value>
+  </data>
+  <data name="task_detail_reasoning" xml:space="preserve">
+    <value>Размышления</value>
+  </data>
+  <data name="task_detail_tool_calls" xml:space="preserve">
+    <value>Вызовы инструментов</value>
+  </data>
+  <data name="task_detail_subtasks" xml:space="preserve">
+    <value>Подзадачи</value>
+  </data>
+  <data name="system_role" xml:space="preserve">
+    <value>Система</value>
+  </data>
+  <data name="user_role" xml:space="preserve">
+    <value>Пользователь</value>
+  </data>
+  <data name="assistant_role" xml:space="preserve">
+    <value>Ассистент</value>
+  </data>
+  <data name="task_detail_input_tokens" xml:space="preserve">
+    <value>вход</value>
+  </data>
+  <data name="task_detail_input_cache_hit_tokens" xml:space="preserve">
+    <value>вход кеш</value>
+  </data>
+  <data name="task_detail_output_tokens" xml:space="preserve">
+    <value>выход</value>
+  </data>
+  <data name="task_detail_time_to_first_token" xml:space="preserve">
+    <value>первый токен</value>
+  </data>
+  <data name="task_detail_inference_time" xml:space="preserve">
+    <value>инференс</value>
+  </data>
 </root>

@@ -439,6 +439,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Assistant.
+        /// </summary>
+        public static string assistant_role {
+            get {
+                return ResourceManager.GetString("assistant_role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Add URL.
         /// </summary>
         public static string attachment_add_url_hint {
@@ -5371,6 +5380,177 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на System.
+        /// </summary>
+        public static string system_role {
+            get {
+                return ResourceManager.GetString("system_role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Execution behaviour.
+        /// </summary>
+        public static string task_detail_behaviour {
+            get {
+                return ResourceManager.GetString("task_detail_behaviour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Configuration.
+        /// </summary>
+        public static string task_detail_configuration {
+            get {
+                return ResourceManager.GetString("task_detail_configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Error.
+        /// </summary>
+        public static string task_detail_error {
+            get {
+                return ResourceManager.GetString("task_detail_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Task ID.
+        /// </summary>
+        public static string task_detail_id {
+            get {
+                return ResourceManager.GetString("task_detail_id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на inference.
+        /// </summary>
+        public static string task_detail_inference_time {
+            get {
+                return ResourceManager.GetString("task_detail_inference_time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на in cache.
+        /// </summary>
+        public static string task_detail_input_cache_hit_tokens {
+            get {
+                return ResourceManager.GetString("task_detail_input_cache_hit_tokens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на in.
+        /// </summary>
+        public static string task_detail_input_tokens {
+            get {
+                return ResourceManager.GetString("task_detail_input_tokens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Max parallel tools.
+        /// </summary>
+        public static string task_detail_max_parallel_tools {
+            get {
+                return ResourceManager.GetString("task_detail_max_parallel_tools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Messages.
+        /// </summary>
+        public static string task_detail_messages {
+            get {
+                return ResourceManager.GetString("task_detail_messages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на out.
+        /// </summary>
+        public static string task_detail_output_tokens {
+            get {
+                return ResourceManager.GetString("task_detail_output_tokens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Parent task.
+        /// </summary>
+        public static string task_detail_parent {
+            get {
+                return ResourceManager.GetString("task_detail_parent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Reasoning.
+        /// </summary>
+        public static string task_detail_reasoning {
+            get {
+                return ResourceManager.GetString("task_detail_reasoning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Sub-tasks.
+        /// </summary>
+        public static string task_detail_subtasks {
+            get {
+                return ResourceManager.GetString("task_detail_subtasks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на first token.
+        /// </summary>
+        public static string task_detail_time_to_first_token {
+            get {
+                return ResourceManager.GetString("task_detail_time_to_first_token", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Timeout.
+        /// </summary>
+        public static string task_detail_timeout {
+            get {
+                return ResourceManager.GetString("task_detail_timeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tool calls.
+        /// </summary>
+        public static string task_detail_tool_calls {
+            get {
+                return ResourceManager.GetString("task_detail_tool_calls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Available tools.
+        /// </summary>
+        public static string task_detail_tools_count {
+            get {
+                return ResourceManager.GetString("task_detail_tools_count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Task details.
+        /// </summary>
+        public static string task_details {
+            get {
+                return ResourceManager.GetString("task_details", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Cancelled.
         /// </summary>
         public static string task_status_cancelled {
@@ -6321,6 +6501,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string user_profile_image_hint {
             get {
                 return ResourceManager.GetString("user_profile_image_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на User.
+        /// </summary>
+        public static string user_role {
+            get {
+                return ResourceManager.GetString("user_role", resourceCulture);
             }
         }
         

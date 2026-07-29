@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.Localization
 {
 	public class LocExtension : MarkupExtension
 	{
-		private readonly string? _key;
+		private readonly object? _key;
 		private readonly BindingBase? _binding;
 		private object? _targetObject;
 		private object? _targetProperty;
@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.Localization
 		/// </summary>
 		public LocExtension(object key)
 		{
-			_key = key as string;
+			_key = key;
 			_binding = key as BindingBase;
 		}
 

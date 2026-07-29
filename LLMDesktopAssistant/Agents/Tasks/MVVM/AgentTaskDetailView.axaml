@@ -1,0 +1,440 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 xmlns:local="using:LLMDesktopAssistant.Agents.Tasks.MVVM"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+						 xmlns:beh="using:LLMDesktopAssistant.Controls.Behaviours"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:tsk="using:LLMDesktopAssistant.Agents.Tasks"
+						 mc:Ignorable="d" d:DesignWidth="720" d:DesignHeight="640"
+						 x:Class="LLMDesktopAssistant.Agents.Tasks.MVVM.AgentTaskDetailView"
+						 x:DataType="local:AgentTaskDetailViewModel">
+
+	<UserControl.Styles>
+		<Style Selector="TextBlock.SectionTitle">
+			<Setter Property="FontSize" Value="18"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Margin" Value="0,12,0,6"/>
+		</Style>
+		<Style Selector="TextBlock.LabelText">
+			<Setter Property="FontSize" Value="12"/>
+			<Setter Property="Opacity" Value="0.55"/>
+		</Style>
+		<Style Selector="TextBlock.ValueText">
+			<Setter Property="FontSize" Value="12"/>
+		</Style>
+		<Style Selector="Border.ToolCallCard">
+			<Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="Padding" Value="10,8"/>
+			<Setter Property="Margin" Value="0,3"/>
+		</Style>
+		<Style Selector="Border.StatsBlock">
+			<Setter Property="Background" Value="{DynamicResource SubtleBackgroundBrush}"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="Padding" Value="10,6"/>
+			<Setter Property="Margin" Value="0,0,8,0"/>
+		</Style>
+		<Style Selector="Border.ErrorBlock">
+			<Setter Property="Background" Value="#1AF44336"/>
+			<Setter Property="CornerRadius" Value="6"/>
+			<Setter Property="Padding" Value="12,10"/>
+			<Setter Property="Margin" Value="0,8"/>
+		</Style>
+	</UserControl.Styles>
+
+	<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
+		
+		<!-- ===== HEADER ===== -->
+		<Grid Grid.Row="0"
+					ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,12">
+
+			<!-- Status icon -->
+			<Panel Width="36" Height="36" Grid.Column="0" Margin="0,0,12,0"
+						 VerticalAlignment="Center">
+				<ctrl:ProgressRing IsVisible="{Binding TaskViewModel.IsRunning}"
+													 IsIndeterminate="True"
+													 Width="36" Height="36"
+													 StrokeThickness="4"
+													 Foreground="{DynamicResource PrimaryAccentBrush}"/>
+				<ico:MaterialIcon Kind="{Binding TaskViewModel.StatusIcon}"
+													Width="36" Height="36"
+													IsVisible="{Binding !TaskViewModel.IsRunning}"/>
+			</Panel>
+
+			<!-- Task name + status -->
+			<StackPanel Grid.Column="1" VerticalAlignment="Center">
+				<TextBlock Text="{Binding TaskViewModel.TaskName, TargetNullValue={loc:Loc unnamed_task}}"
+									 FontSize="18" FontWeight="SemiBold"
+									 TextTrimming="CharacterEllipsis"/>
+				<TextBlock Text="{Binding TaskViewModel.StatusText}"
+									 FontSize="13" Opacity="0.6"
+									 Margin="0,2,0,0"/>
+			</StackPanel>
+
+			<!-- Cancel button (if running) -->
+			<Button Grid.Column="2"
+											Command="{Binding CancelCommand}"
+											IsVisible="{Binding TaskViewModel.IsRunning}"
+											Classes="SmallIconButton"
+											Margin="0,0,8,0"
+											ToolTip.Tip="{loc:Loc cancel_task}">
+				<ico:MaterialIcon Kind="Stop" Width="20" Height="20"/>
+			</Button>
+
+			<!-- Close button -->
+			<Button Grid.Column="3"
+							Command="{Binding CloseCommand}"
+							Classes="SmallIconButton"
+							ToolTip.Tip="{loc:Loc close}">
+				<ico:MaterialIcon Kind="Close" Width="20" Height="20"/>
+			</Button>
+
+		</Grid>
+
+		<!-- ===== USAGE STATISTICS ===== -->
+		<WrapPanel Grid.Row="1"
+							 IsVisible="{Binding Task.UsageStatistics, Converter={StaticResource NotnullToBooleanConverter}}"
+							 Orientation="Horizontal" ItemSpacing="8">
+			<Border Classes="StatsBlock">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<ico:MaterialIcon Kind="Clock" Width="14" Height="14" Opacity="0.5"/>
+					<TextBlock Text="{Binding ExecutionTimeFormatted}" Classes="ValueText"/>
+				</StackPanel>
+			</Border>
+			<Border Classes="StatsBlock">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<ico:MaterialIcon Kind="ArrowUp" Width="14" Height="14" Opacity="0.5"/>
+					<TextBlock Classes="ValueText">
+						<Run Text="{Binding Task.UsageStatistics.InputTokens}"/>
+						<Run Text=" "/>
+						<Run Text="{loc:Loc task_detail_input_tokens}"/>
+					</TextBlock>
+				</StackPanel>
+			</Border>
+			<Border Classes="StatsBlock">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<ico:MaterialIcon Kind="Database" Width="14" Height="14" Opacity="0.5"/>
+					<TextBlock Classes="ValueText">
+						<Run Text="{Binding Task.UsageStatistics.InputCacheHitTokens}"/>
+						<Run Text=" "/>
+						<Run Text="{loc:Loc task_detail_input_cache_hit_tokens}"/>
+					</TextBlock>
+				</StackPanel>
+			</Border>
+			<Border Classes="StatsBlock">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<ico:MaterialIcon Kind="ArrowDown" Width="14" Height="14" Opacity="0.5"/>
+					<TextBlock Classes="ValueText">
+						<Run Text="{Binding Task.UsageStatistics.OutputTokens}"/>
+						<Run Text=" "/>
+						<Run Text="{loc:Loc task_detail_output_tokens}"/>
+					</TextBlock>
+				</StackPanel>
+			</Border>
+			<Border Classes="StatsBlock">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<ico:MaterialIcon Kind="Timer" Width="14" Height="14" Opacity="0.5"/>
+					<TextBlock Classes="ValueText">
+						<Run Text="{loc:Loc task_detail_time_to_first_token}"/>
+						<Run Text=" "/>
+						<Run Text="{Binding TtftFormatted}"/>
+					</TextBlock>
+				</StackPanel>
+			</Border>
+			<Border Classes="StatsBlock">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<ico:MaterialIcon Kind="LightningBolt" Width="14" Height="14" Opacity="0.5"/>
+					<TextBlock Classes="ValueText">
+						<Run Text="{loc:Loc task_detail_inference_time}"/>
+						<Run Text=" "/>
+						<Run Text="{Binding InferenceTimeFormatted}"/>
+					</TextBlock>
+				</StackPanel>
+			</Border>
+		</WrapPanel>
+
+		<!-- ===== CONFIGURATION SECTION ===== -->
+		<TextBlock Grid.Row="2"
+							 Classes="SectionTitle" Text="{loc:Loc task_detail_configuration}"/>
+
+		<Grid Grid.Row="3"
+					ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+					ColumnSpacing="16" RowSpacing="4">
+
+			<TextBlock Classes="LabelText" Grid.Row="0" Grid.Column="0"
+								 Text="{loc:Loc task_detail_id}"/>
+			<TextBlock Classes="ValueText" Grid.Row="0" Grid.Column="1"
+								 Text="{Binding Task.Id, StringFormat=\{0:B\}}"
+								 FontFamily="JetBrains Mono" FontSize="11"/>
+
+			<TextBlock Classes="LabelText" Grid.Row="1" Grid.Column="0"
+								 Text="{loc:Loc task_detail_parent}"
+								 IsVisible="{Binding Task.Parent.Id, Converter={StaticResource NotnullToBooleanConverter}}"/>
+			<TextBlock Classes="ValueText" Grid.Row="1" Grid.Column="1"
+								 Text="{Binding Task.Parent.Id, StringFormat=\{0:B\}}"
+								 FontFamily="JetBrains Mono" FontSize="11"
+								 IsVisible="{Binding Task.Parent.Id, Converter={StaticResource NotnullToBooleanConverter}}"/>
+
+			<TextBlock Classes="LabelText" Grid.Row="2" Grid.Column="0"
+								 Text="{loc:Loc task_detail_behaviour}"/>
+			<TextBlock Classes="ValueText" Grid.Row="2" Grid.Column="1"
+								 Text="{Binding Task.LaunchParameters.Behaviour}"/>
+
+			<TextBlock Classes="LabelText" Grid.Row="3" Grid.Column="0"
+								 Text="{loc:Loc task_detail_max_parallel_tools}"/>
+			<TextBlock Classes="ValueText" Grid.Row="3" Grid.Column="1"
+								 Text="{Binding Task.LaunchParameters.MaxParallelToolCalls}"/>
+
+			<TextBlock Classes="LabelText" Grid.Row="4" Grid.Column="0"
+								 Text="{loc:Loc task_detail_timeout}"/>
+			<TextBlock Classes="ValueText" Grid.Row="4" Grid.Column="1"
+								 Text="{Binding TimeOut}"
+								 IsVisible="{Binding TimeOut, Converter={StaticResource NotnullToBooleanConverter}}"/>
+
+			<TextBlock Classes="LabelText" Grid.Row="5" Grid.Column="0"
+								 Text="{loc:Loc task_detail_tools_count}"/>
+			<TextBlock Classes="ValueText" Grid.Row="5" Grid.Column="1"
+								 Text="{Binding Task.LaunchParameters.Tools.Count}"/>
+
+		</Grid>
+
+		<!-- ===== ERROR SECTION ===== -->
+		<Border Grid.Row="4"
+						Classes="ErrorBlock" IsVisible="{Binding Task.Exception, Converter={StaticResource NotnullToBooleanConverter}}">
+			<StackPanel>
+				<StackPanel Orientation="Horizontal" Spacing="8">
+					<ico:MaterialIcon Kind="AlertCircle" Width="20" Height="20"
+														Foreground="#F44336"/>
+					<TextBlock Text="{loc:Loc task_detail_error}"
+										 FontSize="14" FontWeight="SemiBold"
+										 Foreground="#F44336"/>
+				</StackPanel>
+				<TextBlock Text="{Binding Task.Exception.Message}"
+									 FontSize="12"
+									 Margin="0,8,0,0"
+									 TextWrapping="Wrap"/>
+				<TextBlock Text="{Binding Task.Exception.StackTrace}"
+									 FontSize="11"
+									 FontFamily="JetBrains Mono"
+									 Opacity="0.6"
+									 Margin="0,4,0,0"
+									 TextWrapping="Wrap"
+															IsVisible="{Binding Task.Exception.StackTrace, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+			</StackPanel>
+		</Border>
+
+		<!-- ===== MESSAGES SECTION ===== -->
+		<TextBlock Grid.Row="5"
+							 Classes="SectionTitle" Text="{loc:Loc task_detail_messages}"/>
+
+		<ScrollViewer Grid.Row="6"
+									VerticalScrollBarVisibility="Auto"
+									beh:ScrollViewerBehavior.AutoScrollEnabled="True">
+			
+			<ItemsControl ItemsSource="{Binding Task.Messages}">
+
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Vertical"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+
+				<ItemsControl.DataTemplates>
+				
+					<DataTemplate x:DataType="tsk:AgentSystemMessage">
+						<StackPanel Margin="4,8,2,2"
+												MaxWidth="640"
+												HorizontalAlignment="Left">
+
+							<!-- Message header: role + icon -->
+							<StackPanel Orientation="Horizontal" Spacing="6"
+													Margin="0,0,0,6">
+								<ico:MaterialIcon Kind="Cog"
+																	Width="22" Height="22"/>
+								<TextBlock Text="{loc:Loc system_role}"
+													 FontSize="16" FontWeight="SemiBold"/>
+							</StackPanel>
+
+							<!-- Message content -->
+							<ctrl:MarkdownControl MarkdownText="{Binding Content}"
+																		IsVisible="{Binding Content, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+																		MaxWidth="640"
+																		Opacity="0.9"/>
+						</StackPanel>
+					</DataTemplate>
+				
+					<DataTemplate x:DataType="tsk:AgentUserMessage">
+						<StackPanel Margin="4,8,2,2"
+												MaxWidth="640"
+												HorizontalAlignment="Left">
+
+							<!-- Message header: role + icon -->
+							<StackPanel Orientation="Horizontal" Spacing="6"
+													Margin="0,0,0,6">
+								<ico:MaterialIcon Kind="Account"
+																	Width="22" Height="22"/>
+								<TextBlock Text="{loc:Loc user_role}"
+													 FontSize="16" FontWeight="SemiBold"/>
+							</StackPanel>
+
+							<!-- Message content -->
+							<ctrl:MarkdownControl MarkdownText="{Binding Content}"
+																		IsVisible="{Binding Content, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+																		Opacity="0.8"/>
+						
+							<!-- Attachments -->
+							<ItemsControl ItemsSource="{Binding Attachments}"
+														IsVisible="{Binding Attachments.Any}"
+														Margin="0,6,0,0">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate x:DataType="tsk:AgentAttachment">
+										<StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2">
+											<ico:MaterialIcon Kind="Paperclip"
+																				Width="12" Height="12"
+																				Opacity="0.5"/>
+											<TextBlock Text="{Binding Url}"
+																 FontSize="11"
+																 Opacity="0.5"
+																 TextTrimming="CharacterEllipsis"
+																 MaxWidth="400"/>
+										</StackPanel>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</StackPanel>
+					</DataTemplate>
+
+					<DataTemplate x:DataType="tsk:AgentAssistantMessage">
+						<StackPanel Margin="4,8,2,2"
+												MaxWidth="640"
+												HorizontalAlignment="Left">
+
+							<!-- Message header: role + icon -->
+							<StackPanel Orientation="Horizontal" Spacing="6"
+													Margin="0,0,0,6">
+								<ico:MaterialIcon Kind="Robot"
+																	Width="22" Height="22"/>
+								<TextBlock Text="{loc:Loc assistant_role}"
+													 FontSize="18" FontWeight="SemiBold"/>
+
+								<!-- Per-message token stats -->
+								<TextBlock IsVisible="{Binding UsageStatistics, Converter={StaticResource NotnullToBooleanConverter}}"
+													 VerticalAlignment="Center"
+													 FontSize="11" Opacity="0.4"
+													 Margin="8,0,0,0">
+									<Run Text="{Binding UsageStatistics.InputTokens}"/>
+									<Run Text="{loc:Loc task_detail_input_tokens}"/>
+									<Run Text=" "/>
+									<Run Text="{Binding UsageStatistics.InputCacheHitTokens}"/>
+									<Run Text="{loc:Loc task_detail_input_cache_hit_tokens}"/>
+									<Run Text=" "/>
+									<Run Text="{Binding UsageStatistics.OutputTokens}"/>
+									<Run Text="{loc:Loc task_detail_output_tokens}"/>
+									<Run Text=" "/>
+									<Run Text="{Binding UsageStatistics.ExecutionTime.TotalSeconds, StringFormat={}{0:F1}s}"/>
+								</TextBlock>
+							</StackPanel>
+
+							<!-- Reasoning block (collapsible-like) -->
+							<StackPanel IsVisible="{Binding ReasoningContent, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+								<TextBlock Text="{loc:Loc task_detail_reasoning}"
+														FontSize="11" FontWeight="SemiBold"
+														Opacity="0.5"
+														Margin="0,0,0,4"/>
+								<ctrl:MarkdownControl MarkdownText="{Binding ReasoningContent}"
+																			Opacity="0.5"/>
+							</StackPanel>
+
+							<!-- Message content -->
+							<ctrl:MarkdownControl MarkdownText="{Binding Content}"
+																		IsVisible="{Binding Content, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
+																		Opacity="0.8"/>
+
+							<!-- Attachments -->
+							<ItemsControl ItemsSource="{Binding Attachments}"
+														IsVisible="{Binding Attachments.Any}"
+														Margin="0,6,0,0">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate x:DataType="tsk:AgentAttachment">
+										<StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2">
+											<ico:MaterialIcon Kind="Paperclip"
+																				Width="12" Height="12"
+																				Opacity="0.7"/>
+											<TextBlock Text="{Binding Url}"
+																 FontSize="11"
+																 Opacity="0.7"
+																 TextTrimming="CharacterEllipsis"
+																 MaxWidth="400"/>
+										</StackPanel>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+
+							<!-- Tool calls (compact list) -->
+							<StackPanel IsVisible="{Binding ToolCalls.Any}"
+													Margin="0,6,0,0">
+								<TextBlock Text="{loc:Loc task_detail_tool_calls}"
+													 FontSize="11" FontWeight="SemiBold"
+													 Opacity="0.6"
+													 Margin="0,0,0,4"/>
+
+								<ItemsControl ItemsSource="{Binding ToolCalls}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate x:DataType="tsk:AgentToolCall">
+											<Border Classes="ToolCallCard">
+												<StackPanel>
+													<StackPanel Orientation="Horizontal" Spacing="6">
+														<TextBlock Text="{Binding ToolName}"
+																			 FontSize="12"
+																			 FontWeight="SemiBold"/>
+														<TextBlock Text="{Binding Status}"
+																			 FontSize="11"
+																			 Opacity="0.6"/>
+													</StackPanel>
+
+													<TextBlock Text="{Binding Arguments}"
+																		 FontSize="11"
+																		 FontFamily="JetBrains Mono"
+																		 Opacity="0.7"
+																		 TextWrapping="Wrap"
+																		 MaxLines="1"
+																		 Margin="0,4,0,0"
+																		 MaxWidth="400"
+																		 IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
+													<TextBlock Text="{Binding Result.Content}"
+																		 FontSize="11"
+																		 Opacity="0.8"
+																		 TextWrapping="Wrap"
+																		 MaxLines="1"
+																		 Margin="0,4,0,0"
+																		 MaxWidth="400"
+																		 IsVisible="{Binding Result.Content, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+												</StackPanel>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</StackPanel>
+						</StackPanel>
+					</DataTemplate>
+
+				</ItemsControl.DataTemplates>
+			</ItemsControl>
+
+		</ScrollViewer>
+
+		<!-- ===== FOOTER ===== -->
+		<Button Grid.Row="7"
+						Command="{Binding CloseCommand}"
+						HorizontalAlignment="Right"
+						Margin="0,16,0,0"
+						Padding="20,8">
+			<TextBlock Text="{loc:Loc close}"/>
+		</Button>
+
+	</Grid>
+</UserControl>
