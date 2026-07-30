@@ -18,13 +18,15 @@
 	}
 	@if persona
 	{
-		Act as:
+		<persona>
 		@persona
+		</persona>
 	}
 	@if specialization
 	{
-		Your specialization is:
+		<specialization>
 		@specialization
+		</specialization>
 	}
 	@if persona && specialization
 	{
@@ -38,7 +40,28 @@
 	}
 	@if summary
 	{
-		There is summary of previous messages in the conversation:
+		<previous_conversation_summary>
 		@summary
+		</previous_conversation_summary>
+	}
+	@if skills
+	{
+		<available_skills>
+			The following skills provide specialized instructions for specific tasks.
+			When a task matches a skill's description, call the `skill-load` tool
+			with the skill's name to load its full instructions.
+			@foreach skill in skills
+			{
+				<skill>
+					<name>@skill.name</name>
+					<description>@skill.description</description>
+					<location>@skill.path</location>
+					@if skill.is_body_injected
+					{
+						<body>@skill.body</body>
+					}
+				</skill>
+			}
+		</available_skills>
 	}
 }

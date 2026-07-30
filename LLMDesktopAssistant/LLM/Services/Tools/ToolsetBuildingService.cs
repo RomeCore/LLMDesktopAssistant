@@ -16,6 +16,28 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		IServiceProvider services
 		) : IToolsetBuildingService
 	{
+		public IEnumerable<ToolInfo> GetAvailableTools()
+		{
+			var metatoolManager = services.GetService<IMetaToolManagementService>();
+
+			return services.GetServices<ToolModule>()
+
+				// Tool modules
+				.Concat(chat.AdditionalTools ?? [])
+				.Concat(mcpManager.GetMCPTools())
+
+				.SelectMany(m => m.GetTools())
+
+				// Tools
+				.Concat(metatoolManager?.GetMetaTools() ?? [])
+
+				// Select the last tool of each name (to avoid duplicates)
+				.GroupBy(t => t.Tool.Name)
+				.Select(t => t.Last())
+
+				.ToList();
+		}
+
 		public IEnumerable<ToolInfo> GetToolsForAgent(ChatAgentDescriptor agent)
 		{
 			if (!chat.Settings.Tools.EnableTools)
@@ -60,36 +82,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						result.Add(toolInfo);
 				}
 			}
-/*
-			Log.Information("Tool list:\n{Tools}", string.Join("\n", result.Select(t => $"""
-				Tool: {t.Name}
-				Description: {t.DescriptionGetter()}
-				Arguments: {t.ArgumentSchema.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true, TypeInfoResolver = new DefaultJsonTypeInfoResolver() })}
-				""")));
-*/
+
 			return result;
-		}
-
-		public IEnumerable<ToolInfo> GetAvailableTools()
-		{
-			var metatoolManager = services.GetService<IMetaToolManagementService>();
-
-			return services.GetServices<ToolModule>()
-
-				// Tool modules
-				.Concat(chat.AdditionalTools ?? [])
-				.Concat(mcpManager.GetMCPTools())
-
-				.SelectMany(m => m.GetTools())
-
-				// Tools
-				.Concat(metatoolManager?.GetMetaTools() ?? [])
-
-				// Select the last tool of each name (to avoid duplicates)
-				.GroupBy(t => t.Tool.Name)
-				.Select(t => t.Last())
-
-				.ToList();
 		}
 	}
 }

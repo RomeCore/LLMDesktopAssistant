@@ -5308,6 +5308,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Load skill.
+        /// </summary>
+        public static string skill_load {
+            get {
+                return ResourceManager.GetString("skill-load", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Skills.
+        /// </summary>
+        public static string skills {
+            get {
+                return ResourceManager.GetString("skills", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Clear specialization.
         /// </summary>
         public static string specialization_clear {

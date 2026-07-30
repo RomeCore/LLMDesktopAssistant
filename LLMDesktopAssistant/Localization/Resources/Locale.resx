@@ -2511,4 +2511,10 @@
   <data name="task_detail_inference_time" xml:space="preserve">
     <value>inference</value>
   </data>
+  <data name="skill-load" xml:space="preserve">
+    <value>Load skill</value>
+  </data>
+  <data name="skills" xml:space="preserve">
+    <value>Skills</value>
+  </data>
 </root>

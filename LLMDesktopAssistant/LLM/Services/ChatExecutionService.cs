@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IAgentManagementService agentManager,
 		IChatStorageService storage,
 		IMessageRevealService messageRevealer,
-		IPromptChatBuilder promptBuilder,
+		IChatPromptBuilder promptBuilder,
 		IModelManager modelManager,
 		IToolExecutionService toolExecutor,
 		ILLMPropertiesBuilder propertiesBuilder,

@@ -76,5 +76,15 @@ namespace LLMDesktopAssistant.LLM.Settings
 			get => _mcpSettings;
 			set => SetProperty(ref _mcpSettings, value);
 		}
+
+		private ChatSkillSettings _skillSettings = new();
+		/// <summary>
+		/// Settings related to skills.
+		/// </summary>
+		public ChatSkillSettings Skills
+		{
+			get => _skillSettings;
+			set => SetProperty(ref _skillSettings, value);
+		}
 	}
 }

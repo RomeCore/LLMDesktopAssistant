@@ -126,7 +126,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 		private string? SelectContext(AgentPreExecutionContext context)
 		{
 			var rounds = MessagesInterface.GroupMessagesIntoRounds(context.Chat.Messages, MaxVisibleRounds);
-			var promptBuilder = context.Services.GetRequiredService<IPromptChatBuilder>();
+			var promptBuilder = context.Services.GetRequiredService<IChatPromptBuilder>();
 
 			var sb = new StringBuilder();
 

@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
 
 namespace LLMDesktopAssistant.LLM.Services
@@ -8,7 +9,10 @@ namespace LLMDesktopAssistant.LLM.Services
 	/// </summary>
 	/// <param name="chat">The current chat instance that contains environment settings.</param>
 	[ChatService]
-	public class WorkingDirectoryAccessService(Chat chat)
+	public class WorkingDirectoryAccessService(
+		Chat chat,
+		ISkillLocator skillLocator
+	)
 	{
 		public string GetWorkingDirectory()
 		{
@@ -47,6 +51,18 @@ namespace LLMDesktopAssistant.LLM.Services
 					break;
 				}
 			}
+
+			// Skill folders are allowed to access.
+			if (!isAccessed)
+				foreach (var skillPath in skillLocator.LocateSkillFiles())
+				{
+					var skillDir = Path.GetDirectoryName(skillPath);
+					if (!string.IsNullOrEmpty(skillDir) && IsSubdirectoryOf(skillDir, fullPath))
+					{
+						isAccessed = true;
+						break;
+					}
+				}
 
 			// Order rules by path length (more common rules goes first),
 			// then calculate by access mode with overrides.

@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	[ChatService(typeof(IChatSummarizationService))]
 	public class ChatSummarizationService(
 		Chat chat,
-		IPromptChatBuilder promptBuilder,
+		IChatPromptBuilder promptBuilder,
 		TemplateLibrary templates,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager

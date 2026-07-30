@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.Prompting;
 /// </summary>
 /// <remarks>
 /// <see cref="RawUserMessage"/> is treated as a regular <see cref="ChatMessage"/> during
-/// the conversion phase in <see cref="LLM.Services.Prompting.PromptChatBuilder"/>, but it is
+/// the conversion phase in <see cref="LLM.Services.Prompting.ChatPromptBuilder"/>, but it is
 /// filtered out before any persistence or UI rendering occurs.
 /// </remarks>
 public sealed class RawUserMessage : ChatMessage

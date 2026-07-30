@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		Chat chat,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager,
-		IPromptChatBuilder promptBuilder,
+		IChatPromptBuilder promptBuilder,
 		TemplateLibrary templates,
 		MessagesInterface messagesInterface
 		) : IChatNamingService

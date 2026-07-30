@@ -8,6 +8,7 @@ using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Hooks;
 using LLMDesktopAssistant.Prompting.Injectors;
 using LLMDesktopAssistant.Prompting.Plugins;
+using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Users;
 using LLTSharp;
 using LLTSharp.Locale;
@@ -25,19 +26,20 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 	/// - <see cref="AgentReadSettings.MaxVisibleRounds"/> — how many recent rounds to include
 	/// - Foreign agent messages are merged and presented as a single user message.
 	/// </summary>
-	[ChatService(typeof(IPromptChatBuilder))]
-	public class PromptChatBuilder(
+	[ChatService(typeof(IChatPromptBuilder))]
+	public class ChatPromptBuilder(
 		Chat chat,
 		TemplateLibrary templates,
 		IPromptRegistry promptRegistry,
 		IAgentManagementService agentManager,
 		IUserManagementService userManager,
+		ISkillsetBuildingService skillsetBuilder,
 		IEnumerable<IPromptInjector> promptInjectors,
 		IEnumerable<IPromptBuildingHook> promptBuildingHooks,
 		IEnumerable<IPromptSystemContextExpander> promptSystemContextExpanders,
 		IEnumerable<IPromptMessageContextExpander> promptMessageContextExpanders,
 		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins
-		) : IPromptChatBuilder
+		) : IChatPromptBuilder
 	{
 		private TemplateFunctionSet GetTemplateFunctions()
 		{
@@ -130,6 +132,11 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			return true;
 		}
 
+		public string RenderSystemPrompt(ChatAgentDescriptor agent, string? summaryOfPrevMessages = null)
+		{
+			return BuildSystemPrompt(summaryOfPrevMessages, agent, GetTemplateFunctions());
+		}
+
 		private string BuildSystemPrompt(string? summaryOfPrevMessages,
 			ChatAgentDescriptor agent, TemplateFunctionSet functions)
 		{
@@ -166,6 +173,14 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				promptSettings.CustomPersona :
 				(promptSettings.PersonaId != null ? promptRegistry.GetPersona(promptSettings.PersonaId.Value)?.Template.Template.Render(componentsContext) : null);
 			generalContext["summary"] = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages;
+			generalContext["skills"] = skillsetBuilder.GetSkillsForAgent(agent).Select(s => new
+			{
+				name = s.Name,
+				description = s.Description,
+				body = s.Body,
+				is_body_injected = s.InjectionMode is SkillInjectionMode.Full,
+				path = s.Path
+			});
 
 			return template!.Render(generalContext, functions);
 		}

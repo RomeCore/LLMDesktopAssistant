@@ -8,7 +8,7 @@ namespace LLMDesktopAssistant.Prompting.Hooks;
 
 /// <summary>
 /// Defines a mechanism for modifying individual messages or the final message list
-/// during the prompt building phase in <see cref="LLM.Services.Prompting.PromptChatBuilder"/>.
+/// during the prompt building phase in <see cref="LLM.Services.Prompting.ChatPromptBuilder"/>.
 /// </summary>
 /// <remarks>
 /// <para>

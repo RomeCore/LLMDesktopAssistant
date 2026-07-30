@@ -85,6 +85,16 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _toolSettings, value);
 		}
 
+		private AgentSkillSettings _skillSettings = new();
+		/// <summary>
+		/// The skill settings for this agent.
+		/// </summary>
+		public AgentSkillSettings Skills
+		{
+			get => _skillSettings;
+			set => SetProperty(ref _skillSettings, value);
+		}
+
 		/// <summary>
 		/// Creates a deep clone of this agent descriptor via JSON serialization.
 		/// </summary>
