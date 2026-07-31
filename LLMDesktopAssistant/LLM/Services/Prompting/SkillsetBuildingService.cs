@@ -1,7 +1,10 @@
 ﻿using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Prompting.ContextExpanders;
+using LLMDesktopAssistant.Prompting.Plugins;
 using LLMDesktopAssistant.Prompting.Skills;
+using LLTSharp;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
@@ -10,7 +13,9 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		Chat chat,
 		ISkillLocator skillLocator,
 		ISkillLoader skillLoader,
-		IPromptRegistry promptRegistry
+		IPromptRegistry promptRegistry,
+		IEnumerable<IPromptSystemContextExpander> promptSystemContextExpanders,
+		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins
 	) : ISkillsetBuildingService
 	{
 		public IEnumerable<SkillInfo> GetAvailableSkills()
@@ -22,7 +27,10 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var promptSkills = promptRegistry.GetSkills().ToList();
 			if (promptSkills.Count > 0)
 			{
-
+				var context = new Dictionary<string, object?>();
+				foreach (var expander in promptSystemContextExpanders)
+					expander.ExpandPromptContext(context);
+				var templateFunctions = new TemplateFunctionSet(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
 
 				skills.AddRange(promptSkills.Select(s =>
 				{
@@ -30,7 +38,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{
 						Name = s.Name,
 						Description = s.Description ?? string.Empty,
-						Body = s.Template.Template.Render()
+						Body = s.Template.Template.Render(context, templateFunctions)
 					};
 				}));
 			}

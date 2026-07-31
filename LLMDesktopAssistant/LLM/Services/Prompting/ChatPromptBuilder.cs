@@ -193,6 +193,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var template = templates.TryRetrieveBestAllWithFallback("user_message_prompt", language)?.LastOrDefault() as ITextTemplate;
 
 			var context = new Dictionary<string, object?>();
+			foreach (var expander in promptSystemContextExpanders)
+				expander.ExpandPromptContext(context);
 			foreach (var expander in promptMessageContextExpanders)
 				expander.ExpandPromptContext(message, null, context);
 
