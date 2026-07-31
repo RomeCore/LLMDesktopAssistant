@@ -42,7 +42,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 
-			AddTool(DownloadFile, DownloadFileStreaming, null,
+			AddTool(DownloadFile, DownloadFileStreaming, DownloadFilePreview,
 				new ToolInitializationInfo
 				{
 					Name = "web-download",
