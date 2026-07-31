@@ -12,6 +12,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		private readonly Parser _parser;
 
 		private static readonly IDeserializer _frontmatterDeserializer = new DeserializerBuilder()
+			.IgnoreUnmatchedProperties()
 			.WithNamingConvention(HyphenatedNamingConvention.Instance)
 			.Build();
 
@@ -21,7 +22,6 @@ namespace LLMDesktopAssistant.Prompting.Skills
 			public string? Description { get; set; }
 			public string? Compatibility { get; set; }
 			public string? License { get; set; }
-			public YamlNode? AllowedTools { get; set; }
 			public List<string>? Tags { get; set; }
 			public Dictionary<string, string>? Metadata { get; set; }
 		}
@@ -41,12 +41,12 @@ namespace LLMDesktopAssistant.Prompting.Skills
 				).Label("yaml")
 
 				.Optional(b => b
-					.Literal("#").TextUntil("\n", "\r", "\r\n")
+					.Literal("#").TextUntil("\n", "\r", "\r\n").Optional(b => b.Whitespaces())
 					.Transform(v => v[1].Text)
 				).Label("name")
 
 				.Optional(b => b
-					.TextUntil("\n", "\r", "\r\n")
+					.OneOrMoreSeparated(b => b.TextUntil("\n", "\r", "\r\n"), s => s.Newline()).Optional(b => b.Whitespaces())
 					.Transform(v => v.Text)
 				).Label("desc")
 
@@ -97,18 +97,23 @@ namespace LLMDesktopAssistant.Prompting.Skills
 							}
 						}
 
-						if (frontmatter.AllowedTools is YamlScalarNode allowedToolsStrNode)
+						if (frontmatterMap!.Children.TryGetValue("allowed-tools", out var allowedTools))
 						{
-							foreach (var tool in _parser!.FindAllMatches<string>("allowed_tool", allowedToolsStrNode.Value ?? ""))
+							if (allowedTools is YamlScalarNode allowedToolsStrNode)
 							{
-								allowedToolsBuilder.Add(tool);
+								foreach (var tool in _parser!.FindAllMatches<string>("allowed_tool", allowedToolsStrNode.Value ?? ""))
+								{
+									if (!string.IsNullOrWhiteSpace(tool))
+										allowedToolsBuilder.Add(tool.Trim());
+								}
 							}
-						}
-						else if (frontmatter.AllowedTools is YamlSequenceNode allowedToolsSeqNode)
-						{
-							foreach (var node in allowedToolsSeqNode)
+							else if (allowedTools is YamlSequenceNode allowedToolsSeqNode)
 							{
-								allowedToolsBuilder.Add((string)node!);
+								foreach (var node in allowedToolsSeqNode)
+								{
+									if (node is YamlScalarNode s && !string.IsNullOrWhiteSpace(s.Value))
+										allowedToolsBuilder.Add(s.Value.Trim());
+								}
 							}
 						}
 
@@ -116,7 +121,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 						{
 							foreach (var tag in frontmatter.Tags)
 							{
-								tagsBuilder.Add(tag);
+								tagsBuilder.Add(tag.Trim());
 							}
 						}
 
@@ -160,8 +165,8 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 					return new SkillInfo
 					{
-						Name = name,
-						Description = description,
+						Name = name.Trim(),
+						Description = description.Trim(),
 						Body = body,
 						Path = fullpath,
 						HomeDirectory = homeDir,

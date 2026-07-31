@@ -20,28 +20,36 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						IsActive = chat.Settings.Environment.IsDefaultWorkingDirectoryActive,
 						Path = Directories.DefaultWorkingDirectory
 					})
-					.Where(wd => wd.IsEnabled && string.IsNullOrEmpty(wd.Path))
+					.Where(wd => wd.IsEnabled && !string.IsNullOrEmpty(wd.Path))
 					.Select(wd => wd.Path)
 					.ToArray()!;
 			else
 				projectPaths = [chat.Settings.Environment.GetWorkingDirectory()];
 
-			List<string> projectCheckPaths = [
-				$"{Directories.WorkingHome}/skills",
+			List<string> sharedCheckPaths = [
 				".agents/skills",
 				".claude/skills",
 				".github/skills",
 				".codex/skills",
 				".cursor/skills"
 			];
+			List<string> projectCheckPaths = [
+				$"{Directories.WorkingHome}/skills"
+			];
 			List<string> potentialSkillDirectories = [];
 			foreach (string projectPath in projectPaths)
 			{
-				foreach (string checkPath in projectCheckPaths)
+				foreach (string checkPath in projectCheckPaths.Concat(sharedCheckPaths))
 				{
 					var potentialSkillDirectory = Path.Combine(projectPath, checkPath);
 					potentialSkillDirectories.Add(potentialSkillDirectory);
 				}
+			}
+			var sharedRootFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+			foreach (string sharedCheckPath in sharedCheckPaths)
+			{
+				var potentialSkillDirectory = Path.Combine(sharedRootFolder, sharedCheckPath);
+				potentialSkillDirectories.Add(potentialSkillDirectory);
 			}
 
 			potentialSkillDirectories.Add(Directories.Skills);
@@ -64,7 +72,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			skillFiles.AddRange(chat.Settings.Skills.AdditionalSkillFiles);
 
-			return skillFiles.Where(File.Exists);
+			var comparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+			return skillFiles.Distinct(comparer).Where(File.Exists);
 		}
 	}
 }
