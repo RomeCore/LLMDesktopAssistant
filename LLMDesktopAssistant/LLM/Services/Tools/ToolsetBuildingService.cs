@@ -1,7 +1,6 @@
 ﻿using AngleSharp.Common;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
@@ -22,20 +21,50 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 			return services.GetServices<ToolModule>()
 
-				// Tool modules
 				.Concat(chat.AdditionalTools ?? [])
 				.Concat(mcpManager.GetMCPTools())
 
 				.SelectMany(m => m.GetTools())
 
-				// Tools
 				.Concat(metatoolManager?.GetMetaTools() ?? [])
 
-				// Select the last tool of each name (to avoid duplicates)
 				.GroupBy(t => t.Tool.Name)
-				.Select(t => t.Last())
-
-				.ToList();
+				.Select(g =>
+				{
+					ImmutableList<ToolInfo>.Builder? overridesBuilder = null;
+					ToolInfo? last = null;
+					foreach (var skill in g)
+					{
+						if (last is not null)
+						{
+							overridesBuilder ??= ImmutableList.CreateBuilder<ToolInfo>();
+							overridesBuilder.Add(last);
+						}
+						last = skill;
+					}
+					if (overridesBuilder == null)
+						return last!;
+					return new ToolInfo
+					{
+						Name = last!.Name,
+						Aliases = last.Aliases,
+						DescriptionGetter = last.DescriptionGetter,
+						ArgumentSchema = last.ArgumentSchema,
+						OutputSchema = last.OutputSchema,
+						StreamingArgumentsAnalyser = last.StreamingArgumentsAnalyser,
+						PreviewExecutor = last.PreviewExecutor,
+						DefaultExpectedBehaviour = last.DefaultExpectedBehaviour,
+						DefaultSelfHandledDecisions = last.DefaultSelfHandledDecisions,
+						Executor = last.Executor,
+						SynchronizationGroup = last.SynchronizationGroup,
+						Category = last.Category,
+						DisplayName = last.DisplayName,
+						Source = last.Source,
+						Enabled = last.Enabled,
+						ApprovalLevel = last.ApprovalLevel,
+						Overrides = overridesBuilder.ToImmutable()
+					};
+				});
 		}
 
 		public IEnumerable<ToolInfo> GetToolsForAgent(ChatAgentDescriptor agent)

@@ -13,7 +13,43 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 	{
 		public IEnumerable<SkillInfo> GetAvailableSkills()
 		{
-			return skillLoader.Load(skillLocator.LocateSkillFiles());
+			var skillFiles = skillLocator.LocateSkillFiles();
+			var skills = skillLoader.Load(skillFiles);
+
+			return skills
+				.GroupBy(s => s.Name)
+				.Select(g =>
+				{
+					ImmutableList<SkillInfo>.Builder? overridesBuilder = null;
+					SkillInfo? last = null;
+					foreach (var skill in g)
+					{
+						if (last is not null)
+						{
+							overridesBuilder ??= ImmutableList.CreateBuilder<SkillInfo>();
+							overridesBuilder.Add(last);
+						}
+						last = skill;
+					}
+					if (overridesBuilder == null)
+						return last!;
+					return new SkillInfo
+					{
+						Name = last!.Name,
+						Description = last.Description,
+						Body = last.Body,
+						Path = last.Path,
+						HomeDirectory = last.HomeDirectory,
+						Metadata = last.Metadata,
+						AdditionalMetadata = last.AdditionalMetadata,
+						AllowedTools = last.AllowedTools,
+						Tags = last.Tags,
+						AdditionalProperties = last.AdditionalProperties,
+						Enabled = last.Enabled,
+						InjectionMode = last.InjectionMode,
+						Overrides = overridesBuilder.ToImmutable()
+					};
+				});
 		}
 
 		public IEnumerable<SkillInfo> GetSkillsForAgent(ChatAgentDescriptor agent)
@@ -31,6 +67,9 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var changes = settings.SkillChanges.ToDictionary(c => c.SkillName, c => c);
 			foreach (var skillInfo in skills)
 			{
+				if (skillInfo.Diagnostic?.IsFatal == true)
+					continue;
+
 				if (changes.TryGetValue(skillInfo.Name, out var change))
 				{
 					if (change.Enabled ?? skillInfo.Enabled)
@@ -57,9 +96,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				}
 			}
 
-			return result
-				.GroupBy(s => s.Name)
-				.Select(g => g.Last());
+			return result;
 		}
 	}
 }

@@ -47,13 +47,16 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 				.Optional(b => b
 					.OneOrMoreSeparated(b => b.TextUntil("\n", "\r", "\r\n"), s => s.Newline()).Optional(b => b.Whitespaces())
-					.Transform(v => v.Text)
+					.Transform(v => v[0].Text)
 				).Label("desc")
 
 				.AllText()
 				
 				.Transform(v =>
 				{
+					var diagnosticCodes = SkillDiagnosticCode.None;
+					Exception? exception = null;
+
 					var fullpath = v.GetParsingParameter<string>();
 					var yaml = v.TryGetValue<string>("yaml");
 					var fallbackName = v.TryGetValue<string>("name");
@@ -61,106 +64,178 @@ namespace LLMDesktopAssistant.Prompting.Skills
 					var homeDir = Path.GetDirectoryName(fullpath);
 					var dirName = Path.GetFileName(homeDir);
 
-					var frontmatter = yaml != null ? _frontmatterDeserializer.Deserialize<FrontmatterDto>(yaml) : null;
-					var frontmatterMap = yaml != null ? _frontmatterDeserializer.Deserialize<YamlMappingNode>(yaml) : null;
-					var body = v.Text[v["yaml"].EndIndex..];
+					FrontmatterDto? frontmatter = null;
+					YamlMappingNode? frontmatterMap = null;
 
-					string name = frontmatter?.Name ?? fallbackName ?? dirName ?? throw new Exception($"Cannot fetch skill name from '{fullpath}'.");
-					string description = frontmatter?.Description ?? fallbackDesc ?? "No description provided.";
+					if (!string.IsNullOrWhiteSpace(yaml))
+					{
+						try
+						{
+							frontmatter = _frontmatterDeserializer.Deserialize<FrontmatterDto>(yaml);
+							frontmatterMap = _frontmatterDeserializer.Deserialize<YamlMappingNode>(yaml);
+						}
+						catch (Exception ex)
+						{
+							diagnosticCodes |= SkillDiagnosticCode.YamlParsingError;
+							exception = ex;
+						}
+					}
+					else
+					{
+						diagnosticCodes |= SkillDiagnosticCode.MissingYaml;
+					}
+
+					string? name = frontmatter?.Name ?? fallbackName ?? dirName;
+					string? description = frontmatter?.Description ?? fallbackDesc;
+					string body = v.Text[v["yaml"].EndIndex..];
+
+					if (string.IsNullOrEmpty(name))
+					{
+						diagnosticCodes |= SkillDiagnosticCode.MissingName;
+						name = "unknown";
+					}
+					if (string.IsNullOrEmpty(frontmatter?.Name))
+					{
+						diagnosticCodes |= SkillDiagnosticCode.MissingYamlName;
+					}
+					if (!SkillName.IsValidSkillName(name))
+					{
+						name = SkillName.ToValidSkillName(name);
+						diagnosticCodes |= SkillDiagnosticCode.NameFormatError;
+					}
+					if (name != dirName)
+					{
+						diagnosticCodes |= SkillDiagnosticCode.NameDirectoryMismatch;
+					}
+					if (string.IsNullOrEmpty(description))
+					{
+						diagnosticCodes |= SkillDiagnosticCode.MissingDescription;
+						description = string.Empty;
+					}
+					if (string.IsNullOrEmpty(frontmatter?.Description))
+					{
+						diagnosticCodes |= SkillDiagnosticCode.MissingYamlDescription;
+					}
 
 					if (frontmatter != null)
 					{
-						var metadataBuilder = ImmutableDictionary.CreateBuilder<SkillMetadataType, string>();
-						var additionalMetadataBuilder = ImmutableDictionary.CreateBuilder<string, string>();
-						var allowedToolsBuilder = ImmutableList.CreateBuilder<string>();
-						var tagsBuilder = ImmutableList.CreateBuilder<string>();
-						var additionalPropertiesBuilder = ImmutableDictionary.CreateBuilder<string, YamlNode>();
-
-						if (!string.IsNullOrEmpty(frontmatter.Compatibility))
-							metadataBuilder.Add(SkillMetadataType.Compatibility, frontmatter.Compatibility);
-						if (!string.IsNullOrEmpty(frontmatter.License))
-							metadataBuilder.Add(SkillMetadataType.License, frontmatter.License);
-
-						foreach (var (key, value) in frontmatter.Metadata ?? [])
+						try
 						{
-							switch (key)
-							{
-								case "author":
-									metadataBuilder.Add(SkillMetadataType.Author, value);
-									break;
-								case "version":
-									metadataBuilder.Add(SkillMetadataType.Version, value);
-									break;
-								default:
-									additionalMetadataBuilder.Add(key, value);
-									break;
-							}
-						}
+							var metadataBuilder = ImmutableDictionary.CreateBuilder<SkillMetadataType, string>();
+							var additionalMetadataBuilder = ImmutableDictionary.CreateBuilder<string, string>();
+							var allowedToolsBuilder = ImmutableList.CreateBuilder<string>();
+							var tagsBuilder = ImmutableList.CreateBuilder<string>();
+							var additionalPropertiesBuilder = ImmutableDictionary.CreateBuilder<string, YamlNode>();
 
-						if (frontmatterMap!.Children.TryGetValue("allowed-tools", out var allowedTools))
-						{
-							if (allowedTools is YamlScalarNode allowedToolsStrNode)
+							if (!string.IsNullOrEmpty(frontmatter.Compatibility))
+								metadataBuilder.Add(SkillMetadataType.Compatibility, frontmatter.Compatibility);
+							if (!string.IsNullOrEmpty(frontmatter.License))
+								metadataBuilder.Add(SkillMetadataType.License, frontmatter.License);
+
+							foreach (var (key, value) in frontmatter.Metadata ?? [])
 							{
-								foreach (var tool in _parser!.FindAllMatches<string>("allowed_tool", allowedToolsStrNode.Value ?? ""))
+								switch (key)
 								{
-									if (!string.IsNullOrWhiteSpace(tool))
-										allowedToolsBuilder.Add(tool.Trim());
-								}
-							}
-							else if (allowedTools is YamlSequenceNode allowedToolsSeqNode)
-							{
-								foreach (var node in allowedToolsSeqNode)
-								{
-									if (node is YamlScalarNode s && !string.IsNullOrWhiteSpace(s.Value))
-										allowedToolsBuilder.Add(s.Value.Trim());
-								}
-							}
-						}
-
-						if (frontmatter.Tags is not null)
-						{
-							foreach (var tag in frontmatter.Tags)
-							{
-								tagsBuilder.Add(tag.Trim());
-							}
-						}
-
-						if (frontmatterMap?.Children is not null)
-						{
-							foreach (var (key, value) in frontmatterMap.Children)
-							{
-								var strKey = (string)key!;
-								switch (strKey)
-								{
-									case "name":
-									case "description":
-									case "compatibility":
-									case "license":
-									case "allowed-tools":
-									case "tags":
-									case "metadata":
-										continue;
-
+									case "author":
+										metadataBuilder.Add(SkillMetadataType.Author, value);
+										break;
+									case "version":
+										metadataBuilder.Add(SkillMetadataType.Version, value);
+										break;
 									default:
-										additionalPropertiesBuilder.Add(strKey, value);
+										additionalMetadataBuilder.Add(key, value);
 										break;
 								}
 							}
-						}
 
-						return new SkillInfo
+							if (frontmatterMap!.Children.TryGetValue("allowed-tools", out var allowedTools))
+							{
+								if (allowedTools is YamlScalarNode allowedToolsStrNode)
+								{
+									foreach (var tool in _parser!.FindAllMatches<string>("allowed_tool", allowedToolsStrNode.Value ?? ""))
+									{
+										if (!string.IsNullOrWhiteSpace(tool))
+											allowedToolsBuilder.Add(tool.Trim());
+									}
+								}
+								else if (allowedTools is YamlSequenceNode allowedToolsSeqNode)
+								{
+									foreach (var node in allowedToolsSeqNode)
+									{
+										if (node is YamlScalarNode s && !string.IsNullOrWhiteSpace(s.Value))
+											allowedToolsBuilder.Add(s.Value.Trim());
+									}
+								}
+							}
+
+							if (frontmatter.Tags is not null)
+							{
+								foreach (var tag in frontmatter.Tags)
+								{
+									tagsBuilder.Add(tag.Trim());
+								}
+							}
+
+							if (frontmatterMap?.Children is not null)
+							{
+								foreach (var (key, value) in frontmatterMap.Children)
+								{
+									var strKey = (string)key!;
+									switch (strKey)
+									{
+										case "name":
+										case "description":
+										case "compatibility":
+										case "license":
+										case "allowed-tools":
+										case "tags":
+										case "metadata":
+											continue;
+
+										default:
+											additionalPropertiesBuilder.Add(strKey, value);
+											break;
+									}
+								}
+							}
+
+							return new SkillInfo
+							{
+								Name = name.Trim(),
+								Description = description.Trim(),
+								Body = body,
+								Path = fullpath,
+								HomeDirectory = homeDir,
+								Metadata = metadataBuilder.ToImmutableDictionary(),
+								AdditionalMetadata = additionalMetadataBuilder.ToImmutableDictionary(),
+								AllowedTools = allowedToolsBuilder.ToImmutableList(),
+								Tags = tagsBuilder.ToImmutableList(),
+								AdditionalProperties = additionalPropertiesBuilder.ToImmutableDictionary(),
+								Diagnostic = diagnosticCodes != SkillDiagnosticCode.None ? new SkillDiagnostic
+								{
+									IsFatal = false,
+									Codes = diagnosticCodes,
+									Exception = exception
+								} : null
+							};
+						}
+						catch (Exception ex)
 						{
-							Name = name.Trim(),
-							Description = description.Trim(),
-							Body = body,
-							Path = fullpath,
-							HomeDirectory = homeDir,
-							Metadata = metadataBuilder.ToImmutableDictionary(),
-							AdditionalMetadata = additionalMetadataBuilder.ToImmutableDictionary(),
-							AllowedTools = allowedToolsBuilder.ToImmutableList(),
-							Tags = tagsBuilder.ToImmutableList(),
-							AdditionalProperties = additionalPropertiesBuilder.ToImmutableDictionary()
-						};
+							return new SkillInfo
+							{
+								Name = name.Trim(),
+								Description = description.Trim(),
+								Body = body,
+								Path = fullpath,
+								HomeDirectory = homeDir,
+								Diagnostic = new SkillDiagnostic
+								{
+									IsFatal = false,
+									Codes = diagnosticCodes | SkillDiagnosticCode.YamlDecodingError,
+									Exception = ex
+								}
+							};
+						}
 					}
 
 					return new SkillInfo
@@ -170,11 +245,12 @@ namespace LLMDesktopAssistant.Prompting.Skills
 						Body = body,
 						Path = fullpath,
 						HomeDirectory = homeDir,
-						Metadata = [],
-						AdditionalMetadata = [],
-						AllowedTools = [],
-						Tags = [],
-						AdditionalProperties = []
+						Diagnostic = new SkillDiagnostic
+						{
+							IsFatal = false,
+							Codes = diagnosticCodes,
+							Exception = exception
+						}
 					};
 				});
 

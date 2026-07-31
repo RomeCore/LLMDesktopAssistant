@@ -25,43 +25,48 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		/// <summary>
 		/// The absolute path to the SKILL.md file, if applicable. Null otherwise.
 		/// </summary>
-		public required string? Path { get; init; }
+		public string? Path { get; init; } = null;
 
 		/// <summary>
 		/// The home directory for this skill. Null if the skill does not have a home directory.
 		/// </summary>
-		public required string? HomeDirectory { get; init; }
+		public string? HomeDirectory { get; init; } = null;
 
 		/// <summary>
 		/// The metadata associated with the skill.
 		/// This dictionary can be used to store additional information about the skill, such as its version number or author.
 		/// </summary>
-		public required ImmutableDictionary<SkillMetadataType, string> Metadata { get; init; }
+		public ImmutableDictionary<SkillMetadataType, string> Metadata { get; init; } = [];
 
 		/// <summary>
 		/// The additional metadata associated with the skill.
 		/// Used for metadata values that are not covered by <see cref="SkillMetadataType"/>.
 		/// </summary>
-		public required ImmutableDictionary<string, string> AdditionalMetadata { get; init; }
+		public ImmutableDictionary<string, string> AdditionalMetadata { get; init; } = [];
 
 		/// <summary>
 		/// The fuzzy list of tools that would be used in this skill.
 		/// Used for UI display for helping user understand behaviour of the skill.
 		/// Examples: 'Read', 'Bash(git:*)'
 		/// </summary>
-		public required ImmutableList<string> AllowedTools { get; init; }
+		public ImmutableList<string> AllowedTools { get; init; } = [];
 
 		/// <summary>
 		/// The tags associated with the skill. Used for UI display and search.
 		/// Examples: 'development', 'code-quality', 'refactoring'.
 		/// </summary>
-		public required ImmutableList<string> Tags { get; init; }
+		public ImmutableList<string> Tags { get; init; } = [];
 
 		/// <summary>
 		/// The additional properties associated with the skill.
 		/// Used for root properties that are not covered by other properties of this class.
 		/// </summary>
-		public required ImmutableDictionary<string, YamlNode> AdditionalProperties { get; init; }
+		public ImmutableDictionary<string, YamlNode> AdditionalProperties { get; init; } = [];
+
+		/// <summary>
+		/// The diagnostic containing specific warnings and errors that was occured during skill parsing.
+		/// </summary>
+		public SkillDiagnostic? Diagnostic { get; init; } = null;
 
 		/// <summary>
 		/// Whether or not this skill is enabled. Defaults to true.
@@ -72,5 +77,10 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		/// The mode in which the skill should be injected into the prompt.
 		/// </summary>
 		public SkillInjectionMode InjectionMode { get; init; } = SkillInjectionMode.Default;
+
+		/// <summary>
+		/// Gets the list of overriden skills during deduplication by name.
+		/// </summary>
+		public ImmutableList<SkillInfo> Overrides { get; init; } = [];
 	}
 }

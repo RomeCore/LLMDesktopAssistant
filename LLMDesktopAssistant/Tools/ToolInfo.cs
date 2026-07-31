@@ -119,6 +119,11 @@ namespace LLMDesktopAssistant.Tools
 		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.PolicyBased;
 
 		/// <summary>
+		/// Gets the list of tools that was overriden during deduplication by name.
+		/// </summary>
+		public ImmutableList<ToolInfo> Overrides { get; init; } = [];
+
+		/// <summary>
 		/// Creates a new instance of the <see cref="ToolInfo"/> class with the specified executor and initialization information.
 		/// </summary>
 		/// <param name="executor">The delegate representing the executor function for the tool.</param>

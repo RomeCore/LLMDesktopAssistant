@@ -11,6 +11,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 	{
 		public IEnumerable<string> LocateSkillFiles()
 		{
+			// 1. Skill directories
+			List<string> potentialSkillDirectories = [];
+
+			potentialSkillDirectories.Add(Directories.Skills);
+			potentialSkillDirectories.AddRange(chat.Settings.Skills.AdditionalSkillDirectories);
+
 			string[] projectPaths;
 			if (chat.Settings.Skills.FetchFromAllWorkingDirectories)
 				projectPaths = chat.Settings.Environment.WorkingDirectories
@@ -33,10 +39,17 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				".codex/skills",
 				".cursor/skills"
 			];
+
+			var sharedRootFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+			foreach (string sharedCheckPath in sharedCheckPaths)
+			{
+				var potentialSkillDirectory = Path.Combine(sharedRootFolder, sharedCheckPath);
+				potentialSkillDirectories.Add(potentialSkillDirectory);
+			}
+
 			List<string> projectCheckPaths = [
 				$"{Directories.WorkingHome}/skills"
 			];
-			List<string> potentialSkillDirectories = [];
 			foreach (string projectPath in projectPaths)
 			{
 				foreach (string checkPath in projectCheckPaths.Concat(sharedCheckPaths))
@@ -45,17 +58,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					potentialSkillDirectories.Add(potentialSkillDirectory);
 				}
 			}
-			var sharedRootFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-			foreach (string sharedCheckPath in sharedCheckPaths)
-			{
-				var potentialSkillDirectory = Path.Combine(sharedRootFolder, sharedCheckPath);
-				potentialSkillDirectories.Add(potentialSkillDirectory);
-			}
 
-			potentialSkillDirectories.Add(Directories.Skills);
-			potentialSkillDirectories.AddRange(chat.Settings.Skills.AdditionalSkillDirectories);
+			// 2. Skill files
 
 			List<string> skillFiles = [];
+
+			skillFiles.AddRange(chat.Settings.Skills.AdditionalSkillFiles);
 
 			foreach (string potentialSkillDirectory in potentialSkillDirectories)
 			{
@@ -69,8 +77,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					skillFiles.Add(Path.Combine(subdirectory, "SKILL.mdx"));
 				}
 			}
-
-			skillFiles.AddRange(chat.Settings.Skills.AdditionalSkillFiles);
 
 			var comparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 			return skillFiles.Distinct(comparer).Where(File.Exists);

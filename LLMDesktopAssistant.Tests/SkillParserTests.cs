@@ -120,7 +120,7 @@ public class SkillParserTests
 			Detailed instructions go here.
 			""");
 
-		Assert.Equal("My Custom Skill", skill.Name);
+		Assert.Equal("my-custom-skill", skill.Name); // Parser slugifies skill name
 		Assert.Equal("""
 			This skill does something useful.
 			Use this skill when you need to do X.
@@ -150,7 +150,7 @@ public class SkillParserTests
 			Some other content.
 			""");
 
-		Assert.Equal("Code Review", skill.Name);
+		Assert.Equal("code-review", skill.Name);
 		Assert.Equal("""
 			Reviews pull requests for code quality.
 			Make sure to check style and tests.
@@ -207,7 +207,7 @@ public class SkillParserTests
 			Description from paragraph.
 			""");
 
-		Assert.Equal("My Skill", skill.Name);
+		Assert.Equal("my-skill", skill.Name);
 		Assert.Equal("Description from paragraph.", skill.Description);
 	}
 
