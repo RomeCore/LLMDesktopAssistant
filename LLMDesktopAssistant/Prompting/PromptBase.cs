@@ -24,6 +24,16 @@ namespace LLMDesktopAssistant.Prompting
 			set => SetProperty(ref _name, value);
 		}
 
+		private string? _description = null;
+		/// <summary>
+		/// The description of the prompt instance.
+		/// </summary>
+		public string? Description
+		{
+			get => _description;
+			set => SetProperty(ref _description, value);
+		}
+
 		private string _category = string.Empty;
 		/// <summary>
 		/// The category or type of the prompt instance.

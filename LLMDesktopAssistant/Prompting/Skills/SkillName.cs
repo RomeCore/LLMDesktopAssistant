@@ -6,7 +6,10 @@ namespace LLMDesktopAssistant.Prompting.Skills
 	{
 		public static bool IsValidSkillName(string skillName)
 		{
+			// Length must be in range of 1-64
 			if (string.IsNullOrWhiteSpace(skillName))
+				return false;
+			if (skillName.Length > 64)
 				return false;
 
 			char p = '\0';
@@ -38,7 +41,10 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 		public static string ToValidSkillName(string skillName)
 		{
-			return skillName.Slugify().Trim().Trim('-');
+			skillName = skillName.Slugify().Trim().Trim('-');
+			if (skillName.Length > 64)
+				return skillName.Substring(0, 64);
+			return skillName;
 		}
 	}
 }

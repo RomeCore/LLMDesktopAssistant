@@ -10,5 +10,6 @@ namespace LLMDesktopAssistant.Prompting
 		Persona? GetPersona(Guid id);
 		BehaviourSlider? GetSlider(Guid id);
 		Specialization? GetSpecialization(Guid id);
+		IEnumerable<SkillPrompt> GetSkills();
 	}
 }

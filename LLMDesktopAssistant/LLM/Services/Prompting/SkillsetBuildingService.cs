@@ -1,5 +1,6 @@
 ﻿using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.Skills;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
@@ -8,13 +9,32 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 	public class SkillsetBuildingService(
 		Chat chat,
 		ISkillLocator skillLocator,
-		ISkillLoader skillLoader
+		ISkillLoader skillLoader,
+		IPromptRegistry promptRegistry
 	) : ISkillsetBuildingService
 	{
 		public IEnumerable<SkillInfo> GetAvailableSkills()
 		{
 			var skillFiles = skillLocator.LocateSkillFiles();
-			var skills = skillLoader.Load(skillFiles);
+
+			List<SkillInfo> skills = [];
+
+			var promptSkills = promptRegistry.GetSkills().ToList();
+			if (promptSkills.Count > 0)
+			{
+
+
+				skills.AddRange(promptSkills.Select(s =>
+				{
+					return new SkillInfo
+					{
+						Name = s.Name,
+						Description = s.Description ?? string.Empty,
+						Body = s.Template.Template.Render()
+					};
+				}));
+			}
+			skills.AddRange(skillLoader.Load(skillFiles));
 
 			return skills
 				.GroupBy(s => s.Name)

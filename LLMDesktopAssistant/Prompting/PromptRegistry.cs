@@ -37,6 +37,11 @@ namespace LLMDesktopAssistant.Prompting
 		public ImmutableDictionary<(Guid, LanguageCode), BehaviourSlider> AllBuiltinSliders { get; }
 
 		/// <summary>
+		/// Gets all built-in skills.
+		/// </summary>
+		public ImmutableDictionary<(string, LanguageCode), SkillPrompt> AllBuiltinSkills { get; }
+
+		/// <summary>
 		/// Gets target built-in prompt components mapped by their unique identifier.
 		/// </summary>
 		public ImmutableDictionary<Guid, PromptComponent> BuiltinComponents { get; private set; } = null!;
@@ -55,6 +60,11 @@ namespace LLMDesktopAssistant.Prompting
 		/// Gets target built-in behaviour sliders mapped by their unique identifier.
 		/// </summary>
 		public ImmutableDictionary<Guid, BehaviourSlider> BuiltinSliders { get; private set; } = null!;
+
+		/// <summary>
+		/// Gets target built-in skills mapped by their unique identifier.
+		/// </summary>
+		public ImmutableDictionary<string, SkillPrompt> BuiltinSkills { get; private set; } = null!;
 
 		public PromptRegistry()
 		{
@@ -81,6 +91,7 @@ namespace LLMDesktopAssistant.Prompting
 			var allPersonasBuilder = ImmutableDictionary.CreateBuilder<(Guid, LanguageCode), Persona>();
 			var allSpecializationsBuilder = ImmutableDictionary.CreateBuilder<(Guid, LanguageCode), Specialization>();
 			var allSlidersBuilder = ImmutableDictionary.CreateBuilder<(Guid, LanguageCode), BehaviourSlider>();
+			var allSkillsBuilder = ImmutableDictionary.CreateBuilder<(string, LanguageCode), SkillPrompt>();
 
 			foreach (var template in SharedLibrary)
 			{
@@ -89,17 +100,24 @@ namespace LLMDesktopAssistant.Prompting
 
 				// Log.Debug("Loading template: {Id}", id);
 
-				if (type == "component" || type == "persona" || type == "specialization" || type == "slider")
+				if (type == "component" || type == "persona" || type == "specialization" || type == "slider" || type == "skill")
 				{
 					if (template is not ITextTemplate textTemplate)
 						throw new InvalidDataException($"Invalid template: {id} is not a text template.");
 
+					Guid guid;
 					var guidStr = template.Metadata.TryGetAdditional<string>("guid")
-						?? throw new InvalidDataException($"Invalid template: {id} missing 'guid' metadata.");
+						?? (type != "skill" ?
+							throw new InvalidDataException($"Invalid template: {id} missing 'guid' metadata.") :
+							string.Empty);
 					var lang = template.Metadata.TryGet<LanguageMetadata>()
 						?? throw new InvalidDataException($"Invalid template: {id} missing 'lang' metadata.");
 					var title = template.Metadata.TryGetAdditional<string>("title");
-					var guid = Guid.Parse(guidStr);
+					var description = template.Metadata.TryGetAdditional<string>("description");
+					if (string.IsNullOrEmpty(guidStr))
+						guid = Guid.Empty;
+					else
+						guid = Guid.Parse(guidStr);
 					var category = template.Metadata.TryGetAdditional<string>("category") ?? string.Empty;
 					var localizedForRaw = template.Metadata.TryGetAdditional<string>("localized_for");
 					LanguageCode? localizedFor = localizedForRaw != null ? new LanguageCode(localizedForRaw) : null;
@@ -113,6 +131,7 @@ namespace LLMDesktopAssistant.Prompting
 							{
 								Id = guid,
 								Name = title ?? id,
+								Description = description,
 								Category = category,
 								LocalizedFor = localizedFor,
 								Template = new SerializableTextTemplate(textTemplate)
@@ -126,6 +145,7 @@ namespace LLMDesktopAssistant.Prompting
 							{
 								Id = guid,
 								Name = title ?? id,
+								Description = description,
 								Category = category,
 								LocalizedFor = localizedFor,
 								Template = new SerializableTextTemplate(textTemplate)
@@ -139,6 +159,7 @@ namespace LLMDesktopAssistant.Prompting
 							{
 								Id = guid,
 								Name = title ?? id,
+								Description = description,
 								Category = category,
 								LocalizedFor = localizedFor,
 								Template = new SerializableTextTemplate(textTemplate)
@@ -173,12 +194,27 @@ namespace LLMDesktopAssistant.Prompting
 							{
 								Id = guid,
 								Name = title ?? id,
+								Description = description,
 								Category = category,
 								LocalizedFor = localizedFor,
 								Titles = hints.ToImmutable(),
 								MinimumValue = sliderMin,
 								MaximumValue = sliderMax,
 								DefaultValue = sliderDefault,
+								Template = new SerializableTextTemplate(textTemplate)
+							};
+							break;
+
+						case "skill":
+							if (allSkillsBuilder.ContainsKey((title ?? id, lang.LanguageCode)))
+								Log.Warning("PromptRegistry: Duplicate skill found: {Id}, {Lang}", guid, lang.LanguageCode);
+							allSkillsBuilder[(title ?? id, lang.LanguageCode)] = new SkillPrompt
+							{
+								Id = guid,
+								Name = title ?? id,
+								Description = description,
+								Category = category,
+								LocalizedFor = localizedFor,
 								Template = new SerializableTextTemplate(textTemplate)
 							};
 							break;
@@ -242,10 +278,24 @@ namespace LLMDesktopAssistant.Prompting
 				slider.Template = sliderToExtend.Template;
 			}
 
+			foreach (var ((guid, lang), skill) in allSkillsBuilder)
+			{
+				if (!skill.LocalizedFor.HasValue) continue;
+
+				if (!allSkillsBuilder.TryGetValue((guid, skill.LocalizedFor.Value), out var skillToExtend))
+				{
+					Log.Error("PromptRegistry: Cannot find skill to extend: {Id}, {Lang}", guid, skill.LocalizedFor.Value);
+					continue;
+				}
+
+				skill.Template = skillToExtend.Template;
+			}
+
 			AllBuiltinComponents = allComponentsBuilder.ToImmutable();
 			AllBuiltinPersonas = allPersonasBuilder.ToImmutable();
 			AllBuiltinSpecializations = allSpecializationsBuilder.ToImmutable();
 			AllBuiltinSliders = allSlidersBuilder.ToImmutable();
+			AllBuiltinSkills = allSkillsBuilder.ToImmutable();
 
 			RefreshTargetBuiltinPrompts();
 		}
@@ -256,6 +306,7 @@ namespace LLMDesktopAssistant.Prompting
 			var personasBuilder = ImmutableDictionary.CreateBuilder<Guid, Persona>();
 			var specializationsBuilder = ImmutableDictionary.CreateBuilder<Guid, Specialization>();
 			var slidersBuilder = ImmutableDictionary.CreateBuilder<Guid, BehaviourSlider>();
+			var skillsBuilder = ImmutableDictionary.CreateBuilder<string, SkillPrompt>();
 
 			foreach (var ((guid, lang), component) in AllBuiltinComponents)
 				if (ShouldAdd(componentsBuilder, guid, lang))
@@ -273,16 +324,21 @@ namespace LLMDesktopAssistant.Prompting
 				if (ShouldAdd(slidersBuilder, guid, lang))
 					slidersBuilder[guid] = slider;
 
+			foreach (var ((guid, lang), skill) in AllBuiltinSkills)
+				if (ShouldAdd(skillsBuilder, guid, lang))
+					skillsBuilder[guid] = skill;
+
 			BuiltinComponents = componentsBuilder.ToImmutable();
 			BuiltinPersonas = personasBuilder.ToImmutable();
 			BuiltinSpecializations = specializationsBuilder.ToImmutable();
 			BuiltinSliders = slidersBuilder.ToImmutable();
+			BuiltinSkills = skillsBuilder.ToImmutable();
 		}
 
-		private bool ShouldAdd<T>(ImmutableDictionary<Guid, T>.Builder builder,
-			Guid guid, LanguageCode lang)
+		private bool ShouldAdd<T, K>(ImmutableDictionary<K, T>.Builder builder,
+			K key, LanguageCode lang) where K : notnull
 		{
-			if (!builder.ContainsKey(guid))
+			if (!builder.ContainsKey(key))
 				return true;
 
 			if (lang == new LanguageCode(System.Globalization.CultureInfo.CurrentCulture))
@@ -336,6 +392,11 @@ namespace LLMDesktopAssistant.Prompting
 				return slider;
 
 			return null;
+		}
+
+		public IEnumerable<SkillPrompt> GetSkills()
+		{
+			return BuiltinSkills.Values;
 		}
 	}
 }
