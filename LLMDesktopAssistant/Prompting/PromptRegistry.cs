@@ -112,7 +112,7 @@ namespace LLMDesktopAssistant.Prompting
 							allComponentsBuilder[(guid, lang.LanguageCode)] = new PromptComponent
 							{
 								Id = guid,
-								Name = title ?? LocalizationManager.LocalizeStatic("promptcomponent-" + id),
+								Name = title ?? id,
 								Category = category,
 								LocalizedFor = localizedFor,
 								Template = new SerializableTextTemplate(textTemplate)
@@ -125,7 +125,7 @@ namespace LLMDesktopAssistant.Prompting
 							allPersonasBuilder[(guid, lang.LanguageCode)] = new Persona
 							{
 								Id = guid,
-								Name = title ?? LocalizationManager.LocalizeStatic("persona-" + id),
+								Name = title ?? id,
 								Category = category,
 								LocalizedFor = localizedFor,
 								Template = new SerializableTextTemplate(textTemplate)
@@ -138,7 +138,7 @@ namespace LLMDesktopAssistant.Prompting
 							allSpecializationsBuilder[(guid, lang.LanguageCode)] = new Specialization
 							{
 								Id = guid,
-								Name = title ?? LocalizationManager.LocalizeStatic("specialization-" + id),
+								Name = title ?? id,
 								Category = category,
 								LocalizedFor = localizedFor,
 								Template = new SerializableTextTemplate(textTemplate)
@@ -172,7 +172,7 @@ namespace LLMDesktopAssistant.Prompting
 							allSlidersBuilder[(guid, lang.LanguageCode)] = new BehaviourSlider
 							{
 								Id = guid,
-								Name = title ?? LocalizationManager.LocalizeStatic("behaviourslider-" + id),
+								Name = title ?? id,
 								Category = category,
 								LocalizedFor = localizedFor,
 								Titles = hints.ToImmutable(),

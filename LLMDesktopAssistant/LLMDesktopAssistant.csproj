@@ -20,6 +20,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Prompting\Resources\ru-RU\components.llt" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<AvaloniaResource Include="Assets\Fonts\Inter.ttf" />
 		<AvaloniaResource Include="Assets\Fonts\JetBrains Mono.ttf" />
 		<AvaloniaResource Include="Assets\Fonts\Segoe Fluent Icons.ttf" />
@@ -29,6 +33,7 @@
 		<EmbeddedResource Include="Prompting\Resources\components.llt" />
 		<EmbeddedResource Include="Prompting\Resources\naming.llt" />
 		<EmbeddedResource Include="Prompting\Resources\router.llt" />
+		<EmbeddedResource Include="Prompting\Resources\ru-RU\components.llt" />
 		<EmbeddedResource Include="Prompting\Resources\ru-RU\sliders.llt" />
 		<EmbeddedResource Include="Prompting\Resources\sliders.llt" />
 		<EmbeddedResource Include="Prompting\Resources\summarizer.llt" />

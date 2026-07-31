@@ -3238,15 +3238,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Niggalink AI.
-        /// </summary>
-        public static string persona_niggalink_ai {
-            get {
-                return ResourceManager.GetString("persona-niggalink_ai", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Personality.
         /// </summary>
         public static string personality_hint {
@@ -3657,78 +3648,6 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string prompt_user_nickname_placeholder {
             get {
                 return ResourceManager.GetString("prompt_user_nickname_placeholder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Application Hint.
-        /// </summary>
-        public static string promptcomponent_app_hint {
-            get {
-                return ResourceManager.GetString("promptcomponent-app_hint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Git Hints.
-        /// </summary>
-        public static string promptcomponent_git_hints {
-            get {
-                return ResourceManager.GetString("promptcomponent-git_hints", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Markdown Tips.
-        /// </summary>
-        public static string promptcomponent_markdown_tips {
-            get {
-                return ResourceManager.GetString("promptcomponent-markdown_tips", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Multiple Tools.
-        /// </summary>
-        public static string promptcomponent_multiple_tools {
-            get {
-                return ResourceManager.GetString("promptcomponent-multiple_tools", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на No restrictions.
-        /// </summary>
-        public static string promptcomponent_no_restrictions {
-            get {
-                return ResourceManager.GetString("promptcomponent-no_restrictions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Quick actions.
-        /// </summary>
-        public static string promptcomponent_quick_actions {
-            get {
-                return ResourceManager.GetString("promptcomponent-quick_actions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Quick explanations.
-        /// </summary>
-        public static string promptcomponent_quick_explanations {
-            get {
-                return ResourceManager.GetString("promptcomponent-quick_explanations", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Uncensored.
-        /// </summary>
-        public static string promptcomponent_uncensored {
-            get {
-                return ResourceManager.GetString("promptcomponent-uncensored", resourceCulture);
             }
         }
         

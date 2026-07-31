@@ -567,18 +567,6 @@
   <data name="prompt_manager_hint" xml:space="preserve">
     <value>Менеджер промптов</value>
   </data>
-  <data name="promptcomponent-markdown_tips" xml:space="preserve">
-    <value>Советы по Markdown</value>
-  </data>
-  <data name="promptcomponent-app_hint" xml:space="preserve">
-    <value>Подсказка о приложении</value>
-  </data>
-  <data name="promptcomponent-multiple_tools" xml:space="preserve">
-    <value>Несколько инструментов</value>
-  </data>
-  <data name="persona-niggalink_ai" xml:space="preserve">
-    <value>Niggalink AI</value>
-  </data>
   <data name="add" xml:space="preserve">
     <value>Добавить</value>
   </data>
@@ -590,15 +578,6 @@
   </data>
   <data name="prompt_manager_header" xml:space="preserve">
     <value>Менеджер промптов</value>
-  </data>
-  <data name="promptcomponent-uncensored" xml:space="preserve">
-    <value>Без цензуры</value>
-  </data>
-  <data name="promptcomponent-no_restrictions" xml:space="preserve">
-    <value>Без ограничений</value>
-  </data>
-  <data name="promptcomponent-git_hints" xml:space="preserve">
-    <value>Советы по использованию Git</value>
   </data>
   <data name="fs-changes_modified" xml:space="preserve">
     <value>изменён</value>
@@ -1607,12 +1586,6 @@
   </data>
   <data name="execute_using_repl" xml:space="preserve">
     <value>Выполнить при помощи REPL</value>
-  </data>
-  <data name="promptcomponent-quick_actions" xml:space="preserve">
-    <value>Быстрые действия</value>
-  </data>
-  <data name="promptcomponent-quick_explanations" xml:space="preserve">
-    <value>Быстрые определения</value>
   </data>
   <data name="send_quick_action" xml:space="preserve">
     <value>Отправить "{0}"</value>

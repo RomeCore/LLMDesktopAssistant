@@ -567,18 +567,6 @@
   <data name="prompt_manager_hint" xml:space="preserve">
     <value>Prompt manager</value>
   </data>
-  <data name="promptcomponent-markdown_tips" xml:space="preserve">
-    <value>Markdown Tips</value>
-  </data>
-  <data name="promptcomponent-app_hint" xml:space="preserve">
-    <value>Application Hint</value>
-  </data>
-  <data name="promptcomponent-multiple_tools" xml:space="preserve">
-    <value>Multiple Tools</value>
-  </data>
-  <data name="persona-niggalink_ai" xml:space="preserve">
-    <value>Niggalink AI</value>
-  </data>
   <data name="add" xml:space="preserve">
     <value>Add</value>
   </data>
@@ -590,15 +578,6 @@
   </data>
   <data name="prompt_manager_header" xml:space="preserve">
     <value>Prompt manager</value>
-  </data>
-  <data name="promptcomponent-uncensored" xml:space="preserve">
-    <value>Uncensored</value>
-  </data>
-  <data name="promptcomponent-no_restrictions" xml:space="preserve">
-    <value>No restrictions</value>
-  </data>
-  <data name="promptcomponent-git_hints" xml:space="preserve">
-    <value>Git Hints</value>
   </data>
   <data name="fs-changes_modified" xml:space="preserve">
     <value>modified</value>
@@ -1607,12 +1586,6 @@
   </data>
   <data name="execute_using_repl" xml:space="preserve">
     <value>Execute using REPL</value>
-  </data>
-  <data name="promptcomponent-quick_actions" xml:space="preserve">
-    <value>Quick actions</value>
-  </data>
-  <data name="promptcomponent-quick_explanations" xml:space="preserve">
-    <value>Quick explanations</value>
   </data>
   <data name="send_quick_action" xml:space="preserve">
     <value>Send "{0}"</value>
