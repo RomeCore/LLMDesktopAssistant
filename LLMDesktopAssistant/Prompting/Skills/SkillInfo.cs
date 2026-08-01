@@ -18,9 +18,9 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		public required string Description { get; init; }
 
 		/// <summary>
-		/// The SKILL.md content, excluding the YAML frontmatter.
+		/// The SKILL.md content getter, excluding the YAML frontmatter.
 		/// </summary>
-		public required string Body { get; set; }
+		public required Func<string> BodyGetter { get; init; }
 
 		/// <summary>
 		/// The absolute path to the SKILL.md file, if applicable. Null otherwise.

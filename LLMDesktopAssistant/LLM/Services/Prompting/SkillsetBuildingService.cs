@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{
 						Name = s.Name,
 						Description = s.Description ?? string.Empty,
-						Body = s.Template.Template.Render(context, templateFunctions)
+						BodyGetter = new(() => s.Template.Template.Render(context, templateFunctions))
 					};
 				}));
 			}
@@ -65,7 +65,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{
 						Name = last!.Name,
 						Description = last.Description,
-						Body = last.Body,
+						BodyGetter = last.BodyGetter,
 						Path = last.Path,
 						HomeDirectory = last.HomeDirectory,
 						Metadata = last.Metadata,
@@ -107,7 +107,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 							InjectionMode = change.InjectionMode ?? skillInfo.InjectionMode,
 							Name = skillInfo.Name,
 							Description = skillInfo.Description,
-							Body = skillInfo.Body,
+							BodyGetter = skillInfo.BodyGetter,
 							Path = skillInfo.Path,
 							HomeDirectory = skillInfo.HomeDirectory,
 							Metadata = skillInfo.Metadata,

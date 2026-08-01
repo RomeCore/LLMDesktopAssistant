@@ -1,4 +1,3 @@
-using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
@@ -396,7 +395,8 @@ namespace LLMDesktopAssistant.Prompting
 
 		public IEnumerable<SkillPrompt> GetSkills()
 		{
-			return BuiltinSkills.Values;
+			var skillsConfig = SettingsManager.Get<SkillsConfiguration>();
+			return skillsConfig.Skills.Concat(BuiltinSkills.Values);
 		}
 	}
 }

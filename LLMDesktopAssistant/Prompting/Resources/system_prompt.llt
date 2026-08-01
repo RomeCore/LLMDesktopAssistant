@@ -55,8 +55,11 @@
 				<skill>
 					<name>@skill.name</name>
 					<description>@skill.description</description>
-					<location>@skill.path</location>
-					@if skill.is_body_injected
+					@if skill.path
+					{
+						<location>@skill.path</location>
+					}
+					@if skill.body
 					{
 						<body>@skill.body</body>
 					}

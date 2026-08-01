@@ -203,7 +203,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 							{
 								Name = name.Trim(),
 								Description = description.Trim(),
-								Body = body,
+								BodyGetter = new(() => body),
 								Path = fullpath,
 								HomeDirectory = homeDir,
 								Metadata = metadataBuilder.ToImmutableDictionary(),
@@ -225,7 +225,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 							{
 								Name = name.Trim(),
 								Description = description.Trim(),
-								Body = body,
+								BodyGetter = new(() => body),
 								Path = fullpath,
 								HomeDirectory = homeDir,
 								Diagnostic = new SkillDiagnostic
@@ -242,7 +242,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 					{
 						Name = name.Trim(),
 						Description = description.Trim(),
-						Body = body,
+						BodyGetter = new(() => body),
 						Path = fullpath,
 						HomeDirectory = homeDir,
 						Diagnostic = new SkillDiagnostic

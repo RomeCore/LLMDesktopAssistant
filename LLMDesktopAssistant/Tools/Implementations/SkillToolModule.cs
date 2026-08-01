@@ -59,8 +59,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				StatusIcon = MaterialIconKind.Cards,
 				StatusTitle = $"*{name}*",
-				ResultContent = string.IsNullOrEmpty(foundSkill.HomeDirectory) ? foundSkill.Body : $"""
-					{foundSkill.Body}
+				ResultContent = string.IsNullOrEmpty(foundSkill.HomeDirectory) ? foundSkill.BodyGetter() : $"""
+					{foundSkill.BodyGetter()}
 
 					---
 

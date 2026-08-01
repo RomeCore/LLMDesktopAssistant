@@ -177,9 +177,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			{
 				name = s.Name,
 				description = s.Description,
-				body = s.Body,
-				is_body_injected = s.InjectionMode is SkillInjectionMode.Full,
-				path = s.Path
+				path = s.Path,
+				body = s.InjectionMode is SkillInjectionMode.Full ? s.BodyGetter() : null
 			});
 
 			return template!.Render(generalContext, functions);

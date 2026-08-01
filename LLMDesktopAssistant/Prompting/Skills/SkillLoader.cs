@@ -1,5 +1,4 @@
 ﻿using LLMDesktopAssistant.Services;
-using Serilog;
 
 namespace LLMDesktopAssistant.Prompting.Skills
 {
@@ -83,7 +82,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 			{
 				Name = name,
 				Description = string.Empty,
-				Body = string.Empty,
+				BodyGetter = new(() => string.Empty),
 				Diagnostic = diagnostic
 			};
 		}
