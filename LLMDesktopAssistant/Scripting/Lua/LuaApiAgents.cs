@@ -4,6 +4,7 @@ using AsyncLua.Values;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Tools;
@@ -89,6 +90,33 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			        }
 
 			      Mixed example: { "web-search", { name = "calc", ... } }
+
+			    - skills: table (optional) — Mixed array of skill names (strings) and/or
+			      ad-hoc skill definitions (tables). If omitted, no skills are available.
+
+			      String entries reference registered skills by name:
+			        { "webreaper", "skill-creator" }
+
+			      Table entries define ad-hoc skills:
+			        {
+			          name = "my_skill",
+			          description = "Does something useful.",
+			          path = "C:/skills/my_skill/SKILL.md", -- (optional) path to the skill file
+			          home_directory = "C:/skills/my_skill", -- (optional) home directory; defaults to the directory of "path"
+			          body = "Skill instructions in Markdown..." -- or a Lua function
+			        }
+
+			      Ad-hoc skill fields:
+			        - name: string (required) — skill name
+			        - description: string (required) — description shown to the model
+			        - path: string (optional) — path to the skill file
+			        - home_directory: string (optional) — home directory; if omitted
+			          and "path" is set, defaults to the path's directory
+			        - body: string or function (required) — the skill body: a string
+			          is returned as-is; a Lua function is invoked on demand to produce
+			          the body (can be async).
+
+			      Mixed example: { "webreaper", { name = "my_skill", ... } }
 
 			  RETURNS:
 			    - If a single property table is passed: table — array of response messages
@@ -247,6 +275,23 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  })
 			  print(table.last(r).content)  -- "123 * 456 = 56088"
 
+			  -- With ad-hoc skill
+			  local r = await dass.agents.execute({
+			    task_title = "Skill example",
+			    messages = {
+			      { role = "system", content = "Use the skill to analyze code." },
+			      { role = "user", content = "What issues does this code have?" }
+			    },
+			    skills = {
+			      {
+			        name = "code-analyzer",
+			        description = "Analyzes C# code for issues.",
+			        body = "You are a code analyzer. Focus on correctness, performance and style."
+			      }
+			    }
+			  })
+			  print(table.last(r).content)
+
 			  -- Batch execution: run multiple agents concurrently
 			  local results = await dass.agents.execute(
 			    {
@@ -293,6 +338,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    and callback (function). The callback receives a table of arguments
 			    matching the schema and should return a string. Callbacks can use the full
 			    Lua API (fs, web, dass.*, etc.). Callbacks can be async.
+			  - SKILLS: pass string entries (registered skill names) and/or table entries
+			    (ad-hoc skills) in the "skills" array. Ad-hoc skills require: name (string),
+			    description (string), and body (string or function). "path" and
+			    "home_directory" are optional; home_directory defaults to the directory
+			    of "path". A function body is invoked on demand to produce the skill body
+			    and can be async.
 			  - Image attachments: use `image.load(path)` or `image.create(width, height)`
 			    to create attachment objects.
 			  - Returns the full conversation history produced by the agent AFTER the input
@@ -313,16 +364,18 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private readonly IAgentTaskExecutor _agentTaskExecutor;
 		private readonly IModelManager _modelManager;
 		private readonly IAgentManagementService _agentManager;
+		private readonly ISkillsetBuildingService _skillsetBuilder;
 		private readonly IToolsetCacheService _toolsetCache;
 		private LuaService _luaService = null!;
 
 		public LuaApiAgents(Chat chat, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
-			IAgentManagementService agentManager, IToolsetCacheService toolsetCache)
+			IAgentManagementService agentManager, ISkillsetBuildingService skillsetBuilder, IToolsetCacheService toolsetCache)
 		{
 			_chat = chat;
 			_agentTaskExecutor = agentTaskExecutor;
 			_modelManager = modelManager;
 			_agentManager = agentManager;
+			_skillsetBuilder = skillsetBuilder;
 			_toolsetCache = toolsetCache;
 		}
 
@@ -443,11 +496,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				throw new Exception("last message must be an user message.");
 
 			// Resolve model name and LLM.
-			var modelNameParam = parameters.Get("model");
-			var modelName = modelNameParam.TryToString();
-			if (modelNameParam is LuaNil || string.IsNullOrEmpty(modelName))
+			var modelName = (parameters.Get("model") as LuaString)?.Value;
+			if (string.IsNullOrEmpty(modelName))
 				modelName = _chat.Settings.Models.AgenticToolsModel;
-
 			if (string.IsNullOrEmpty(modelName))
 				throw new Exception("agentic model is not selected.");
 
@@ -477,21 +528,75 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					}
 					else if (toolValue is LuaTable toolValueTable)
 					{
-						var name = toolValueTable.Get("name").ToString();
+						var name = (toolValueTable.Get("name") as LuaString)?.Value;
 						var displayName = (toolValueTable.Get("display_name") as LuaString)?.Value;
-						var desc = toolValueTable.Get("description").ToString();
+						var desc = (toolValueTable.Get("description") as LuaString)?.Value;
 						var schema = StructuredLuaConverter.LuaValueToJsonNode(toolValueTable.Get("parameters"));
 						var callback = toolValueTable.Get("callback");
 
 						if (string.IsNullOrEmpty(name))
 							throw new Exception("callback tool definition: 'name' is required.");
+						if (string.IsNullOrEmpty(desc))
+							throw new Exception($"callback tool definition '{name}': 'description' is required.");
 						if (callback is not LuaFunction func)
-							throw new Exception($"callback tool '{name}': 'callback' must be a function.");
+							throw new Exception($"callback tool definition '{name}': 'callback' must be a function.");
 
 						tools.Add(new LuaAdHocAgentTool(name, displayName ?? name, desc, schema as JsonObject ?? [], ctx, func)
 						{
 							ApprovalLevel = ToolApprovalLevel.PolicyAutoApproveUnlessDisallowed
 						});
+					}
+				}
+			}
+
+			var skills = new List<AgentSkill>();
+			var skillsOption = parameters.Get("skills");
+			if (skillsOption is LuaTable skillsOptionTable)
+			{
+				var skillMap = skillsOptionTable.Values.Any(v => v is LuaString) ?
+					_skillsetBuilder.GetAvailableSkills().ToImmutableDictionary(s => s.Name) :
+					null;
+
+				foreach (var skillValue in skillsOptionTable.Values)
+				{
+					if (skillValue is LuaString skillValueString)
+					{
+						if (!skillMap!.TryGetValue(skillValueString.Value, out var skill))
+							throw new Exception($"skill '{skillValueString.Value}' is not available.");
+
+						skills.Add(new ChatAgentSkill { ChatSkillInfo = skill });
+					}
+					else if (skillValue is LuaTable skillValueTable)
+					{
+						var name = (skillValueTable.Get("name") as LuaString)?.Value;
+						var desc = (skillValueTable.Get("description") as LuaString)?.Value;
+						var path = (skillValueTable.Get("path") as LuaString)?.Value;
+						var homeDir = (skillValueTable.Get("home_directory") as LuaString)?.Value;
+						if (path is not null && homeDir is null)
+							homeDir = Path.GetDirectoryName(path);
+						var body = skillValueTable.Get("body");
+
+						if (string.IsNullOrEmpty(name))
+							throw new Exception("ad-hoc skill definition: 'name' is required.");
+						if (string.IsNullOrEmpty(desc))
+							throw new Exception($"ad-hoc skill definition '{name}': 'description' is required.");
+						if (body is LuaNil)
+							throw new Exception($"ad-hoc skill definition '{name}': 'body' is required.");
+
+						if (body is LuaString bodyStr)
+						{
+							if (string.IsNullOrEmpty(bodyStr.Value))
+								throw new Exception($"ad-hoc skill definition '{name}': 'body' cannot be an empty string.");
+							skills.Add(new LuaAdHocAgentSkill(name, desc, path, homeDir, bodyStr.Value));
+						}
+						else if (body is LuaFunction bodyFunc)
+						{
+							skills.Add(new LuaAdHocAgentSkill(name, desc, path, homeDir, ctx, bodyFunc));
+						}
+						else
+						{
+							throw new Exception($"ad-hoc skill definition '{name}': 'body' must be a string or function.");
+						}
 					}
 				}
 			}
@@ -517,8 +622,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					TriggeredChat = tec?.Chat,
 					TriggeredMessage = tec?.Message,
 					Model = llm,
-					InitialMessages = [..messages],
-					Tools = [..tools],
+					InitialMessages = [.. messages],
+					Tools = [.. tools],
+					Skills = [.. skills],
 					AutoApproveBehaviours = autoApproveBehaviours,
 					DisallowedBehaviours = disallowedBehaviours
 				}, ctx.CancellationToken);

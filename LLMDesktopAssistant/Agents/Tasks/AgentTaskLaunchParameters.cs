@@ -60,6 +60,11 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public ImmutableList<AgentTool> Tools { get; init; } = [];
 
 		/// <summary>
+		/// The list of skills available to the agent during the task.
+		/// </summary>
+		public ImmutableList<AgentSkill> Skills { get; init; } = [];
+
+		/// <summary>
 		/// The behaviour of tools that are automatically approved.
 		/// </summary>
 		public ToolBehaviour AutoApproveBehaviours { get; init; }

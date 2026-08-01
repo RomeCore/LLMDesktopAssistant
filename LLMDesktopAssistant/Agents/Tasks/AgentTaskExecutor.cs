@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Providers;
@@ -58,16 +59,52 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCt)
 			};
 
+			var model = parameters.Model ?? _modelManager.GetModel(parameters.ModelName!);
+
+			var agentTools = parameters.Tools;
+			string? additionalPrompt = null;
+			if (parameters.Skills.Count > 0)
+			{
+				agentTools = agentTools.RemoveAll(t => t.Name == "skill-load");
+				agentTools = agentTools.Add(new SkillLoadTool
+				{
+					Skills = parameters.Skills.ToImmutableDictionary(s => s.Name),
+					ApprovalLevel = ToolApprovalLevel.AlwaysApprove
+				});
+
+				var sb = new StringBuilder();
+				foreach (var skill in parameters.Skills)
+				{
+					sb.AppendLine("\t<skill>");
+					sb.AppendLine($"\t\t<name>{skill.Name}</name>");
+					sb.AppendLine($"\t\t<description>{skill.Description}</description>");
+					if (!string.IsNullOrEmpty(skill.Path))
+						sb.AppendLine($"\t\t<path>{skill.Path}</path>");
+					sb.AppendLine("\t</skill>");
+				}
+
+				string skillPrompt = $"""
+					<available_skills>
+						The following skills provide specialized instructions for specific tasks.
+						When a task matches a skill's description, call the `skill-load` tool
+						with the skill's name to load its full instructions.
+					{sb}
+					</available_skills>
+					""";
+
+				additionalPrompt = skillPrompt;
+			}
+			var tools = agentTools.ToImmutableDictionary(k => k.Name);
+
+			model = model.WithTools(agentTools.Select(t => new FunctionTool(t.Name, t.Description, t.ArgumentSchema,
+				(_, _) => throw new Exception("This tool is not expected to be invoked directly."))));
+
 			task.Messages.AddRange(parameters.InitialMessages);
 			var nativeMessages = new List<IMessage>();
 			foreach (var message in task.Messages)
-				nativeMessages.AddRange(ConvertMessageFromAgent(message));
-
-			var model = parameters.Model ?? _modelManager.GetModel(parameters.ModelName!);
-			model = model.WithTools(parameters.Tools.Select(t => new FunctionTool(t.Name, t.Description, t.ArgumentSchema,
-				(_, _) => throw new Exception("This tool is not expected to be invoked directly."))));
-
-			var tools = parameters.Tools.ToImmutableDictionary(k => k.Name);
+				nativeMessages.AddRange(ConvertMessageFromAgent(message, ref additionalPrompt));
+			if (additionalPrompt != null)
+				nativeMessages.Insert(0, new SystemMessage(additionalPrompt));
 
 			Task.Run(async () =>
 			{
@@ -486,11 +523,29 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			}
 		}
 
-		private static IEnumerable<IMessage> ConvertMessageFromAgent(AgentChatMessage agentMessage)
+		private static IEnumerable<IMessage> ConvertMessageFromAgent(AgentChatMessage agentMessage, ref string? additionalSysPrompt)
 		{
 			switch (agentMessage)
 			{
 				case AgentSystemMessage systemMessage:
+					if (additionalSysPrompt != null)
+					{
+						var addPrompt = additionalSysPrompt;
+						additionalSysPrompt = null;
+						if (string.IsNullOrEmpty(systemMessage.Content))
+						{
+							return [new SystemMessage(addPrompt)];
+						}
+						else
+						{
+							return [new SystemMessage($"""
+								{systemMessage.Content}
+
+								{addPrompt}
+								""")];
+						}
+					}
+
 					return [new SystemMessage(systemMessage.Content ?? string.Empty)];
 
 				case AgentUserMessage userMessage:

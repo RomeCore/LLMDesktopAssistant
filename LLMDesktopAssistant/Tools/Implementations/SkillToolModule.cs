@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
@@ -55,17 +55,19 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}.CompleteWithError();
 			}
 
+			var body = foundSkill.BodyGetter();
+
 			return new ReactiveToolResult
 			{
 				StatusIcon = MaterialIconKind.Cards,
 				StatusTitle = $"*{name}*",
-				ResultContent = string.IsNullOrEmpty(foundSkill.HomeDirectory) ? foundSkill.BodyGetter() : $"""
-					{foundSkill.BodyGetter()}
+				ResultContent = string.IsNullOrEmpty(foundSkill.HomeDirectory) ? body : $"""
+				{body}
 
-					---
+				---
 
-					**Note**: all paths in the skill are relative to skill's home path: *{foundSkill.HomeDirectory}*
-					""",
+				**Note**: all paths in the skill are relative to skill's home path: *{foundSkill.HomeDirectory}*
+				""",
 				UseMarkdown = true
 			}.CompleteWithSuccess();
 		}

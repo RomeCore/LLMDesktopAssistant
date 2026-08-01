@@ -4,6 +4,7 @@ using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
@@ -24,11 +25,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly IAgentManagementService _agentManager;
 		private readonly IAgentTaskExecutor _agentTaskExecutor;
 		private readonly IToolsetBuildingService _toolsetBuildingService;
+		private readonly ISkillsetBuildingService _skillsetBuildingService;
 		private readonly IModelManager _modelManager;
 
 		public AgenticToolModule(Chat chat, TemplateLibrary templateLibrary, WorkingDirectoryAccessService fileAccess,
 			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor,
-			IToolsetBuildingService toolsetBuildingService, IModelManager modelManager)
+			IToolsetBuildingService toolsetBuildingService, ISkillsetBuildingService skillsetBuildingService, ModelManager modelManager)
 		{
 			_chat = chat;
 			_templateLibrary = templateLibrary;
@@ -36,6 +38,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			_agentManager = agentManager;
 			_agentTaskExecutor = agentTaskExecutor;
 			_toolsetBuildingService = toolsetBuildingService;
+			_skillsetBuildingService = skillsetBuildingService;
 			_modelManager = modelManager;
 
 			AddTool(CallAgent,
@@ -63,6 +66,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Description("The system prompt to use in the agent's context")] string systemPrompt,
 			[Description("The user message to send to the agent")] string userMessage,
 			[Description("A list of tool names that can be used by agent.")] string[] allowedTools,
+			[Description("A list of skill names that can be used by agent.")] string[] allowedSkills,
 			ToolExecutionContext ctx,
 			[Description("""
 				If true - waits for end of execution and returns the contents of last message.
@@ -91,29 +95,64 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 
 			var agentDescriptor = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
-			var toolMap = _toolsetBuildingService.GetToolsForAgent(agentDescriptor).ToDictionary(t => t.Tool.Name);
-			var tools = ImmutableList.CreateBuilder<AgentTool>();
+
 			var errorSb = new StringBuilder();
 
-			foreach (var allowedTool in allowedTools.Distinct())
+			var tools = ImmutableList.CreateBuilder<AgentTool>();
+			if (allowedTools.Length > 0)
 			{
-				if (toolMap.TryGetValue(allowedTool, out var toolInfo))
+				var toolMap = _toolsetBuildingService.GetToolsForAgent(agentDescriptor).ToDictionary(t => t.Name);
+
+				int notFound = 0;
+				foreach (var allowedTool in allowedTools.Distinct())
 				{
-					tools.Add(new ChatAgentTool
+					if (toolMap.TryGetValue(allowedTool, out var toolInfo))
 					{
-						ChatToolInfo = toolInfo,
-						ApprovalLevel = toolInfo.ApprovalLevel,
-					});
+						tools.Add(new ChatAgentTool
+						{
+							ChatToolInfo = toolInfo,
+							ApprovalLevel = toolInfo.ApprovalLevel
+						});
+					}
+					else
+					{
+						notFound++;
+						errorSb.AppendLine("Tool was not found: " + allowedTool);
+					}
 				}
-				else
+
+				if (notFound > 0)
+					errorSb.Append("Valid tool names: " + string.Join(", ", toolMap.Keys));
+			}
+
+			var skills = ImmutableList.CreateBuilder<AgentSkill>();
+			if (allowedSkills.Length > 0)
+			{
+				var skillMap = _skillsetBuildingService.GetSkillsForAgent(agentDescriptor).ToDictionary(s => s.Name);
+
+				int notFound = 0;
+				foreach (var allowedSkill in allowedSkills.Distinct())
 				{
-					errorSb.AppendLine("Tool was not found: " + allowedTool);
+					if (skillMap.TryGetValue(allowedSkill, out var skillInfo))
+					{
+						skills.Add(new ChatAgentSkill
+						{
+							ChatSkillInfo = skillInfo
+						});
+					}
+					else
+					{
+						notFound++;
+						errorSb.AppendLine("Skill was not found: " + allowedSkill);
+					}
 				}
+
+				if (notFound > 0)
+					errorSb.Append("Valid skill names: " + string.Join(", ", skillMap.Keys));
 			}
 
 			if (errorSb.Length > 0)
 			{
-				errorSb.Append("Valid tool names: " + string.Join(", ", toolMap.Keys));
 				return new ReactiveToolResult
 				{
 					ResultContent = errorSb.ToString()
@@ -139,6 +178,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					TriggeredMessage = ctx.Message,
 					Model = llm,
 					Tools = tools.ToImmutableList(),
+					Skills = skills.ToImmutableList(),
 					InitialMessages = [
 						new AgentSystemMessage { Content = systemPrompt },
 						new AgentUserMessage { Content = userMessage }
