@@ -2,9 +2,10 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.Desktop.Execution
 {
 	/// <summary>
 	/// Provides methods for executing shell commands on Windows and WSL (Bash).

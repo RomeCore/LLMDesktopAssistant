@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Text;
-using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
@@ -147,7 +147,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 				{
 					result.ResultContent = viewModel.Output +
 						$"\nProcess exited with code {exitCode}. Check terminal output above for details.";
-					result.CompleteWithSuccess();
+					result.CompleteWithError();
 					return;
 				}
 			}, cancellationToken);

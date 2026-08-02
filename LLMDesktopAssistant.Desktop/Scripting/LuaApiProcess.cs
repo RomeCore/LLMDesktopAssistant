@@ -6,8 +6,10 @@ using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Scripting.Lua;
 
-namespace LLMDesktopAssistant.Scripting.Lua
+namespace LLMDesktopAssistant.Desktop.Scripting
 {
 	/// <summary>
 	/// Lua API for process execution: <c>process.*</c>.

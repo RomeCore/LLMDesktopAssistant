@@ -11,16 +11,8 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <None Remove="Execution\Python\repl_server.py" />
-	</ItemGroup>
-
   <ItemGroup>
     <AvaloniaResource Include="Assets\icon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Execution\Python\repl_server.py" />
   </ItemGroup>
 
 	<ItemGroup>

@@ -1,0 +1,53 @@
+﻿using System.Runtime.CompilerServices;
+
+namespace LLMDesktopAssistant.Desktop.Execution
+{
+	public class ProcessDescriptor : NotifyPropertyChanged
+	{
+		/// <summary>
+		/// The unique identifier for the process in the OS.
+		/// </summary>
+		public required int ProcessId { get; init; }
+
+		/// <summary>
+		/// The parameters used to launch the process.
+		/// </summary>
+		public required ProcessLaunchParameters LaunchParameters { get; init; }
+
+		/// <summary>
+		/// The cancellation token source used to kill the process.
+		/// </summary>
+		public required CancellationTokenSource CancellationTokenSource { get; init; }
+
+		/// <summary>
+		/// The task that will be completed when the process exits, returning the exit code of the process.
+		/// </summary>
+		public required Task<int> ExitCodeTask { get; init; }
+
+		/// <summary>
+		/// The terminal session associated with this process, if process ran with <see cref="ProcessLaunchParameters.RunInTerminal"/> set to true.
+		/// </summary>
+		public required ProcessTerminalSession? TerminalSession { get; init; }
+
+		/// <summary>
+		/// The output associated with this process, if process ran with <see cref="ProcessLaunchParameters.RunInTerminal"/> set to false.
+		/// </summary>
+		public required ProcessOutput? Output { get; init; }
+
+		private bool _isRunning = true;
+		/// <summary>
+		/// Indicates whether the process is currently running.
+		/// </summary>
+		public bool IsRunning
+		{
+			get => _isRunning;
+			internal set => SetProperty(ref _isRunning, value);
+		}
+
+		/// <summary>
+		/// Gets a task awaiter for the exit code of the process.
+		/// </summary>
+		/// <returns>A task awaiter that can be used to asynchronously wait for the exit code of the process.</returns>
+		public TaskAwaiter<int> GetAwaiter() => ExitCodeTask.GetAwaiter();
+	}
+}

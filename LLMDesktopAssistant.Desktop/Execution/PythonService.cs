@@ -1,8 +1,9 @@
 ﻿using System.IO;
+using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.Desktop.Execution
 {
 	[Service]
 	public class PythonService
