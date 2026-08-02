@@ -5,6 +5,7 @@ using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Utils;
@@ -83,6 +84,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ChatEnvironmentSettingsViewModel EnvironmentSettings { get; }
 		public ChatMCPSettingsViewModel McpSettings { get; }
 		public ChatToolsSettingsViewModel ToolsSettings { get; }
+		public ChatSkillsSettingsViewModel SkillsSettings { get; }
 		public ChatSummarizationSettingsViewModel SummarizationSettings { get; }
 		public ChatAgentsSettingsViewModel AgentsSettings { get; }
 		public ChatUserSettingsViewModel UserSettings { get; }
@@ -116,6 +118,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 			McpSettings = new ChatMCPSettingsViewModel(settings.Mcp, chat.Services.GetRequiredService<IMCPManagementService>());
 
 			ToolsSettings = new ChatToolsSettingsViewModel(settings.Tools);
+
+			var skillsetBuilder = chat.Services.GetRequiredService<ISkillsetBuildingService>();
+			SkillsSettings = new ChatSkillsSettingsViewModel(settings.Skills, skillsetBuilder);
 
 			AgentsSettings.AgentsChanged += OnAgentsChanged;
 
@@ -164,7 +169,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 				MaterialIconKind.Wrench,
 				ToolsSettings));
 
-			_generalSettingsCount = 8;
+			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_skills"),
+				MaterialIconKind.Cards,
+				SkillsSettings));
+
+			_generalSettingsCount = 9;
 
 			RebuildAgents();
 		}
@@ -204,6 +214,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 						new AgentToolSettingsViewModel(
 							descriptor.Tools,
 							Chat.Services.GetRequiredService<IToolsetBuildingService>())),
+
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_skills"),
+						MaterialIconKind.Cards,
+						new AgentSkillSettingsViewModel(
+							descriptor.Skills,
+							Chat.Services.GetRequiredService<ISkillsetBuildingService>())),
 				};
 
 				SettingsTree.Add(new SettingsAgentParentNode(descriptor.Info, isGlobal, agentChildren));

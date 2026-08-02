@@ -89,12 +89,48 @@ namespace LLMDesktopAssistant.Prompting.Skills
 				yield return _cache.AddOrUpdate(file,
 					file =>
 					{
-						var fileInfo = new FileInfo(file);
+						FileInfo fileInfo;
+						try
+						{
+							fileInfo = new FileInfo(file);
+						}
+						catch (Exception ex)
+						{
+							var skill = CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+							{
+								IsFatal = true,
+								Codes = SkillDiagnosticCode.FileAccessError | nameUnknownCode,
+								Exception = ex
+							});
+							return new SkillCacheEntry
+							{
+								LastWriteTime = DateTime.MinValue,
+								SkillInfo = skill
+							};
+						}
 						return CreateCacheEntry(fileInfo, file);
 					},
 					(file, existingEntry) =>
 					{
-						var fileInfo = new FileInfo(file);
+						FileInfo fileInfo;
+						try
+						{
+							fileInfo = new FileInfo(file);
+						}
+						catch (Exception ex)
+						{
+							var skill = CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+							{
+								IsFatal = true,
+								Codes = SkillDiagnosticCode.FileAccessError | nameUnknownCode,
+								Exception = ex
+							});
+							return new SkillCacheEntry
+							{
+								LastWriteTime = DateTime.MinValue,
+								SkillInfo = skill
+							};
+						}
 						if (fileInfo.LastWriteTime == existingEntry.LastWriteTime)
 						{
 							// File has not changed since last load, return cached skill info

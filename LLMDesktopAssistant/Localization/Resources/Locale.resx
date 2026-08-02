@@ -2490,4 +2490,136 @@
   <data name="skills" xml:space="preserve">
     <value>Skills</value>
   </data>
+  <data name="chat_settings_skills" xml:space="preserve">
+    <value>Skills</value>
+  </data>
+  <data name="settings-skills_select_directory" xml:space="preserve">
+    <value>Select skill directory</value>
+  </data>
+  <data name="settings-skills_select_file" xml:space="preserve">
+    <value>Select skill file</value>
+  </data>
+  <data name="skill_diagnostic_missingyaml" xml:space="preserve">
+    <value>Missing YAML</value>
+  </data>
+  <data name="skill_diagnostic_missingyaml_hint" xml:space="preserve">
+    <value>The SKILL.md file does not have a YAML frontmatter block (--- ... ---).</value>
+  </data>
+  <data name="skill_diagnostic_yamlparsingerror" xml:space="preserve">
+    <value>YAML Syntax Error</value>
+  </data>
+  <data name="skill_diagnostic_yamlparsingerror_hint" xml:space="preserve">
+    <value>The YAML frontmatter contains invalid syntax.</value>
+  </data>
+  <data name="skill_diagnostic_yamldecodingerror" xml:space="preserve">
+    <value>YAML Decode Error</value>
+  </data>
+  <data name="skill_diagnostic_yamldecodingerror_hint" xml:space="preserve">
+    <value>Failed to deserialize the YAML frontmatter into the expected structure.</value>
+  </data>
+  <data name="skill_diagnostic_namedirectorymismatch" xml:space="preserve">
+    <value>Name/Directory Mismatch</value>
+  </data>
+  <data name="skill_diagnostic_namedirectorymismatch_hint" xml:space="preserve">
+    <value>The skill name does not match the name of the directory containing SKILL.md.</value>
+  </data>
+  <data name="skill_diagnostic_nameformaterror" xml:space="preserve">
+    <value>Invalid Name Format</value>
+  </data>
+  <data name="skill_diagnostic_nameformaterror_hint" xml:space="preserve">
+    <value>The skill name contains invalid characters. Skills must use lowercase letters, digits and hyphens.</value>
+  </data>
+  <data name="skill_diagnostic_missingname" xml:space="preserve">
+    <value>Missing Name</value>
+  </data>
+  <data name="skill_diagnostic_missingname_hint" xml:space="preserve">
+    <value>The skill has no name defined in YAML frontmatter, header, or folder name.</value>
+  </data>
+  <data name="skill_diagnostic_missingyamlname" xml:space="preserve">
+    <value>Missing YAML Name</value>
+  </data>
+  <data name="skill_diagnostic_missingyamlname_hint" xml:space="preserve">
+    <value>The 'name' field is missing from the YAML frontmatter. A fallback name was used.</value>
+  </data>
+  <data name="skill_diagnostic_missingdescription" xml:space="preserve">
+    <value>Missing Description</value>
+  </data>
+  <data name="skill_diagnostic_missingdescription_hint" xml:space="preserve">
+    <value>The skill has no description. Add a description in YAML frontmatter or as the first paragraph.</value>
+  </data>
+  <data name="skill_diagnostic_missingyamldescription" xml:space="preserve">
+    <value>Missing YAML Description</value>
+  </data>
+  <data name="skill_diagnostic_missingyamldescription_hint" xml:space="preserve">
+    <value>The 'description' field is missing from the YAML frontmatter. A fallback was used.</value>
+  </data>
+  <data name="skill_diagnostic_missingfile" xml:space="preserve">
+    <value>File Missing</value>
+  </data>
+  <data name="skill_diagnostic_missingfile_hint" xml:space="preserve">
+    <value>The SKILL.md file could not be found at the expected location.</value>
+  </data>
+  <data name="skill_diagnostic_fileaccesserror" xml:space="preserve">
+    <value>File Access Error</value>
+  </data>
+  <data name="skill_diagnostic_fileaccesserror_hint" xml:space="preserve">
+    <value>Unable to read the SKILL.md file. Check file permissions.</value>
+  </data>
+  <data name="skill_diagnostic_generalparsingerror" xml:space="preserve">
+    <value>Parse Error</value>
+  </data>
+  <data name="skill_diagnostic_generalparsingerror_hint" xml:space="preserve">
+    <value>An unexpected error occurred while parsing the skill file.</value>
+  </data>
+  <data name="settings-skills_enable" xml:space="preserve">
+    <value>Enable skills</value>
+  </data>
+  <data name="settings-skills_available" xml:space="preserve">
+    <value>Available Skills</value>
+  </data>
+  <data name="settings-skills_available_hint" xml:space="preserve">
+    <value>Skills discovered in skill directories. Only enabled skills are injected into agent prompts.</value>
+  </data>
+  <data name="settings-skills_refresh" xml:space="preserve">
+    <value>Refresh skills list</value>
+  </data>
+  <data name="settings-skills_diagnostic" xml:space="preserve">
+    <value>⚠</value>
+  </data>
+  <data name="settings-skills_fetch_all" xml:space="preserve">
+    <value>Fetch from all working directories</value>
+  </data>
+  <data name="settings-skills_additional_dirs" xml:space="preserve">
+    <value>Additional Skill Directories</value>
+  </data>
+  <data name="settings-skills_additional_dirs_hint" xml:space="preserve">
+    <value>Additional directories to search for skills. Subdirectories containing SKILL.md or SKILL.mdx files will be loaded.</value>
+  </data>
+  <data name="settings-skills_additional_files" xml:space="preserve">
+    <value>Additional Skill Files</value>
+  </data>
+  <data name="settings-skills_additional_files_hint" xml:space="preserve">
+    <value>Additional individual SKILL.md or SKILL.mdx files to load.</value>
+  </data>
+  <data name="settings-skills_dir_placeholder" xml:space="preserve">
+    <value>Directory path...</value>
+  </data>
+  <data name="settings-skills_file_placeholder" xml:space="preserve">
+    <value>File path...</value>
+  </data>
+  <data name="settings-skills_skill_list" xml:space="preserve">
+    <value>Skill Overrides</value>
+  </data>
+  <data name="settings-skills_skill_list_hint" xml:space="preserve">
+    <value>Override skill settings for this agent. Disabled skills are excluded from the prompt. Toggle injection mode to include full skill body in the system prompt.</value>
+  </data>
+  <data name="settings-skills_injection_mode" xml:space="preserve">
+    <value>Injection</value>
+  </data>
+  <data name="skill_injection_mode_default" xml:space="preserve">
+    <value>Name + Description</value>
+  </data>
+  <data name="skill_injection_mode_full" xml:space="preserve">
+    <value>Full Body</value>
+  </data>
 </root>

@@ -2490,4 +2490,136 @@
   <data name="skills" xml:space="preserve">
     <value>Навыки</value>
   </data>
+  <data name="chat_settings_skills" xml:space="preserve">
+    <value>Навыки</value>
+  </data>
+  <data name="settings-skills_select_directory" xml:space="preserve">
+    <value>Выберите директорию навыка</value>
+  </data>
+  <data name="settings-skills_select_file" xml:space="preserve">
+    <value>Выберите файл навыка</value>
+  </data>
+  <data name="skill_diagnostic_missingyaml" xml:space="preserve">
+    <value>Отсутствует YAML</value>
+  </data>
+  <data name="skill_diagnostic_missingyaml_hint" xml:space="preserve">
+    <value>В файле SKILL.md нет блока YAML frontmatter (--- ... ---).</value>
+  </data>
+  <data name="skill_diagnostic_yamlparsingerror" xml:space="preserve">
+    <value>Ошибка синтаксиса YAML</value>
+  </data>
+  <data name="skill_diagnostic_yamlparsingerror_hint" xml:space="preserve">
+    <value>YAML frontmatter содержит недопустимый синтаксис.</value>
+  </data>
+  <data name="skill_diagnostic_yamldecodingerror" xml:space="preserve">
+    <value>Ошибка декодирования YAML</value>
+  </data>
+  <data name="skill_diagnostic_yamldecodingerror_hint" xml:space="preserve">
+    <value>Не удалось десериализовать YAML frontmatter в ожидаемую структуру.</value>
+  </data>
+  <data name="skill_diagnostic_namedirectorymismatch" xml:space="preserve">
+    <value>Несовпадение имени и папки</value>
+  </data>
+  <data name="skill_diagnostic_namedirectorymismatch_hint" xml:space="preserve">
+    <value>Имя навыка не совпадает с именем директории, содержащей SKILL.md.</value>
+  </data>
+  <data name="skill_diagnostic_nameformaterror" xml:space="preserve">
+    <value>Недопустимый формат имени</value>
+  </data>
+  <data name="skill_diagnostic_nameformaterror_hint" xml:space="preserve">
+    <value>Имя навыка содержит недопустимые символы. Разрешены строчные латинские буквы, цифры и дефисы.</value>
+  </data>
+  <data name="skill_diagnostic_missingname" xml:space="preserve">
+    <value>Отсутствует имя</value>
+  </data>
+  <data name="skill_diagnostic_missingname_hint" xml:space="preserve">
+    <value>У навыка нет имени ни в YAML frontmatter, ни в заголовке, ни в имени папки.</value>
+  </data>
+  <data name="skill_diagnostic_missingyamlname" xml:space="preserve">
+    <value>Отсутствует имя в YAML</value>
+  </data>
+  <data name="skill_diagnostic_missingyamlname_hint" xml:space="preserve">
+    <value>Поле 'name' отсутствует в YAML frontmatter. Использовано резервное имя.</value>
+  </data>
+  <data name="skill_diagnostic_missingdescription" xml:space="preserve">
+    <value>Отсутствует описание</value>
+  </data>
+  <data name="skill_diagnostic_missingdescription_hint" xml:space="preserve">
+    <value>У навыка нет описания. Добавьте описание в YAML frontmatter или как первый абзац.</value>
+  </data>
+  <data name="skill_diagnostic_missingyamldescription" xml:space="preserve">
+    <value>Отсутствует описание в YAML</value>
+  </data>
+  <data name="skill_diagnostic_missingyamldescription_hint" xml:space="preserve">
+    <value>Поле 'description' отсутствует в YAML frontmatter. Использовано резервное описание.</value>
+  </data>
+  <data name="skill_diagnostic_missingfile" xml:space="preserve">
+    <value>Файл отсутствует</value>
+  </data>
+  <data name="skill_diagnostic_missingfile_hint" xml:space="preserve">
+    <value>Файл SKILL.md не найден по ожидаемому пути.</value>
+  </data>
+  <data name="skill_diagnostic_fileaccesserror" xml:space="preserve">
+    <value>Ошибка доступа к файлу</value>
+  </data>
+  <data name="skill_diagnostic_fileaccesserror_hint" xml:space="preserve">
+    <value>Не удалось прочитать файл SKILL.md. Проверьте права доступа.</value>
+  </data>
+  <data name="skill_diagnostic_generalparsingerror" xml:space="preserve">
+    <value>Ошибка парсинга</value>
+  </data>
+  <data name="skill_diagnostic_generalparsingerror_hint" xml:space="preserve">
+    <value>Непредвиденная ошибка при разборе файла навыка.</value>
+  </data>
+  <data name="settings-skills_enable" xml:space="preserve">
+    <value>Включить навыки</value>
+  </data>
+  <data name="settings-skills_available" xml:space="preserve">
+    <value>Доступные навыки</value>
+  </data>
+  <data name="settings-skills_available_hint" xml:space="preserve">
+    <value>Навыки, найденные в директориях. Только включённые навыки внедряются в промпт агента.</value>
+  </data>
+  <data name="settings-skills_refresh" xml:space="preserve">
+    <value>Обновить список навыков</value>
+  </data>
+  <data name="settings-skills_diagnostic" xml:space="preserve">
+    <value>⚠</value>
+  </data>
+  <data name="settings-skills_fetch_all" xml:space="preserve">
+    <value>Искать во всех рабочих директориях</value>
+  </data>
+  <data name="settings-skills_additional_dirs" xml:space="preserve">
+    <value>Дополнительные директории навыков</value>
+  </data>
+  <data name="settings-skills_additional_dirs_hint" xml:space="preserve">
+    <value>Дополнительные директории для поиска навыков. Поддиректории с SKILL.md или SKILL.mdx будут загружены.</value>
+  </data>
+  <data name="settings-skills_additional_files" xml:space="preserve">
+    <value>Дополнительные файлы навыков</value>
+  </data>
+  <data name="settings-skills_additional_files_hint" xml:space="preserve">
+    <value>Дополнительные отдельные файлы SKILL.md или SKILL.mdx для загрузки.</value>
+  </data>
+  <data name="settings-skills_dir_placeholder" xml:space="preserve">
+    <value>Путь к директории...</value>
+  </data>
+  <data name="settings-skills_file_placeholder" xml:space="preserve">
+    <value>Путь к файлу...</value>
+  </data>
+  <data name="settings-skills_skill_list" xml:space="preserve">
+    <value>Переопределение навыков</value>
+  </data>
+  <data name="settings-skills_skill_list_hint" xml:space="preserve">
+    <value>Переопределите настройки навыков для этого агента. Отключённые навыки исключаются из промпта. Переключите режим инжекции, чтобы включить полное тело навыка в системный промпт.</value>
+  </data>
+  <data name="settings-skills_injection_mode" xml:space="preserve">
+    <value>Инжекция</value>
+  </data>
+  <data name="skill_injection_mode_default" xml:space="preserve">
+    <value>Имя + описание</value>
+  </data>
+  <data name="skill_injection_mode_full" xml:space="preserve">
+    <value>Полное тело</value>
+  </data>
 </root>

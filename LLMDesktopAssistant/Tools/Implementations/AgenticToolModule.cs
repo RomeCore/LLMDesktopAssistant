@@ -30,7 +30,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		public AgenticToolModule(Chat chat, TemplateLibrary templateLibrary, WorkingDirectoryAccessService fileAccess,
 			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor,
-			IToolsetBuildingService toolsetBuildingService, ISkillsetBuildingService skillsetBuildingService, ModelManager modelManager)
+			IToolsetBuildingService toolsetBuildingService, ISkillsetBuildingService skillsetBuildingService, IModelManager modelManager)
 		{
 			_chat = chat;
 			_templateLibrary = templateLibrary;
