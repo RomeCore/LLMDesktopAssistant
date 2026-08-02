@@ -1,4 +1,6 @@
-﻿using LLMDesktopAssistant.Services;
+﻿using System.Collections.Concurrent;
+using LLMDesktopAssistant.Services;
+using RCLargeLanguageModels;
 
 namespace LLMDesktopAssistant.Prompting.Skills
 {
@@ -7,11 +9,18 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		ISkillParser parser
 	) : ISkillLoader
 	{
+		private class SkillCacheEntry
+		{
+			public required DateTime LastWriteTime { get; init; }
+			public required SkillInfo SkillInfo { get; init; }
+		}
+
+		private readonly ConcurrentDictionary<string, SkillCacheEntry> _cache = [];
+
 		public IEnumerable<SkillInfo> Load(IEnumerable<string> files)
 		{
 			foreach (var file in files)
 			{
-				Exception? exception = null;
 				var fallbackSkillName = Path.GetFileName(Path.GetDirectoryName(file));
 				var nameUnknownCode = string.IsNullOrEmpty(fallbackSkillName)
 					? SkillDiagnosticCode.MissingName
@@ -20,6 +29,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 				if (!File.Exists(file))
 				{
+					_cache.TryRemove(file, out _);
 					yield return CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
 					{
 						IsFatal = true,
@@ -29,50 +39,69 @@ namespace LLMDesktopAssistant.Prompting.Skills
 					continue;
 				}
 
-				string? contents = null;
-				try
+				SkillCacheEntry CreateCacheEntry(FileInfo fileInfo, string file)
 				{
-					contents = File.ReadAllText(file);
-				}
-				catch (Exception ex)
-				{
-					exception = ex;
-				}
-
-				if (exception != null)
-				{
-					yield return CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+					string contents;
+					try
 					{
-						IsFatal = true,
-						Codes = SkillDiagnosticCode.FileAccessError | nameUnknownCode,
-						Exception = exception
-					});
-					continue;
-				}
-
-				SkillInfo? parsed = null;
-				try
-				{
-					parsed = parser.Parse(file, contents!);
-				}
-				catch (Exception ex)
-				{
-					exception = ex;
-				}
-
-				if (exception != null)
-				{
-					yield return CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+						contents = File.ReadAllText(file);
+					}
+					catch (Exception ex)
 					{
-						IsFatal = true,
-						Codes = SkillDiagnosticCode.GeneralParsingError | nameUnknownCode,
-						Exception = exception
-					});
-					continue;
+						var skill = CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+						{
+							IsFatal = true,
+							Codes = SkillDiagnosticCode.FileAccessError | nameUnknownCode,
+							Exception = ex
+						});
+						return new SkillCacheEntry
+						{
+							LastWriteTime = DateTime.MinValue, // File access errors may be random, pass invalid time
+							SkillInfo = skill
+						};
+					}
+
+					try
+					{
+						var skill = parser.Parse(file, contents!);
+						return new SkillCacheEntry
+						{
+							LastWriteTime = fileInfo.LastWriteTime,
+							SkillInfo = skill
+						};
+					}
+					catch (Exception ex)
+					{
+						var skill = CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+						{
+							IsFatal = true,
+							Codes = SkillDiagnosticCode.GeneralParsingError | nameUnknownCode,
+							Exception = ex
+						});
+						return new SkillCacheEntry
+						{
+							LastWriteTime = fileInfo.LastWriteTime,
+							SkillInfo = skill
+						};
+					}
 				}
 
-				if (parsed != null)
-					yield return parsed;
+				yield return _cache.AddOrUpdate(file,
+					file =>
+					{
+						var fileInfo = new FileInfo(file);
+						return CreateCacheEntry(fileInfo, file);
+					},
+					(file, existingEntry) =>
+					{
+						var fileInfo = new FileInfo(file);
+						if (fileInfo.LastWriteTime == existingEntry.LastWriteTime)
+						{
+							// File has not changed since last load, return cached skill info
+							return existingEntry;
+						}
+						return CreateCacheEntry(fileInfo, file);
+					}).SkillInfo;
 			}
 		}
 
