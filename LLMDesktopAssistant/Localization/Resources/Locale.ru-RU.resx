@@ -765,6 +765,12 @@
   <data name="prompt_custom_persona_placeholder" xml:space="preserve">
     <value>Опишите персону в деталях...</value>
   </data>
+  <data name="prompt_preview_toggle" xml:space="preserve">
+    <value>Показать/скрыть предпросмотр системного промпта</value>
+  </data>
+  <data name="prompt_preview_header" xml:space="preserve">
+    <value>Предпросмотр системного промпта</value>
+  </data>
   <data name="dice_rolled" xml:space="preserve">
     <value>Прокрутили</value>
   </data>

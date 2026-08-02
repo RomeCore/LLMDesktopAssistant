@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Settings;
@@ -158,6 +159,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public AgentPromptSettings PromptSettings { get; }
 		public PromptRegistry PromptRegistry { get; }
 
+		private readonly IChatPromptBuilder _promptBuilder;
+		private readonly ChatAgentDescriptor _agent;
+
 		public ObservableCollection<ComponentCategoryViewModel> ComponentCategories { get; } = new();
 		public ObservableCollection<PersonaItemViewModel> AvailablePersonas { get; } = new();
 		private PersonaItemViewModel? _selectedPersona;
@@ -172,6 +176,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 						PromptSettings.PersonaId = value.Persona.Id;
 					else
 						PromptSettings.PersonaId = null;
+					RegeneratePreview();
 				}
 			}
 		}
@@ -191,6 +196,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 						PromptSettings.SpecializationId = value.Specialization.Id;
 					else
 						PromptSettings.SpecializationId = null;
+					RegeneratePreview();
 				}
 			}
 		}
@@ -202,14 +208,62 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// </summary>
 		public ObservableCollection<BehaviorSliderItemViewModel> SliderItems { get; } = new();
 
-		public AgentPromptSettingsViewModel(AgentPromptSettings settings, IPromptRegistry promptRegistry)
+		private bool _isPreviewVisible;
+		/// <summary>
+		/// Whether the system prompt preview is visible.
+		/// </summary>
+		public bool IsPreviewVisible
+		{
+			get => _isPreviewVisible;
+			set => SetProperty(ref _isPreviewVisible, value);
+		}
+
+		private string _systemPromptPreview = string.Empty;
+		/// <summary>
+		/// The fully rendered system prompt preview text.
+		/// </summary>
+		public string SystemPromptPreview
+		{
+			get => _systemPromptPreview;
+			private set => SetProperty(ref _systemPromptPreview, value);
+		}
+
+		public ICommand TogglePreviewCommand { get; }
+
+		public AgentPromptSettingsViewModel(
+			AgentPromptSettings settings,
+			IPromptRegistry promptRegistry,
+			IChatPromptBuilder promptBuilder,
+			ChatAgentDescriptor agent)
 		{
 			PromptSettings = settings;
 			PromptRegistry = promptRegistry as PromptRegistry ?? throw new InvalidOperationException("Prompt registry must be of type PromptRegistry.");
+			_promptBuilder = promptBuilder;
+			_agent = agent;
 
 			ClearPersonaCommand = new RelayCommand(() => SelectedPersona = null);
 			ClearSpecializationCommand = new RelayCommand(() => SelectedSpecialization = null);
+			TogglePreviewCommand = new RelayCommand(() => IsPreviewVisible = !IsPreviewVisible);
+
+			PromptSettings.PropertyChanged += (_, _) => RegeneratePreview();
+
 			Refresh();
+			RegeneratePreview();
+		}
+
+		/// <summary>
+		/// Regenerates the system prompt preview using <see cref="IChatPromptBuilder.RenderSystemPrompt"/>.
+		/// </summary>
+		public void RegeneratePreview()
+		{
+			try
+			{
+				SystemPromptPreview = _promptBuilder.RenderSystemPrompt(_agent);
+			}
+			catch (Exception ex)
+			{
+				SystemPromptPreview = $"// Failed to render preview: {ex.Message}";
+			}
 		}
 
 		public void Refresh()
@@ -271,6 +325,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 
 			// --- Sliders ---
+			SliderItems.Clear();
 			foreach (var (sliderId, slider) in PromptRegistry.BuiltinSliders)
 			{
 				// Find existing slider value or create new one with default (0)
@@ -284,6 +339,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					};
 					PromptSettings.SliderValues.Add(existingValue);
 				}
+
+				existingValue.PropertyChanged += (_, _) => RegeneratePreview();
 
 				var itemVm = new BehaviorSliderItemViewModel(
 					this,
@@ -316,6 +373,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				}
 			}
 			PromptSettings.PromptComponents = selectedIds;
+			RegeneratePreview();
 		}
 	}
 }

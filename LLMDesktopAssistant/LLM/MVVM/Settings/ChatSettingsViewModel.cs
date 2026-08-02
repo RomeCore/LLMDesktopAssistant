@@ -207,7 +207,11 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_prompts"),
 						MaterialIconKind.Text,
-						new AgentPromptSettingsViewModel(descriptor.Prompts, promptRegistry)),
+						new AgentPromptSettingsViewModel(
+							descriptor.Prompts,
+							promptRegistry,
+							Chat.Services.GetRequiredService<IChatPromptBuilder>(),
+							descriptor)),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_tools"),
 						MaterialIconKind.Wrench,

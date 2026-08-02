@@ -11,6 +11,55 @@
 
 	<StackPanel Margin="8" Spacing="8">
 
+		<!-- Preview Toggle -->
+		<StackPanel Orientation="Horizontal"
+					Spacing="6"
+					Margin="0,0,0,4">
+
+			<Button Command="{Binding TogglePreviewCommand}"
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc prompt_preview_toggle}">
+
+				<ico:MaterialIcon Kind="Eye"
+													Width="18" Height="18"/>
+
+			</Button>
+
+			<TextBlock Text="{loc:Loc prompt_preview_header}"
+								 FontWeight="Bold"
+								 FontSize="{DynamicResource FontSizeL}"
+								 VerticalAlignment="Center"
+								 IsVisible="{Binding IsPreviewVisible}"/>
+
+		</StackPanel>
+
+		<!-- Preview Content -->
+		<Border IsVisible="{Binding IsPreviewVisible}"
+						BorderBrush="{DynamicResource SecondaryAccentBrush}"
+						BorderThickness="1"
+						CornerRadius="4"
+						Padding="4"
+						Margin="0,0,0,8">
+
+			<TextBox Text="{Binding SystemPromptPreview}"
+							 IsReadOnly="True"
+							 AcceptsReturn="True"
+							 TextWrapping="Wrap"
+							 FontFamily="Cascadia Code,Consolas,monospace"
+							 FontSize="12"
+							 MinHeight="60"
+							 MaxHeight="250"
+							 ScrollViewer.VerticalScrollBarVisibility="Auto"
+							 Opacity="0.85"/>
+
+		</Border>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"
+							 IsVisible="{Binding IsPreviewVisible}"/>
+
 		<!-- System Prompt -->
 		<TextBlock Text="{loc:Loc prompt_system_prompt}"
 					  FontWeight="Bold"

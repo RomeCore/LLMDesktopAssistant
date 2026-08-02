@@ -765,6 +765,12 @@
   <data name="prompt_custom_persona_placeholder" xml:space="preserve">
     <value>Describe the persona in detail...</value>
   </data>
+  <data name="prompt_preview_toggle" xml:space="preserve">
+    <value>Toggle system prompt preview</value>
+  </data>
+  <data name="prompt_preview_header" xml:space="preserve">
+    <value>System Prompt Preview</value>
+  </data>
   <data name="dice_rolled" xml:space="preserve">
     <value>Rolled</value>
   </data>
