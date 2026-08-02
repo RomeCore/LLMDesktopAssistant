@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 				if (!File.Exists(file))
 				{
-					yield return CreateDiagnosticSkill(fallbackSkillName, new SkillDiagnostic
+					yield return CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
 					{
 						IsFatal = true,
 						Codes = SkillDiagnosticCode.MissingFile | nameUnknownCode,
@@ -41,7 +41,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 				if (exception != null)
 				{
-					yield return CreateDiagnosticSkill(fallbackSkillName, new SkillDiagnostic
+					yield return CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
 					{
 						IsFatal = true,
 						Codes = SkillDiagnosticCode.FileAccessError | nameUnknownCode,
@@ -62,7 +62,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 				if (exception != null)
 				{
-					yield return CreateDiagnosticSkill(fallbackSkillName, new SkillDiagnostic
+					yield return CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
 					{
 						IsFatal = true,
 						Codes = SkillDiagnosticCode.GeneralParsingError | nameUnknownCode,
@@ -76,14 +76,16 @@ namespace LLMDesktopAssistant.Prompting.Skills
 			}
 		}
 
-		private static SkillInfo CreateDiagnosticSkill(string name, SkillDiagnostic diagnostic)
+		private static SkillInfo CreateDiagnosticSkill(string name, string file, SkillDiagnostic diagnostic)
 		{
 			return new SkillInfo
 			{
 				Name = name,
 				Description = string.Empty,
 				BodyGetter = new(() => string.Empty),
-				Diagnostic = diagnostic
+				Diagnostic = diagnostic,
+				Path = file,
+				HomeDirectory = Path.GetDirectoryName(file)
 			};
 		}
 	}
