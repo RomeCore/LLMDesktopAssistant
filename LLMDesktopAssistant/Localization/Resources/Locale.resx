@@ -387,6 +387,9 @@
   <data name="fs-open_file" xml:space="preserve">
     <value>Open file</value>
   </data>
+  <data name="fs-open_in_explorer" xml:space="preserve">
+    <value>Open in explorer</value>
+  </data>
   <data name="fs-write_binary_file" xml:space="preserve">
     <value>Write binary file</value>
   </data>

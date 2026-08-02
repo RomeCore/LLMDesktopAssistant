@@ -387,6 +387,9 @@
   <data name="fs-open_file" xml:space="preserve">
     <value>Открыть файл</value>
   </data>
+  <data name="fs-open_in_explorer" xml:space="preserve">
+    <value>Открыть в проводнике</value>
+  </data>
   <data name="fs-write_binary_file" xml:space="preserve">
     <value>Записать в бинарный файл</value>
   </data>

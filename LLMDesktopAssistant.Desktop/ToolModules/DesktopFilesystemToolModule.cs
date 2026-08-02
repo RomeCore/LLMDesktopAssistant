@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
 
@@ -11,10 +12,12 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	public class DesktopFilesystemToolModule : ToolModule
 	{
 		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IExplorerOpener _explorerOpener;
 
-		public DesktopFilesystemToolModule(WorkingDirectoryAccessService fileAccess)
+		public DesktopFilesystemToolModule(WorkingDirectoryAccessService fileAccess, IExplorerOpener explorerOpener)
 		{
 			_fileAccess = fileAccess;
+			_explorerOpener = explorerOpener;
 
 			AddTool(OpenFile, OpenFileStreaming, OpenFilePreview,
 				new ToolInitializationInfo
@@ -24,6 +27,17 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Category = "filesystem",
 					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.FileRead |
 						ToolBehaviour.AccessOutsideWorkdir
+				});
+
+			AddTool(OpenInExplorer, OpenInExplorerStreaming, OpenInExplorerPreview,
+				new ToolInitializationInfo
+				{
+					Name = "fs-open_in_explorer",
+					Description = "Opens a file or directory in the system file explorer. " +
+						"Files are revealed and selected, directories are opened, and non-existent paths " +
+						"fall back to opening their parent directory.",
+					Category = "filesystem",
+					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}
 
@@ -74,7 +88,12 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 
 				if (!File.Exists(fullPath))
 				{
-					return ReactiveToolResult.CreateError($"File not found: {path}");
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.OpenInNew,
+						StatusTitle = $"**{path}**",
+						ResultContent = $"File not found: {path}"
+					}.CompleteWithError();
 				}
 
 				using (Process process = new Process())
@@ -97,7 +116,73 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			}
 			catch (Exception ex)
 			{
-				return ReactiveToolResult.CreateError($"Error opening file {path}: {ex.Message}");
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.OpenInNew,
+					StatusTitle = $"**{path}**",
+					ResultContent = $"Error opening file {path}: {ex.Message}"
+				}.CompleteWithError();
+			}
+		}
+
+		public StreamingToolArgumentsAnalysisResult OpenInExplorerStreaming(
+			string? path)
+		{
+			path ??= "?";
+			return new StreamingToolArgumentsAnalysisResult
+			{
+				StatusIcon = MaterialIconKind.FolderOpen,
+				StatusTitle = $"**{path}**"
+			};
+		}
+
+		public PreviewToolExecutionResult OpenInExplorerPreview(
+			string path, [SharedContext] out string fullPath)
+		{
+			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Execute, out var isAccessed);
+
+			return new PreviewToolExecutionResult
+			{
+				StatusIcon = MaterialIconKind.FolderOpen,
+				StatusTitle = $"**{path}**",
+				ExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : 0)
+			};
+		}
+
+		public ReactiveToolResult OpenInExplorer(
+			[SharedContext] string? fullPath,
+			string path)
+		{
+			try
+			{
+				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Execute);
+
+				if (!_explorerOpener.OpenPath(fullPath))
+				{
+					return new ReactiveToolResult
+					{
+						StatusIcon = MaterialIconKind.FolderOpen,
+						StatusTitle = $"**{path}**",
+						ResultContent = $"Failed to open in explorer: {path}"
+					}.CompleteWithError();
+				}
+
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.FolderOpen,
+					StatusTitle = $"**{path}**",
+					ResultContent = $"Successfully opened in explorer: {path}"
+				}.CompleteWithSuccess();
+			}
+			catch (Exception ex)
+			{
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.FolderOpen,
+					StatusTitle = $"**{path}**",
+					ResultContent = $"Error opening {path} in explorer: {ex.Message}"
+				}.CompleteWithError();
 			}
 		}
 
