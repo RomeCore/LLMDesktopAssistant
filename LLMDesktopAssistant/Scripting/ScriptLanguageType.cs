@@ -10,14 +10,54 @@
 		/// </summary>
 		Unknown,
 
+		// === SHELL SCRIPTS ===
+
 		/// <summary>
-		/// Lua scripting language.
+		/// Windows Batch (.bat or .cmd) scripting language.
+		/// Available only on Windows operating systems.
+		/// </summary>
+		Batch,
+
+		/// <summary>
+		/// PowerShell (.ps1) scripting language.
+		/// Available on desktop operating systems using the Microsoft.PowerShell.SDK.
+		/// </summary>
+		PowerShell,
+
+		/// <summary>
+		/// Bash (.sh) scripting language.
+		/// Available on Unix-like operating systems natively.
+		/// On Windows, the git's or WSL's bash.exe used.
+		/// </summary>
+		Bash,
+
+		// === EMBEDDED SCRIPTS ===
+
+		/// <summary>
+		/// Lua (.lua) scripting language.
+		/// The AsyncLua is used, which is an extended version of Lua with async/await support.
 		/// </summary>
 		Lua,
 
 		/// <summary>
-		/// Python scripting language.
+		/// C# Script (.csx) scripting language.
+		/// Embedded using Microsoft.CodeAnalysis.CSharp.Scripting package.
 		/// </summary>
-		Python
+		CSharpScript,
+
+		// === EXTERNAL PROCESS SCRIPTS ===
+
+		/// <summary>
+		/// Python (.py) scripting language.
+		/// External process is used to execute the script.
+		/// Supports virtual environments.
+		/// </summary>
+		Python,
+
+		/// <summary>
+		/// JavaScript (.js) scripting language.
+		/// NodeJS, Bun or Deno are used to execute the script.
+		/// </summary>
+		JavaScript
 	}
 }
