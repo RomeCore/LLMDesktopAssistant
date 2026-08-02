@@ -1,5 +1,6 @@
-using System.Diagnostics;
 using Avalonia.Platform.Storage;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services.Instances;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.Services.Prompting;
@@ -60,6 +61,7 @@ public class SkillInfoItemViewModel
 public class ChatSkillsSettingsViewModel : ViewModelBase
 {
 	private readonly ISkillsetBuildingService? _skillsetBuilder;
+	private readonly IExplorerOpener? _explorerOpener;
 
 	public ChatSkillSettings SkillSettings { get; }
 
@@ -121,6 +123,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	{
 		SkillSettings = settings;
 		_skillsetBuilder = skillsetBuilder;
+		_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
 
 		AddDirectoryCommand = new RelayCommand(() =>
 		{
@@ -212,42 +215,12 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 		}
 	}
 
-	private static void OpenPath(string? path)
+	private void OpenPath(string? path)
 	{
 		if (string.IsNullOrWhiteSpace(path))
 			return;
 
-		if (File.Exists(path))
-		{
-			// Open explorer with file selected
-			Process.Start(new ProcessStartInfo
-			{
-				FileName = "explorer.exe",
-				Arguments = $"/select,\"{path}\"",
-				UseShellExecute = true
-			});
-		}
-		else if (Directory.Exists(path))
-		{
-			Process.Start(new ProcessStartInfo
-			{
-				FileName = path,
-				UseShellExecute = true
-			});
-		}
-		else
-		{
-			// Path doesn't exist — try to open parent directory
-			var parent = Path.GetDirectoryName(path);
-			if (!string.IsNullOrWhiteSpace(parent) && Directory.Exists(parent))
-			{
-				Process.Start(new ProcessStartInfo
-				{
-					FileName = parent,
-					UseShellExecute = true
-				});
-			}
-		}
+		_explorerOpener?.OpenPath(path);
 	}
 
 	/// <summary>

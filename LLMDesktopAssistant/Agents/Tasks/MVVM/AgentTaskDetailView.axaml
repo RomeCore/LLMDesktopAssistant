@@ -314,7 +314,7 @@
 
 							<!-- Message header: role + icon -->
 							<StackPanel Orientation="Horizontal" Spacing="6"
-													Margin="0,0,0,6">
+													Margin="0,0,0,8">
 								<ico:MaterialIcon Kind="Robot"
 																	Width="22" Height="22"/>
 								<TextBlock Text="{loc:Loc assistant_role}"
@@ -345,13 +345,15 @@
 														Opacity="0.5"
 														Margin="0,0,0,4"/>
 								<ctrl:MarkdownControl MarkdownText="{Binding ReasoningContent}"
-																			Opacity="0.5"/>
+																			Opacity="0.5"
+																			Margin="0,0,0,8"/>
 							</StackPanel>
 
 							<!-- Message content -->
 							<ctrl:MarkdownControl MarkdownText="{Binding Content}"
 																		IsVisible="{Binding Content, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-																		Opacity="0.8"/>
+																		Opacity="0.8"
+																		Margin="0,0,0,4"/>
 
 							<!-- Attachments -->
 							<ItemsControl ItemsSource="{Binding Attachments}"
@@ -359,7 +361,8 @@
 														Margin="0,6,0,0">
 								<ItemsControl.ItemTemplate>
 									<DataTemplate x:DataType="tsk:AgentAttachment">
-										<StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2">
+										<StackPanel Orientation="Horizontal" Spacing="4" Margin="0,2"
+																HorizontalAlignment="Left">
 											<ico:MaterialIcon Kind="Paperclip"
 																				Width="12" Height="12"
 																				Opacity="0.7"/>
@@ -384,7 +387,8 @@
 								<ItemsControl ItemsSource="{Binding ToolCalls}">
 									<ItemsControl.ItemTemplate>
 										<DataTemplate x:DataType="tsk:AgentToolCall">
-											<Border Classes="ToolCallCard">
+											<Border Classes="ToolCallCard"
+															HorizontalAlignment="Left">
 												<StackPanel>
 													<StackPanel Orientation="Horizontal" Spacing="6">
 														<TextBlock Text="{Binding ToolName}"

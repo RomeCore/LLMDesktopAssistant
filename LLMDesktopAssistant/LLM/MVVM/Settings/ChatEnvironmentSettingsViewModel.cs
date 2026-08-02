@@ -1,5 +1,6 @@
-using System.Diagnostics;
 using Avalonia.Platform.Storage;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services.Instances;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Localization;
 
@@ -34,9 +35,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public IRelayCommand SelectPythonMetaVenvActivateScriptPathCommand { get; }
 		public IRelayCommand OpenPythonMetaVenvActivateScriptPathCommand { get; }
 
+		private readonly IExplorerOpener? _explorerOpener;
+
 		public ChatEnvironmentSettingsViewModel(ChatEnvironmentSettings settings)
 		{
 			EnvironmentSettings = settings;
+			_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
 
 			AddWorkingDirectoryCommand = new RelayCommand(AddWorkingDirectory);
 			RemoveWorkingDirectoryCommand = new RelayCommand<WorkingDirectorySetting>(RemoveWorkingDirectory);
@@ -187,12 +191,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			if (!string.IsNullOrWhiteSpace(EnvironmentSettings.PythonVenvActivateScriptPath) &&
 				File.Exists(EnvironmentSettings.PythonVenvActivateScriptPath))
 			{
-				Process.Start(new ProcessStartInfo
-				{
-					FileName = "explorer.exe",
-					Arguments = $"/select,\"{EnvironmentSettings.PythonVenvActivateScriptPath}\"",
-					UseShellExecute = true
-				});
+				_explorerOpener?.ShowFileInExplorer(EnvironmentSettings.PythonVenvActivateScriptPath);
 			}
 		}
 
@@ -219,12 +218,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			if (!string.IsNullOrWhiteSpace(EnvironmentSettings.PythonMetaVenvActivateScriptPath) &&
 				File.Exists(EnvironmentSettings.PythonMetaVenvActivateScriptPath))
 			{
-				Process.Start(new ProcessStartInfo
-				{
-					FileName = "explorer.exe",
-					Arguments = $"/select,\"{EnvironmentSettings.PythonMetaVenvActivateScriptPath}\"",
-					UseShellExecute = true
-				});
+				_explorerOpener?.ShowFileInExplorer(EnvironmentSettings.PythonMetaVenvActivateScriptPath);
 			}
 		}
 
@@ -232,11 +226,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		{
 			if (!string.IsNullOrWhiteSpace(path) && Directory.Exists(path))
 			{
-				Process.Start(new ProcessStartInfo
-				{
-					FileName = path,
-					UseShellExecute = true
-				});
+				_explorerOpener?.OpenDirectory(path);
 			}
 		}
 	}
