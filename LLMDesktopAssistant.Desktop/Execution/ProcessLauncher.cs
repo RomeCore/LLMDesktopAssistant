@@ -246,7 +246,11 @@ namespace LLMDesktopAssistant.Desktop.Execution
 					});
 
 					// Pump PTY output into the terminal emulation and the session output collection.
+					// A streaming decoder preserves multi-byte sequences split across reads,
+					// unlike per-chunk Encoding.UTF8.GetString which would garble them.
 					var buffer = new byte[0x4000];
+					var decoder = Encoding.UTF8.GetDecoder();
+					var chars = new char[Encoding.UTF8.GetMaxCharCount(buffer.Length)];
 					while (true)
 					{
 						int bytesRead;
@@ -260,10 +264,22 @@ namespace LLMDesktopAssistant.Desktop.Execution
 						}
 
 						if (bytesRead == 0)
+						{
+							// Flush any bytes left in the middle of a sequence at EOF.
+							var trailingChars = decoder.GetChars(buffer, 0, 0, chars, 0, flush: true);
+							if (trailingChars > 0)
+							{
+								terminal.Write(new string(chars, 0, trailingChars));
+								session.RaiseOutputUpdated();
+							}
 							break;
+						}
 
-						var text = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-						terminal.Write(text);
+						var charCount = decoder.GetChars(buffer, 0, bytesRead, chars, 0, flush: false);
+						if (charCount == 0)
+							continue;
+
+						terminal.Write(new string(chars, 0, charCount));
 
 						// Keep the viewport pinned to the bottom unless a full-screen app
 						// (alternate buffer) is controlling the cursor itself.
