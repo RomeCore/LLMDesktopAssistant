@@ -1,6 +1,6 @@
 using System;
 
-namespace Iciclecreek.Terminal
+namespace LLMDesktopAssistant.Desktop.Execution.Terminals
 {
     /// <summary>
     /// EventArgs for the ProcessExited event.

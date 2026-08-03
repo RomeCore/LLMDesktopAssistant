@@ -27,12 +27,15 @@
 		<PackageReference Include="System.Speech" Version="10.0.9" />
 		<PackageReference Include="NAudio" Version="2.3.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+		<PackageReference Include="Porta.Pty" Version="1.0.7" />
+		<PackageReference Include="Unicode.net" Version="2.0.0" />
+		<PackageReference Include="Wcwidth" Version="4.0.1" />
+		<PackageReference Include="XTerm.NET" Version="1.0.12" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\LLMDesktopAssistant.Blazor\LLMDesktopAssistant.Blazor.csproj" />
 		<ProjectReference Include="..\LLMDesktopAssistant\LLMDesktopAssistant.csproj" />
-		<ProjectReference Include="..\thirdparty\Iciclecreek.Avalonia.Terminal\Iciclecreek.Avalonia.Terminal.csproj" />
 	</ItemGroup>
 	
 	<Target Name="PublishBlazorStaticAssets" BeforeTargets="BeforeBuild">

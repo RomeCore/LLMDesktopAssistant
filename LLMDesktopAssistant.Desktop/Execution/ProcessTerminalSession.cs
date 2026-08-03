@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Desktop.Execution.Terminals;
 using Porta.Pty;
 using XTerm;
 

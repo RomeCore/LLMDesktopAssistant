@@ -5,7 +5,7 @@
 						 d:DesignWidth="600" d:DesignHeight="300"
 						 xmlns:local="using:LLMDesktopAssistant.Desktop.ToolModules.Terminal"
 						 xmlns:loc="using:LLMDesktopAssistant.Localization"
-						 xmlns:exec="using:LLMDesktopAssistant.Desktop.Execution"
+						 xmlns:term="using:LLMDesktopAssistant.Desktop.Execution.Terminals"
 						 x:Class="LLMDesktopAssistant.Desktop.ToolModules.Terminal.TerminalAdditionalView"
 						 x:DataType="local:TerminalAdditionalViewModel">
 
@@ -30,13 +30,13 @@
 			</Grid.ColumnDefinitions>
 
 			<!-- Terminal Control -->
-			<exec:TerminalView x:Name="TerminalHost"
-													Grid.Row="1"
-													FontFamily="Cascadia Mono,Consolas,monospace"
-													FontSize="12"
-													Background="#1E1E1E"
-													Foreground="#D4D4D4"
-													BufferSize="5000"/>
+			<term:TerminalView x:Name="TerminalHost"
+												 Grid.Row="1"
+												 FontFamily="Cascadia Mono,Consolas,monospace"
+												 FontSize="12"
+												 Background="#1E1E1E"
+												 Foreground="#D4D4D4"
+												 BufferSize="5000"/>
 
 			<!-- Footer with controls -->
 			<Border Grid.Row="2"

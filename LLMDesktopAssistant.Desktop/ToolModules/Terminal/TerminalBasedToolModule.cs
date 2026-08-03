@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Runtime.InteropServices;
-using System.Text;
 using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Tools;
 

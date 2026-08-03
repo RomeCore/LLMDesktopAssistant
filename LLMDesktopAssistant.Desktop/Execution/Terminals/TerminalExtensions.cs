@@ -1,7 +1,7 @@
 using System.Text;
 using XTerm;
 
-namespace LLMDesktopAssistant.Desktop.Execution
+namespace LLMDesktopAssistant.Desktop.Execution.Terminals
 {
 	public static class TerminalExtensions
 	{

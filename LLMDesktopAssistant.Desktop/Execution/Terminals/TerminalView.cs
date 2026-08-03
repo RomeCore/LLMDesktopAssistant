@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -16,14 +11,12 @@ using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Threading;
-using Iciclecreek.Avalonia.Terminal;
-using Iciclecreek.Terminal;
 using Porta.Pty;
 using XTerm.Buffer;
 using XTerm.Events;
 using XT = global::XTerm;
 
-namespace LLMDesktopAssistant.Desktop.Execution
+namespace LLMDesktopAssistant.Desktop.Execution.Terminals
 {
 	/// <summary>
 	/// A terminal emulator view that renders an <see cref="XTerm.Terminal"/> and forwards
@@ -218,15 +211,15 @@ namespace LLMDesktopAssistant.Desktop.Execution
 		public static void RemoveWindowMovedHandler(Interactive target, EventHandler<WindowMovedEventArgs> handler) =>
 			target.RemoveHandler(WindowMovedEvent, handler);
 
-		public static readonly RoutedEvent<Iciclecreek.Terminal.WindowResizedEventArgs> WindowResizedEvent =
-			RoutedEvent.Register<TerminalView, Iciclecreek.Terminal.WindowResizedEventArgs>(
+		public static readonly RoutedEvent<WindowResizedEventArgs> WindowResizedEvent =
+			RoutedEvent.Register<TerminalView, WindowResizedEventArgs>(
 				nameof(WindowResized),
 				RoutingStrategies.Bubble);
 
-		public static void AddWindowResizedHandler(Interactive target, EventHandler<Iciclecreek.Terminal.WindowResizedEventArgs> handler) =>
+		public static void AddWindowResizedHandler(Interactive target, EventHandler<WindowResizedEventArgs> handler) =>
 			target.AddHandler(WindowResizedEvent, handler);
 
-		public static void RemoveWindowResizedHandler(Interactive target, EventHandler<Iciclecreek.Terminal.WindowResizedEventArgs> handler) =>
+		public static void RemoveWindowResizedHandler(Interactive target, EventHandler<WindowResizedEventArgs> handler) =>
 			target.RemoveHandler(WindowResizedEvent, handler);
 
 		public static readonly RoutedEvent<RoutedEventArgs> WindowMinimizedEvent =
@@ -337,7 +330,7 @@ namespace LLMDesktopAssistant.Desktop.Execution
 		/// <summary>
 		/// Event raised when a window resize command is received from the terminal.
 		/// </summary>
-		public event EventHandler<Iciclecreek.Terminal.WindowResizedEventArgs>? WindowResized;
+		public event EventHandler<WindowResizedEventArgs>? WindowResized;
 
 		/// <summary>
 		/// Event raised when a window minimize command is received from the terminal.
@@ -1514,8 +1507,7 @@ namespace LLMDesktopAssistant.Desktop.Execution
 		{
 			Dispatcher.UIThread.Post(() =>
 			{
-
-				var args = new Iciclecreek.Terminal.WindowResizedEventArgs(e.Width, e.Height)
+				var args = new WindowResizedEventArgs(e.Width, e.Height)
 				{
 					RoutedEvent = WindowResizedEvent
 				};
