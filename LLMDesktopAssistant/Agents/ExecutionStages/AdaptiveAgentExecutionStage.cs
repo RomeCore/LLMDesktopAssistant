@@ -4,12 +4,14 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
+using LLMDesktopAssistant.Utils.Json;
 using LLTSharp;
 using RCLargeLanguageModels;
 using Serilog;
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
+	[JsonDerived(typeof(AgentExecutionStage), "adaptive")]
 	public class AdaptiveAgentExecutionStage : MentionableBaseAgentExecutionStage
 	{
 		private readonly Random _random = new();

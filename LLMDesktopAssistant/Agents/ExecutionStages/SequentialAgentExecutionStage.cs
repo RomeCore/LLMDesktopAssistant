@@ -1,5 +1,8 @@
+using LLMDesktopAssistant.Utils.Json;
+
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
+	[JsonDerived(typeof(AgentExecutionStage), "sequential")]
 	public class SequentialAgentExecutionStage : AgentExecutionStage
 	{
 		public override Task<Guid?> GetNextAgentAsync(AgentPreExecutionContext context,

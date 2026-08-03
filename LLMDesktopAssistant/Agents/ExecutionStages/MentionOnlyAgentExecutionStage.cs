@@ -1,5 +1,8 @@
-﻿namespace LLMDesktopAssistant.Agents.ExecutionStages
+﻿using LLMDesktopAssistant.Utils.Json;
+
+namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
+	[JsonDerived(typeof(AgentExecutionStage), "mentionOnly")]
 	public class MentionOnlyAgentExecutionStage : MentionableBaseAgentExecutionStage
 	{
 	}

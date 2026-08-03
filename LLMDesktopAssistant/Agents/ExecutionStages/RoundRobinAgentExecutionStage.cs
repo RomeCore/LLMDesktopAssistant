@@ -1,3 +1,5 @@
+using LLMDesktopAssistant.Utils.Json;
+
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
 	/// <summary>
@@ -8,6 +10,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 	/// When <see cref="CanAgentsBeSkipped"/> is enabled, each agent's <see cref="ChatAgentInstance.Weight"/>
 	/// is used as the probability of being selected (skip chance = 1 - weight).
 	/// </summary>
+	[JsonDerived(typeof(AgentExecutionStage), "roundRobin")]
 	public class RoundRobinAgentExecutionStage : AgentExecutionStage
 	{
 		private readonly Random _random = new();

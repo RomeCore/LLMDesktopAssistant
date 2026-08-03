@@ -1,5 +1,8 @@
+using LLMDesktopAssistant.Utils.Json;
+
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
+	[JsonDerived(typeof(AgentExecutionStage), "random")]
 	public class RandomAgentExecutionStage : MentionableBaseAgentExecutionStage
 	{
 		private readonly Random _random = new();

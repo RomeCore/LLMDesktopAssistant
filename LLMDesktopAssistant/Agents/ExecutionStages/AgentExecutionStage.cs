@@ -3,11 +3,6 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
-	[JsonDerivedType(typeof(SequentialAgentExecutionStage), "sequential")]
-	[JsonDerivedType(typeof(MentionOnlyAgentExecutionStage), "mentionOnly")]
-	[JsonDerivedType(typeof(RandomAgentExecutionStage), "random")]
-	[JsonDerivedType(typeof(AdaptiveAgentExecutionStage), "adaptive")]
-	[JsonDerivedType(typeof(RoundRobinAgentExecutionStage), "roundRobin")]
 	public abstract class AgentExecutionStage : NotifyPropertyChanged
 	{
 		private Guid _id;

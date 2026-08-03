@@ -2,7 +2,6 @@
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
-	[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
 	public abstract class AdditionalEnvironmentSetting : NotifyPropertyChanged
 	{
 	}
