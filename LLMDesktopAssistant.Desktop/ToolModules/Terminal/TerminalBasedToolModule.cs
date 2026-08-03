@@ -113,7 +113,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 		{
 			if (descriptor.TerminalSession != null)
 				return descriptor.TerminalSession.Output;
-			return string.Join(Environment.NewLine, descriptor.Output!.Output);
+			return string.Join(Environment.NewLine, descriptor.PlainOutput!.Output);
 		}
 
 		private static (string Process, string[] Args) ResolveProcessAndArgs(TerminalToolRunParameters parameters)

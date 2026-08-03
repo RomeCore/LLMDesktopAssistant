@@ -72,7 +72,7 @@ namespace LLMDesktopAssistant.Desktop.Execution
 				Status = ProcessStatus.Running,
 				IsRunning = true,
 
-				Output = output,
+				PlainOutput = output,
 				TerminalSession = null
 			};
 
@@ -205,7 +205,7 @@ namespace LLMDesktopAssistant.Desktop.Execution
 				Status = ProcessStatus.Running,
 				IsRunning = true,
 
-				Output = null,
+				PlainOutput = null,
 				TerminalSession = session
 			};
 

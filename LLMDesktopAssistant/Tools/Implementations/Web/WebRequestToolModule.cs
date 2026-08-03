@@ -267,6 +267,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				try
 				{
 					var fullSavePath = _fileAccess.AccessPath(savePath, DirectoryAccessMode.Write);
+					var dir = Path.GetDirectoryName(fullSavePath);
+					if (!Directory.Exists(dir))
+						Directory.CreateDirectory(dir!);
 					using var fileStream = File.Create(fullSavePath);
 					using var request = new HttpRequestMessage(HttpMethod.Get, url);
 

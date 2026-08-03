@@ -38,7 +38,12 @@ namespace LLMDesktopAssistant.Desktop.Execution
 		/// <summary>
 		/// The output associated with this process, if process ran with <see cref="ProcessLaunchParameters.RunInTerminal"/> set to false.
 		/// </summary>
-		public required ProcessOutput? Output { get; init; }
+		public required ProcessOutput? PlainOutput { get; init; }
+
+		/// <summary>
+		/// The output associated with this process, either from a terminal session or plain output.
+		/// </summary>
+		public string Output => TerminalSession?.Output ?? string.Join(Environment.NewLine, PlainOutput!.Output);
 
 		private int _exitCode = -1;
 		/// <summary>
