@@ -20,20 +20,6 @@ namespace LLMDesktopAssistant.Settings
 		/// </summary>
 		public const int SaveDebounceDelayMs = 500;
 
-		private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
-		{
-			WriteIndented = true,
-			ReferenceHandler = ReferenceHandler.Preserve,
-			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-			Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),
-			Converters =
-			{
-				new JsonStringEnumConverter(),
-	
-			}
-		};
-
 		private readonly string _name;
 		private readonly string _filePath;
 		private readonly ConcurrentDictionary<string, (TSettings, ChangeTracker)> _objects = [];
@@ -62,7 +48,7 @@ namespace LLMDesktopAssistant.Settings
 				return;
 
 			var json = File.ReadAllText(_filePath);
-			var data = JsonSerializer.Deserialize<Dictionary<string, TSettings>>(json, _jsonOptions);
+			var data = JsonSerializer.Deserialize<Dictionary<string, TSettings>>(json, SettingsManager.jsonOptions);
 
 			Unload();
 
@@ -101,7 +87,7 @@ namespace LLMDesktopAssistant.Settings
 		public void Save()
 		{
 			var data = _objects.ToDictionary(k => k.Key, v => v.Value.Item1);
-			var json = JsonSerializer.Serialize(data, _jsonOptions);
+			var json = JsonSerializer.Serialize(data, SettingsManager.jsonOptions);
 			File.WriteAllText(_filePath, json);
 		}
 
@@ -189,8 +175,8 @@ namespace LLMDesktopAssistant.Settings
 			if (!_objects.TryGetValue(idFrom, out var objTuple))
 				return false;
 
-			var serialized = JsonSerializer.Serialize(objTuple.Item1, _jsonOptions);
-			var copy = JsonSerializer.Deserialize<TSettings>(serialized, _jsonOptions)
+			var serialized = JsonSerializer.Serialize(objTuple.Item1, SettingsManager.jsonOptions);
+			var copy = JsonSerializer.Deserialize<TSettings>(serialized, SettingsManager.jsonOptions)
 				?? throw new InvalidOperationException("Failed to deserialize copied settings.");
 			copy.Id = idTo;
 			var tracker = new ChangeTracker(copy, SaveDebounced);

@@ -1,6 +1,10 @@
 using System.Collections.Concurrent;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Utils.Json;
 
 namespace LLMDesktopAssistant.Settings
 {
@@ -10,6 +14,27 @@ namespace LLMDesktopAssistant.Settings
 	/// </summary>
 	public static class SettingsManager
 	{
+		internal static readonly JsonSerializerOptions jsonOptions;
+
+		static SettingsManager()
+		{
+			jsonOptions = new()
+			{
+				WriteIndented = true,
+				ReferenceHandler = ReferenceHandler.Preserve,
+				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+				TypeInfoResolver = JsonTypeInfoResolverCreator.Create(),
+				PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+				Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),
+				Converters =
+				{
+					new JsonStringEnumConverter(),
+				},
+			};
+
+			jsonOptions.MakeReadOnly();
+		}
+
 		private static readonly ConcurrentDictionary<Type, object> _categories = [];
 
 		private static string GetCategoryName(Type type)

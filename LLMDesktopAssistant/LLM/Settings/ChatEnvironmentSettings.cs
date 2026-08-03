@@ -54,6 +54,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 			WorkingDirectories.FirstOrDefault(w => w.IsEnabled && w.IsActive)?.Path
 			?? Directories.DefaultWorkingDirectory;
 
+		private readonly RangeObservableCollection<AdditionalEnvironmentSetting> _additionalSettings = [];
+		/// <summary>
+		/// The list of additional environment settings.
+		/// </summary>
+		public RangeObservableCollection<AdditionalEnvironmentSetting> AdditionalSettings
+		{
+			get => _additionalSettings;
+			set => _additionalSettings.Reset(value);
+		}
+
 		private string? _pythonVenvActivateScriptPath;
 		/// <summary>
 		/// The path to the script that activates a python virtual environment.
