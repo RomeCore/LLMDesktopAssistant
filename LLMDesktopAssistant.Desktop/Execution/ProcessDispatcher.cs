@@ -1,5 +1,6 @@
 ﻿using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
+using Serilog;
 
 namespace LLMDesktopAssistant.Desktop.Execution
 {
@@ -20,9 +21,22 @@ namespace LLMDesktopAssistant.Desktop.Execution
 			_processes.Add(descriptor);
 		}
 
-		public void OnProcessEnd(ProcessDescriptor descriptor)
+		public async void OnProcessEnd(ProcessDescriptor descriptor)
 		{
-			_processes.Remove(descriptor);
+			try
+			{
+				if (descriptor.LaunchParameters.CompletionExpiryTime != null)
+				{
+					if (descriptor.LaunchParameters.CompletionExpiryTime.Value > TimeSpan.Zero)
+						await Task.Delay(descriptor.LaunchParameters.CompletionExpiryTime.Value);
+
+					_processes.Remove(descriptor);
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Error while ending task: {Message}", ex.Message);
+			}
 		}
 	}
 }

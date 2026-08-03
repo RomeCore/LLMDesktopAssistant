@@ -5,6 +5,11 @@ namespace LLMDesktopAssistant.Desktop.Execution
 	public class ProcessLaunchParameters
 	{
 		/// <summary>
+		/// The display name of the process to be launched. Used for identifying by the user in the dispatcher.
+		/// </summary>
+		public required string? ProcessName { get; init; }
+
+		/// <summary>
 		/// The name of the file to execute.
 		/// </summary>
 		public required string FileName { get; init; }
@@ -27,11 +32,22 @@ namespace LLMDesktopAssistant.Desktop.Execution
 		/// <summary>
 		/// The environment variables to set for the process.
 		/// </summary>
-		public ImmutableDictionary<string, string> EnvironmentVariables { get; init; } = [];
+		public ImmutableDictionary<string, string?> EnvironmentVariables { get; init; } = [];
 
 		/// <summary>
-		/// The standard input to pass to the process.
+		/// The initial standard input to pass to the process.
 		/// </summary>
 		public string? StdIn { get; init; }
+
+		/// <summary>
+		/// The time span after which the process should be terminated if it has not completed.
+		/// </summary>
+		public TimeSpan? TimeOut { get; init; } = TimeSpan.FromMinutes(30);
+
+		/// <summary>
+		/// The time span after which the process should be removed from the dispatcher.
+		/// If null - it will not be removed. If zero - it will be removed immediately upon completion.
+		/// </summary>
+		public TimeSpan? CompletionExpiryTime { get; init; } = TimeSpan.FromMinutes(5);
 	}
 }

@@ -1,25 +1,22 @@
-﻿namespace LLMDesktopAssistant.Desktop.Execution
+﻿using LLMDesktopAssistant.Utils;
+
+namespace LLMDesktopAssistant.Desktop.Execution
 {
 	public class ProcessOutput : NotifyPropertyChanged
 	{
-		private string? _stdOut;
 		/// <summary>
-		/// Standard output of the process.
+		/// Standard output lines of the process.
 		/// </summary>
-		public string? StdOut
-		{
-			get => _stdOut;
-			internal set => SetProperty(ref _stdOut, value);
-		}
+		public RangeObservableCollection<string> StdOut { get; } = [];
 
-		private string? _stdErr;
 		/// <summary>
 		/// Standard error output of the process.
 		/// </summary>
-		public string? StdErr
-		{
-			get => _stdErr;
-			internal set => SetProperty(ref _stdErr, value);
-		}
+		public RangeObservableCollection<string> StdErr { get; } = [];
+
+		/// <summary>
+		/// Standard output and error output of the process combined.
+		/// </summary>
+		public RangeObservableCollection<string> Output { get; } = [];
 	}
 }

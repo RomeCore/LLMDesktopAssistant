@@ -45,9 +45,9 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				throw new ArgumentException("Invalid behaviour value.", nameof(parameters.Behaviour));
 
 			var completionSource = new TaskCompletionSource<AgentTask>();
-			CancellationToken timeoutCt = default;
-			if (parameters.TimeOut.HasValue && parameters.TimeOut.Value > TimeSpan.Zero)
-				timeoutCt = new CancellationTokenSource(parameters.TimeOut.Value).Token;
+			var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+			if (parameters.TimeOut is { } timeout && timeout > TimeSpan.Zero)
+				cts.CancelAfter(timeout);
 
 			var parentTask = _currentTask.Value;
 			var task = new AgentTask
@@ -56,7 +56,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				Parent = parentTask,
 				LaunchParameters = parameters,
 				Completion = completionSource.Task,
-				CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCt)
+				CancellationTokenSource = cts
 			};
 
 			var model = parameters.Model ?? _modelManager.GetModel(parameters.ModelName!);
