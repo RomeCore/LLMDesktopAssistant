@@ -1,4 +1,3 @@
-using LLMDesktopAssistant.Utils;
 using Porta.Pty;
 using XTerm;
 
@@ -16,10 +15,11 @@ namespace LLMDesktopAssistant.Desktop.Execution
 		/// </summary>
 		public required Terminal Terminal { get; init; }
 
+		private string? _output;
 		/// <summary>
 		/// Standard output and error output of the process combined.
 		/// </summary>
-		public RangeObservableCollection<string> Output { get; } = [];
+		public string Output => _output ??= Terminal.GetBufferContents();
 
 		/// <summary>
 		/// Raised when new output has been written to the <see cref="Terminal"/>.
@@ -30,6 +30,10 @@ namespace LLMDesktopAssistant.Desktop.Execution
 		/// <summary>
 		/// Raises the <see cref="OutputUpdated"/> event.
 		/// </summary>
-		internal void RaiseOutputUpdated() => OutputUpdated?.Invoke(this, EventArgs.Empty);
+		internal void RaiseOutputUpdated()
+		{
+			_output = null;
+			OutputUpdated?.Invoke(this, EventArgs.Empty);
+		}
 	}
 }

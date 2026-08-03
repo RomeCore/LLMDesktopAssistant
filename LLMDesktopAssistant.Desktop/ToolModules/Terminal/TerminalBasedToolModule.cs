@@ -112,11 +112,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 
 		private static string BuildOutput(ProcessDescriptor descriptor)
 		{
-			var lines = descriptor.TerminalSession?.Output ?? descriptor.Output?.Output;
-			if (lines == null || lines.Count == 0)
-				return string.Empty;
-
-			return string.Join(Environment.NewLine, lines);
+			if (descriptor.TerminalSession != null)
+				return descriptor.TerminalSession.Output;
+			return string.Join(Environment.NewLine, descriptor.Output!.Output);
 		}
 
 		private static (string Process, string[] Args) ResolveProcessAndArgs(TerminalToolRunParameters parameters)

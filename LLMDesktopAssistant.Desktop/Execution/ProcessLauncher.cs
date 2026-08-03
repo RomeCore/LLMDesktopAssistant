@@ -247,7 +247,6 @@ namespace LLMDesktopAssistant.Desktop.Execution
 
 					// Pump PTY output into the terminal emulation and the session output collection.
 					var buffer = new byte[0x4000];
-					var pendingLine = new StringBuilder();
 					while (true)
 					{
 						int bytesRead;
@@ -274,21 +273,7 @@ namespace LLMDesktopAssistant.Desktop.Execution
 						// Notify views so they can repaint — XTerm.Terminal.BufferChanged
 						// only fires on buffer switches, not on writes.
 						session.RaiseOutputUpdated();
-
-						// Collect complete lines for the session output.
-						pendingLine.Append(text);
-						while (true)
-						{
-							var lineEnd = pendingLine.ToString().IndexOf('\n');
-							if (lineEnd < 0)
-								break;
-							session.Output.Add(pendingLine.ToString(0, lineEnd).TrimEnd('\r'));
-							pendingLine.Remove(0, lineEnd + 1);
-						}
 					}
-
-					if (pendingLine.Length > 0)
-						session.Output.Add(pendingLine.ToString().TrimEnd('\r'));
 
 					if (cts.IsCancellationRequested)
 					{
