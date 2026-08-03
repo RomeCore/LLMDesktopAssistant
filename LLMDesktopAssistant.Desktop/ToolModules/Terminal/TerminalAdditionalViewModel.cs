@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.Utils;
 
@@ -19,55 +20,15 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 		[ChangeTracker.Untracked]
 		public Task<int> ExitCodeTask => _exitCodeTcs.Task;
 
-		private string _processName = string.Empty;
+		private ProcessDescriptor? _descriptor;
 		/// <summary>
-		/// The name of the process to run (e.g., "python", "cmd.exe", "bash").
+		/// The process descriptor created by the <see cref="IProcessLauncher"/> for this session.
+		/// Its <see cref="ProcessTerminalSession"/> is rendered by the view.
 		/// </summary>
-		public string ProcessName
+		public ProcessDescriptor? Descriptor
 		{
-			get => _processName;
-			set => SetProperty(ref _processName, value);
-		}
-
-		private string[] _arguments = [];
-		/// <summary>
-		/// Arguments for the process.
-		/// </summary>
-		public string[] Arguments
-		{
-			get => _arguments;
-			set => SetProperty(ref _arguments, value);
-		}
-
-		private string? _workingDirectory;
-		/// <summary>
-		/// The working directory for the process.
-		/// </summary>
-		public string? WorkingDirectory
-		{
-			get => _workingDirectory;
-			set => SetProperty(ref _workingDirectory, value);
-		}
-
-		private string _command = string.Empty;
-		/// <summary>
-		/// The command line to execute via shell (used when ProcessName is not specified).
-		/// On Windows runs via cmd.exe /c, on Linux via bash -c.
-		/// </summary>
-		public string Command
-		{
-			get => _command;
-			set => SetProperty(ref _command, value);
-		}
-
-		private CancellationToken _cancellationToken = default;
-		/// <summary>
-		/// The cancellation token to use to kill the process.
-		/// </summary>
-		public CancellationToken CancellationToken
-		{
-			get => _cancellationToken;
-			set => SetProperty(ref _cancellationToken, value);
+			get => _descriptor;
+			set => SetProperty(ref _descriptor, value);
 		}
 
 		private bool _isRunning;

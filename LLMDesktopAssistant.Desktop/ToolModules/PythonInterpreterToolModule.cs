@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.IO;
+using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
@@ -21,7 +22,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		private readonly Chat _chat;
 		private readonly WorkingDirectoryAccessService _fileAccess;
 
-		public PythonInterpreterToolModule(Chat chat, WorkingDirectoryAccessService fileAccess)
+		public PythonInterpreterToolModule(Chat chat, WorkingDirectoryAccessService fileAccess, IProcessLauncher processLauncher)
+			: base(processLauncher)
 		{
 			_chat = chat;
 			_fileAccess = fileAccess;

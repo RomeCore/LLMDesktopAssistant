@@ -1,5 +1,6 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
+using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
@@ -12,7 +13,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	{
 		private readonly Chat _chat;
 
-		public ShellInterpreterToolModule(Chat chat)
+		public ShellInterpreterToolModule(Chat chat, IProcessLauncher processLauncher) : base(processLauncher)
 		{
 			_chat = chat;
 

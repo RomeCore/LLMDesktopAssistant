@@ -593,6 +593,11 @@ namespace LLMDesktopAssistant.Desktop.Execution
 
 				RaisePropertyChanged(TerminalProperty, _terminal, value);
 				this.RequestInvalidate();
+
+				// The view may have been arranged before the terminal was attached
+				// (e.g. with a default 80x24 terminal), so re-run layout to resize
+				// the newly attached terminal and PTY to the view's actual size.
+				InvalidateMeasure();
 			}
 		}
 
@@ -628,6 +633,10 @@ namespace LLMDesktopAssistant.Desktop.Execution
 
 				RaisePropertyChanged(PtyConnectionProperty, _ptyConnection, value);
 				this.RequestInvalidate();
+
+				// The PTY resize happens in ArrangeOverride, so force a layout pass
+				// to propagate the view's current size to the freshly attached PTY.
+				InvalidateMeasure();
 			}
 		}
 

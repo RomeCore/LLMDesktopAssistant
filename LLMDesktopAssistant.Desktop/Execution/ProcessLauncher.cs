@@ -266,6 +266,15 @@ namespace LLMDesktopAssistant.Desktop.Execution
 						var text = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 						terminal.Write(text);
 
+						// Keep the viewport pinned to the bottom unless a full-screen app
+						// (alternate buffer) is controlling the cursor itself.
+						if (terminal.ActiveBuffer != XTerm.Common.BufferType.Alternate)
+							terminal.Buffer.ScrollToBottom();
+
+						// Notify views so they can repaint — XTerm.Terminal.BufferChanged
+						// only fires on buffer switches, not on writes.
+						session.RaiseOutputUpdated();
+
 						// Collect complete lines for the session output.
 						pendingLine.Append(text);
 						while (true)

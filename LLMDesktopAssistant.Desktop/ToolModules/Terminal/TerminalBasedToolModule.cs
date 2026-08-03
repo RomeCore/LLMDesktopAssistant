@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using System.Text;
 using LLMDesktopAssistant.Desktop.Execution;
@@ -11,6 +12,17 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 	/// </summary>
 	public abstract class TerminalBasedToolModule : ToolModule
 	{
+		private readonly IProcessLauncher _processLauncher;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TerminalBasedToolModule"/> class.
+		/// </summary>
+		/// <param name="processLauncher">The process launcher used to start child processes.</param>
+		protected TerminalBasedToolModule(IProcessLauncher processLauncher)
+		{
+			_processLauncher = processLauncher;
+		}
+
 		/// <summary>
 		/// Runs a process with terminal output displayed in the chat message.
 		/// Creates a <see cref="TerminalAdditionalViewModel"/>, adds it to the message's
@@ -20,7 +32,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 		/// <param name="context">The tool execution context (provides access to the chat message).</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>A ReactiveToolResult with the process exit code.</returns>
-		protected Task<ReactiveToolResult> RunAsync(
+		protected async Task<ReactiveToolResult> RunAsync(
 			TerminalToolRunParameters parameters,
 			ToolExecutionContext context,
 			CancellationToken cancellationToken = default)
@@ -28,132 +40,105 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 			ArgumentNullException.ThrowIfNull(parameters);
 			ArgumentNullException.ThrowIfNull(context);
 
+			var message = context.Message;
+
+			var result = new ReactiveToolResult
+			{
+				StatusIcon = parameters.StatusIcon,
+				StatusTitle = parameters.StatusTitle
+			};
+
+			var (process, args) = ResolveProcessAndArgs(parameters);
+
+			ProcessDescriptor descriptor;
+			try
+			{
+				descriptor = _processLauncher.Launch(new ProcessLaunchParameters
+				{
+					ProcessName = process,
+					FileName = process,
+					Arguments = args.ToImmutableList(),
+					WorkingDirectory = parameters.WorkingDirectory ?? Environment.CurrentDirectory,
+					RunInTerminal = parameters.RunTerminal
+				}, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				result.ResultContent = $"Failed to launch process: {ex.Message}";
+				result.CompleteWithError();
+				return result;
+			}
+
+			TerminalAdditionalViewModel? viewModel = null;
 			if (parameters.RunTerminal)
-				return RunInTerminalAsync(parameters, context, cancellationToken);
+			{
+				viewModel = new TerminalAdditionalViewModel
+				{
+					Descriptor = descriptor,
+					IsRunning = true
+				};
+				viewModel.SetCancellationTokenSource(descriptor.CancellationTokenSource);
+				message.AdditionalViewModels.Add(viewModel);
+			}
+
+			int exitCode;
+			try
+			{
+				exitCode = await descriptor.ExitCodeTask.WaitAsync(cancellationToken);
+			}
+			catch (OperationCanceledException)
+			{
+				viewModel?.Cancel();
+				result.ResultContent = BuildOutput(descriptor);
+				result.CompleteWithError();
+				return result;
+			}
+
+			viewModel?.Complete(exitCode);
+			result.ResultContent = BuildOutput(descriptor);
+
+			if (exitCode == 0)
+			{
+				result.CompleteWithSuccess();
+			}
 			else
-				return RunNonTerminalAsync(parameters, context, cancellationToken);
+			{
+				result.ResultContent += $"\nProcess exited with code {exitCode}. Check terminal output above for details.";
+				result.CompleteWithError();
+			}
+
+			return result;
 		}
 
-		private async Task<ReactiveToolResult> RunNonTerminalAsync(
-			TerminalToolRunParameters parameters,
-			ToolExecutionContext context,
-			CancellationToken cancellationToken = default)
+		private static string BuildOutput(ProcessDescriptor descriptor)
 		{
-			var message = context.Message;
-			string process;
-			string[] args;
-			string? workDir = parameters.WorkingDirectory;
+			var lines = descriptor.TerminalSession?.Output ?? descriptor.Output?.Output;
+			if (lines == null || lines.Count == 0)
+				return string.Empty;
 
+			return string.Join(Environment.NewLine, lines);
+		}
+
+		private static (string Process, string[] Args) ResolveProcessAndArgs(TerminalToolRunParameters parameters)
+		{
 			if (!string.IsNullOrEmpty(parameters.ProcessName))
 			{
 				// Explicit process specified
-				process = parameters.ProcessName;
-				args = parameters.Arguments ?? [];
+				return (parameters.ProcessName, parameters.Arguments ?? []);
 			}
 			else if (!string.IsNullOrEmpty(parameters.Command))
 			{
 				// Run command via system shell
 				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-				{
-					process = "cmd.exe";
-					args = ["/c " + parameters.Command];
-				}
+					return ("cmd.exe", ["/c " + parameters.Command]);
 				else
-				{
-					process = "/bin/bash";
-					args = ["-c " + parameters.Command];
-				}
+					return ("/bin/bash", ["-c " + parameters.Command]);
 			}
 			else
 			{
 				// Default: open interactive shell
-				process = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash";
-				args = [];
+				return (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash", []);
 			}
-
-			var result = new ReactiveToolResult
-			{
-				StatusIcon = parameters.StatusIcon,
-				StatusTitle = parameters.StatusTitle
-			};
-
-			_ = Task.Run(async () =>
-			{
-				var executionResult = await ShellExecutor.ExecuteProcessAsync(process, string.Join(" ", args), workDir, cancellationToken);
-
-				var resultBuilder = new StringBuilder();
-				resultBuilder.Append(executionResult.StdOut);
-				if (!string.IsNullOrEmpty(executionResult.StdErr))
-				{
-					resultBuilder.AppendLine().AppendLine("STDERR:");
-					resultBuilder.Append(executionResult.StdErr);
-				}
-
-				result.ResultContent = resultBuilder.ToString();
-				result.CompleteWithSuccess();
-			}, cancellationToken);
-
-			return result;
-		}
-
-		private async Task<ReactiveToolResult> RunInTerminalAsync(
-			TerminalToolRunParameters parameters,
-			ToolExecutionContext context,
-			CancellationToken cancellationToken = default)
-		{
-			var message = context.Message;
-
-			var result = new ReactiveToolResult
-			{
-				StatusIcon = parameters.StatusIcon,
-				StatusTitle = parameters.StatusTitle
-			};
-
-			_ = Task.Run(async () =>
-			{
-				var viewModel = new TerminalAdditionalViewModel
-				{
-					ProcessName = parameters.ProcessName ?? string.Empty,
-					Arguments = parameters.Arguments ?? [],
-					Command = parameters.Command ?? string.Empty,
-					WorkingDirectory = parameters.WorkingDirectory,
-				};
-
-				message.AdditionalViewModels.Add(viewModel);
-
-				int exitCode;
-				try
-				{
-					// Wait for the process to complete
-					exitCode = await viewModel.ExitCodeTask.WaitAsync(cancellationToken);
-				}
-				catch (OperationCanceledException)
-				{
-					// User cancelled or token was cancelled
-					viewModel.Cancel();
-					result.ResultContent = viewModel.Output ?? string.Empty;
-					result.CompleteWithError();
-					return;
-				}
-
-				// Return result based on exit code
-				if (exitCode == 0)
-				{
-					result.ResultContent = viewModel.Output ?? string.Empty;
-					result.CompleteWithSuccess();
-					return;
-				}
-				else
-				{
-					result.ResultContent = viewModel.Output +
-						$"\nProcess exited with code {exitCode}. Check terminal output above for details.";
-					result.CompleteWithError();
-					return;
-				}
-			}, cancellationToken);
-
-			return result;
-
 		}
 	}
 }
