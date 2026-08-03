@@ -167,7 +167,7 @@ namespace LLMDesktopAssistant.Desktop.Services
 						{
 							ProcessName = "Python Meta",
 							FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
-							Arguments = [OperatingSystem.IsWindows() ? $"/c \"{command}\"" : $"-c \"{command}\""],
+							Arguments = OperatingSystem.IsWindows() ? [$"/c \"{command}\""] : ["-c", command],
 							VerbatimArguments = OperatingSystem.IsWindows(),
 							WorkingDirectory = workDir
 						}, cancellationToken);

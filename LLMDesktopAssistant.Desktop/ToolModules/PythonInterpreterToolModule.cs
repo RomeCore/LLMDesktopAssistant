@@ -152,7 +152,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 						ProcessName = "Python",
 						RunInTerminal = runTerminal,
 						FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
-						Arguments = [OperatingSystem.IsWindows() ? $"/c \"{command}\"" : $"-c \"{command}\""],
+						Arguments = OperatingSystem.IsWindows() ? [$"/c \"{command}\""] : ["-c", command],
 						VerbatimArguments = OperatingSystem.IsWindows(),
 						WorkingDirectory = workDir
 					}
@@ -236,7 +236,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					ProcessName = "Python",
 					RunInTerminal = runTerminal,
 					FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
-					Arguments = [OperatingSystem.IsWindows() ? $"/c \"{command}\"" : $"-c \"{command}\""],
+					Arguments = OperatingSystem.IsWindows() ? [$"/c \"{command}\""] : ["-c", command],
 					VerbatimArguments = OperatingSystem.IsWindows(),
 					WorkingDirectory = workDir
 				}
@@ -268,7 +268,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					ProcessName = "Python",
 					RunInTerminal = false,
 					FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
-					Arguments = [OperatingSystem.IsWindows() ? $"/c \"{command}\"" : $"-c \"{command}\""],
+					Arguments = OperatingSystem.IsWindows() ? [$"/c \"{command}\""] : ["-c", command],
 					VerbatimArguments = OperatingSystem.IsWindows(),
 					WorkingDirectory = workDir
 				}
