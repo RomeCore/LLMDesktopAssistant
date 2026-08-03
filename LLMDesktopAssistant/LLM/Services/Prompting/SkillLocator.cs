@@ -14,7 +14,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			// 1. Skill directories
 			List<string> potentialSkillDirectories = [];
 
-			potentialSkillDirectories.Add(Directories.Skills);
 			potentialSkillDirectories.AddRange(chat.Settings.Skills.AdditionalSkillDirectories);
 
 			string[] projectPaths;
@@ -33,6 +32,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				projectPaths = [chat.Settings.Environment.GetWorkingDirectory()];
 
 			List<string> sharedCheckPaths = [
+				$"{Directories.WorkingHome}/skills", // .llmassist/skills
 				".agents/skills",
 				".claude/skills",
 				".github/skills",
@@ -47,9 +47,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				potentialSkillDirectories.Add(potentialSkillDirectory);
 			}
 
-			List<string> projectCheckPaths = [
-				$"{Directories.WorkingHome}/skills"
-			];
+			List<string> projectCheckPaths = [];
+			projectCheckPaths.AddRange(sharedCheckPaths);
 			foreach (string projectPath in projectPaths)
 			{
 				foreach (string checkPath in projectCheckPaths.Concat(sharedCheckPaths))

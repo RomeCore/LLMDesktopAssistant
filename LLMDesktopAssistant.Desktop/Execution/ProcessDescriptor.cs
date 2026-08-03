@@ -2,7 +2,6 @@
 
 namespace LLMDesktopAssistant.Desktop.Execution
 {
-
 	public class ProcessDescriptor : NotifyPropertyChanged
 	{
 		/// <summary>

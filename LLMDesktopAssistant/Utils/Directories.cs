@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Utils
 		public const string WorkingHome = ".llmassist";
 
 		/// <summary>
-		/// The root directory of the application data, typically located at %LOCALAPPDATA%\LLMDesktopAssistant.
+		/// The root directory of the application data, typically located at %LOCALAPPDATA%\.llmassist.
 		/// </summary>
 		public static string LocalAppData { get; }
 
@@ -81,7 +81,7 @@ namespace LLMDesktopAssistant.Utils
 
 		static Directories()
 		{
-			LocalAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LLMDesktopAssistant");
+			LocalAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), WorkingHome);
 			TempFiles = Path.Combine(LocalAppData, "temp/");
 			LuaScripts = Path.Combine(LocalAppData, "scripts/lua/");
 			TempScripts = Path.Combine(LocalAppData, "temp/scripts/");
