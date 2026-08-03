@@ -1,4 +1,5 @@
-﻿using LLMDesktopAssistant.Settings;
+﻿using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Settings;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -7,6 +8,17 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// </summary>
 	public class ChatSettings : SettingsObject
 	{
+		private ChatAgentDescriptor _inheritedAgentSettings = new();
+		/// <summary>
+		/// Gets or sets the agent settings that will be used for inherted agent settings.
+		/// Example: agent inherits chat's tool settings.
+		/// </summary>
+		public ChatAgentDescriptor InheritedAgentSettings
+		{
+			get => _inheritedAgentSettings;
+			set => SetProperty(ref _inheritedAgentSettings, value);
+		}
+
 		private ChatUserSettings _userSettings = new();
 		/// <summary>
 		/// Settings for the users interacting with the chat.

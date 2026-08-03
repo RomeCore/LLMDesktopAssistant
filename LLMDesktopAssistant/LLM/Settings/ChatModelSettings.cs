@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Agents.ExecutionStages;
+using LLMDesktopAssistant.Settings.Application;
 using LLMDesktopAssistant.Tools.Implementations;
 
 namespace LLMDesktopAssistant.LLM.Settings
