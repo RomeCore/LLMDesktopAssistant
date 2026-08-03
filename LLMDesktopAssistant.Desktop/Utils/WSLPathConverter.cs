@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Desktop.Execution
+﻿namespace LLMDesktopAssistant.Desktop.Utils
 {
 	public static class WSLPathConverter
 	{

@@ -9,7 +9,7 @@ using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Scripting.Lua;
 
-namespace LLMDesktopAssistant.Desktop.Scripting
+namespace LLMDesktopAssistant.Desktop.Scripting.Lua
 {
 	/// <summary>
 	/// Lua API for process execution: <c>process.*</c>.
