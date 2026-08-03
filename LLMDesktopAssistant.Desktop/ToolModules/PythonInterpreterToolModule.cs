@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.InteropServices;
 using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
@@ -142,13 +143,19 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					command = $"python \"{pyFile}\"";
 
 				// Run in terminal
-				var result = await RunAsync(new TerminalToolRunParameters
+				var result = Run(new TerminalToolRunParameters
 				{
 					StatusIcon = MaterialIconKind.LanguagePython,
 					StatusTitle = null,
-					RunTerminal = runTerminal,
-					Command = command,
-					WorkingDirectory = workDir,
+					ProcessParameters = new ProcessLaunchParameters
+					{
+						ProcessName = "Python",
+						RunInTerminal = runTerminal,
+						FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
+						Arguments = [OperatingSystem.IsWindows() ? $"/c \"{command}\"" : $"-c \"{command}\""],
+						VerbatimArguments = OperatingSystem.IsWindows(),
+						WorkingDirectory = workDir
+					}
 				}, context, cancellationToken);
 
 				_ = result.Completion.ContinueWith(t =>
@@ -205,13 +212,13 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		/// Executes a shell command in the Python virtual environment via terminal.
 		/// Useful for pip install, pip list, etc.
 		/// </summary>
-		public Task<ReactiveToolResult> ExecuteVenvShell(
+		public ReactiveToolResult ExecuteVenvShell(
 			[Description("The shell command to run in the Python's virtual environment.")] string shell,
 			[Description("Whether to run the output in an embedded terminal emulator. Use `true` for long-running scripts.")] bool runTerminal,
 			ToolExecutionContext context,
 			CancellationToken cancellationToken = default)
 		{
-			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
+			var workDir = _fileAccess.GetWorkingDirectory();
 			var venvPath = _chat.Settings.Environment.PythonVenvActivateScriptPath;
 
 			string command;
@@ -220,13 +227,19 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			else
 				command = $"{shell}";
 
-			return RunAsync(new TerminalToolRunParameters
+			return Run(new TerminalToolRunParameters
 			{
 				StatusIcon = MaterialIconKind.LanguagePython,
 				StatusTitle = null,
-				RunTerminal = runTerminal,
-				Command = command,
-				WorkingDirectory = workDir,
+				ProcessParameters = new ProcessLaunchParameters
+				{
+					ProcessName = "Python",
+					RunInTerminal = runTerminal,
+					FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
+					Arguments = [OperatingSystem.IsWindows() ? $"/c \"{command}\"" : $"-c \"{command}\""],
+					VerbatimArguments = OperatingSystem.IsWindows(),
+					WorkingDirectory = workDir
+				}
 			}, context, cancellationToken);
 		}
 
@@ -234,10 +247,10 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		/// Gets the list of installed packages in the current Python virtual environment.
 		/// Still returns a simple ToolResult since it's a quick query, not a long-running process.
 		/// </summary>
-		public Task<ReactiveToolResult> GetInstalledPackagesList(
+		public ReactiveToolResult GetInstalledPackagesList(
 			ToolExecutionContext context, CancellationToken cancellationToken = default)
 		{
-			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
+			var workDir = _fileAccess.GetWorkingDirectory();
 			var venvPath = _chat.Settings.Environment.PythonVenvActivateScriptPath;
 
 			string command;
@@ -246,13 +259,19 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			else
 				command = $"pip list";
 
-			return RunAsync(new TerminalToolRunParameters
+			return Run(new TerminalToolRunParameters
 			{
 				StatusIcon = MaterialIconKind.LanguagePython,
 				StatusTitle = null,
-				RunTerminal = false,
-				Command = command,
-				WorkingDirectory = workDir,
+				ProcessParameters = new ProcessLaunchParameters
+				{
+					ProcessName = "Python",
+					RunInTerminal = false,
+					FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
+					Arguments = [OperatingSystem.IsWindows() ? $"/c \"{command}\"" : $"-c \"{command}\""],
+					VerbatimArguments = OperatingSystem.IsWindows(),
+					WorkingDirectory = workDir
+				}
 			}, context, cancellationToken);
 		}
 	}

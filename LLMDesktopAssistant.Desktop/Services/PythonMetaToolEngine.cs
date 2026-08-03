@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -6,6 +7,7 @@ using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Utils;
 using RCParsing;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -49,14 +51,14 @@ namespace LLMDesktopAssistant.Desktop.Services
 			_frontmatterParser = pb.Build();
 		}
 
-		private readonly PythonService _python;
+		private readonly IProcessLauncher _processLauncher;
 
 		public ScriptLanguageType Language => ScriptLanguageType.Python;
 		public string FileExtension => ".py";
 
-		public PythonMetaToolEngine(PythonService python)
+		public PythonMetaToolEngine(IProcessLauncher processLauncher)
 		{
-			_python = python;
+			_processLauncher = processLauncher;
 		}
 
 		private class FrontmatterDto
@@ -137,6 +139,9 @@ namespace LLMDesktopAssistant.Desktop.Services
 				try
 				{
 					string pythonCode = $"""
+						import sys
+						sys.stdout.reconfigure(encoding="utf-8")
+						sys.stderr.reconfigure(encoding="utf-8")
 						tool_args = {SerializeNodeToPython(args)}
 						{tool.ExecutionCode}
 						""";
@@ -145,18 +150,42 @@ namespace LLMDesktopAssistant.Desktop.Services
 					var workDir = chat.Settings.Environment.GetWorkingDirectory();
 					var activationScript = chat.Settings.Environment.PythonMetaVenvActivateScriptPath
 						?? chat.Settings.Environment.PythonVenvActivateScriptPath;
-					var result = await _python.RunScript(pythonCode, workDir, activationScript, cancellationToken);
 
-					var resultBuilder = new StringBuilder();
-					resultBuilder.Append(result.StdOut);
-					if (!string.IsNullOrEmpty(result.StdErr))
+					var tempPyFile = Path.GetFullPath(Path.Combine(Directories.TempScripts, $"{Guid.NewGuid()}.py"));
+					File.WriteAllText(tempPyFile, pythonCode);
+
+					ProcessDescriptor? process = null;
+					try
 					{
-						resultBuilder.AppendLine().AppendLine("Errors:");
-						resultBuilder.Append(result.StdErr);
-					}
+						string command;
+						if (!string.IsNullOrWhiteSpace(activationScript))
+							command = $"call \"{activationScript}\" && python \"{tempPyFile}\"";
+						else
+							command = $"python \"{tempPyFile}\"";
 
-					bool success = result.Success && !result.StdOut.StartsWith("error", StringComparison.OrdinalIgnoreCase);
-					return ReactiveToolResult.Create(success, resultBuilder.ToString().TrimEnd());
+						process = _processLauncher.Launch(new ProcessLaunchParameters
+						{
+							ProcessName = "Python Meta",
+							FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
+							Arguments = [OperatingSystem.IsWindows() ? $"/c \"{command}\"" : $"-c \"{command}\""],
+							VerbatimArguments = OperatingSystem.IsWindows(),
+							WorkingDirectory = workDir
+						}, cancellationToken);
+
+						int exitCode = await process;
+						return ReactiveToolResult.Create(exitCode == 0, process.Output + $"\nProcess exited with code {exitCode}. Check terminal output above for details.");
+					}
+					catch (Exception ex)
+					{
+						if (process != null)
+							return ReactiveToolResult.CreateError(process.Output + $"\nProcess finished with error: {ex.Message}");
+						else
+							return ReactiveToolResult.CreateError(ex.Message);
+					}
+					finally
+					{
+						File.Delete(tempPyFile);
+					}
 				}
 				catch (Exception ex)
 				{

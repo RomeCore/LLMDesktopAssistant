@@ -183,8 +183,8 @@
   <data name="execute-python_venv_shell" xml:space="preserve">
     <value>Выполнить Shell скрипт в виртуальном окружении Python</value>
   </data>
-  <data name="execute-shell" xml:space="preserve">
-    <value>Выполнить Shell скрипт</value>
+  <data name="shell-batch" xml:space="preserve">
+    <value>Выполнить Batch скрипт</value>
   </data>
   <data name="copy" xml:space="preserve">
     <value>Скопировать в буфер обмена</value>
@@ -351,10 +351,7 @@
   <data name="filesystem" xml:space="preserve">
     <value>Файловая система</value>
   </data>
-  <data name="execute-bash" xml:space="preserve">
-    <value>Выполнить Bash скрипт</value>
-  </data>
-  <data name="execute-powershell" xml:space="preserve">
+  <data name="shell-powershell" xml:space="preserve">
     <value>Выполнить Powershell скрипт</value>
   </data>
   <data name="settings" xml:space="preserve">
@@ -2630,5 +2627,8 @@
   </data>
   <data name="skill_injection_mode_full" xml:space="preserve">
     <value>Полное тело</value>
+  </data>
+  <data name="shell-bash" xml:space="preserve">
+    <value>Выполнить Bash скрипт</value>
   </data>
 </root>

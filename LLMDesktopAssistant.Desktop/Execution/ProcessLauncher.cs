@@ -47,8 +47,11 @@ namespace LLMDesktopAssistant.Desktop.Execution
 				StandardErrorEncoding = encoding,
 				StandardInputEncoding = stdinAvailable ? encoding : null,
 			};
-			foreach (var arg in parameters.Arguments)
-				psi.ArgumentList.Add(arg);
+			if (parameters.VerbatimArguments)
+				psi.Arguments = string.Join(" ", parameters.Arguments);
+			else
+				foreach (var arg in parameters.Arguments)
+					psi.ArgumentList.Add(arg);
 			foreach (var envVar in parameters.EnvironmentVariables)
 				psi.Environment.Add(envVar);
 
@@ -157,10 +160,10 @@ namespace LLMDesktopAssistant.Desktop.Execution
 				Cols = terminal.Cols,
 				Rows = terminal.Rows,
 				Cwd = parameters.WorkingDirectory,
-				VerbatimCommandLine = true
+				VerbatimCommandLine = parameters.VerbatimArguments
 			};
 			if (parameters.Arguments.Count > 0)
-				ptyOptions.CommandLine = parameters.Arguments.ToArray();
+				ptyOptions.CommandLine = [.. parameters.Arguments];
 			if (parameters.EnvironmentVariables.Count > 0)
 			{
 				var environment = new Dictionary<string, string>();

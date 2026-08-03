@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
 
@@ -19,33 +20,13 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 		public string? StatusTitle { get; init; }
 
 		/// <summary>
-		/// Whether to run the terminal with interactive UI or just run an external process.
-		/// If true, a full interactive shell is launched. If false, just runs the command.
+		/// Whether to wait for the process to complete before returning.
 		/// </summary>
-		public bool RunTerminal { get; init; }
+		public bool Wait { get; init; } = true;
 
 		/// <summary>
-		/// The name of the process to run in the terminal.
-		/// If not provided and <see cref="Command"/> is set, uses system shell (cmd/bash).
-		/// If neither is set, opens default shell.
+		/// The parameters for launching the process.
 		/// </summary>
-		public string? ProcessName { get; init; }
-
-		/// <summary>
-		/// Arguments for the process. Used only when <see cref="ProcessName"/> is set.
-		/// </summary>
-		public string[]? Arguments { get; init; }
-
-		/// <summary>
-		/// The command to run in the terminal via system shell.
-		/// On Windows runs via cmd.exe /c, on Linux via bash -c.
-		/// Ignored if <see cref="ProcessName"/> is set.
-		/// </summary>
-		public string? Command { get; init; }
-
-		/// <summary>
-		/// The working directory to run the process in.
-		/// </summary>
-		public string? WorkingDirectory { get; init; }
+		public required ProcessLaunchParameters ProcessParameters { get; init; }
 	}
 }

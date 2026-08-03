@@ -20,6 +20,11 @@ namespace LLMDesktopAssistant.Desktop.Execution
 		public required ImmutableList<string> Arguments { get; init; }
 
 		/// <summary>
+		/// Whether to pass arguments verbatim (without escaping). This is useful for passing file paths that may contain spaces or special characters.
+		/// </summary>
+		public bool VerbatimArguments { get; init; } = false;
+
+		/// <summary>
 		/// The working directory for the process.
 		/// </summary>
 		public required string WorkingDirectory { get; init; }

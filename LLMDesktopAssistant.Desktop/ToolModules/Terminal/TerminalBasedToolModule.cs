@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Tools;
+using Serilog;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 {
@@ -31,7 +32,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 		/// <param name="context">The tool execution context (provides access to the chat message).</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
 		/// <returns>A ReactiveToolResult with the process exit code.</returns>
-		protected async Task<ReactiveToolResult> RunAsync(
+		protected ReactiveToolResult Run(
 			TerminalToolRunParameters parameters,
 			ToolExecutionContext context,
 			CancellationToken cancellationToken = default)
@@ -47,19 +48,10 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 				StatusTitle = parameters.StatusTitle
 			};
 
-			var (process, args) = ResolveProcessAndArgs(parameters);
-
 			ProcessDescriptor descriptor;
 			try
 			{
-				descriptor = _processLauncher.Launch(new ProcessLaunchParameters
-				{
-					ProcessName = process,
-					FileName = process,
-					Arguments = args.ToImmutableList(),
-					WorkingDirectory = parameters.WorkingDirectory ?? Environment.CurrentDirectory,
-					RunInTerminal = parameters.RunTerminal
-				}, cancellationToken);
+				descriptor = _processLauncher.Launch(parameters.ProcessParameters, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -68,74 +60,69 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 				return result;
 			}
 
-			TerminalAdditionalViewModel? viewModel = null;
-			if (parameters.RunTerminal)
+			Task.Run(async () =>
 			{
-				viewModel = new TerminalAdditionalViewModel
+				TerminalAdditionalViewModel? viewModel = null;
+				if (parameters.ProcessParameters.RunInTerminal)
 				{
-					Descriptor = descriptor,
-					IsRunning = true
-				};
-				viewModel.SetCancellationTokenSource(descriptor.CancellationTokenSource);
-				message.AdditionalViewModels.Add(viewModel);
-			}
+					viewModel = new TerminalAdditionalViewModel
+					{
+						Descriptor = descriptor,
+						IsRunning = true
+					};
+					viewModel.SetCancellationTokenSource(descriptor.CancellationTokenSource);
+					message.AdditionalViewModels.Add(viewModel);
+				}
 
-			int exitCode;
-			try
-			{
-				exitCode = await descriptor.ExitCodeTask.WaitAsync(cancellationToken);
-			}
-			catch (OperationCanceledException)
-			{
-				viewModel?.Cancel();
-				result.ResultContent = BuildOutput(descriptor);
-				result.CompleteWithError();
-				return result;
-			}
+				if (parameters.Wait)
+				{
+					int exitCode;
+					try
+					{
+						exitCode = await descriptor.ExitCodeTask.WaitAsync(cancellationToken);
+					}
+					catch (OperationCanceledException)
+					{
+						viewModel?.Cancel();
+						result.ResultContent = descriptor.Output;
+						result.CompleteWithError();
+						return;
+					}
 
-			viewModel?.Complete(exitCode);
-			result.ResultContent = BuildOutput(descriptor);
+					viewModel?.Complete(exitCode);
+					result.ResultContent = descriptor.Output;
 
-			if (exitCode == 0)
-			{
-				result.CompleteWithSuccess();
-			}
-			else
-			{
-				result.ResultContent += $"\nProcess exited with code {exitCode}. Check terminal output above for details.";
-				result.CompleteWithError();
-			}
+					if (exitCode == 0)
+					{
+						result.CompleteWithSuccess();
+						return;
+					}
+					else
+					{
+						result.ResultContent += $"\nProcess exited with code {exitCode}. Check terminal output above for details.";
+						result.CompleteWithError();
+						return;
+					}
+				}
+				else
+				{
+					async void FireAndForgetTask()
+					{
+						try
+						{
+							viewModel?.Complete(await descriptor.ExitCodeTask);
+						}
+						catch (Exception ex)
+						{
+							Log.Error(ex, "Error waiting for process exit code: {Error}", ex.Message);
+						}
+					}
+					FireAndForgetTask();
+					result.CompleteWithSuccess();
+				}
+			}, CancellationToken.None);
 
 			return result;
-		}
-
-		private static string BuildOutput(ProcessDescriptor descriptor)
-		{
-			if (descriptor.TerminalSession != null)
-				return descriptor.TerminalSession.Output;
-			return string.Join(Environment.NewLine, descriptor.PlainOutput!.Output);
-		}
-
-		private static (string Process, string[] Args) ResolveProcessAndArgs(TerminalToolRunParameters parameters)
-		{
-			if (!string.IsNullOrEmpty(parameters.ProcessName))
-			{
-				// Explicit process specified
-				return (parameters.ProcessName, parameters.Arguments ?? []);
-			}
-			else if (!string.IsNullOrEmpty(parameters.Command))
-			{
-				// Run command via system shell
-				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-					return ("cmd.exe", ["/c " + parameters.Command]);
-				else
-					return ("/bin/bash", ["-c " + parameters.Command]);
-			}
-			else
-			{
-				// Default: open interactive shell
-				return (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash", []);
-			}
 		}
 	}
 }

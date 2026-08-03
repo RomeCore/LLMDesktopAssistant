@@ -183,8 +183,8 @@
   <data name="execute-python_venv_shell" xml:space="preserve">
     <value>Execute Shell script in Python virt. environment</value>
   </data>
-  <data name="execute-shell" xml:space="preserve">
-    <value>Execute Shell script</value>
+  <data name="shell-batch" xml:space="preserve">
+    <value>Execute Batch script</value>
   </data>
   <data name="copy" xml:space="preserve">
     <value>Copy to clipboard</value>
@@ -351,10 +351,7 @@
   <data name="filesystem" xml:space="preserve">
     <value>File system</value>
   </data>
-  <data name="execute-bash" xml:space="preserve">
-    <value>Execute Bash script</value>
-  </data>
-  <data name="execute-powershell" xml:space="preserve">
+  <data name="shell-powershell" xml:space="preserve">
     <value>Execute Powershell script</value>
   </data>
   <data name="settings" xml:space="preserve">
@@ -2630,5 +2627,8 @@
   </data>
   <data name="skill_injection_mode_full" xml:space="preserve">
     <value>Full Body</value>
+  </data>
+  <data name="shell-bash" xml:space="preserve">
+    <value>Execute Bash script</value>
   </data>
 </root>
