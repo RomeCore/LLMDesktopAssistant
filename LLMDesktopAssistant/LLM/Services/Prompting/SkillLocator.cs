@@ -51,7 +51,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			projectCheckPaths.AddRange(sharedCheckPaths);
 			foreach (string projectPath in projectPaths)
 			{
-				foreach (string checkPath in projectCheckPaths.Concat(sharedCheckPaths))
+				foreach (string checkPath in projectCheckPaths)
 				{
 					var potentialSkillDirectory = Path.Combine(projectPath, checkPath);
 					potentialSkillDirectories.Add(potentialSkillDirectory);
