@@ -24,9 +24,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		/// Renders a system prompt for the given agent.
 		/// </summary>
 		/// <param name="agent">The agent to render the system prompt for.</param>
-		/// <param name="summaryOfPrevMessages">Optional summary of latest messages to include in the system prompt.</param>
 		/// <returns>The rendered system prompt.</returns>
-		string RenderSystemPrompt(ChatAgentDescriptor agent, string? summaryOfPrevMessages = null);
+		string RenderSystemPrompt(ChatAgentDescriptor agent);
 
 		/// <summary>
 		/// Builds a list of messages for the LLM chat input.

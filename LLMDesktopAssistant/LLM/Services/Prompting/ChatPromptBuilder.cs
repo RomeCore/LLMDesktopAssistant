@@ -132,13 +132,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			return true;
 		}
 
-		public string RenderSystemPrompt(ChatAgentDescriptor agent, string? summaryOfPrevMessages = null)
+		public string RenderSystemPrompt(ChatAgentDescriptor agent)
 		{
-			return BuildSystemPrompt(summaryOfPrevMessages, agent, GetTemplateFunctions());
+			return BuildSystemPrompt(agent, GetTemplateFunctions());
 		}
 
-		private string BuildSystemPrompt(string? summaryOfPrevMessages,
-			ChatAgentDescriptor agent, TemplateFunctionSet functions)
+		private string BuildSystemPrompt(ChatAgentDescriptor agent, TemplateFunctionSet functions)
 		{
 			var language = GetCurrentLanguageMetadata();
 			var template = templates.TryRetrieveBestAllWithFallback("system_prompt", language)?.LastOrDefault() as ITextTemplate;
@@ -172,7 +171,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			generalContext["persona"] = promptSettings.UseCustomPersona ?
 				promptSettings.CustomPersona :
 				(promptSettings.PersonaId != null ? promptRegistry.GetPersona(promptSettings.PersonaId.Value)?.Template.Template.Render(componentsContext) : null);
-			generalContext["summary"] = string.IsNullOrWhiteSpace(summaryOfPrevMessages) ? null : summaryOfPrevMessages;
 			generalContext["skills"] = skillsetBuilder.GetSkillsForAgent(agent).Select(s => new
 			{
 				name = s.Name,
@@ -510,7 +508,13 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				}
 			}
 
-			string systemPrompt = BuildSystemPrompt(summaryOfPrevMessages, agent, functions);
+			string systemPrompt = BuildSystemPrompt(agent, functions);
+			if (summaryOfPrevMessages != null)
+				result.Insert(0, new RCLargeLanguageModels.Messages.UserMessage(Senders.User, $"""
+					<summary>
+					{summaryOfPrevMessages}
+					</summary>
+					"""));
 			result.Insert(0, new SystemMessage(systemPrompt));
 
 			return result;

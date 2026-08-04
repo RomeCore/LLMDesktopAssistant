@@ -38,12 +38,6 @@
 		Your alternate name is:
 		@assistantNickname
 	}
-	@if summary
-	{
-		<previous_conversation_summary>
-		@summary
-		</previous_conversation_summary>
-	}
 	@if skills
 	{
 		<available_skills>
