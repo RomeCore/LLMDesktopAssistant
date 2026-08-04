@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Text.Json.Nodes;
+using DocumentFormat.OpenXml.Wordprocessing;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting;
@@ -14,6 +16,14 @@ namespace LLMDesktopAssistant.Tools.Meta
 	[ChatService(typeof(IMetaToolManagementService))]
 	public class MetaToolManagementService : IMetaToolManagementService
 	{
+		private class MetaToolCacheEntry
+		{
+			public required DateTime LastWriteTime { get; init; }
+			public required MetaTool MetaTool { get; init; }
+		}
+
+		private readonly ConcurrentDictionary<string, MetaToolCacheEntry> _cache = [];
+
 		private readonly Chat _chat;
 		private readonly IMetaToolSerializer _serializer;
 		private readonly Dictionary<string, IMetaToolEngine> _enginesByExtension;
@@ -229,9 +239,28 @@ namespace LLMDesktopAssistant.Tools.Meta
 
 		private MetaTool DeserializeToolFile(string filePath, bool isLocal, IMetaToolEngineDescriptor engineDescriptor)
 		{
-			var content = File.ReadAllText(filePath);
-			var name = Path.GetFileNameWithoutExtension(filePath);
-			return _serializer.Deserialize(content, name, isLocal, engineDescriptor);
+			var fileInfo = new FileInfo(filePath);
+
+			MetaToolCacheEntry CreateCacheEntry()
+			{
+				var content = File.ReadAllText(filePath);
+				var name = Path.GetFileNameWithoutExtension(filePath);
+				return new MetaToolCacheEntry
+				{
+					MetaTool = _serializer.Deserialize(content, name, isLocal, engineDescriptor),
+					LastWriteTime = fileInfo.LastWriteTime
+				};
+			}
+
+			return _cache.AddOrUpdate(filePath, filePath =>
+			{
+				return CreateCacheEntry();
+			}, (filePath, entry) =>
+			{
+				if (fileInfo.LastWriteTime == entry.LastWriteTime)
+					return entry;
+				return CreateCacheEntry();
+			}).MetaTool;
 		}
 
 		private void WriteToolFile(MetaTool tool, IMetaToolEngineDescriptor engineDescriptor, string? filePath)
@@ -245,6 +274,12 @@ namespace LLMDesktopAssistant.Tools.Meta
 					filePath = Path.Combine(Directories.Metatools, tool.Name + engineDescriptor.MainExtension);
 			}
 			File.WriteAllText(filePath, content);
+			var fileInfo = new FileInfo(filePath);
+			_cache[filePath] = new MetaToolCacheEntry
+			{
+				MetaTool = tool,
+				LastWriteTime = fileInfo.LastWriteTime
+			};
 		}
 
 		private (string? Path, bool IsLocal) FindToolFile(string name)
