@@ -19,12 +19,12 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	/// Replaces PythonInterpreterToolModule with terminal UI support.
 	/// </summary>
 	[ToolModule]
-	public class PythonInterpreterToolModule : TerminalBasedToolModule
+	public class PythonExecutionToolModule : TerminalBasedToolModule
 	{
 		private readonly Chat _chat;
 		private readonly WorkingDirectoryAccessService _fileAccess;
 
-		public PythonInterpreterToolModule(Chat chat, WorkingDirectoryAccessService fileAccess, IProcessLauncher processLauncher)
+		public PythonExecutionToolModule(Chat chat, WorkingDirectoryAccessService fileAccess, IProcessLauncher processLauncher)
 			: base(processLauncher)
 		{
 			_chat = chat;
