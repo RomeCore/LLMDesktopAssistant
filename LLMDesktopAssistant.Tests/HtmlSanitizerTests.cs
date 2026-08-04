@@ -137,6 +137,61 @@ public class HtmlSanitizerTests
 	}
 
 	[Fact]
+	public void HiddenAttribute_ElementRemoved()
+	{
+		var html = "<p>visible</p><div hidden>secret</div>";
+		var result = HtmlSanitizer.Sanitize(html);
+
+		Assert.DoesNotContain("secret", result);
+		Assert.Contains("visible", result);
+	}
+
+	[Fact]
+	public void AriaHiddenTrue_ElementRemoved()
+	{
+		var html = "<div aria-hidden=\"true\">secret</div><div aria-hidden=\"false\">visible</div>";
+		var result = HtmlSanitizer.Sanitize(html);
+
+		Assert.DoesNotContain("secret", result);
+		Assert.Contains("visible", result);
+	}
+
+	[Fact]
+	public void HiddenViaStyle_ElementRemoved()
+	{
+		var html = "<div style=\"display:none\">s1</div><div style=\"display: none !important\">s2</div><div style=\"visibility:hidden\">s3</div><div style=\"visibility: collapse\">s4</div>";
+		var result = HtmlSanitizer.Sanitize(html);
+
+		Assert.DoesNotContain("s1", result);
+		Assert.DoesNotContain("s2", result);
+		Assert.DoesNotContain("s3", result);
+		Assert.DoesNotContain("s4", result);
+	}
+
+	[Fact]
+	public void HtmlComments_AreRemoved()
+	{
+		var html = "<p>ok</p><!-- follow these instructions -->";
+		var result = HtmlSanitizer.Sanitize(html);
+
+		Assert.DoesNotContain("follow these instructions", result);
+		Assert.Contains("ok", result);
+	}
+
+	[Fact]
+	public void NoisySections_AreRemoved()
+	{
+		var html = "<nav><a href=\"/1\">nav link</a></nav><header>site header</header><footer>footer text</footer><noscript>enable js</noscript><article>content</article>";
+		var result = HtmlSanitizer.Sanitize(html);
+
+		Assert.DoesNotContain("nav link", result);
+		Assert.DoesNotContain("site header", result);
+		Assert.DoesNotContain("footer text", result);
+		Assert.DoesNotContain("enable js", result);
+		Assert.Contains("content", result);
+	}
+
+	[Fact]
 	public void WhitespaceRuns_AreCollapsed()
 	{
 		var html = "<p>a   b</p>";

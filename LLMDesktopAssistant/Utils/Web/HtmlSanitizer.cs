@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using RCParsing;
@@ -5,9 +6,10 @@ using RCParsing;
 namespace LLMDesktopAssistant.Utils.Web
 {
 	/// <summary>
-	/// Sanitizes HTML strings by removing dangerous elements, attributes and URL schemes.
-	/// Parsing and serialization are done with AngleSharp; the whitelist-based rules
-	/// mirror the behavior of the previously used Ganss.Xss.HtmlSanitizer package.
+	/// Sanitizes HTML strings for LLM consumption: removes dangerous elements, attributes and URL schemes,
+	/// hidden content and HTML comments (common prompt injection vectors), and noisy sections
+	/// such as <c>nav</c>, <c>footer</c>, <c>header</c> and <c>noscript</c>.
+	/// Parsing and serialization are done with AngleSharp.
 	/// </summary>
 	public static class HtmlSanitizer
 	{
@@ -20,10 +22,10 @@ namespace LLMDesktopAssistant.Utils.Web
 			"b", "bdi", "bdo", "big", "blockquote", "body", "br", "button", "canvas",
 			"caption", "center", "cite", "code", "col", "colgroup", "data", "datalist",
 			"dd", "del", "details", "dfn", "dialog", "div", "dl", "dt", "em",
-			"fieldset", "figcaption", "figure", "font", "footer", "form", "h1", "h2",
-			"h3", "h4", "h5", "h6", "head", "header", "hr", "html", "i", "img",
+			"fieldset", "figcaption", "figure", "font", "form", "h1", "h2",
+			"h3", "h4", "h5", "h6", "head", "hr", "html", "i", "img",
 			"input", "ins", "kbd", "label", "legend", "li", "link", "main", "map",
-			"mark", "menu", "meter", "nav", "ol", "optgroup", "option", "output", "p",
+			"mark", "menu", "meter", "ol", "optgroup", "option", "output", "p",
 			"picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
 			"section", "select", "slot", "small", "source", "span", "strike", "strong",
 			"sub", "summary", "sup", "table", "tbody", "td", "textarea", "tfoot", "th",
@@ -68,6 +70,10 @@ namespace LLMDesktopAssistant.Utils.Web
 			"http", "https", "mailto"
 		};
 
+		private static readonly Regex _hiddenStyleRegex = new(
+			@"(?:display\s*:\s*none|visibility\s*:\s*(?:hidden|collapse))",
+			RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
 		private static readonly HtmlParser _parser = new();
 		private static readonly Parser _postSanitizer;
 
@@ -102,7 +108,7 @@ namespace LLMDesktopAssistant.Utils.Web
 
 			foreach (var element in document.All.ToArray())
 			{
-				if (!_allowedTags.Contains(element.LocalName))
+				if (!_allowedTags.Contains(element.LocalName) || IsHiddenElement(element))
 				{
 					element.Remove();
 					continue;
@@ -115,9 +121,26 @@ namespace LLMDesktopAssistant.Utils.Web
 				}
 			}
 
+			foreach (var comment in document.Descendants<IComment>().ToArray())
+				comment.Remove();
+
 			html = document.DocumentElement?.OuterHtml ?? string.Empty;
 			return _postSanitizer.ReplaceAllMatches(html);
 		}
+
+		private static bool IsHiddenElement(IElement element)
+		{
+			if (element.HasAttribute("hidden"))
+				return true;
+
+			var ariaHidden = element.GetAttribute("aria-hidden");
+			if (ariaHidden is not null && ariaHidden.Trim().Equals("true", StringComparison.OrdinalIgnoreCase))
+				return true;
+
+			var style = element.GetAttribute("style");
+			return style is not null && _hiddenStyleRegex.IsMatch(style);
+		}
+
 
 		private static bool IsAllowedAttribute(IAttr attribute)
 		{
