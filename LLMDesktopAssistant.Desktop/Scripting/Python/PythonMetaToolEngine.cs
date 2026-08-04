@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Desktop.Execution;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
@@ -12,7 +13,7 @@ using RCParsing;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace LLMDesktopAssistant.Desktop.Services
+namespace LLMDesktopAssistant.Desktop.Scripting.Python
 {
 	/// <summary>
 	/// Python implementation of <see cref="IMetaToolEngine"/>.
@@ -148,8 +149,9 @@ namespace LLMDesktopAssistant.Desktop.Services
 
 					var chat = context.Chat;
 					var workDir = chat.Settings.Environment.GetWorkingDirectory();
-					var activationScript = chat.Settings.Environment.PythonMetaVenvActivateScriptPath
-						?? chat.Settings.Environment.PythonVenvActivateScriptPath;
+					var pythonConfig = chat.Settings.Environment.EnsureAdditional<PythonEnvironmentConfiguration>();
+					var activationScript = pythonConfig.PythonMetaVenvActivateScriptPath
+						?? pythonConfig.PythonVenvActivateScriptPath;
 
 					var tempPyFile = Path.GetFullPath(Path.Combine(Directories.TempScripts, $"{Guid.NewGuid()}.py"));
 					File.WriteAllText(tempPyFile, pythonCode);

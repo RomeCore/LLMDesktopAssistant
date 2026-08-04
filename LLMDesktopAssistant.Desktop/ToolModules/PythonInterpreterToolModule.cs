@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using LLMDesktopAssistant.Desktop.Execution;
+using LLMDesktopAssistant.Desktop.Scripting.Python;
 using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
@@ -94,7 +95,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			CancellationToken cancellationToken = default)
 		{
 			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
-			var venvPath = _chat.Settings.Environment.PythonVenvActivateScriptPath;
+			var pythonConfig = _chat.Settings.Environment.EnsureAdditional<PythonEnvironmentConfiguration>();
+			var venvPath = pythonConfig.PythonVenvActivateScriptPath;
 
 			string pyFile;
 			bool isTemporaryFile;
@@ -219,7 +221,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			CancellationToken cancellationToken = default)
 		{
 			var workDir = _fileAccess.GetWorkingDirectory();
-			var venvPath = _chat.Settings.Environment.PythonVenvActivateScriptPath;
+			var pythonConfig = _chat.Settings.Environment.EnsureAdditional<PythonEnvironmentConfiguration>();
+			var venvPath = pythonConfig.PythonVenvActivateScriptPath;
 
 			string command;
 			if (!string.IsNullOrWhiteSpace(venvPath))
@@ -251,7 +254,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			ToolExecutionContext context, CancellationToken cancellationToken = default)
 		{
 			var workDir = _fileAccess.GetWorkingDirectory();
-			var venvPath = _chat.Settings.Environment.PythonVenvActivateScriptPath;
+			var pythonConfig = _chat.Settings.Environment.EnsureAdditional<PythonEnvironmentConfiguration>();
+			var venvPath = pythonConfig.PythonVenvActivateScriptPath;
 
 			string command;
 			if (!string.IsNullOrWhiteSpace(venvPath))

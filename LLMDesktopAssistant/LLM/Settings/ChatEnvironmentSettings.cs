@@ -64,25 +64,17 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => _additionalSettings.Reset(value);
 		}
 
-		private string? _pythonVenvActivateScriptPath;
 		/// <summary>
-		/// The path to the script that activates a python virtual environment.
+		/// Returns an additional environment setting of type <typeparamref name="T"/>. If no such setting exists, a new one is created and added to the collection.
 		/// </summary>
-		public string? PythonVenvActivateScriptPath
+		/// <typeparam name="T">The type of the additional environment setting. Must inherit from <see cref="AdditionalEnvironmentSetting"/> and have a parameterless constructor.</typeparam>
+		/// <returns>The additional environment setting of type <typeparamref name="T"/>.</returns>
+		public T EnsureAdditional<T>() where T : AdditionalEnvironmentSetting, new()
 		{
-			get => _pythonVenvActivateScriptPath;
-			set => SetProperty(ref _pythonVenvActivateScriptPath, value);
-		}
-
-		private string? _pythonMetaVenvActivateScriptPath;
-		/// <summary>
-		/// The path to the script that activates a python virtual environment.
-		/// Used for meta-tools. If null, the <see cref="PythonMetaVenvActivateScriptPath"/> will be used.
-		/// </summary>
-		public string? PythonMetaVenvActivateScriptPath
-		{
-			get => _pythonMetaVenvActivateScriptPath;
-			set => SetProperty(ref _pythonMetaVenvActivateScriptPath, value);
+			if (AdditionalSettings.FirstOrDefault(s => s is T) is T found) return found;
+			found = new();
+			AdditionalSettings.Add(found);
+			return found;
 		}
 	}
 }

@@ -325,95 +325,32 @@
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
+
+		<ItemsControl ItemsSource="{Binding AdditionalEnvironmentSettings}">
+
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Vertical" Spacing="8"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Vertical" Spacing="8">
+						
+						<!-- Separator -->
+						<Rectangle Height="1"
+											 Fill="{DynamicResource DefaultForeground}"
+											 Opacity="0.2"/>
+
+						<ContentControl Content="{Binding}"/>
+
+					</StackPanel>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+
+		</ItemsControl>
 		
-		<!-- Separator -->
-		<Rectangle Height="1"
-							 Fill="{DynamicResource DefaultForeground}"
-							 Opacity="0.2"/>
-
-		<!-- ============================================================ -->
-		<!-- PYTHON ENVIRONMENTS -->
-		<!-- ============================================================ -->
-		<TextBlock Text="{loc:Loc env_python_environments}"
-							 FontSize="{DynamicResource FontSizeL}"
-							 FontWeight="Bold"/>
-
-		<TextBlock Text="{loc:Loc env_python_hint}"
-						Opacity="0.6"
-						TextWrapping="Wrap"
-						Margin="0,4,0,8"/>
-
-		<!-- Python venv path -->
-		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-						BorderThickness="1"
-						CornerRadius="4"
-						Padding="8"
-						Margin="0,0,0,8">
-			<StackPanel Spacing="6">
-				<TextBlock Text="{loc:Loc env_python_venv_script}"
-									 FontWeight="Medium"
-									 Margin="0,0,0,2"/>
-				<Grid ColumnDefinitions="*,Auto,Auto">
-					<TextBox Grid.Column="0"
-									 Text="{Binding EnvironmentSettings.PythonVenvActivateScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-									 PlaceholderText="{loc:Loc env_python_venv_hint}"
-									 UseFloatingPlaceholder="True"
-									 VerticalContentAlignment="Center"/>
-
-					<Button Grid.Column="1"
-									Margin="8,0,0,0"
-									Classes="IconButton"
-									Command="{Binding SelectPythonVenvActivateScriptPathCommand}"
-									ToolTip.Tip="{loc:Loc env_select_script}">
-						<ico:MaterialIcon Kind="FolderOpen"/>
-					</Button>
-
-					<Button Grid.Column="2"
-									Margin="8,0,0,0"
-									Classes="IconButton"
-									Command="{Binding OpenPythonVenvActivateScriptPathCommand}"
-									ToolTip.Tip="{loc:Loc env_open_in_explorer}">
-						<ico:MaterialIcon Kind="OpenInNew"/>
-					</Button>
-				</Grid>
-			</StackPanel>
-		</Border>
-
-		<!-- Python meta venv path -->
-		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-						BorderThickness="1"
-						CornerRadius="4"
-						Padding="8"
-						Margin="0,0,0,8">
-			<StackPanel Spacing="6">
-				<TextBlock Text="{loc:Loc env_python_meta_venv_script}"
-									 FontWeight="Medium"
-									 Margin="0,0,0,2"/>
-				<Grid ColumnDefinitions="*,Auto,Auto">
-					<TextBox Grid.Column="0"
-									 Text="{Binding EnvironmentSettings.PythonMetaVenvActivateScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-									 PlaceholderText="{loc:Loc env_python_meta_venv_hint}"
-									 UseFloatingPlaceholder="True"
-									 VerticalContentAlignment="Center"/>
-
-					<Button Grid.Column="1"
-									Margin="8,0,0,0"
-									Classes="IconButton"
-									Command="{Binding SelectPythonMetaVenvActivateScriptPathCommand}"
-									ToolTip.Tip="{loc:Loc env_select_script}">
-						<ico:MaterialIcon Kind="FolderOpen"/>
-					</Button>
-
-					<Button Grid.Column="2"
-									Margin="8,0,0,0"
-									Classes="IconButton"
-									Command="{Binding OpenPythonMetaVenvActivateScriptPathCommand}"
-									ToolTip.Tip="{loc:Loc env_open_in_explorer}">
-						<ico:MaterialIcon Kind="OpenInNew"/>
-					</Button>
-				</Grid>
-			</StackPanel>
-		</Border>
 
 	</StackPanel>
 

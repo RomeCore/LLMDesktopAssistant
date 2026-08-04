@@ -3,6 +3,9 @@ using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Utils;
+using System.ComponentModel;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -13,7 +16,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 	[ViewModelFor(typeof(ChatEnvironmentSettingsView))]
 	public class ChatEnvironmentSettingsViewModel : ViewModelBase
 	{
+		private List<IScriptEngineEnvConfigurationProvider> _scriptEngineConfigProviders;
+		private readonly IExplorerOpener? _explorerOpener;
+
 		public ChatEnvironmentSettings EnvironmentSettings { get; }
+
+		public ImmutableList<INotifyPropertyChanged> AdditionalEnvironmentSettings { get; }
 
 		public IRelayCommand AddWorkingDirectoryCommand { get; }
 		public IRelayCommand<WorkingDirectorySetting> RemoveWorkingDirectoryCommand { get; }
@@ -29,18 +37,29 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 		public IRelayCommand<string?> OpenDirectoryCommand { get; }
 
-		// Python venv commands (unchanged)
-		public IRelayCommand SelectPythonVenvActivateScriptPathCommand { get; }
-		public IRelayCommand OpenPythonVenvActivateScriptPathCommand { get; }
-		public IRelayCommand SelectPythonMetaVenvActivateScriptPathCommand { get; }
-		public IRelayCommand OpenPythonMetaVenvActivateScriptPathCommand { get; }
-
-		private readonly IExplorerOpener? _explorerOpener;
-
-		public ChatEnvironmentSettingsViewModel(ChatEnvironmentSettings settings)
+		public ChatEnvironmentSettingsViewModel(ChatEnvironmentSettings settings,
+			IEnumerable<IScriptEngineEnvConfigurationProvider> scriptEngineConfigProviders, IExplorerOpener? explorerOpener)
 		{
+			_scriptEngineConfigProviders = scriptEngineConfigProviders.ToList();
+			_explorerOpener = explorerOpener;
+
+			var additionalEnvBuilder = ImmutableList.CreateBuilder<INotifyPropertyChanged>();
+
+			foreach (var provider in _scriptEngineConfigProviders)
+			{
+				var foundConfig = provider.FindConfiguration(settings.AdditionalSettings);
+				if (foundConfig is null)
+				{
+					foundConfig = provider.CreateConfiguration();
+					settings.AdditionalSettings.Add(foundConfig);
+				}
+				var viewModel = provider.CreateViewModel(foundConfig);
+				additionalEnvBuilder.Add(viewModel);
+			}
+
+			AdditionalEnvironmentSettings = additionalEnvBuilder.ToImmutable();
+
 			EnvironmentSettings = settings;
-			_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
 
 			AddWorkingDirectoryCommand = new RelayCommand(AddWorkingDirectory);
 			RemoveWorkingDirectoryCommand = new RelayCommand<WorkingDirectorySetting>(RemoveWorkingDirectory);
@@ -55,11 +74,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 			BrowseDirectoryAccessRulePathCommand = new AsyncRelayCommand<DirectoryAccessSetting>(BrowseDirectoryAccessRulePath);
 
 			OpenDirectoryCommand = new RelayCommand<string?>(OpenDirectory);
-
-			SelectPythonVenvActivateScriptPathCommand = new AsyncRelayCommand(SelectPythonVenvActivateScriptPath);
-			OpenPythonVenvActivateScriptPathCommand = new RelayCommand(OpenPythonVenvActivateScriptPath);
-			SelectPythonMetaVenvActivateScriptPathCommand = new AsyncRelayCommand(SelectPythonMetaVenvActivateScriptPath);
-			OpenPythonMetaVenvActivateScriptPathCommand = new RelayCommand(OpenPythonMetaVenvActivateScriptPath);
 		}
 
 		private void AddWorkingDirectory()
@@ -165,60 +179,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 			if (result.Count > 0)
 			{
 				rule.Path = result[0].Path.LocalPath;
-			}
-		}
-
-		private async Task SelectPythonVenvActivateScriptPath()
-		{
-			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-			{
-				Title = LocalizationManager.LocalizeStatic("select_python_venv_activate_script"),
-				FileTypeFilter = [
-					new FilePickerFileType("Batch files") { Patterns = ["*.bat"] },
-					new FilePickerFileType("All files") { Patterns = ["*"] }
-				],
-				AllowMultiple = false
-			});
-
-			if (result.Count > 0)
-			{
-				EnvironmentSettings.PythonVenvActivateScriptPath = result[0].Path.LocalPath;
-			}
-		}
-
-		private void OpenPythonVenvActivateScriptPath()
-		{
-			if (!string.IsNullOrWhiteSpace(EnvironmentSettings.PythonVenvActivateScriptPath) &&
-				File.Exists(EnvironmentSettings.PythonVenvActivateScriptPath))
-			{
-				_explorerOpener?.ShowFileInExplorer(EnvironmentSettings.PythonVenvActivateScriptPath);
-			}
-		}
-
-		private async Task SelectPythonMetaVenvActivateScriptPath()
-		{
-			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-			{
-				Title = LocalizationManager.LocalizeStatic("select_python_meta_venv_activate_script"),
-				FileTypeFilter = [
-					new FilePickerFileType("Batch files") { Patterns = ["*.bat"] },
-					new FilePickerFileType("All files") { Patterns = ["*"] }
-				],
-				AllowMultiple = false
-			});
-
-			if (result.Count > 0)
-			{
-				EnvironmentSettings.PythonMetaVenvActivateScriptPath = result[0].Path.LocalPath;
-			}
-		}
-
-		private void OpenPythonMetaVenvActivateScriptPath()
-		{
-			if (!string.IsNullOrWhiteSpace(EnvironmentSettings.PythonMetaVenvActivateScriptPath) &&
-				File.Exists(EnvironmentSettings.PythonMetaVenvActivateScriptPath))
-			{
-				_explorerOpener?.ShowFileInExplorer(EnvironmentSettings.PythonMetaVenvActivateScriptPath);
 			}
 		}
 

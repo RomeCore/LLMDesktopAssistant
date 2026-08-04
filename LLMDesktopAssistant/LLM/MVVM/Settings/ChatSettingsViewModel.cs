@@ -10,6 +10,8 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
+using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Services.Instances;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -114,7 +116,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 			SummarizationSettings = new ChatSummarizationSettingsViewModel(settings.Summarization);
 			UserSettings = new ChatUserSettingsViewModel(settings.Users.Users);
 
-			EnvironmentSettings = new ChatEnvironmentSettingsViewModel(settings.Environment);
+			EnvironmentSettings = new ChatEnvironmentSettingsViewModel(settings.Environment,
+				chat.Services.GetServices<IScriptEngineEnvConfigurationProvider>(), chat.Services.GetService<IExplorerOpener>());
 			McpSettings = new ChatMCPSettingsViewModel(settings.Mcp, chat.Services.GetRequiredService<IMCPManagementService>());
 
 			ToolsSettings = new ChatToolsSettingsViewModel(settings.Tools);
