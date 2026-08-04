@@ -22,6 +22,25 @@
 							 Margin="0,10"/>
 
 		<!-- ============================================================ -->
+		<!-- FETCH FROM ALL WORKING DIRECTORIES -->
+		<!-- ============================================================ -->
+		<CheckBox IsChecked="{Binding ToolSettings.FetchFromAllWorkingDirectories}"
+							Content="{loc:Loc settings-tools_fetch_all}"
+							IsEnabled="{Binding ToolSettings.EnableTools}"/>
+
+
+		<TextBlock Text="{loc:Loc settings-tools_fetch_all_hint}"
+							Opacity="0.6"
+							TextWrapping="Wrap"
+							IsEnabled="{Binding ToolSettings.EnableTools}"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"
+							 Margin="0,10"/>
+
+		<!-- ============================================================ -->
 		<!-- BEHAVIOUR POLICY -->
 		<!-- ============================================================ -->
 		<TextBlock Text="{loc:Loc tool_behaviour_policy}"

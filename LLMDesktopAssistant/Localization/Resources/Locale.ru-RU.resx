@@ -402,6 +402,13 @@
   <data name="settings-use_tools" xml:space="preserve">
     <value>Включить инструменты</value>
   </data>
+
+  <data name="settings-tools_fetch_all" xml:space="preserve">
+    <value>Искать во всех рабочих директориях</value>
+  </data>
+  <data name="settings-tools_fetch_all_hint" xml:space="preserve">
+    <value>Искать мета-инструменты во всех рабочих директориях, а не только в активной.</value>
+  </data>
   <data name="application-only_reference" xml:space="preserve">
     <value>Только ссылка</value>
   </data>

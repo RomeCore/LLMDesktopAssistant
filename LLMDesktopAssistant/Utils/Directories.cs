@@ -82,18 +82,18 @@ namespace LLMDesktopAssistant.Utils
 		static Directories()
 		{
 			LocalAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), WorkingHome);
-			TempFiles = Path.Combine(LocalAppData, "temp/");
-			LuaScripts = Path.Combine(LocalAppData, "scripts/lua/");
-			TempScripts = Path.Combine(LocalAppData, "temp/scripts/");
-			Plugins = Path.Combine(LocalAppData, "plugins/");
-			Templates = Path.Combine(LocalAppData, "templates/");
-			Metatools = Path.Combine(LocalAppData, "metatools/");
-			Skills = Path.Combine(LocalAppData, "skills/");
-			Settings = Path.Combine(LocalAppData, "settings/");
-			Data = Path.Combine(LocalAppData, "data/");
-			Models = Path.Combine(LocalAppData, "models/");
-			DefaultWorkingDirectory = Path.Combine(LocalAppData, "working_directory/");
-			LogFiles = Path.Combine(LocalAppData, "logs/");
+			TempFiles = Path.Combine(LocalAppData, "temp");
+			LuaScripts = Path.Combine(LocalAppData, "scripts", "lua");
+			TempScripts = Path.Combine(LocalAppData, "temp", "scripts");
+			Plugins = Path.Combine(LocalAppData, "plugins");
+			Templates = Path.Combine(LocalAppData, "templates");
+			Metatools = Path.Combine(LocalAppData, "metatools");
+			Skills = Path.Combine(LocalAppData, "skills");
+			Settings = Path.Combine(LocalAppData, "settings");
+			Data = Path.Combine(LocalAppData, "data");
+			Models = Path.Combine(LocalAppData, "models");
+			DefaultWorkingDirectory = Path.Combine(LocalAppData, "working_directory");
+			LogFiles = Path.Combine(LocalAppData, "logs");
 		}
 
 		public static void EnsureAll()

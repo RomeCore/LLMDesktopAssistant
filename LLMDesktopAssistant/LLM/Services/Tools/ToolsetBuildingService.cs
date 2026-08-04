@@ -2,6 +2,7 @@
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Meta;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {

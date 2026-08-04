@@ -402,6 +402,14 @@
   <data name="settings-use_tools" xml:space="preserve">
     <value>Enable tools</value>
   </data>
+
+  <data name="settings-tools_fetch_all" xml:space="preserve">
+    <value>Fetch from all working directories</value>
+  </data>
+
+  <data name="settings-tools_fetch_all_hint" xml:space="preserve">
+    <value>Search for meta tools in all working directories, not only in the active one.</value>
+  </data>
   <data name="application-only_reference" xml:space="preserve">
     <value>Only reference</value>
   </data>

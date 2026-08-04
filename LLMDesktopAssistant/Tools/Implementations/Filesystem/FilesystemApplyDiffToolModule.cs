@@ -68,11 +68,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				new PreviewToolExecutionResult
 				{
+					InterruptingSuccess = false,
+					InterruptingContent = $"File or directory not found: {path}",
 					StatusIcon = MaterialIconKind.FileDocumentEdit,
 					StatusTitle = $"**{path}**",
-					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
-					InterruptingSuccess = false,
-					InterruptingContent = $"File or directory not found: {path}"
+					ExpectedBehaviour = ToolBehaviour.None |
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 				};
 			}
 
@@ -89,11 +90,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				return new PreviewToolExecutionResult
 				{
-					StatusIcon = MaterialIconKind.FileQuestion,
-					StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
-					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = true,
 					InterruptingContent = errorMessage ?? "No changes were made to the file. The specified match was not found.",
+					StatusIcon = MaterialIconKind.FileQuestion,
+					StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
+					ExpectedBehaviour = ToolBehaviour.None |
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None),
 				};
 			}
 

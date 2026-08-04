@@ -54,6 +54,21 @@ namespace LLMDesktopAssistant.LLM.Settings
 			WorkingDirectories.FirstOrDefault(w => w.IsEnabled && w.IsActive)?.Path
 			?? Directories.DefaultWorkingDirectory;
 
+		/// <summary>
+		/// Returns a list of enabled working directories. If the default directory is enabled, it is included in the list.
+		/// </summary>
+		/// <returns>A list of enabled working directories.</returns>
+		public List<string> GetEnabledWorkingDirectories()
+		{
+			var result = new List<string>();
+			if (IsDefaultWorkingDirectoryEnabled)
+				result.Add(Directories.DefaultWorkingDirectory);
+			foreach (var wd in WorkingDirectories)
+				if (wd.IsEnabled && !string.IsNullOrEmpty(wd.Path))
+					result.Add(wd.Path);
+			return result;
+		}
+
 		private readonly RangeObservableCollection<AdditionalEnvironmentSetting> _additionalSettings = [];
 		/// <summary>
 		/// The list of additional environment settings.

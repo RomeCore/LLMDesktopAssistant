@@ -45,8 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\LLMDesktopAssistant.SourceGenerators\LLMDesktopAssistant.SourceGenerators.csproj"
-			OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\LLMDesktopAssistant.SourceGenerators\LLMDesktopAssistant.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 
 

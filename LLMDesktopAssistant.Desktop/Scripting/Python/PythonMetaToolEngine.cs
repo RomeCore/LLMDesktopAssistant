@@ -1,17 +1,12 @@
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Desktop.Execution;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Meta;
 using LLMDesktopAssistant.Utils;
-using RCParsing;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace LLMDesktopAssistant.Desktop.Scripting.Python
 {
@@ -24,113 +19,15 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 	[Service(typeof(IMetaToolEngine))]
 	public class PythonMetaToolEngine : IMetaToolEngine
 	{
-		private static readonly Parser _frontmatterParser;
-
-		private static readonly ISerializer _yamlSerializer = new SerializerBuilder()
-			.WithNamingConvention(UnderscoredNamingConvention.Instance)
-			.Build();
-
-		private static readonly IDeserializer _yamlDeserializer = new DeserializerBuilder()
-			.WithNamingConvention(UnderscoredNamingConvention.Instance)
-			.Build();
-
-		private static readonly JsonSerializerOptions _jsonOptions = new()
-		{
-			Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),
-			WriteIndented = true
-		};
-
-		static PythonMetaToolEngine()
-		{
-			var pb = new ParserBuilder();
-			pb.Settings.Skip(b => b.Whitespaces(), ParserSkippingStrategy.TryParseThenSkip);
-			pb.CreateRule("python_frontmatter")
-				.Literal("\"\"\"")
-				.TextUntil("\"\"\"")
-				.Literal("\"\"\"")
-				.AllText();
-			_frontmatterParser = pb.Build();
-		}
-
 		private readonly IProcessLauncher _processLauncher;
 
 		public ScriptLanguageType Language => ScriptLanguageType.Python;
-		public string FileExtension => ".py";
+
+		public IMetaToolEngineDescriptor Descriptor { get; } = new PythonMetaToolEngineDescriptor();
 
 		public PythonMetaToolEngine(IProcessLauncher processLauncher)
 		{
 			_processLauncher = processLauncher;
-		}
-
-		private class FrontmatterDto
-		{
-			public string Title { get; set; } = string.Empty;
-			public string Description { get; set; } = string.Empty;
-			public string Category { get; set; } = string.Empty;
-			public bool AskForConfirmation { get; set; } = false;
-			public string ArgumentSchema { get; set; } = string.Empty;
-		}
-
-		public string ExampleArgs => """
-			{"location": "New York", "days": 3}
-			""";
-
-		public string ExampleCode => """
-			import python_weather
-			import asyncio
-
-			async def getweather():
-			    async with python_weather.Client() as client:
-			        location = tool_args["location"]
-			        weather = await client.get(location)
-			        print(f"Current temperature: {weather.temperature}°C")
-
-			asyncio.run(getweather())
-			""";
-
-
-		public MetaTool Deserialize(string fileContent, string name)
-		{
-			var parsed = _frontmatterParser.ParseRule("python_frontmatter", fileContent);
-			var frontmatterText = parsed[1].Text.Trim();
-			var executionCode = parsed[3].Text.Trim();
-
-			var frontmatter = _yamlDeserializer.Deserialize<FrontmatterDto>(frontmatterText);
-			var argumentSchema = JsonSerializer.Deserialize<JsonObject>(frontmatter.ArgumentSchema, _jsonOptions)
-				?? new JsonObject { ["type"] = "object", ["additionalProperties"] = false };
-
-			return new MetaTool
-			{
-				Name = name,
-				Title = frontmatter.Title,
-				Description = frontmatter.Description,
-				Category = frontmatter.Category,
-				AskForConfirmation = frontmatter.AskForConfirmation,
-				ArgumentSchema = argumentSchema,
-				ScriptLanguage = ScriptLanguageType.Python,
-				ExecutionCode = executionCode
-			};
-		}
-
-		public string Serialize(MetaTool tool)
-		{
-			var argumentSchemaText = JsonSerializer.Serialize(tool.ArgumentSchema, _jsonOptions);
-			var frontmatter = new FrontmatterDto
-			{
-				Title = tool.Title,
-				Description = tool.Description,
-				Category = tool.Category,
-				AskForConfirmation = tool.AskForConfirmation,
-				ArgumentSchema = argumentSchemaText
-			};
-			var frontmatterText = _yamlSerializer.Serialize(frontmatter);
-
-			return $""""
-				"""
-				{frontmatterText.TrimEnd()}
-				"""
-				{tool.ExecutionCode}
-				"""";
 		}
 
 		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool)

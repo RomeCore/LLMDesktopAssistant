@@ -1,8 +1,8 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools;
 
-namespace LLMDesktopAssistant.LLM.Services.Tools
+namespace LLMDesktopAssistant.Tools.Meta
 {
 	/// <summary>
 	/// Interface for managing tools that can be created by LLM via <see cref="MetaToolModule"/>.
@@ -14,15 +14,17 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		/// If tool does not exists, all parameters must not be null.
 		/// </summary>
 		/// <param name="name">The name of the tool.</param>
+		/// <param name="isLocal">Indicates whether the tool is local- or app-scoped.</param>
 		/// <param name="description">The description of the tool.</param>
 		/// <param name="title">The human-readable title of the tool.</param>
 		/// <param name="category">The category of the tool.</param>
-		/// <param name="askForConfirmation">Whether to ask user for confirmation before executing the tool.</param>
+		/// <param name="approvalLevel">The level of approval for the tool.</param>
+		/// <param name="behaviours">The behaviors of the tool. Describes what tool does.</param>
 		/// <param name="argumentSchema">The JSON schema describing the arguments for the tool.</param>
 		/// <param name="language">The programming language in which the tool is written.</param>
 		/// <param name="executionCode">The code to execute when the tool is called.</param>
-		void CreateOrUpdateTool(string name, string? description, string? title, string? category,
-			bool? askForConfirmation, JsonObject? argumentSchema, ScriptLanguageType? language, string? executionCode);
+		void CreateOrUpdateTool(string name, bool? isLocal, string? description, string? title, string? category,
+			ToolApprovalLevel? approvalLevel, ToolBehaviour? behaviours, JsonObject? argumentSchema, ScriptLanguageType? language, string? executionCode);
 
 		/// <summary>
 		/// Lists all tools that have been created by LLM.

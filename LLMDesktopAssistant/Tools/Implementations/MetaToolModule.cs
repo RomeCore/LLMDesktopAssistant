@@ -2,8 +2,9 @@ using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Tools.Meta;
+using RCLargeLanguageModels.Json.Schema;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Tools.Implementations
@@ -29,7 +30,20 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Name = "metatools-create_or_update",
 					Description = BuildCreateOrUpdateDescription(),
 					Category = "metatools",
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
+					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess,
+					ModifyArgumentSchema = schema =>
+					{
+						var properties = schema["properties"]!;
+
+						var approvalLevel = properties["approvalLevel"]!;
+						approvalLevel["enum"] = new JsonArray(MetaToolHumanizedEnumNames.ApprovalLevelNames.Values
+							.Select(v => JsonValue.Create(v)).ToArray());
+
+						var behaviours = properties["behaviours"]!;
+						var items = behaviours["items"]!;
+						items["enum"] = new JsonArray(MetaToolHumanizedEnumNames.BehaviourNames.Values
+							.Select(v => JsonValue.Create(v)).ToArray());
+					}
 				});
 
 			AddTool(ListMetaTools,
@@ -78,15 +92,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 			foreach (var engine in _engines)
 			{
+				var descriptor = engine.Descriptor;
 				sb.AppendLine();
-				sb.AppendLine($"--- {engine.Language} ---");
-				sb.AppendLine($"File extension: {engine.FileExtension}");
+				sb.AppendLine($"--- {descriptor.Language} ---");
+				sb.AppendLine($"File extension: {descriptor.MainExtension}");
 				sb.AppendLine();
-				sb.AppendLine("Example arguments:");
-				sb.AppendLine(engine.ExampleArgs);
-				sb.AppendLine();
-				sb.AppendLine("Example code:");
-				sb.AppendLine(engine.ExampleCode);
+				sb.AppendLine(descriptor.Examples);
 			}
 
 			sb.AppendLine();
@@ -103,14 +114,18 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			string name,
 			[Description("The scripting language to use. Example: 'Lua'")]
 			string language,
+			[Description("Whether this tool is bound to current working directory.")]
+			bool? isLocal = null,
 			[Description("A description of what the tool does. This can contain guides for LLM how to use that tool.")]
 			string? description = null,
 			[Description("The human-readable title of the tool for showing it in the UI.")]
 			string? title = null,
 			[Description("The human-readable category of the tool for showing it in the UI.")]
 			string? category = null,
-			[Description("Whether the tool requires user confirmation before execution. Use 'true' for potentially dangerous actions. Use 'false' otherwise.")]
-			bool? askForConfirmation = null,
+			[Description("The tool approval level. 'policy-based' is used by default.")]
+			string? approvalLevel = null,
+			[Description("The expected behaviors of the tool.")]
+			string[]? behaviours = null,
 			[Description(
 				"""
 				The JSON schema for the arguments that the tool accepts.
@@ -160,8 +175,16 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					argumentSchemaJson = null;
 				}
 
-				_metaToolManager.CreateOrUpdateTool(name, description, title, category,
-					askForConfirmation, argumentSchemaJson, lang, executionCode);
+				var approvalLevelEnum = string.IsNullOrEmpty(approvalLevel)
+					? (ToolApprovalLevel?)null
+					: MetaToolHumanizedEnumNames.DeserializeApprovalLevel(approvalLevel);
+
+				var behavioursEnum = behaviours is not null
+					? MetaToolHumanizedEnumNames.ResolveBehaviours(behaviours)
+					: (ToolBehaviour?)null;
+
+				_metaToolManager.CreateOrUpdateTool(name, isLocal, description, title, category,
+					approvalLevelEnum, behavioursEnum, argumentSchemaJson, lang, executionCode);
 
 				return new ToolResult($"Tool '{name}' ({lang}) created or updated successfully");
 			}
@@ -188,7 +211,15 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				result.AppendLine($"Description: {tool.Description}");
 				result.AppendLine($"Category: {tool.Category}");
 				result.AppendLine($"Language: {tool.ScriptLanguage}");
-				result.AppendLine($"Requires confirmation: {tool.AskForConfirmation}");
+				result.AppendLine($"Approval level: {MetaToolHumanizedEnumNames.SerializeApprovalLevel(tool.ApprovalLevel)}");
+
+				var behaviours = MetaToolHumanizedEnumNames.SerializeBehaviours(tool.Behaviours);
+				result.AppendLine("Behaviours:");
+				if (behaviours is not null && behaviours.Length > 0)
+					foreach (var behaviour in behaviours)
+						result.AppendLine($"  - {behaviour}");
+				else
+					result.AppendLine("  - none");
 
 				result.AppendLine().AppendLine("Argument schema:");
 				result.AppendLine(tool.ArgumentSchema?.ToJsonString(new JsonSerializerOptions

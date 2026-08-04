@@ -99,12 +99,6 @@
 	private bool _showProfileOverlay = false;
 
 	/// <summary>
-	/// When <see langword="true"/>, the MutationObserver on JS side will auto-scroll
-	/// as new content arrives.
-	/// </summary>
-	private bool _autoScrollEnabled = false;
-
-	/// <summary>
 	/// When <see langword="true"/>, the next render will scroll to bottom.
 	/// Used after sending a message (without generation) to ensure the new message is visible.
 	/// </summary>
@@ -176,16 +170,12 @@
 
 	private void StartAutoScroll()
 	{
-		_autoScrollEnabled = true;
-
 		// Enable the JS observer and scroll to bottom immediately
 		_ = JS.InvokeVoidAsync("ChatScroll.enable");
 	}
 
 	private void StopAutoScroll()
 	{
-		_autoScrollEnabled = false;
-
 		// Disable the JS observer and do one final smooth scroll
 		_ = JS.InvokeVoidAsync("ChatScroll.disable");
 		_ = ScrollToBottom(true);

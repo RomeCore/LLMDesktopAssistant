@@ -18,16 +18,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			string[] projectPaths;
 			if (chat.Settings.Skills.FetchFromAllWorkingDirectories)
-				projectPaths = chat.Settings.Environment.WorkingDirectories
-					.Append(new WorkingDirectorySetting
-					{
-						IsEnabled = chat.Settings.Environment.IsDefaultWorkingDirectoryEnabled,
-						IsActive = chat.Settings.Environment.IsDefaultWorkingDirectoryActive,
-						Path = Directories.DefaultWorkingDirectory
-					})
-					.Where(wd => wd.IsEnabled && !string.IsNullOrEmpty(wd.Path))
-					.Select(wd => wd.Path)
-					.ToArray()!;
+				projectPaths = [..chat.Settings.Environment.GetEnabledWorkingDirectories()];
 			else
 				projectPaths = [chat.Settings.Environment.GetWorkingDirectory()];
 
