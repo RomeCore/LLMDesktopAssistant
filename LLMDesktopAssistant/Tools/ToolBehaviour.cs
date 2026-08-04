@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.Tools;
 /// system interaction that may require user awareness or consent.
 /// </remarks>
 [Flags]
-public enum ToolBehaviour
+public enum ToolBehaviour : ulong
 {
 	/// <summary>
 	/// No specific behaviour flags. The tool performs purely computational
@@ -182,19 +182,19 @@ public enum ToolBehaviour
 	/// unpredictable behaviour. Treat MCP tools with caution as they
 	/// may access external systems or resources outside this application's control.
 	/// </summary>
-	MCP = 1 << 29,
+	MCP = (ulong)1 << 61,
 
 	/// <summary>
 	/// The tool is a meta-tool created at runtime by the LLM itself
 	/// (via Lua/Python scripting). Such tools can have arbitrary behaviour
 	/// defined by the LLM and should be carefully monitored.
 	/// </summary>
-	Meta = 1 << 30,
+	Meta = (ulong)1 << 62,
 
 	/// <summary>
 	/// The tool is an ad-hoc/specifically created tool for concrete task (for example, by ad-hoc
 	/// functions in <see cref="LuaApiAgents"/>). Mostly used for <see cref="IAgentTaskExecutor"/>
 	/// pipeline.
 	/// </summary>
-	AdHoc = 1 << 31
+	AdHoc = (ulong)1 << 63
 }
