@@ -145,6 +145,8 @@ namespace LLMDesktopAssistant.Tools
 			var _previewExecutor = previewExecutor != null ?
 				PreviewToolExecutorCreator.Create(previewExecutor) : null;
 
+			info.ModifyArgumentSchema?.Invoke(argSchema);
+
 			return new ToolInfo
 			{
 				Name = info.Name,

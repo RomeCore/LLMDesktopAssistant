@@ -35,6 +35,11 @@ namespace LLMDesktopAssistant.Tools
 		public Func<string> DescriptionGetter { get; init; } = null!;
 
 		/// <summary>
+		/// The action to modify arguments before they are passed to the <see cref="ToolInfo"/>.
+		/// </summary>
+		public Action<JsonObject>? ModifyArgumentSchema { get; init; } = null;
+
+		/// <summary>
 		/// Gets or sets the default expected behaviour of the tool.
 		/// </summary>
 		public ToolBehaviour DefaultExpectedBehaviour { get; init; }
