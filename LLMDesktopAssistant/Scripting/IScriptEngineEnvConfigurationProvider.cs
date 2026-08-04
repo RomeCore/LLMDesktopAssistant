@@ -29,5 +29,15 @@ namespace LLMDesktopAssistant.Scripting
 		/// <param name="configuration">The additional environment setting to create a view model for.</param>
 		/// <returns>The view model for the given additional environment setting.</returns>
 		INotifyPropertyChanged CreateViewModel(AdditionalEnvironmentSetting configuration);
+
+		/// <summary>
+		/// Checks the given additional environment setting for any issues or missing dependencies.
+		/// </summary>
+		/// <param name="settings">The chat environment settings to use for checking.</param>
+		/// <param name="configuration">The additional environment setting to check.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+		/// <returns>The check result, indicating whether the configuration is valid or not.</returns>
+		Task<ScriptEnvironmentCheckResult> CheckConfigurationAsync(ChatEnvironmentSettings settings,
+			AdditionalEnvironmentSetting configuration, CancellationToken cancellationToken = default);
 	}
 }

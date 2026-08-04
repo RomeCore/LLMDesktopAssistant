@@ -2333,6 +2333,16 @@
   <data name="env_select_script" xml:space="preserve">
     <value>Select script</value>
   </data>
+  <data name="env_check_configuration" xml:space="preserve">
+    <value>Check configuration</value>
+  </data>
+  <data name="env_check_ok" xml:space="preserve">
+    <value>Environment is ready</value>
+  </data>
+  <data name="env_check_failed" xml:space="preserve">
+    <value>Environment check failed</value>
+  </data>
+
   <data name="workdir" xml:space="preserve">
     <value>Working directories</value>
   </data>

@@ -2,6 +2,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Desktop.Execution;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
@@ -20,14 +21,16 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 	public class PythonMetaToolEngine : IMetaToolEngine
 	{
 		private readonly IProcessLauncher _processLauncher;
+		private readonly PythonHelperService _pythonHelperService;
 
 		public ScriptLanguageType Language => ScriptLanguageType.Python;
 
 		public IMetaToolEngineDescriptor Descriptor { get; } = new PythonMetaToolEngineDescriptor();
 
-		public PythonMetaToolEngine(IProcessLauncher processLauncher)
+		public PythonMetaToolEngine(IProcessLauncher processLauncher, PythonHelperService pythonHelperService)
 		{
 			_processLauncher = processLauncher;
+			_pythonHelperService = pythonHelperService;
 		}
 
 		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool)
@@ -46,30 +49,15 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 
 					var chat = context.Chat;
 					var workDir = chat.Settings.Environment.GetWorkingDirectory();
-					var pythonConfig = chat.Settings.Environment.EnsureAdditional<PythonEnvironmentConfiguration>();
-					var activationScript = pythonConfig.PythonMetaVenvActivateScriptPath
-						?? pythonConfig.PythonVenvActivateScriptPath;
 
-					var tempPyFile = Path.GetFullPath(Path.Combine(Directories.TempScripts, $"{Guid.NewGuid()}.py"));
+					var tempPyFile = Path.GetFullPath(Path.Combine(workDir, $"{Guid.NewGuid()}.py"));
 					File.WriteAllText(tempPyFile, pythonCode);
 
 					ProcessDescriptor? process = null;
 					try
 					{
-						string command;
-						if (!string.IsNullOrWhiteSpace(activationScript))
-							command = $"call \"{activationScript}\" && python \"{tempPyFile}\"";
-						else
-							command = $"python \"{tempPyFile}\"";
-
-						process = _processLauncher.Launch(new ProcessLaunchParameters
-						{
-							ProcessName = "Python Meta",
-							FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
-							Arguments = OperatingSystem.IsWindows() ? [$"/c \"{command}\""] : ["-c", command],
-							VerbatimArguments = OperatingSystem.IsWindows(),
-							WorkingDirectory = workDir
-						}, cancellationToken);
+						process = _processLauncher.Launch(_pythonHelperService.CreateLaunchParameters(
+							chat.Settings.Environment, $"python \"{tempPyFile}\"", "Python Meta", false, true), cancellationToken);
 
 						int exitCode = await process;
 						return ReactiveToolResult.Create(exitCode == 0, process.Output + $"\nProcess exited with code {exitCode}. Check terminal output above for details.");

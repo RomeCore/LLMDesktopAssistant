@@ -23,12 +23,15 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	{
 		private readonly Chat _chat;
 		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly PythonHelperService _pythonHelperService;
 
-		public PythonExecutionToolModule(Chat chat, WorkingDirectoryAccessService fileAccess, IProcessLauncher processLauncher)
+		public PythonExecutionToolModule(Chat chat, WorkingDirectoryAccessService fileAccess,
+			PythonHelperService pythonHelperService, IProcessLauncher processLauncher)
 			: base(processLauncher)
 		{
 			_chat = chat;
 			_fileAccess = fileAccess;
+			_pythonHelperService = pythonHelperService;
 
 			AddTool(Execute, ExecuteStreaming, ExecutePreview,
 				new ToolInitializationInfo
@@ -95,8 +98,6 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			CancellationToken cancellationToken = default)
 		{
 			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
-			var pythonConfig = _chat.Settings.Environment.EnsureAdditional<PythonEnvironmentConfiguration>();
-			var venvPath = pythonConfig.PythonVenvActivateScriptPath;
 
 			string pyFile;
 			bool isTemporaryFile;
@@ -137,27 +138,13 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 
 			try
 			{
-				// Build command: activate venv if available, then run python
-				string command;
-				if (!string.IsNullOrWhiteSpace(venvPath))
-					command = $"call \"{venvPath}\" && python \"{pyFile}\"";
-				else
-					command = $"python \"{pyFile}\"";
-
 				// Run in terminal
 				var result = Run(new TerminalToolRunParameters
 				{
 					StatusIcon = MaterialIconKind.LanguagePython,
 					StatusTitle = null,
-					ProcessParameters = new ProcessLaunchParameters
-					{
-						ProcessName = "Python",
-						RunInTerminal = runTerminal,
-						FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
-						Arguments = OperatingSystem.IsWindows() ? [$"/c \"{command}\""] : ["-c", command],
-						VerbatimArguments = OperatingSystem.IsWindows(),
-						WorkingDirectory = workDir
-					}
+					ProcessParameters = _pythonHelperService.CreateLaunchParameters(_chat.Settings.Environment,
+						$"python \"{pyFile}\"", "Python", runTerminal, false)
 				}, context, cancellationToken);
 
 				_ = result.Completion.ContinueWith(t =>
@@ -220,29 +207,12 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			ToolExecutionContext context,
 			CancellationToken cancellationToken = default)
 		{
-			var workDir = _fileAccess.GetWorkingDirectory();
-			var pythonConfig = _chat.Settings.Environment.EnsureAdditional<PythonEnvironmentConfiguration>();
-			var venvPath = pythonConfig.PythonVenvActivateScriptPath;
-
-			string command;
-			if (!string.IsNullOrWhiteSpace(venvPath))
-				command = $"call \"{venvPath}\" && {shell}";
-			else
-				command = $"{shell}";
-
 			return Run(new TerminalToolRunParameters
 			{
 				StatusIcon = MaterialIconKind.LanguagePython,
 				StatusTitle = null,
-				ProcessParameters = new ProcessLaunchParameters
-				{
-					ProcessName = "Python",
-					RunInTerminal = runTerminal,
-					FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
-					Arguments = OperatingSystem.IsWindows() ? [$"/c \"{command}\""] : ["-c", command],
-					VerbatimArguments = OperatingSystem.IsWindows(),
-					WorkingDirectory = workDir
-				}
+				ProcessParameters = _pythonHelperService.CreateLaunchParameters(_chat.Settings.Environment,
+					shell, "Python Shell", runTerminal, false)
 			}, context, cancellationToken);
 		}
 
@@ -253,29 +223,12 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		public ReactiveToolResult GetInstalledPackagesList(
 			ToolExecutionContext context, CancellationToken cancellationToken = default)
 		{
-			var workDir = _fileAccess.GetWorkingDirectory();
-			var pythonConfig = _chat.Settings.Environment.EnsureAdditional<PythonEnvironmentConfiguration>();
-			var venvPath = pythonConfig.PythonVenvActivateScriptPath;
-
-			string command;
-			if (!string.IsNullOrWhiteSpace(venvPath))
-				command = $"call \"{venvPath}\" && pip list";
-			else
-				command = $"pip list";
-
 			return Run(new TerminalToolRunParameters
 			{
 				StatusIcon = MaterialIconKind.LanguagePython,
 				StatusTitle = null,
-				ProcessParameters = new ProcessLaunchParameters
-				{
-					ProcessName = "Python",
-					RunInTerminal = false,
-					FileName = OperatingSystem.IsWindows() ? "cmd.exe" : "/bin/bash",
-					Arguments = OperatingSystem.IsWindows() ? [$"/c \"{command}\""] : ["-c", command],
-					VerbatimArguments = OperatingSystem.IsWindows(),
-					WorkingDirectory = workDir
-				}
+				ProcessParameters = _pythonHelperService.CreateLaunchParameters(_chat.Settings.Environment,
+					"pip list", "Python Shell", false, false)
 			}, context, cancellationToken);
 		}
 	}

@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 		public ChatEnvironmentSettings EnvironmentSettings { get; }
 
-		public ImmutableList<INotifyPropertyChanged> AdditionalEnvironmentSettings { get; }
+		public ImmutableList<ScriptEnvironmentSettingsItemViewModel> AdditionalEnvironmentSettings { get; }
 
 		public IRelayCommand AddWorkingDirectoryCommand { get; }
 		public IRelayCommand<WorkingDirectorySetting> RemoveWorkingDirectoryCommand { get; }
@@ -43,7 +43,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			_scriptEngineConfigProviders = scriptEngineConfigProviders.ToList();
 			_explorerOpener = explorerOpener;
 
-			var additionalEnvBuilder = ImmutableList.CreateBuilder<INotifyPropertyChanged>();
+			var additionalEnvBuilder = ImmutableList.CreateBuilder<ScriptEnvironmentSettingsItemViewModel>();
 
 			foreach (var provider in _scriptEngineConfigProviders)
 			{
@@ -54,7 +54,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 					settings.AdditionalSettings.Add(foundConfig);
 				}
 				var viewModel = provider.CreateViewModel(foundConfig);
-				additionalEnvBuilder.Add(viewModel);
+				additionalEnvBuilder.Add(new ScriptEnvironmentSettingsItemViewModel(provider, settings, foundConfig, viewModel));
 			}
 
 			AdditionalEnvironmentSettings = additionalEnvBuilder.ToImmutable();

@@ -7,6 +7,7 @@
 						 xmlns:loc="using:LLMDesktopAssistant.Localization"
 						 xmlns:util="using:LLMDesktopAssistant.Utils"
 						 xmlns:ico="using:Material.Icons.Avalonia"
+						 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
 						 x:Class="LLMDesktopAssistant.LLM.Settings.ChatEnvironmentSettingsView"
 						 x:DataType="local:ChatEnvironmentSettingsViewModel"
 						 x:Name="VMRoot">
@@ -337,13 +338,44 @@
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Vertical" Spacing="8">
-						
+
 						<!-- Separator -->
 						<Rectangle Height="1"
 											 Fill="{DynamicResource DefaultForeground}"
 											 Opacity="0.2"/>
 
-						<ContentControl Content="{Binding}"/>
+						<ContentControl Content="{Binding Content}"/>
+
+						<!-- Environment check -->
+						<StackPanel Orientation="Horizontal" Spacing="8">
+							<Button Command="{Binding CheckCommand}"
+											IsEnabled="{Binding IsChecking, Converter={StaticResource InverseBooleanConverter}}"
+											VerticalAlignment="Top"
+											Padding="10,4">
+								<StackPanel Orientation="Horizontal" Spacing="6">
+									<ico:MaterialIcon Kind="CheckDecagram"
+																		Width="16"
+																		Height="16"/>
+									<TextBlock Text="{loc:Loc env_check_configuration}"
+														 VerticalAlignment="Center"/>
+								</StackPanel>
+							</Button>
+
+							<ctrl:ProgressRing IsIndeterminate="True"
+																 IsVisible="{Binding IsChecking}"/>
+
+							<TextBlock Text="{Binding CheckResultText}"
+												 TextWrapping="Wrap"
+												 VerticalAlignment="Center"
+												 Foreground="{DynamicResource SuccessBrush}"
+												 IsVisible="{Binding IsCheckSuccessful}"/>
+
+							<TextBlock Text="{Binding CheckResultText}"
+												 TextWrapping="Wrap"
+												 VerticalAlignment="Center"
+												 Foreground="{DynamicResource ErrorBrush}"
+												 IsVisible="{Binding IsCheckFailed}"/>
+						</StackPanel>
 
 					</StackPanel>
 				</DataTemplate>

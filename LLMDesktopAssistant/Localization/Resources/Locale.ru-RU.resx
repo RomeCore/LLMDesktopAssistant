@@ -2332,6 +2332,16 @@
   <data name="env_select_script" xml:space="preserve">
     <value>Выбрать скрипт</value>
   </data>
+  <data name="env_check_configuration" xml:space="preserve">
+    <value>Проверить конфигурацию</value>
+  </data>
+  <data name="env_check_ok" xml:space="preserve">
+    <value>Окружение готово</value>
+  </data>
+  <data name="env_check_failed" xml:space="preserve">
+    <value>Проверка окружения не удалась</value>
+  </data>
+
   <data name="workdir" xml:space="preserve">
     <value>Рабочие директории</value>
   </data>

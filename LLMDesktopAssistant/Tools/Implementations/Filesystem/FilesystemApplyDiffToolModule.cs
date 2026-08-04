@@ -76,7 +76,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 				};
 			}
-
+			
 			var originalContent = File.ReadAllText(fullPath!);
 			var (newContent, errorMessage) = Edit(originalContent, deleteLines, insertBeforeLine, insertText);
 
