@@ -109,7 +109,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			return sb.ToString();
 		}
 
-		public ToolResult CreateOrUpdateMetaTool(
+		private ToolResult CreateOrUpdateMetaTool(
 			[Description("The name of the tool. Example: 'get_weather'")]
 			string name,
 			[Description("The scripting language to use. Example: 'Lua'")]
@@ -194,7 +194,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ToolResult GetToolInfo(string name)
+		private ToolResult GetToolInfo(string name)
 		{
 			try
 			{
@@ -238,7 +238,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ToolResult ListMetaTools()
+		private ToolResult ListMetaTools()
 		{
 			try
 			{
@@ -263,7 +263,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ToolResult RenameMetaTool(
+		private ToolResult RenameMetaTool(
 			[Description("The current name of the meta tool")]
 			string oldName,
 			[Description("The new name for the meta tool")]
@@ -283,7 +283,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ToolResult DeleteMetaTool(
+		private ToolResult DeleteMetaTool(
 			[Description("The name of the meta tool to delete")]
 			string name)
 		{

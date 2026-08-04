@@ -29,7 +29,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				});
 		}
 
-		public StreamingToolArgumentsAnalysisResult GrepStreaming(
+		private StreamingToolArgumentsAnalysisResult GrepStreaming(
 			string? path, string? pattern)
 		{
 			path ??= "?";
@@ -40,7 +40,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public PreviewToolExecutionResult GrepPreview(
+		private PreviewToolExecutionResult GrepPreview(
 			string path, string pattern, [SharedContext] out string fullPath)
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Read, out var isAccessed);
@@ -69,7 +69,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult Grep(
+		private ReactiveToolResult Grep(
 			[SharedContext] string? fullPath,
 			[Description("The path where to search, can be file or directory path.")]
 			string path,

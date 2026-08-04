@@ -119,7 +119,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				});
 		}
 
-		public PreviewToolExecutionResult PreviewGetFileInfo(string path, [SharedContext] out string fullPath)
+		private PreviewToolExecutionResult PreviewGetFileInfo(string path, [SharedContext] out string fullPath)
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Read, out var isAccessed);
 
@@ -156,7 +156,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult GetFileInfo(string path, [SharedContext] string? fullPath = null)
+		private ReactiveToolResult GetFileInfo(string path, [SharedContext] string? fullPath = null)
 		{
 			try
 			{
@@ -204,7 +204,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public PreviewToolExecutionResult PreviewReadBinaryFile(
+		private PreviewToolExecutionResult PreviewReadBinaryFile(
 			string path, [SharedContext] out string fullPath,
 			int startByte = 1,
 			int endByte = 4096)
@@ -251,7 +251,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public ReactiveToolResult ReadBinaryFile(
+		private ReactiveToolResult ReadBinaryFile(
 			string path,
 			[Description("The 1-based index of the first byte to read.")]
 			int startByte = 1,
@@ -308,7 +308,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public PreviewToolExecutionResult PreviewReadDocumentFile(
+		private PreviewToolExecutionResult PreviewReadDocumentFile(
 			string path, [SharedContext] out string fullPath,
 			int startPage = 1,
 			int endPage = 30)
@@ -349,7 +349,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult ReadDocumentFile(
+		private ReactiveToolResult ReadDocumentFile(
 			string path,
 			[Description("The 1-based index of the first page to read.")]
 			int startPage = 1,
@@ -419,13 +419,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			return bytes;
 		}
 
-		public class WriteBinaryFileContext
+		private class WriteBinaryFileContext
 		{
 			public required string FullPath { get; init; }
 			public required byte[] Bytes { get; init; }
 		}
 
-		public PreviewToolExecutionResult PreviewWriteBinaryFile(string path, string hex,
+		private PreviewToolExecutionResult PreviewWriteBinaryFile(string path, string hex,
 			[SharedContext] out WriteBinaryFileContext? ctx, bool append = false)
 		{
 			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
@@ -463,7 +463,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public ReactiveToolResult WriteBinaryFile(
+		private ReactiveToolResult WriteBinaryFile(
 			string path,
 			[Description("Hexadecimal string representing binary data in format '01 F8 2A'")]
 			string hex,
@@ -528,7 +528,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public PreviewToolExecutionResult PreviewCreateDirectory(string path, [SharedContext] out string fullPath)
+		private PreviewToolExecutionResult PreviewCreateDirectory(string path, [SharedContext] out string fullPath)
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
 
@@ -553,7 +553,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult CreateDirectory(string path, [SharedContext] string? fullPath = null)
+		private ReactiveToolResult CreateDirectory(string path, [SharedContext] string? fullPath = null)
 		{
 			try
 			{
@@ -589,7 +589,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public PreviewToolExecutionResult PreviewDeleteFile(string path, [SharedContext] out string? fullPath)
+		private PreviewToolExecutionResult PreviewDeleteFile(string path, [SharedContext] out string? fullPath)
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
 
@@ -614,7 +614,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult DeleteFile(string path, [SharedContext] string? fullPath = null)
+		private ReactiveToolResult DeleteFile(string path, [SharedContext] string? fullPath = null)
 		{
 			try
 			{
@@ -653,12 +653,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public class DeleteDirectoryContext
+		private class DeleteDirectoryContext
 		{
 			public required string FullPath { get; init; }
 		}
 
-		public PreviewToolExecutionResult PreviewDeleteDirectory(string path, [SharedContext] out DeleteDirectoryContext? ctx)
+		private PreviewToolExecutionResult PreviewDeleteDirectory(string path, [SharedContext] out DeleteDirectoryContext? ctx)
 		{
 			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
 			ctx = new DeleteDirectoryContext { FullPath = fullPath };
@@ -697,7 +697,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult DeleteDirectory(string path, [SharedContext] DeleteDirectoryContext? ctx = null)
+		private ReactiveToolResult DeleteDirectory(string path, [SharedContext] DeleteDirectoryContext? ctx = null)
 		{
 			try
 			{
@@ -746,13 +746,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public class RenameFileContext
+		private class RenameFileContext
 		{
 			public required string FullOldPath { get; init; }
 			public required string FullNewPath { get; init; }
 		}
 
-		public PreviewToolExecutionResult PreviewRenameFile(
+		private PreviewToolExecutionResult PreviewRenameFile(
 			string oldPath,
 			string newPath,
 			[SharedContext] out RenameFileContext? ctx,
@@ -795,7 +795,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult RenameFile(
+		private ReactiveToolResult RenameFile(
 			string oldPath,
 			string newPath,
 			bool overwrite = false,
@@ -849,13 +849,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public class MoveDirectoryContext
+		private class MoveDirectoryContext
 		{
 			public required string FullOldPath { get; init; }
 			public required string FullNewPath { get; init; }
 		}
 
-		public PreviewToolExecutionResult PreviewMoveDirectory(
+		private PreviewToolExecutionResult PreviewMoveDirectory(
 			string oldPath,
 			string newPath,
 			[SharedContext] out MoveDirectoryContext? ctx,
@@ -898,7 +898,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult MoveDirectory(
+		private ReactiveToolResult MoveDirectory(
 			string oldPath,
 			string newPath,
 			bool overwrite = false,
@@ -950,13 +950,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public class CopyFileContext
+		private class CopyFileContext
 		{
 			public required string FullOldPath { get; init; }
 			public required string FullNewPath { get; init; }
 		}
 
-		public PreviewToolExecutionResult PreviewCopyFile(
+		private PreviewToolExecutionResult PreviewCopyFile(
 			string oldPath,
 			string newPath,
 			[SharedContext] out CopyFileContext? ctx,
@@ -999,7 +999,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult CopyFile(
+		private ReactiveToolResult CopyFile(
 			string oldPath,
 			string newPath,
 			bool overwrite = false,
@@ -1053,13 +1053,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public class CopyDirectoryContext
+		private class CopyDirectoryContext
 		{
 			public required string FullOldPath { get; init; }
 			public required string FullNewPath { get; init; }
 		}
 
-		public PreviewToolExecutionResult PreviewCopyDirectory(
+		private PreviewToolExecutionResult PreviewCopyDirectory(
 			string oldPath,
 			string newPath,
 			[SharedContext] out CopyDirectoryContext? ctx,
@@ -1102,7 +1102,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult CopyDirectory(
+		private ReactiveToolResult CopyDirectory(
 			string oldPath,
 			string newPath,
 			bool overwrite = false,

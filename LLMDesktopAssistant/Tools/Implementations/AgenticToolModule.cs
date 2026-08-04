@@ -61,7 +61,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				});
 		}
 
-		public async Task<ReactiveToolResult> CallAgent(
+		private async Task<ReactiveToolResult> CallAgent(
 			[Description("The title of the agent call to be visible in UI")] string? callTitle,
 			[Description("The system prompt to use in the agent's context")] string systemPrompt,
 			[Description("The user message to send to the agent")] string userMessage,
@@ -215,7 +215,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public StreamingToolArgumentsAnalysisResult DescribeImageStreaming(
+		private StreamingToolArgumentsAnalysisResult DescribeImageStreaming(
 			string? path)
 		{
 			path ??= "?";
@@ -226,7 +226,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			};
 		}
 
-		public PreviewToolExecutionResult DescribeImagePreview(
+		private PreviewToolExecutionResult DescribeImagePreview(
 			string path, [SharedContext] out string fullPath)
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Read, out var isAccessed);
@@ -252,7 +252,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			};
 		}
 
-		public async Task DescribeImage(
+		private async Task DescribeImage(
 			[SharedContext] string? fullPath,
 			ReactiveToolResult result,
 			[Description("The title of the agent call to be visible in UI")] string? callTitle,

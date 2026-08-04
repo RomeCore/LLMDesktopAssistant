@@ -84,7 +84,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				});
 		}
 
-		public StreamingToolArgumentsAnalysisResult ExecuteStreaming(string? lua)
+		private StreamingToolArgumentsAnalysisResult ExecuteStreaming(string? lua)
 		{
 			int lines = 0;
 			if (lua != null)
@@ -98,7 +98,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			};
 		}
 
-		public PreviewToolExecutionResult ExecutePreview(string lua)
+		private PreviewToolExecutionResult ExecutePreview(string lua)
 		{
 			return new PreviewToolExecutionResult
 			{
@@ -107,7 +107,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			};
 		}
 
-		public ReactiveToolResult Execute(
+		private ReactiveToolResult Execute(
 			string lua,
 			ToolExecutionContext context,
 			bool isolatedExecution = true,

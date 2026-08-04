@@ -58,7 +58,7 @@ public class FormsToolModule : ToolModule
 			});
 	}
 
-	public async Task<ReactiveToolResult> FormsConfirm(
+	private async Task<ReactiveToolResult> FormsConfirm(
 		[Description("Title of the confirmation question. For example: 'Delete file?', 'Confirm sending?'")] string title,
 		[Description("Detailed description of what needs to be confirmed. Provide context for the user.")] string? description,
 		[Description("Text on the confirm button (default: 'OK')")] string? confirmText,
@@ -99,7 +99,7 @@ public class FormsToolModule : ToolModule
 			return ReactiveToolResult.CreateSuccess($"User declined: \"{title}\".");
 	}
 
-	public async Task<ReactiveToolResult> FormsChoice(
+	private async Task<ReactiveToolResult> FormsChoice(
 		ToolExecutionContext context,
 		[Description("Title of the question")] string title,
 		[Description("Detailed description of what needs to be selected")] string? description,
@@ -157,7 +157,7 @@ public class FormsToolModule : ToolModule
 		return ReactiveToolResult.CreateSuccess(resultText);
 	}
 
-	public async Task<ReactiveToolResult> FormsInput(
+	private async Task<ReactiveToolResult> FormsInput(
 		ToolExecutionContext context,
 		[Description("Title of the form")] string title,
 		[Description("Description of the form")] string? description,
@@ -217,7 +217,7 @@ public class FormsToolModule : ToolModule
 		return ReactiveToolResult.CreateSuccess($"User entered data: {valuesStr}.");
 	}
 
-	public async Task<ReactiveToolResult> FormsFilePicker(
+	private async Task<ReactiveToolResult> FormsFilePicker(
 		ToolExecutionContext context,
 		[Description("Title of the file selection dialog")] string title,
 		[Description("Description or instructions for the user")] string? description,

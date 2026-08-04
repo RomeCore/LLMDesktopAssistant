@@ -94,7 +94,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			return sb.ToString();
 		}
 
-		public ReactiveToolResult RegisterOrUpdateLuaScript(
+		private ReactiveToolResult RegisterOrUpdateLuaScript(
 			[Description("The path of the script file relative to the Lua scripts directory. Example: 'mytools/utils.lua' or 'myplugin.lua'")]
 			string path,
 			[Description("The namespace for the script. Example: 'mytools.utils' or 'myplugin'. Use empty string for global namespace.")]
@@ -126,7 +126,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ReactiveToolResult RemoveLuaScript(
+		private ReactiveToolResult RemoveLuaScript(
 			[Description("The path of the script to remove, relative to the Lua scripts directory. Example: 'mytools/utils.lua'")]
 			string path)
 		{
@@ -157,7 +157,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ReactiveToolResult MoveLuaScript(
+		private ReactiveToolResult MoveLuaScript(
 			[Description("The current path of the script, relative to the Lua scripts directory. Example: 'mytools/utils.lua'")]
 			string oldPath,
 			[Description("The new path for the script, relative to the Lua scripts directory. Example: 'mytools/strings.lua'")]
@@ -191,7 +191,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ReactiveToolResult ListLuaScripts()
+		private ReactiveToolResult ListLuaScripts()
 		{
 			try
 			{
@@ -229,7 +229,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 		}
 
-		public ReactiveToolResult GetLuaScriptInfo(
+		private ReactiveToolResult GetLuaScriptInfo(
 			[Description("The path of the script to get info for, relative to the Lua scripts directory. Example: 'mytools/utils.lua'")]
 			string path)
 		{

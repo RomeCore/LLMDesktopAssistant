@@ -102,13 +102,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			return null;
 		}
 
-		public class FSWriteSharedContext
+		private class FSWriteSharedContext
 		{
 			public required string Path { get; init; }
 			public required string NewContent { get; init; }
 		}
 
-		public StreamingToolArgumentsAnalysisResult EditStreaming(
+		private StreamingToolArgumentsAnalysisResult EditStreaming(
 			string? path)
 		{
 			path ??= "?";
@@ -119,7 +119,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public PreviewToolExecutionResult EditPreview(
+		private PreviewToolExecutionResult EditPreview(
 			[SharedContext] ref FSWriteSharedContext? sharedCtx,
 			string path, string operation, bool useRegex, string match, string text = "",
 			int occurrence = 0, bool ignoreWhitespace = true, bool ignoreCase = false,
@@ -187,7 +187,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public async Task Edit(
+		private async Task Edit(
 			[SharedContext] FSWriteSharedContext? sharedCtx,
 			ReactiveToolResult result,
 			ToolExecutionContext ctx,

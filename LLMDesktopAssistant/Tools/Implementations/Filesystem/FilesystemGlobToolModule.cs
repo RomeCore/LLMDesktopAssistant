@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				});
 		}
 
-		public StreamingToolArgumentsAnalysisResult GlobStreaming(
+		private StreamingToolArgumentsAnalysisResult GlobStreaming(
 			string? path, string? pattern)
 		{
 			path ??= "?";
@@ -63,7 +63,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public PreviewToolExecutionResult GlobPreview(
+		private PreviewToolExecutionResult GlobPreview(
 			string path, string pattern, [SharedContext] out string fullPath)
 		{
 			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Read, out var isAccessed);
@@ -89,7 +89,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public ReactiveToolResult Glob(
+		private ReactiveToolResult Glob(
 			[SharedContext] string? fullPath,
 			[Description("The glob pattern to search for, e.g. '**/*.cs' or '*.txt'")]
 			string pattern,

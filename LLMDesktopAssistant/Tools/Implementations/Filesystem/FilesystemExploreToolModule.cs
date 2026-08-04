@@ -39,7 +39,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				});
 		}
 
-		public StreamingToolArgumentsAnalysisResult ExploreStreaming(
+		private StreamingToolArgumentsAnalysisResult ExploreStreaming(
 			string? path)
 		{
 			path ??= "?";
@@ -50,7 +50,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public PreviewToolExecutionResult? ExplorePreview(string path,
+		private PreviewToolExecutionResult? ExplorePreview(string path,
 			[SharedContext] out string? fullPath,
 			int startLine = 0, int endLine = 0, int maxLineLength = 0,
 			[Inject] DetectSecretsSharp.Core.Scanner scanner = default!)
@@ -141,7 +141,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public async Task<ReactiveToolResult> Explore(
+		private async Task<ReactiveToolResult> Explore(
 			[Description("The path of the entry to read. Leave empty to read the current working directory.")]
 			string path, [SharedContext] string? fullPath,
 			[Description("The 1-based index of the first line to read. Only for files.")]

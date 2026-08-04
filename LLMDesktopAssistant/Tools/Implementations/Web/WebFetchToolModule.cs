@@ -41,7 +41,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				});
 		}
 
-		public StreamingToolArgumentsAnalysisResult FetchStreaming(
+		private StreamingToolArgumentsAnalysisResult FetchStreaming(
 			string? url)
 		{
 			return new StreamingToolArgumentsAnalysisResult
@@ -51,7 +51,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			};
 		}
 
-		public async Task<ReactiveToolResult> Fetch(
+		private async Task<ReactiveToolResult> Fetch(
 			[Description("URL to fetch HTML from")]
 			string url,
 			[Description("The starting index of character to return")]
@@ -102,7 +102,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			return result;
 		}
 
-		public StreamingToolArgumentsAnalysisResult ParseHtmlStreaming(
+		private StreamingToolArgumentsAnalysisResult ParseHtmlStreaming(
 			string? url, string? selector)
 		{
 			return new StreamingToolArgumentsAnalysisResult
@@ -112,7 +112,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			};
 		}
 
-		public async Task<ReactiveToolResult> ParseHtml(
+		private async Task<ReactiveToolResult> ParseHtml(
 			[Description("URL to fetch HTML from")]
 			string url,
 			[Description("The query selector to select values with")]

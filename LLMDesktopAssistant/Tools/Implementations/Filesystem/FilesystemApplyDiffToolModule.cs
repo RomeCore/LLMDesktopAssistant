@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(ApplyDiff,
+			AddTool(ApplyDiff, ApplyDiffStreaming, ApplyDiffPreview,
 				new ToolInitializationInfo
 				{
 					Name = "fs-apply_diff",
@@ -41,13 +41,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				});
 		}
 
-		public class FSApplyDiffSharedContext
+		private class FSApplyDiffSharedContext
 		{
 			public required string Path { get; init; }
 			public required string NewContent { get; init; }
 		}
 
-		public StreamingToolArgumentsAnalysisResult ApplyDiffStreaming(
+		private StreamingToolArgumentsAnalysisResult ApplyDiffStreaming(
 			string? path)
 		{
 			path ??= "?";
@@ -58,7 +58,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public PreviewToolExecutionResult ApplyDiffPreview(
+		private PreviewToolExecutionResult ApplyDiffPreview(
 			[SharedContext] ref FSApplyDiffSharedContext? sharedCtx,
 			string path, string? deleteLines = null, string? insertBeforeLine = null, string? insertText = null)
 		{
@@ -66,7 +66,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			if (!File.Exists(fullPath))
 			{
-				new PreviewToolExecutionResult
+				return new PreviewToolExecutionResult
 				{
 					InterruptingSuccess = false,
 					InterruptingContent = $"File or directory not found: {path}",
@@ -77,14 +77,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				};
 			}
 			
-			var originalContent = File.ReadAllText(fullPath!);
+			var originalContent = File.ReadAllText(fullPath);
 			var (newContent, errorMessage) = Edit(originalContent, deleteLines, insertBeforeLine, insertText);
 
 			if (newContent == null || newContent == originalContent)
 			{
 				sharedCtx = new FSApplyDiffSharedContext
 				{
-					Path = fullPath!,
+					Path = fullPath,
 					NewContent = originalContent
 				};
 
@@ -101,7 +101,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			sharedCtx = new FSApplyDiffSharedContext
 			{
-				Path = fullPath!,
+				Path = fullPath,
 				NewContent = newContent
 			};
 
@@ -114,7 +114,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public async Task ApplyDiff(
+		private async Task ApplyDiff(
 			[SharedContext] FSApplyDiffSharedContext? sharedCtx,
 			ReactiveToolResult result,
 			ToolExecutionContext ctx,

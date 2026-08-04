@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				});
 		}
 
-		public ReactiveToolResult GetEngines()
+		private ReactiveToolResult GetEngines()
 		{
 			var result = new ReactiveToolResult
 			{
@@ -81,7 +81,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			return result.CompleteWithSuccess();
 		}
 
-		public StreamingToolArgumentsAnalysisResult SearchStreaming(string? query)
+		private StreamingToolArgumentsAnalysisResult SearchStreaming(string? query)
 		{
 			return new StreamingToolArgumentsAnalysisResult
 			{
@@ -94,7 +94,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 		/// Performs a search across all available search engines with the specified category.
 		/// Returns ALL non-default fields from SearchResult for rich metadata.
 		/// </summary>
-		public async Task<ReactiveToolResult> Search(
+		private async Task<ReactiveToolResult> Search(
 			[Description("The query to search by")] string query,
 			[Description("The page number to return results for (1-based)"), Range(1, 10)] int page = 1,
 			[Description("Language code (auto, en, ru, etc.)")] string language = "auto",

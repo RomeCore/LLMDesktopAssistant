@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				});
 		}
 
-		public StreamingToolArgumentsAnalysisResult CheckWebsiteStatusStreaming(
+		private StreamingToolArgumentsAnalysisResult CheckWebsiteStatusStreaming(
 			string? url)
 		{
 			return new StreamingToolArgumentsAnalysisResult
@@ -62,7 +62,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			};
 		}
 
-		public async Task<ReactiveToolResult> CheckWebsiteStatus(
+		private async Task<ReactiveToolResult> CheckWebsiteStatus(
 			[Description("URL to check")]
 			string url,
 			[Description("Timeout in seconds (default: 30)")]
@@ -115,7 +115,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			return result;
 		}
 
-		public StreamingToolArgumentsAnalysisResult WebRequestStreaming(
+		private StreamingToolArgumentsAnalysisResult WebRequestStreaming(
 			string? method, string? url)
 		{
 			return new StreamingToolArgumentsAnalysisResult
@@ -125,7 +125,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			};
 		}
 
-		public async Task<ReactiveToolResult> WebRequest(
+		private async Task<ReactiveToolResult> WebRequest(
 			[Description("Method of the request"), Enum(["GET", "POST", "PUT", "DELETE"])]
 			string method,
 			[Description("URL to send request to")]
@@ -203,7 +203,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			return result;
 		}
 
-		public StreamingToolArgumentsAnalysisResult DownloadFileStreaming(
+		private StreamingToolArgumentsAnalysisResult DownloadFileStreaming(
 			string? url, string? savePath)
 		{
 			return new StreamingToolArgumentsAnalysisResult
@@ -213,7 +213,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			};
 		}
 
-		public PreviewToolExecutionResult DownloadFilePreview(
+		private PreviewToolExecutionResult DownloadFilePreview(
 			string url, string savePath)
 		{
 			try
@@ -248,7 +248,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			}
 		}
 
-		public async Task<ReactiveToolResult> DownloadFile(
+		private async Task<ReactiveToolResult> DownloadFile(
 			[Description("URL of the file to download")] string url,
 			[Description("Local working directory path to save the file")] string savePath,
 			[Description("Optional: Additional headers as JSON")] JsonObject? headersJson = null,

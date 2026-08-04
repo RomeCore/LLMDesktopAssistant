@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				});
 		}
 
-		public StreamingToolArgumentsAnalysisResult? WriteFileStream(
+		private StreamingToolArgumentsAnalysisResult? WriteFileStream(
 			string? path,
 			string? content,
 			bool append = false)
@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
-		public PreviewToolExecutionResult? WriteFilePreview(
+		private PreviewToolExecutionResult? WriteFilePreview(
 			[SharedContext] out string? fullPath,
 			string path,
 			string content,
@@ -114,7 +114,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		public async Task WriteFile(
+		private async Task WriteFile(
 			[SharedContext] string? fullPath,
 			ReactiveToolResult result,
 			ToolExecutionContext ctx,
