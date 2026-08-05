@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	{
 		private ChatAgentDescriptor _inheritedAgentSettings = new();
 		/// <summary>
-		/// Gets or sets the agent settings that will be used for inherted agent settings.
+		/// Gets or sets the agent settings that will be used for inherited agent settings.
 		/// Example: agent inherits chat's tool settings.
 		/// </summary>
 		public ChatAgentDescriptor InheritedAgentSettings

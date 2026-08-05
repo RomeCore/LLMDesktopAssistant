@@ -95,6 +95,16 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _skillSettings, value);
 		}
 
+		private AgentMemorySettings _memorySettings = new();
+		/// <summary>
+		/// Settings related to memory management.
+		/// </summary>
+		public AgentMemorySettings Memory
+		{
+			get => _memorySettings;
+			set => SetProperty(ref _memorySettings, value);
+		}
+
 		/// <summary>
 		/// Creates a deep clone of this agent descriptor via JSON serialization.
 		/// </summary>

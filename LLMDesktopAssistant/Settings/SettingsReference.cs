@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Settings
 {
@@ -37,6 +38,7 @@ namespace LLMDesktopAssistant.Settings
 		/// <remarks>
 		/// Returns <see langword="null"/> when the referenced settings instance does not exist.
 		/// </remarks>
+		[ChangeTracker.Untracked]
 		public T? Object
 		{
 			get

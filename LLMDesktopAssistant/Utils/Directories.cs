@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Agents.Memory;
 
 namespace LLMDesktopAssistant.Utils
 {
@@ -50,6 +51,11 @@ namespace LLMDesktopAssistant.Utils
 		public static string Skills { get; }
 
 		/// <summary>
+		/// The path where to store the agentic memory data. This directory contains subdirectories, where each subdirectory represents a data associated with <see cref="MemoryBlock"/>.
+		/// </summary>
+		public static string Memory { get; }
+
+		/// <summary>
 		/// The path where to store the settings files. These are usually configuration files that need to persist across sessions.
 		/// </summary>
 		public static string Settings { get; }
@@ -89,6 +95,7 @@ namespace LLMDesktopAssistant.Utils
 			Templates = Path.Combine(LocalAppData, "templates");
 			Metatools = Path.Combine(LocalAppData, "metatools");
 			Skills = Path.Combine(LocalAppData, "skills");
+			Memory = Path.Combine(LocalAppData, "memory");
 			Settings = Path.Combine(LocalAppData, "settings");
 			Data = Path.Combine(LocalAppData, "data");
 			Models = Path.Combine(LocalAppData, "models");
@@ -106,6 +113,7 @@ namespace LLMDesktopAssistant.Utils
 			Directory.CreateDirectory(Templates);
 			Directory.CreateDirectory(Metatools);
 			Directory.CreateDirectory(Skills);
+			Directory.CreateDirectory(Memory);
 			Directory.CreateDirectory(Settings);
 			Directory.CreateDirectory(Data);
 			Directory.CreateDirectory(Models);

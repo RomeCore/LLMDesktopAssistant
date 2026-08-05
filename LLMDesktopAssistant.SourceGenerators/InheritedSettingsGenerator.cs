@@ -28,6 +28,7 @@ namespace LLMDesktopAssistant.SourceGenerators
 		private const string InheritanceLevelType = "global::LLMDesktopAssistant.LLM.Settings.ChatSettingsInheritanceLevel";
 		private const string ApplicationSettingsType = "global::LLMDesktopAssistant.Settings.Application.ApplicationSettings";
 		private const string ChatSettingsType = "global::LLMDesktopAssistant.LLM.Settings.ChatSettings";
+		private const string SettingsManagerType = "global::LLMDesktopAssistant.Settings.SettingsManager";
 		private const string NotifyPropertyChangedType = "LLMDesktopAssistant.NotifyPropertyChanged";
 
 		private static readonly SymbolDisplayFormat _typeFormat = SymbolDisplayFormat.FullyQualifiedFormat
@@ -230,12 +231,13 @@ namespace LLMDesktopAssistant.SourceGenerators
 
 			// GetEffective
 			sb.AppendLine();
-			sb.Append("\t\tpublic ").Append(property.Type).Append(" GetEffective").Append(property.Name)
-				.Append('(').Append(ApplicationSettingsType).Append(" appSettings");
+			sb.Append("\t\tpublic ").Append(property.Type).Append(" GetEffective").Append(property.Name).Append('(');
 			if (property.Kind == SettingKind.Agent)
-				sb.Append(", ").Append(ChatSettingsType).Append(" chatSettings");
+				sb.Append(ChatSettingsType).Append(" chatSettings");
 			sb.AppendLine(")");
 			sb.AppendLine("\t\t{");
+			sb.Append("\t\t\tvar appSettings = ").Append(SettingsManagerType).Append(".Get<").Append(ApplicationSettingsType).Append(">();").AppendLine();
+			sb.AppendLine();
 			sb.Append("\t\t\tswitch (").Append(property.Name).Append("Inheritance)").AppendLine();
 			sb.AppendLine("\t\t\t{");
 
@@ -257,12 +259,13 @@ namespace LLMDesktopAssistant.SourceGenerators
 
 			// SetEffective
 			sb.AppendLine();
-			sb.Append("\t\tpublic void SetEffective").Append(property.Name)
-				.Append('(').Append(ApplicationSettingsType).Append(" appSettings");
+			sb.Append("\t\tpublic void SetEffective").Append(property.Name).Append('(');
 			if (property.Kind == SettingKind.Agent)
-				sb.Append(", ").Append(ChatSettingsType).Append(" chatSettings");
-			sb.Append(", ").Append(property.Type).Append(" value)").AppendLine();
+				sb.Append(ChatSettingsType).Append(" chatSettings, ");
+			sb.Append(property.Type).Append(" value)").AppendLine();
 			sb.AppendLine("\t\t{");
+			sb.Append("\t\t\tvar appSettings = ").Append(SettingsManagerType).Append(".Get<").Append(ApplicationSettingsType).Append(">();").AppendLine();
+			sb.AppendLine();
 			sb.Append("\t\t\tswitch (").Append(property.Name).Append("Inheritance)").AppendLine();
 			sb.AppendLine("\t\t\t{");
 
