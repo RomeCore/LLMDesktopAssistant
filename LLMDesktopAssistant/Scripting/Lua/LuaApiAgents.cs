@@ -608,13 +608,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				var tec = ctx.TryGetToolExecutionContext();
 				var agentToolSettings = tec != null ? _agentManager.TryGetAgentDescriptor(tec.Message.SenderAgentId)?.Tools : null;
 
-				ToolBehaviour autoApproveBehaviours = _chat.Settings.Tools.AutoApproveBehaviours,
-					disallowedBehaviours = _chat.Settings.Tools.DisallowedBehaviours;
-				if (agentToolSettings != null && agentToolSettings.EnablePolicyOverride)
-				{
-					autoApproveBehaviours = agentToolSettings.AutoApproveBehaviours;
-					disallowedBehaviours = agentToolSettings.DisallowedBehaviours;
-				}
+				var policy = agentToolSettings?.GetEffectivePolicy(_chat.Settings)
+					?? _chat.Settings.InheritedAgentSettings.Tools.GetEffectivePolicy(_chat.Settings);
+				ToolBehaviour autoApproveBehaviours = policy.AutoApproveBehaviours,
+					disallowedBehaviours = policy.DisallowedBehaviours;
 
 				var agentTask = _agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{

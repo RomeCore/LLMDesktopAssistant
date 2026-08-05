@@ -1632,9 +1632,6 @@
   <data name="approval_level_alwaysdisallow" xml:space="preserve">
     <value>Всегда запрещать</value>
   </data>
-  <data name="enable_policy_override" xml:space="preserve">
-    <value>Переопределить глобальную политику инструментов для этого агента</value>
-  </data>
   <data name="tools_auto_approve_behaviours" xml:space="preserve">
     <value>Авто-одобряемые поведения</value>
   </data>
@@ -2369,6 +2366,27 @@
   </data>
   <data name="tool_settings" xml:space="preserve">
     <value>Настройки инструментов</value>
+  </data>
+  <data name="toolset" xml:space="preserve">
+    <value>Тулсет</value>
+  </data>
+  <data name="toolset_create" xml:space="preserve">
+    <value>Создать тулсет</value>
+  </data>
+  <data name="toolset_remove" xml:space="preserve">
+    <value>Удалить тулсет</value>
+  </data>
+  <data name="toolset_rename" xml:space="preserve">
+    <value>Переименовать тулсет</value>
+  </data>
+  <data name="toolset_shared" xml:space="preserve">
+    <value>Общий тулсет:</value>
+  </data>
+  <data name="toolset_use_custom" xml:space="preserve">
+    <value>Использовать свой тулсет</value>
+  </data>
+  <data name="toolset_use_custom_hint" xml:space="preserve">
+    <value>Изменения применяются только к этому агенту. При выключении используется общая конфигурация тулсета.</value>
   </data>
   <data name="tool_behaviour_adhoc" xml:space="preserve">
     <value>Специальные/одноразовые инструменты</value>

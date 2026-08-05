@@ -5,7 +5,6 @@
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ChatToolsSettingsView"
 			 x:DataType="local:ChatToolsSettingsViewModel">
 
@@ -14,7 +13,7 @@
 		<!-- Enable tools checkbox -->
 		<CheckBox IsChecked="{Binding ToolSettings.EnableTools}"
 							Content="{loc:Loc settings-use_tools}"/>
-		
+
 		<!-- Separator -->
 		<Rectangle Height="1"
 							 Fill="{DynamicResource DefaultForeground}"
@@ -28,95 +27,10 @@
 							Content="{loc:Loc settings-tools_fetch_all}"
 							IsEnabled="{Binding ToolSettings.EnableTools}"/>
 
-
 		<TextBlock Text="{loc:Loc settings-tools_fetch_all_hint}"
 							Opacity="0.6"
 							TextWrapping="Wrap"
 							IsEnabled="{Binding ToolSettings.EnableTools}"/>
-
-		<!-- Separator -->
-		<Rectangle Height="1"
-							 Fill="{DynamicResource DefaultForeground}"
-							 Opacity="0.2"
-							 Margin="0,10"/>
-
-		<!-- ============================================================ -->
-		<!-- BEHAVIOUR POLICY -->
-		<!-- ============================================================ -->
-		<TextBlock Text="{loc:Loc tool_behaviour_policy}"
-							 FontSize="{DynamicResource FontSizeL}"
-							 IsEnabled="{Binding ToolSettings.EnableTools}"
-							 FontWeight="Bold"/>
-
-		<!-- Column headers -->
-		<Grid ColumnDefinitions="*,Auto"
-					IsEnabled="{Binding ToolSettings.EnableTools}">
-
-			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc name}"
-								 FontWeight="Bold"
-								 Margin="5,0,0,0"/>
-
-			<TextBlock Grid.Column="1"
-								 Text="{loc:Loc policy}"
-								 FontWeight="Bold"
-								 Margin="8,0,8,0"/>
-		</Grid>
-
-		<ItemsControl ItemsSource="{Binding PolicyBehaviourItems}"
-									IsVisible="{Binding ToolSettings.EnableTools}">
-			<ItemsControl.ItemTemplate>
-				<DataTemplate x:DataType="local:ToolBehaviourPolicyItem">
-					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-									BorderThickness="1"
-									CornerRadius="4"
-									Padding="8"
-									Margin="0,0,0,8">
-						<Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">
-
-							<!-- Row 0: Icon + Name + ComboBox -->
-							<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-
-								<ico:MaterialIcon Grid.Column="0"
-																	Kind="{Binding Icon}"
-																	Foreground="{Binding Color}"
-																	Width="20" Height="20"
-																	VerticalAlignment="Center"
-																	Margin="0,0,8,0"/>
-
-								<TextBlock Grid.Column="1"
-													 Text="{Binding DisplayName}"
-													 FontWeight="Medium"
-													 TextTrimming="CharacterEllipsis"
-													 VerticalAlignment="Center"/>
-
-								<ComboBox Grid.Column="2"
-													ItemsSource="{Binding PolicyModes}"
-													SelectedItem="{Binding PolicyMode, Mode=TwoWay}"
-													MinWidth="140"
-													Margin="8,0,0,0">
-									<ComboBox.ItemTemplate>
-										<DataTemplate x:DataType="local:PolicyModeItem">
-											<TextBlock Text="{Binding DisplayName}"/>
-										</DataTemplate>
-									</ComboBox.ItemTemplate>
-								</ComboBox>
-							</Grid>
-
-							<!-- Row 1: Description -->
-							<TextBlock Grid.Row="1"
-												 Text="{Binding Description}"
-												 Opacity="0.6"
-												 FontSize="12"
-												 TextWrapping="Wrap"
-												 Margin="28,4,0,0"
-												 IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
-
-						</Grid>
-					</Border>
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
-		</ItemsControl>
 
 	</StackPanel>
 

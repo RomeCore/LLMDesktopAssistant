@@ -1,4 +1,4 @@
-﻿using AngleSharp.Common;
+using AngleSharp.Common;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
@@ -80,7 +80,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			var tools = GetAvailableTools();
 			var result = new List<ToolInfo>();
 
-			var changes = settings.ToolChanges.ToDictionary(c => c.ToolName, c => c);
+			var toolset = settings.GetEffectiveToolset(chat.Settings).GetEffectiveConfiguration();
+			var changes = toolset.ToolChanges.ToDictionary(c => c.ToolName, c => c);
 			foreach (var toolInfo in tools)
 			{
 				if (changes.TryGetValue(toolInfo.Tool.Name, out var change))

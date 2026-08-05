@@ -163,18 +163,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				cancellationToken.ThrowIfCancellationRequested();
 
 				var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
-				var agentToolSettings = senderAgent.Tools;
-				ToolBehaviour autoApproveBehaviours, disallowedBehaviours;
-				if (agentToolSettings.EnablePolicyOverride)
-				{
-					autoApproveBehaviours = agentToolSettings.AutoApproveBehaviours;
-					disallowedBehaviours = agentToolSettings.DisallowedBehaviours;
-				}
-				else
-				{
-					autoApproveBehaviours = chat.Settings.Tools.AutoApproveBehaviours;
-					disallowedBehaviours = chat.Settings.Tools.DisallowedBehaviours;
-				}
+				var policy = senderAgent.Tools.GetEffectivePolicy(chat.Settings);
+				var autoApproveBehaviours = policy.AutoApproveBehaviours;
+				var disallowedBehaviours = policy.DisallowedBehaviours;
 
 				var approvalLevel = toolInfo.ApprovalLevel;
 

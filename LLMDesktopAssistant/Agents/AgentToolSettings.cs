@@ -1,14 +1,15 @@
-﻿using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.SourceGenerators;
 using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents
 {
 	/// <summary>
 	/// Describes an agent tool settings.
-	/// Contains the list of tools that can be used by the agent.
+	/// Contains the tool policy group, the toolset group and the local tools enable flag.
 	/// </summary>
-	public class AgentToolSettings : AgentSettingsCategoryBase
+	[SettingsRoute(nameof(ChatAgentDescriptor.Tools))]
+	public partial class AgentToolSettings : AgentSettingsCategoryBase
 	{
 		private bool _enableTools = true;
 		/// <summary>
@@ -20,46 +21,28 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _enableTools, value);
 		}
 
-		private bool _enablePolicyOverride = false;
+		private ToolPolicySettings _policy = new();
 		/// <summary>
-		/// Whether to override the approval policy for tools.
-		/// When true, the <see cref="AutoApproveBehaviours"/> and <see cref="DisallowedBehaviours"/> 
-		/// will be used instead of policy specified in <see cref="ChatToolSettings"/>.
+		/// Gets or sets the tool behaviour policy for this agent.
+		/// Inherits the chat profile policy by default.
 		/// </summary>
-		public bool EnablePolicyOverride
+		[InheritedChatAgentSetting(DefaultLevel = ChatSettingsInheritanceLevel.Profile)]
+		public ToolPolicySettings Policy
 		{
-			get => _enablePolicyOverride;
-			set => SetProperty(ref _enablePolicyOverride, value);
+			get => _policy;
+			set => SetProperty(ref _policy, value);
 		}
 
-		private ToolBehaviour _autoApproveBehaviours = ToolBehaviour.None;
+		private ToolsetSettings _toolset = new();
 		/// <summary>
-		/// The behaviour of tools that will be automatically approved.
+		/// Gets or sets the toolset configuration for this agent: a custom toolset or a
+		/// reference to a shared toolset configuration.
 		/// </summary>
-		public ToolBehaviour AutoApproveBehaviours
+		[InheritedChatAgentSetting]
+		public ToolsetSettings Toolset
 		{
-			get => _autoApproveBehaviours;
-			set => SetProperty(ref _autoApproveBehaviours, value);
-		}
-
-		private ToolBehaviour _disallowedBehaviours = ToolBehaviour.None;
-		/// <summary>
-		/// The behaviour of tools that will be disallowed.
-		/// </summary>
-		public ToolBehaviour DisallowedBehaviours
-		{
-			get => _disallowedBehaviours;
-			set => SetProperty(ref _disallowedBehaviours, value);
-		}
-
-		private readonly RangeObservableCollection<ToolChange> _toolChanges = [];
-		/// <summary>
-		/// Gets or sets the tool changes.
-		/// </summary>
-		public ICollection<ToolChange> ToolChanges
-		{
-			get => _toolChanges;
-			set => _toolChanges.Reset(value);
+			get => _toolset;
+			set => SetProperty(ref _toolset, value);
 		}
 	}
 }

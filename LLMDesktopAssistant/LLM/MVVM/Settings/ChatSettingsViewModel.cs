@@ -220,7 +220,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 						MaterialIconKind.Wrench,
 						new AgentToolSettingsViewModel(
 							descriptor.Tools,
-							Chat.Services.GetRequiredService<IToolsetBuildingService>())),
+							Chat.Services.GetRequiredService<IToolsetBuildingService>(),
+							Chat.Settings)),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_skills"),
 						MaterialIconKind.Cards,

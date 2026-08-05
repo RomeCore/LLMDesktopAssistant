@@ -1,13 +1,16 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Text;
 using Avalonia;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Messages;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Localization.Resources;
+using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 
@@ -15,7 +18,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
 	public class ToolItemViewModel : ViewModelBase
 	{
-		private readonly AgentToolSettings _settings;
+		private readonly ToolsetConfiguration _toolset;
 		private readonly ToolInfo _toolInfo;
 		private ToolChange? _change;
 
@@ -37,9 +40,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// </summary>
 		public IReadOnlyList<ToolBehaviourFlagInfo> BehaviourFlags { get; }
 
-		public ToolItemViewModel(ToolInfo tool, AgentToolSettings settings)
+		public ToolItemViewModel(ToolInfo tool, ToolsetConfiguration toolset)
 		{
-			_settings = settings;
+			_toolset = toolset;
 			_toolInfo = tool;
 			BehaviourFlags = ToolBehaviourFlagInfo.CreateForFlags(tool.DefaultExpectedBehaviour);
 
@@ -72,14 +75,14 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				DescriptionOpacityMask = gradientBrush;
 			}
 
-			_change = _settings.ToolChanges.FirstOrDefault(x => x.ToolName == Name);
+			_change = _toolset.ToolChanges.FirstOrDefault(x => x.ToolName == Name);
 		}
 
 		private void Reset()
 		{
 			if (_change != null)
 			{
-				_settings.ToolChanges.Remove(_change);
+				_toolset.ToolChanges.Remove(_change);
 				_change = null;
 				RaisePropertyChanged(nameof(Enabled));
 				RaisePropertyChanged(nameof(ApprovalLevel));
@@ -96,7 +99,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					Enabled = null,
 					ApprovalLevel = null
 				};
-				_settings.ToolChanges.Add(_change);
+				_toolset.ToolChanges.Add(_change);
 			}
 			return _change;
 		}
@@ -223,32 +226,148 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	[ViewModelFor(typeof(AgentToolSettingsView))]
 	public class AgentToolSettingsViewModel : ViewModelBase
 	{
+		private enum IdEditMode
+		{
+			Create,
+			Rename
+		}
+
 		private readonly IToolsetBuildingService _toolsetBuildingService;
-		public AgentToolSettings ToolSettings { get; }
-
-
-	/// <summary>
-	/// List of ToolBehaviour flags with combined Auto-Approve / Disallowed policy toggles.
-	/// </summary>
-	public ObservableCollection<ToolBehaviourPolicyItem> PolicyBehaviourItems { get; } = [];
+		private readonly ChatSettings _chatSettings;
+		private IdEditMode _mode = IdEditMode.Create;
 
 		/// <summary>
-		/// Whether to override the global tool policy for this agent.
+		/// Gets the underlying agent tool settings.
 		/// </summary>
-		public bool EnablePolicyOverride
+		public AgentToolSettings ToolSettings { get; }
+
+		/// <summary>
+		/// Gets the effective tool behaviour policy resolved by the current inheritance level.
+		/// </summary>
+		public ToolPolicySettings EffectivePolicy => ToolSettings.GetEffectivePolicy(_chatSettings);
+
+		/// <summary>
+		/// Gets the effective toolset settings resolved by the current inheritance level.
+		/// </summary>
+		public ToolsetSettings EffectiveToolset => ToolSettings.GetEffectiveToolset(_chatSettings);
+
+		/// <summary>
+		/// Gets the effective toolset configuration (custom or referenced shared).
+		/// </summary>
+		public ToolsetConfiguration EffectiveToolsetConfiguration => EffectiveToolset.GetEffectiveConfiguration();
+
+		/// <summary>
+		/// List of ToolBehaviour flags with combined Auto-Approve / Disallowed policy toggles.
+		/// </summary>
+		public ObservableCollection<ToolBehaviourPolicyItem> PolicyBehaviourItems { get; } = [];
+
+		private InheritanceLevelItem _selectedPolicyInheritance;
+		/// <summary>
+		/// Gets or sets the inheritance level for the tool policy group.
+		/// </summary>
+		public InheritanceLevelItem SelectedPolicyInheritance
 		{
-			get => ToolSettings.EnablePolicyOverride;
+			get => _selectedPolicyInheritance;
 			set
 			{
-				if (ToolSettings.EnablePolicyOverride != value)
+				if (SetProperty(ref _selectedPolicyInheritance, value) && value != null)
+					ToolSettings.PolicyInheritance = value.Value;
+			}
+		}
+
+		private InheritanceLevelItem _selectedToolsetInheritance;
+		/// <summary>
+		/// Gets or sets the inheritance level for the toolset group.
+		/// </summary>
+		public InheritanceLevelItem SelectedToolsetInheritance
+		{
+			get => _selectedToolsetInheritance;
+			set
+			{
+				if (SetProperty(ref _selectedToolsetInheritance, value) && value != null)
+					ToolSettings.ToolsetInheritance = value.Value;
+			}
+		}
+
+		/// <summary>
+		/// Gets the settings category that stores shared toolset configurations.
+		/// </summary>
+		public static SettingsCategory<ToolsetConfiguration> ToolsetCategory { get; } = SettingsManager.GetCategory<ToolsetConfiguration>();
+
+		/// <summary>
+		/// Gets the available shared toolset configuration IDs.
+		/// </summary>
+		public RangeObservableCollection<SettingsIdItemViewModel> ToolsetIds { get; } = [ ..ToolsetCategory.GetAvailableIds()
+			.Where(c => c != SettingsObject.DefaultId)
+			.Select(c => new SettingsIdItemViewModel { Id = c })
+			.Prepend(SettingsIdItemViewModel.Default) ];
+
+		private SettingsIdItemViewModel _selectedToolsetId = null!;
+		/// <summary>
+		/// Gets or sets the selected shared toolset configuration.
+		/// </summary>
+		public SettingsIdItemViewModel SelectedToolsetId
+		{
+			get => _selectedToolsetId;
+			set
+			{
+				if (value == null)
+					value = SettingsIdItemViewModel.Default;
+				if (SetProperty(ref _selectedToolsetId, value))
 				{
-					ToolSettings.EnablePolicyOverride = value;
-					RaisePropertyChanged();
+					EffectiveToolset.Reference.Id = value.Id;
+					UpdateTools();
 				}
 			}
 		}
 
+		private bool _isEditingId;
+		/// <summary>
+		/// Gets or sets a value indicating whether the toolset ID editor is visible.
+		/// </summary>
+		public bool IsEditingId
+		{
+			get => _isEditingId;
+			set => SetProperty(ref _isEditingId, value);
+		}
+
+		private string? _newId;
+		/// <summary>
+		/// Gets or sets the toolset ID being created or renamed.
+		/// </summary>
+		public string? NewId
+		{
+			get => _newId;
+			set => SetProperty(ref _newId, value);
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the custom toolset is used instead of the referenced shared one.
+		/// </summary>
+		public bool UseCustomToolset
+		{
+			get => EffectiveToolset.UseCustomToolset;
+			set
+			{
+				if (EffectiveToolset.UseCustomToolset != value)
+				{
+					EffectiveToolset.UseCustomToolset = value;
+					RaisePropertyChanged();
+					UpdateTools();
+				}
+			}
+		}
+
+		public ICommand CreateNewIdCommand { get; }
+		public ICommand RenameIdCommand { get; }
+		public ICommand RemoveIdCommand { get; }
+		public ICommand ConfirmEditIdCommand { get; }
+		public ICommand CancelEditIdCommand { get; }
+
 		private RangeObservableCollection<ToolCategoryViewModel> _toolCategories = [];
+		/// <summary>
+		/// Gets the tool list grouped by categories for the effective toolset.
+		/// </summary>
 		public ICollection<ToolCategoryViewModel> ToolCategories
 		{
 			get => _toolCategories;
@@ -259,15 +378,59 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 		}
 
-		public AgentToolSettingsViewModel(AgentToolSettings settings, IToolsetBuildingService toolsetBuildingService)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AgentToolSettingsViewModel"/> class.
+		/// </summary>
+		/// <param name="settings">The agent tool settings to edit.</param>
+		/// <param name="toolsetBuildingService">The toolset building service used to enumerate available tools.</param>
+		/// <param name="chatSettings">The chat settings used to resolve inherited settings.</param>
+		public AgentToolSettingsViewModel(AgentToolSettings settings, IToolsetBuildingService toolsetBuildingService, ChatSettings chatSettings)
 		{
 			_toolsetBuildingService = toolsetBuildingService;
+			_chatSettings = chatSettings;
 			ToolSettings = settings;
+
+			_selectedPolicyInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.PolicyInheritance);
+			_selectedToolsetInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.ToolsetInheritance);
+			_selectedToolsetId = ToolsetIds.FirstOrDefault(i => i.Id == EffectiveToolset.Reference.Id) ?? SettingsIdItemViewModel.Default;
+
+			settings.PropertyChanged += ToolSettings_PropertyChanged;
+
 			InitializeBehaviourItems();
 			UpdateTools();
+
+			CreateNewIdCommand = new RelayCommand(CreateNewId);
+			RenameIdCommand = new RelayCommand(RenameId);
+			RemoveIdCommand = new RelayCommand(RemoveId);
+			ConfirmEditIdCommand = new RelayCommand(ConfirmEditId);
+			CancelEditIdCommand = new RelayCommand(() => IsEditingId = false);
 		}
 
-	private void InitializeBehaviourItems()
+		private void ToolSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(AgentToolSettings.PolicyInheritance):
+					_selectedPolicyInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == ToolSettings.PolicyInheritance);
+					RaisePropertyChanged(nameof(SelectedPolicyInheritance));
+					RaisePropertyChanged(nameof(EffectivePolicy));
+					InitializeBehaviourItems();
+					break;
+
+				case nameof(AgentToolSettings.ToolsetInheritance):
+					_selectedToolsetInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == ToolSettings.ToolsetInheritance);
+					_selectedToolsetId = ToolsetIds.FirstOrDefault(i => i.Id == EffectiveToolset.Reference.Id) ?? SettingsIdItemViewModel.Default;
+					RaisePropertyChanged(nameof(SelectedToolsetInheritance));
+					RaisePropertyChanged(nameof(EffectiveToolset));
+					RaisePropertyChanged(nameof(EffectiveToolsetConfiguration));
+					RaisePropertyChanged(nameof(SelectedToolsetId));
+					RaisePropertyChanged(nameof(UseCustomToolset));
+					UpdateTools();
+					break;
+			}
+		}
+
+		private void InitializeBehaviourItems()
 		{
 			PolicyBehaviourItems.Clear();
 
@@ -284,10 +447,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					description = string.Empty;
 
 				PolicyBehaviourItems.Add(new ToolBehaviourPolicyItem(
-					() => ToolSettings.AutoApproveBehaviours,
-					v => ToolSettings.AutoApproveBehaviours = v,
-					() => ToolSettings.DisallowedBehaviours,
-					v => ToolSettings.DisallowedBehaviours = v,
+					() => EffectivePolicy.AutoApproveBehaviours,
+					v => EffectivePolicy.AutoApproveBehaviours = v,
+					() => EffectivePolicy.DisallowedBehaviours,
+					v => EffectivePolicy.DisallowedBehaviours = v,
 					flag,
 					displayName,
 					description));
@@ -297,7 +460,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		private static IEnumerable<ToolBehaviour> GetBehaviourFlags()
 		{
 			return Enum.GetValues<ToolBehaviour>()
-				.Where(v => v != ToolBehaviour.None);
+				.Where(v => v != ToolBehaviour.None && v != ToolBehaviour.All);
 		}
 
 		private static string SplitCamelCase(string input)
@@ -318,11 +481,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			return result.ToString();
 		}
 
-
+		/// <summary>
+		/// Rebuilds the tool list from the effective toolset configuration.
+		/// </summary>
 		public void UpdateTools()
 		{
 			var tools = _toolsetBuildingService.GetAvailableTools();
-			var toolVMs = tools.Select(t => new ToolItemViewModel(t, ToolSettings));
+			var toolVMs = tools.Select(t => new ToolItemViewModel(t, EffectiveToolsetConfiguration));
 
 			foreach (var category in ToolCategories)
 				category.Dispose();
@@ -331,6 +496,72 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				.GroupBy(t => t.Category)
 				.Select(g => new ToolCategoryViewModel(g.Key, g))
 				.ToImmutableList();
+		}
+
+		private void CreateNewId()
+		{
+			_mode = IdEditMode.Create;
+			IsEditingId = true;
+			NewId = null;
+		}
+
+		private void RenameId()
+		{
+			_mode = IdEditMode.Rename;
+			IsEditingId = true;
+			NewId = EffectiveToolset.Reference.Id;
+		}
+
+		private void RemoveId()
+		{
+			var currentId = EffectiveToolset.Reference.Id;
+			if (ToolsetCategory.Remove(currentId))
+			{
+				if (currentId != SettingsObject.DefaultId)
+					ToolsetIds.Remove(new SettingsIdItemViewModel { Id = currentId });
+				SelectedToolsetId = SettingsIdItemViewModel.Default;
+			}
+		}
+
+		private void ConfirmEditId()
+		{
+			var oldId = EffectiveToolset.Reference.Id;
+			switch (_mode)
+			{
+				case IdEditMode.Create:
+
+					if (!string.IsNullOrWhiteSpace(NewId) && ToolsetCategory.Copy(oldId, NewId))
+					{
+						if (NewId != SettingsObject.DefaultId && !ToolsetIds.Any(c => c.Id == NewId))
+							ToolsetIds.Add(new SettingsIdItemViewModel { Id = NewId });
+
+						SelectedToolsetId = new SettingsIdItemViewModel { Id = NewId };
+						IsEditingId = false;
+						NewId = null;
+					}
+
+					break;
+
+				case IdEditMode.Rename:
+
+					var newId = NewId == SettingsIdItemViewModel.Default.DisplayId ? SettingsObject.DefaultId : NewId;
+					if (!string.IsNullOrWhiteSpace(newId) &&
+						newId != oldId &&
+						ToolsetCategory.Rename(oldId, newId))
+					{
+						if (newId != SettingsObject.DefaultId && !ToolsetIds.Any(c => c.Id == newId))
+							ToolsetIds.Add(new SettingsIdItemViewModel { Id = newId });
+						if (oldId != SettingsObject.DefaultId)
+							ToolsetIds.Remove(new SettingsIdItemViewModel { Id = oldId });
+						SelectedToolsetId = new SettingsIdItemViewModel { Id = newId };
+
+						ToolsetCategory.Get(SettingsObject.DefaultId); // Ensure default settings are loaded if they were renamed.
+						IsEditingId = false;
+						NewId = null;
+					}
+
+					break;
+			}
 		}
 	}
 }

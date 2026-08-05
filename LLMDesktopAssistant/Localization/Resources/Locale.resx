@@ -1632,9 +1632,6 @@
   <data name="approval_level_alwaysdisallow" xml:space="preserve">
     <value>Always disallow</value>
   </data>
-  <data name="enable_policy_override" xml:space="preserve">
-    <value>Override global tool policy for this agent</value>
-  </data>
   <data name="tools_auto_approve_behaviours" xml:space="preserve">
     <value>Auto-approve behaviours</value>
   </data>
@@ -2369,6 +2366,27 @@
   </data>
   <data name="tool_settings" xml:space="preserve">
     <value>Tools settings</value>
+  </data>
+  <data name="toolset" xml:space="preserve">
+    <value>Toolset</value>
+  </data>
+  <data name="toolset_create" xml:space="preserve">
+    <value>Create toolset</value>
+  </data>
+  <data name="toolset_remove" xml:space="preserve">
+    <value>Remove toolset</value>
+  </data>
+  <data name="toolset_rename" xml:space="preserve">
+    <value>Rename toolset</value>
+  </data>
+  <data name="toolset_shared" xml:space="preserve">
+    <value>Shared toolset:</value>
+  </data>
+  <data name="toolset_use_custom" xml:space="preserve">
+    <value>Use custom toolset</value>
+  </data>
+  <data name="toolset_use_custom_hint" xml:space="preserve">
+    <value>Edits apply only to this agent. When disabled, a shared toolset configuration is used.</value>
   </data>
   <data name="tool_behaviour_adhoc" xml:space="preserve">
     <value>Ad-hoc (special tools)</value>

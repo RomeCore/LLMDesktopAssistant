@@ -5,6 +5,8 @@
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
 			 xmlns:sett="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:set="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:appset="using:LLMDesktopAssistant.Settings"
 			 xmlns:llmsg="using:LLMDesktopAssistant.LLM.Messages"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
@@ -18,104 +20,231 @@
 		<!-- Enable tools checkbox -->
 		<CheckBox IsChecked="{Binding ToolSettings.EnableTools}"
 							Content="{loc:Loc settings-use_tools}"/>
-		
+
 		<!-- Separator -->
 		<Rectangle Height="1"
 							 Fill="{DynamicResource DefaultForeground}"
 							 Opacity="0.2"/>
-
-		<TextBlock Text="{loc:Loc tool_behaviour_policy}"
-							 FontSize="{DynamicResource FontSizeL}"
-							 FontWeight="Bold"/>
-
-		<!-- Policy override checkbox (agent-only) -->
-		<CheckBox IsChecked="{Binding EnablePolicyOverride}"
-							Content="{loc:Loc enable_policy_override}"
-							IsEnabled="{Binding ToolSettings.EnableTools}"/>
 
 		<!-- ============================================================ -->
 		<!-- BEHAVIOUR POLICY -->
 		<!-- ============================================================ -->
-		<StackPanel IsVisible="{Binding EnablePolicyOverride}" Spacing="16">
+		<Grid ColumnDefinitions="*,Auto">
 
-			<!-- Column headers -->
-			<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc tool_behaviour_policy}"
+								 FontSize="{DynamicResource FontSizeL}"
+								 FontWeight="Bold"
+								 VerticalAlignment="Center"/>
 
-				<TextBlock Grid.Column="0"
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+								SelectedItem="{Binding SelectedPolicyInheritance}"
+								VerticalAlignment="Center"
+								Margin="0,0,8,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
+
+		<!-- Column headers -->
+		<Grid ColumnDefinitions="*,Auto"
+					IsEnabled="{Binding ToolSettings.EnableTools}">
+
+			<TextBlock Grid.Column="0"
 						   Text="{loc:Loc name}"
 						   FontWeight="Bold"
 						   Margin="5,0,0,0"/>
 
-				<TextBlock Grid.Column="1"
+			<TextBlock Grid.Column="1"
 						   Text="{loc:Loc policy}"
 						   FontWeight="Bold"
 						   Margin="8,0,8,0"/>
-			</Grid>
+		</Grid>
 
-			<ItemsControl ItemsSource="{Binding PolicyBehaviourItems}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="sett:ToolBehaviourPolicyItem">
-						<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-										BorderThickness="1"
-										CornerRadius="4"
-										Padding="8"
-										Margin="0,0,0,8">
-							<Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">
+		<ItemsControl ItemsSource="{Binding PolicyBehaviourItems}"
+									IsEnabled="{Binding ToolSettings.EnableTools}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="sett:ToolBehaviourPolicyItem">
+					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+									BorderThickness="1"
+									CornerRadius="4"
+									Padding="8"
+									Margin="0,0,0,8">
+						<Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">
 
-								<!-- Row 0: Icon + Name + ComboBox -->
-								<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+							<!-- Row 0: Icon + Name + ComboBox -->
+							<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
 
-									<ico:MaterialIcon Grid.Column="0"
-													  Kind="{Binding Icon}"
-													  Foreground="{Binding Color}"
-													  Width="20" Height="20"
-													  VerticalAlignment="Center"
-													  Margin="0,0,8,0"/>
+								<ico:MaterialIcon Grid.Column="0"
+												  Kind="{Binding Icon}"
+												  Foreground="{Binding Color}"
+												  Width="20" Height="20"
+												  VerticalAlignment="Center"
+												  Margin="0,0,8,0"/>
 
-									<TextBlock Grid.Column="1"
-											   Text="{Binding DisplayName}"
-											   FontWeight="Medium"
-											   TextTrimming="CharacterEllipsis"
-											   VerticalAlignment="Center"/>
+								<TextBlock Grid.Column="1"
+										   Text="{Binding DisplayName}"
+										   FontWeight="Medium"
+										   TextTrimming="CharacterEllipsis"
+										   VerticalAlignment="Center"/>
 
-									<ComboBox Grid.Column="2"
-											  ItemsSource="{Binding PolicyModes}"
-											  SelectedItem="{Binding PolicyMode, Mode=TwoWay}"
-											  MinWidth="140"
-											  Margin="8,0,0,0">
-										<ComboBox.ItemTemplate>
-											<DataTemplate x:DataType="sett:PolicyModeItem">
-												<TextBlock Text="{Binding DisplayName}"/>
-											</DataTemplate>
-										</ComboBox.ItemTemplate>
-									</ComboBox>
-								</Grid>
-
-								<!-- Row 1: Description -->
-								<TextBlock Grid.Row="1"
-										   Text="{Binding Description}"
-										   Opacity="0.6"
-										   FontSize="12"
-										   TextWrapping="Wrap"
-										   Margin="28,4,0,0"
-										   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
-
+								<ComboBox Grid.Column="2"
+										  ItemsSource="{Binding PolicyModes}"
+										  SelectedItem="{Binding PolicyMode, Mode=TwoWay}"
+										  MinWidth="140"
+										  Margin="8,0,0,0">
+									<ComboBox.ItemTemplate>
+										<DataTemplate x:DataType="sett:PolicyModeItem">
+											<TextBlock Text="{Binding DisplayName}"/>
+										</DataTemplate>
+									</ComboBox.ItemTemplate>
+								</ComboBox>
 							</Grid>
-						</Border>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
 
-		</StackPanel>
-		
+							<!-- Row 1: Description -->
+							<TextBlock Grid.Row="1"
+									   Text="{Binding Description}"
+									   Opacity="0.6"
+									   FontSize="12"
+									   TextWrapping="Wrap"
+									   Margin="28,4,0,0"
+									   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
 		<!-- Separator -->
 		<Rectangle Height="1"
 							 Fill="{DynamicResource DefaultForeground}"
 							 Opacity="0.2"/>
 
-		<TextBlock Text="{loc:Loc tool_settings}"
-							 FontSize="{DynamicResource FontSizeL}"
-							 FontWeight="Bold"/>
+		<!-- ============================================================ -->
+		<!-- TOOLSET -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc tool_settings}"
+								 FontSize="{DynamicResource FontSizeL}"
+								 FontWeight="Bold"
+								 VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+								SelectedItem="{Binding SelectedToolsetInheritance}"
+								VerticalAlignment="Center"
+								Margin="0,0,8,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
+
+		<CheckBox IsChecked="{Binding UseCustomToolset}"
+							Content="{loc:Loc toolset_use_custom}"
+							IsEnabled="{Binding ToolSettings.EnableTools}"/>
+
+		<TextBlock Text="{loc:Loc toolset_use_custom_hint}"
+							Opacity="0.6"
+							TextWrapping="Wrap"
+							IsEnabled="{Binding ToolSettings.EnableTools}"/>
+
+		<!-- Shared toolset name editor -->
+		<StackPanel Orientation="Horizontal"
+								Spacing="4"
+								IsVisible="{Binding UseCustomToolset, Converter={StaticResource InverseBooleanConverter}}"
+								IsEnabled="{Binding ToolSettings.EnableTools}">
+
+			<TextBlock Text="{loc:Loc toolset_shared}"
+								 FontWeight="Bold"
+								 VerticalAlignment="Center"
+								 Margin="0,0,4,0"/>
+
+			<StackPanel Orientation="Horizontal"
+									Spacing="4"
+									IsVisible="{Binding IsEditingId, Converter={StaticResource InverseBooleanConverter}}">
+
+				<ComboBox MinWidth="150"
+									VerticalAlignment="Center"
+									SelectedItem="{Binding SelectedToolsetId}"
+									ItemsSource="{Binding ToolsetIds}">
+
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="appset:SettingsIdItemViewModel">
+							<TextBlock Text="{Binding DisplayId}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+
+				</ComboBox>
+
+				<Button Command="{Binding CreateNewIdCommand}"
+								Classes="IconButton"
+								ToolTip.Tip="{loc:Loc toolset_create}">
+
+					<ico:MaterialIcon Kind="Plus"/>
+				</Button>
+
+				<Button Command="{Binding RenameIdCommand}"
+								Classes="IconButton"
+								ToolTip.Tip="{loc:Loc toolset_rename}">
+
+					<ico:MaterialIcon Kind="Edit"/>
+				</Button>
+
+				<Button Command="{Binding RemoveIdCommand}"
+								Classes="IconButton"
+								ToolTip.Tip="{loc:Loc toolset_remove}">
+
+					<ico:MaterialIcon Kind="Remove"/>
+				</Button>
+
+			</StackPanel>
+
+			<StackPanel Orientation="Horizontal"
+									Spacing="4"
+									IsVisible="{Binding IsEditingId}">
+
+				<TextBox MinWidth="150"
+									VerticalAlignment="Center"
+									Text="{Binding NewId}"/>
+
+				<Button Command="{Binding ConfirmEditIdCommand}"
+								Classes="IconButton">
+
+					<ico:MaterialIcon Kind="Check"/>
+				</Button>
+
+				<Button Command="{Binding CancelEditIdCommand}"
+								Classes="IconButton">
+
+					<ico:MaterialIcon Kind="Cancel"/>
+				</Button>
+
+			</StackPanel>
+
+		</StackPanel>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"/>
 
 		<!-- Column headers for tool list -->
 		<Grid Grid.IsSharedSizeScope="True">
@@ -281,17 +410,17 @@
 												IsChecked="{Binding Enabled, Mode=TwoWay}"
 												HorizontalAlignment="Center"/>
 
-						<ComboBox Grid.Column="4"
+							<ComboBox Grid.Column="4"
 											SelectedItem="{Binding ApprovalLevel, Mode=TwoWay}"
 											ItemsSource="{Binding ApprovalLevelList}"
 											HorizontalAlignment="Stretch"
 											Margin="2,0">
-							<ComboBox.ItemTemplate>
-								<DataTemplate>
-									<TextBlock Text="{Binding DisplayName}"/>
-								</DataTemplate>
-							</ComboBox.ItemTemplate>
-						</ComboBox>
+								<ComboBox.ItemTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding DisplayName}"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
 
 							<Button Grid.Column="6"
 											Command="{Binding ResetCommand}"
@@ -301,15 +430,15 @@
 							</Button>
 
 						</Grid>
-						
+
 						<StackPanel Orientation="Horizontal"
 												Spacing="4">
-							
+
 							<TextBlock Text="{Binding Name}"
 												 FontSize="11"
 												 Opacity="0.4"
 												 VerticalAlignment="Center"/>
-							
+
 							<ItemsControl ItemsSource="{Binding BehaviourFlags}"
 														VerticalAlignment="Center">
 

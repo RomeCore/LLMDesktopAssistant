@@ -159,13 +159,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}.CompleteWithError();
 			}
 
-			ToolBehaviour autoApproveBehaviours = ctx.Chat.Settings.Tools.AutoApproveBehaviours,
-				disallowedBehaviours = ctx.Chat.Settings.Tools.DisallowedBehaviours;
-			if (agentDescriptor.Tools.EnablePolicyOverride)
-			{
-				autoApproveBehaviours = agentDescriptor.Tools.AutoApproveBehaviours;
-				disallowedBehaviours = agentDescriptor.Tools.DisallowedBehaviours;
-			}
+			var policy = agentDescriptor.Tools.GetEffectivePolicy(ctx.Chat.Settings);
+			ToolBehaviour autoApproveBehaviours = policy.AutoApproveBehaviours,
+				disallowedBehaviours = policy.DisallowedBehaviours;
 
 			try
 			{
