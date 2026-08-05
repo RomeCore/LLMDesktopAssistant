@@ -135,8 +135,8 @@ namespace LLMDesktopAssistant.SourceGenerators
 				if (member is not IPropertySymbol property)
 					continue;
 
-				var kind = GetSettingKind(property);
-				if (kind is null)
+				var settingInfo = GetSettingInfo(property, ct);
+				if (settingInfo is null)
 					continue;
 
 				if (property.IsStatic || property.IsIndexer || property.GetMethod is null || property.SetMethod is null)
@@ -159,7 +159,7 @@ namespace LLMDesktopAssistant.SourceGenerators
 					continue;
 				}
 
-				properties.Add(new PropertyModel(property.Name, type, kind.Value));
+				properties.Add(new PropertyModel(property.Name, type, settingInfo.Value.Kind, settingInfo.Value.DefaultLevel));
 			}
 
 			return new ClassModel(
@@ -211,7 +211,7 @@ namespace LLMDesktopAssistant.SourceGenerators
 		private static void AppendProperty(StringBuilder sb, PropertyModel property, string route)
 		{
 			var level = InheritanceLevelType;
-			var defaultLevel = property.Kind == SettingKind.Agent ? "Agent" : "Profile";
+			var defaultLevel = property.DefaultLevel;
 			var fieldName = "_" + ToCamelCase(property.Name) + "Inheritance";
 
 			// Inheritance level field + property
@@ -289,18 +289,47 @@ namespace LLMDesktopAssistant.SourceGenerators
 			sb.AppendLine("\t\t}");
 		}
 
-		private static SettingKind? GetSettingKind(IPropertySymbol property)
+		private static (SettingKind Kind, string DefaultLevel)? GetSettingInfo(IPropertySymbol property, CancellationToken ct)
 		{
 			foreach (var attribute in property.GetAttributes())
 			{
 				var name = attribute.AttributeClass?.ToDisplayString();
 				if (name == AgentSettingAttributeName)
-					return SettingKind.Agent;
+					return (SettingKind.Agent, GetDefaultLevel(attribute, ct, "Agent"));
 				if (name == ChatSettingAttributeName)
-					return SettingKind.Chat;
+					return (SettingKind.Chat, GetDefaultLevel(attribute, ct, "Profile"));
 			}
 
 			return null;
+		}
+
+		private static string GetDefaultLevel(AttributeData attribute, CancellationToken ct, string fallback)
+		{
+			var reference = attribute.ApplicationSyntaxReference;
+			if (reference is null)
+				return fallback;
+
+			if (reference.GetSyntax(ct) is not AttributeSyntax syntax || syntax.ArgumentList is null)
+				return fallback;
+
+			foreach (var argument in syntax.ArgumentList.Arguments)
+			{
+				// The named argument "DefaultLevel" or the single positional argument.
+				if (argument.NameEquals is not null &&
+					argument.NameEquals.Name.Identifier.ValueText != "DefaultLevel")
+				{
+					continue;
+				}
+
+				return argument.Expression switch
+				{
+					MemberAccessExpressionSyntax member => member.Name.Identifier.ValueText,
+					IdentifierNameSyntax identifier => identifier.Identifier.ValueText,
+					_ => fallback,
+				};
+			}
+
+			return fallback;
 		}
 
 		private static bool IsPartial(INamedTypeSymbol symbol)
@@ -339,7 +368,7 @@ namespace LLMDesktopAssistant.SourceGenerators
 			Chat
 		}
 
-		private sealed record PropertyModel(string Name, string Type, SettingKind Kind);
+		private sealed record PropertyModel(string Name, string Type, SettingKind Kind, string DefaultLevel);
 
 		private sealed record ClassModel(
 			string Namespace,

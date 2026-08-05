@@ -34,6 +34,11 @@ namespace LLMDesktopAssistant.SourceGenerators
 	[System.Diagnostics.Conditional("DASSGEN_ATTRIBUTES")]
 	public sealed class InheritedChatAgentSettingAttribute : System.Attribute
 	{
+		/// <summary>
+		/// The default inheritance level used when the property is first created.
+		/// </summary>
+		public global::LLMDesktopAssistant.LLM.Settings.ChatSettingsInheritanceLevel DefaultLevel { get; set; } =
+			global::LLMDesktopAssistant.LLM.Settings.ChatSettingsInheritanceLevel.Agent;
 	}
 
 	/// <summary>
@@ -46,5 +51,10 @@ namespace LLMDesktopAssistant.SourceGenerators
 	[System.Diagnostics.Conditional("DASSGEN_ATTRIBUTES")]
 	public sealed class InheritedChatSettingAttribute : System.Attribute
 	{
+		/// <summary>
+		/// The default inheritance level used when the property is first created.
+		/// </summary>
+		public global::LLMDesktopAssistant.LLM.Settings.ChatSettingsInheritanceLevel DefaultLevel { get; set; } =
+			global::LLMDesktopAssistant.LLM.Settings.ChatSettingsInheritanceLevel.Profile;
 	}
 }

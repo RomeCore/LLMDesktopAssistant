@@ -147,6 +147,22 @@ public class InheritedSettingsGeneratorTests
 	}
 
 	[Fact]
+	public void GeneratesCustomDefaultLevel_FromNamedAttributeArgument()
+	{
+		var source = SampleSource.Replace(
+			"[LLMDesktopAssistant.SourceGenerators.InheritedChatAgentSetting]",
+			"[LLMDesktopAssistant.SourceGenerators.InheritedChatAgentSetting(DefaultLevel = LLMDesktopAssistant.LLM.Settings.ChatSettingsInheritanceLevel.Profile)]");
+
+		var (runResult, outputCompilation) = RunGenerator(source);
+		var generated = string.Join("\n", runResult.GeneratedTrees.Select(t => t.ToString()));
+
+		Assert.Contains("_systemPromptInheritance = global::LLMDesktopAssistant.LLM.Settings.ChatSettingsInheritanceLevel.Profile;", generated);
+
+		var errors = outputCompilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
+		Assert.True(errors.Count == 0, string.Join("\n", errors));
+	}
+
+	[Fact]
 	public void ReportsDiagnostic_WhenClassIsNotPartial()
 	{
 		const string source = """
