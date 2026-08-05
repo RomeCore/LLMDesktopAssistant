@@ -10,6 +10,7 @@ namespace LLMDesktopAssistant.Settings
 	/// The reference is serialized as the ID of the referenced settings instance. The instance itself is
 	/// resolved lazily on first access and cached. If the referenced instance does not exist,
 	/// <see cref="Object"/> returns <see langword="null"/> and nothing is created.
+	/// Use <see cref="EnsureObject"/> to create the instance if it does not exist.
 	/// </remarks>
 	public class SettingsReference<T> : NotifyPropertyChanged
 		where T : SettingsObject, new()
@@ -56,6 +57,17 @@ namespace LLMDesktopAssistant.Settings
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets the referenced settings instance, creating a new one through <see cref="SettingsManager"/> if it does not exist.
+		/// </summary>
+		/// <returns>The referenced settings instance.</returns>
+		public T EnsureObject()
+		{
+			if (_object == null)
+				Object = SettingsManager.Get<T>(Id);
+			return _object!;
 		}
 	}
 }

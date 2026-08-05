@@ -101,9 +101,42 @@ public class SettingsReferenceTests
 	{
 		var reference = JsonSerializer.Deserialize<SettingsReference<TestSettings>>(
 			"\"missing-profile\"", SettingsManager.jsonOptions)!;
-		
+
 		Assert.Equal("missing-profile", reference.Id);
 		Assert.Null(reference.Object);
 		Assert.False(SettingsManager.TryGet<TestSettings>("missing-profile", out _));
+	}
+
+	[Fact]
+	public void EnsureObjectCreatesMissingInstance()
+	{
+		var reference = JsonSerializer.Deserialize<SettingsReference<TestSettings>>(
+			"\"ensure-profile\"", SettingsManager.jsonOptions)!;
+
+		Assert.Null(reference.Object);
+
+		var created = reference.EnsureObject();
+
+		Assert.NotNull(created);
+		Assert.Same(SettingsManager.Get<TestSettings>("ensure-profile"), created);
+		Assert.Same(created, reference.Object);
+
+		SettingsManager.Remove<TestSettings>("ensure-profile");
+		SettingsManager.GetCategory<TestSettings>().Save();
+	}
+
+	[Fact]
+	public void EnsureObjectReturnsExistingInstance()
+	{
+		var reference = new SettingsReference<TestSettings> { Id = "existing-profile" };
+		var existing = SettingsManager.Get<TestSettings>("existing-profile");
+
+		var result = reference.EnsureObject();
+
+		Assert.Same(existing, result);
+		Assert.Same(existing, reference.Object);
+
+		SettingsManager.Remove<TestSettings>("existing-profile");
+		SettingsManager.GetCategory<TestSettings>().Save();
 	}
 }
