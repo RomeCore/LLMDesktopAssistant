@@ -227,7 +227,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 						MaterialIconKind.Cards,
 						new AgentSkillSettingsViewModel(
 							descriptor.Skills,
-							Chat.Services.GetRequiredService<ISkillsetBuildingService>())),
+							Chat.Services.GetRequiredService<ISkillsetBuildingService>(),
+							Chat.Settings)),
 				};
 
 				SettingsTree.Add(new SettingsAgentParentNode(descriptor.Info, isGlobal, agentChildren));

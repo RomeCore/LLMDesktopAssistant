@@ -5002,6 +5002,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Skill sources.
+        /// </summary>
+        public static string settings_skills_sources {
+            get {
+                return ResourceManager.GetString("settings-skills_sources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Application.
         /// </summary>
         public static string settings_scope_application {

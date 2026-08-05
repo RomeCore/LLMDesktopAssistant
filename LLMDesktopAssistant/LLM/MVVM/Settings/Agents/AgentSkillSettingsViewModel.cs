@@ -1,7 +1,9 @@
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.Services.Prompting;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Utils;
@@ -162,8 +164,28 @@ public class SkillInjectionModeItem
 public class AgentSkillSettingsViewModel : ViewModelBase
 {
 	private readonly ISkillsetBuildingService _skillsetBuilder;
+	private readonly ChatSettings _chatSettings;
 
 	public AgentSkillSettings SkillSettings { get; }
+
+	/// <summary>
+	/// Gets the effective skill changes resolved by the current inheritance level.
+	/// </summary>
+	public RangeObservableCollection<SkillChange> EffectiveSkillChanges => SkillSettings.GetEffectiveSkillChanges(_chatSettings);
+
+	private InheritanceLevelItem _selectedSkillChangesInheritance;
+	/// <summary>
+	/// Gets or sets the inheritance level for the skill changes group.
+	/// </summary>
+	public InheritanceLevelItem SelectedSkillChangesInheritance
+	{
+		get => _selectedSkillChangesInheritance;
+		set
+		{
+			if (SetProperty(ref _selectedSkillChangesInheritance, value) && value != null)
+				SkillSettings.SkillChangesInheritance = value.Value;
+		}
+	}
 
 	private RangeObservableCollection<SkillChangeItemViewModel> _skillItems = [];
 	/// <summary>
@@ -180,10 +202,26 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 	}
 
 	public AgentSkillSettingsViewModel(AgentSkillSettings settings,
-		ISkillsetBuildingService skillsetBuilder)
+		ISkillsetBuildingService skillsetBuilder, ChatSettings chatSettings)
 	{
 		SkillSettings = settings;
 		_skillsetBuilder = skillsetBuilder;
+		_chatSettings = chatSettings;
+
+		_selectedSkillChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SkillChangesInheritance);
+		settings.PropertyChanged += SkillSettings_PropertyChanged;
+
+		UpdateSkills();
+	}
+
+	private void SkillSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName != nameof(AgentSkillSettings.SkillChangesInheritance))
+			return;
+
+		_selectedSkillChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == SkillSettings.SkillChangesInheritance);
+		RaisePropertyChanged(nameof(SelectedSkillChangesInheritance));
+		RaisePropertyChanged(nameof(EffectiveSkillChanges));
 		UpdateSkills();
 	}
 
@@ -194,7 +232,7 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 	public void UpdateSkills()
 	{
 		var allSkills = _skillsetBuilder.GetAvailableSkills();
-		var changes = SkillSettings.SkillChanges.ToDictionary(c => c.SkillName, c => c);
+		var changes = EffectiveSkillChanges.ToDictionary(c => c.SkillName, c => c);
 
 		SkillItems = allSkills
 			.Where(s => s.Diagnostic?.IsFatal != true)
@@ -202,7 +240,7 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 			{
 				changes.TryGetValue(s.Name, out var existingChange);
 				return new SkillChangeItemViewModel(s, existingChange,
-					SkillSettings.SkillChanges, SkillSettings);
+					EffectiveSkillChanges, SkillSettings);
 			})
 			.ToImmutableList();
 	}

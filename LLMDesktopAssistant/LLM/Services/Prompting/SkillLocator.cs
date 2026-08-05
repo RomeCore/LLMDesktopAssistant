@@ -14,10 +14,11 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			// 1. Skill directories
 			List<string> potentialSkillDirectories = [];
 
-			potentialSkillDirectories.AddRange(chat.Settings.Skills.AdditionalSkillDirectories);
+			var skillSources = chat.Settings.Skills.GetEffectiveSources();
+			potentialSkillDirectories.AddRange(skillSources.AdditionalSkillDirectories);
 
 			string[] projectPaths;
-			if (chat.Settings.Skills.FetchFromAllWorkingDirectories)
+			if (skillSources.FetchFromAllWorkingDirectories)
 				projectPaths = [..chat.Settings.Environment.GetEffectiveWorkingDirectories().GetEnabledWorkingDirectories()];
 			else
 				projectPaths = [chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory()];
@@ -53,7 +54,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			List<string> skillFiles = [];
 
-			skillFiles.AddRange(chat.Settings.Skills.AdditionalSkillFiles);
+			skillFiles.AddRange(skillSources.AdditionalSkillFiles);
 
 			foreach (string potentialSkillDirectory in potentialSkillDirectories)
 			{

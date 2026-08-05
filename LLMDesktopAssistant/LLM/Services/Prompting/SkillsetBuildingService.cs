@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
@@ -92,7 +92,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var skills = GetAvailableSkills();
 			var result = new List<SkillInfo>();
 
-			var changes = settings.SkillChanges.ToDictionary(c => c.SkillName, c => c);
+			var changes = settings.GetEffectiveSkillChanges(chat.Settings).ToDictionary(c => c.SkillName, c => c);
 			foreach (var skillInfo in skills)
 			{
 				if (skillInfo.Diagnostic?.IsFatal == true)

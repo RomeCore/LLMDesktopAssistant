@@ -2676,4 +2676,7 @@
   <data name="settings_scope_agent" xml:space="preserve">
     <value>Профиль агента</value>
   </data>
+  <data name="settings-skills_sources" xml:space="preserve">
+    <value>Источники навыков</value>
+  </data>
 </root>

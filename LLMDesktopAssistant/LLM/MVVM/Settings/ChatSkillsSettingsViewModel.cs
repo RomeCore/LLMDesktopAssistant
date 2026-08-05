@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Avalonia.Platform.Storage;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
@@ -66,6 +67,25 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	public ChatSkillSettings SkillSettings { get; }
 
 	/// <summary>
+	/// Gets the effective skill sources resolved by the current inheritance level.
+	/// </summary>
+	public SkillSourcesSettings EffectiveSources => SkillSettings.GetEffectiveSources();
+
+	private InheritanceLevelItem _selectedSourcesInheritance;
+	/// <summary>
+	/// Gets or sets the inheritance level for the skill sources group.
+	/// </summary>
+	public InheritanceLevelItem SelectedSourcesInheritance
+	{
+		get => _selectedSourcesInheritance;
+		set
+		{
+			if (SetProperty(ref _selectedSourcesInheritance, value) && value != null)
+				SkillSettings.SourcesInheritance = value.Value;
+		}
+	}
+
+	/// <summary>
 	/// Command to open a folder picker dialog for selecting a skill directory.
 	/// </summary>
 	public ICommand BrowseDirectoryCommand { get; }
@@ -125,26 +145,29 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 		_skillsetBuilder = skillsetBuilder;
 		_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
 
+		_selectedSourcesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.SourcesInheritance);
+		settings.PropertyChanged += SkillSettings_PropertyChanged;
+
 		AddDirectoryCommand = new RelayCommand(() =>
 		{
-			SkillSettings.AdditionalSkillDirectories.Add(string.Empty);
+			EffectiveSources.AdditionalSkillDirectories.Add(string.Empty);
 		});
 
 		RemoveDirectoryCommand = new RelayCommand<string?>(path =>
 		{
 			if (path != null)
-				SkillSettings.AdditionalSkillDirectories.Remove(path);
+				EffectiveSources.AdditionalSkillDirectories.Remove(path);
 		});
 
 		AddFileCommand = new RelayCommand(() =>
 		{
-			SkillSettings.AdditionalSkillFiles.Add(string.Empty);
+			EffectiveSources.AdditionalSkillFiles.Add(string.Empty);
 		});
 
 		RemoveFileCommand = new RelayCommand<string?>(path =>
 		{
 			if (path != null)
-				SkillSettings.AdditionalSkillFiles.Remove(path);
+				EffectiveSources.AdditionalSkillFiles.Remove(path);
 		});
 
 		BrowseDirectoryCommand = new AsyncRelayCommand<string?>(BrowseDirectoryAsync);
@@ -166,7 +189,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 		{
 			var newPath = result[0].Path.LocalPath;
 			// Find the directory entry and replace it
-			ReplaceOrSetPath(SkillSettings.AdditionalSkillDirectories, currentPath, newPath);
+			ReplaceOrSetPath(EffectiveSources.AdditionalSkillDirectories, currentPath, newPath);
 		}
 	}
 
@@ -186,7 +209,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 		if (result.Count > 0)
 		{
 			var newPath = result[0].Path.LocalPath;
-			ReplaceOrSetPath(SkillSettings.AdditionalSkillFiles, currentPath, newPath);
+			ReplaceOrSetPath(EffectiveSources.AdditionalSkillFiles, currentPath, newPath);
 		}
 	}
 
@@ -213,6 +236,16 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 			else
 				collection.Add(newValue);
 		}
+	}
+
+	private void SkillSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName != nameof(ChatSkillSettings.SourcesInheritance))
+			return;
+
+		_selectedSourcesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == SkillSettings.SourcesInheritance);
+		RaisePropertyChanged(nameof(SelectedSourcesInheritance));
+		RaisePropertyChanged(nameof(EffectiveSources));
 	}
 
 	private void OpenPath(string? path)

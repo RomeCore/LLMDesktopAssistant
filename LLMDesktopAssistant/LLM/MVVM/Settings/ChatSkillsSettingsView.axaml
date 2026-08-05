@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:settings="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
@@ -142,11 +143,36 @@
 				   Fill="{DynamicResource DefaultForeground}"
 				   Opacity="0.2"
 				   Margin="0,10"/>
+		
+		<!-- ============================================================ -->
+		<!-- SKILL SOURCES -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc settings-skills_sources}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+					  ItemsSource="{x:Static settings:InheritanceLevelItem.AllProfile}"
+					  SelectedItem="{Binding SelectedSourcesInheritance}"
+					  VerticalAlignment="Center"
+					  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="settings:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
 
 		<!-- ============================================================ -->
 		<!-- FETCH FROM ALL WORKING DIRECTORIES -->
 		<!-- ============================================================ -->
-		<CheckBox IsChecked="{Binding SkillSettings.FetchFromAllWorkingDirectories}"
+		<CheckBox IsChecked="{Binding EffectiveSources.FetchFromAllWorkingDirectories}"
 				  Content="{loc:Loc settings-skills_fetch_all}"
 				  IsEnabled="{Binding SkillSettings.EnableSkills}"/>
 
@@ -180,7 +206,7 @@
 				   Opacity="0.6"
 				   TextWrapping="Wrap"/>
 
-		<ItemsControl ItemsSource="{Binding SkillSettings.AdditionalSkillDirectories}"
+		<ItemsControl ItemsSource="{Binding EffectiveSources.AdditionalSkillDirectories}"
 					  IsEnabled="{Binding SkillSettings.EnableSkills}">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate x:DataType="x:String">
@@ -250,7 +276,7 @@
 				   Opacity="0.6"
 				   TextWrapping="Wrap"/>
 
-		<ItemsControl ItemsSource="{Binding SkillSettings.AdditionalSkillFiles}"
+		<ItemsControl ItemsSource="{Binding EffectiveSources.AdditionalSkillFiles}"
 					  IsEnabled="{Binding SkillSettings.EnableSkills}">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate x:DataType="x:String">

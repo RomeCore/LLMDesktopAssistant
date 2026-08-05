@@ -1,12 +1,16 @@
-﻿using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.SourceGenerators;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
-	public class ChatSkillSettings : NotifyPropertyChanged
+	/// <summary>
+	/// Chat-level skills settings: the local enable flag and the inheritable skill sources group.
+	/// </summary>
+	[SettingsRoute(nameof(ChatSettings.Skills))]
+	public partial class ChatSkillSettings : ChatSettingsCategoryBase
 	{
 		private bool _enableSkills = true;
 		/// <summary>
-		/// Gets or sets a value indicating whether skills are enabled.
+		/// Gets or sets a value indicating whether skills are enabled for the chat.
 		/// </summary>
 		public bool EnableSkills
 		{
@@ -14,36 +18,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _enableSkills, value);
 		}
 
-		private bool _fetchFromAllWorkingDirectories = false;
+		private SkillSourcesSettings _sources = new();
 		/// <summary>
-		/// Gets or sets a value indicating whether skills should be fetched from all
-		/// working directories (see <see cref="ChatEnvironmentSettings.WorkingDirectories"/>).
+		/// Gets or sets the skill sources group: the working directories search flag and the
+		/// additional skill directories and files.
 		/// </summary>
-		public bool FetchFromAllWorkingDirectories
+		[InheritedChatSetting]
+		public SkillSourcesSettings Sources
 		{
-			get => _fetchFromAllWorkingDirectories;
-			set => SetProperty(ref _fetchFromAllWorkingDirectories, value);
-		}
-
-		private readonly RangeObservableCollection<string> _additionalSkillPaths = [];
-		/// <summary>
-		/// Gets or sets the additional skill paths. These are paths similar to <c>skills/</c> directories.
-		/// Example for additional directory <c>C:/MyProject/.claude/skills/</c>: <c>C:/MyProject/.claude/skills/my_skill/SKILL.md</c>
-		/// </summary>
-		public RangeObservableCollection<string> AdditionalSkillDirectories
-		{
-			get => _additionalSkillPaths;
-			set => _additionalSkillPaths.Reset(value);
-		}
-
-		private readonly RangeObservableCollection<string> _additionalSkillFiles = [];
-		/// <summary>
-		/// Gets or sets the additional skill files. These are paths to individual SKILL.md files.
-		/// </summary>
-		public RangeObservableCollection<string> AdditionalSkillFiles
-		{
-			get => _additionalSkillFiles;
-			set => _additionalSkillFiles.Reset(value);
+			get => _sources;
+			set => SetProperty(ref _sources, value);
 		}
 	}
 }
