@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	{
 		public string GetWorkingDirectory()
 		{
-			return chat.Settings.Environment.GetWorkingDirectory();
+			return chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 		}
 
 		public string? TryAccessPath(string path, DirectoryAccessMode mode)
@@ -37,13 +37,13 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public string CheckedAccessPath(string path, DirectoryAccessMode mode, out bool isAccessed)
 		{
-			var baseDir = Path.GetFullPath(chat.Settings.Environment.GetWorkingDirectory());
+			var baseDir = Path.GetFullPath(chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory());
 			var fullPath = string.IsNullOrEmpty(path) ? baseDir : Path.GetFullPath(Path.Combine(baseDir, path));
 			
 			isAccessed = false;
 
 			// Any of working directories are allowed to access.
-			foreach (var wd in chat.Settings.Environment.WorkingDirectories)
+			foreach (var wd in chat.Settings.Environment.GetEffectiveWorkingDirectories().Items)
 			{
 				if (wd.IsEnabled && !string.IsNullOrEmpty(wd.Path) && IsSubdirectoryOf(wd.Path, fullPath))
 				{
@@ -66,7 +66,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			// Order rules by path length (more common rules goes first),
 			// then calculate by access mode with overrides.
-			foreach (var access in chat.Settings.Environment.DirectoryAccessRules.OrderBy(a => a.Path?.Length ?? 0))
+			foreach (var access in chat.Settings.Environment.GetEffectiveDirectoryAccessRules().OrderBy(a => a.Path?.Length ?? 0))
 			{
 				if (!access.IsEnabled || string.IsNullOrEmpty(access.Path) || !IsSubdirectoryOf(access.Path, fullPath))
 					continue;

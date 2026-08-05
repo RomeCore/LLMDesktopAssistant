@@ -6,6 +6,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// <summary>
 	/// Class representing the settings for a chat session.
 	/// </summary>
+	[SettingsObject("chat")]
 	public class ChatSettings : SettingsObject
 	{
 		private ChatAgentDescriptor _inheritedAgentSettings = new();

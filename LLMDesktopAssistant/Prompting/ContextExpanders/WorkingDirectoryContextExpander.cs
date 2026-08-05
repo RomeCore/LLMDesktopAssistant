@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 
 namespace LLMDesktopAssistant.Prompting.ContextExpanders
@@ -8,7 +8,7 @@ namespace LLMDesktopAssistant.Prompting.ContextExpanders
 	{
 		public void ExpandPromptContext(Dictionary<string, object?> context)
 		{
-			context["working_directory"] = chat.Settings.Environment.GetWorkingDirectory();
+			context["working_directory"] = chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 		}
 	}
 }

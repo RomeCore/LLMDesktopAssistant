@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.IO;
 using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.LLM.Domain;
@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 		public ProcessLaunchParameters CreateLaunchParameters(ChatEnvironmentSettings envSettings, string command,
 			string? processName, bool runInTerminal, bool isMetaTool)
 		{
-			var workDir = envSettings.GetWorkingDirectory();
+			var workDir = envSettings.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 			var pythonConfig = envSettings.EnsureAdditional<PythonEnvironmentConfiguration>();
 			var venvPath = isMetaTool
 				? (pythonConfig.PythonMetaVenvActivateScriptPath ?? pythonConfig.PythonVenvActivateScriptPath)

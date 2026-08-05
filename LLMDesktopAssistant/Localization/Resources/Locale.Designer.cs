@@ -1330,11 +1330,47 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Additional settings.
+        /// </summary>
+        public static string env_additional_settings {
+            get {
+                return ResourceManager.GetString("env_additional_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Browse....
         /// </summary>
         public static string env_browse {
             get {
                 return ResourceManager.GetString("env_browse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Check configuration.
+        /// </summary>
+        public static string env_check_configuration {
+            get {
+                return ResourceManager.GetString("env_check_configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Environment check failed.
+        /// </summary>
+        public static string env_check_failed {
+            get {
+                return ResourceManager.GetString("env_check_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Environment is ready.
+        /// </summary>
+        public static string env_check_ok {
+            get {
+                return ResourceManager.GetString("env_check_ok", resourceCulture);
             }
         }
         
@@ -4966,6 +5002,33 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Agent profile.
+        /// </summary>
+        public static string settings_scope_agent {
+            get {
+                return ResourceManager.GetString("settings_scope_agent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Application.
+        /// </summary>
+        public static string settings_scope_application {
+            get {
+                return ResourceManager.GetString("settings_scope_application", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Chat profile.
+        /// </summary>
+        public static string settings_scope_profile {
+            get {
+                return ResourceManager.GetString("settings_scope_profile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Select an agent first.
         /// </summary>
         public static string settings_select_agent_first {
@@ -5358,6 +5421,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_toggle_agent_active {
             get {
                 return ResourceManager.GetString("settings_toggle_agent_active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Fetch from all working directories.
+        /// </summary>
+        public static string settings_tools_fetch_all {
+            get {
+                return ResourceManager.GetString("settings-tools_fetch_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Search for meta tools in all working directories, not only in the active one..
+        /// </summary>
+        public static string settings_tools_fetch_all_hint {
+            get {
+                return ResourceManager.GetString("settings-tools_fetch_all_hint", resourceCulture);
             }
         }
         

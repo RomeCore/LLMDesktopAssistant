@@ -48,7 +48,7 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 						""";
 
 					var chat = context.Chat;
-					var workDir = chat.Settings.Environment.GetWorkingDirectory();
+					var workDir = chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 
 					var tempPyFile = Path.GetFullPath(Path.Combine(workDir, $"{Guid.NewGuid()}.py"));
 					File.WriteAllText(tempPyFile, pythonCode);

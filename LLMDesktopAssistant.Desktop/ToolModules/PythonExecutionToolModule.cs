@@ -97,7 +97,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			ToolExecutionContext context,
 			CancellationToken cancellationToken = default)
 		{
-			var workDir = _chat.Settings.Environment.GetWorkingDirectory();
+			var workDir = _chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 
 			string pyFile;
 			bool isTemporaryFile;

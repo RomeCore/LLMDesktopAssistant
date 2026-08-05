@@ -17,14 +17,29 @@
 		<!-- ============================================================ -->
 		<!-- WORKING DIRECTORIES -->
 		<!-- ============================================================ -->
-		<Grid ColumnDefinitions="*,Auto">
+		<Grid ColumnDefinitions="*,Auto,Auto">
 			<TextBlock Grid.Column="0"
 								 Text="{loc:Loc workdir}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
 
-			<Button Grid.Column="1"
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static local:InheritanceLevelItem.AllProfile}"
+								SelectedItem="{Binding SelectedWorkingDirectoriesInheritance}"
+								VerticalAlignment="Center"
+								Margin="0,0,8,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+			<Button Grid.Column="2"
 							Command="{Binding AddWorkingDirectoryCommand}"
 							Classes="IconButton"
 							ToolTip.Tip="{loc:Loc env_add_working_directory}">
@@ -47,8 +62,8 @@
 
 					<!-- Active radio -->
 					<RadioButton Grid.Column="0"
-											 IsChecked="{Binding EnvironmentSettings.IsDefaultWorkingDirectoryActive}"
-											 GroupName="ActiveWorkDir"
+											 IsChecked="{Binding EffectiveWorkingDirectories.IsDefaultWorkingDirectoryActive, Mode=OneWay}"
+											 Command="{Binding SetDefaultWorkingDirectoryActiveCommand}"
 											 VerticalAlignment="Center"
 											 Margin="0,0,6,0"
 											 ToolTip.Tip="{loc:Loc env_active}"/>
@@ -66,7 +81,7 @@
 				
 					<!-- Enabled checkbox -->
 					<CheckBox Grid.Column="2"
-										IsChecked="{Binding EnvironmentSettings.IsDefaultWorkingDirectoryEnabled}"
+										IsChecked="{Binding EffectiveWorkingDirectories.IsDefaultWorkingDirectoryEnabled}"
 										Content="{loc:Loc env_enabled}"/>
 
 				</Grid>
@@ -94,7 +109,7 @@
 			</StackPanel>
 		</Border>
 
-		<ItemsControl ItemsSource="{Binding EnvironmentSettings.WorkingDirectories}">
+		<ItemsControl ItemsSource="{Binding EffectiveWorkingDirectories.Items}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<StackPanel Orientation="Vertical" Spacing="8"/>
@@ -112,8 +127,9 @@
 
 								<!-- Active radio -->
 								<RadioButton Grid.Column="0"
-														 IsChecked="{Binding IsActive}"
-														 GroupName="ActiveWorkDir"
+														 IsChecked="{Binding IsActive, Mode=OneWay}"
+														 Command="{Binding #VMRoot.DataContext.SetActiveWorkingDirectoryCommand}"
+														 CommandParameter="{Binding}"
 														 VerticalAlignment="Center"
 														 Margin="0,0,6,0"
 														 ToolTip.Tip="{loc:Loc env_active}"/>
@@ -204,14 +220,29 @@
 		<!-- ============================================================ -->
 		<!-- DIRECTORY ACCESS RULES -->
 		<!-- ============================================================ -->
-		<Grid ColumnDefinitions="*,Auto">
+		<Grid ColumnDefinitions="*,Auto,Auto">
 			<TextBlock Grid.Column="0"
 								 Text="{loc:Loc env_directory_access_rules}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
 
-			<Button Grid.Column="1"
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static local:InheritanceLevelItem.AllProfile}"
+								SelectedItem="{Binding SelectedDirectoryAccessRulesInheritance}"
+								VerticalAlignment="Center"
+								Margin="0,0,8,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+			<Button Grid.Column="2"
 							Command="{Binding AddDirectoryAccessRuleCommand}"
 							Classes="IconButton"
 							ToolTip.Tip="{loc:Loc env_add_access_rule}">
@@ -224,7 +255,7 @@
 						TextWrapping="Wrap"
 						Margin="0,0,0,8"/>
 
-		<ItemsControl ItemsSource="{Binding EnvironmentSettings.DirectoryAccessRules}">
+		<ItemsControl ItemsSource="{Binding EffectiveDirectoryAccessRules}">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate DataType="local:DirectoryAccessSetting">
 					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
@@ -326,6 +357,32 @@
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
+
+		<!-- ============================================================ -->
+		<!-- ADDITIONAL ENVIRONMENT SETTINGS -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc env_additional_settings}"
+								 FontSize="{DynamicResource FontSizeL}"
+								 FontWeight="Bold"
+								 VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static local:InheritanceLevelItem.AllProfile}"
+								SelectedItem="{Binding SelectedAdditionalSettingsInheritance}"
+								VerticalAlignment="Center"
+								Margin="0,0,8,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
 
 		<ItemsControl ItemsSource="{Binding AdditionalEnvironmentSettings}">
 

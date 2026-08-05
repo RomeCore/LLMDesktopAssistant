@@ -91,7 +91,7 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 		{
 			var sourceUri = parameters.SourceUri;
 
-			var workingDir = chat.Settings.Environment.GetWorkingDirectory();
+			var workingDir = chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 			var attachmentsDir = Path.Combine(workingDir, Directories.WorkingHome, "attachments");
 			Directory.CreateDirectory(attachmentsDir);
 

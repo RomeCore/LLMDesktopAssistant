@@ -240,6 +240,12 @@
   <data name="settings_profile" xml:space="preserve">
     <value>Профиль:</value>
   </data>
+  <data name="settings_scope_profile" xml:space="preserve">
+    <value>Профиль чата</value>
+  </data>
+  <data name="settings_scope_application" xml:space="preserve">
+    <value>Приложение</value>
+  </data>
   <data name="settings-summarizer_model_hint" xml:space="preserve">
     <value>Модель суммаризации</value>
   </data>
@@ -402,7 +408,6 @@
   <data name="settings-use_tools" xml:space="preserve">
     <value>Включить инструменты</value>
   </data>
-
   <data name="settings-tools_fetch_all" xml:space="preserve">
     <value>Искать во всех рабочих директориях</value>
   </data>
@@ -2332,6 +2337,9 @@
   <data name="env_select_script" xml:space="preserve">
     <value>Выбрать скрипт</value>
   </data>
+  <data name="env_additional_settings" xml:space="preserve">
+    <value>Дополнительные настройки</value>
+  </data>
   <data name="env_check_configuration" xml:space="preserve">
     <value>Проверить конфигурацию</value>
   </data>
@@ -2341,7 +2349,6 @@
   <data name="env_check_failed" xml:space="preserve">
     <value>Проверка окружения не удалась</value>
   </data>
-
   <data name="workdir" xml:space="preserve">
     <value>Рабочие директории</value>
   </data>
@@ -2647,5 +2654,8 @@
   </data>
   <data name="shell-bash" xml:space="preserve">
     <value>Выполнить Bash скрипт</value>
+  </data>
+  <data name="settings_scope_agent" xml:space="preserve">
+    <value>Профиль агента</value>
   </data>
 </root>

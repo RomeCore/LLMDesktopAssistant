@@ -240,6 +240,12 @@
   <data name="settings_profile" xml:space="preserve">
     <value>Profile:</value>
   </data>
+  <data name="settings_scope_profile" xml:space="preserve">
+    <value>Chat profile</value>
+  </data>
+  <data name="settings_scope_application" xml:space="preserve">
+    <value>Application</value>
+  </data>
   <data name="settings-summarizer_model_hint" xml:space="preserve">
     <value>Summarizer model</value>
   </data>
@@ -402,11 +408,9 @@
   <data name="settings-use_tools" xml:space="preserve">
     <value>Enable tools</value>
   </data>
-
   <data name="settings-tools_fetch_all" xml:space="preserve">
     <value>Fetch from all working directories</value>
   </data>
-
   <data name="settings-tools_fetch_all_hint" xml:space="preserve">
     <value>Search for meta tools in all working directories, not only in the active one.</value>
   </data>
@@ -2333,6 +2337,9 @@
   <data name="env_select_script" xml:space="preserve">
     <value>Select script</value>
   </data>
+  <data name="env_additional_settings" xml:space="preserve">
+    <value>Additional settings</value>
+  </data>
   <data name="env_check_configuration" xml:space="preserve">
     <value>Check configuration</value>
   </data>
@@ -2342,7 +2349,6 @@
   <data name="env_check_failed" xml:space="preserve">
     <value>Environment check failed</value>
   </data>
-
   <data name="workdir" xml:space="preserve">
     <value>Working directories</value>
   </data>
@@ -2648,5 +2654,8 @@
   </data>
   <data name="shell-bash" xml:space="preserve">
     <value>Execute Bash script</value>
+  </data>
+  <data name="settings_scope_agent" xml:space="preserve">
+    <value>Agent profile</value>
   </data>
 </root>

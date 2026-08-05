@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Utils;
 
@@ -18,9 +18,9 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			string[] projectPaths;
 			if (chat.Settings.Skills.FetchFromAllWorkingDirectories)
-				projectPaths = [..chat.Settings.Environment.GetEnabledWorkingDirectories()];
+				projectPaths = [..chat.Settings.Environment.GetEffectiveWorkingDirectories().GetEnabledWorkingDirectories()];
 			else
-				projectPaths = [chat.Settings.Environment.GetWorkingDirectory()];
+				projectPaths = [chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory()];
 
 			List<string> sharedCheckPaths = [
 				$"{Directories.WorkingHome}/skills", // .llmassist/skills

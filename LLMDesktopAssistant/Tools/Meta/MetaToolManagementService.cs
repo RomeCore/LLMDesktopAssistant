@@ -136,7 +136,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 			var files = Directory.Exists(Directories.Metatools) ? Directory.GetFiles(Directories.Metatools).Select(f => (f, false)).ToList() : [];
 			if (_chat.Settings.Tools.FetchFromAllWorkingDirectories)
 			{
-				foreach (var workdir in _chat.Settings.Environment.GetEnabledWorkingDirectories())
+				foreach (var workdir in _chat.Settings.Environment.GetEffectiveWorkingDirectories().GetEnabledWorkingDirectories())
 				{
 					var searchDir = Path.Combine(workdir, Directories.WorkingHome, "metatools");
 					if (Directory.Exists(searchDir))
@@ -145,7 +145,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 			}
 			else
 			{
-				var workdir = _chat.Settings.Environment.GetWorkingDirectory();
+				var workdir = _chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 				var searchDir = Path.Combine(workdir, Directories.WorkingHome, "metatools");
 				if (Directory.Exists(searchDir))
 					files.AddRange(Directory.GetFiles(searchDir).Select(f => (f, true)));
@@ -171,7 +171,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 
 			var extension = Path.GetExtension(oldFile.Path);
 			var newFile = oldFile.IsLocal
-				? Path.Combine(_chat.Settings.Environment.GetWorkingDirectory(), Directories.WorkingHome, "metatools", newName + extension)
+				? Path.Combine(_chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory(), Directories.WorkingHome, "metatools", newName + extension)
 				: Path.Combine(Directories.Metatools, newName + extension);
 
 			if (File.Exists(newFile))
@@ -269,7 +269,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 			if (filePath is null)
 			{
 				if (tool.IsLocal)
-					filePath = Path.Combine(_chat.Settings.Environment.GetWorkingDirectory(), Directories.WorkingHome, "metatools", tool.Name + engineDescriptor.MainExtension);
+					filePath = Path.Combine(_chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory(), Directories.WorkingHome, "metatools", tool.Name + engineDescriptor.MainExtension);
 				else
 					filePath = Path.Combine(Directories.Metatools, tool.Name + engineDescriptor.MainExtension);
 			}

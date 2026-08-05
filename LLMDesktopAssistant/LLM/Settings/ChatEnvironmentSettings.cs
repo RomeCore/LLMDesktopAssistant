@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.SourceGenerators;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Settings
@@ -5,74 +6,36 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// <summary>
 	/// Environment and working directory settings.
 	/// </summary>
-	public class ChatEnvironmentSettings : ChatSettingsCategoryBase
+	[SettingsRoute(nameof(ChatSettings.Environment))]
+	public partial class ChatEnvironmentSettings : ChatSettingsCategoryBase
 	{
-		private bool _isDefaultWorkingDirectoryEnabled = true;
+		private WorkingDirectoriesSettings _workingDirectories = new();
 		/// <summary>
-		/// Gets or sets a value indicating whether the default working directory (<see cref="Directories.DefaultWorkingDirectory"/>) is enabled.
+		/// Gets or sets the working directory configuration for the chat.
 		/// </summary>
-		public bool IsDefaultWorkingDirectoryEnabled
-		{
-			get => _isDefaultWorkingDirectoryEnabled;
-			set => SetProperty(ref _isDefaultWorkingDirectoryEnabled, value);
-		}
-
-		private bool _isDefaultWorkingDirectoryActive = true;
-		/// <summary>
-		/// Gets or sets a value indicating whether the default working directory (<see cref="Directories.DefaultWorkingDirectory"/>) is active.
-		/// </summary>
-		public bool IsDefaultWorkingDirectoryActive
-		{
-			get => _isDefaultWorkingDirectoryActive;
-			set => SetProperty(ref _isDefaultWorkingDirectoryActive, value);
-		}
-
-		private readonly RangeObservableCollection<WorkingDirectorySetting> _workingDirectories = [];
-		/// <summary>
-		/// The list of working directories that can be used by the agent.
-		/// </summary>
-		public RangeObservableCollection<WorkingDirectorySetting> WorkingDirectories
+		[InheritedChatSetting]
+		public WorkingDirectoriesSettings WorkingDirectories
 		{
 			get => _workingDirectories;
-			set => _workingDirectories.Reset(value);
+			set => SetProperty(ref _workingDirectories, value);
 		}
-
+		
 		private readonly RangeObservableCollection<DirectoryAccessSetting> _directoryAccessRules = [];
 		/// <summary>
 		/// The list of directory access rules.
 		/// </summary>
+		[InheritedChatSetting]
 		public RangeObservableCollection<DirectoryAccessSetting> DirectoryAccessRules
 		{
 			get => _directoryAccessRules;
 			set => _directoryAccessRules.Reset(value);
 		}
 
-		/// <summary>
-		/// Returns the working directory for the chatbot. If no working directory is specified, returns the default directory.
-		/// </summary>
-		public string GetWorkingDirectory() => IsDefaultWorkingDirectoryActive ? Directories.DefaultWorkingDirectory :
-			WorkingDirectories.FirstOrDefault(w => w.IsEnabled && w.IsActive)?.Path
-			?? Directories.DefaultWorkingDirectory;
-
-		/// <summary>
-		/// Returns a list of enabled working directories. If the default directory is enabled, it is included in the list.
-		/// </summary>
-		/// <returns>A list of enabled working directories.</returns>
-		public List<string> GetEnabledWorkingDirectories()
-		{
-			var result = new List<string>();
-			if (IsDefaultWorkingDirectoryEnabled)
-				result.Add(Directories.DefaultWorkingDirectory);
-			foreach (var wd in WorkingDirectories)
-				if (wd.IsEnabled && !string.IsNullOrEmpty(wd.Path))
-					result.Add(wd.Path);
-			return result;
-		}
-
 		private readonly RangeObservableCollection<AdditionalEnvironmentSetting> _additionalSettings = [];
 		/// <summary>
 		/// The list of additional environment settings.
 		/// </summary>
+		[InheritedChatSetting]
 		public RangeObservableCollection<AdditionalEnvironmentSetting> AdditionalSettings
 		{
 			get => _additionalSettings;

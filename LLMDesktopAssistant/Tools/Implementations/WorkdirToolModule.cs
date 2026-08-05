@@ -37,10 +37,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			var sb = new StringBuilder();
 
-			if (_chat.Settings.Environment.IsDefaultWorkingDirectoryEnabled)
-				sb.AppendLine($"- *{Directories.DefaultWorkingDirectoryName}*: {Directories.DefaultWorkingDirectory}{(_chat.Settings.Environment.IsDefaultWorkingDirectoryActive ? " **(ACTIVE)**" : "")}");
+			var workingDirectories = _chat.Settings.Environment.GetEffectiveWorkingDirectories();
 
-			foreach (var wd in _chat.Settings.Environment.WorkingDirectories)
+			if (workingDirectories.IsDefaultWorkingDirectoryEnabled)
+				sb.AppendLine($"- *{Directories.DefaultWorkingDirectoryName}*: {Directories.DefaultWorkingDirectory}{(workingDirectories.IsDefaultWorkingDirectoryActive ? " **(ACTIVE)**" : "")}");
+
+			foreach (var wd in workingDirectories.Items)
 				if (wd.IsEnabled)
 					sb.AppendLine($"- *{wd.Name ?? "null"}*: {wd.Path}{(wd.IsActive ? " **(ACTIVE)**" : "")}");
 
@@ -60,7 +62,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private PreviewToolExecutionResult SwitchWorkingDirectoryPreview(string name)
 		{
-			if (name == Directories.DefaultWorkingDirectoryName && _chat.Settings.Environment.IsDefaultWorkingDirectoryEnabled)
+			var workingDirectories = _chat.Settings.Environment.GetEffectiveWorkingDirectories();
+			if (name == Directories.DefaultWorkingDirectoryName && workingDirectories.IsDefaultWorkingDirectoryEnabled)
 			{
 				return new PreviewToolExecutionResult
 				{
@@ -69,7 +72,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				};
 			}
 
-			if (!_chat.Settings.Environment.WorkingDirectories.Any(wd => wd.Name == name && wd.IsEnabled))
+			if (!workingDirectories.Items.Any(wd => wd.Name == name && wd.IsEnabled))
 			{
 				return new PreviewToolExecutionResult
 				{
@@ -90,10 +93,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private ReactiveToolResult SwitchWorkingDirectory(string name)
 		{
-			if (name == Directories.DefaultWorkingDirectoryName && _chat.Settings.Environment.IsDefaultWorkingDirectoryEnabled)
+			var workingDirectories = _chat.Settings.Environment.GetEffectiveWorkingDirectories();
+			if (name == Directories.DefaultWorkingDirectoryName && workingDirectories.IsDefaultWorkingDirectoryEnabled)
 			{
-				_chat.Settings.Environment.IsDefaultWorkingDirectoryActive = true;
-				foreach (var wd in _chat.Settings.Environment.WorkingDirectories)
+				workingDirectories.IsDefaultWorkingDirectoryActive = true;
+				foreach (var wd in workingDirectories.Items)
 					wd.IsActive = false;
 
 				return new ReactiveToolResult
@@ -105,7 +109,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}.CompleteWithSuccess();
 			}
 
-			if (!_chat.Settings.Environment.WorkingDirectories.Any(wd => wd.Name == name && wd.IsEnabled))
+			if (!workingDirectories.Items.Any(wd => wd.Name == name && wd.IsEnabled))
 			{
 				return new ReactiveToolResult
 				{
@@ -119,7 +123,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			// Prevent to activate multiple working directories with the same name.
 			bool onceFlag = true;
 			string? path = null;
-			foreach (var wd in _chat.Settings.Environment.WorkingDirectories)
+			foreach (var wd in workingDirectories.Items)
 			{
 				wd.IsActive = wd.Name == name && onceFlag;
 				if (wd.IsActive)
