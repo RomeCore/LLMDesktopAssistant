@@ -1,14 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
-using Avalonia.Interactivity;
 using LiveMarkdown.Avalonia;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.MVVM;
-using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Controls;
 

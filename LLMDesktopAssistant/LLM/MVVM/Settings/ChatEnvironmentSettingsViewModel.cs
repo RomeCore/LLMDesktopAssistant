@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// Gets the underlying environment settings.
 		/// </summary>
 		public ChatEnvironmentSettings EnvironmentSettings { get; }
-
+		
 		/// <summary>
 		/// Gets the effective working directories configuration resolved by the current inheritance level.
 		/// </summary>
