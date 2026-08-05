@@ -117,6 +117,30 @@ namespace LLMDesktopAssistant.Settings
 		}
 
 		/// <summary>
+		/// Attempts to retrieve a settings instance by ID without creating a new one.
+		/// </summary>
+		/// <param name="id">The unique identifier for the settings instance.</param>
+		/// <param name="settings">When this method returns <see langword="true"/>, contains the settings instance; otherwise, <see langword="null"/>.</param>
+		/// <returns><see langword="true"/> if a settings instance with the specified ID exists; otherwise, <see langword="false"/>.</returns>
+		/// <exception cref="ArgumentException">Thrown when the ID is null or whitespace.</exception>
+		/// <remarks>
+		/// Unlike <see cref="Get(string)"/>, this method does not create a new settings instance when the ID is not found.
+		/// </remarks>
+		public bool TryGet(string id, out TSettings? settings)
+		{
+			if (string.IsNullOrWhiteSpace(id))
+				throw new ArgumentException("Id cannot be null or whitespace.", nameof(id));
+			if (_objects.TryGetValue(id, out var pair))
+			{
+				settings = pair.Item1;
+				return true;
+			}
+			settings = null;
+			return false;
+		}
+
+
+		/// <summary>
 		/// Removes a settings instance by ID and disposes it.
 		/// </summary>
 		/// <param name="id">The unique identifier for the settings instance to remove.</param>

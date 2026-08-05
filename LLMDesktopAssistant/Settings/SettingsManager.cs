@@ -97,6 +97,37 @@ namespace LLMDesktopAssistant.Settings
 		}
 
 		/// <summary>
+		/// Attempts to retrieve a settings instance by ID without creating a new one.
+		/// </summary>
+		/// <typeparam name="TSettings">The settings type, must inherit from <see cref="SettingsObject"/> and have a parameterless constructor.</typeparam>
+		/// <param name="id">The unique identifier for the settings instance.</param>
+		/// <param name="settings">When this method returns <see langword="true"/>, contains the settings instance; otherwise, <see langword="null"/>.</param>
+		/// <returns><see langword="true"/> if a settings instance with the specified ID exists; otherwise, <see langword="false"/>.</returns>
+		/// <exception cref="ArgumentException">Thrown when the ID is null or whitespace.</exception>
+		/// <remarks>
+		/// Unlike <see cref="Get{TSettings}(string)"/>, this method does not create a new settings instance when the ID is not found.
+		/// </remarks>
+		public static bool TryGet<TSettings>(string id, out TSettings? settings)
+			where TSettings : SettingsObject, new()
+		{
+			var category = GetCategory<TSettings>();
+			return category.TryGet(id, out settings);
+		}
+
+		/// <summary>
+		/// Attempts to retrieve the default settings instance without creating a new one.
+		/// </summary>
+		/// <typeparam name="TSettings">The settings type, must inherit from <see cref="SettingsObject"/> and have a parameterless constructor.</typeparam>
+		/// <param name="settings">When this method returns <see langword="true"/>, contains the settings instance; otherwise, <see langword="null"/>.</param>
+		/// <returns><see langword="true"/> if a default settings instance exists; otherwise, <see langword="false"/>.</returns>
+		public static bool TryGet<TSettings>(out TSettings? settings)
+			where TSettings : SettingsObject, new()
+		{
+			return TryGet(SettingsObject.DefaultId, out settings);
+		}
+
+
+		/// <summary>
 		/// Removes a settings instance by ID and disposes it.
 		/// </summary>
 		/// <typeparam name="TSettings">The settings type, must inherit from <see cref="SettingsObject"/> and have a parameterless constructor.</typeparam>
