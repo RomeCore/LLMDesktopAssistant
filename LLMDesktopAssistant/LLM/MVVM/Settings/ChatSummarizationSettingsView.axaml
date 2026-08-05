@@ -12,21 +12,66 @@
 
 	<StackPanel Orientation="Vertical" Margin="8" Spacing="8">
 
+		<!-- ============================================================ -->
+		<!-- AUTO-SUMMARIZATION -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc settings-summarization}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+					  ItemsSource="{x:Static local:InheritanceLevelItem.AllProfile}"
+					  SelectedItem="{Binding SelectedOptionsInheritance}"
+					  VerticalAlignment="Center"
+					  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
+
+		<TextBlock Text="{loc:Loc settings-summarization_hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"
+				   Margin="0,0,0,8"/>
+
 		<CheckBox Content="{loc:Loc settings-summarization_enabled}"
-					IsChecked="{Binding SummarizationSettings.AutoSummarizationEnabled, Mode=TwoWay}"/>
+				  IsChecked="{Binding SummarizationSettings.AutoSummarizationEnabled, Mode=TwoWay}"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,10"/>
 
 		<TextBlock Text="{loc:Loc settings-summarization_trigger_tokens_hint}"
-					  Margin="0,2"/>
-		<NumericUpDown Value="{Binding SummarizationSettings.SummarizationTriggerTokens, Mode=TwoWay}"
-						  Minimum="1024"
-						  Maximum="1024000"
-							Increment="1024"
-						  FormatString="N0"
-						  HorizontalAlignment="Stretch"/>
+				   Margin="0,2"/>
+		<NumericUpDown Value="{Binding EffectiveOptions.SummarizationTriggerTokens, Mode=TwoWay}"
+					   Minimum="1024"
+					   Maximum="1024000"
+					   Increment="1024"
+					   FormatString="N0"
+					   HorizontalAlignment="Stretch"/>
+
+		<TextBlock Text="{loc:Loc settings-summarization_ignore_last_rounds_hint}"
+				   Margin="0,2"/>
+		<NumericUpDown Value="{Binding EffectiveOptions.IgnoreLastRounds, Mode=TwoWay}"
+					   Minimum="0"
+					   Maximum="100"
+					   Increment="1"
+					   FormatString="N0"
+					   HorizontalAlignment="Stretch"/>
 
 		<TextBlock Text="{loc:Loc settings-summarizer_model_hint}"
-					  Margin="0,2"/>
-		<ctrl:ModelSelectorControl SelectedModel="{Binding SummarizationSettings.SummarizerModel, Mode=TwoWay}"/>
+				   Margin="0,2"/>
+		<ctrl:ModelSelectorControl SelectedModel="{Binding EffectiveOptions.SummarizerModel, Mode=TwoWay}"/>
 
 	</StackPanel>
 

@@ -4705,6 +4705,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Models.
+        /// </summary>
+        public static string settings_models {
+            get {
+                return ResourceManager.GetString("settings-models", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Select the language models used for the chat, agentic routing, agentic tools and vision tasks..
+        /// </summary>
+        public static string settings_models_hint {
+            get {
+                return ResourceManager.GetString("settings-models_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Profile:.
         /// </summary>
         public static string settings_profile {
@@ -5389,11 +5407,38 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Auto-summarization.
+        /// </summary>
+        public static string settings_summarization {
+            get {
+                return ResourceManager.GetString("settings-summarization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Enable chat auto-summarization.
         /// </summary>
         public static string settings_summarization_enabled {
             get {
                 return ResourceManager.GetString("settings-summarization_enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на When enabled, the conversation is automatically summarized and compacted once it grows beyond the trigger threshold..
+        /// </summary>
+        public static string settings_summarization_hint {
+            get {
+                return ResourceManager.GetString("settings-summarization_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ignore last rounds.
+        /// </summary>
+        public static string settings_summarization_ignore_last_rounds_hint {
+            get {
+                return ResourceManager.GetString("settings-summarization_ignore_last_rounds_hint", resourceCulture);
             }
         }
         

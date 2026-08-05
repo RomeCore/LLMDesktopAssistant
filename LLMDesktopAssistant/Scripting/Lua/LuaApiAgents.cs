@@ -498,7 +498,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			// Resolve model name and LLM.
 			var modelName = (parameters.Get("model") as LuaString)?.Value;
 			if (string.IsNullOrEmpty(modelName))
-				modelName = _chat.Settings.Models.AgenticToolsModel;
+				modelName = _chat.Settings.Models.GetEffectiveSelection().AgenticToolsModel;
 			if (string.IsNullOrEmpty(modelName))
 				throw new Exception("agentic model is not selected.");
 

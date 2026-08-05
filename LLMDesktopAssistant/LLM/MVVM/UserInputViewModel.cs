@@ -3,6 +3,7 @@ using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using System.ComponentModel;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.LLM.Attachments;
 using LLMDesktopAssistant.LLM.Domain;
@@ -138,6 +139,79 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public Chat Chat { get; }
 
 		/// <summary>
+		/// Gets or sets the chat model selected in the input bar.
+		/// The value is routed through the effective (inherited) model selection of the chat.
+		/// </summary>
+		public string ChatModel
+		{
+			get => Chat.Settings.Models.GetEffectiveSelection().ChatModel;
+			set
+			{
+				var selection = Chat.Settings.Models.GetEffectiveSelection();
+				if (selection.ChatModel != value)
+					selection.ChatModel = value;
+			}
+		}
+
+		private IDisposable? _settingsSubscription;
+		private IDisposable? _modelsSubscription;
+		private ModelSelectionSettings? _trackedSelection;
+
+		/// <summary>
+		/// Subscribes to the model settings of the current chat and raises
+		/// <see cref="ChatModel"/> change notifications when the effective value changes.
+		/// </summary>
+		private void TrackModelSelection()
+		{
+			_modelsSubscription?.Dispose();
+			Chat.Settings.SubscribeChanged(nameof(ChatSettings.Models), _ =>
+			{
+				Chat.Settings.Models.PropertyChanged -= Models_PropertyChanged;
+				Chat.Settings.Models.PropertyChanged += Models_PropertyChanged;
+				TrackEffectiveSelection();
+				RaisePropertyChanged(nameof(ChatModel));
+			}, out _modelsSubscription);
+
+			Chat.Settings.Models.PropertyChanged -= Models_PropertyChanged;
+			Chat.Settings.Models.PropertyChanged += Models_PropertyChanged;
+			TrackEffectiveSelection();
+			RaisePropertyChanged(nameof(ChatModel));
+		}
+
+		private void Models_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			// The generated SelectionInheritance setter raises PropertyChanged with the
+			// name of the inherited property ("Selection") when the level changes.
+			if (e.PropertyName != "Selection")
+				return;
+
+			TrackEffectiveSelection();
+			RaisePropertyChanged(nameof(ChatModel));
+		}
+
+		/// <summary>
+		/// Tracks the currently effective model selection object so that changes of its
+		/// <see cref="ModelSelectionSettings.ChatModel"/> are reflected in the input bar.
+		/// </summary>
+		private void TrackEffectiveSelection()
+		{
+			var selection = Chat.Settings.Models.GetEffectiveSelection();
+			if (ReferenceEquals(_trackedSelection, selection))
+				return;
+
+			if (_trackedSelection is not null)
+				_trackedSelection.PropertyChanged -= EffectiveSelection_PropertyChanged;
+			_trackedSelection = selection;
+			_trackedSelection.PropertyChanged += EffectiveSelection_PropertyChanged;
+		}
+
+		private void EffectiveSelection_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof(ModelSelectionSettings.ChatModel))
+				RaisePropertyChanged(nameof(ChatModel));
+		}
+
+		/// <summary>
 		/// Gets the chat view model that holds this user input manager.
 		/// </summary>
 		public ChatViewModel ChatViewModel { get; }
@@ -251,6 +325,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		{
 			Chat = chatVM.Chat;
 			ChatViewModel = chatVM;
+
+			Chat.SubscribeChanged(nameof(Chat.Settings), _ => TrackModelSelection(), out _settingsSubscription);
+			TrackModelSelection();
 
 			OpenSettingsCommand = new AsyncRelayCommand(async () =>
 			{
@@ -387,6 +464,25 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			}
 
 			return Task.CompletedTask;
+		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				_settingsSubscription?.Dispose();
+				_modelsSubscription?.Dispose();
+				_settingsSubscription = null;
+				_modelsSubscription = null;
+
+				Chat.Settings.Models.PropertyChanged -= Models_PropertyChanged;
+				if (_trackedSelection is not null)
+					_trackedSelection.PropertyChanged -= EffectiveSelection_PropertyChanged;
+				_trackedSelection = null;
+			}
 		}
 	}
 }

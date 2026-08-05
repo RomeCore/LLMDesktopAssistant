@@ -42,7 +42,7 @@
 						Spacing="5">
 				
 				<!-- Model selector -->
-				<ctrl:ModelSelectorControl SelectedModel="{Binding Chat.Settings.Models.ChatModel, Mode=TwoWay}"/>
+				<ctrl:ModelSelectorControl SelectedModel="{Binding ChatModel, Mode=TwoWay}"/>
 
 				<!-- Settings -->
 				<Button Classes="IconButton"

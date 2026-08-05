@@ -1,11 +1,13 @@
-﻿using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.SourceGenerators;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
 	/// <summary>
 	/// Settings for MCP (Model Context Protocol) servers.
 	/// </summary>
-	public class ChatMcpSettings : ChatSettingsCategoryBase
+	[SettingsRoute(nameof(ChatSettings.Mcp))]
+	public partial class ChatMcpSettings : ChatSettingsCategoryBase
 	{
 		private bool _enableMcp = true;
 		/// <summary>
@@ -21,6 +23,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// <summary>
 		/// Gets or sets the used MCP server Ids.
 		/// </summary>
+		[InheritedChatSetting(DefaultLevel = ChatSettingsInheritanceLevel.Application)]
 		public ICollection<Guid> UsedMcpServers
 		{
 			get => _usedMcpServers;

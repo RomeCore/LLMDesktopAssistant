@@ -165,6 +165,12 @@
   <data name="settings-chat_model_hint" xml:space="preserve">
     <value>Chat model</value>
   </data>
+  <data name="settings-models" xml:space="preserve">
+    <value>Models</value>
+  </data>
+  <data name="settings-models_hint" xml:space="preserve">
+    <value>Select the language models used for the chat, agentic routing, agentic tools and vision tasks.</value>
+  </data>
   <data name="empty_model" xml:space="preserve">
     <value>Empty</value>
   </data>
@@ -404,6 +410,15 @@
   </data>
   <data name="settings-use_mcp" xml:space="preserve">
     <value>Enable MCP</value>
+  </data>
+  <data name="settings-mcp_servers" xml:space="preserve">
+    <value>MCP servers</value>
+  </data>
+  <data name="settings-mcp_servers_hint" xml:space="preserve">
+    <value>Select the MCP servers whose tools will be available to agents in this chat.</value>
+  </data>
+  <data name="settings-mcp_servers_toggle_hint" xml:space="preserve">
+    <value>Enable or disable this MCP server</value>
   </data>
   <data name="settings-use_tools" xml:space="preserve">
     <value>Enable tools</value>
@@ -677,6 +692,15 @@
   </data>
   <data name="settings-summarization_trigger_tokens_hint" xml:space="preserve">
     <value>Trigger tokens</value>
+  </data>
+  <data name="settings-summarization_ignore_last_rounds_hint" xml:space="preserve">
+    <value>Ignore last rounds</value>
+  </data>
+  <data name="settings-summarization" xml:space="preserve">
+    <value>Auto-summarization</value>
+  </data>
+  <data name="settings-summarization_hint" xml:space="preserve">
+    <value>When enabled, the conversation is automatically summarized and compacted once it grows beyond the trigger threshold.</value>
   </data>
   <data name="chat_settings_models" xml:space="preserve">
     <value>Models</value>

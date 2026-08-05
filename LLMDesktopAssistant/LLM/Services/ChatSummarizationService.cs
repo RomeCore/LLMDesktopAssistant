@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	{
 		public async Task TrySummarizeChatAsync(IUsageMetadata lastUsageMetadata, CancellationToken cancellationToken = default)
 		{
-			var summarizationLLM = modelManager.TryGetModel(chat.Settings.Summarization.SummarizerModel);
+			var summarizationLLM = modelManager.TryGetModel(chat.Settings.Summarization.GetEffectiveOptions().SummarizerModel);
 
 			try
 			{
@@ -32,14 +32,14 @@ namespace LLMDesktopAssistant.LLM.Services
 					return;
 
 				var totalTokensUsed = lastUsageMetadata.TotalTokens;
-				if (totalTokensUsed < chat.Settings.Summarization.SummarizationTriggerTokens)
+				if (totalTokensUsed < chat.Settings.Summarization.GetEffectiveOptions().SummarizationTriggerTokens)
 					return;
 
 				// If the summarization LLM is not available, do not summarize
 				if (summarizationLLM == null)
 					return;
 
-				var lastRoundsToIgnore = chat.Settings.Summarization.IgnoreLastRounds;
+				var lastRoundsToIgnore = chat.Settings.Summarization.GetEffectiveOptions().IgnoreLastRounds;
 
 				var rounds = GroupMessagesIntoRounds(chat.Messages.Select(m => m.Message).ToList());
 				var roundsToSummarize = rounds.Take(Math.Max(0, rounds.Count - lastRoundsToIgnore)).ToList();
@@ -107,7 +107,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public async Task SummarizeMessageWithPreviousMessagesAsync(ChatMessage message, CancellationToken cancellationToken = default)
 		{
-			var summarizationLLM = modelManager.TryGetModel(chat.Settings.Summarization.SummarizerModel);
+			var summarizationLLM = modelManager.TryGetModel(chat.Settings.Summarization.GetEffectiveOptions().SummarizerModel);
 
 			try
 			{

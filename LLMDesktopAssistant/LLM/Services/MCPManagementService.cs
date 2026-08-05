@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.Settings;
 using RCLargeLanguageModels;
@@ -17,7 +17,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!chat.Settings.Mcp.EnableMcp)
 				return false;
 
-			var usedServerIds = chat.Settings.Mcp.UsedMcpServers
+			var usedServerIds = chat.Settings.Mcp.GetEffectiveUsedMcpServers()
 				.Intersect(SettingsManager.Get<MCPConfiguration>().Servers.Select(s => s.Id));
 
 			return usedServerIds.Any();
@@ -31,7 +31,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				return;
 			}
 
-			var usedServerIds = chat.Settings.Mcp.UsedMcpServers
+			var usedServerIds = chat.Settings.Mcp.GetEffectiveUsedMcpServers()
 				.Intersect(SettingsManager.Get<MCPConfiguration>().Servers.Select(s => s.Id));
 
 			var usedConnectionTasks = usedServerIds.Select(id => MCPManager.EnsureConnectionAsync(id, cancellationToken));

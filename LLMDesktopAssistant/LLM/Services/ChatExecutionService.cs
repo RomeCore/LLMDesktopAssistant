@@ -125,7 +125,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					var settings = agent.Generation;
 					var modelName = settings.EnableCustomModel && !string.IsNullOrEmpty(settings.Model)
 						? settings.Model
-						: chat.Settings.Models.ChatModel;
+						: chat.Settings.Models.GetEffectiveSelection().ChatModel;
 					llm = modelManager.GetModel(modelName);
 				}
 				catch

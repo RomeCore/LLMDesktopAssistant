@@ -74,7 +74,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				""")] bool wait = true,
 			CancellationToken cancellationToken = default)
 		{
-			var modelName = _chat.Settings.Models.AgenticToolsModel;
+			var modelName = _chat.Settings.Models.GetEffectiveSelection().AgenticToolsModel;
 			if (string.IsNullOrEmpty(modelName))
 				return new ReactiveToolResult
 				{
@@ -260,7 +260,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			result.StatusTitle = $"**{path}**";
 			result.UseMarkdown = true;
 
-			var modelName = _chat.Settings.Models.VisionModel;
+			var modelName = _chat.Settings.Models.GetEffectiveSelection().VisionModel;
 			if (string.IsNullOrEmpty(modelName))
 			{
 				result.ResultContent = $"No vision model selected. Say user to select a vision model first.";
