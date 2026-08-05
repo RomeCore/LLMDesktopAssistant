@@ -8,7 +8,8 @@ namespace LLMDesktopAssistant.Settings
 	/// <typeparam name="T">The settings type, must inherit from <see cref="SettingsObject"/> and have a parameterless constructor.</typeparam>
 	/// <remarks>
 	/// The reference is serialized as the ID of the referenced settings instance. The instance itself is
-	/// resolved lazily on first access and cached.
+	/// resolved lazily on first access and cached. If the referenced instance does not exist,
+	/// <see cref="Object"/> returns <see langword="null"/> and nothing is created.
 	/// </remarks>
 	public class SettingsReference<T> : NotifyPropertyChanged
 		where T : SettingsObject, new()
@@ -32,15 +33,27 @@ namespace LLMDesktopAssistant.Settings
 		/// <summary>
 		/// Gets or sets the referenced settings instance, resolving it lazily through <see cref="SettingsManager"/> when not set explicitly.
 		/// </summary>
-		public T Object
+		/// <remarks>
+		/// Returns <see langword="null"/> when the referenced settings instance does not exist.
+		/// </remarks>
+		public T? Object
 		{
-			get => _object ??= SettingsManager.Get<T>(Id);
+			get
+			{
+				if (_object == null && SettingsManager.TryGet<T>(Id, out var obj))
+					_object = obj;
+				return _object;
+			}
 			set
 			{
 				if (SetProperty(ref _object, value))
 				{
-					_id = value?.Id;
-					RaisePropertyChanged(nameof(Id));
+					var newId = value?.Id ?? _id;
+					if (_id != newId)
+					{
+						_id = newId;
+						RaisePropertyChanged(nameof(Id));
+					}
 				}
 			}
 		}

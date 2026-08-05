@@ -95,4 +95,15 @@ public class SettingsReferenceTests
 		Assert.Throws<JsonException>(() =>
 			JsonSerializer.Deserialize<RequiredReferenceSettings>("{}", SettingsManager.jsonOptions));
 	}
+
+	[Fact]
+	public void BrokenReferenceResolvesToNullWithoutCreating()
+	{
+		var reference = JsonSerializer.Deserialize<SettingsReference<TestSettings>>(
+			"\"missing-profile\"", SettingsManager.jsonOptions)!;
+		
+		Assert.Equal("missing-profile", reference.Id);
+		Assert.Null(reference.Object);
+		Assert.False(SettingsManager.TryGet<TestSettings>("missing-profile", out _));
+	}
 }
