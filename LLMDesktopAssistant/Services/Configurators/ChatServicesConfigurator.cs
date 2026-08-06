@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Services.Configurators
@@ -8,10 +8,13 @@ namespace LLMDesktopAssistant.Services.Configurators
 	{
 		public override void Configure(IServiceCollection services)
 		{
-			var chatServices = ReflectionUtility.GetTypesWithAttribute<ChatServiceAttribute>().ToList();
+			var chatServices = ReflectionUtility.GetTypesWithAttributes<ChatServiceAttribute>().ToList();
 			foreach (var service in chatServices)
 			{
-				services.AddScoped(service.Attribute.ServiceType ?? service.Type, service.Type);
+				foreach (var attribute in service.Attributes)
+				{
+					services.AddScoped(attribute.ServiceType ?? service.Type, service.Type);
+				}
 			}
 		}
 	}

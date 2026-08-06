@@ -1,9 +1,9 @@
-﻿namespace LLMDesktopAssistant.Services
+namespace LLMDesktopAssistant.Services
 {
 	/// <summary>
 	/// Represents an attribute that can be used to mark a class as a service to be registered in <see cref="ServiceRegistry"/>.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Class)]
+	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 	public sealed class ServiceAttribute(Type? serviceType = null) : Attribute
 	{
 		/// <summary>

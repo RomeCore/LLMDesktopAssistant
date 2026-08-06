@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Serilog;
 
 namespace LLMDesktopAssistant.Utils
@@ -91,6 +91,43 @@ namespace LLMDesktopAssistant.Utils
 				throw new ArgumentException($"Type '{type}' is not assignable to '{typeof(T)}'", nameof(type));
 			Type = type;
 			Attribute = attribute;
+		}
+	}
+
+	/// <summary>
+	/// Represents a pair of a type and all its attributes of the specified type.
+	/// </summary>
+	/// <typeparam name="TAttribute">The type of attribute.</typeparam>
+	public readonly struct TypeAttributesPair<TAttribute> where TAttribute : Attribute
+	{
+		/// <summary>
+		/// The type associated with the attributes.
+		/// </summary>
+		public readonly Type Type;
+
+		/// <summary>
+		/// The attributes associated with and applied to the type.
+		/// </summary>
+		public readonly IReadOnlyList<TAttribute> Attributes;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TypeAttributesPair{TAttribute}"/> struct.
+		/// </summary>
+		/// <param name="type">The type.</param>
+		/// <param name="attributes">The attributes applied to the type.</param>
+		public TypeAttributesPair(Type type, IReadOnlyList<TAttribute> attributes)
+		{
+			Type = type;
+			Attributes = attributes;
+		}
+
+		/// <summary>
+		/// Returns a string representation of the pair.
+		/// </summary>
+		/// <returns>A string containing the type and its attributes.</returns>
+		public override string ToString()
+		{
+			return $"{Type} [{string.Join(", ", Attributes)}]";
 		}
 	}
 
@@ -324,6 +361,85 @@ namespace LLMDesktopAssistant.Utils
 				.Where(t => predicate(t));
 		}
 
+		/// <summary>
+		/// Gets all types marked with the specified attribute, along with all attributes of that type applied to each type.
+		/// </summary>
+		/// <typeparam name="TAttribute">The type of attribute.</typeparam>
+		/// <param name="observedOnly">Whether to search only observed types (default <see langword="true"/>).</param>
+		/// <returns>A collection of type-attributes pairs.</returns>
+		public static IEnumerable<TypeAttributesPair<TAttribute>> GetTypesWithAttributes<TAttribute>(bool observedOnly = true)
+			where TAttribute : Attribute
+		{
+			CheckInitialized();
+			var set = observedOnly ? _observedTypes : _allTypes;
+			return set
+				.Select(t => new TypeAttributesPair<TAttribute>(t, t.GetCustomAttributes<TAttribute>(inherit: true).ToArray()))
+				.Where(t => t.Attributes.Count > 0);
+		}
+
+		/// <summary>
+		/// Gets all types marked with the specified attribute, along with all attributes of that type applied to each type,
+		/// that satisfy the given predicate.
+		/// </summary>
+		/// <typeparam name="TAttribute">The type of attribute.</typeparam>
+		/// <param name="predicate">The predicate to filter the pairs.</param>
+		/// <param name="observedOnly">Whether to search only observed types (default <see langword="true"/>).</param>
+		/// <returns>A collection of type-attributes pairs.</returns>
+		public static IEnumerable<TypeAttributesPair<TAttribute>> GetTypesWithAttributes<TAttribute>(
+			Func<TypeAttributesPair<TAttribute>, bool> predicate, bool observedOnly = true)
+			where TAttribute : Attribute
+		{
+			CheckInitialized();
+			var set = observedOnly ? _observedTypes : _allTypes;
+			return set
+				.Select(t => new TypeAttributesPair<TAttribute>(t, t.GetCustomAttributes<TAttribute>(inherit: true).ToArray()))
+				.Where(t => t.Attributes.Count > 0)
+				.Where(t => predicate(t));
+		}
+
+		/// <summary>
+		/// Gets all types inherited from specified type and marked with the specified attribute,
+		/// along with all attributes of that type applied to each type.
+		/// </summary>
+		/// <typeparam name="TBase">The base type.</typeparam>
+		/// <typeparam name="TAttribute">The type of attribute.</typeparam>
+		/// <param name="observedOnly">Whether to search only observed types (default <see langword="true"/>).</param>
+		/// <returns>A collection of type-attributes pairs.</returns>
+		public static IEnumerable<TypeAttributesPair<TAttribute>> GetTypesWithAttributes<TBase, TAttribute>(bool observedOnly = true)
+			where TAttribute : Attribute
+		{
+			CheckInitialized();
+			var set = observedOnly ? _observedTypes : _allTypes;
+			var baseType = typeof(TBase);
+			return set
+				.Where(t => baseType.IsAssignableFrom(t) && t != baseType)
+				.Select(t => new TypeAttributesPair<TAttribute>(t, t.GetCustomAttributes<TAttribute>(inherit: true).ToArray()))
+				.Where(t => t.Attributes.Count > 0);
+		}
+
+		/// <summary>
+		/// Gets all types inherited from specified type and marked with the specified attribute,
+		/// along with all attributes of that type applied to each type, that satisfy the given predicate.
+		/// </summary>
+		/// <typeparam name="TBase">The base type.</typeparam>
+		/// <typeparam name="TAttribute">The type of attribute.</typeparam>
+		/// <param name="predicate">The predicate to filter the pairs.</param>
+		/// <param name="observedOnly">Whether to search only observed types (default <see langword="true"/>).</param>
+		/// <returns>A collection of type-attributes pairs.</returns>
+		public static IEnumerable<TypeAttributesPair<TAttribute>> GetTypesWithAttributes<TBase, TAttribute>(
+			Func<TypeAttributesPair<TAttribute>, bool> predicate, bool observedOnly = true)
+			where TAttribute : Attribute
+		{
+			CheckInitialized();
+			var set = observedOnly ? _observedTypes : _allTypes;
+			var baseType = typeof(TBase);
+			return set
+				.Where(t => baseType.IsAssignableFrom(t) && t != baseType)
+				.Select(t => new TypeAttributesPair<TAttribute>(t, t.GetCustomAttributes<TAttribute>(inherit: true).ToArray()))
+				.Where(t => t.Attributes.Count > 0)
+				.Where(t => predicate(t));
+		}
+
 		// EXTENSION METHODS
 
 		public static IEnumerable<TypeAttributePair<TAttribute>> GetTypesWithAttribute<TAttribute>(this Assembly assembly)
@@ -342,6 +458,39 @@ namespace LLMDesktopAssistant.Utils
 			return set
 				.Select(t => new TypeAttributePair<TAttribute>(t, t.GetCustomAttribute<TAttribute>(inherit: true)!))
 				.Where(t => t.Attribute != null)
+				.Where(t => predicate(t));
+		}
+
+		/// <summary>
+		/// Gets all types in the assembly marked with the specified attribute, along with all attributes of that type applied to each type.
+		/// </summary>
+		/// <typeparam name="TAttribute">The type of attribute.</typeparam>
+		/// <param name="assembly">The assembly to search.</param>
+		/// <returns>A collection of type-attributes pairs.</returns>
+		public static IEnumerable<TypeAttributesPair<TAttribute>> GetTypesWithAttributes<TAttribute>(this Assembly assembly)
+			where TAttribute : Attribute
+		{
+			var set = assembly.GetTypes();
+			return set
+				.Select(t => new TypeAttributesPair<TAttribute>(t, t.GetCustomAttributes<TAttribute>(inherit: true).ToArray()))
+				.Where(t => t.Attributes.Count > 0);
+		}
+
+		/// <summary>
+		/// Gets all types in the assembly marked with the specified attribute, along with all attributes of that type applied to each type,
+		/// that satisfy the given predicate.
+		/// </summary>
+		/// <typeparam name="TAttribute">The type of attribute.</typeparam>
+		/// <param name="assembly">The assembly to search.</param>
+		/// <param name="predicate">The predicate to filter the pairs.</param>
+		/// <returns>A collection of type-attributes pairs.</returns>
+		public static IEnumerable<TypeAttributesPair<TAttribute>> GetTypesWithAttributes<TAttribute>(this Assembly assembly, Func<TypeAttributesPair<TAttribute>, bool> predicate)
+			where TAttribute : Attribute
+		{
+			var set = assembly.GetTypes();
+			return set
+				.Select(t => new TypeAttributesPair<TAttribute>(t, t.GetCustomAttributes<TAttribute>(inherit: true).ToArray()))
+				.Where(t => t.Attributes.Count > 0)
 				.Where(t => predicate(t));
 		}
 
@@ -379,6 +528,20 @@ namespace LLMDesktopAssistant.Utils
 			return types
 				.Select(t => new TypeAttributePair<TAttribute>(t, t.GetCustomAttribute<TAttribute>(inherit: true)!))
 				.Where(t => t.Attribute != null);
+		}
+
+		/// <summary>
+		/// Maps the types to <see cref="TypeAttributesPair{TAttribute}"/> instances containing all attributes of the specified type.
+		/// </summary>
+		/// <typeparam name="TAttribute">The type of attribute.</typeparam>
+		/// <param name="types">The types to map.</param>
+		/// <returns>A collection of type-attributes pairs.</returns>
+		public static IEnumerable<TypeAttributesPair<TAttribute>> WithAttributes<TAttribute>(this IEnumerable<Type> types)
+			where TAttribute : Attribute
+		{
+			return types
+				.Select(t => new TypeAttributesPair<TAttribute>(t, t.GetCustomAttributes<TAttribute>(inherit: true).ToArray()))
+				.Where(t => t.Attributes.Count > 0);
 		}
 
 		/// <summary>

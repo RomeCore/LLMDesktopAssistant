@@ -60,10 +60,13 @@ namespace LLMDesktopAssistant.Services
 
 			configureServices?.Invoke(collection);
 
-			foreach (var service in ReflectionUtility.GetTypesWithAttribute<object, ServiceAttribute>())
+			foreach (var service in ReflectionUtility.GetTypesWithAttributes<object, ServiceAttribute>())
 			{
-				var serviceType = service.Attribute.ServiceType ?? service.Type;
-				collection.AddSingleton(serviceType, service.Type);
+				foreach (var attribute in service.Attributes)
+				{
+					var serviceType = attribute.ServiceType ?? service.Type;
+					collection.AddSingleton(serviceType, service.Type);
+				}
 			}
 
 			foreach (var configurator in ReflectionUtility.GetTypesWithAttribute<ServiceConfigurator, ServiceConfiguratorAttribute>())

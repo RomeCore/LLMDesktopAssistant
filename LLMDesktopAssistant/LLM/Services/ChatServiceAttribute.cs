@@ -1,9 +1,9 @@
-﻿namespace LLMDesktopAssistant.LLM.Services
+namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
 	/// The attribute to mark a class as a scoped chat service.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 	public sealed class ChatServiceAttribute(Type? serviceType = null) : Attribute
 	{
 		/// <summary>
