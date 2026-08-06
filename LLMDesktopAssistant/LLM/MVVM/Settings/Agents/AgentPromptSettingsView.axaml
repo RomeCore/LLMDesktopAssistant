@@ -21,14 +21,13 @@
 										ToolTip.Tip="{loc:Loc prompt_preview_toggle}"
 										IsChecked="{Binding IsPreviewVisible, Mode=OneWay}">
 
-				<StackPanel Orientation="Horizontal">
+				<StackPanel Orientation="Horizontal" Spacing="8">
 				
 					<ico:MaterialIcon Kind="Eye"
 														Width="18" Height="18"/>
 					
 					<TextBlock Text="{loc:Loc prompt_preview_header}"
 										 FontWeight="Bold"
-										 FontSize="{DynamicResource FontSizeL}"
 										 VerticalAlignment="Center"/>
 
 				</StackPanel>
@@ -38,25 +37,16 @@
 		</StackPanel>
 
 		<!-- Preview Content -->
-		<Border IsVisible="{Binding IsPreviewVisible}"
-						BorderBrush="{DynamicResource SecondaryAccentBrush}"
-						BorderThickness="1"
-						CornerRadius="4"
-						Padding="4"
-						Margin="0,0,0,8">
-
-			<TextBox Text="{Binding SystemPromptPreview}"
-							 IsReadOnly="True"
-							 AcceptsReturn="True"
-							 TextWrapping="Wrap"
-							 FontFamily="Cascadia Code,Consolas,monospace"
-							 FontSize="12"
-							 MinHeight="60"
-							 MaxHeight="250"
-							 ScrollViewer.VerticalScrollBarVisibility="Auto"
-							 Opacity="0.85"/>
-
-		</Border>
+		<TextBox IsVisible="{Binding IsPreviewVisible}"
+						 Text="{Binding SystemPromptPreview}"
+						 IsReadOnly="True"
+						 AcceptsReturn="True"
+						 TextWrapping="Wrap"
+						 FontFamily="Cascadia Code,Consolas,monospace"
+						 FontSize="12"
+						 MinHeight="60"
+						 MaxHeight="450"
+						 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
@@ -386,7 +376,7 @@
 
 			<ComboBox Grid.Column="1"
 								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-								SelectedItem="{Binding SelectedSlidersInheritance}"
+								SelectedItem="{Binding SelectedSliderValuesInheritance}"
 								VerticalAlignment="Center"
 								Margin="0,0,8,0"
 								MinWidth="120">

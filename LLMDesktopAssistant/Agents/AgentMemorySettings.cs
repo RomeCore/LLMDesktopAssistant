@@ -10,7 +10,6 @@ namespace LLMDesktopAssistant.Agents
 		/// <summary>
 		/// Enables or disables the agent memory feature.
 		/// </summary>
-		[InheritedChatAgentSetting]
 		public bool EnableMemory
 		{
 			get => _enableMemory;

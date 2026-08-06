@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
 	/// <summary>
 	/// Builds the prompt context for a given agent, respecting:
-	/// - <see cref="AgentReadSettings.Reading"/> — what the agent can see
+	/// - <see cref="AgentReadSettings.ReadPermissions"/> — what the agent can see
 	/// - <see cref="AgentReadSettings.AgentIdsReadFilter"/> — white/black list for other agents
 	/// - <see cref="AgentReadSettings.Context"/> — how many recent rounds to include
 	/// - Foreign agent messages are merged and presented as a single user message.
@@ -68,7 +68,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		private bool IsUserMessageVisibleToAgent(BranchedMessage message, ChatAgentDescriptor agent)
 		{
 			var userMessage = message.AsUserMessage();
-			var permissions = agent.Read.GetEffectiveReading(chat.Settings).ReadPermissions;
+			var permissions = agent.Read.GetEffectiveReadPermissions(chat.Settings);
 
 			if (!permissions.HasFlag(AgentReadPermissions.UserMessages))
 				return false;
@@ -97,8 +97,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var assistantMessage = message.AsAssistantMessage();
 			var messageAgentId = assistantMessage.SenderAgentId;
 			var agentDescriptor = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
-			var exposure = agentDescriptor.Read.GetEffectiveExposure(chat.Settings).ExposureMode; // What sender agent exposes
-			var permissions = agent.Read.GetEffectiveReading(chat.Settings).ReadPermissions; // What current agent can see
+			var exposure = agentDescriptor.Read.GetEffectiveExposureMode(chat.Settings); // What sender agent exposes
+			var permissions = agent.Read.GetEffectiveReadPermissions(chat.Settings); // What current agent can see
 
 			// Own messages
 			if (messageAgentId == agent.Id)
@@ -150,7 +150,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			var effectiveSystemPrompt = promptSettings.GetEffectiveSystemPrompt(chat.Settings);
 			var effectiveComponents = promptSettings.GetEffectivePromptComponents(chat.Settings);
-			var effectiveSliders = promptSettings.GetEffectiveSliders(chat.Settings);
+			var effectiveSliderValues = promptSettings.GetEffectiveSliderValues(chat.Settings);
 			var effectivePersona = promptSettings.GetEffectivePersona(chat.Settings);
 			var effectiveSpecialization = promptSettings.GetEffectiveSpecialization(chat.Settings);
 
@@ -159,7 +159,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				.Select(id => promptRegistry.GetComponent(id)?.Template.Template.Render(componentsContext))
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
-			generalContext["sliders"] = effectiveSliders.Items.Select(s =>
+			generalContext["sliders"] = effectiveSliderValues.Select(s =>
 				{
 					var sliderTemplate = promptRegistry.GetSlider(s.SliderId)?.Template.Template;
 					var sliderContext = new
@@ -231,7 +231,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			context["content"] = userMessage.Content;
 			context["attachments"] = userMessage.Attachments;
 			context["can_read_content"] = true;
-			bool canReadAttachments = agent.Read.GetEffectiveReading(chat.Settings).ReadPermissions.HasFlag(AgentReadPermissions.UserAttachments);
+			bool canReadAttachments = agent.Read.GetEffectiveReadPermissions(chat.Settings).HasFlag(AgentReadPermissions.UserAttachments);
 			context["can_read_attachments"] = canReadAttachments;
 
 			var result = template!.Render(context, functions);
@@ -247,8 +247,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var assistantMessage = message.AsAssistantMessage();
 			var senderDescriptor = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
 			var agentName = senderDescriptor.Info.Name ?? senderDescriptor.Id.ToString()[..8];
-			var exposure = senderDescriptor.Read.GetEffectiveExposure(chat.Settings).ExposureMode; // What sender agent exposes
-			var permissions = agent.Read.GetEffectiveReading(chat.Settings).ReadPermissions; // What current agent can see
+			var exposure = senderDescriptor.Read.GetEffectiveExposureMode(chat.Settings); // What sender agent exposes
+			var permissions = agent.Read.GetEffectiveReadPermissions(chat.Settings); // What current agent can see
 
 			var language = GetCurrentLanguageMetadata();
 			if (exposure.HasFlag(AgentExposureMode.IdentifySelfAsUser) || permissions.HasFlag(AgentReadPermissions.IdentifyAgentsAsUsers))
@@ -365,10 +365,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
 				var previewAgent = new ChatAgentDescriptor();
-				previewAgent.Read.SetEffectiveReading(chat.Settings, new AgentReadingSettings
-				{
-					ReadPermissions = (AgentReadPermissions)0x7fffffff
-				});
+				previewAgent.Read.SetEffectiveReadPermissions(chat.Settings, (AgentReadPermissions)0x7fffffff);
 				return BuildForeignAgentMessageText(assistantMessage, previewAgent, functions).Content;
 			}
 

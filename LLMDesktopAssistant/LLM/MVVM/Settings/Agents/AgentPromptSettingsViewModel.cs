@@ -7,6 +7,7 @@ using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
@@ -201,9 +202,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public SpecializationSettings EffectiveSpecialization => PromptSettings.GetEffectiveSpecialization(_chatSettings);
 
 		/// <summary>
-		/// Gets the effective behavior sliders group resolved by the current inheritance level.
+		/// Gets the effective behavior slider values resolved by the current inheritance level.
 		/// </summary>
-		public SliderValuesSettings EffectiveSliders => PromptSettings.GetEffectiveSliders(_chatSettings);
+		public RangeObservableCollection<BehaviorSliderValue> EffectiveSliderValues => PromptSettings.GetEffectiveSliderValues(_chatSettings);
 
 		private InheritanceLevelItem _selectedSystemPromptInheritance;
 		/// <summary>
@@ -261,17 +262,17 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 		}
 
-		private InheritanceLevelItem _selectedSlidersInheritance;
+		private InheritanceLevelItem _selectedSliderValuesInheritance;
 		/// <summary>
-		/// Gets or sets the inheritance level for the behavior sliders group.
+		/// Gets or sets the inheritance level for the behavior slider values.
 		/// </summary>
-		public InheritanceLevelItem SelectedSlidersInheritance
+		public InheritanceLevelItem SelectedSliderValuesInheritance
 		{
-			get => _selectedSlidersInheritance;
+			get => _selectedSliderValuesInheritance;
 			set
 			{
-				if (SetProperty(ref _selectedSlidersInheritance, value) && value != null)
-					PromptSettings.SlidersInheritance = value.Value;
+				if (SetProperty(ref _selectedSliderValuesInheritance, value) && value != null)
+					PromptSettings.SliderValuesInheritance = value.Value;
 			}
 		}
 
@@ -354,7 +355,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			_selectedComponentsInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.PromptComponentsInheritance);
 			_selectedPersonaInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.PersonaInheritance);
 			_selectedSpecializationInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SpecializationInheritance);
-			_selectedSlidersInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SlidersInheritance);
+			_selectedSliderValuesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SliderValuesInheritance);
 
 			ClearPersonaCommand = new RelayCommand(() => SelectedPersona = null);
 			ClearSpecializationCommand = new RelayCommand(() => SelectedSpecialization = null);
@@ -400,10 +401,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					Refresh();
 					break;
 
-				case nameof(AgentPromptSettings.SlidersInheritance):
-					_selectedSlidersInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.SlidersInheritance);
-					RaisePropertyChanged(nameof(SelectedSlidersInheritance));
-					RaisePropertyChanged(nameof(EffectiveSliders));
+				case nameof(AgentPromptSettings.SliderValuesInheritance):
+					_selectedSliderValuesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.SliderValuesInheritance);
+					RaisePropertyChanged(nameof(SelectedSliderValuesInheritance));
+					RaisePropertyChanged(nameof(EffectiveSliderValues));
 					Refresh();
 					break;
 			}
@@ -519,7 +520,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			// --- Sliders ---
 			SliderItems.Clear();
-			var sliderValues = EffectiveSliders.Items;
+			var sliderValues = EffectiveSliderValues;
 			foreach (var (sliderId, slider) in PromptRegistry.BuiltinSliders)
 			{
 				// Find existing slider value or create new one with default (0)

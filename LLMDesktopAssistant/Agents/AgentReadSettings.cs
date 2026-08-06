@@ -4,33 +4,46 @@ using LLMDesktopAssistant.Utils;
 namespace LLMDesktopAssistant.Agents
 {
 	/// <summary>
-	/// Describes an agent's reading settings: the inheritable reading, exposure and context
-	/// groups, and the local agent ID filter.
+	/// Describes an agent's reading settings: the inheritable read permissions, exposure mode
+	/// and context group, and the local agent ID filter.
 	/// </summary>
 	[SettingsRoute(nameof(ChatAgentDescriptor.Read))]
 	public partial class AgentReadSettings : AgentSettingsCategoryBase
 	{
-		private AgentReadingSettings _reading = new();
+		private AgentReadPermissions _readPermissions =
+			AgentReadPermissions.UserMessages |
+			AgentReadPermissions.UserAttachments |
+			AgentReadPermissions.OwnMessages |
+			AgentReadPermissions.OtherAgentMessages |
+			AgentReadPermissions.OtherAgentContent |
+			AgentReadPermissions.OtherAgentToolCalls |
+			AgentReadPermissions.OtherAgentAttachments |
+			AgentReadPermissions.MessagesWithToolCalls;
 		/// <summary>
-		/// Gets or sets the reading permissions group: what the agent can read.
+		/// The permissions that determine what the agent can read.
 		/// </summary>
 		[InheritedChatAgentSetting]
-		public AgentReadingSettings Reading
+		public AgentReadPermissions ReadPermissions
 		{
-			get => _reading;
-			set => SetProperty(ref _reading, value);
+			get => _readPermissions;
+			set => SetProperty(ref _readPermissions, value);
 		}
 
-		private AgentExposureSettings _exposure = new();
+		private AgentExposureMode _exposureMode =
+			AgentExposureMode.Reasoning |
+			AgentExposureMode.Content |
+			AgentExposureMode.ToolCalls |
+			AgentExposureMode.Attachments |
+			AgentExposureMode.MessagesWithToolCalls;
 		/// <summary>
-		/// Gets or sets the exposure group: what parts of this agent's messages
+		/// The exposure mode that determines what parts of this agent's messages
 		/// are visible to other agents.
 		/// </summary>
 		[InheritedChatAgentSetting]
-		public AgentExposureSettings Exposure
+		public AgentExposureMode ExposureMode
 		{
-			get => _exposure;
-			set => SetProperty(ref _exposure, value);
+			get => _exposureMode;
+			set => SetProperty(ref _exposureMode, value);
 		}
 
 		private AgentContextSettings _context = new();

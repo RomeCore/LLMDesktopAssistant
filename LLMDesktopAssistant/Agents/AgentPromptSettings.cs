@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.SourceGenerators;
 using LLMDesktopAssistant.Utils;
 
@@ -6,7 +7,7 @@ namespace LLMDesktopAssistant.Agents
 	/// <summary>
 	/// Describes an agent prompt settings.
 	/// Contains the system prompt, prompt components, the persona group, the specialization
-	/// group and the behavior sliders group. All groups are resolved through their effective
+	/// group and the behavior slider values. All groups are resolved through their effective
 	/// (inherited) scope, selected via the inheritance level combo boxes in the view.
 	/// </summary>
 	[SettingsRoute(nameof(ChatAgentDescriptor.Prompts))]
@@ -57,15 +58,15 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _specialization, value);
 		}
 
-		private SliderValuesSettings _sliders = new();
+		private readonly RangeObservableCollection<BehaviorSliderValue> _sliderValues = [];
 		/// <summary>
-		/// Gets or sets the behavior sliders group of the agent.
+		/// Gets or sets the behavior slider values of the agent.
 		/// </summary>
 		[InheritedChatAgentSetting]
-		public SliderValuesSettings Sliders
+		public RangeObservableCollection<BehaviorSliderValue> SliderValues
 		{
-			get => _sliders;
-			set => SetProperty(ref _sliders, value);
+			get => _sliderValues;
+			set => _sliderValues.Reset(value);
 		}
 	}
 }

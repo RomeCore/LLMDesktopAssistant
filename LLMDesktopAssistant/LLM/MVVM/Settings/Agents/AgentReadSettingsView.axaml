@@ -24,7 +24,7 @@
 
 			<ComboBox Grid.Column="1"
 								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-								SelectedItem="{Binding SelectedReadingInheritance}"
+								SelectedItem="{Binding SelectedReadPermissionsInheritance}"
 								VerticalAlignment="Center"
 								Margin="8,5,0,0"
 								MinWidth="120">
@@ -75,7 +75,7 @@
 
 			<ComboBox Grid.Column="1"
 								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-								SelectedItem="{Binding SelectedExposureInheritance}"
+								SelectedItem="{Binding SelectedExposureModeInheritance}"
 								VerticalAlignment="Center"
 								Margin="8,5,0,0"
 								MinWidth="120">
