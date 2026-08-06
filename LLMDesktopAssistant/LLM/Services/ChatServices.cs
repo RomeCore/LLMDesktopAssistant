@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Data;
+using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using Serilog;
@@ -19,6 +19,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			serviceBuilder.AddAppServices();
 			serviceBuilder.AddSingleton(database);
 			serviceBuilder.AddChatServices();
+			serviceBuilder.DeduplicateServices();
 			ServiceProvider = serviceBuilder.BuildServiceProvider();
 
 			ManagementService = ServiceProvider.GetRequiredService<IChatManagementService>();

@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Utils;
 using Serilog;
 
 namespace LLMDesktopAssistant.Services
@@ -71,6 +71,8 @@ namespace LLMDesktopAssistant.Services
 				if (configurator.Attribute.Scope == ServiceScope.App)
 					configurator.Type.Instantiate<ServiceConfigurator>().Configure(collection);
 			}
+
+			collection.DeduplicateServices();
 
 			_serviceProvider = collection.BuildServiceProvider();
 
