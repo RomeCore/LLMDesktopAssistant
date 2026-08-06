@@ -2140,7 +2140,7 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Searching for {0}....
+        ///   Ищет локализованную строку, похожую на Searching for **{0}**....
         /// </summary>
         public static string fs_glob_searching {
             get {
@@ -4692,6 +4692,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_mcp_servers_toggle_hint {
             get {
                 return ResourceManager.GetString("settings-mcp_servers_toggle_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Mentions.
+        /// </summary>
+        public static string settings_mentions {
+            get {
+                return ResourceManager.GetString("settings_mentions", resourceCulture);
             }
         }
         

@@ -679,7 +679,7 @@
     <value>{0} result(s)</value>
   </data>
   <data name="fs-glob_searching" xml:space="preserve">
-    <value>Searching for {0}...</value>
+    <value>Searching for **{0}**...</value>
   </data>
   <data name="fs-glob_found_count" xml:space="preserve">
     <value>Found {0} item(s)...</value>

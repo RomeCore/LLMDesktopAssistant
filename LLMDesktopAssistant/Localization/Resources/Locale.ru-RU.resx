@@ -679,7 +679,7 @@
     <value>{0} результат(ов)</value>
   </data>
   <data name="fs-glob_searching" xml:space="preserve">
-    <value>Поиск {0}...</value>
+    <value>Поиск **{0}**...</value>
   </data>
   <data name="fs-glob_found_count" xml:space="preserve">
     <value>Найдено {0}...</value>

@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using LLMDesktopAssistant.Markdown;
 
 namespace LLMDesktopAssistant.Utils
 {
@@ -55,6 +56,11 @@ namespace LLMDesktopAssistant.Utils
 			str = Regex.Replace(str, @"\s", "-");
 
 			return str;
+		}
+
+		public static string MarkdownEscape(this string text)
+		{
+			return MarkdownEscaper.Escape(text) ?? string.Empty;
 		}
 	}
 }

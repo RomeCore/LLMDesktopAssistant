@@ -3,6 +3,7 @@ using System.Text;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
 using Microsoft.Extensions.FileSystemGlobbing;
@@ -59,7 +60,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			return new StreamingToolArgumentsAnalysisResult
 			{
 				StatusIcon = MaterialIconKind.FileSearch,
-				StatusTitle = pattern != null ? $"**{path}** → `{pattern.Replace("*", "\\*")}`" : $"**{path}**"
+				StatusTitle = pattern != null ? $"**{path}** → **{pattern.MarkdownEscape()}**" : $"**{path}**"
 			};
 		}
 
@@ -73,7 +74,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				new PreviewToolExecutionResult
 				{
 					StatusIcon = MaterialIconKind.FolderSearch,
-					StatusTitle = $"**{path}** → `{pattern.Replace("*", "\\*")}`",
+					StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}**",
 					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 					InterruptingSuccess = false,
 					InterruptingContent = $"Directory not found: {path}"
@@ -83,7 +84,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			return new PreviewToolExecutionResult
 			{
 				StatusIcon = MaterialIconKind.FolderSearch,
-				StatusTitle = $"**{path}** → **{pattern.Replace("*", "\\*")}**",
+				StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}**",
 				ExpectedBehaviour = ToolBehaviour.DirectoryRead |
 					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 			};
@@ -119,7 +120,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					try
 					{
 						result.StatusIcon = MaterialIconKind.FolderSearch;
-						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-glob_searching"), pattern.Replace("*", "\\*"));
+						result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}**";
 
 						var matcher = new Matcher();
 						matcher.AddInclude(pattern);
@@ -156,7 +157,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 									matchingFiles.Add($"[FILE] {displayPath} ({FileUtils.BytesToDisplaySize(metrics.Size)}, {lines}, {metrics.Modified:yyyy-MM-dd HH:mm})");
 
-									result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-glob_found_count"), matchingFiles.Count + matchingDirectories.Count);
+									result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("fs-glob_found_count", matchingFiles.Count + matchingDirectories.Count)}";
 
 									if (limit > 0 && matchingFiles.Count + matchingDirectories.Count >= limit)
 										break;
@@ -212,7 +213,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 									matchingDirectories.Add($"[DIR] {displayPath} ({items} items, {dirInfo.LastWriteTime:yyyy-MM-dd HH:mm})");
 
-									result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("fs-glob_found_count"), matchingFiles.Count + matchingDirectories.Count);
+									result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("fs-glob_found_count", matchingFiles.Count + matchingDirectories.Count)}";
 
 									if (limit > 0 && matchingFiles.Count + matchingDirectories.Count >= limit)
 										break;
@@ -246,14 +247,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 						if (total == 0)
 						{
-							sb.AppendLine(LocalizationManager.LocalizeStatic("fs-glob_no_matches"));
-							result.StatusIcon = Material.Icons.MaterialIconKind.FolderOpen;
-							result.StatusTitle = $"**{pattern.Replace("*", "\\*")}** *{string.Format(LocalizationManager.LocalizeStatic("fs-glob_results"), 0)}*";
+							sb.AppendLine("No matches found.");
+							result.StatusIcon = MaterialIconKind.FolderOpen;
+							result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("fs-glob_results", total)}";
 						}
 						else
 						{
-							result.StatusIcon = Material.Icons.MaterialIconKind.FolderMultiple;
-							result.StatusTitle = $"**{pattern.Replace("*", "\\*")}** *({string.Format(LocalizationManager.LocalizeStatic("fs-glob_results"), total)})*";
+							result.StatusIcon = MaterialIconKind.FolderMultiple;
+							result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("fs-glob_results", total)}";
 						}
 
 						result.ResultContent = sb.ToString();
