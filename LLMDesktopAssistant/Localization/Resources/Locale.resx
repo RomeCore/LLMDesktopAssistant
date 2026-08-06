@@ -1219,7 +1219,7 @@
     <value>Other agents will be visible and treated as user messages to this agent.</value>
   </data>
   <data name="settings_exposure_mode" xml:space="preserve">
-    <value>Exposure mode (how this agent appears to others)</value>
+    <value>Exposure mode</value>
   </data>
   <data name="settings_exposure_mode_hint" xml:space="preserve">
     <value>Controls what parts of this agent's messages are visible to other agents.</value>

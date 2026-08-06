@@ -1,47 +1,50 @@
+using LLMDesktopAssistant.SourceGenerators;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents
 {
 	/// <summary>
-	/// Describes an agent's reading settings.
+	/// Describes an agent's reading settings: the inheritable reading, exposure and context
+	/// groups, and the local agent ID filter.
 	/// </summary>
-	public class AgentReadSettings : AgentSettingsCategoryBase
+	[SettingsRoute(nameof(ChatAgentDescriptor.Read))]
+	public partial class AgentReadSettings : AgentSettingsCategoryBase
 	{
-		private AgentReadPermissions _readPermissions =
-			AgentReadPermissions.UserMessages |
-			AgentReadPermissions.UserAttachments |
-			AgentReadPermissions.OwnMessages |
-			AgentReadPermissions.OtherAgentMessages |
-			AgentReadPermissions.OtherAgentContent |
-			AgentReadPermissions.OtherAgentToolCalls |
-			AgentReadPermissions.OtherAgentAttachments |
-			AgentReadPermissions.MessagesWithToolCalls;
+		private AgentReadingSettings _reading = new();
 		/// <summary>
-		/// The permissions that determines what the agent can read.
+		/// Gets or sets the reading permissions group: what the agent can read.
 		/// </summary>
-		public AgentReadPermissions ReadPermissions
+		[InheritedChatAgentSetting]
+		public AgentReadingSettings Reading
 		{
-			get => _readPermissions;
-			set => SetProperty(ref _readPermissions, value);
+			get => _reading;
+			set => SetProperty(ref _reading, value);
 		}
 
-		private AgentExposureMode _exposureMode =
-			AgentExposureMode.Reasoning |
-			AgentExposureMode.Content |
-			AgentExposureMode.ToolCalls |
-			AgentExposureMode.Attachments |
-			AgentExposureMode.MessagesWithToolCalls;
+		private AgentExposureSettings _exposure = new();
 		/// <summary>
-		/// The exposure mode that determines what parts of this agent's messages
+		/// Gets or sets the exposure group: what parts of this agent's messages
 		/// are visible to other agents.
 		/// </summary>
-		public AgentExposureMode ExposureMode
+		[InheritedChatAgentSetting]
+		public AgentExposureSettings Exposure
 		{
-			get => _exposureMode;
-			set => SetProperty(ref _exposureMode, value);
+			get => _exposure;
+			set => SetProperty(ref _exposure, value);
 		}
 
-		private RangeObservableCollection<Guid> _agentIdsReadFilter = [];
+		private AgentContextSettings _context = new();
+		/// <summary>
+		/// Gets or sets the context group: visible rounds, context shields and summaries.
+		/// </summary>
+		[InheritedChatAgentSetting]
+		public AgentContextSettings Context
+		{
+			get => _context;
+			set => SetProperty(ref _context, value);
+		}
+
+		private readonly RangeObservableCollection<Guid> _agentIdsReadFilter = [];
 		/// <summary>
 		/// The list of agent IDs that the agent can read.
 		/// The behaviour of filter is controlled by <see cref="IsFilterWhiteList"/>.
@@ -62,36 +65,6 @@ namespace LLMDesktopAssistant.Agents
 		{
 			get => _isFilterWhiteList;
 			set => SetProperty(ref _isFilterWhiteList, value);
-		}
-
-		private int _maxVisibleRounds = 0;
-		/// <summary>
-		/// The maximum number of rounds that the agent can see in its context. If zero, there is no limit.
-		/// </summary>
-		public int MaxVisibleRounds
-		{
-			get => _maxVisibleRounds;
-			set => SetProperty(ref _maxVisibleRounds, value);
-		}
-
-		private bool _allowContextShields = true;
-		/// <summary>
-		/// Whether the agent can use context shields to prevent seeing messages after shields.
-		/// </summary>
-		public bool AllowContextShields
-		{
-			get => _allowContextShields;
-			set => SetProperty(ref _allowContextShields, value);
-		}
-
-		private bool _allowSummaries = true;
-		/// <summary>
-		/// Whether the agent is allowed to see summaries of messages in chat history and stop on them.
-		/// </summary>
-		public bool AllowSummaries
-		{
-			get => _allowSummaries;
-			set => SetProperty(ref _allowSummaries, value);
 		}
 	}
 }

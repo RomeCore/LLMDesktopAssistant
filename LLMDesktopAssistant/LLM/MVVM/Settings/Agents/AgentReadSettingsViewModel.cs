@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;
 
@@ -22,7 +24,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				if (SetProperty(ref _isEnabled, value))
 				{
-					_parent.ReadSettings.ReadPermissions = (_parent.ReadSettings.ReadPermissions & ~Permission) | (value ? Permission : 0);
+					_parent.EffectiveReading.ReadPermissions = (_parent.EffectiveReading.ReadPermissions & ~Permission) | (value ? Permission : 0);
 				}
 			}
 		}
@@ -52,7 +54,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				if (SetProperty(ref _isEnabled, value))
 				{
-					_parent.ReadSettings.ExposureMode = (_parent.ReadSettings.ExposureMode & ~Mode) | (value ? Mode : 0);
+					_parent.EffectiveExposure.ExposureMode = (_parent.EffectiveExposure.ExposureMode & ~Mode) | (value ? Mode : 0);
 				}
 			}
 		}
@@ -107,8 +109,69 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	{
 		private readonly ICollection<ChatAgentDescriptor> _chatAgents;
 		private readonly Guid _agentId;
+		private readonly ChatSettings _chatSettings;
 
+		/// <summary>
+		/// Gets the underlying agent read settings.
+		/// </summary>
 		public AgentReadSettings ReadSettings { get; }
+
+		/// <summary>
+		/// Gets the effective reading permissions group resolved by the current inheritance level.
+		/// </summary>
+		public AgentReadingSettings EffectiveReading => ReadSettings.GetEffectiveReading(_chatSettings);
+
+		/// <summary>
+		/// Gets the effective exposure group resolved by the current inheritance level.
+		/// </summary>
+		public AgentExposureSettings EffectiveExposure => ReadSettings.GetEffectiveExposure(_chatSettings);
+
+		/// <summary>
+		/// Gets the effective context group resolved by the current inheritance level.
+		/// </summary>
+		public AgentContextSettings EffectiveContext => ReadSettings.GetEffectiveContext(_chatSettings);
+
+		private InheritanceLevelItem _selectedReadingInheritance;
+		/// <summary>
+		/// Gets or sets the inheritance level for the reading group.
+		/// </summary>
+		public InheritanceLevelItem SelectedReadingInheritance
+		{
+			get => _selectedReadingInheritance;
+			set
+			{
+				if (SetProperty(ref _selectedReadingInheritance, value) && value != null)
+					ReadSettings.ReadingInheritance = value.Value;
+			}
+		}
+
+		private InheritanceLevelItem _selectedExposureInheritance;
+		/// <summary>
+		/// Gets or sets the inheritance level for the exposure group.
+		/// </summary>
+		public InheritanceLevelItem SelectedExposureInheritance
+		{
+			get => _selectedExposureInheritance;
+			set
+			{
+				if (SetProperty(ref _selectedExposureInheritance, value) && value != null)
+					ReadSettings.ExposureInheritance = value.Value;
+			}
+		}
+
+		private InheritanceLevelItem _selectedContextInheritance;
+		/// <summary>
+		/// Gets or sets the inheritance level for the context group.
+		/// </summary>
+		public InheritanceLevelItem SelectedContextInheritance
+		{
+			get => _selectedContextInheritance;
+			set
+			{
+				if (SetProperty(ref _selectedContextInheritance, value) && value != null)
+					ReadSettings.ContextInheritance = value.Value;
+			}
+		}
 
 		public ObservableCollection<ReadPermissionItem> ReadPermissionItems { get; } = [];
 		public ObservableCollection<ExposureModeItem> ExposureModeItems { get; } = [];
@@ -142,12 +205,26 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public ICommand SelectAllAgentsCommand { get; }
 		public ICommand DeselectAllAgentsCommand { get; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AgentReadSettingsViewModel"/> class.
+		/// </summary>
+		/// <param name="settings">The agent read settings to edit.</param>
+		/// <param name="chatAgents">The chat-local agent descriptors.</param>
+		/// <param name="agentId">The ID of the agent being edited.</param>
+		/// <param name="chatSettings">The chat settings used to resolve inherited settings.</param>
 		public AgentReadSettingsViewModel(AgentReadSettings settings,
-			ICollection<ChatAgentDescriptor> chatAgents, Guid agentId)
+			ICollection<ChatAgentDescriptor> chatAgents, Guid agentId, ChatSettings chatSettings)
 		{
 			ReadSettings = settings;
 			_chatAgents = chatAgents;
 			_agentId = agentId;
+			_chatSettings = chatSettings;
+
+			_selectedReadingInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.ReadingInheritance);
+			_selectedExposureInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.ExposureInheritance);
+			_selectedContextInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.ContextInheritance);
+
+			settings.PropertyChanged += ReadSettings_PropertyChanged;
 
 			InitializePermissions();
 			InitializeExposureMode();
@@ -157,11 +234,37 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			DeselectAllAgentsCommand = new RelayCommand(() => SetAllAgentsFilter(false));
 		}
 
+		private void ReadSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(AgentReadSettings.ReadingInheritance):
+					_selectedReadingInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == ReadSettings.ReadingInheritance);
+					RaisePropertyChanged(nameof(SelectedReadingInheritance));
+					RaisePropertyChanged(nameof(EffectiveReading));
+					InitializePermissions();
+					break;
+
+				case nameof(AgentReadSettings.ExposureInheritance):
+					_selectedExposureInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == ReadSettings.ExposureInheritance);
+					RaisePropertyChanged(nameof(SelectedExposureInheritance));
+					RaisePropertyChanged(nameof(EffectiveExposure));
+					InitializeExposureMode();
+					break;
+
+				case nameof(AgentReadSettings.ContextInheritance):
+					_selectedContextInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == ReadSettings.ContextInheritance);
+					RaisePropertyChanged(nameof(SelectedContextInheritance));
+					RaisePropertyChanged(nameof(EffectiveContext));
+					break;
+			}
+		}
+
 		private void InitializePermissions()
 		{
 			ReadPermissionItems.Clear();
 
-			var perms = ReadSettings.ReadPermissions;
+			var perms = EffectiveReading.ReadPermissions;
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.UserMessages,
 				LocalizationManager.LocalizeStatic("perm_user_messages"),
@@ -218,7 +321,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		{
 			ExposureModeItems.Clear();
 
-			var mode = ReadSettings.ExposureMode;
+			var mode = EffectiveExposure.ExposureMode;
 
 			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.Content,
 				LocalizationManager.LocalizeStatic("exposure_content"),

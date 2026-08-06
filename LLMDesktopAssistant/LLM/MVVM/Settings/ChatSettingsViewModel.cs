@@ -206,7 +206,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_read"),
 						MaterialIconKind.Eye,
 						new AgentReadSettingsViewModel(
-							descriptor.Read, Settings.Agents.ChatAgents, descriptor.Id)),
+							descriptor.Read, Settings.Agents.ChatAgents, descriptor.Id, Chat.Settings)),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_prompts"),
 						MaterialIconKind.Text,

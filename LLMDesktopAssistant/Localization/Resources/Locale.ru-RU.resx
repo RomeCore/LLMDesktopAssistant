@@ -1219,7 +1219,7 @@
     <value>Другие агенты будут идентифицироваться как пользователи для этого агента.</value>
   </data>
   <data name="settings_exposure_mode" xml:space="preserve">
-    <value>Режим видимости (как этот агент выглядит для других)</value>
+    <value>Режим видимости</value>
   </data>
   <data name="settings_exposure_mode_hint" xml:space="preserve">
     <value>Определяет, какие части сообщений этого агента видны другим агентам.</value>

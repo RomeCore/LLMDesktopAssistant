@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+			 xmlns:set="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentReadSettingsView"
@@ -13,10 +14,29 @@
 							Margin="8" Spacing="8">
 
 		<!-- ===================== Read Permissions ===================== -->
-		<TextBlock Text="{loc:Loc settings_read_permissions}"
-							 FontWeight="Bold"
-							 FontSize="{DynamicResource FontSizeL}"
-							 Margin="0,5,0,0"/>
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc settings_read_permissions}"
+								 FontWeight="Bold"
+								 FontSize="{DynamicResource FontSizeL}"
+								 VerticalAlignment="Center"
+								 Margin="0,5,0,0"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+								SelectedItem="{Binding SelectedReadingInheritance}"
+								VerticalAlignment="Center"
+								Margin="8,5,0,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
 
 		<TextBlock Text="{loc:Loc settings_read_permissions_hint}"
 							 Opacity="0.6"
@@ -45,10 +65,29 @@
 							 Margin="0,10"/>
 
 		<!-- ===================== Exposure Mode ===================== -->
-		<TextBlock Text="{loc:Loc settings_exposure_mode}"
-							 FontWeight="Bold"
-							 FontSize="{DynamicResource FontSizeL}"
-							 Margin="0,5,0,0"/>
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc settings_exposure_mode}"
+								 FontWeight="Bold"
+								 FontSize="{DynamicResource FontSizeL}"
+								 VerticalAlignment="Center"
+								 Margin="0,5,0,0"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+								SelectedItem="{Binding SelectedExposureInheritance}"
+								VerticalAlignment="Center"
+								Margin="8,5,0,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
 
 		<TextBlock Text="{loc:Loc settings_exposure_mode_hint}"
 							 Opacity="0.6"
@@ -69,6 +108,79 @@
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"
+							 Margin="0,10"/>
+
+		<!-- ===================== Context ===================== -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc settings_context}"
+								 FontWeight="Bold"
+								 FontSize="{DynamicResource FontSizeL}"
+								 VerticalAlignment="Center"
+								 Margin="0,5,0,0"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+								SelectedItem="{Binding SelectedContextInheritance}"
+								VerticalAlignment="Center"
+								Margin="8,5,0,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
+
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc settings_max_visible_rounds}"
+								 VerticalAlignment="Center"
+								 Margin="0,0,8,0"/>
+
+			<NumericUpDown Grid.Column="1"
+										 Value="{Binding EffectiveContext.MaxVisibleRounds, Mode=TwoWay}"
+										 Minimum="0"
+										 Maximum="999"
+										 Width="120"
+										 HorizontalAlignment="Left"/>
+		</Grid>
+			
+		<TextBlock Text="{loc:Loc settings_max_visible_rounds_hint}"
+							 Opacity="0.5"
+							 FontSize="11"
+							 Margin="24,0,0,4"/>
+
+		<CheckBox IsChecked="{Binding EffectiveContext.AllowContextShields, Mode=TwoWay}"
+							Content="{loc:Loc settings_allow_context_shields}"
+							Margin="0,2"/>
+		<TextBlock Text="{loc:Loc settings_allow_context_shields_hint}"
+							 Opacity="0.5"
+							 FontSize="11"
+							 Margin="24,0,0,4"
+							 TextWrapping="Wrap"/>
+
+		<CheckBox IsChecked="{Binding EffectiveContext.AllowSummaries, Mode=TwoWay}"
+							Content="{loc:Loc settings_allow_summaries}"
+							Margin="0,2"/>
+		<TextBlock Text="{loc:Loc settings_allow_summaries_hint}"
+							 Opacity="0.5"
+							 FontSize="11"
+							 Margin="24,0,0,4"
+							 TextWrapping="Wrap"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
@@ -156,60 +268,6 @@
 				</ItemsControl>
 			</ScrollViewer>
 		</Border>
-
-		<!-- Separator -->
-		<Rectangle Height="1"
-					  Fill="{DynamicResource DefaultForeground}"
-					  Opacity="0.2"
-					  Margin="0,10"/>
-
-		<!-- ===================== Context ===================== -->
-		<TextBlock Text="{loc:Loc settings_context}"
-							 FontWeight="Bold"
-							 FontSize="{DynamicResource FontSizeL}"
-							 Margin="0,5,0,0"/>
-
-		<Grid>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="*"/>
-			</Grid.ColumnDefinitions>
-
-			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc settings_max_visible_rounds}"
-								 VerticalAlignment="Center"
-								 Margin="0,0,8,0"/>
-
-			<NumericUpDown Grid.Column="1"
-										 Value="{Binding ReadSettings.MaxVisibleRounds, Mode=TwoWay}"
-										 Minimum="0"
-										 Maximum="999"
-										 Width="120"
-										 HorizontalAlignment="Left"/>
-		</Grid>
-			
-		<TextBlock Text="{loc:Loc settings_max_visible_rounds_hint}"
-							 Opacity="0.5"
-							 FontSize="11"
-							 Margin="24,0,0,4"/>
-
-		<CheckBox IsChecked="{Binding ReadSettings.AllowContextShields, Mode=TwoWay}"
-							Content="{loc:Loc settings_allow_context_shields}"
-							Margin="0,2"/>
-		<TextBlock Text="{loc:Loc settings_allow_context_shields_hint}"
-							 Opacity="0.5"
-							 FontSize="11"
-							 Margin="24,0,0,4"
-							 TextWrapping="Wrap"/>
-
-		<CheckBox IsChecked="{Binding ReadSettings.AllowSummaries, Mode=TwoWay}"
-							Content="{loc:Loc settings_allow_summaries}"
-							Margin="0,2"/>
-		<TextBlock Text="{loc:Loc settings_allow_summaries_hint}"
-							 Opacity="0.5"
-							 FontSize="11"
-							 Margin="24,0,0,4"
-							 TextWrapping="Wrap"/>
 
 	</StackPanel>
 
