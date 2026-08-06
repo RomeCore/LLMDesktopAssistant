@@ -212,6 +212,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 						MaterialIconKind.Text,
 						new AgentPromptSettingsViewModel(
 							descriptor.Prompts,
+							Chat.Settings,
 							promptRegistry,
 							Chat.Services.GetRequiredService<IChatPromptBuilder>(),
 							descriptor)),

@@ -28,18 +28,20 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			try
 			{
-				if (!chat.Settings.Summarization.AutoSummarizationEnabled)
+				var effectiveOptions = chat.Settings.Summarization.GetEffectiveOptions();
+
+				if (!effectiveOptions.AutoSummarizationEnabled)
 					return;
 
 				var totalTokensUsed = lastUsageMetadata.TotalTokens;
-				if (totalTokensUsed < chat.Settings.Summarization.GetEffectiveOptions().SummarizationTriggerTokens)
+				if (totalTokensUsed < effectiveOptions.SummarizationTriggerTokens)
 					return;
 
 				// If the summarization LLM is not available, do not summarize
 				if (summarizationLLM == null)
 					return;
 
-				var lastRoundsToIgnore = chat.Settings.Summarization.GetEffectiveOptions().IgnoreLastRounds;
+				var lastRoundsToIgnore = effectiveOptions.IgnoreLastRounds;
 
 				var rounds = GroupMessagesIntoRounds(chat.Messages.Select(m => m.Message).ToList());
 				var roundsToSummarize = rounds.Take(Math.Max(0, rounds.Count - lastRoundsToIgnore)).ToList();

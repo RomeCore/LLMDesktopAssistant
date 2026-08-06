@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Settings;
@@ -17,7 +19,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		{
 			_parent = parent;
 			Component = component;
-			_isSelected = parent.PromptSettings.PromptComponents.Contains(component.Id);
+			_isSelected = parent.EffectivePromptComponents.Contains(component.Id);
 		}
 
 		private bool _isSelected;
@@ -156,11 +158,122 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	[ViewModelFor(typeof(AgentPromptSettingsView))]
 	public class AgentPromptSettingsViewModel : ViewModelBase
 	{
+		/// <summary>
+		/// Gets the underlying agent prompt settings.
+		/// </summary>
 		public AgentPromptSettings PromptSettings { get; }
+
+		/// <summary>
+		/// Gets the prompt registry used to resolve components, personas and specializations.
+		/// </summary>
 		public PromptRegistry PromptRegistry { get; }
 
+		private readonly ChatSettings _chatSettings;
 		private readonly IChatPromptBuilder _promptBuilder;
 		private readonly ChatAgentDescriptor _agent;
+
+		/// <summary>
+		/// Gets the effective system prompt resolved by the current inheritance level.
+		/// </summary>
+		public string? EffectiveSystemPrompt
+		{
+			get => PromptSettings.GetEffectiveSystemPrompt(_chatSettings);
+			set
+			{
+				PromptSettings.SetEffectiveSystemPrompt(_chatSettings, value);
+				RegeneratePreview();
+			}
+		}
+
+		/// <summary>
+		/// Gets the effective prompt components resolved by the current inheritance level.
+		/// </summary>
+		public ICollection<Guid> EffectivePromptComponents => PromptSettings.GetEffectivePromptComponents(_chatSettings);
+
+		/// <summary>
+		/// Gets the effective persona group resolved by the current inheritance level.
+		/// </summary>
+		public PersonaSettings EffectivePersona => PromptSettings.GetEffectivePersona(_chatSettings);
+
+		/// <summary>
+		/// Gets the effective specialization group resolved by the current inheritance level.
+		/// </summary>
+		public SpecializationSettings EffectiveSpecialization => PromptSettings.GetEffectiveSpecialization(_chatSettings);
+
+		/// <summary>
+		/// Gets the effective behavior sliders group resolved by the current inheritance level.
+		/// </summary>
+		public SliderValuesSettings EffectiveSliders => PromptSettings.GetEffectiveSliders(_chatSettings);
+
+		private InheritanceLevelItem _selectedSystemPromptInheritance;
+		/// <summary>
+		/// Gets or sets the inheritance level for the system prompt group.
+		/// </summary>
+		public InheritanceLevelItem SelectedSystemPromptInheritance
+		{
+			get => _selectedSystemPromptInheritance;
+			set
+			{
+				if (SetProperty(ref _selectedSystemPromptInheritance, value) && value != null)
+					PromptSettings.SystemPromptInheritance = value.Value;
+			}
+		}
+
+		private InheritanceLevelItem _selectedComponentsInheritance;
+		/// <summary>
+		/// Gets or sets the inheritance level for the prompt components group.
+		/// </summary>
+		public InheritanceLevelItem SelectedComponentsInheritance
+		{
+			get => _selectedComponentsInheritance;
+			set
+			{
+				if (SetProperty(ref _selectedComponentsInheritance, value) && value != null)
+					PromptSettings.PromptComponentsInheritance = value.Value;
+			}
+		}
+
+		private InheritanceLevelItem _selectedPersonaInheritance;
+		/// <summary>
+		/// Gets or sets the inheritance level for the persona group.
+		/// </summary>
+		public InheritanceLevelItem SelectedPersonaInheritance
+		{
+			get => _selectedPersonaInheritance;
+			set
+			{
+				if (SetProperty(ref _selectedPersonaInheritance, value) && value != null)
+					PromptSettings.PersonaInheritance = value.Value;
+			}
+		}
+
+		private InheritanceLevelItem _selectedSpecializationInheritance;
+		/// <summary>
+		/// Gets or sets the inheritance level for the specialization group.
+		/// </summary>
+		public InheritanceLevelItem SelectedSpecializationInheritance
+		{
+			get => _selectedSpecializationInheritance;
+			set
+			{
+				if (SetProperty(ref _selectedSpecializationInheritance, value) && value != null)
+					PromptSettings.SpecializationInheritance = value.Value;
+			}
+		}
+
+		private InheritanceLevelItem _selectedSlidersInheritance;
+		/// <summary>
+		/// Gets or sets the inheritance level for the behavior sliders group.
+		/// </summary>
+		public InheritanceLevelItem SelectedSlidersInheritance
+		{
+			get => _selectedSlidersInheritance;
+			set
+			{
+				if (SetProperty(ref _selectedSlidersInheritance, value) && value != null)
+					PromptSettings.SlidersInheritance = value.Value;
+			}
+		}
 
 		public ObservableCollection<ComponentCategoryViewModel> ComponentCategories { get; } = new();
 		public ObservableCollection<PersonaItemViewModel> AvailablePersonas { get; } = new();
@@ -172,10 +285,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				if (SetProperty(ref _selectedPersona, value))
 				{
-					if (value != null)
-						PromptSettings.PersonaId = value.Persona.Id;
-					else
-						PromptSettings.PersonaId = null;
+					EffectivePersona.PersonaId = value?.Persona.Id;
 					RegeneratePreview();
 				}
 			}
@@ -192,10 +302,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				if (SetProperty(ref _selectedSpecialization, value))
 				{
-					if (value != null)
-						PromptSettings.SpecializationId = value.Specialization.Id;
-					else
-						PromptSettings.SpecializationId = null;
+					EffectiveSpecialization.SpecializationId = value?.Specialization.Id;
 					RegeneratePreview();
 				}
 			}
@@ -232,22 +339,108 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		public AgentPromptSettingsViewModel(
 			AgentPromptSettings settings,
+			ChatSettings chatSettings,
 			IPromptRegistry promptRegistry,
 			IChatPromptBuilder promptBuilder,
 			ChatAgentDescriptor agent)
 		{
 			PromptSettings = settings;
+			_chatSettings = chatSettings;
 			PromptRegistry = promptRegistry as PromptRegistry ?? throw new InvalidOperationException("Prompt registry must be of type PromptRegistry.");
 			_promptBuilder = promptBuilder;
 			_agent = agent;
+
+			_selectedSystemPromptInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SystemPromptInheritance);
+			_selectedComponentsInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.PromptComponentsInheritance);
+			_selectedPersonaInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.PersonaInheritance);
+			_selectedSpecializationInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SpecializationInheritance);
+			_selectedSlidersInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SlidersInheritance);
 
 			ClearPersonaCommand = new RelayCommand(() => SelectedPersona = null);
 			ClearSpecializationCommand = new RelayCommand(() => SelectedSpecialization = null);
 			TogglePreviewCommand = new RelayCommand(() => IsPreviewVisible = !IsPreviewVisible);
 
-			PromptSettings.PropertyChanged += (_, _) => RegeneratePreview();
+			settings.PropertyChanged += PromptSettings_PropertyChanged;
+			SubscribeEffectiveObjects();
 
 			Refresh();
+			RegeneratePreview();
+		}
+
+		private void PromptSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(AgentPromptSettings.SystemPromptInheritance):
+					_selectedSystemPromptInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.SystemPromptInheritance);
+					RaisePropertyChanged(nameof(SelectedSystemPromptInheritance));
+					RaisePropertyChanged(nameof(EffectiveSystemPrompt));
+					break;
+
+				case nameof(AgentPromptSettings.PromptComponentsInheritance):
+					_selectedComponentsInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.PromptComponentsInheritance);
+					RaisePropertyChanged(nameof(SelectedComponentsInheritance));
+					RaisePropertyChanged(nameof(EffectivePromptComponents));
+					Refresh();
+					break;
+
+				case nameof(AgentPromptSettings.PersonaInheritance):
+					_selectedPersonaInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.PersonaInheritance);
+					RaisePropertyChanged(nameof(SelectedPersonaInheritance));
+					RaisePropertyChanged(nameof(EffectivePersona));
+					SubscribeEffectiveObjects();
+					Refresh();
+					break;
+
+				case nameof(AgentPromptSettings.SpecializationInheritance):
+					_selectedSpecializationInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.SpecializationInheritance);
+					RaisePropertyChanged(nameof(SelectedSpecializationInheritance));
+					RaisePropertyChanged(nameof(EffectiveSpecialization));
+					SubscribeEffectiveObjects();
+					Refresh();
+					break;
+
+				case nameof(AgentPromptSettings.SlidersInheritance):
+					_selectedSlidersInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.SlidersInheritance);
+					RaisePropertyChanged(nameof(SelectedSlidersInheritance));
+					RaisePropertyChanged(nameof(EffectiveSliders));
+					Refresh();
+					break;
+			}
+
+			RegeneratePreview();
+		}
+
+		private PersonaSettings? _subscribedPersona;
+		private SpecializationSettings? _subscribedSpecialization;
+
+		/// <summary>
+		/// Subscribes to the currently effective persona and specialization objects so that
+		/// edits to inherited groups regenerate the preview live.
+		/// </summary>
+		private void SubscribeEffectiveObjects()
+		{
+			var persona = EffectivePersona;
+			if (!ReferenceEquals(_subscribedPersona, persona))
+			{
+				if (_subscribedPersona != null)
+					_subscribedPersona.PropertyChanged -= OnEffectiveGroupChanged;
+				_subscribedPersona = persona;
+				persona.PropertyChanged += OnEffectiveGroupChanged;
+			}
+
+			var specialization = EffectiveSpecialization;
+			if (!ReferenceEquals(_subscribedSpecialization, specialization))
+			{
+				if (_subscribedSpecialization != null)
+					_subscribedSpecialization.PropertyChanged -= OnEffectiveGroupChanged;
+				_subscribedSpecialization = specialization;
+				specialization.PropertyChanged += OnEffectiveGroupChanged;
+			}
+		}
+
+		private void OnEffectiveGroupChanged(object? sender, PropertyChangedEventArgs e)
+		{
 			RegeneratePreview();
 		}
 
@@ -298,9 +491,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			foreach (var persona in personasConfig.Personas)
 				AvailablePersonas.Add(new PersonaItemViewModel(this, persona));
 
-			if (PromptSettings.PersonaId.HasValue)
+			if (EffectivePersona.PersonaId.HasValue)
 			{
-				SelectedPersona = AvailablePersonas.FirstOrDefault(p => p.Persona.Id == PromptSettings.PersonaId.Value);
+				SelectedPersona = AvailablePersonas.FirstOrDefault(p => p.Persona.Id == EffectivePersona.PersonaId.Value);
 			}
 			else
 			{
@@ -315,9 +508,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			foreach (var specialization in specializationsConfig.Specializations)
 				AvailableSpecializations.Add(new SpecializationItemViewModel(this, specialization));
 
-			if (PromptSettings.SpecializationId.HasValue)
+			if (EffectiveSpecialization.SpecializationId.HasValue)
 			{
-				SelectedSpecialization = AvailableSpecializations.FirstOrDefault(s => s.Specialization.Id == PromptSettings.SpecializationId.Value);
+				SelectedSpecialization = AvailableSpecializations.FirstOrDefault(s => s.Specialization.Id == EffectiveSpecialization.SpecializationId.Value);
 			}
 			else
 			{
@@ -326,10 +519,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			// --- Sliders ---
 			SliderItems.Clear();
+			var sliderValues = EffectiveSliders.Items;
 			foreach (var (sliderId, slider) in PromptRegistry.BuiltinSliders)
 			{
 				// Find existing slider value or create new one with default (0)
-				var existingValue = PromptSettings.SliderValues.FirstOrDefault(sv => sv.SliderId == sliderId);
+				var existingValue = sliderValues.FirstOrDefault(sv => sv.SliderId == sliderId);
 				if (existingValue == null)
 				{
 					existingValue = new BehaviorSliderValue
@@ -337,7 +531,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 						SliderId = sliderId,
 						Value = slider.DefaultValue
 					};
-					PromptSettings.SliderValues.Add(existingValue);
+					sliderValues.Add(existingValue);
 				}
 
 				existingValue.PropertyChanged += (_, _) => RegeneratePreview();
@@ -372,7 +566,12 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 						selectedIds.Add(component.Component.Id);
 				}
 			}
-			PromptSettings.PromptComponents = selectedIds;
+
+			var effectiveComponents = EffectivePromptComponents;
+			effectiveComponents.Clear();
+			foreach (var id in selectedIds)
+				effectiveComponents.Add(id);
+
 			RegeneratePreview();
 		}
 	}

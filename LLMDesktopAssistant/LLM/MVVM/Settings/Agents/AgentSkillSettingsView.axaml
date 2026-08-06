@@ -1,40 +1,40 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
-			 xmlns:settings="using:LLMDesktopAssistant.LLM.Settings"
-			 xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
-			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 xmlns:ico="using:Material.Icons.Avalonia"
-			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentSkillSettingsView"
-			 x:DataType="local:AgentSkillSettingsViewModel">
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+						 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+						 xmlns:settings="using:LLMDesktopAssistant.LLM.Settings"
+						 xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentSkillSettingsView"
+						 x:DataType="local:AgentSkillSettingsViewModel">
 
 	<StackPanel Margin="8" Spacing="8">
 
 		<!-- Enable skills checkbox -->
 		<CheckBox IsChecked="{Binding SkillSettings.EnableSkills}"
-				  Content="{loc:Loc settings-skills_enable}"/>
+						  Content="{loc:Loc settings-skills_enable}"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
-				   Fill="{DynamicResource DefaultForeground}"
-				   Opacity="0.2"
-				   Margin="0,10"/>
+						   Fill="{DynamicResource DefaultForeground}"
+						   Opacity="0.2"
+						   Margin="0,10"/>
 		
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-					   Text="{loc:Loc settings-skills_skill_list}"
-					   FontSize="{DynamicResource FontSizeL}"
-					   FontWeight="Bold"
-					   VerticalAlignment="Center"/>
+							   Text="{loc:Loc settings-skills_skill_list}"
+							   FontSize="{DynamicResource FontSizeL}"
+							   FontWeight="Bold"
+							   VerticalAlignment="Center"/>
 
 			<ComboBox Grid.Column="1"
-					  ItemsSource="{x:Static settings:InheritanceLevelItem.AllAgent}"
-					  SelectedItem="{Binding SelectedSkillChangesInheritance}"
-					  VerticalAlignment="Center"
-					  MinWidth="120">
+							  ItemsSource="{x:Static settings:InheritanceLevelItem.AllAgent}"
+							  SelectedItem="{Binding SelectedSkillChangesInheritance}"
+							  VerticalAlignment="Center"
+							  MinWidth="120">
 
 				<ComboBox.ItemTemplate>
 					<DataTemplate x:DataType="settings:InheritanceLevelItem">
@@ -46,31 +46,31 @@
 		</Grid>
 
 		<TextBlock Text="{loc:Loc settings-skills_skill_list_hint}"
-				   Opacity="0.6"
-				   TextWrapping="Wrap"/>
+						   Opacity="0.6"
+						   TextWrapping="Wrap"/>
 
 		<!-- Column headers -->
 		<Grid ColumnDefinitions="Auto,*,Auto,50">
 			<TextBlock Grid.Column="0"
-					   Text="{loc:Loc enable}"
-					   FontWeight="Bold"
-					   Margin="5,0,0,0"
-					   MinWidth="60"/>
+							   Text="{loc:Loc enable}"
+							   FontWeight="Bold"
+							   Margin="5,0,0,0"
+							   MinWidth="60"/>
 
 			<TextBlock Grid.Column="1"
-					   Text="{loc:Loc name}"
-					   FontWeight="Bold"
-					   Margin="5,0,0,0"/>
+							   Text="{loc:Loc name}"
+							   FontWeight="Bold"
+							   Margin="5,0,0,0"/>
 
 			<TextBlock Grid.Column="2"
-					   Text="{loc:Loc settings-skills_injection_mode}"
-					   FontWeight="Bold"
-					   Margin="5,0,5,0"/>
+							   Text="{loc:Loc settings-skills_injection_mode}"
+							   FontWeight="Bold"
+							   Margin="5,0,5,0"/>
 
 			<TextBlock Grid.Column="3"
-					   Text="{loc:Loc reset}"
-					   FontWeight="Bold"
-					   Margin="5,0"/>
+							   Text="{loc:Loc reset}"
+							   FontWeight="Bold"
+							   Margin="5,0"/>
 		</Grid>
 
 		<!-- Skill items -->
@@ -79,10 +79,10 @@
 			<ItemsControl.ItemTemplate>
 				<DataTemplate x:DataType="local:SkillChangeItemViewModel">
 					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-							BorderThickness="1"
-							CornerRadius="4"
-							Padding="8"
-							Margin="0,0,0,8">
+									BorderThickness="1"
+									CornerRadius="4"
+									Padding="8"
+									Margin="0,0,0,8">
 						<Grid RowDefinitions="Auto,Auto">
 
 							<!-- Row 0: Enabled | Name | InjectionMode | Reset -->
@@ -92,9 +92,8 @@
 
 								<!-- Enabled checkbox -->
 								<CheckBox Grid.Column="0"
-										  IsChecked="{Binding Enabled, Mode=TwoWay}"
-										  HorizontalAlignment="Center"
-										  MinWidth="60"/>
+													IsChecked="{Binding Enabled, Mode=TwoWay}"
+													HorizontalAlignment="Center"/>
 
 								<!-- Name -->
 								<TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"
@@ -104,10 +103,10 @@
 
 								<!-- Injection Mode -->
 								<ComboBox Grid.Column="2"
-										  SelectedItem="{Binding InjectionMode, Mode=TwoWay}"
-										  ItemsSource="{Binding InjectionModeList}"
-										  MinWidth="140"
-										  Margin="5,0">
+												  SelectedItem="{Binding InjectionMode, Mode=TwoWay}"
+												  ItemsSource="{Binding InjectionModeList}"
+												  MinWidth="140"
+												  Margin="5,0">
 									<ComboBox.ItemTemplate>
 										<DataTemplate x:DataType="local:SkillInjectionModeItem">
 											<TextBlock Text="{Binding DisplayName}"/>
@@ -117,10 +116,10 @@
 
 								<!-- Reset button -->
 								<Button Grid.Column="3"
-										Command="{Binding ResetCommand}"
-										HorizontalAlignment="Center"
-										Classes="IconButton"
-										ToolTip.Tip="{loc:Loc reset}">
+												Command="{Binding ResetCommand}"
+												HorizontalAlignment="Center"
+												Classes="IconButton"
+												ToolTip.Tip="{loc:Loc reset}">
 									<ico:MaterialIcon Kind="Refresh"/>
 								</Button>
 							</Grid>
@@ -128,16 +127,16 @@
 							<!-- Row 1: Description + Path + Diagnostics -->
 							<StackPanel Grid.Row="1" Margin="28,4,0,0" Spacing="2">
 								<TextBlock Text="{Binding Description}"
-										   Opacity="0.7"
-										   FontSize="12"
-										   TextWrapping="Wrap"
-										   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+												   Opacity="0.7"
+												   FontSize="12"
+												   TextWrapping="Wrap"
+												   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 
 								<TextBlock Text="{Binding Path}"
-										   Opacity="0.4"
-										   FontSize="11"
-										   TextTrimming="CharacterEllipsis"
-										   IsVisible="{Binding Path, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+												   Opacity="0.4"
+												   FontSize="11"
+												   TextTrimming="CharacterEllipsis"
+												   IsVisible="{Binding Path, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 
 								<!-- Diagnostic flags -->
 								<ItemsControl ItemsSource="{Binding DiagnosticFlags}"
@@ -152,9 +151,9 @@
 										<DataTemplate x:DataType="messages:SkillDiagnosticFlagInfo">
 											<Panel ToolTip.Tip="{Binding DisplayName}">
 												<ico:MaterialIcon Kind="{Binding Icon}"
-																  Foreground="{Binding Color}"
-																  Background="Transparent"
-																  Width="14" Height="14"/>
+																				  Foreground="{Binding Color}"
+																				  Background="Transparent"
+																				  Width="14" Height="14"/>
 											</Panel>
 										</DataTemplate>
 									</ItemsControl.ItemTemplate>

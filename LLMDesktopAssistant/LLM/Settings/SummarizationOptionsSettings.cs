@@ -6,6 +6,17 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// </summary>
 	public class SummarizationOptionsSettings : NotifyPropertyChanged
 	{
+		private bool _summarizationEnabled = false;
+		/// <summary>
+		/// Whether auto-summarization is enabled.
+		/// Auto summarization triggers when total usage tokens exceeds a certain threshold (<see cref="SummarizationOptionsSettings.SummarizationTriggerTokens"/>).
+		/// </summary>
+		public bool AutoSummarizationEnabled
+		{
+			get => _summarizationEnabled;
+			set => SetProperty(ref _summarizationEnabled, value);
+		}
+
 		private int _summarizationTriggerTokens = 102400; // 100k tokens by default
 		/// <summary>
 		/// The number of tokens that must be reached before auto-summarization is triggered.

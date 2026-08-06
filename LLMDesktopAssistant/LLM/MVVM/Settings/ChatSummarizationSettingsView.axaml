@@ -43,7 +43,7 @@
 				   Margin="0,0,0,8"/>
 
 		<CheckBox Content="{loc:Loc settings-summarization_enabled}"
-				  IsChecked="{Binding SummarizationSettings.AutoSummarizationEnabled, Mode=TwoWay}"/>
+						  IsChecked="{Binding EffectiveOptions.AutoSummarizationEnabled, Mode=TwoWay}"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"

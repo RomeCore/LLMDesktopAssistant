@@ -163,6 +163,108 @@ public class InheritedSettingsGeneratorTests
 	}
 
 	[Fact]
+	public void GeneratesInheritanceMembers_ForGroupObjectProperties()
+	{
+		const string source = """
+			namespace LLMDesktopAssistant
+			{
+				public abstract class NotifyPropertyChanged : System.ComponentModel.INotifyPropertyChanged
+				{
+					public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged = delegate { };
+
+					protected bool SetProperty<T>(ref T field, T value)
+					{
+						if (System.Collections.Generic.EqualityComparer<T>.Default.Equals(field, value))
+							return false;
+						field = value;
+						PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(null));
+						return true;
+					}
+
+					protected void RaisePropertyChanged(string? propertyName)
+						=> PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+				}
+			}
+
+			namespace LLMDesktopAssistant.Agents
+			{
+				public class ChatAgentDescriptor
+				{
+					public AgentPromptSettings Prompts { get; set; } = new();
+				}
+
+				public class PersonaSettings : LLMDesktopAssistant.NotifyPropertyChanged
+				{
+					private string? _nickname;
+
+					public string? Nickname
+					{
+						get => _nickname;
+						set => SetProperty(ref _nickname, value);
+					}
+				}
+
+				[LLMDesktopAssistant.SourceGenerators.SettingsRoute(nameof(ChatAgentDescriptor.Prompts))]
+				public partial class AgentPromptSettings : LLMDesktopAssistant.NotifyPropertyChanged
+				{
+					private PersonaSettings _persona = new();
+
+					[LLMDesktopAssistant.SourceGenerators.InheritedChatAgentSetting]
+					public PersonaSettings Persona
+					{
+						get => _persona;
+						set => SetProperty(ref _persona, value);
+					}
+				}
+			}
+
+			namespace LLMDesktopAssistant.LLM.Settings
+			{
+				public enum ChatSettingsInheritanceLevel
+				{
+					Application,
+					Profile,
+					Agent
+				}
+
+				public class ChatSettings : LLMDesktopAssistant.NotifyPropertyChanged
+				{
+					public LLMDesktopAssistant.Agents.ChatAgentDescriptor InheritedAgentSettings { get; set; } = new();
+				}
+			}
+
+			namespace LLMDesktopAssistant.Settings.Application
+			{
+				public class ApplicationSettings : LLMDesktopAssistant.NotifyPropertyChanged
+				{
+					public LLMDesktopAssistant.LLM.Settings.ChatSettings InheritedChatSettings { get; set; } = new();
+				}
+			}
+
+			namespace LLMDesktopAssistant.Settings
+			{
+				public static class SettingsManager
+				{
+					public static T Get<T>() where T : new() => new();
+				}
+			}
+			""";
+
+		var (runResult, outputCompilation) = RunGenerator(source);
+		var generated = string.Join("\n", runResult.GeneratedTrees.Select(t => t.ToString()));
+
+		Assert.Contains("PersonaInheritance", generated);
+		Assert.Contains("GetEffectivePersona", generated);
+		Assert.Contains("SetEffectivePersona", generated);
+		Assert.Contains("chatSettings.InheritedAgentSettings.Prompts.Persona", generated);
+		Assert.Contains("appSettings.InheritedChatSettings.InheritedAgentSettings.Prompts.Persona", generated);
+		Assert.Contains("global::LLMDesktopAssistant.Agents.PersonaSettings GetEffectivePersona", generated);
+
+		var errors = outputCompilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
+		Assert.True(errors.Count == 0, string.Join("\n", errors));
+	}
+
+	[Fact]
 	public void ReportsDiagnostic_WhenClassIsNotPartial()
 	{
 		const string source = """

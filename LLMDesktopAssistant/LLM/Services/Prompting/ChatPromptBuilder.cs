@@ -148,12 +148,18 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				expander.ExpandPromptContext(generalContext);
 			var componentsContext = generalContext.ToDictionary(); // Clone
 
-			generalContext["prompt"] = promptSettings.SystemPrompt;
-			generalContext["components"] = promptSettings.PromptComponents
+			var effectiveSystemPrompt = promptSettings.GetEffectiveSystemPrompt(chat.Settings);
+			var effectiveComponents = promptSettings.GetEffectivePromptComponents(chat.Settings);
+			var effectiveSliders = promptSettings.GetEffectiveSliders(chat.Settings);
+			var effectivePersona = promptSettings.GetEffectivePersona(chat.Settings);
+			var effectiveSpecialization = promptSettings.GetEffectiveSpecialization(chat.Settings);
+
+			generalContext["prompt"] = effectiveSystemPrompt;
+			generalContext["components"] = effectiveComponents
 				.Select(id => promptRegistry.GetComponent(id)?.Template.Template.Render(componentsContext))
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
-			generalContext["sliders"] = promptSettings.SliderValues.Select(s =>
+			generalContext["sliders"] = effectiveSliders.Items.Select(s =>
 				{
 					var sliderTemplate = promptRegistry.GetSlider(s.SliderId)?.Template.Template;
 					var sliderContext = new
@@ -164,13 +170,13 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				})
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
-			generalContext["assistantNickname"] = promptSettings.Nickname;
-			generalContext["specialization"] = promptSettings.UseCustomSpecialization ?
-				promptSettings.CustomSpecialization :
-				(promptSettings.SpecializationId != null ? promptRegistry.GetSpecialization(promptSettings.SpecializationId.Value)?.Template.Template.Render(componentsContext) : null);
-			generalContext["persona"] = promptSettings.UseCustomPersona ?
-				promptSettings.CustomPersona :
-				(promptSettings.PersonaId != null ? promptRegistry.GetPersona(promptSettings.PersonaId.Value)?.Template.Template.Render(componentsContext) : null);
+			generalContext["assistantNickname"] = effectivePersona.Nickname;
+			generalContext["specialization"] = effectiveSpecialization.UseCustomSpecialization ?
+				effectiveSpecialization.CustomSpecialization :
+				(effectiveSpecialization.SpecializationId != null ? promptRegistry.GetSpecialization(effectiveSpecialization.SpecializationId.Value)?.Template.Template.Render(componentsContext) : null);
+			generalContext["persona"] = effectivePersona.UseCustomPersona ?
+				effectivePersona.CustomPersona :
+				(effectivePersona.PersonaId != null ? promptRegistry.GetPersona(effectivePersona.PersonaId.Value)?.Template.Template.Render(componentsContext) : null);
 			generalContext["skills"] = skillsetBuilder.GetSkillsForAgent(agent).Select(s => new
 			{
 				name = s.Name,
