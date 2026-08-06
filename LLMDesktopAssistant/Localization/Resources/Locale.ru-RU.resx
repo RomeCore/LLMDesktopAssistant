@@ -1059,6 +1059,10 @@
   <data name="stage_type_random" xml:space="preserve">
     <value>Случайный</value>
   </data>
+  <data name="settings_mentions" xml:space="preserve">
+    <value>Упоминания</value>
+  </data>
+
   <data name="settings_can_be_mentioned" xml:space="preserve">
     <value>Можно упомянуть</value>
   </data>

@@ -197,7 +197,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				{
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_execution"),
 						MaterialIconKind.Play,
-						new AgentExecutionConditionsSettingsViewModel(descriptor.ExecutionConditions)),
+						new AgentExecutionConditionsSettingsViewModel(descriptor.ExecutionConditions, Chat.Settings)),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_llm_properties"),
 						MaterialIconKind.Tune,

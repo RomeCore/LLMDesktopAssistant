@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+			 xmlns:set="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentExecutionConditionsSettingsView"
 			 x:DataType="local:AgentExecutionConditionsSettingsViewModel">
@@ -11,8 +12,36 @@
 	<StackPanel Orientation="Vertical"
 							Margin="8" Spacing="8">
 
+		<!-- ============================================================ -->
+		<!-- MENTIONS -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+
+			<TextBlock Grid.Column="0"
+						  Text="{loc:Loc settings_mentions}"
+						  FontWeight="Bold"
+						  FontSize="{DynamicResource FontSizeL}"
+						  VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedMentionInheritance}"
+						  VerticalAlignment="Center"
+						  Margin="0,0,8,0"
+						  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
+
 		<!-- Can be mentioned -->
-		<CheckBox IsChecked="{Binding ExecutionConditionsSettings.CanBeMentioned, Mode=TwoWay}"
+		<CheckBox IsChecked="{Binding EffectiveMention.CanBeMentioned, Mode=TwoWay}"
 					Content="{loc:Loc settings_can_be_mentioned}"/>
 
 		<TextBlock Text="{loc:Loc settings_can_be_mentioned_hint}"
@@ -26,7 +55,7 @@
 					  Margin="0,10"/>
 
 		<!-- Can mention others -->
-		<CheckBox IsChecked="{Binding ExecutionConditionsSettings.CanMentionOthers, Mode=TwoWay}"
+		<CheckBox IsChecked="{Binding EffectiveMention.CanMentionOthers, Mode=TwoWay}"
 					Content="{loc:Loc settings_can_mention_others}"/>
 
 		<TextBlock Text="{loc:Loc settings_can_mention_others_hint}"

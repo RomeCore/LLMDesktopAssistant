@@ -1,28 +1,25 @@
-﻿namespace LLMDesktopAssistant.Agents
+using LLMDesktopAssistant.SourceGenerators;
+
+namespace LLMDesktopAssistant.Agents
 {
 	/// <summary>
 	/// Describes an agent execution conditions settings.
+	/// The mention group is resolved through its effective (inherited) scope, selected via
+	/// the inheritance level combo box in the view.
 	/// </summary>
-	public class AgentExecutionConditionsSettings : AgentSettingsCategoryBase
+	[SettingsRoute(nameof(ChatAgentDescriptor.ExecutionConditions))]
+	public partial class AgentExecutionConditionsSettings : AgentSettingsCategoryBase
 	{
-		private bool _canBeMentioned = true;
+		private MentionSettings _mention = new();
 		/// <summary>
-		/// Whether the agent can be mentioned by other agents and users, causing the agent to execute.
+		/// Gets or sets the mention group of the agent: whether the agent can be mentioned
+		/// by others and can mention other agents.
 		/// </summary>
-		public bool CanBeMentioned
+		[InheritedChatAgentSetting]
+		public MentionSettings Mention
 		{
-			get => _canBeMentioned;
-			set => SetProperty(ref _canBeMentioned, value);
-		}
-
-		private bool _canMentionOthers = true;
-		/// <summary>
-		/// Whether the agent can mention other agents, causing them to be executed.
-		/// </summary>
-		public bool CanMentionOthers
-		{
-			get => _canMentionOthers;
-			set => SetProperty(ref _canMentionOthers, value);
+			get => _mention;
+			set => SetProperty(ref _mention, value);
 		}
 	}
 }
