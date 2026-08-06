@@ -1,6 +1,7 @@
 using LiteDB;
 using LLMDesktopAssistant.Data.UsageModels;
 using LLMDesktopAssistant.Services;
+using Serilog;
 
 namespace LLMDesktopAssistant.Data
 {
@@ -15,6 +16,28 @@ namespace LLMDesktopAssistant.Data
 		public UsageStatsCollector(UsageDatabase database)
 		{
 			_database = database ?? throw new ArgumentNullException(nameof(database));
+			LogUsageStatistics();
+		}
+
+		/// <summary>
+		/// Logs a brief summary of the accumulated usage statistics at startup.
+		/// </summary>
+		private void LogUsageStatistics()
+		{
+			try
+			{
+				var usage = GetStatistics();
+				Log.Information(
+					"Usage statistics: {Requests} requests ({Failed} failed), {InputTokens:N0} input, {OutputTokens:N0} output, {CacheHitTokens:N0} cache hit, {CacheMissTokens:N0} cache miss. First request: {FirstRequest}, last request: {LastRequest}",
+					usage.TotalRequests, usage.FailedRequests, usage.TotalInputTokens, usage.TotalOutputTokens,
+					usage.TotalCacheHitTokens, usage.TotalCacheMissTokens,
+					usage.FirstRequestTime?.ToString("yyyy-MM-dd HH:mm") ?? "n/a",
+					usage.LastRequestTime?.ToString("yyyy-MM-dd HH:mm") ?? "n/a");
+			}
+			catch (Exception ex)
+			{
+				Log.Warning(ex, "Failed to log usage statistics.");
+			}
 		}
 
 		public void RecordUsage(
@@ -63,10 +86,10 @@ namespace LLMDesktopAssistant.Data
 				TotalRequests = records.Count,
 				SuccessfulRequests = records.Count(r => r.Success),
 				FailedRequests = records.Count(r => !r.Success),
-				TotalInputTokens = records.Sum(r => r.InputTokens),
-				TotalOutputTokens = records.Sum(r => r.OutputTokens),
-				TotalCacheHitTokens = records.Sum(r => r.CacheHitTokens),
-				TotalCacheMissTokens = records.Sum(r => r.CacheMissTokens),
+				TotalInputTokens = records.Sum(r => (long)r.InputTokens),
+				TotalOutputTokens = records.Sum(r => (long)r.OutputTokens),
+				TotalCacheHitTokens = records.Sum(r => (long)r.CacheHitTokens),
+				TotalCacheMissTokens = records.Sum(r => (long)r.CacheMissTokens),
 				AverageDurationMs = records.Any() ? records.Average(r => r.DurationMs) : 0,
 				FirstRequestTime = records.Any() ? records.Min(r => r.Timestamp) : null,
 				LastRequestTime = records.Any() ? records.Max(r => r.Timestamp) : null
@@ -82,10 +105,10 @@ namespace LLMDesktopAssistant.Data
 					TotalRequests = modelRecords.Count,
 					SuccessfulRequests = modelRecords.Count(r => r.Success),
 					FailedRequests = modelRecords.Count(r => !r.Success),
-					TotalInputTokens = modelRecords.Sum(r => r.InputTokens),
-					TotalOutputTokens = modelRecords.Sum(r => r.OutputTokens),
-					TotalCacheHitTokens = modelRecords.Sum(r => r.CacheHitTokens),
-					TotalCacheMissTokens = modelRecords.Sum(r => r.CacheMissTokens),
+					TotalInputTokens = modelRecords.Sum(r => (long)r.InputTokens),
+					TotalOutputTokens = modelRecords.Sum(r => (long)r.OutputTokens),
+					TotalCacheHitTokens = modelRecords.Sum(r => (long)r.CacheHitTokens),
+					TotalCacheMissTokens = modelRecords.Sum(r => (long)r.CacheMissTokens),
 					AverageDurationMs = modelRecords.Any() ? modelRecords.Average(r => r.DurationMs) : 0
 				};
 			}

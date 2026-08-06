@@ -19,7 +19,6 @@ namespace LLMDesktopAssistant.LLM.Services
 			services.AddSingleton<IChatManagementService, ChatManagementService>();
 			services.AddSingleton<IDocumentReadingService, DocumentReadingService>();
 			services.AddSingleton<IMessageTokenSerializationSchema>(MessageTokenSerializationSchema.Default);
-			services.AddSingleton<IUsageStatsCollector, UsageStatsCollector>();
 
 			services.AddScoped<Chat>();
 

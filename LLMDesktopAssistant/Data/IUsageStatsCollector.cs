@@ -48,10 +48,10 @@ namespace LLMDesktopAssistant.Data
 		public int TotalRequests { get; set; }
 		public int SuccessfulRequests { get; set; }
 		public int FailedRequests { get; set; }
-		public int TotalInputTokens { get; set; }
-		public int TotalOutputTokens { get; set; }
-		public int TotalCacheHitTokens { get; set; }
-		public int TotalCacheMissTokens { get; set; }
+		public long TotalInputTokens { get; set; }
+		public long TotalOutputTokens { get; set; }
+		public long TotalCacheHitTokens { get; set; }
+		public long TotalCacheMissTokens { get; set; }
 		public double AverageDurationMs { get; set; }
 		public DateTime? FirstRequestTime { get; set; }
 		public DateTime? LastRequestTime { get; set; }
@@ -66,10 +66,10 @@ namespace LLMDesktopAssistant.Data
 		public int TotalRequests { get; set; }
 		public int SuccessfulRequests { get; set; }
 		public int FailedRequests { get; set; }
-		public int TotalInputTokens { get; set; }
-		public int TotalOutputTokens { get; set; }
-		public int TotalCacheHitTokens { get; set; }
-		public int TotalCacheMissTokens { get; set; }
+		public long TotalInputTokens { get; set; }
+		public long TotalOutputTokens { get; set; }
+		public long TotalCacheHitTokens { get; set; }
+		public long TotalCacheMissTokens { get; set; }
 		public double AverageDurationMs { get; set; }
 	}
 }
