@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	/// so the UI and database are updated automatically through the existing infrastructure.
 	/// </summary>
 	[ChatService(typeof(IChatNamingService))]
+	[ChatService(typeof(IChatExecutionHook))]
 	public class ChatNamingService(
 		Chat chat,
 		IAgentTaskExecutor agentTaskExecutor,
@@ -24,9 +25,15 @@ namespace LLMDesktopAssistant.LLM.Services
 		IChatPromptBuilder promptBuilder,
 		TemplateLibrary templates,
 		MessagesInterface messagesInterface
-		) : IChatNamingService
+		) : ChatExecutionHookBase, IChatNamingService
 	{
 		private readonly SemaphoreSlim _semaphore = new(1, 1);
+
+		/// <inheritdoc />
+		public override Task OnExecutionFinishedAsync(ChatExecutionHookContext context, CancellationToken cancellationToken = default)
+		{
+			return TryNameChatAsync(cancellationToken);
+		}
 
 		public async Task TryNameChatAsync(CancellationToken cancellationToken = default)
 		{

@@ -32,8 +32,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IModelManager modelManager,
 		IToolExecutionService toolExecutor,
 		ILLMPropertiesBuilder propertiesBuilder,
-		IChatSummarizationService summarizer,
-		IChatNamingService namingService,
+		IEnumerable<IChatExecutionHook> executionHooks,
 		IToolsetCacheService toolsetCache,
 		IMCPManagementService mcpManager,
 		IUsageStatsCollector usageStatsCollector,
@@ -188,6 +187,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				List<Task> toolExecutionTasks = [];
 				var lockObj = new object();
+				int cycle = 0;
 
 				while (true)
 				{
@@ -321,7 +321,15 @@ namespace LLMDesktopAssistant.LLM.Services
 										success: true);
 								}
 
-								await summarizer.TrySummarizeChatAsync(usageMetadata, cancellationToken);
+								await RunResponseCompletedHooksAsync(new ChatExecutionHookContext
+								{
+									Chat = chat,
+									Agent = agent,
+									Response = domainResponseMessage,
+									UsageMetadata = usageMetadata,
+									HasToolCalls = toolExecutionTasks.Count > 0,
+									Cycle = cycle
+								}, cancellationToken);
 							}
 							else
 							{
@@ -375,9 +383,15 @@ namespace LLMDesktopAssistant.LLM.Services
 						}
 						finally
 						{
-							// Auto-name the chat if it still has a default title
+							// Invoke execution-finished hooks (e.g. auto-naming) fire-and-forget
 							if (toolExecutionTasks.Count == 0)
-								_ = namingService.TryNameChatAsync(cancellationToken);
+								_ = RunExecutionFinishedHooksAsync(new ChatExecutionHookContext
+								{
+									Chat = chat,
+									Agent = agent,
+									Response = domainResponseMessage,
+									Cycle = cycle
+								}, cancellationToken);
 
 							completionSource.Complete();
 							cancellationToken.ThrowIfCancellationRequested();
@@ -386,6 +400,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 					if (toolExecutionTasks.Count == 0)
 						break;
+
+					cycle++;
 
 					timeRequested = DateTime.Now;
 					timeFirstToken = null;
@@ -425,6 +441,55 @@ namespace LLMDesktopAssistant.LLM.Services
 				chat.StatusIcon = MaterialIconKind.ChatProcessing;
 				chat.StatusText = null;
 			}
+		}
+
+		/// <summary>
+		/// Invokes <see cref="IChatExecutionHook.OnResponseCompletedAsync"/> on all registered
+		/// hooks in ascending <see cref="IChatExecutionHook.Order"/>, awaiting each one.
+		/// Failures are logged and do not propagate to the execution pipeline.
+		/// </summary>
+		/// <param name="context">The context of the completed response cycle.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		private async Task RunResponseCompletedHooksAsync(ChatExecutionHookContext context, CancellationToken cancellationToken)
+		{
+			foreach (var hook in executionHooks.OrderBy(h => h.Order))
+			{
+				try
+				{
+					await hook.OnResponseCompletedAsync(context, cancellationToken);
+				}
+				catch (OperationCanceledException)
+				{
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Hook {Hook} failed in OnResponseCompleted: {Error}", hook.GetType().Name, ex.Message);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Invokes <see cref="IChatExecutionHook.OnExecutionFinishedAsync"/> on all registered
+		/// hooks in ascending <see cref="IChatExecutionHook.Order"/> without awaiting them
+		/// (fire-and-forget). Failures are logged and do not propagate to the execution pipeline.
+		/// </summary>
+		/// <param name="context">The context of the finished execution.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		private Task RunExecutionFinishedHooksAsync(ChatExecutionHookContext context, CancellationToken cancellationToken)
+		{
+			foreach (var hook in executionHooks.OrderBy(h => h.Order))
+			{
+				try
+				{
+					_ = hook.OnExecutionFinishedAsync(context, cancellationToken);
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Hook {Hook} failed in OnExecutionFinished: {Error}", hook.GetType().Name, ex.Message);
+				}
+			}
+
+			return Task.CompletedTask;
 		}
 
 		private void RecordFailedUsage(LLModel llm, DateTime timeRequested, string errorMessage)

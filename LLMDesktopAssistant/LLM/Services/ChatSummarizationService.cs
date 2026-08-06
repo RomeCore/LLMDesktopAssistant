@@ -14,14 +14,25 @@ using Serilog;
 namespace LLMDesktopAssistant.LLM.Services
 {
 	[ChatService(typeof(IChatSummarizationService))]
+	[ChatService(typeof(IChatExecutionHook))]
 	public class ChatSummarizationService(
 		Chat chat,
 		IChatPromptBuilder promptBuilder,
 		TemplateLibrary templates,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager
-		) : IChatSummarizationService
+		) : ChatExecutionHookBase, IChatSummarizationService
 	{
+		/// <inheritdoc />
+		public override Task OnResponseCompletedAsync(ChatExecutionHookContext context, CancellationToken cancellationToken = default)
+		{
+			return context.UsageMetadata != null
+				? TrySummarizeChatAsync(context.UsageMetadata, cancellationToken)
+				: Task.CompletedTask;
+		}
+
+		/// <inheritdoc />
+		public override int Order => 10;
 		public async Task TrySummarizeChatAsync(IUsageMetadata lastUsageMetadata, CancellationToken cancellationToken = default)
 		{
 			var summarizationLLM = modelManager.TryGetModel(chat.Settings.Summarization.GetEffectiveOptions().SummarizerModel);
