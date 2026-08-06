@@ -33,6 +33,8 @@ public class DirectSettingsAccessAnalyzerTests
 
 				public void Write(Settings s) => s.Value = "x"; // DASSW001
 
+				public string NameOfRead(Settings s) => nameof(s.Value); // compile-time name -> ok
+
 				public string Plain(PlainSettings s) => s.Value; // no accessor -> ok
 			}
 
@@ -110,6 +112,34 @@ public class DirectSettingsAccessAnalyzerTests
 				public class Consumer
 				{
 					public string Read(Settings s) => s.GetEffectiveValue();
+				}
+			}
+			""";
+
+		var diagnostics = RunAnalyzer(source)
+			.Where(d => d.Id == DirectSettingsAccessAnalyzer.DiagnosticId);
+
+		Assert.Empty(diagnostics);
+	}
+
+	[Fact]
+	public void NoDiagnostics_ForNameOfReferences()
+	{
+		const string source = """
+			namespace TestNamespace
+			{
+				public class Settings
+				{
+					public string Value { get; set; } = string.Empty;
+
+					public string GetEffectiveValue() => Value;
+				}
+
+				public class Consumer
+				{
+					public string NameOfRead(Settings s) => nameof(s.Value);
+					public string NameOfTypeRead(Settings s) => nameof(Settings.Value);
+					public void NameOfWrite(Settings s) { var _ = nameof(s.Value); }
 				}
 			}
 			""";

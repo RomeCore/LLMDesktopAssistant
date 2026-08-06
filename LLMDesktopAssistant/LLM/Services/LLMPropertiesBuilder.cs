@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Services.Agents;
+using LLMDesktopAssistant.LLM.Settings;
 using RCLargeLanguageModels.Completions;
 using RCLargeLanguageModels.Completions.Properties;
 
@@ -9,18 +10,19 @@ namespace LLMDesktopAssistant.LLM.Services
 	[ChatService(typeof(ILLMPropertiesBuilder))]
 	public class LLMPropertiesBuilder() : ILLMPropertiesBuilder
 	{
-		public IEnumerable<CompletionProperty> BuildProperties(ChatAgentDescriptor agent)
+		/// <inheritdoc/>
+		public IEnumerable<CompletionProperty> BuildProperties(ChatAgentDescriptor agent, ChatSettings chatSettings)
 		{
 			var result = new List<CompletionProperty>();
-			var properties = agent.Generation;
 
-			if (properties.EnableReasoningSettings)
+			var reasoning = agent.Generation.GetEffectiveReasoning(chatSettings);
+			if (reasoning.EnableReasoningSettings)
 			{
-				if (properties.ReasoningSettings == ReasoningSettings.Disabled)
+				if (reasoning.ReasoningSettings == ReasoningSettings.Disabled)
 					result.Add(new ReasoningProperty(false));
 
-				else if (properties.ReasoningSettings != ReasoningSettings.Default)
-					result.Add(new ReasoningProperty(properties.ReasoningSettings switch
+				else if (reasoning.ReasoningSettings != ReasoningSettings.Default)
+					result.Add(new ReasoningProperty(reasoning.ReasoningSettings switch
 					{
 						ReasoningSettings.None => ReasoningEffort.None,
 						ReasoningSettings.Minimal => ReasoningEffort.Minimal,
@@ -33,17 +35,19 @@ namespace LLMDesktopAssistant.LLM.Services
 					}));
 			}
 
-			if (properties.EnableTemperature)
+			var temperature = agent.Generation.GetEffectiveTemperature(chatSettings);
+			if (temperature.EnableTemperature)
 			{
-				result.Add(new TemperatureProperty(properties.Temperature / 2.0f));
+				result.Add(new TemperatureProperty(temperature.Temperature / 2.0f));
 			}
 
-			if (properties.EnableMaxTokens)
+			var maxTokens = agent.Generation.GetEffectiveMaxTokens(chatSettings);
+			if (maxTokens.EnableMaxTokens)
 			{
-				result.Add(new MaxTokensProperty(properties.MaxTokens));
+				result.Add(new MaxTokensProperty(maxTokens.MaxTokens));
 			}
 
-			foreach (var parameter in properties.AdditionalParameters)
+			foreach (var parameter in agent.Generation.GetEffectiveAdditionalParameters(chatSettings))
 			{
 				if (!parameter.Enabled)
 					continue;

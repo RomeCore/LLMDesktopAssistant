@@ -122,9 +122,9 @@ namespace LLMDesktopAssistant.LLM.Services
 				LLModel llm;
 				try
 				{
-					var settings = agent.Generation;
-					var modelName = settings.EnableCustomModel && !string.IsNullOrEmpty(settings.Model)
-						? settings.Model
+					var customModel = agent.Generation.GetEffectiveCustomModel(chat.Settings);
+					var modelName = customModel.EnableCustomModel && !string.IsNullOrEmpty(customModel.Model)
+						? customModel.Model
 						: chat.Settings.Models.GetEffectiveSelection().ChatModel;
 					llm = modelManager.GetModel(modelName);
 				}
@@ -135,7 +135,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					toastService.ShowError(toastTitle, toastDesc);
 					throw new ToastedException(toastTitle, toastDesc);
 				}
-				llm = llm.WithProperties(propertiesBuilder.BuildProperties(agent));
+				llm = llm.WithProperties(propertiesBuilder.BuildProperties(agent, chat.Settings));
 
 				if (mcpManager.HasMCPConnections())
 				{

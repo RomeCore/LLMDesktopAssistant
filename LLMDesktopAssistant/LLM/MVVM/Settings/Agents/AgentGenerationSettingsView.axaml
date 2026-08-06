@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+			 xmlns:set="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:agt="using:LLMDesktopAssistant.Agents"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
@@ -14,21 +15,43 @@
 
 	<StackPanel Orientation="Vertical" Margin="8" Spacing="8">
 			
-		<!-- Custom Model -->
-		<TextBlock Text="{loc:Loc settings-llm_custom_model}"
-					  FontWeight="Bold"
-					  FontSize="{DynamicResource FontSizeL}"
-					  Margin="0,5,0,5"/>
+		<!-- ============================================================ -->
+		<!-- CUSTOM MODEL -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+
+			<TextBlock Grid.Column="0"
+						  Text="{loc:Loc settings-llm_custom_model}"
+						  FontWeight="Bold"
+						  FontSize="{DynamicResource FontSizeL}"
+						  VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedCustomModelInheritance}"
+						  VerticalAlignment="Center"
+						  Margin="0,0,8,0"
+						  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
 
 		<CheckBox Content="{loc:Loc settings-llm_enable_custom_model}"
-					IsChecked="{Binding GenerationSettings.EnableCustomModel, Mode=TwoWay}"/>
+					IsChecked="{Binding EffectiveCustomModel.EnableCustomModel, Mode=TwoWay}"/>
 
 		<StackPanel Orientation="Vertical"
 					Spacing="4"
 					Margin="20,0,0,0"
-					IsEnabled="{Binding GenerationSettings.EnableCustomModel}">
+					IsEnabled="{Binding EffectiveCustomModel.EnableCustomModel}">
 
-			<ctrl:ModelSelectorControl SelectedModel="{Binding GenerationSettings.Model, Mode=TwoWay}"/>
+			<ctrl:ModelSelectorControl SelectedModel="{Binding EffectiveCustomModel.Model, Mode=TwoWay}"/>
 
 		</StackPanel>
 
@@ -38,18 +61,41 @@
 					  Opacity="0.2"
 					  Margin="0,10"/>
 
-		<TextBlock Text="{loc:Loc settings-llm_reasoning}"
-					  FontWeight="Bold"
-					  FontSize="{DynamicResource FontSizeL}"
-					  Margin="0,5,0,5"/>
+		<!-- ============================================================ -->
+		<!-- REASONING -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+
+			<TextBlock Grid.Column="0"
+						  Text="{loc:Loc settings-llm_reasoning}"
+						  FontWeight="Bold"
+						  FontSize="{DynamicResource FontSizeL}"
+						  VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedReasoningInheritance}"
+						  VerticalAlignment="Center"
+						  Margin="0,0,8,0"
+						  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
 
 		<CheckBox Content="{loc:Loc settings-llm_enable_reasoning}"
-					IsChecked="{Binding GenerationSettings.EnableReasoningSettings, Mode=TwoWay}"/>
+					IsChecked="{Binding EffectiveReasoning.EnableReasoningSettings, Mode=TwoWay}"/>
 
 		<StackPanel Orientation="Horizontal"
 					Spacing="8"
 					Margin="20,0,0,0"
-					IsEnabled="{Binding GenerationSettings.EnableReasoningSettings}">
+					IsEnabled="{Binding EffectiveReasoning.EnableReasoningSettings}">
 
 			<TextBlock Text="{loc:Loc settings-llm_reasoning_level}"
 						  VerticalAlignment="Center"/>
@@ -75,18 +121,41 @@
 					  Opacity="0.2"
 					  Margin="0,10"/>
 
-		<TextBlock Text="{loc:Loc settings-llm_temperature}"
-					  FontWeight="Bold"
-					  FontSize="{DynamicResource FontSizeL}"
-					  Margin="0,5,0,5"/>
+		<!-- ============================================================ -->
+		<!-- TEMPERATURE -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+
+			<TextBlock Grid.Column="0"
+						  Text="{loc:Loc settings-llm_temperature}"
+						  FontWeight="Bold"
+						  FontSize="{DynamicResource FontSizeL}"
+						  VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedTemperatureInheritance}"
+						  VerticalAlignment="Center"
+						  Margin="0,0,8,0"
+						  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
 
 		<CheckBox Content="{loc:Loc settings-llm_enable_temperature}"
-					IsChecked="{Binding GenerationSettings.EnableTemperature, Mode=TwoWay}"/>
+					IsChecked="{Binding EffectiveTemperature.EnableTemperature, Mode=TwoWay}"/>
 
 		<StackPanel Orientation="Vertical"
 					Spacing="4"
 					Margin="20,0,0,0"
-					IsEnabled="{Binding GenerationSettings.EnableTemperature}">
+					IsEnabled="{Binding EffectiveTemperature.EnableTemperature}">
 
 			<Grid ColumnDefinitions="Auto,*,50"
 					ColumnSpacing="8">
@@ -95,7 +164,7 @@
 							  VerticalAlignment="Center"/>
 
 				<Slider Grid.Column="1"
-						Value="{Binding GenerationSettings.Temperature, Mode=TwoWay}"
+						Value="{Binding EffectiveTemperature.Temperature, Mode=TwoWay}"
 						Minimum="0.0"
 						Maximum="2.0"
 						TickFrequency="0.1"
@@ -104,7 +173,7 @@
 						VerticalAlignment="Center"/>
 
 				<TextBlock Grid.Column="2"
-						Text="{Binding GenerationSettings.Temperature, StringFormat=F2}"
+						Text="{Binding EffectiveTemperature.Temperature, StringFormat=F2}"
 						Margin="4"
 						VerticalAlignment="Center"
 						HorizontalAlignment="Right"/>
@@ -113,24 +182,46 @@
 
 		</StackPanel>
 
-		<!-- Max Tokens -->
+		<!-- ============================================================ -->
+		<!-- MAX TOKENS -->
+		<!-- ============================================================ -->
 		<Rectangle Height="1"
 					  Fill="{DynamicResource DefaultForeground}"
 					  Opacity="0.2"
 					  Margin="0,10"/>
 
-		<TextBlock Text="{loc:Loc settings-llm_max_tokens}"
-					  FontWeight="Bold"
-					  FontSize="{DynamicResource FontSizeL}"
-					  Margin="0,5,0,5"/>
+		<Grid ColumnDefinitions="*,Auto">
+
+			<TextBlock Grid.Column="0"
+						  Text="{loc:Loc settings-llm_max_tokens}"
+						  FontWeight="Bold"
+						  FontSize="{DynamicResource FontSizeL}"
+						  VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedMaxTokensInheritance}"
+						  VerticalAlignment="Center"
+						  Margin="0,0,8,0"
+						  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
 
 		<CheckBox Content="{loc:Loc settings-llm_enable_max_tokens}"
-					IsChecked="{Binding GenerationSettings.EnableMaxTokens, Mode=TwoWay}"/>
+					IsChecked="{Binding EffectiveMaxTokens.EnableMaxTokens, Mode=TwoWay}"/>
 
 		<StackPanel Orientation="Horizontal"
 					Spacing="8"
 					Margin="20,0,0,0"
-					IsEnabled="{Binding GenerationSettings.EnableMaxTokens}">
+					IsEnabled="{Binding EffectiveMaxTokens.EnableMaxTokens}">
 
 			<TextBlock Text="{loc:Loc settings-llm_max_tokens_value}"
 						  VerticalAlignment="Center"/>
@@ -140,7 +231,7 @@
 							  Maximum="1048576"
 								AllowSpin="True"
 								Increment="1024"
-							  Value="{Binding GenerationSettings.MaxTokens, Mode=TwoWay}"
+							  Value="{Binding EffectiveMaxTokens.MaxTokens, Mode=TwoWay}"
 							  VerticalAlignment="Center"/>
 
 		</StackPanel>
@@ -151,16 +242,34 @@
 					  Opacity="0.2"
 					  Margin="0,10"/>
 
-		<!-- Additional Parameters -->
-		<Grid ColumnDefinitions="*,Auto"
+		<!-- ============================================================ -->
+		<!-- ADDITIONAL PARAMETERS -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto,Auto"
 				Margin="0,5,0,0">
 
-			<TextBlock Text="{loc:Loc settings-llm_additional_parameters}"
+			<TextBlock Grid.Column="0"
+						  Text="{loc:Loc settings-llm_additional_parameters}"
 						  FontWeight="Bold"
 						  FontSize="{DynamicResource FontSizeL}"
 						  VerticalAlignment="Center"/>
 
-			<Button Grid.Column="1"
+			<ComboBox Grid.Column="1"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedAdditionalParametersInheritance}"
+						  VerticalAlignment="Center"
+						  Margin="0,0,8,0"
+						  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+			<Button Grid.Column="2"
 					Command="{Binding AddParameterCommand}"
 					Classes="IconButton"
 					ToolTip.Tip="{loc:Loc add}">
@@ -180,9 +289,9 @@
 				BorderThickness="1"
 				CornerRadius="4"
 				Padding="6"
-				IsVisible="{Binding GenerationSettings.AdditionalParameters.Any}">
+				IsVisible="{Binding EffectiveAdditionalParameters.Any}">
 				
-			<ItemsControl ItemsSource="{Binding GenerationSettings.AdditionalParameters}">
+			<ItemsControl ItemsSource="{Binding EffectiveAdditionalParameters}">
 
 				<ItemsControl.ItemTemplate>
 					<DataTemplate x:DataType="agt:AdditionalParameter">

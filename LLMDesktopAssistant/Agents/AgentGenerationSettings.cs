@@ -1,87 +1,55 @@
+using LLMDesktopAssistant.SourceGenerators;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents
 {
 	/// <summary>
 	/// Describes an agent's generation settings.
+	/// All groups are resolved through their effective (inherited) scope, selected via
+	/// the inheritance level combo boxes in the view.
 	/// </summary>
-	public class AgentGenerationSettings : AgentSettingsCategoryBase
+	[SettingsRoute(nameof(ChatAgentDescriptor.Generation))]
+	public partial class AgentGenerationSettings : AgentSettingsCategoryBase
 	{
-		private bool _enableCustomModel = false;
+		private CustomModelSettings _customModel = new();
 		/// <summary>
-		/// Whether to enable custom model settings overriding the default model.
+		/// Gets or sets the custom model group of the agent: the enable flag and the model override.
 		/// </summary>
-		public bool EnableCustomModel
+		[InheritedChatAgentSetting]
+		public CustomModelSettings CustomModel
 		{
-			get => _enableCustomModel;
-			set => SetProperty(ref _enableCustomModel, value);
+			get => _customModel;
+			set => SetProperty(ref _customModel, value);
 		}
 
-		private string _model = string.Empty;
+		private ReasoningOverrideSettings _reasoning = new();
 		/// <summary>
-		/// The model to use for the agent. Format: "ProviderName$ModelName".
+		/// Gets or sets the reasoning group of the agent: the enable flag and the reasoning settings override.
 		/// </summary>
-		public string Model
+		[InheritedChatAgentSetting]
+		public ReasoningOverrideSettings Reasoning
 		{
-			get => _model;
-			set => SetProperty(ref _model, value);
+			get => _reasoning;
+			set => SetProperty(ref _reasoning, value);
 		}
 
-		private bool _enableReasoningSettings = false;
+		private TemperatureSettings _temperature = new();
 		/// <summary>
-		/// Whether to enable reasoning settings overriding the model's default settings.
+		/// Gets or sets the temperature group of the agent: the enable flag and the temperature override.
 		/// </summary>
-		public bool EnableReasoningSettings
-		{
-			get => _enableReasoningSettings;
-			set => SetProperty(ref _enableReasoningSettings, value);
-		}
-
-		private ReasoningSettings _reasoningSettings = ReasoningSettings.Disabled;
-		/// <summary>
-		/// The reasoning settings to use for the agent. These override the model's default settings if <see cref="EnableReasoningSettings"/> is true.
-		/// </summary>
-		public ReasoningSettings ReasoningSettings
-		{
-			get => _reasoningSettings;
-			set => SetProperty(ref _reasoningSettings, value);
-		}
-
-		private bool _enableTemperature = false;
-		/// <summary>
-		/// Whether to enable temperature settings overriding the model's default settings.
-		/// </summary>
-		public bool EnableTemperature
-		{
-			get => _enableTemperature;
-			set => SetProperty(ref _enableTemperature, value);
-		}
-
-		private float _temperature = 1.0f;
-		/// <summary>
-		/// The temperature to use for the agent in range from 0 to 2. This overrides the model's default settings if <see cref="EnableTemperature"/> is true.
-		/// </summary>
-		public float Temperature
+		[InheritedChatAgentSetting]
+		public TemperatureSettings Temperature
 		{
 			get => _temperature;
 			set => SetProperty(ref _temperature, value);
 		}
 
-		private bool _enableMaxTokens = false;
+		private MaxTokensSettings _maxTokens = new();
 		/// <summary>
-		/// Whether to enable max tokens settings overriding the model's default settings.
+		/// Gets or sets the max tokens group of the agent: the enable flag and the max tokens override.
 		/// </summary>
-		public bool EnableMaxTokens
-		{
-			get => _enableMaxTokens;
-			set => SetProperty(ref _enableMaxTokens, value);
-		}
-
-		private int _maxTokens = 8096;
-		/// <summary>
-		/// The maximum number of tokens to generate for the agent. This overrides the model's default settings if <see cref="EnableMaxTokens"/> is true.
-		/// </summary>
-		public int MaxTokens
+		[InheritedChatAgentSetting]
+		public MaxTokensSettings MaxTokens
 		{
 			get => _maxTokens;
 			set => SetProperty(ref _maxTokens, value);
@@ -91,6 +59,7 @@ namespace LLMDesktopAssistant.Agents
 		/// <summary>
 		/// The additional parameters to use for the agent. These are represented in a key-value format and passed to API.
 		/// </summary>
+		[InheritedChatAgentSetting]
 		public RangeObservableCollection<AdditionalParameter> AdditionalParameters
 		{
 			get => _additionalParameters;

@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 
@@ -59,6 +60,10 @@ namespace LLMDesktopAssistant.SourceGenerators
 			if (IsInsideType(context.ContainingSymbol, declaringType))
 				return;
 
+			// References inside nameof(...) are compile-time names, not real accesses.
+			if (IsInsideNameOf(reference.Syntax))
+				return;
+
 			var isWrite = reference.Parent is IAssignmentOperation { Target: var target } && target == reference
 				|| reference.Parent is ICompoundAssignmentOperation;
 
@@ -78,6 +83,21 @@ namespace LLMDesktopAssistant.SourceGenerators
 			}
 			return false;
 		}
+
+		private static bool IsInsideNameOf(SyntaxNode? node)
+		{
+			for (var current = node; current is not null; current = current.Parent)
+			{
+				if (current is InvocationExpressionSyntax invocation &&
+					invocation.Expression is IdentifierNameSyntax identifier &&
+					identifier.Identifier.ValueText == "nameof")
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 
 		private static bool IsInsideType(ISymbol? symbol, INamedTypeSymbol type)
 		{

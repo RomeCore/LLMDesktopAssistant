@@ -2,6 +2,7 @@
 
 namespace LLMDesktopAssistant.Settings.Application
 {
+	[SettingsObject("application")]
 	public class ApplicationSettings : SettingsObject
 	{
 		private ChatSettings _inheritedChatSettings = new();
