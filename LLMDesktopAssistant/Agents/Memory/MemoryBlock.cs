@@ -1,5 +1,4 @@
 ﻿using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents.Memory
 {
@@ -46,7 +45,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 		private string _maintainerModel = string.Empty;
 		/// <summary>
 		/// Gets or sets the model used for maintaining this memory block.
-		/// This will be used for filling, consolidating, and updating the memory block.
+		/// This will be used for consolidating the memory block.
 		/// </summary>
 		public string MaintainerModel
 		{

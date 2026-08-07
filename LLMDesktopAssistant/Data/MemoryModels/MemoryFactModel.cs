@@ -1,14 +1,11 @@
-﻿using LiteDB;
+using LiteDB;
 
 namespace LLMDesktopAssistant.Data.MemoryModels
 {
-
 	public class MemoryFactModel
 	{
 		[BsonId]
 		public int Id { get; set; }
-
-
 
 		/// <summary>
 		/// The date and time when the fact was created in the UTC timezone.
@@ -53,7 +50,13 @@ namespace LLMDesktopAssistant.Data.MemoryModels
 		/// <summary>
 		/// The status of the fact.
 		/// </summary>
-		public FactStatus Status { get; set; } = FactStatus.Active;
+		public MemoryFactStatus Status { get; set; } = MemoryFactStatus.Active;
+
+		/// <summary>
+		/// The ID of the fact by which this fact has been superseded.
+		/// Zero when the fact is not superseded.
+		/// </summary>
+		public int SupersededBy { get; set; }
 
 		/// <summary>
 		/// The importance score of the fact, which is a value between 0 and 1.0.

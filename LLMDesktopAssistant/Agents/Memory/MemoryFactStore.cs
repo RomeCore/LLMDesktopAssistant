@@ -54,19 +54,25 @@ namespace LLMDesktopAssistant.Agents.Memory
 		{
 			ArgumentException.ThrowIfNullOrWhiteSpace(replacementText);
 
-			return _provider.ExecuteAsync(block, (db, ct) =>
+			return _provider.ExecuteAsync(block, async (db, ct) =>
 			{
 				var fact = db.Facts.FindById(factId)
 					?? throw new KeyNotFoundException($"Fact with id {factId} not found in memory block '{block.Name}'.");
 
-				if (fact.Status == FactStatus.Active)
+				var storedFact = await StoreInternalAsync(db, replacementText, sourceChatId, sourceMessageId, importance, ct);
+
+				if (fact.Status == MemoryFactStatus.Active)
 				{
-					fact.Status = FactStatus.Superseded;
+					fact.Status = MemoryFactStatus.Superseded;
+					fact.SupersededBy = storedFact.Id;
 					fact.UpdatedAt = DateTime.UtcNow;
 					db.Facts.Update(fact);
 				}
 
-				return StoreInternalAsync(db, replacementText, sourceChatId, sourceMessageId, importance, ct);
+				db.FactIndexes.DeleteMany(fi => fi.FactId == factId);
+				db.FactSector.DeleteWhere(id => id == factId);
+
+				return storedFact;
 			}, cancellationToken);
 		}
 
@@ -78,12 +84,15 @@ namespace LLMDesktopAssistant.Agents.Memory
 				var fact = db.Facts.FindById(factId)
 					?? throw new KeyNotFoundException($"Fact with id {factId} not found in memory block '{block.Name}'.");
 
-				if (fact.Status == FactStatus.Active)
+				if (fact.Status == MemoryFactStatus.Active)
 				{
-					fact.Status = FactStatus.Deleted;
+					fact.Status = MemoryFactStatus.Deleted;
 					fact.UpdatedAt = DateTime.UtcNow;
 					db.Facts.Update(fact);
 				}
+
+				db.FactIndexes.DeleteMany(fi => fi.FactId == factId);
+				db.FactSector.DeleteWhere(id => id == factId);
 
 				return Task.FromResult(true);
 			}, cancellationToken);
@@ -104,6 +113,53 @@ namespace LLMDesktopAssistant.Agents.Memory
 			}, cancellationToken);
 		}
 
+		/// <inheritdoc/>
+		public async Task RestoreAsync(MemoryBlock block, int factId, CancellationToken cancellationToken = default)
+		{
+			await _provider.ExecuteAsync(block, async (db, ct) =>
+			{
+				var fact = db.Facts.FindById(factId)
+					?? throw new KeyNotFoundException($"Fact with id {factId} not found in memory block '{block.Name}'.");
+
+				if (fact.Status == MemoryFactStatus.Active)
+					return true;
+
+				var previousStatus = fact.Status;
+				var previousSupersededBy = fact.SupersededBy;
+
+				fact.Status = MemoryFactStatus.Active;
+				fact.SupersededBy = 0;
+				fact.UpdatedAt = DateTime.UtcNow;
+				db.Facts.Update(fact);
+
+				try
+				{
+					foreach (var (token, count) in MemoryTokenizer.Tokenize(fact.Text).GroupBy(t => t).Select(g => (g.Key, g.Count())))
+					{
+						db.FactIndexes.Insert(new MemoryFactIndexModel
+						{
+							FactId = fact.Id,
+							Token = token,
+							Count = count
+						});
+					}
+
+					await db.FactSector.RecordAsync(fact.Id, ct);
+				}
+				catch
+				{
+					fact.Status = previousStatus;
+					fact.SupersededBy = previousSupersededBy;
+					fact.UpdatedAt = DateTime.UtcNow;
+					db.Facts.Update(fact);
+					db.FactIndexes.DeleteMany(fi => fi.FactId == fact.Id);
+					throw;
+				}
+
+				return true;
+			}, cancellationToken);
+		}
+
 		private static async Task<MemoryFactResult> StoreInternalAsync(
 			MemoryDatabase db,
 			string fact,
@@ -119,6 +175,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				Text = fact,
 				SourceChatId = sourceChatId,
 				SourceMessageId = sourceMessageId,
+				Status = MemoryFactStatus.Active,
 				Importance = importance,
 				TokenCount = tokens.Count
 			};
@@ -150,6 +207,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			{
 				Id = model.Id,
 				Text = model.Text,
+				Status = MemoryFactStatus.Active,
 				CreatedAt = model.CreatedAt,
 				UpdatedAt = model.UpdatedAt,
 				LastAccessedAt = model.LastAccessedAt,
@@ -198,7 +256,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 					break;
 
 				var fact = db.Facts.FindById(id);
-				if (fact is { Status: FactStatus.Active })
+				if (fact is { Status: MemoryFactStatus.Active })
 				{
 					fact.AccessCount++;
 					fact.LastAccessedAt = DateTime.UtcNow;
@@ -208,6 +266,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 					{
 						Id = fact.Id,
 						Text = fact.Text,
+						Status = fact.Status,
 						CreatedAt = fact.CreatedAt,
 						UpdatedAt = fact.UpdatedAt,
 						LastAccessedAt = fact.LastAccessedAt,
@@ -238,7 +297,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			if (tokens.Count == 0)
 				return [];
 
-			var activeFacts = db.Facts.Find(f => f.Status == FactStatus.Active).ToList();
+			var activeFacts = db.Facts.Find(f => f.Status == MemoryFactStatus.Active).ToList();
 			if (activeFacts.Count == 0)
 				return [];
 

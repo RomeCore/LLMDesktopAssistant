@@ -1,6 +1,6 @@
 ﻿namespace LLMDesktopAssistant.Data.MemoryModels
 {
-	public enum FactStatus
+	public enum MemoryFactStatus
 	{
 		/// <summary>
 		/// The fact is currently active and relevant.

@@ -1,3 +1,5 @@
+using LLMDesktopAssistant.Data.MemoryModels;
+
 namespace LLMDesktopAssistant.Agents.Memory
 {
 	/// <summary>
@@ -14,6 +16,11 @@ namespace LLMDesktopAssistant.Agents.Memory
 		/// Gets the text of the fact.
 		/// </summary>
 		public required string Text { get; init; }
+
+		/// <summary>
+		/// Gets the status of the fact.
+		/// </summary>
+		public required MemoryFactStatus Status { get; init; }
 
 		/// <summary>
 		/// Gets the date and time when the fact was created in the UTC timezone.

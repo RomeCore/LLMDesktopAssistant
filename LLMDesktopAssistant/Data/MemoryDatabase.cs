@@ -11,6 +11,8 @@ namespace LLMDesktopAssistant.Data
 		public ILiteDatabase Database { get; }
 		public ILiteCollection<MemoryFactModel> Facts { get; }
 		public ILiteCollection<MemoryFactIndexModel> FactIndexes { get; }
+		public ILiteCollection<MemoryLogModel> Logs { get; }
+		public ILiteCollection<MemoryLogIndexModel> LogIndexes { get; }
 
 		public SemanticDatabase SemanticDatabase { get; }
 		public SemanticSector<int> FactSector { get; }
@@ -26,10 +28,15 @@ namespace LLMDesktopAssistant.Data
 
 			Facts = Database.GetCollection<MemoryFactModel>("Facts");
 			FactIndexes = Database.GetCollection<MemoryFactIndexModel>("FactIndexes");
+			Logs = Database.GetCollection<MemoryLogModel>("Logs");
+			LogIndexes = Database.GetCollection<MemoryLogIndexModel>("LogIndexes");
 
 			FactIndexes.EnsureIndex(f => f.FactId);
 			FactIndexes.EnsureIndex(f => f.Token);
 			Facts.EnsureIndex(f => f.Status);
+			LogIndexes.EnsureIndex(l => l.LogId);
+			LogIndexes.EnsureIndex(l => l.Token);
+			Logs.EnsureIndex(l => l.Status);
 
 			SemanticDatabase = new SemanticDatabase(dataPath, embedModel);
 			FactSector = SemanticDatabase.CreateSector<int>("facts", new SemanticSectorProperties<int>

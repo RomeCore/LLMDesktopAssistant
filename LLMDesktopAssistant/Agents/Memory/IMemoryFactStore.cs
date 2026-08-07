@@ -27,8 +27,8 @@ namespace LLMDesktopAssistant.Agents.Memory
 
 		/// <summary>
 		/// Supersedes the specified active fact with a replacement fact. The old fact is
-		/// marked as <see cref="FactStatus.Superseded"/> and the replacement is stored
-		/// as a new active fact.
+		/// marked as <see cref="MemoryFactStatus.Superseded"/>, removed from the keyword
+		/// index and the semantic sector, and the replacement is stored as a new active fact.
 		/// </summary>
 		/// <param name="block">The memory block that contains the fact to supersede.</param>
 		/// <param name="factId">The ID of the fact to supersede.</param>
@@ -48,8 +48,9 @@ namespace LLMDesktopAssistant.Agents.Memory
 			CancellationToken cancellationToken = default);
 
 		/// <summary>
-		/// Soft-deletes the specified fact by marking it as <see cref="FactStatus.Deleted"/>.
-		/// The fact remains in the database but is excluded from search results.
+		/// Soft-deletes the specified fact by marking it as <see cref="MemoryFactStatus.Deleted"/>
+		/// and removing it from the keyword index and the semantic sector. The fact record
+		/// itself remains in the database so it can be restored.
 		/// </summary>
 		/// <param name="block">The memory block that contains the fact to delete.</param>
 		/// <param name="factId">The ID of the fact to delete.</param>
@@ -66,6 +67,17 @@ namespace LLMDesktopAssistant.Agents.Memory
 		/// <param name="cancellationToken">The cancellation token to use for this operation.</param>
 		/// <returns>A task that represents the asynchronous operation.</returns>
 		Task HardDeleteAsync(MemoryBlock block, int factId, CancellationToken cancellationToken = default);
+
+		/// <summary>
+		/// Restores a previously deleted or superseded fact back to
+		/// <see cref="MemoryFactStatus.Active"/>, re-adding it to the keyword index and
+		/// the semantic sector so that it becomes searchable again.
+		/// </summary>
+		/// <param name="block">The memory block that contains the fact to restore.</param>
+		/// <param name="factId">The ID of the fact to restore.</param>
+		/// <param name="cancellationToken">The cancellation token to use for this operation.</param>
+		/// <returns>A task that represents the asynchronous operation.</returns>
+		Task RestoreAsync(MemoryBlock block, int factId, CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Searches the specified memory block for facts relevant to the query.

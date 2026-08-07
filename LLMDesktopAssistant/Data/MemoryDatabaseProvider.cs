@@ -2,8 +2,6 @@ using System.Collections.Concurrent;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.Utils;
-using RCLargeLanguageModels;
 
 namespace LLMDesktopAssistant.Data
 {
@@ -27,7 +25,8 @@ namespace LLMDesktopAssistant.Data
 		public MemoryDatabaseProvider(IModelManager modelManager)
 		{
 			_modelManager = modelManager;
-			_cache = new Utils.AsyncCache<(Guid DataId, string ModelName), MemoryDatabase>(CreateAsync);
+			_cache = new Utils.AsyncCache<(Guid DataId, string ModelName), MemoryDatabase>(CreateAsync,
+				slidingExpirationTime: TimeSpan.FromMinutes(10), cleanupInterval: TimeSpan.FromMinutes(10));
 		}
 
 		/// <inheritdoc/>

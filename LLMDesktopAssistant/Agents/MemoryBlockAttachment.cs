@@ -15,6 +15,16 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _enabled, value);
 		}
 
+		private MemoryBlockAttachmentMode _mode = MemoryBlockAttachmentMode.Standard;
+		/// <summary>
+		/// The mode of the memory block attachment.
+		/// </summary>
+		public MemoryBlockAttachmentMode Mode
+		{
+			get => _mode;
+			set => SetProperty(ref _mode, value);
+		}
+
 		/// <summary>
 		/// The memory block setting reference.
 		/// </summary>
