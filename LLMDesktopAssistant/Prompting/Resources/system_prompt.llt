@@ -33,7 +33,7 @@
 		Integrate your personality with your specialization naturally.
 		Your personality defines who you are, your specialization defines what you do.
 	}
-	@if assistantNickname
+	@if assistant_nickname
 	{
 		Your alternate name is:
 		@assistantNickname
@@ -60,5 +60,19 @@
 				</skill>
 			}
 		</available_skills>
+	}
+	@if memory_blocks
+	{
+		<memory_blocks>
+			The following memory blocks provide context for the conversation.
+			You can access these blocks by calling the `memory-store` and `memory-retrieve` tools.
+			@foreach block in memory_blocks
+			{
+				<block>
+					<name>@block.name</name>
+					<description>@block.description</description>
+				</block>
+			}
+		</memory_blocks>
 	}
 }

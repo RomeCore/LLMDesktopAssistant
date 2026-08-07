@@ -61,7 +61,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			
 			try
 			{
-				var namingLLM = modelManager.TryGetModel(chat.Settings.Summarization.GetEffectiveOptions().SummarizerModel);
+				var namingLLM = modelManager.TryGetModel(chat.Settings.Memory.GetEffectiveSummarization().SummarizerModel);
 				if (namingLLM == null)
 				{
 					Log.Warning("Cannot name chat: no naming LLM available.");

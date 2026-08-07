@@ -50,14 +50,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _agentSettings, value);
 		}
 
-		private ChatSummarizationSettings _summarizationSettings = new();
+		private ChatMemorySettings _memorySettings = new();
 		/// <summary>
-		/// Settings for conversation auto-summarization.
+		/// Settings for memory management in chat sessions.
 		/// </summary>
-		public ChatSummarizationSettings Summarization
+		public ChatMemorySettings Memory
 		{
-			get => _summarizationSettings;
-			set => SetProperty(ref _summarizationSettings, value);
+			get => _memorySettings;
+			set => SetProperty(ref _memorySettings, value);
 		}
 
 		private ChatEnvironmentSettings _environmentSettings = new();

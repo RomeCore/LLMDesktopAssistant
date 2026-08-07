@@ -2707,4 +2707,102 @@
   <data name="settings-skills_sources" xml:space="preserve">
     <value>Skill sources</value>
   </data>
+  <data name="chat_settings_memory" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="settings-memory_enable" xml:space="preserve">
+    <value>Enable agent memory</value>
+  </data>
+  <data name="settings-memory_blocks" xml:space="preserve">
+    <value>Memory blocks</value>
+  </data>
+  <data name="settings-memory_blocks_hint" xml:space="preserve">
+    <value>Attach shared memory blocks to this agent. A block stores semantic facts, episodic logs and persistent state. Select a block in the list to edit its contents below.</value>
+  </data>
+  <data name="settings-memory_add_block" xml:space="preserve">
+    <value>New block</value>
+  </data>
+  <data name="settings-memory_attach_placeholder" xml:space="preserve">
+    <value>Existing block...</value>
+  </data>
+  <data name="settings-memory_attach" xml:space="preserve">
+    <value>Attach</value>
+  </data>
+  <data name="settings-memory_remove" xml:space="preserve">
+    <value>Detach</value>
+  </data>
+  <data name="settings-memory_block_editor" xml:space="preserve">
+    <value>Block editor</value>
+  </data>
+  <data name="settings-memory_block_name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="settings-memory_block_description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="settings-memory_block_embedding_model" xml:space="preserve">
+    <value>Embedding model</value>
+  </data>
+  <data name="settings-memory_block_maintainer_model" xml:space="preserve">
+    <value>Maintainer model</value>
+  </data>
+  <data name="settings-memory_duplicate" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="settings-memory_rename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="settings-memory_rename_confirm" xml:space="preserve">
+    <value>Confirm rename</value>
+  </data>
+  <data name="settings-memory_delete" xml:space="preserve">
+    <value>Delete block</value>
+  </data>
+  <data name="settings-memory_missing_block" xml:space="preserve">
+    <value>Missing block ({0})</value>
+  </data>
+  <data name="settings-memory_default_block_name" xml:space="preserve">
+    <value>New memory block</value>
+  </data>
+  <data name="settings-memory_copy_suffix" xml:space="preserve">
+    <value>copy</value>
+  </data>
+  <data name="memory_attachment_mode_standard" xml:space="preserve">
+    <value>Read &amp; Write</value>
+  </data>
+  <data name="memory_attachment_mode_readonly" xml:space="preserve">
+    <value>Read only</value>
+  </data>
+  <data name="memory_attachment_mode_writeonly" xml:space="preserve">
+    <value>Write only</value>
+  </data>
+  <data name="settings-memory_options" xml:space="preserve">
+    <value>Memory options</value>
+  </data>
+  <data name="settings-memory_hint" xml:space="preserve">
+    <value>Configure how this chat records and retrieves conversation memory.</value>
+  </data>
+  <data name="settings-memory_enable_memory" xml:space="preserve">
+    <value>Enable conversation memory</value>
+  </data>
+  <data name="settings-memory_auto_retrieval" xml:space="preserve">
+    <value>Automatic retrieval</value>
+  </data>
+  <data name="settings-memory_auto_recording" xml:space="preserve">
+    <value>Automatic recording</value>
+  </data>
+  <data name="settings-memory_block_storage" xml:space="preserve">
+    <value>Block storage</value>
+  </data>
+  <data name="settings-memory_block_facts" xml:space="preserve">
+    <value>Store semantic facts</value>
+  </data>
+  <data name="settings-memory_block_logs" xml:space="preserve">
+    <value>Store episodic logs</value>
+  </data>
+  <data name="settings-memory_block_state" xml:space="preserve">
+    <value>Store exact state</value>
+  </data>
+
+
 </root>

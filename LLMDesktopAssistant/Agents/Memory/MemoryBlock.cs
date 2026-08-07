@@ -5,11 +5,6 @@ namespace LLMDesktopAssistant.Agents.Memory
 	[SettingsObject("memory_blocks")]
 	public class MemoryBlock : SettingsObject
 	{
-		/// <summary>
-		/// Unique identifier for this memory block. This should be unique across all memory blocks in the system.
-		/// </summary>
-		public Guid DataId { get; set; } = Guid.NewGuid();
-
 		private string _name = string.Empty;
 		/// <summary>
 		/// Gets or sets the (display) name of the memory block. This is used to identify the block within the system.
@@ -51,6 +46,36 @@ namespace LLMDesktopAssistant.Agents.Memory
 		{
 			get => _maintainerModel;
 			set => SetProperty(ref _maintainerModel, value);
+		}
+
+		private bool _factsEnabled = true;
+		/// <summary>
+		/// Gets or sets a value indicating whether facts are enabled for this memory block.
+		/// </summary>
+		public bool FactsEnabled
+		{
+			get => _factsEnabled;
+			set => SetProperty(ref _factsEnabled, value);
+		}
+
+		private bool _logsEnabled = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether memory logs are enabled for this memory block.
+		/// </summary>
+		public bool LogsEnabled
+		{
+			get => _logsEnabled;
+			set => SetProperty(ref _logsEnabled, value);
+		}
+
+		private bool _stateEnabled = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether the exact state object is enabled for this memory block.
+		/// </summary>
+		public bool StateEnabled
+		{
+			get => _stateEnabled;
+			set => SetProperty(ref _stateEnabled, value);
 		}
 	}
 }

@@ -153,6 +153,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var effectiveSliderValues = promptSettings.GetEffectiveSliderValues(chat.Settings);
 			var effectivePersona = promptSettings.GetEffectivePersona(chat.Settings);
 			var effectiveSpecialization = promptSettings.GetEffectiveSpecialization(chat.Settings);
+			var effectiveChatMemoryOptions = chat.Settings.Memory.GetEffectiveMemoryOptions();
+			var effectiveMemoryBlocks = agent.Memory.GetEffectiveBlocks(chat.Settings);
 
 			generalContext["prompt"] = effectiveSystemPrompt;
 			generalContext["components"] = effectiveComponents
@@ -170,7 +172,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				})
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
-			generalContext["assistantNickname"] = effectivePersona.Nickname;
+			generalContext["assistant_nickname"] = effectivePersona.Nickname;
 			generalContext["specialization"] = effectiveSpecialization.UseCustomSpecialization ?
 				effectiveSpecialization.CustomSpecialization :
 				(effectiveSpecialization.SpecializationId != null ? promptRegistry.GetSpecialization(effectiveSpecialization.SpecializationId.Value)?.Template.Template.Render(componentsContext) : null);
@@ -184,6 +186,16 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				path = s.Path,
 				body = s.InjectionMode is SkillInjectionMode.Full ? s.BodyGetter() : null
 			});
+			generalContext["memory_blocks"] = effectiveChatMemoryOptions.EnableMemory && agent.Memory.EnableMemory
+				? effectiveMemoryBlocks.Where(b => b.Enabled)
+					.Select(b => b.Reference.Object!)
+					.Where(b => b != null)
+					.Select(b => new
+					{
+						name = b.Name,
+						description = b.Description
+					})
+				: null;
 
 			return template!.Render(generalContext, functions);
 		}

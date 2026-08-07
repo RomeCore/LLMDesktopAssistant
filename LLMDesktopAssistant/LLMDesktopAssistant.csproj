@@ -169,6 +169,9 @@
 		<Compile Update="LLM\MVVM\Settings\ChatExecutionStagesSettingsView.axaml.cs">
 		  <DependentUpon>ChatExecutionStagesSettingsView.axaml</DependentUpon>
 		</Compile>
+		<Compile Update="LLM\MVVM\Settings\ChatMemorySettingsView.axaml.cs">
+		  <DependentUpon>ChatMemorySettingsView.axaml</DependentUpon>
+		</Compile>
 		<Compile Update="LLM\MVVM\UserInputView.axaml.cs">
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>

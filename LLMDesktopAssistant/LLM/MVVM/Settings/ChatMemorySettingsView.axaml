@@ -1,0 +1,149 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="clr-namespace:LLMDesktopAssistant.Controls"
+			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatMemorySettingsView"
+			 x:DataType="local:ChatMemorySettingsViewModel">
+
+	<StackPanel Orientation="Vertical" Margin="8" Spacing="8">
+
+		<!-- ============================================================ -->
+		<!-- CONVERSATION MEMORY -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc settings-memory_options}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+					  ItemsSource="{x:Static local:InheritanceLevelItem.AllProfile}"
+					  SelectedItem="{Binding SelectedMemoryOptionsInheritance}"
+					  VerticalAlignment="Center"
+					  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
+
+		<TextBlock Text="{loc:Loc settings-memory_hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"
+				   Margin="0,0,0,8"/>
+
+		<CheckBox Content="{loc:Loc settings-memory_enable_memory}"
+						  IsChecked="{Binding EffectiveMemoryOptions.EnableMemory, Mode=TwoWay}"/>
+
+		<!-- Automatic retrieval -->
+		<Grid ColumnDefinitions="Auto,*"
+			  IsEnabled="{Binding EffectiveMemoryOptions.EnableMemory}">
+
+			<CheckBox Grid.Column="0"
+					  Content="{loc:Loc settings-memory_auto_retrieval}"
+					  IsChecked="{Binding EffectiveMemoryOptions.AutomaticRetrievalEnabled, Mode=TwoWay}"
+					  VerticalAlignment="Center"/>
+
+			<ctrl:ModelSelectorControl Grid.Column="1"
+									   Margin="12,0,0,0"
+									   SelectedModel="{Binding EffectiveMemoryOptions.RetrievalModel, Mode=TwoWay}"
+									   IsEnabled="{Binding EffectiveMemoryOptions.AutomaticRetrievalEnabled}"/>
+
+		</Grid>
+
+		<!-- Automatic recording -->
+		<Grid ColumnDefinitions="Auto,*"
+			  IsEnabled="{Binding EffectiveMemoryOptions.EnableMemory}">
+
+			<CheckBox Grid.Column="0"
+					  Content="{loc:Loc settings-memory_auto_recording}"
+					  IsChecked="{Binding EffectiveMemoryOptions.AutomaticRecordingEnabled, Mode=TwoWay}"
+					  VerticalAlignment="Center"/>
+
+			<ctrl:ModelSelectorControl Grid.Column="1"
+									   Margin="12,0,0,0"
+									   SelectedModel="{Binding EffectiveMemoryOptions.RecordingModel, Mode=TwoWay}"
+									   IsEnabled="{Binding EffectiveMemoryOptions.AutomaticRecordingEnabled}"/>
+
+		</Grid>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,10"/>
+
+		<!-- ============================================================ -->
+		<!-- AUTO-SUMMARIZATION -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc settings-summarization}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+					  ItemsSource="{x:Static local:InheritanceLevelItem.AllProfile}"
+					  SelectedItem="{Binding SelectedSummarizationInheritance}"
+					  VerticalAlignment="Center"
+					  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
+
+		<TextBlock Text="{loc:Loc settings-summarization_hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"
+				   Margin="0,0,0,8"/>
+
+		<CheckBox Content="{loc:Loc settings-summarization_enabled}"
+						  IsChecked="{Binding EffectiveSummarization.AutoSummarizationEnabled, Mode=TwoWay}"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,10"/>
+
+		<TextBlock Text="{loc:Loc settings-summarization_trigger_tokens_hint}"
+				   Margin="0,2"/>
+		<NumericUpDown Value="{Binding EffectiveSummarization.SummarizationTriggerTokens, Mode=TwoWay}"
+					   Minimum="1024"
+					   Maximum="1024000"
+					   Increment="1024"
+					   FormatString="N0"
+					   HorizontalAlignment="Stretch"/>
+
+		<TextBlock Text="{loc:Loc settings-summarization_ignore_last_rounds_hint}"
+				   Margin="0,2"/>
+		<NumericUpDown Value="{Binding EffectiveSummarization.IgnoreLastRounds, Mode=TwoWay}"
+					   Minimum="0"
+					   Maximum="100"
+					   Increment="1"
+					   FormatString="N0"
+					   HorizontalAlignment="Stretch"/>
+
+		<TextBlock Text="{loc:Loc settings-summarizer_model_hint}"
+				   Margin="0,2"/>
+		<ctrl:ModelSelectorControl SelectedModel="{Binding EffectiveSummarization.SummarizerModel, Mode=TwoWay}"/>
+
+	</StackPanel>
+
+</UserControl>

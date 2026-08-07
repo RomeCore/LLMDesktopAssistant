@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace LLMDesktopAssistant.LLM.Settings;
 
-public partial class ChatSummarizationSettingsView : UserControl
+public partial class ChatMemorySettingsView : UserControl
 {
-    public ChatSummarizationSettingsView()
+    public ChatMemorySettingsView()
     {
         InitializeComponent();
     }

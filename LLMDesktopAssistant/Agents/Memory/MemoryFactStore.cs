@@ -17,13 +17,13 @@ namespace LLMDesktopAssistant.Agents.Memory
 		private const double Bm25K1 = 1.2;
 		private const double Bm25B = 0.75;
 
-		private readonly IMemoryDatabaseProvider _provider;
+		private readonly IMemoryDatabaseManager _provider;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MemoryFactStore"/> class.
 		/// </summary>
 		/// <param name="provider">The provider used to access memory databases.</param>
-		public MemoryFactStore(IMemoryDatabaseProvider provider)
+		public MemoryFactStore(IMemoryDatabaseManager provider)
 		{
 			_provider = provider;
 		}

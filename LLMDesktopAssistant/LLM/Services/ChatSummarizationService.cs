@@ -35,12 +35,11 @@ namespace LLMDesktopAssistant.LLM.Services
 		public override int Order => 10;
 		public async Task TrySummarizeChatAsync(IUsageMetadata lastUsageMetadata, CancellationToken cancellationToken = default)
 		{
-			var summarizationLLM = modelManager.TryGetModel(chat.Settings.Summarization.GetEffectiveOptions().SummarizerModel);
+			var effectiveOptions = chat.Settings.Memory.GetEffectiveSummarization();
+			var summarizationLLM = modelManager.TryGetModel(effectiveOptions.SummarizerModel);
 
 			try
 			{
-				var effectiveOptions = chat.Settings.Summarization.GetEffectiveOptions();
-
 				if (!effectiveOptions.AutoSummarizationEnabled)
 					return;
 
@@ -120,7 +119,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public async Task SummarizeMessageWithPreviousMessagesAsync(ChatMessage message, CancellationToken cancellationToken = default)
 		{
-			var summarizationLLM = modelManager.TryGetModel(chat.Settings.Summarization.GetEffectiveOptions().SummarizerModel);
+			var effectiveOptions = chat.Settings.Memory.GetEffectiveSummarization();
+			var summarizationLLM = modelManager.TryGetModel(effectiveOptions.SummarizerModel);
 
 			try
 			{

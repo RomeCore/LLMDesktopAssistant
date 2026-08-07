@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Settings;
 using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
@@ -87,7 +88,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public ChatMCPSettingsViewModel McpSettings { get; }
 		public ChatToolsSettingsViewModel ToolsSettings { get; }
 		public ChatSkillsSettingsViewModel SkillsSettings { get; }
-		public ChatSummarizationSettingsViewModel SummarizationSettings { get; }
+		public ChatMemorySettingsViewModel MemorySettings { get; }
 		public ChatAgentsSettingsViewModel AgentsSettings { get; }
 		public ChatUserSettingsViewModel UserSettings { get; }
 
@@ -113,7 +114,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			AgentsSettings = new ChatAgentsSettingsViewModel(settings.Agents, agentManager);
 			ExecutionStagesSettings = new ChatExecutionStagesSettingsViewModel(settings.Agents, agentManager);
 			ModelSettings = new ChatModelSettingsViewModel(settings.Models);
-			SummarizationSettings = new ChatSummarizationSettingsViewModel(settings.Summarization);
+			MemorySettings = new ChatMemorySettingsViewModel(settings.Memory);
 			UserSettings = new ChatUserSettingsViewModel(settings.Users.Users);
 
 			EnvironmentSettings = new ChatEnvironmentSettingsViewModel(settings.Environment,
@@ -148,9 +149,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 				ModelSettings));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_summarization"),
-				MaterialIconKind.ArrowCollapseVertical,
-				SummarizationSettings));
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_memory"),
+				MaterialIconKind.Database,
+				MemorySettings));
 
 			SettingsTree.Add(
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_users"),
@@ -230,6 +231,13 @@ namespace LLMDesktopAssistant.LLM.Settings
 							descriptor.Skills,
 							Chat.Services.GetRequiredService<ISkillsetBuildingService>(),
 							Chat.Settings)),
+
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_memory"),
+						MaterialIconKind.Database,
+						new AgentMemorySettingsViewModel(
+							descriptor.Memory,
+							Chat.Settings,
+							Chat.Services.GetRequiredService<IMemoryDatabaseManager>())),
 				};
 
 				SettingsTree.Add(new SettingsAgentParentNode(descriptor.Info, isGlobal, agentChildren));

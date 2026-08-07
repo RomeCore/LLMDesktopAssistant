@@ -2707,4 +2707,102 @@
   <data name="settings-skills_sources" xml:space="preserve">
     <value>Источники навыков</value>
   </data>
+  <data name="chat_settings_memory" xml:space="preserve">
+    <value>Память</value>
+  </data>
+  <data name="settings-memory_enable" xml:space="preserve">
+    <value>Включить память агента</value>
+  </data>
+  <data name="settings-memory_blocks" xml:space="preserve">
+    <value>Блоки памяти</value>
+  </data>
+  <data name="settings-memory_blocks_hint" xml:space="preserve">
+    <value>Прикрепите общие блоки памяти к этому агенту. Блок хранит семантические факты, эпизодические логи и постоянное состояние. Выберите блок в списке, чтобы отредактировать его содержимое ниже.</value>
+  </data>
+  <data name="settings-memory_add_block" xml:space="preserve">
+    <value>Новый блок</value>
+  </data>
+  <data name="settings-memory_attach_placeholder" xml:space="preserve">
+    <value>Существующий блок...</value>
+  </data>
+  <data name="settings-memory_attach" xml:space="preserve">
+    <value>Прикрепить</value>
+  </data>
+  <data name="settings-memory_remove" xml:space="preserve">
+    <value>Открепить</value>
+  </data>
+  <data name="settings-memory_block_editor" xml:space="preserve">
+    <value>Редактор блока</value>
+  </data>
+  <data name="settings-memory_block_name" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="settings-memory_block_description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="settings-memory_block_embedding_model" xml:space="preserve">
+    <value>Модель эмбеддингов</value>
+  </data>
+  <data name="settings-memory_block_maintainer_model" xml:space="preserve">
+    <value>Модель обслуживания</value>
+  </data>
+  <data name="settings-memory_duplicate" xml:space="preserve">
+    <value>Дублировать</value>
+  </data>
+  <data name="settings-memory_rename" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="settings-memory_rename_confirm" xml:space="preserve">
+    <value>Подтвердить переименование</value>
+  </data>
+  <data name="settings-memory_delete" xml:space="preserve">
+    <value>Удалить блок</value>
+  </data>
+  <data name="settings-memory_missing_block" xml:space="preserve">
+    <value>Блок отсутствует ({0})</value>
+  </data>
+  <data name="settings-memory_default_block_name" xml:space="preserve">
+    <value>Новый блок памяти</value>
+  </data>
+  <data name="settings-memory_copy_suffix" xml:space="preserve">
+    <value>копия</value>
+  </data>
+  <data name="memory_attachment_mode_standard" xml:space="preserve">
+    <value>Чтение и запись</value>
+  </data>
+  <data name="memory_attachment_mode_readonly" xml:space="preserve">
+    <value>Только чтение</value>
+  </data>
+  <data name="memory_attachment_mode_writeonly" xml:space="preserve">
+    <value>Только запись</value>
+  </data>
+  <data name="settings-memory_options" xml:space="preserve">
+    <value>Параметры памяти</value>
+  </data>
+  <data name="settings-memory_hint" xml:space="preserve">
+    <value>Настройте запись и поиск памяти этого разговора.</value>
+  </data>
+  <data name="settings-memory_enable_memory" xml:space="preserve">
+    <value>Включить память разговора</value>
+  </data>
+  <data name="settings-memory_auto_retrieval" xml:space="preserve">
+    <value>Автоматический поиск</value>
+  </data>
+  <data name="settings-memory_auto_recording" xml:space="preserve">
+    <value>Автоматическая запись</value>
+  </data>
+  <data name="settings-memory_block_storage" xml:space="preserve">
+    <value>Хранилище блока</value>
+  </data>
+  <data name="settings-memory_block_facts" xml:space="preserve">
+    <value>Хранить семантические факты</value>
+  </data>
+  <data name="settings-memory_block_logs" xml:space="preserve">
+    <value>Хранить эпизодические логи</value>
+  </data>
+  <data name="settings-memory_block_state" xml:space="preserve">
+    <value>Хранить точное состояние</value>
+  </data>
+
+
 </root>

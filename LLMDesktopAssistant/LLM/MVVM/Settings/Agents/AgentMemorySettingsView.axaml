@@ -1,0 +1,276 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+			 xmlns:set="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:appset="using:LLMDesktopAssistant.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentMemorySettingsView"
+			 x:DataType="local:AgentMemorySettingsViewModel">
+
+	<StackPanel Margin="8" Spacing="8">
+
+		<!-- Enable memory checkbox -->
+		<CheckBox IsChecked="{Binding MemorySettings.EnableMemory}"
+							Content="{loc:Loc settings-memory_enable}"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"/>
+
+		<!-- ============================================================ -->
+		<!-- ATTACHED MEMORY BLOCKS -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc settings-memory_blocks}"
+								 FontSize="{DynamicResource FontSizeL}"
+								 FontWeight="Bold"
+								 VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+								SelectedItem="{Binding SelectedBlocksInheritance}"
+								VerticalAlignment="Center"
+								Margin="0,0,8,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
+
+		<TextBlock Text="{loc:Loc settings-memory_blocks_hint}"
+							Opacity="0.6"
+							TextWrapping="Wrap"/>
+
+		<!-- Add / attach existing block -->
+		<Grid ColumnDefinitions="Auto,*,Auto"
+					IsEnabled="{Binding MemorySettings.EnableMemory}">
+
+			<Button Grid.Column="0"
+							Command="{Binding AddBlockCommand}"
+							Content="{loc:Loc settings-memory_add_block}"/>
+
+			<ComboBox Grid.Column="1"
+								Margin="8,0"
+								MinWidth="150"
+								VerticalAlignment="Center"
+								PlaceholderText="{loc:Loc settings-memory_attach_placeholder}"
+								ItemsSource="{Binding AvailableBlockIds}"
+								SelectedItem="{Binding SelectedAvailableBlockId}">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="appset:SettingsIdItemViewModel">
+						<TextBlock Text="{Binding DisplayId}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+			<Button Grid.Column="2"
+							Command="{Binding AttachBlockCommand}"
+							Content="{loc:Loc settings-memory_attach}"/>
+
+		</Grid>
+
+		<!-- Attached blocks list -->
+		<ListBox ItemsSource="{Binding BlockItems}"
+						 SelectedItem="{Binding SelectedBlockItem}"
+						 IsEnabled="{Binding MemorySettings.EnableMemory}"
+						 MaxHeight="220"
+						 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+						 ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+			<ListBox.ItemTemplate>
+				<DataTemplate x:DataType="local:MemoryBlockAttachmentItemViewModel">
+					<Grid RowDefinitions="Auto,Auto"
+								Margin="0,4,0,6">
+
+						<!-- Row 0: Enabled | Name (id) | Mode | Remove -->
+						<Grid Grid.Row="0"
+									ColumnDefinitions="Auto,*,Auto,Auto"
+									VerticalAlignment="Center">
+
+							<CheckBox Grid.Column="0"
+												IsChecked="{Binding Enabled, Mode=TwoWay}"
+												HorizontalAlignment="Center"/>
+
+							<Grid Grid.Column="1"
+										Margin="8,0"
+										VerticalAlignment="Center">
+
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+
+								<TextBlock Grid.Column="0"
+													 Text="{Binding Name}"
+													 FontWeight="Bold"
+													 TextTrimming="CharacterEllipsis"
+													 ToolTip.Tip="{Binding Name}"/>
+
+								<TextBlock Grid.Column="1"
+													 Text="{Binding BlockId}"
+													 Opacity="0.5"
+													 FontSize="12"
+													 Margin="6,0,0,0"
+													 TextTrimming="CharacterEllipsis"
+													 ToolTip.Tip="{Binding BlockId}"/>
+
+							</Grid>
+
+							<ComboBox Grid.Column="2"
+												SelectedItem="{Binding Mode, Mode=TwoWay}"
+												ItemsSource="{Binding ModeList}"
+												MinWidth="130"
+												VerticalAlignment="Center">
+
+								<ComboBox.ItemTemplate>
+									<DataTemplate x:DataType="local:MemoryBlockAttachmentModeItem">
+										<TextBlock Text="{Binding DisplayName}"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+
+							</ComboBox>
+
+							<Button Grid.Column="3"
+											Command="{Binding RemoveCommand}"
+											HorizontalAlignment="Center"
+											Classes="IconButton"
+											ToolTip.Tip="{loc:Loc settings-memory_remove}">
+
+								<ico:MaterialIcon Kind="Delete"/>
+							</Button>
+
+						</Grid>
+
+						<!-- Row 1: Description -->
+						<TextBlock Grid.Row="1"
+											 Text="{Binding Description}"
+											 Opacity="0.6"
+											 FontSize="12"
+											 TextWrapping="Wrap"
+											 Margin="28,2,0,0"
+											 IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
+					</Grid>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+
+		</ListBox>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"/>
+
+		<!-- ============================================================ -->
+		<!-- BLOCK EDITOR -->
+		<!-- ============================================================ -->
+		<StackPanel Spacing="4"
+								IsVisible="{Binding HasEditedBlock}"
+								IsEnabled="{Binding MemorySettings.EnableMemory}">
+
+			<Grid ColumnDefinitions="*,Auto">
+
+				<TextBlock Grid.Column="0"
+									 Text="{loc:Loc settings-memory_block_editor}"
+									 FontSize="{DynamicResource FontSizeL}"
+									 FontWeight="Bold"
+									 VerticalAlignment="Center"/>
+
+				<TextBlock Grid.Column="1"
+									 Text="{Binding EditedBlockId}"
+									 Opacity="0.5"
+									 FontSize="12"
+									 VerticalAlignment="Center"/>
+
+			</Grid>
+
+			<TextBlock Text="{loc:Loc settings-memory_block_name}"
+								 Margin="0,6,0,0"/>
+			<TextBox Text="{Binding EditedBlock.Name, Mode=TwoWay}"/>
+
+			<TextBlock Text="{loc:Loc settings-memory_block_description}"
+								 Margin="0,6,0,0"/>
+			<TextBox Text="{Binding EditedBlock.Description, Mode=TwoWay}"
+							 AcceptsReturn="True"
+							 MinHeight="70"
+							 TextWrapping="Wrap"/>
+
+			<TextBlock Text="{loc:Loc settings-memory_block_storage}"
+								 Margin="0,6,0,0"/>
+			<CheckBox Content="{loc:Loc settings-memory_block_facts}"
+								IsChecked="{Binding EditedBlock.FactsEnabled, Mode=TwoWay}"/>
+			<CheckBox Content="{loc:Loc settings-memory_block_logs}"
+								IsChecked="{Binding EditedBlock.LogsEnabled, Mode=TwoWay}"/>
+			<CheckBox Content="{loc:Loc settings-memory_block_state}"
+								IsChecked="{Binding EditedBlock.StateEnabled, Mode=TwoWay}"/>
+
+			<TextBlock Text="{loc:Loc settings-memory_block_embedding_model}"
+								 Margin="0,6,0,0"/>
+			<ctrl:ModelSelectorControl SelectedModel="{Binding EditedBlock.EmbeddingModel, Mode=TwoWay}"/>
+
+			<TextBlock Text="{loc:Loc settings-memory_block_maintainer_model}"
+								 Margin="0,6,0,0"/>
+			<ctrl:ModelSelectorControl SelectedModel="{Binding EditedBlock.MaintainerModel, Mode=TwoWay}"/>
+
+			<!-- Block management -->
+			<StackPanel Orientation="Horizontal"
+									Spacing="4"
+									Margin="0,10,0,0">
+
+				<Button Command="{Binding DuplicateBlockCommand}"
+								Content="{loc:Loc settings-memory_duplicate}"/>
+
+				<Button Command="{Binding RenameBlockCommand}"
+								Content="{loc:Loc settings-memory_rename}"/>
+
+				<Button Command="{Binding DeleteBlockCommand}"
+								Content="{loc:Loc settings-memory_delete}"/>
+
+			</StackPanel>
+
+			<!-- Rename editor -->
+			<StackPanel Orientation="Horizontal"
+									Spacing="4"
+									IsVisible="{Binding IsEditingId}">
+
+				<TextBox MinWidth="160"
+								 VerticalAlignment="Center"
+								 Text="{Binding NewId}"/>
+
+				<Button Command="{Binding ConfirmEditIdCommand}"
+								Classes="IconButton"
+								ToolTip.Tip="{loc:Loc settings-memory_rename_confirm}">
+
+					<ico:MaterialIcon Kind="Check"/>
+				</Button>
+
+				<Button Command="{Binding CancelEditIdCommand}"
+								Classes="IconButton"
+								ToolTip.Tip="{loc:Loc cancel}">
+
+					<ico:MaterialIcon Kind="Cancel"/>
+				</Button>
+
+			</StackPanel>
+
+		</StackPanel>
+
+	</StackPanel>
+
+</UserControl>
