@@ -53,10 +53,5 @@ namespace LLMDesktopAssistant.Agents.Memory
 			get => _maintainerModel;
 			set => SetProperty(ref _maintainerModel, value);
 		}
-
-		/// <summary>
-		/// Returns the directory where this memory block's data is stored.
-		/// </summary>
-		public string GetDataDirectory() => Path.Combine(Directories.Memory, DataId.ToString());
 	}
 }

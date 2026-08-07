@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 
 namespace LLMDesktopAssistant.Utils
 {
@@ -295,6 +295,12 @@ namespace LLMDesktopAssistant.Utils
 		/// Removes all items from the cache.
 		/// </summary>
 		public void Clear() => _storage.Clear();
+
+		/// <summary>
+		/// Gets the keys of all items currently stored in the cache, including items
+		/// that are still being created.
+		/// </summary>
+		public IEnumerable<TKey> Keys => _storage.Keys;
 
 		/// <summary>
 		/// Gets the number of items currently in the cache (excluding pending items).

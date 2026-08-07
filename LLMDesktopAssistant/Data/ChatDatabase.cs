@@ -21,11 +21,11 @@ namespace LLMDesktopAssistant.Data
 		/// Initializes a new instance of the <see cref="ChatDatabase"/> class.
 		/// </summary>
 		/// <param name="path">The path to the database file. Or the "Memory=true;" if you want to use in-memory database.</param>
-		public ChatDatabase(string path)
+		public ChatDatabase(string? path)
 		{
-			if (path != "Filename=:memory:" && Path.GetDirectoryName(path) is string dir)
+			if (path is not null && Path.GetDirectoryName(path) is string dir)
 				Directory.CreateDirectory(dir);
-			Database = new LiteDatabase(path);
+			Database = new LiteDatabase(path ?? "Filename=:memory:");
 
 			Chats = Database.GetCollection<ChatModel>();
 			MessageNodes = Database.GetCollection<MessageNodeModel>();

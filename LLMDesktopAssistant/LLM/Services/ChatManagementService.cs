@@ -58,7 +58,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		public IServiceScope OpenMemoryChat(string title)
 		{
 			const int memoryChatId = 1;
-			var memoryDatabase = new ChatDatabase("Filename=:memory:");
+			var memoryDatabase = new ChatDatabase(null);
 
 			var model = new ChatModel
 			{
