@@ -226,7 +226,13 @@ namespace LLMDesktopAssistant.Desktop.Execution
 					descriptor.Status = exitCode == 0 ? ProcessStatus.Success : ProcessStatus.Failed;
 					tcs.TrySetResult(exitCode);
 				}
-				void OnPtyExited(object? sender, PtyExitedEventArgs e) => Complete(e.ExitCode);
+				async void OnPtyExited(object? sender, PtyExitedEventArgs e)
+				{
+					// Wait a bit to ensure that all output has been readed.
+					// This is because pty.ProcessExited is fired BEFORE all output has been readed.
+					await Task.Delay(500);
+					Complete(e.ExitCode);
+				}
 
 				try
 				{
