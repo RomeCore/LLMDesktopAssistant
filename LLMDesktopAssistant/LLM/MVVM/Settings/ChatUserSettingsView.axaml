@@ -4,161 +4,109 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:users="using:LLMDesktopAssistant.Users"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatUserSettingsView"
-			 x:DataType="local:ChatUserSettingsViewModel">
+			 x:DataType="local:ChatUserSettingsViewModel"
+			 x:Name="VMRoot">
 
-	<Grid ColumnDefinitions="240,4,*">
+	<StackPanel Margin="8" Spacing="8">
 
-		<!-- User list  -->
-		<DockPanel Margin="4">
-			<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="4,8">
-				<Button Command="{Binding AddCommand}"
-								Content="{loc:Loc add}"
-								MinWidth="60"/>
-				<Button Command="{Binding DeleteCommand}"
-								Content="{loc:Loc remove}"
-								MinWidth="60"/>
-			</StackPanel>
+		<!-- ============================================================ -->
+		<!-- HEADER + ADD -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
 
-			<ListBox ItemsSource="{Binding Users}"
-							 SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
-							 BorderThickness="0"
-							 Margin="0,0,0,4">
-				<ListBox.ItemTemplate>
-					<DataTemplate>
-						<StackPanel Orientation="Horizontal" Spacing="8" Margin="4,4">
-							<StackPanel VerticalAlignment="Center">
-								<TextBlock Text="{Binding Name}"
-												   FontWeight="Bold"/>
-								<TextBlock Text="{Binding Login}"
-													 Opacity="0.6"
-													 FontSize="11"/>
-							</StackPanel>
-						</StackPanel>
-					</DataTemplate>
-				</ListBox.ItemTemplate>
-			</ListBox>
-		</DockPanel>
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc chat_settings_users}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
 
-		<GridSplitter Grid.Column="1"
-									Width="4"
-									ResizeDirection="Columns"
-									HorizontalAlignment="Stretch"/>
-
-		<!-- User editor -->
-		<ScrollViewer Grid.Column="2"
-									VerticalScrollBarVisibility="Auto"
-									IsVisible="{Binding SelectedUser, Converter={StaticResource NotnullToBooleanConverter}}">
-			<StackPanel Margin="10" Spacing="12">
-
-				<!-- Login -->
-				<TextBlock Text="{loc:Loc user_login}"
-									 FontWeight="Bold"
-									 FontSize="{DynamicResource FontSizeL}"
-									 Margin="0,5,0,0"/>
-
-				<TextBlock Text="{loc:Loc user_login_hint}"
-									 Opacity="0.6"
-									 TextWrapping="Wrap"/>
-
-				<TextBox Text="{Binding SelectedUser.Login, Mode=TwoWay}"
-								 TextWrapping="NoWrap"
-								 PlaceholderText="user"/>
-
-				<!-- Separator -->
-				<Rectangle Height="1"
-									 Fill="{DynamicResource DefaultForeground}"
-									 Opacity="0.2"
-									 Margin="0,5"/>
-
-				<!-- Name -->
-				<TextBlock Text="{loc:Loc user_name}"
-									 FontWeight="Bold"
-									 FontSize="{DynamicResource FontSizeL}"
-									 Margin="0,5,0,0"/>
-
-				<TextBlock Text="{loc:Loc user_name_hint}"
-									 Opacity="0.6"
-									 TextWrapping="Wrap"/>
-
-				<TextBox Text="{Binding SelectedUser.Name, Mode=TwoWay}"
-								 TextWrapping="NoWrap"
-								 PlaceholderText="User"/>
-
-				<!-- Separator -->
-				<Rectangle Height="1"
-									 Fill="{DynamicResource DefaultForeground}"
-									 Opacity="0.2"
-									 Margin="0,5"/>
-
-				<!-- Description -->
-				<TextBlock Text="{loc:Loc user_description}"
-									 FontWeight="Bold"
-									 FontSize="{DynamicResource FontSizeL}"
-									 Margin="0,5,0,0"/>
-
-				<TextBlock Text="{loc:Loc user_description_hint}"
-									 Opacity="0.6"
-									 TextWrapping="Wrap"/>
-
-				<TextBox Text="{Binding SelectedUser.Description, Mode=TwoWay}"
-								 TextWrapping="Wrap"
-								 MinHeight="60"
-								 AcceptsReturn="True"/>
-
-				<!-- Separator -->
-				<Rectangle Height="1"
-									 Fill="{DynamicResource DefaultForeground}"
-									 Opacity="0.2"
-									 Margin="0,5"/>
-
-				<!-- Profile Image -->
-				<TextBlock Text="{loc:Loc user_profile_image}"
-									 FontWeight="Bold"
-									 FontSize="{DynamicResource FontSizeL}"
-									 Margin="0,5,0,0"/>
-
-				<TextBlock Text="{loc:Loc user_profile_image_hint}"
-									 Opacity="0.6"
-									 TextWrapping="Wrap"/>
-
-				<!-- Image preview -->
-				<Border BorderBrush="{DynamicResource DefaultForeground}"
-								BorderThickness="1"
-								CornerRadius="8"
-								Padding="4"
-								Width="136"
-								Height="136"
-								HorizontalAlignment="Left">
-					<Image Source="{Binding ProfileImage}"
-								 Width="128"
-								 Height="128"
-								 Stretch="Uniform"
-								 VerticalAlignment="Center"
-								 HorizontalAlignment="Center"/>
-				</Border>
-
-				<StackPanel Orientation="Horizontal" Spacing="8">
-					<Button Command="{Binding SelectImageCommand}"
-									Content="{loc:Loc user_select_image}"/>
-
-					<Button Command="{Binding ClearImageCommand}"
-									Content="{loc:Loc user_clear_image}"/>
+			<Button Grid.Column="1"
+					Command="{Binding AddCommand}"
+					Classes="Primary">
+				<StackPanel Orientation="Horizontal" Spacing="4">
+					<ico:MaterialIcon Kind="AddCircle" Width="14" Height="14"/>
+					<TextBlock Text="{loc:Loc add}"/>
 				</StackPanel>
+			</Button>
 
-			</StackPanel>
-		</ScrollViewer>
+		</Grid>
 
-		<!-- Empty state when no user selected -->
-		<TextBlock Grid.Column="2"
-							 Text="{loc:Loc user_select_prompt}"
-							 HorizontalAlignment="Center"
-							 VerticalAlignment="Center"
-							 Opacity="0.5"
-							 IsVisible="{Binding SelectedUser, Converter={StaticResource NotnullToBooleanConverterInverted}}"/>
+		<TextBlock Text="{loc:Loc chat_settings_users_hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"/>
 
-	</Grid>
+		<!-- ============================================================ -->
+		<!-- USER CARDS -->
+		<!-- ============================================================ -->
+		<ItemsControl ItemsSource="{Binding Users}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="users:UserInformation">
+					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+							BorderThickness="1"
+							CornerRadius="4"
+							Padding="8"
+							Margin="0,0,0,8">
+						<Grid RowDefinitions="Auto,Auto"
+							  ColumnDefinitions="Auto,*,Auto,Auto"
+							  ColumnSpacing="6">
+
+							<!-- Row 0: Avatar icon | Name + Login | Edit | Delete -->
+							<ico:MaterialIcon Grid.Row="0" Grid.Column="0"
+											  Kind="AccountCircle"
+											  Foreground="{DynamicResource PrimaryAccentBrush}"
+											  Width="22" Height="22"
+											  VerticalAlignment="Center"/>
+
+							<StackPanel Grid.Row="0" Grid.Column="1"
+										VerticalAlignment="Center">
+								<TextBlock Text="{Binding Name}"
+										   FontWeight="Bold"
+										   TextTrimming="CharacterEllipsis"
+										   ToolTip.Tip="{Binding Name}"/>
+								<TextBlock Text="{Binding Login}"
+										   Opacity="0.6"
+										   FontSize="11"
+										   TextTrimming="CharacterEllipsis"
+										   ToolTip.Tip="{Binding Login}"/>
+							</StackPanel>
+
+							<Button Grid.Row="0" Grid.Column="2"
+									Command="{Binding #VMRoot.DataContext.EditCommand}"
+									CommandParameter="{Binding}"
+									Classes="IconButton"
+									VerticalAlignment="Center"
+									ToolTip.Tip="{loc:Loc edit}">
+								<ico:MaterialIcon Kind="Edit"/>
+							</Button>
+
+							<Button Grid.Row="0" Grid.Column="3"
+									Command="{Binding #VMRoot.DataContext.DeleteCommand}"
+									CommandParameter="{Binding}"
+									Classes="IconButton"
+									VerticalAlignment="Center"
+									ToolTip.Tip="{loc:Loc delete}">
+								<ico:MaterialIcon Kind="Delete"/>
+							</Button>
+
+							<!-- Row 1: Description -->
+							<TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+									   Text="{Binding Description}"
+									   Opacity="0.6"
+									   FontSize="12"
+									   TextWrapping="Wrap"
+									   Margin="0,2,0,0"
+									   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+	</StackPanel>
 
 </UserControl>

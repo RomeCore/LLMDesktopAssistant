@@ -1366,6 +1366,21 @@
   <data name="user_select_image_title" xml:space="preserve">
     <value>Выберите изображение профиля пользователя</value>
   </data>
+  <data name="chat_settings_users_hint" xml:space="preserve">
+    <value>Пользователи, участвующие в этом чате. Агент может обращаться к каждому пользователю по имени.</value>
+  </data>
+  <data name="user_add_title" xml:space="preserve">
+    <value>Добавить пользователя</value>
+  </data>
+  <data name="user_edit_title" xml:space="preserve">
+    <value>Редактировать пользователя</value>
+  </data>
+  <data name="user_error_login_required" xml:space="preserve">
+    <value>Логин обязателен.</value>
+  </data>
+  <data name="user_active_hint" xml:space="preserve">
+    <value>Пользователь, от которого будет отправлено следующее сообщение</value>
+  </data>
   <data name="time-get" xml:space="preserve">
     <value>Получить текущее время</value>
   </data>
@@ -2734,11 +2749,17 @@
   <data name="settings-memory_attach" xml:space="preserve">
     <value>Прикрепить</value>
   </data>
+  <data name="settings-memory_edit" xml:space="preserve">
+    <value>Редактировать блок</value>
+  </data>
   <data name="settings-memory_remove" xml:space="preserve">
     <value>Открепить</value>
   </data>
   <data name="settings-memory_block_editor" xml:space="preserve">
     <value>Редактор блока</value>
+  </data>
+  <data name="settings-memory_block_id" xml:space="preserve">
+    <value>ID блока</value>
   </data>
   <data name="settings-memory_block_name" xml:space="preserve">
     <value>Название</value>

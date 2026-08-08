@@ -8,9 +8,9 @@
 			 xmlns:appset="using:LLMDesktopAssistant.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
-			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentMemorySettingsView"
-			 x:DataType="local:AgentMemorySettingsViewModel">
+			 x:DataType="local:AgentMemorySettingsViewModel"
+			 x:Name="VMRoot">
 
 	<StackPanel Margin="8" Spacing="8">
 
@@ -67,6 +67,7 @@
 								Margin="8,0"
 								MinWidth="150"
 								VerticalAlignment="Center"
+								HorizontalAlignment="Right"
 								PlaceholderText="{loc:Loc settings-memory_attach_placeholder}"
 								ItemsSource="{Binding AvailableBlockIds}"
 								SelectedItem="{Binding SelectedAvailableBlockId}">
@@ -85,57 +86,43 @@
 
 		</Grid>
 
-		<!-- Attached blocks list -->
-		<ListBox ItemsSource="{Binding BlockItems}"
-						 SelectedItem="{Binding SelectedBlockItem}"
-						 IsEnabled="{Binding MemorySettings.EnableMemory}"
-						 MaxHeight="220"
-						 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-						 ScrollViewer.VerticalScrollBarVisibility="Auto">
+		<!-- Attached blocks as cards -->
+		<ItemsControl ItemsSource="{Binding BlockItems}"
+							IsEnabled="{Binding MemorySettings.EnableMemory}">
 
-			<ListBox.ItemTemplate>
+			<ItemsControl.ItemTemplate>
 				<DataTemplate x:DataType="local:MemoryBlockAttachmentItemViewModel">
-					<Grid RowDefinitions="Auto,Auto"
-								Margin="0,4,0,6">
+					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+									BorderThickness="1"
+									CornerRadius="4"
+									Padding="8"
+									Margin="0,0,0,8">
+						<Grid RowDefinitions="Auto,Auto"
+									ColumnDefinitions="Auto,*,Auto,Auto,Auto"
+									ColumnSpacing="6">
 
-						<!-- Row 0: Enabled | Name (id) | Mode | Remove -->
-						<Grid Grid.Row="0"
-									ColumnDefinitions="Auto,*,Auto,Auto"
-									VerticalAlignment="Center">
-
-							<CheckBox Grid.Column="0"
+							<!-- Row 0: Enabled | Name (id) | Mode | Edit | Remove -->
+							<CheckBox Grid.Row="0" Grid.Column="0"
 												IsChecked="{Binding Enabled, Mode=TwoWay}"
-												HorizontalAlignment="Center"/>
+												VerticalAlignment="Center"/>
 
-							<Grid Grid.Column="1"
-										Margin="8,0"
-										VerticalAlignment="Center">
-
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="*"/>
-									<ColumnDefinition Width="Auto"/>
-								</Grid.ColumnDefinitions>
-
-								<TextBlock Grid.Column="0"
-													 Text="{Binding Name}"
+							<StackPanel Grid.Row="0" Grid.Column="1"
+													VerticalAlignment="Center">
+								<TextBlock Text="{Binding Name}"
 													 FontWeight="Bold"
 													 TextTrimming="CharacterEllipsis"
 													 ToolTip.Tip="{Binding Name}"/>
-
-								<TextBlock Grid.Column="1"
-													 Text="{Binding BlockId}"
+								<TextBlock Text="{Binding BlockId}"
 													 Opacity="0.5"
-													 FontSize="12"
-													 Margin="6,0,0,0"
+													 FontSize="11"
 													 TextTrimming="CharacterEllipsis"
 													 ToolTip.Tip="{Binding BlockId}"/>
+							</StackPanel>
 
-							</Grid>
-
-							<ComboBox Grid.Column="2"
+							<ComboBox Grid.Row="0" Grid.Column="2"
 												SelectedItem="{Binding Mode, Mode=TwoWay}"
 												ItemsSource="{Binding ModeList}"
-												MinWidth="130"
+												MinWidth="110"
 												VerticalAlignment="Center">
 
 								<ComboBox.ItemTemplate>
@@ -146,130 +133,40 @@
 
 							</ComboBox>
 
-							<Button Grid.Column="3"
-											Command="{Binding RemoveCommand}"
-											HorizontalAlignment="Center"
+							<Button Grid.Row="0" Grid.Column="3"
+											Command="{Binding #VMRoot.DataContext.EditBlockCommand}"
+											CommandParameter="{Binding}"
 											Classes="IconButton"
+											VerticalAlignment="Center"
+											ToolTip.Tip="{loc:Loc settings-memory_edit}">
+
+								<ico:MaterialIcon Kind="Edit"/>
+							</Button>
+
+							<Button Grid.Row="0" Grid.Column="4"
+											Command="{Binding RemoveCommand}"
+											Classes="IconButton"
+											VerticalAlignment="Center"
 											ToolTip.Tip="{loc:Loc settings-memory_remove}">
 
 								<ico:MaterialIcon Kind="Delete"/>
 							</Button>
 
+							<!-- Row 1: Description -->
+							<TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4"
+												 Text="{Binding Description}"
+												 Opacity="0.6"
+												 FontSize="12"
+												 TextWrapping="Wrap"
+												 Margin="0,2,0,0"
+												 IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
 						</Grid>
-
-						<!-- Row 1: Description -->
-						<TextBlock Grid.Row="1"
-											 Text="{Binding Description}"
-											 Opacity="0.6"
-											 FontSize="12"
-											 TextWrapping="Wrap"
-											 Margin="28,2,0,0"
-											 IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
-
-					</Grid>
+					</Border>
 				</DataTemplate>
-			</ListBox.ItemTemplate>
+			</ItemsControl.ItemTemplate>
 
-		</ListBox>
-
-		<!-- Separator -->
-		<Rectangle Height="1"
-							 Fill="{DynamicResource DefaultForeground}"
-							 Opacity="0.2"/>
-
-		<!-- ============================================================ -->
-		<!-- BLOCK EDITOR -->
-		<!-- ============================================================ -->
-		<StackPanel Spacing="4"
-								IsVisible="{Binding HasEditedBlock}"
-								IsEnabled="{Binding MemorySettings.EnableMemory}">
-
-			<Grid ColumnDefinitions="*,Auto">
-
-				<TextBlock Grid.Column="0"
-									 Text="{loc:Loc settings-memory_block_editor}"
-									 FontSize="{DynamicResource FontSizeL}"
-									 FontWeight="Bold"
-									 VerticalAlignment="Center"/>
-
-				<TextBlock Grid.Column="1"
-									 Text="{Binding EditedBlockId}"
-									 Opacity="0.5"
-									 FontSize="12"
-									 VerticalAlignment="Center"/>
-
-			</Grid>
-
-			<TextBlock Text="{loc:Loc settings-memory_block_name}"
-								 Margin="0,6,0,0"/>
-			<TextBox Text="{Binding EditedBlock.Name, Mode=TwoWay}"/>
-
-			<TextBlock Text="{loc:Loc settings-memory_block_description}"
-								 Margin="0,6,0,0"/>
-			<TextBox Text="{Binding EditedBlock.Description, Mode=TwoWay}"
-							 AcceptsReturn="True"
-							 MinHeight="70"
-							 TextWrapping="Wrap"/>
-
-			<TextBlock Text="{loc:Loc settings-memory_block_storage}"
-								 Margin="0,6,0,0"/>
-			<CheckBox Content="{loc:Loc settings-memory_block_facts}"
-								IsChecked="{Binding EditedBlock.FactsEnabled, Mode=TwoWay}"/>
-			<CheckBox Content="{loc:Loc settings-memory_block_logs}"
-								IsChecked="{Binding EditedBlock.LogsEnabled, Mode=TwoWay}"/>
-			<CheckBox Content="{loc:Loc settings-memory_block_state}"
-								IsChecked="{Binding EditedBlock.StateEnabled, Mode=TwoWay}"/>
-
-			<TextBlock Text="{loc:Loc settings-memory_block_embedding_model}"
-								 Margin="0,6,0,0"/>
-			<ctrl:ModelSelectorControl SelectedModel="{Binding EditedBlock.EmbeddingModel, Mode=TwoWay}"/>
-
-			<TextBlock Text="{loc:Loc settings-memory_block_maintainer_model}"
-								 Margin="0,6,0,0"/>
-			<ctrl:ModelSelectorControl SelectedModel="{Binding EditedBlock.MaintainerModel, Mode=TwoWay}"/>
-
-			<!-- Block management -->
-			<StackPanel Orientation="Horizontal"
-									Spacing="4"
-									Margin="0,10,0,0">
-
-				<Button Command="{Binding DuplicateBlockCommand}"
-								Content="{loc:Loc settings-memory_duplicate}"/>
-
-				<Button Command="{Binding RenameBlockCommand}"
-								Content="{loc:Loc settings-memory_rename}"/>
-
-				<Button Command="{Binding DeleteBlockCommand}"
-								Content="{loc:Loc settings-memory_delete}"/>
-
-			</StackPanel>
-
-			<!-- Rename editor -->
-			<StackPanel Orientation="Horizontal"
-									Spacing="4"
-									IsVisible="{Binding IsEditingId}">
-
-				<TextBox MinWidth="160"
-								 VerticalAlignment="Center"
-								 Text="{Binding NewId}"/>
-
-				<Button Command="{Binding ConfirmEditIdCommand}"
-								Classes="IconButton"
-								ToolTip.Tip="{loc:Loc settings-memory_rename_confirm}">
-
-					<ico:MaterialIcon Kind="Check"/>
-				</Button>
-
-				<Button Command="{Binding CancelEditIdCommand}"
-								Classes="IconButton"
-								ToolTip.Tip="{loc:Loc cancel}">
-
-					<ico:MaterialIcon Kind="Cancel"/>
-				</Button>
-
-			</StackPanel>
-
-		</StackPanel>
+		</ItemsControl>
 
 	</StackPanel>
 

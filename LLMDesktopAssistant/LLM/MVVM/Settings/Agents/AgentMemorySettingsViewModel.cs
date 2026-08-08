@@ -2,6 +2,7 @@ using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
@@ -168,9 +169,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 	/// <summary>
 	/// ViewModel for the per-agent memory settings tab.
-	/// The attached blocks are resolved through the effective (inherited) scope, while
-	/// the block editor below operates on the shared <see cref="MemoryBlock"/> instances
-	/// stored in the memory blocks settings category.
+	/// The attached blocks are resolved through the effective (inherited) scope and are
+	/// listed as cards; block contents are edited through the
+	/// <see cref="EditMemoryBlockDialogViewModel"/> dialog.
 	/// </summary>
 	[ViewModelFor(typeof(AgentMemorySettingsView))]
 	public class AgentMemorySettingsViewModel : ViewModelBase
@@ -225,42 +226,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 		}
 
-		private MemoryBlockAttachmentItemViewModel? _selectedBlockItem;
-		/// <summary>
-		/// Gets or sets the selected attached block. The block editor below is bound to it.
-		/// </summary>
-		public MemoryBlockAttachmentItemViewModel? SelectedBlockItem
-		{
-			get => _selectedBlockItem;
-			set
-			{
-				if (SetProperty(ref _selectedBlockItem, value))
-				{
-					RaisePropertyChanged(nameof(EditedBlock));
-					RaisePropertyChanged(nameof(HasEditedBlock));
-					RaisePropertyChanged(nameof(EditedBlockId));
-					DuplicateBlockCommand.NotifyCanExecuteChanged();
-					RenameBlockCommand.NotifyCanExecuteChanged();
-					DeleteBlockCommand.NotifyCanExecuteChanged();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Gets the memory block being edited in the block editor below.
-		/// </summary>
-		public MemoryBlock? EditedBlock => SelectedBlockItem?.Block;
-
-		/// <summary>
-		/// Gets a value indicating whether a block is selected and can be edited.
-		/// </summary>
-		public bool HasEditedBlock => EditedBlock != null;
-
-		/// <summary>
-		/// Gets the identifier of the edited block.
-		/// </summary>
-		public string EditedBlockId => EditedBlock?.Id ?? string.Empty;
-
 		private InheritanceLevelItem _selectedBlocksInheritance;
 		/// <summary>
 		/// Gets or sets the inheritance level for the attached blocks group.
@@ -275,26 +240,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 		}
 
-		private bool _isEditingId;
-		/// <summary>
-		/// Gets or sets a value indicating whether the block ID rename editor is visible.
-		/// </summary>
-		public bool IsEditingId
-		{
-			get => _isEditingId;
-			set => SetProperty(ref _isEditingId, value);
-		}
-
-		private string? _newId;
-		/// <summary>
-		/// Gets or sets the block ID being entered for the rename operation.
-		/// </summary>
-		public string? NewId
-		{
-			get => _newId;
-			set => SetProperty(ref _newId, value);
-		}
-
 		/// <summary>
 		/// Gets the command that creates a new memory block and attaches it to the agent.
 		/// </summary>
@@ -306,29 +251,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public ICommand AttachBlockCommand { get; }
 
 		/// <summary>
-		/// Gets the command that duplicates the edited block and attaches the copy to the agent.
+		/// Gets the command that opens the edit dialog for the given attached block.
 		/// </summary>
-		public AsyncRelayCommand DuplicateBlockCommand { get; }
-
-		/// <summary>
-		/// Gets the command that starts renaming the edited block.
-		/// </summary>
-		public RelayCommand RenameBlockCommand { get; }
-
-		/// <summary>
-		/// Gets the command that deletes the edited block together with its attachments.
-		/// </summary>
-		public AsyncRelayCommand DeleteBlockCommand { get; }
-
-		/// <summary>
-		/// Gets the command that confirms the block rename.
-		/// </summary>
-		public AsyncRelayCommand ConfirmEditIdCommand { get; }
-
-		/// <summary>
-		/// Gets the command that cancels the block rename.
-		/// </summary>
-		public ICommand CancelEditIdCommand { get; }
+		public AsyncRelayCommand<MemoryBlockAttachmentItemViewModel> EditBlockCommand { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AgentMemorySettingsViewModel"/> class.
@@ -349,11 +274,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			AddBlockCommand = new RelayCommand(AddBlock);
 			AttachBlockCommand = new RelayCommand(AttachBlock);
-			DuplicateBlockCommand = new AsyncRelayCommand(DuplicateBlockAsync, () => HasEditedBlock);
-			RenameBlockCommand = new RelayCommand(RenameBlock, () => HasEditedBlock);
-			DeleteBlockCommand = new AsyncRelayCommand(DeleteBlockAsync, () => HasEditedBlock);
-			ConfirmEditIdCommand = new AsyncRelayCommand(ConfirmRenameBlockAsync);
-			CancelEditIdCommand = new RelayCommand(() => IsEditingId = false);
+			EditBlockCommand = new AsyncRelayCommand<MemoryBlockAttachmentItemViewModel>(EditBlockAsync);
 		}
 
 		/// <inheritdoc/>
@@ -385,7 +306,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		private void UpdateBlocks()
 		{
 			DisposeItems();
-			SelectedBlockItem = null;
 
 			var items = new List<MemoryBlockAttachmentItemViewModel>(EffectiveBlocks.Count);
 			foreach (var attachment in EffectiveBlocks)
@@ -416,10 +336,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		{
 			var existing = BlockItems.FirstOrDefault(b => b.BlockId == id);
 			if (existing != null)
-			{
-				SelectedBlockItem = existing;
 				return;
-			}
 
 			EffectiveBlocks.Add(new MemoryBlockAttachment
 			{
@@ -427,88 +344,47 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			});
 
 			UpdateBlocks();
-			SelectedBlockItem = BlockItems.FirstOrDefault(b => b.BlockId == id);
 		}
 
-		private async Task DuplicateBlockAsync()
+		private async Task EditBlockAsync(MemoryBlockAttachmentItemViewModel? item)
 		{
-			if (EditedBlock is not { } block)
+			if (item?.Block is not { } block)
 				return;
 
-			var id = GenerateBlockId();
-			if (!BlocksCategory.Copy(block.Id, id))
+			var vm = new EditMemoryBlockDialogViewModel(block, _databaseManager);
+			var result = await DialogManager.ShowDialogAsync(vm);
+
+			if (result is not true)
 				return;
 
-			var copy = BlocksCategory.Get(id);
-			copy.Name = block.Name + " (" + LocalizationManager.LocalizeStatic("settings-memory_copy_suffix") + ")";
-
-			await _databaseManager.CopyAsync(block.Id, id);
-
-			AvailableBlockIds.Add(new SettingsIdItemViewModel { Id = id });
-			Attach(id);
-		}
-
-		private void RenameBlock()
-		{
-			if (EditedBlock is not { } block)
-				return;
-
-			NewId = block.Id;
-			IsEditingId = true;
-		}
-
-		private async Task ConfirmRenameBlockAsync()
-		{
-			if (EditedBlock is not { } block)
+			if (vm.DuplicatedBlockId is { } duplicatedId)
 			{
-				IsEditingId = false;
-				return;
+				AvailableBlockIds.Add(new SettingsIdItemViewModel { Id = duplicatedId });
+				Attach(duplicatedId);
 			}
 
-			var oldId = block.Id;
-			var newId = NewId?.Trim();
-			if (string.IsNullOrWhiteSpace(newId) || newId == oldId)
+			if (vm.RenamedFromId is { } oldId && vm.RenamedToId is { } newId)
 			{
-				IsEditingId = false;
-				return;
+				foreach (var attachment in EffectiveBlocks.Where(b => b.Reference.Id == oldId))
+					attachment.Reference.Id = newId;
+
+				if (oldId != SettingsObject.DefaultId)
+					AvailableBlockIds.Remove(new SettingsIdItemViewModel { Id = oldId });
+				if (newId != SettingsObject.DefaultId && !AvailableBlockIds.Any(i => i.Id == newId))
+					AvailableBlockIds.Add(new SettingsIdItemViewModel { Id = newId });
 			}
 
-			if (!BlocksCategory.Rename(oldId, newId))
-				return;
+			if (vm.DeletedBlockId is { } deletedId)
+			{
+				foreach (var attachment in EffectiveBlocks.Where(b => b.Reference.Id == deletedId).ToList())
+					EffectiveBlocks.Remove(attachment);
 
-			foreach (var attachment in EffectiveBlocks.Where(b => b.Reference.Id == oldId))
-				attachment.Reference.Id = newId;
+				if (deletedId != SettingsObject.DefaultId)
+					AvailableBlockIds.Remove(new SettingsIdItemViewModel { Id = deletedId });
+			}
 
-			if (oldId != SettingsObject.DefaultId)
-				AvailableBlockIds.Remove(new SettingsIdItemViewModel { Id = oldId });
-			if (newId != SettingsObject.DefaultId && !AvailableBlockIds.Any(i => i.Id == newId))
-				AvailableBlockIds.Add(new SettingsIdItemViewModel { Id = newId });
-
-			UpdateBlocks();
-			SelectedBlockItem = BlockItems.FirstOrDefault(b => b.BlockId == newId);
-			IsEditingId = false;
-
-			await _databaseManager.RenameAsync(oldId, newId);
-		}
-
-		private async Task DeleteBlockAsync()
-		{
-			if (EditedBlock is not { } block)
-				return;
-
-			var id = block.Id;
-			foreach (var attachment in EffectiveBlocks.Where(b => b.Reference.Id == id).ToList())
-				EffectiveBlocks.Remove(attachment);
-
-			BlocksCategory.Remove(id);
-
-			if (id != SettingsObject.DefaultId)
-				AvailableBlockIds.Remove(new SettingsIdItemViewModel { Id = id });
-
-			UpdateBlocks();
-			SelectedBlockItem = null;
-
-			await _databaseManager.DeleteAsync(id);
+			if (vm.DuplicatedBlockId != null || vm.RenamedToId != null || vm.DeletedBlockId != null)
+				UpdateBlocks();
 		}
 
 		private static string GenerateBlockId()

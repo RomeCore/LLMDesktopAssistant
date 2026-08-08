@@ -1,0 +1,121 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="460" d:DesignHeight="600"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 x:Class="LLMDesktopAssistant.LLM.Settings.EditUserDialogView"
+			 x:DataType="local:EditUserDialogViewModel">
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel Orientation="Vertical" Spacing="10" Margin="16" Width="420">
+
+			<!-- Header -->
+			<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,6">
+				<ico:MaterialIcon Kind="AccountCircle" Width="20" Height="20"
+								  VerticalAlignment="Center"
+								  Foreground="{DynamicResource PrimaryAccentBrush}"/>
+				<TextBlock Text="{Binding TitleText}"
+						   FontSize="{DynamicResource FontSizeL}"
+						   FontWeight="Bold"
+						   VerticalAlignment="Center"/>
+			</StackPanel>
+
+			<!-- Error message -->
+			<Border Background="#33FF0000"
+					CornerRadius="4"
+					Padding="8"
+					IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+				<TextBlock Text="{Binding ErrorMessage}"
+						   Foreground="Red"
+						   TextWrapping="Wrap"/>
+			</Border>
+
+			<!-- Login -->
+			<StackPanel Orientation="Vertical" Spacing="4">
+				<TextBlock Text="{loc:Loc user_login}"
+						   FontWeight="Medium"/>
+				<TextBlock Text="{loc:Loc user_login_hint}"
+						   Opacity="0.6"
+						   FontSize="11"
+						   TextWrapping="Wrap"/>
+				<TextBox Text="{Binding Login, Mode=TwoWay}"
+						 PlaceholderText="user"/>
+			</StackPanel>
+
+			<!-- Name -->
+			<StackPanel Orientation="Vertical" Spacing="4">
+				<TextBlock Text="{loc:Loc user_name}"
+						   FontWeight="Medium"/>
+				<TextBlock Text="{loc:Loc user_name_hint}"
+						   Opacity="0.6"
+						   FontSize="11"
+						   TextWrapping="Wrap"/>
+				<TextBox Text="{Binding Name, Mode=TwoWay}"
+						 PlaceholderText="User"/>
+			</StackPanel>
+
+			<!-- Description -->
+			<StackPanel Orientation="Vertical" Spacing="4">
+				<TextBlock Text="{loc:Loc user_description}"
+						   FontWeight="Medium"/>
+				<TextBlock Text="{loc:Loc user_description_hint}"
+						   Opacity="0.6"
+						   FontSize="11"
+						   TextWrapping="Wrap"/>
+				<TextBox Text="{Binding Description, Mode=TwoWay}"
+						 AcceptsReturn="True"
+						 MinHeight="60"
+						 TextWrapping="Wrap"/>
+			</StackPanel>
+
+			<!-- Profile image -->
+			<StackPanel Orientation="Vertical" Spacing="4">
+				<TextBlock Text="{loc:Loc user_profile_image}"
+						   FontWeight="Medium"/>
+				<TextBlock Text="{loc:Loc user_profile_image_hint}"
+						   Opacity="0.6"
+						   FontSize="11"
+						   TextWrapping="Wrap"/>
+
+				<StackPanel Orientation="Horizontal" Spacing="10">
+					<Border BorderBrush="{DynamicResource DefaultForeground}"
+							BorderThickness="1"
+							CornerRadius="8"
+							Padding="4"
+							Width="72"
+							Height="72"
+							HorizontalAlignment="Left">
+						<Image Source="{Binding ProfileImage}"
+							   Width="64"
+							   Height="64"
+							   Stretch="Uniform"
+							   VerticalAlignment="Center"
+							   HorizontalAlignment="Center"/>
+					</Border>
+
+					<StackPanel Orientation="Vertical" Spacing="4" VerticalAlignment="Center">
+						<Button Command="{Binding SelectImageCommand}"
+								Content="{loc:Loc user_select_image}"/>
+						<Button Command="{Binding ClearImageCommand}"
+								Content="{loc:Loc user_clear_image}"/>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+
+			<!-- Buttons -->
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
+				<Button Content="{loc:Loc cancel}"
+						Command="{Binding CancelCommand}"
+						Classes="Secondary"/>
+				<Button Content="{Binding ConfirmButtonText}"
+						Command="{Binding SaveCommand}"
+						Classes="Primary"/>
+			</StackPanel>
+
+		</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

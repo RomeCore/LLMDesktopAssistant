@@ -283,11 +283,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 				() => new ChatModelSettingsViewModel(Settings.Models)));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_memory"),
-				MaterialIconKind.Database,
-				() => new ChatMemorySettingsViewModel(Settings.Memory)));
-
-			SettingsTree.Add(
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_users"),
 				MaterialIconKind.AccountCircle,
 				() => new ChatUserSettingsViewModel(Settings.Users.Users)));
@@ -314,7 +309,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 				() => new ChatSkillsSettingsViewModel(Settings.Skills,
 					Chat.Services.GetRequiredService<ISkillsetBuildingService>())));
 
-			_generalSettingsCount = 9;
+			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_memory"),
+				MaterialIconKind.Database,
+				() => new ChatMemorySettingsViewModel(Settings.Memory)));
+
+			_generalSettingsCount = SettingsTree.Count;
 
 			RebuildAgents();
 		}

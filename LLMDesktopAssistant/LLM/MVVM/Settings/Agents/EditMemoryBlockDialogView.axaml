@@ -1,0 +1,137 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="640"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.EditMemoryBlockDialogView"
+			 x:DataType="local:EditMemoryBlockDialogViewModel">
+
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel Orientation="Vertical" Spacing="10" Margin="16" Width="440">
+
+			<!-- Header -->
+			<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,6">
+				<ico:MaterialIcon Kind="Database" Width="20" Height="20"
+												  VerticalAlignment="Center"
+												  Foreground="{DynamicResource PrimaryAccentBrush}"/>
+				<TextBlock Text="{loc:Loc settings-memory_block_editor}"
+								   FontSize="{DynamicResource FontSizeL}"
+								   FontWeight="Bold"
+								   VerticalAlignment="Center"/>
+			</StackPanel>
+
+			<!-- Block ID + management -->
+			<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+							BorderThickness="1"
+							CornerRadius="4"
+							Padding="8">
+				<StackPanel Spacing="6">
+
+					<StackPanel Orientation="Horizontal" Spacing="8">
+
+						<TextBlock Text="{loc:Loc settings-memory_block_id}"
+											 FontWeight="Medium"
+											 VerticalAlignment="Center"/>
+
+						<TextBlock Text="{Binding BlockId}"
+											 Opacity="0.7"
+											 FontSize="12"
+											 VerticalAlignment="Center"
+											 TextTrimming="CharacterEllipsis"
+											 ToolTip.Tip="{Binding BlockId}"/>
+
+					</StackPanel>
+					
+					<StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+						<Button Command="{Binding RenameCommand}"
+										Content="{loc:Loc settings-memory_rename}"/>
+						<Button Command="{Binding DuplicateCommand}"
+										Content="{loc:Loc settings-memory_duplicate}"/>
+						<Button Command="{Binding DeleteCommand}"
+										Content="{loc:Loc settings-memory_delete}"
+										Classes="Danger"/>
+					</StackPanel>
+
+					<!-- Rename editor -->
+					<StackPanel Orientation="Horizontal"
+											Spacing="4"
+											IsVisible="{Binding IsEditingId}">
+
+						<TextBox MinWidth="160"
+										 VerticalAlignment="Center"
+										 Text="{Binding NewId}"/>
+
+						<Button Command="{Binding ConfirmRenameCommand}"
+										Classes="IconButton"
+										ToolTip.Tip="{loc:Loc settings-memory_rename_confirm}">
+							<ico:MaterialIcon Kind="Check"/>
+						</Button>
+
+						<Button Command="{Binding CancelRenameCommand}"
+										Classes="IconButton"
+										ToolTip.Tip="{loc:Loc cancel}">
+							<ico:MaterialIcon Kind="Cancel"/>
+						</Button>
+
+					</StackPanel>
+
+				</StackPanel>
+			</Border>
+
+			<!-- Name -->
+			<StackPanel Orientation="Vertical" Spacing="4">
+				<TextBlock Text="{loc:Loc settings-memory_block_name}"
+								   FontWeight="Medium"/>
+				<TextBox Text="{Binding Block.Name, Mode=TwoWay}"/>
+			</StackPanel>
+
+			<!-- Description -->
+			<StackPanel Orientation="Vertical" Spacing="4">
+				<TextBlock Text="{loc:Loc settings-memory_block_description}"
+								   FontWeight="Medium"/>
+				<TextBox Text="{Binding Block.Description, Mode=TwoWay}"
+								 AcceptsReturn="True"
+								 MinHeight="70"
+								 TextWrapping="Wrap"/>
+			</StackPanel>
+
+			<!-- Storage -->
+			<StackPanel Orientation="Vertical" Spacing="4">
+				<TextBlock Text="{loc:Loc settings-memory_block_storage}"
+								   FontWeight="Medium"/>
+				<CheckBox Content="{loc:Loc settings-memory_block_facts}"
+								  IsChecked="{Binding Block.FactsEnabled, Mode=TwoWay}"/>
+				<CheckBox Content="{loc:Loc settings-memory_block_logs}"
+								  IsChecked="{Binding Block.LogsEnabled, Mode=TwoWay}"/>
+				<CheckBox Content="{loc:Loc settings-memory_block_state}"
+								  IsChecked="{Binding Block.StateEnabled, Mode=TwoWay}"/>
+			</StackPanel>
+
+			<!-- Models -->
+			<StackPanel Orientation="Vertical" Spacing="4">
+				<TextBlock Text="{loc:Loc settings-memory_block_embedding_model}"
+								   FontWeight="Medium"/>
+				<ctrl:ModelSelectorControl SelectedModel="{Binding Block.EmbeddingModel, Mode=TwoWay}"/>
+			</StackPanel>
+
+			<StackPanel Orientation="Vertical" Spacing="4">
+				<TextBlock Text="{loc:Loc settings-memory_block_maintainer_model}"
+								   FontWeight="Medium"/>
+				<ctrl:ModelSelectorControl SelectedModel="{Binding Block.MaintainerModel, Mode=TwoWay}"/>
+			</StackPanel>
+
+			<!-- Close -->
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+				<Button Content="{loc:Loc close}"
+								Command="{Binding CloseCommand}"
+								Classes="Primary"/>
+			</StackPanel>
+
+		</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

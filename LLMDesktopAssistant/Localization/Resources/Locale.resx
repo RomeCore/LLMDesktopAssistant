@@ -1366,6 +1366,21 @@
   <data name="user_select_image_title" xml:space="preserve">
     <value>Select user profile image</value>
   </data>
+  <data name="chat_settings_users_hint" xml:space="preserve">
+    <value>Users that participate in this chat. The agent can address each user by name.</value>
+  </data>
+  <data name="user_add_title" xml:space="preserve">
+    <value>Add user</value>
+  </data>
+  <data name="user_edit_title" xml:space="preserve">
+    <value>Edit user</value>
+  </data>
+  <data name="user_error_login_required" xml:space="preserve">
+    <value>Login is required.</value>
+  </data>
+  <data name="user_active_hint" xml:space="preserve">
+    <value>User sending the next message</value>
+  </data>
   <data name="time-get" xml:space="preserve">
     <value>Get current time</value>
   </data>
@@ -2734,11 +2749,17 @@
   <data name="settings-memory_attach" xml:space="preserve">
     <value>Attach</value>
   </data>
+  <data name="settings-memory_edit" xml:space="preserve">
+    <value>Edit block</value>
+  </data>
   <data name="settings-memory_remove" xml:space="preserve">
     <value>Detach</value>
   </data>
   <data name="settings-memory_block_editor" xml:space="preserve">
     <value>Block editor</value>
+  </data>
+  <data name="settings-memory_block_id" xml:space="preserve">
+    <value>Block ID</value>
   </data>
   <data name="settings-memory_block_name" xml:space="preserve">
     <value>Name</value>
