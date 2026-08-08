@@ -23,6 +23,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			AddTool(LoadSkill, new ToolInitializationInfo
 			{
 				Name = "skill-load",
+				IsFixed = true,
 				Description = "Loads a skill (SKILL.md format) by its name.",
 				Category = "skills",
 				DefaultExpectedBehaviour = ToolBehaviour.None

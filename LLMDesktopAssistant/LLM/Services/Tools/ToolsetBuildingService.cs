@@ -62,6 +62,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						DisplayName = last.DisplayName,
 						Source = last.Source,
 						Enabled = last.Enabled,
+						IsFixed = last.IsFixed,
 						ApprovalLevel = last.ApprovalLevel,
 						Overrides = overridesBuilder.ToImmutable()
 					};
@@ -86,7 +87,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			{
 				if (changes.TryGetValue(toolInfo.Tool.Name, out var change))
 				{
-					if (change.Enabled ?? toolInfo.Enabled)
+					if (toolInfo.IsFixed || (change.Enabled ?? toolInfo.Enabled))
 						result.Add(new ToolInfo
 						{
 							Name = toolInfo.Name,
@@ -104,6 +105,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							DisplayName = toolInfo.DisplayName,
 							Source = toolInfo.Source,
 							Enabled = true,
+							IsFixed = toolInfo.IsFixed,
 							ApprovalLevel = change.ApprovalLevel ?? toolInfo.ApprovalLevel
 						});
 				}

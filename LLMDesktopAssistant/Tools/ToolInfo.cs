@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Tools
@@ -114,6 +114,12 @@ namespace LLMDesktopAssistant.Tools
 		public bool Enabled { get; init; } = true;
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the tool is fixed and cannot be disabled (but approval level can be modified).
+		/// Usually the fixed tools are context-based, <c>skill-load</c> for example (only enabled when skills present in the system).
+		/// </summary>
+		public bool IsFixed { get; init; } = false;
+
+		/// <summary>
 		/// Gets or sets a value indicating whether the tool requires user confirmation before execution.
 		/// </summary>
 		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.PolicyBased;
@@ -164,6 +170,7 @@ namespace LLMDesktopAssistant.Tools
 				Category = info.Category,
 				ApprovalLevel = info.ApprovalLevel,
 				Enabled = info.Enabled,
+				IsFixed = info.IsFixed,
 				Source = info.Source
 			};
 		}

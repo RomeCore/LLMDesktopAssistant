@@ -71,7 +71,15 @@
 										</ItemsControl.ItemsPanel>
 										<ItemsControl.ItemTemplate>
 											<DataTemplate x:DataType="local:ToolBehaviourFlagInfo">
-												<Panel ToolTip.Tip="{Binding DisplayName}">
+												<Panel>
+													<ToolTip.Tip>
+														<StackPanel Orientation="Vertical" Spacing="4">
+															<TextBlock Text="{Binding DisplayName}"
+															           FontSize="{DynamicResource FontSizeM}"
+															           FontWeight="SemiBold"/>
+															<TextBlock Text="{Binding Description}"/>
+														</StackPanel>
+													</ToolTip.Tip>
 													<ico:MaterialIcon Kind="{Binding Icon}"
 																	  Foreground="{Binding Color}"
 																	  Width="14" Height="14"/>
@@ -318,7 +326,15 @@
 
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
-							<Panel ToolTip.Tip="{Binding DisplayName}">
+							<Panel>
+								<ToolTip.Tip>
+									<StackPanel Orientation="Vertical" Spacing="4">
+										<TextBlock Text="{Binding DisplayName}"
+										           FontSize="{DynamicResource FontSizeM}"
+										           FontWeight="SemiBold"/>
+										<TextBlock Text="{Binding Description}"/>
+									</StackPanel>
+								</ToolTip.Tip>
 								<ico:MaterialIcon Kind="{Binding Icon}"
 																	Foreground="{Binding Color}"
 																	Background="Transparent"

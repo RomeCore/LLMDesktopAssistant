@@ -50,10 +50,18 @@
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
 						<DataTemplate x:DataType="messages:ToolBehaviourFlagInfo">
-							<Panel ToolTip.Tip="{Binding DisplayName}">
+							<Panel>
+								<ToolTip.Tip>
+									<StackPanel Orientation="Vertical" Spacing="4">
+										<TextBlock Text="{Binding DisplayName}"
+										           FontSize="{DynamicResource FontSizeM}"
+										           FontWeight="SemiBold"/>
+										<TextBlock Text="{Binding Description}"/>
+									</StackPanel>
+								</ToolTip.Tip>
 								<ico:MaterialIcon Kind="{Binding Icon}"
-																	Foreground="{Binding Color}"
-																	Width="12" Height="12"/>
+								                  Foreground="{Binding Color}"
+								                  Width="12" Height="12"/>
 							</Panel>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>

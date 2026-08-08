@@ -324,6 +324,12 @@
   <data name="enable" xml:space="preserve">
     <value>Enable</value>
   </data>
+  <data name="tool_fixed" xml:space="preserve">
+    <value>Fixed tool</value>
+  </data>
+  <data name="tool_fixed_hint" xml:space="preserve">
+    <value>This tool is always enabled while its context is present and cannot be disabled.</value>
+  </data>
   <data name="tool_name_suffix_hint" xml:space="preserve">
     <value>{0} tools</value>
   </data>

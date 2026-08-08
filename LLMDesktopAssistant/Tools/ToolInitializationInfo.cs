@@ -63,22 +63,28 @@ namespace LLMDesktopAssistant.Tools
 		/// <summary>
 		/// Gets or sets the user-friendly display name of the tool. If not set, the tool's name will be used as the display name.
 		/// </summary>
-		public string? DisplayName { get; set; }
+		public string? DisplayName { get; init; }
 
 		/// <summary>
 		/// Gets or sets the category of the tool. Defaults to "general".
 		/// </summary>
-		public string Category { get; set; } = "general";
+		public string Category { get; init; } = "general";
 
 		/// <summary>
 		/// Gets or sets the source of the tool. Defaults to "native".
 		/// </summary>
-		public ToolSource Source { get; set; } = ToolSource.Native;
+		public ToolSource Source { get; init; } = ToolSource.Native;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the tool is enabled. Defaults to true.
 		/// </summary>
-		public bool Enabled { get; set; } = true;
+		public bool Enabled { get; init; } = true;
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the tool is fixed and cannot be disabled (but approval level can be modified).
+		/// Usually the fixed tools are context-based, <c>skill-load</c> for example (only enabled when skills present in the system).
+		/// </summary>
+		public bool IsFixed { get; init; } = false;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the tool requires user confirmation before execution.

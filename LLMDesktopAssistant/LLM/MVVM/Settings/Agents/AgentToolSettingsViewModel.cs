@@ -31,6 +31,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public ToolInfo Info => _toolInfo;
 		public string Name { get; }
 		public string Description { get; }
+
+		public bool IsFixed => _toolInfo.IsFixed;
 		public IBrush? DescriptionOpacityMask { get; }
 		public string Category { get; }
 		public ICommand ResetCommand { get; }
@@ -106,9 +108,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		public bool? Enabled
 		{
-			get => _change?.Enabled ?? _toolInfo.Enabled;
+			get => IsFixed ? true : (_change?.Enabled ?? _toolInfo.Enabled);
 			set
 			{
+				if (IsFixed)
+					return;
 				if (Enabled != value)
 				{
 					EnsureChange().Enabled = value;
@@ -143,6 +147,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public string? TitleSuffix { get; }
 
 		public int ToolCount => Tools.Count;
+
+		public bool CanToggleEnabled => Tools.Any(t => !t.IsFixed);
 
 		/// <summary>
 		/// Gets the list of approval levels from the first tool (all tools share the same static list).
