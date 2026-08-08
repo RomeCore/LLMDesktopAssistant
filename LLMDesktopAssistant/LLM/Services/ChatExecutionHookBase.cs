@@ -10,6 +10,10 @@ namespace LLMDesktopAssistant.LLM.Services
 		public virtual int Order => 0;
 
 		/// <inheritdoc />
+		public virtual Task OnResponsePrepareAsync(ChatPreExecutionHookContext context, CancellationToken cancellationToken = default)
+			=> Task.CompletedTask;
+
+		/// <inheritdoc />
 		public virtual Task OnResponseCompletedAsync(ChatExecutionHookContext context, CancellationToken cancellationToken = default)
 			=> Task.CompletedTask;
 

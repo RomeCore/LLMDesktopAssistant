@@ -2,11 +2,18 @@ using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
+	[ChatService(typeof(IChatExecutionHook))]
 	[ChatService(typeof(IMessageRevealService))]
 	public class MessageRevealService(
 		Chat chat
-	) : IMessageRevealService
+	) : ChatExecutionHookBase, IMessageRevealService
 	{
+		public override Task OnResponsePrepareAsync(ChatPreExecutionHookContext context, CancellationToken cancellationToken = default)
+		{
+			RevealMessages();
+			return Task.CompletedTask;
+		}
+
 		public void RevealMessages()
 		{
 			for (int i = chat.Messages.Count - 1; i >=0; i--)

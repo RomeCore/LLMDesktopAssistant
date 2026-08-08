@@ -1,7 +1,3 @@
-using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.LLM.Domain;
-using RCLargeLanguageModels.Metadata;
-
 namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
@@ -16,6 +12,14 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Gets the execution order of the hook. Hooks run in ascending order.
 		/// </summary>
 		int Order { get; }
+
+		/// <summary>
+		/// Called before the LLM generates a response to the user's input and before prompt is built.
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		Task OnResponsePrepareAsync(ChatPreExecutionHookContext context, CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Called after each LLM response cycle is completed. Hooks are awaited

@@ -6,7 +6,6 @@ using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Hooks;
-using LLMDesktopAssistant.Prompting.Injectors;
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Users;
@@ -34,7 +33,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		IAgentManagementService agentManager,
 		IUserManagementService userManager,
 		ISkillsetBuildingService skillsetBuilder,
-		IEnumerable<IPromptInjector> promptInjectors,
 		IEnumerable<IPromptBuildingHook> promptBuildingHooks,
 		IEnumerable<IPromptSystemContextExpander> promptSystemContextExpanders,
 		IEnumerable<IPromptMessageContextExpander> promptMessageContextExpanders,
@@ -436,7 +434,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var readContext = agent.Read.GetEffectiveContext(chat.Settings);
 			int maxRounds = readContext.MaxVisibleRounds;
 
-			var injectors = promptInjectors.OrderBy(i => i.Order).ToList();
 			var hooks = promptBuildingHooks.OrderBy(h => h.Order).ToList();
 
 			var functions = GetTemplateFunctions();
@@ -446,9 +443,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				.SelectMany(g => g)
 				.ToList();
 
-			foreach (var injector in injectors)
-				injector.Inject(messagesToProcess, agent);
-
 			List<IMessage> result = [];
 
 			string? summaryOfPrevMessages = null;
@@ -457,15 +451,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			for (int i = messagesToProcess.Count - 1; i >= 0; i--)
 			{
 				var branchedMessage = messagesToProcess[i];
-
-				foreach (var hook in hooks)
-				{
-					branchedMessage = hook.Modify(branchedMessage, agent);
-					if (branchedMessage == null)
-						break;
-				}
-				if (branchedMessage == null)
-					continue;
 				var message = branchedMessage.Message;
 
 				if (readContext.AllowContextShields && message.AdditionalViewModels.Has<ContextShieldViewModel>())
@@ -477,9 +462,9 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					if (!IsUserMessageVisibleToAgent(branchedMessage, agent))
 						continue;
 				}
-				else if (message is Domain.AssistantMessage)
+				else if (message is Domain.AssistantMessage assistantMessage)
 				{
-					if (!IsAssistantMessageVisibleToAgent(branchedMessage, agent))
+					if (assistantMessage.IsCompleted && !IsAssistantMessageVisibleToAgent(branchedMessage, agent))
 						continue;
 				}
 
@@ -511,7 +496,11 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 				if (summaryOfPrevMessages == null)
 				{
-					var messages = ConvertMessageForAgent(branchedMessage, agent, functions);
+					IEnumerable<IMessage> messages;
+					if (message is Domain.AssistantMessage assistantMessage && !assistantMessage.IsCompleted)
+						messages = [];
+					else
+						messages = ConvertMessageForAgent(branchedMessage, agent, functions);
 					foreach (var hook in hooks)
 					{
 						var editedMessages = hook.ModifyFinalContext(messages, branchedMessage, agent);

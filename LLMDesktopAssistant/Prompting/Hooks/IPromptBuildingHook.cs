@@ -44,37 +44,6 @@ public interface IPromptBuildingHook
 	int Order => 0;
 
 	/// <summary>
-	/// Allows modification or replacement of a <see cref="BranchedMessage"/> instance
-	/// during the prompt building phase, before it is converted to LLM-native format.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This method gives full control over the entire <see cref="BranchedMessage"/> —
-	/// including its <see cref="BranchedMessage.Message"/>, <see cref="BranchedMessage.MessageIndex"/>,
-	/// and branching metadata (<see cref="BranchedMessage.SelectedBranchIndex"/>,
-	/// <see cref="BranchedMessage.AvailableBranchesCount"/>).
-	/// </para>
-	/// <para>
-	/// If multiple hooks return a non-null <see cref="BranchedMessage"/>, the result of the
-	/// <b>last</b> hook is used (hooks are executed in <see cref="Order"/> ascending).
-	/// </para>
-	/// </remarks>
-	/// <param name="message">
-	/// The <see cref="BranchedMessage"/> currently being processed.
-	/// Contains the original chat message and its branching metadata.
-	/// </param>
-	/// <param name="agent">
-	/// The target agent for which the context is being built.
-	/// Useful for agent-specific filtering or transformation.
-	/// </param>
-	/// <returns>
-	/// A modified <see cref="BranchedMessage"/> to replace the original, or <c>null</c>
-	/// to remove the message from the context entirely.
-	/// If no modification is needed, return <paramref name="message"/> unchanged.
-	/// </returns>
-	BranchedMessage? Modify(BranchedMessage message, ChatAgentDescriptor agent) => message;
-
-	/// <summary>
 	/// Allows final modifications to the complete list of LLM-native messages
 	/// before they are returned to the caller.
 	/// </summary>
@@ -92,5 +61,6 @@ public interface IPromptBuildingHook
 	/// <returns>
 	/// A modified enumerable of messages, or <c>null</c> to keep the list unchanged.
 	/// </returns>
-	IEnumerable<IMessage>? ModifyFinalContext(IEnumerable<IMessage> messages, BranchedMessage message, ChatAgentDescriptor agent) => null;
+	IEnumerable<IMessage>? ModifyFinalContext(IEnumerable<IMessage> messages, BranchedMessage message, ChatAgentDescriptor agent);
 }
+

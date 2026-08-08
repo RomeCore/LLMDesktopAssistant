@@ -27,7 +27,6 @@ namespace LLMDesktopAssistant.LLM.Services
 		IAgentOrderingService agentOrderer,
 		IAgentManagementService agentManager,
 		IChatStorageService storage,
-		IMessageRevealService messageRevealer,
 		IChatPromptBuilder promptBuilder,
 		IModelManager modelManager,
 		IToolExecutionService toolExecutor,
@@ -39,6 +38,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IToastService toastService
 	) : IChatExecutionService
 	{
+		private readonly List<IChatExecutionHook> _executionHooks = executionHooks.OrderBy(h => h.Order).ToList();
 		private CancellationTokenSource? _cts = null;
 
 		public async Task GenerateResponseAsync(CancellationToken cancellationToken = default)
@@ -144,21 +144,6 @@ namespace LLMDesktopAssistant.LLM.Services
 					await mcpManager.EnsureCurrentMCPConnectionsAsync(cancellationToken);
 				}
 
-				var timeRequested = DateTime.Now;
-				DateTime? timeFirstToken = null;
-
-				chat.StatusIcon = MaterialIconKind.ChatProcessing;
-				chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
-
-				var inputMessages = promptBuilder.Build(agent);
-				toolsetCache.Invalidate(agent);
-				// Lul, provider caching is fixed now!
-				var toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
-				// Reveal messages that are marked with 'RevealAfterSend' visibility
-				messageRevealer.RevealMessages();
-				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
-				var responseMessage = response.Message;
-
 				var completionSource = new CompletionSource();
 				var domainResponseMessage = new Domain.AssistantMessage
 				{
@@ -168,6 +153,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					AgentStageId = agentStageId,
 					CompletionToken = completionSource.Token
 				};
+				int cycle = 0;
 
 				string prefixReasoningContent = string.Empty;
 				string prefixContent = string.Empty;
@@ -185,9 +171,30 @@ namespace LLMDesktopAssistant.LLM.Services
 					storage.AppendMessage(domainResponseMessage);
 				}
 
+				var timeRequested = DateTime.Now;
+				DateTime? timeFirstToken = null;
+
+				await RunResponsePrepareHooksAsync(new ChatPreExecutionHookContext
+				{
+					Chat = chat,
+					Agent = agent,
+					Response = domainResponseMessage,
+					Cycle = cycle
+				}, cancellationToken);
+
+				chat.StatusIcon = MaterialIconKind.ChatProcessing;
+				chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
+
+				var inputMessages = promptBuilder.Build(agent);
+				toolsetCache.Invalidate(agent);
+				// Lul, provider caching is fixed now!
+				var toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
+				// Reveal messages that are marked with 'RevealAfterSend' visibility
+				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
+				var responseMessage = response.Message;
+
 				List<Task> toolExecutionTasks = [];
 				var lockObj = new object();
-				int cycle = 0;
 
 				while (true)
 				{
@@ -401,20 +408,6 @@ namespace LLMDesktopAssistant.LLM.Services
 					if (toolExecutionTasks.Count == 0)
 						break;
 
-					cycle++;
-
-					timeRequested = DateTime.Now;
-					timeFirstToken = null;
-
-					chat.StatusIcon = MaterialIconKind.ChatProcessing;
-					chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
-
-					inputMessages = promptBuilder.Build(agent);
-					toolsetCache.Invalidate(agent);
-					toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
-					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
-					responseMessage = response.Message;
-
 					completionSource = new CompletionSource();
 					domainResponseMessage = new Domain.AssistantMessage
 					{
@@ -424,7 +417,29 @@ namespace LLMDesktopAssistant.LLM.Services
 						AgentStageId = agentStageId,
 						CompletionToken = completionSource.Token
 					};
+					cycle++;
+
 					storage.AppendMessage(domainResponseMessage);
+
+					timeRequested = DateTime.Now;
+					timeFirstToken = null;
+
+					await RunResponsePrepareHooksAsync(new ChatPreExecutionHookContext
+					{
+						Chat = chat,
+						Agent = agent,
+						Response = domainResponseMessage,
+						Cycle = cycle
+					}, cancellationToken);
+
+					chat.StatusIcon = MaterialIconKind.ChatProcessing;
+					chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
+
+					inputMessages = promptBuilder.Build(agent);
+					toolsetCache.Invalidate(agent);
+					toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
+					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
+					responseMessage = response.Message;
 				}
 			}
 			catch (OperationCanceledException)
@@ -444,6 +459,32 @@ namespace LLMDesktopAssistant.LLM.Services
 		}
 
 		/// <summary>
+		/// Invokes <see cref="IChatExecutionHook.OnResponsePrepareAsync"/> on all registered
+		/// hooks in ascending <see cref="IChatExecutionHook.Order"/>, awaiting each one.
+		/// Failures are logged and do not propagate to the execution pipeline.
+		/// </summary>
+		/// <param name="context">The context of the preview response cycle.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		private async Task RunResponsePrepareHooksAsync(ChatPreExecutionHookContext context, CancellationToken cancellationToken)
+		{
+			foreach (var hook in _executionHooks)
+			{
+				try
+				{
+					await hook.OnResponsePrepareAsync(context, cancellationToken);
+				}
+				catch (OperationCanceledException)
+				{
+					throw;
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Hook {Hook} failed in OnResponsePrepare: {Error}", hook.GetType().Name, ex.Message);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Invokes <see cref="IChatExecutionHook.OnResponseCompletedAsync"/> on all registered
 		/// hooks in ascending <see cref="IChatExecutionHook.Order"/>, awaiting each one.
 		/// Failures are logged and do not propagate to the execution pipeline.
@@ -452,7 +493,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <param name="cancellationToken">The cancellation token.</param>
 		private async Task RunResponseCompletedHooksAsync(ChatExecutionHookContext context, CancellationToken cancellationToken)
 		{
-			foreach (var hook in executionHooks.OrderBy(h => h.Order))
+			foreach (var hook in _executionHooks)
 			{
 				try
 				{
@@ -460,6 +501,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				}
 				catch (OperationCanceledException)
 				{
+					throw;
 				}
 				catch (Exception ex)
 				{
@@ -477,11 +519,15 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <param name="cancellationToken">The cancellation token.</param>
 		private Task RunExecutionFinishedHooksAsync(ChatExecutionHookContext context, CancellationToken cancellationToken)
 		{
-			foreach (var hook in executionHooks.OrderBy(h => h.Order))
+			foreach (var hook in _executionHooks)
 			{
 				try
 				{
 					_ = hook.OnExecutionFinishedAsync(context, cancellationToken);
+				}
+				catch (OperationCanceledException)
+				{
+					throw;
 				}
 				catch (Exception ex)
 				{
