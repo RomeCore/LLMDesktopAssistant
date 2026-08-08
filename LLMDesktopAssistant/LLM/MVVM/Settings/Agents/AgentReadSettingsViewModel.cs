@@ -401,5 +401,14 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			foreach (var item in AgentFilterItems)
 				item.IsSelected = selected;
 		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				ReadSettings.PropertyChanged -= ReadSettings_PropertyChanged;
+		}
 	}
 }

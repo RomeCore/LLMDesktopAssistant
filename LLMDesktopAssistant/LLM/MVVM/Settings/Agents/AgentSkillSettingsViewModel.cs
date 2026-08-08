@@ -244,4 +244,13 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 			})
 			.ToImmutableList();
 	}
+
+	/// <inheritdoc/>
+	protected override void Dispose(bool disposing)
+	{
+		base.Dispose(disposing);
+
+		if (disposing)
+			SkillSettings.PropertyChanged -= SkillSettings_PropertyChanged;
+	}
 }

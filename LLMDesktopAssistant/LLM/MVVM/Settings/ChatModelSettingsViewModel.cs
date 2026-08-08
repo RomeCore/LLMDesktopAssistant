@@ -55,5 +55,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 			RaisePropertyChanged(nameof(SelectedSelectionInheritance));
 			RaisePropertyChanged(nameof(EffectiveSelection));
 		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				ModelSettings.PropertyChanged -= ModelSettings_PropertyChanged;
+		}
 	}
 }

@@ -63,5 +63,14 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			RaisePropertyChanged(nameof(SelectedMentionInheritance));
 			RaisePropertyChanged(nameof(EffectiveMention));
 		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				ExecutionConditionsSettings.PropertyChanged -= ExecutionConditionsSettings_PropertyChanged;
+		}
 	}
 }

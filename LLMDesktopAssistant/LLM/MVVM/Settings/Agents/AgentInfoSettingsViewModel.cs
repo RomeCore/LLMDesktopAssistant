@@ -1,6 +1,7 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using System.ComponentModel;
 using LLMDesktopAssistant.Agents;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
@@ -31,7 +32,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			LoadProfileImage();
 
 			// Subscribe to changes from the text field
-			AgentInfo.PropertyChanged += (_, _) => LoadProfileImage();
+			AgentInfo.PropertyChanged += AgentInfo_PropertyChanged;
 
 			SelectImageCommand = new AsyncRelayCommand(async () =>
 			{
@@ -80,6 +81,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			});
 		}
 
+		private void AgentInfo_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			LoadProfileImage();
+		}
+
 		private void LoadProfileImage()
 		{
 			try
@@ -98,6 +104,15 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				ProfileImage = null;
 			}
+		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				AgentInfo.PropertyChanged -= AgentInfo_PropertyChanged;
 		}
 	}
 }

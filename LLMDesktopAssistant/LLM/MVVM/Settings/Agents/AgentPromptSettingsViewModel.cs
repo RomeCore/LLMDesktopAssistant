@@ -414,6 +414,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		private PersonaSettings? _subscribedPersona;
 		private SpecializationSettings? _subscribedSpecialization;
+		private readonly List<BehaviorSliderValue> _subscribedSliderValues = [];
 
 		/// <summary>
 		/// Subscribes to the currently effective persona and specialization objects so that
@@ -441,6 +442,20 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		}
 
 		private void OnEffectiveGroupChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			RegeneratePreview();
+		}
+
+		private void SubscribeSliderValue(BehaviorSliderValue value)
+		{
+			if (_subscribedSliderValues.Contains(value))
+				return;
+
+			_subscribedSliderValues.Add(value);
+			value.PropertyChanged += SliderValue_PropertyChanged;
+		}
+
+		private void SliderValue_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			RegeneratePreview();
 		}
@@ -535,7 +550,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					sliderValues.Add(existingValue);
 				}
 
-				existingValue.PropertyChanged += (_, _) => RegeneratePreview();
+				SubscribeSliderValue(existingValue);
 
 				var itemVm = new BehaviorSliderItemViewModel(
 					this,
@@ -574,6 +589,26 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				effectiveComponents.Add(id);
 
 			RegeneratePreview();
+		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				PromptSettings.PropertyChanged -= PromptSettings_PropertyChanged;
+
+				if (_subscribedPersona is not null)
+					_subscribedPersona.PropertyChanged -= OnEffectiveGroupChanged;
+				if (_subscribedSpecialization is not null)
+					_subscribedSpecialization.PropertyChanged -= OnEffectiveGroupChanged;
+
+				foreach (var value in _subscribedSliderValues)
+					value.PropertyChanged -= SliderValue_PropertyChanged;
+				_subscribedSliderValues.Clear();
+			}
 		}
 	}
 }

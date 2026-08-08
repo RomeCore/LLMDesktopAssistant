@@ -244,5 +244,14 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					break;
 			}
 		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				GenerationSettings.PropertyChanged -= GenerationSettings_PropertyChanged;
+		}
 	}
 }

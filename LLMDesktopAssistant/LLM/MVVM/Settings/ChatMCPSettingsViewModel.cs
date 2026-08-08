@@ -188,5 +188,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 				_ensuringMcp = false;
 			}
 		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				McpSettings.PropertyChanged -= McpSettings_PropertyChanged;
+		}
 	}
 }

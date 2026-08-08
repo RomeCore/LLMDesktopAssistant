@@ -83,5 +83,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 					break;
 			}
 		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				MemorySettings.PropertyChanged -= MemorySettings_PropertyChanged;
+		}
 	}
 }

@@ -1,6 +1,7 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using System.ComponentModel;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Users;
 using LLMDesktopAssistant.Utils;
@@ -36,13 +37,22 @@ namespace LLMDesktopAssistant.LLM.Settings
 			private set => SetProperty(ref _profileImage, value);
 		}
 
+		private readonly Dictionary<UserInformation, PropertyChangedEventHandler> _userHandlers = [];
+
 		public ChatUserSettingsViewModel(RangeObservableCollection<UserInformation> users)
 		{
 			Users = users;
 
 			LoadProfileImages();
 			foreach (var user in users)
-				user.PropertyChanged += (_, _) => LoadProfileImage(user);
+				SubscribeUser(user);
+		}
+
+		private void SubscribeUser(UserInformation user)
+		{
+			PropertyChangedEventHandler handler = (_, _) => LoadProfileImage(user);
+			_userHandlers[user] = handler;
+			user.PropertyChanged += handler;
 		}
 
 		private void LoadProfileImages()
@@ -78,7 +88,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				Login = "new_user",
 				Name = "New User"
 			};
-			newUser.PropertyChanged += (_, _) => LoadProfileImage(SelectedUser);
+			SubscribeUser(newUser);
 			Users.Add(newUser);
 			SelectedUser = Users.LastOrDefault();
 		});
@@ -149,5 +159,18 @@ namespace LLMDesktopAssistant.LLM.Settings
 			SelectedUser.Base64ProfileImage = string.Empty;
 			ProfileImage = null;
 		});
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				foreach (var (user, handler) in _userHandlers)
+					user.PropertyChanged -= handler;
+				_userHandlers.Clear();
+			}
+		}
 	}
 }

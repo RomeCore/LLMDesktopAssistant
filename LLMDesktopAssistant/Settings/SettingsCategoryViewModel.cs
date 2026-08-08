@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Utils;
@@ -79,6 +79,7 @@ namespace LLMDesktopAssistant.Settings
 
 				if (!Equals(_currentId, value))
 				{
+					(_currentViewModel as IDisposable)?.Dispose();
 					_currentId = value;
 					_current = Category.Get(value.Id);
 					_changed?.Invoke(Current);
@@ -186,6 +187,15 @@ namespace LLMDesktopAssistant.Settings
 			{
 				DialogManager.CloseDialog();
 			});
+		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				(_currentViewModel as IDisposable)?.Dispose();
 		}
 	}
 }

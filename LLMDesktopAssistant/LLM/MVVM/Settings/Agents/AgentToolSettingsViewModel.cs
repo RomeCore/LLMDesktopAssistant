@@ -569,5 +569,20 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					break;
 			}
 		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				ToolSettings.PropertyChanged -= ToolSettings_PropertyChanged;
+
+				foreach (var category in ToolCategories)
+					category.Dispose();
+				_toolCategories.Clear();
+			}
+		}
 	}
 }

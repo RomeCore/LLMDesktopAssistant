@@ -333,7 +333,14 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				var viewModel = new SettingsCategoryViewModel<ChatSettings>(cs => new ChatSettingsViewModel(cs, Chat),
 					true, newSettings => Chat.Settings = newSettings, Chat.Settings.Id);
-				await DialogManager.ShowDialogAsync(viewModel);
+				try
+				{
+					await DialogManager.ShowDialogAsync(viewModel);
+				}
+				finally
+				{
+					viewModel.Dispose();
+				}
 			});
 
 			OpenAttachmentsManagerCommand = new AsyncRelayCommand(async () =>

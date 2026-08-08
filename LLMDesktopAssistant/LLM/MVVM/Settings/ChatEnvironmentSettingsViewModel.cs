@@ -328,5 +328,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 				_explorerOpener?.OpenDirectory(path);
 			}
 		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				EnvironmentSettings.PropertyChanged -= EnvironmentSettings_PropertyChanged;
+		}
 	}
 }
