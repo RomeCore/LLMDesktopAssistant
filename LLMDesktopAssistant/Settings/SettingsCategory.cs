@@ -112,6 +112,7 @@ namespace LLMDesktopAssistant.Settings
 					Id = id
 				};
 				var tracker = new ChangeTracker(obj, SaveDebounced);
+				SaveDebounced();
 				return (obj, tracker);
 			}).Item1;
 		}
@@ -154,6 +155,7 @@ namespace LLMDesktopAssistant.Settings
 			{
 				objTuple.Item2.Dispose();
 				objTuple.Item1.Dispose();
+				SaveDebounced();
 				return true;
 			}
 			return false;
@@ -178,6 +180,7 @@ namespace LLMDesktopAssistant.Settings
 				return false;
 			_objects.TryAdd(idTo, objTuple);
 			objTuple.Item1.Id = idTo;
+			SaveDebounced();
 			return true;
 		}
 
@@ -205,6 +208,7 @@ namespace LLMDesktopAssistant.Settings
 			copy.Id = idTo;
 			var tracker = new ChangeTracker(copy, SaveDebounced);
 			_objects.TryAdd(idTo, (copy, tracker));
+			SaveDebounced();
 			return true;
 		}
 
