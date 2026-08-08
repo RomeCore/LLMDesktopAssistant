@@ -3,14 +3,17 @@ using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using LLMDesktopAssistant.Controls.Dialogs;
+using Material.Icons;
 using LLMDesktopAssistant.LLM.Attachments;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Users;
+using LLMDesktopAssistant.Utils;
 using Serilog;
 
 namespace LLMDesktopAssistant.LLM.MVVM
@@ -19,6 +22,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 	{
 		public required MessageVisibility Visibility { get; init; }
 		public required string Title { get; init; }
+		public required MaterialIconKind Icon { get; init; }
 	}
 
 	[ViewModelFor(typeof(UserInputView))]
@@ -212,6 +216,32 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		}
 
 		/// <summary>
+		/// Subscribes to the local users of the current chat and refreshes
+		/// <see cref="Users"/> when the settings or the user list change.
+		/// </summary>
+		private void TrackUsers()
+		{
+			_usersSettingsSubscription?.Dispose();
+			Chat.Settings.Users.Users.CollectionChanged -= Users_CollectionChanged;
+			Chat.Settings.Users.Users.CollectionChanged += Users_CollectionChanged;
+			RefreshUsers();
+		}
+
+		private void Users_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			RefreshUsers();
+		}
+
+		private void RefreshUsers()
+		{
+			var currentLogin = SelectedUser?.Login;
+			Users.Reset(Chat.Settings.Users.Users);
+
+			SelectedUser = Users.FirstOrDefault(u => u.Login == currentLogin) ?? Users.FirstOrDefault();
+			RaisePropertyChanged(nameof(HasMultipleUsers));
+		}
+
+		/// <summary>
 		/// Gets the chat view model that holds this user input manager.
 		/// </summary>
 		public ChatViewModel ChatViewModel { get; }
@@ -302,10 +332,10 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		}
 
 		public ImmutableList<UserMessageVisibilityItemModel> Visibilities { get; } = [
-			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.Always, Title = "message_visibility_always" },
-			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.RevealAfterSend, Title = "message_visibility_reveal_after_send" },
-			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.OnlyUsers, Title = "message_visibility_only_users" },
-			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.OnlyAgents, Title = "message_visibility_only_agents" }
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.Always, Title = "message_visibility_always", Icon = MaterialIconKind.Eye },
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.RevealAfterSend, Title = "message_visibility_reveal_after_send", Icon = MaterialIconKind.Clock },
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.OnlyUsers, Title = "message_visibility_only_users", Icon = MaterialIconKind.Account },
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.OnlyAgents, Title = "message_visibility_only_agents", Icon = MaterialIconKind.Robot }
 		];
 
 		private UserMessageVisibilityItemModel _selectedVisibility;
@@ -318,6 +348,28 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set => SetProperty(ref _selectedVisibility, value);
 		}
 
+		/// <summary>
+		/// Gets the list of local users that can send messages in this chat.
+		/// </summary>
+		public RangeObservableCollection<UserInformation> Users { get; } = [];
+
+		private UserInformation? _selectedUser;
+		/// <summary>
+		/// Gets or sets the user that sends the next message.
+		/// </summary>
+		public UserInformation? SelectedUser
+		{
+			get => _selectedUser;
+			set => SetProperty(ref _selectedUser, value);
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether more than one local user is available.
+		/// </summary>
+		public bool HasMultipleUsers => Users.Count > 1;
+
+		private IDisposable? _usersSettingsSubscription;
+
 
 
 
@@ -328,6 +380,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 			Chat.SubscribeChanged(nameof(Chat.Settings), _ => TrackModelSelection(), out _settingsSubscription);
 			TrackModelSelection();
+
+			Chat.SubscribeChanged(nameof(Chat.Settings), _ => TrackUsers(), out _usersSettingsSubscription);
+			TrackUsers();
 
 			OpenSettingsCommand = new AsyncRelayCommand(async () =>
 			{
@@ -386,7 +441,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			return new UserInput
 			{
 				Content = _text,
-				SenderLogin = userManager.GetLocalUsers().FirstOrDefault()?.Login ?? "user",
+				SenderLogin = SelectedUser?.Login ?? userManager.GetLocalUsers().FirstOrDefault()?.Login ?? "user",
 				Attachments = _attachments.Select(a => a.Attachment).ToImmutableList(),
 				Visibility = _selectedVisibility.Visibility,
 			};
@@ -484,6 +539,10 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				_modelsSubscription?.Dispose();
 				_settingsSubscription = null;
 				_modelsSubscription = null;
+
+				_usersSettingsSubscription?.Dispose();
+				_usersSettingsSubscription = null;
+				Chat.Settings.Users.Users.CollectionChanged -= Users_CollectionChanged;
 
 				Chat.Settings.Models.PropertyChanged -= Models_PropertyChanged;
 				if (_trackedSelection is not null)
