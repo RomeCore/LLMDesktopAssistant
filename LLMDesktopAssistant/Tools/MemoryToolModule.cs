@@ -32,6 +32,7 @@ namespace LLMDesktopAssistant.Tools
 				Description = """
 					Stores a fact in the specified memory block with the given importance.
 					""",
+				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
 				Category = "memory"
 			});
 
@@ -43,6 +44,7 @@ namespace LLMDesktopAssistant.Tools
 					Retrieves facts with their IDs from the specified memory blocks (or all enabled blocks) by the given query.
 					HyDE query is used to improve semantic matching and may be provided additionally.
 					""",
+				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
 				Category = "memory"
 			});
 
@@ -55,6 +57,7 @@ namespace LLMDesktopAssistant.Tools
 					By default performs a soft delete: the fact is marked as Deleted and can be restored later.
 					Use mode="hard" to remove the fact permanently.
 					""",
+				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
 				Category = "memory"
 			});
 
@@ -66,7 +69,7 @@ namespace LLMDesktopAssistant.Tools
 					Clears the stored facts and/or episodic logs from the specified memory block.
 					The block itself and its configuration are preserved.
 					""",
-				DefaultExpectedBehaviour = ToolBehaviour.MemoryClear,
+				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess | ToolBehaviour.MemoryClear,
 				Category = "memory"
 			});
 		}

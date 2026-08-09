@@ -225,7 +225,6 @@
   <data name="memory-forget_fact" xml:space="preserve">
     <value>Forget memory fact</value>
   </data>
-
   <data name="memory-retrieve_fact" xml:space="preserve">
     <value>Retrieve memory facts</value>
   </data>
@@ -2880,5 +2879,11 @@
   </data>
   <data name="tool_behaviour_memoryclear_hint" xml:space="preserve">
     <value>The tool clears semantic memory blocks and may cause data loss.</value>
+  </data>
+  <data name="tool_behaviour_memoryaccess" xml:space="preserve">
+    <value>Semantic memory access</value>
+  </data>
+  <data name="tool_behaviour_memoryaccess_hint" xml:space="preserve">
+    <value>Tool has access to semantic memory (facts, logs, state).</value>
   </data>
 </root>

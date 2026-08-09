@@ -2626,6 +2626,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Forget memory fact.
+        /// </summary>
+        public static string memory_forget_fact {
+            get {
+                return ResourceManager.GetString("memory-forget_fact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Retrieve memory facts.
         /// </summary>
         public static string memory_retrieve_fact {
@@ -5011,6 +5020,42 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The block and all its contents (facts, logs, state) will be permanently deleted. This action cannot be undone..
+        /// </summary>
+        public static string settings_memory_delete_confirm {
+            get {
+                return ResourceManager.GetString("settings-memory_delete_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Block deleted.
+        /// </summary>
+        public static string settings_memory_delete_done {
+            get {
+                return ResourceManager.GetString("settings-memory_delete_done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Failed to delete block.
+        /// </summary>
+        public static string settings_memory_delete_error {
+            get {
+                return ResourceManager.GetString("settings-memory_delete_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete block?.
+        /// </summary>
+        public static string settings_memory_delete_title {
+            get {
+                return ResourceManager.GetString("settings-memory_delete_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Duplicate.
         /// </summary>
         public static string settings_memory_duplicate {
@@ -6942,6 +6987,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string tool_behaviour_mcp_hint {
             get {
                 return ResourceManager.GetString("tool_behaviour_mcp_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Semantic memory access.
+        /// </summary>
+        public static string tool_behaviour_memoryaccess {
+            get {
+                return ResourceManager.GetString("tool_behaviour_memoryaccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tool has access to semantic memory (facts, logs, state)..
+        /// </summary>
+        public static string tool_behaviour_memoryaccess_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_memoryaccess_hint", resourceCulture);
             }
         }
         

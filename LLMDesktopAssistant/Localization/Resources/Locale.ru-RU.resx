@@ -225,7 +225,6 @@
   <data name="memory-forget_fact" xml:space="preserve">
     <value>Забыть факт из памяти</value>
   </data>
-
   <data name="memory-retrieve_fact" xml:space="preserve">
     <value>Найти факты в памяти</value>
   </data>
@@ -2880,5 +2879,11 @@
   </data>
   <data name="tool_behaviour_memoryclear_hint" xml:space="preserve">
     <value>Инструмент очищает блоки семантической памяти и может привести к потере данных.</value>
+  </data>
+  <data name="tool_behaviour_memoryaccess" xml:space="preserve">
+    <value>Доступ к семантической памяти</value>
+  </data>
+  <data name="tool_behaviour_memoryaccess_hint" xml:space="preserve">
+    <value>Инструмент имеет доступ к семантической памяти (факты, логи, состояние).</value>
   </data>
 </root>

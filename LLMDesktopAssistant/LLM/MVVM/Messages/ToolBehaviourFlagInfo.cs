@@ -96,6 +96,7 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.WorkdirChange => MaterialIconKind.FolderArrowRight,
 		ToolBehaviour.ClipboardWrite => MaterialIconKind.ClipboardPlus,
 		ToolBehaviour.ClipboardRead => MaterialIconKind.ClipboardText,
+		ToolBehaviour.MemoryAccess => MaterialIconKind.Database,
 		ToolBehaviour.MemoryClear => MaterialIconKind.DatabaseRemove,
 		ToolBehaviour.InternetAccess => MaterialIconKind.Web,
 		ToolBehaviour.LongRunningTask => MaterialIconKind.TimerSand,
@@ -141,6 +142,7 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.FileDirectoryCreate => Brushes.DodgerBlue,
 		ToolBehaviour.ClipboardRead => Brushes.DodgerBlue,
 		ToolBehaviour.ClipboardWrite => Brushes.DodgerBlue,
+		ToolBehaviour.MemoryAccess => Brushes.DodgerBlue,
 		ToolBehaviour.LongRunningTask => Brushes.DodgerBlue,
 		ToolBehaviour.UserInteraction => Brushes.DodgerBlue,
 
