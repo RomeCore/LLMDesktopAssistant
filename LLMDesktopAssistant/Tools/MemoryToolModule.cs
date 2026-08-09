@@ -40,8 +40,20 @@ namespace LLMDesktopAssistant.Tools
 				Name = "memory-retrieve_fact",
 				IsFixed = true,
 				Description = """
-					Retrieves facts from the specified memory blocks (or all enabled blocks) by the given query.
+					Retrieves facts with their IDs from the specified memory blocks (or all enabled blocks) by the given query.
 					HyDE query is used to improve semantic matching and may be provided additionally.
+					""",
+				Category = "memory"
+			});
+
+			AddTool(ForgetAsync, new ToolInitializationInfo
+			{
+				Name = "memory-forget_fact",
+				IsFixed = false,
+				Description = """
+					Forgets (deletes) a fact from the specified memory block by its ID.
+					By default performs a soft delete: the fact is marked as Deleted and can be restored later.
+					Use mode="hard" to remove the fact permanently.
 					""",
 				Category = "memory"
 			});
@@ -49,7 +61,7 @@ namespace LLMDesktopAssistant.Tools
 			AddTool(ClearAsync, new ToolInitializationInfo
 			{
 				Name = "memory-clear",
-				IsFixed = true,
+				IsFixed = false,
 				Description = """
 					Clears the stored facts and/or episodic logs from the specified memory block.
 					The block itself and its configuration are preserved.
@@ -285,6 +297,50 @@ namespace LLMDesktopAssistant.Tools
 				result.CompleteWithError();
 			}
 		}
+
+
+		private async Task ForgetAsync(
+			[Description("The memory block that contains the fact")] string block,
+			[Description("The ID of the fact to forget")] int factId,
+			ReactiveToolResult result,
+			ToolExecutionContext ctx,
+			[Description("The deletion mode: 'soft' (default) marks the fact as Deleted and keeps it restorable; 'hard' removes the fact permanently.")] string mode = "soft",
+			CancellationToken cancellationToken = default)
+		{
+			result.StatusIcon = MaterialIconKind.DatabaseRemove;
+			result.StatusTitle = $"**{block}** [id: {factId}]";
+
+			var targetBlock = GetBlocks(ctx, [block], requireReading: false, requireWriting: true, requireFacts: true).FirstOrDefault();
+			if (targetBlock is null)
+			{
+				result.ResultContent = $"Memory block '{block}' is not found or does not allow writing.";
+				result.CompleteWithError();
+				return;
+			}
+
+			try
+			{
+				bool hardDelete = string.Equals(mode, "hard", StringComparison.OrdinalIgnoreCase);
+
+				if (hardDelete)
+					await _memoryFactStore.HardDeleteAsync(targetBlock, factId, cancellationToken);
+				else
+					await _memoryFactStore.SoftDeleteAsync(targetBlock, factId, cancellationToken);
+
+				result.StatusIcon = MaterialIconKind.DatabaseCheck;
+				result.ResultContent = hardDelete
+					? $"Fact [id: {factId}] permanently deleted from memory block '{block}'."
+					: $"Fact [id: {factId}] forgotten in memory block '{block}'. It can be restored later.";
+				result.CompleteWithSuccess();
+			}
+			catch (Exception ex)
+			{
+				result.StatusIcon = MaterialIconKind.DatabaseOff;
+				result.ResultContent = $"Failed to forget fact [id: {factId}] in memory block '{block}'. Error: {ex.Message}";
+				result.CompleteWithError();
+			}
+		}
+
 
 		private List<MemoryBlock> GetBlocks(ToolExecutionContext ctx, string[]? names, bool requireReading, bool requireWriting, bool requireFacts)
 		{

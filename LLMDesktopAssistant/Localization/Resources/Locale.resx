@@ -222,6 +222,10 @@
   <data name="memory" xml:space="preserve">
     <value>Memory</value>
   </data>
+  <data name="memory-forget_fact" xml:space="preserve">
+    <value>Forget memory fact</value>
+  </data>
+
   <data name="memory-retrieve_fact" xml:space="preserve">
     <value>Retrieve memory facts</value>
   </data>
