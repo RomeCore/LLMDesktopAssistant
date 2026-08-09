@@ -96,6 +96,7 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.WorkdirChange => MaterialIconKind.FolderArrowRight,
 		ToolBehaviour.ClipboardWrite => MaterialIconKind.ClipboardPlus,
 		ToolBehaviour.ClipboardRead => MaterialIconKind.ClipboardText,
+		ToolBehaviour.MemoryClear => MaterialIconKind.DatabaseRemove,
 		ToolBehaviour.InternetAccess => MaterialIconKind.Web,
 		ToolBehaviour.LongRunningTask => MaterialIconKind.TimerSand,
 		ToolBehaviour.ExecuteExternalProcess => MaterialIconKind.Console,
@@ -122,6 +123,7 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.ReadSecrets => Brushes.Red,
 		ToolBehaviour.ExecuteExternalProcess => Brushes.Red,
 		ToolBehaviour.PossiblyUnexpected => Brushes.Red,
+		ToolBehaviour.MemoryClear => Brushes.Red,
 		ToolBehaviour.ScriptAccess => Brushes.Red,
 		ToolBehaviour.AgentExecution => Brushes.Red,
 

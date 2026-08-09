@@ -149,6 +149,13 @@ namespace LLMDesktopAssistant.Agents.Memory
 		}
 
 		/// <inheritdoc/>
+		public async Task<int> ClearAsync(MemoryBlock block, CancellationToken cancellationToken = default)
+		{
+			var (_, logs) = await _provider.ClearAsync(block, clearFacts: false, clearLogs: true, cancellationToken);
+			return logs;
+		}
+
+		/// <inheritdoc/>
 		public async Task RestoreAsync(MemoryBlock block, int logId, CancellationToken cancellationToken = default)
 		{
 			await _provider.ExecuteAsync(block, async (db, ct) =>

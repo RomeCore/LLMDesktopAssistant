@@ -103,6 +103,12 @@ public enum ToolBehaviour : ulong
 	/// </summary>
 	ClipboardRead = 1 << 11,
 
+	/// <summary>
+	/// The tool clears semantic memory blocks.
+	/// Examples: <c>memory-clear</c>.
+	/// </summary>
+	MemoryClear = 1 << 12,
+
 	// ────────────────────────────── Network ─────────────────────────────────
 
 	/// <summary>
@@ -110,7 +116,7 @@ public enum ToolBehaviour : ulong
 	/// Includes HTTP requests, web searches, file downloads, and webhook calls.
 	/// Examples: <c>web-fetch</c>, <c>web-search</c>, <c>web-download</c>.
 	/// </summary>
-	InternetAccess = 1 << 12,
+	InternetAccess = 1 << 13,
 
 	// ────────────────────────────── Performance ─────────────────────────────
 
@@ -120,7 +126,7 @@ public enum ToolBehaviour : ulong
 	/// or network latency. Examples: <c>fs-grep</c> on large codebase,
 	/// large file downloads, AI model inference (image description).
 	/// </summary>
-	LongRunningTask = 1 << 13,
+	LongRunningTask = 1 << 14,
 
 	// ────────────────────────────── Execution ───────────────────────────────
 
@@ -129,13 +135,13 @@ public enum ToolBehaviour : ulong
 	/// This includes running shell commands, scripts, or binaries.
 	/// Examples: <c>execute-shell</c>, <c>execute-python</c>.
 	/// </summary>
-	ExecuteExternalProcess = 1 << 14,
+	ExecuteExternalProcess = 1 << 15,
 
 	/// <summary>
 	/// The tool may perform actions that are potentially unexpected or uncontrollable,
 	/// such as executing scripts that is not analyzed yet.
 	/// </summary>
-	PossiblyUnexpected = 1 << 15,
+	PossiblyUnexpected = 1 << 16,
 
 	/// <summary>
 	/// The tool runs commands in an embedded terminal emulator with
@@ -143,7 +149,7 @@ public enum ToolBehaviour : ulong
 	/// and potential for arbitrary command execution.
 	/// Examples: <c>execute-shell</c> with <c>runTerminal: true</c>.
 	/// </summary>
-	RunTerminal = 1 << 16,
+	RunTerminal = 1 << 17,
 
 	// ────────────────────────────── User Interaction ────────────────────────
 
@@ -151,7 +157,7 @@ public enum ToolBehaviour : ulong
 	/// The tool requires special user input, such as prompts for confirmation, various forms,
 	/// file uploads, or custom UI elements. Examples: <c>forms-input</c>, <c>forms-submit</c>.
 	/// </summary>
-	UserInteraction = 1 << 17,
+	UserInteraction = 1 << 18,
 
 	// ────────────────────────────── Agents ──────────────────────────────────
 
@@ -161,7 +167,7 @@ public enum ToolBehaviour : ulong
 	/// carefully monitored to prevent runaway agent loops.
 	/// Examples: <c>agent-describe_image</c>, agent delegation calls.
 	/// </summary>
-	AgentExecution = 1 << 18,
+	AgentExecution = 1 << 19,
 
 	// ────────────────────────────── Meta ────────────────────────────────────
 
@@ -172,7 +178,7 @@ public enum ToolBehaviour : ulong
 	/// it can alter the assistant's capabilities on the fly.
 	/// Examples: <c>metatools-create_or_update</c>, <c>metatools-delete</c>, <c>lua-register_or_update_script</c>.
 	/// </summary>
-	ScriptAccess = 1 << 19,
+	ScriptAccess = 1 << 20,
 
 	// ────────────────────────────── Source ─────────────────────────────────
 

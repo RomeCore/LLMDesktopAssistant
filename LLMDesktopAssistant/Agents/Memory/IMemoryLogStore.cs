@@ -134,5 +134,14 @@ namespace LLMDesktopAssistant.Agents.Memory
 		/// <param name="cancellationToken">The cancellation token to use for this operation.</param>
 		/// <returns>A task that represents the asynchronous operation.</returns>
 		Task HardDeleteAsync(MemoryBlock block, int logId, CancellationToken cancellationToken = default);
+
+		/// <summary>
+		/// Clears all logs from the specified memory block, removing them from the
+		/// database and the keyword index. The block configuration itself is preserved.
+		/// </summary>
+		/// <param name="block">The memory block to clear.</param>
+		/// <param name="cancellationToken">The cancellation token to use for this operation.</param>
+		/// <returns>A task that represents the asynchronous operation. The result contains the number of removed logs.</returns>
+		Task<int> ClearAsync(MemoryBlock block, CancellationToken cancellationToken = default);
 	}
 }

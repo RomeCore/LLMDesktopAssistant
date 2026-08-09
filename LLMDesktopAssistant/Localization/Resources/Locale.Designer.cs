@@ -853,6 +853,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Memory.
+        /// </summary>
+        public static string chat_settings_memory {
+            get {
+                return ResourceManager.GetString("chat_settings_memory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Models.
         /// </summary>
         public static string chat_settings_models {
@@ -912,6 +921,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string chat_settings_users {
             get {
                 return ResourceManager.GetString("chat_settings_users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Users that participate in this chat. The agent can address each user by name..
+        /// </summary>
+        public static string chat_settings_users_hint {
+            get {
+                return ResourceManager.GetString("chat_settings_users_hint", resourceCulture);
             }
         }
         
@@ -2559,6 +2577,69 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string mcp_manager_hint {
             get {
                 return ResourceManager.GetString("mcp_manager_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Memory.
+        /// </summary>
+        public static string memory {
+            get {
+                return ResourceManager.GetString("memory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read only.
+        /// </summary>
+        public static string memory_attachment_mode_readonly {
+            get {
+                return ResourceManager.GetString("memory_attachment_mode_readonly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Read &amp; Write.
+        /// </summary>
+        public static string memory_attachment_mode_standard {
+            get {
+                return ResourceManager.GetString("memory_attachment_mode_standard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Write only.
+        /// </summary>
+        public static string memory_attachment_mode_writeonly {
+            get {
+                return ResourceManager.GetString("memory_attachment_mode_writeonly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Clear memory block.
+        /// </summary>
+        public static string memory_clear {
+            get {
+                return ResourceManager.GetString("memory-clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Retrieve memory facts.
+        /// </summary>
+        public static string memory_retrieve_fact {
+            get {
+                return ResourceManager.GetString("memory-retrieve_fact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Store memory fact.
+        /// </summary>
+        public static string memory_store_fact {
+            get {
+                return ResourceManager.GetString("memory-store_fact", resourceCulture);
             }
         }
         
@@ -4696,6 +4777,330 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на New block.
+        /// </summary>
+        public static string settings_memory_add_block {
+            get {
+                return ResourceManager.GetString("settings-memory_add_block", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Attach.
+        /// </summary>
+        public static string settings_memory_attach {
+            get {
+                return ResourceManager.GetString("settings-memory_attach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Existing block....
+        /// </summary>
+        public static string settings_memory_attach_placeholder {
+            get {
+                return ResourceManager.GetString("settings-memory_attach_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Automatic recording.
+        /// </summary>
+        public static string settings_memory_auto_recording {
+            get {
+                return ResourceManager.GetString("settings-memory_auto_recording", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Automatic retrieval.
+        /// </summary>
+        public static string settings_memory_auto_retrieval {
+            get {
+                return ResourceManager.GetString("settings-memory_auto_retrieval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Description.
+        /// </summary>
+        public static string settings_memory_block_description {
+            get {
+                return ResourceManager.GetString("settings-memory_block_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Block editor.
+        /// </summary>
+        public static string settings_memory_block_editor {
+            get {
+                return ResourceManager.GetString("settings-memory_block_editor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Embedding model.
+        /// </summary>
+        public static string settings_memory_block_embedding_model {
+            get {
+                return ResourceManager.GetString("settings-memory_block_embedding_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Store semantic facts.
+        /// </summary>
+        public static string settings_memory_block_facts {
+            get {
+                return ResourceManager.GetString("settings-memory_block_facts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Block ID.
+        /// </summary>
+        public static string settings_memory_block_id {
+            get {
+                return ResourceManager.GetString("settings-memory_block_id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Store episodic logs.
+        /// </summary>
+        public static string settings_memory_block_logs {
+            get {
+                return ResourceManager.GetString("settings-memory_block_logs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Maintainer model.
+        /// </summary>
+        public static string settings_memory_block_maintainer_model {
+            get {
+                return ResourceManager.GetString("settings-memory_block_maintainer_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Name.
+        /// </summary>
+        public static string settings_memory_block_name {
+            get {
+                return ResourceManager.GetString("settings-memory_block_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Store exact state.
+        /// </summary>
+        public static string settings_memory_block_state {
+            get {
+                return ResourceManager.GetString("settings-memory_block_state", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Block storage.
+        /// </summary>
+        public static string settings_memory_block_storage {
+            get {
+                return ResourceManager.GetString("settings-memory_block_storage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Memory blocks.
+        /// </summary>
+        public static string settings_memory_blocks {
+            get {
+                return ResourceManager.GetString("settings-memory_blocks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Attach shared memory blocks to this agent. A block stores semantic facts, episodic logs and persistent state. Select a block in the list to edit its contents below..
+        /// </summary>
+        public static string settings_memory_blocks_hint {
+            get {
+                return ResourceManager.GetString("settings-memory_blocks_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Clear memory.
+        /// </summary>
+        public static string settings_memory_clear {
+            get {
+                return ResourceManager.GetString("settings-memory_clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на All facts and logs stored in this block will be permanently deleted. This action cannot be undone..
+        /// </summary>
+        public static string settings_memory_clear_confirm {
+            get {
+                return ResourceManager.GetString("settings-memory_clear_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Memory cleared.
+        /// </summary>
+        public static string settings_memory_clear_done {
+            get {
+                return ResourceManager.GetString("settings-memory_clear_done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Failed to clear memory.
+        /// </summary>
+        public static string settings_memory_clear_error {
+            get {
+                return ResourceManager.GetString("settings-memory_clear_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Removed facts: {0}, removed logs: {1}..
+        /// </summary>
+        public static string settings_memory_clear_result {
+            get {
+                return ResourceManager.GetString("settings-memory_clear_result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Clear memory?.
+        /// </summary>
+        public static string settings_memory_clear_title {
+            get {
+                return ResourceManager.GetString("settings-memory_clear_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на copy.
+        /// </summary>
+        public static string settings_memory_copy_suffix {
+            get {
+                return ResourceManager.GetString("settings-memory_copy_suffix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на New memory block.
+        /// </summary>
+        public static string settings_memory_default_block_name {
+            get {
+                return ResourceManager.GetString("settings-memory_default_block_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete block.
+        /// </summary>
+        public static string settings_memory_delete {
+            get {
+                return ResourceManager.GetString("settings-memory_delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Duplicate.
+        /// </summary>
+        public static string settings_memory_duplicate {
+            get {
+                return ResourceManager.GetString("settings-memory_duplicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit block.
+        /// </summary>
+        public static string settings_memory_edit {
+            get {
+                return ResourceManager.GetString("settings-memory_edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable agent memory.
+        /// </summary>
+        public static string settings_memory_enable {
+            get {
+                return ResourceManager.GetString("settings-memory_enable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enable conversation memory.
+        /// </summary>
+        public static string settings_memory_enable_memory {
+            get {
+                return ResourceManager.GetString("settings-memory_enable_memory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Configure how this chat records and retrieves conversation memory..
+        /// </summary>
+        public static string settings_memory_hint {
+            get {
+                return ResourceManager.GetString("settings-memory_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Missing block ({0}).
+        /// </summary>
+        public static string settings_memory_missing_block {
+            get {
+                return ResourceManager.GetString("settings-memory_missing_block", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Memory options.
+        /// </summary>
+        public static string settings_memory_options {
+            get {
+                return ResourceManager.GetString("settings-memory_options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Detach.
+        /// </summary>
+        public static string settings_memory_remove {
+            get {
+                return ResourceManager.GetString("settings-memory_remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Rename.
+        /// </summary>
+        public static string settings_memory_rename {
+            get {
+                return ResourceManager.GetString("settings-memory_rename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Confirm rename.
+        /// </summary>
+        public static string settings_memory_rename_confirm {
+            get {
+                return ResourceManager.GetString("settings-memory_rename_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Mentions.
         /// </summary>
         public static string settings_mentions {
@@ -6541,6 +6946,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Semantic memory clear.
+        /// </summary>
+        public static string tool_behaviour_memoryclear {
+            get {
+                return ResourceManager.GetString("tool_behaviour_memoryclear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на The tool clears semantic memory blocks and may cause data loss..
+        /// </summary>
+        public static string tool_behaviour_memoryclear_hint {
+            get {
+                return ResourceManager.GetString("tool_behaviour_memoryclear_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Meta-tool (LLM-created).
         /// </summary>
         public static string tool_behaviour_meta {
@@ -6829,6 +7252,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Fixed tool.
+        /// </summary>
+        public static string tool_fixed {
+            get {
+                return ResourceManager.GetString("tool_fixed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на This tool is always enabled while its context is present and cannot be disabled..
+        /// </summary>
+        public static string tool_fixed_hint {
+            get {
+                return ResourceManager.GetString("tool_fixed_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на {0} tools.
         /// </summary>
         public static string tool_name_suffix_hint {
@@ -6991,6 +7432,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на User sending the next message.
+        /// </summary>
+        public static string user_active_hint {
+            get {
+                return ResourceManager.GetString("user_active_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Add user.
+        /// </summary>
+        public static string user_add_title {
+            get {
+                return ResourceManager.GetString("user_add_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Clear.
         /// </summary>
         public static string user_clear_image {
@@ -7014,6 +7473,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string user_description_hint {
             get {
                 return ResourceManager.GetString("user_description_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Edit user.
+        /// </summary>
+        public static string user_edit_title {
+            get {
+                return ResourceManager.GetString("user_edit_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Login is required..
+        /// </summary>
+        public static string user_error_login_required {
+            get {
+                return ResourceManager.GetString("user_error_login_required", resourceCulture);
             }
         }
         

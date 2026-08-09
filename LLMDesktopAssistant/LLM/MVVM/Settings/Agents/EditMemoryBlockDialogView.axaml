@@ -46,15 +46,18 @@
 
 					</StackPanel>
 					
-					<StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+					<WrapPanel Grid.Column="2" Orientation="Horizontal" ItemSpacing="4" LineSpacing="4">
 						<Button Command="{Binding RenameCommand}"
 										Content="{loc:Loc settings-memory_rename}"/>
 						<Button Command="{Binding DuplicateCommand}"
 										Content="{loc:Loc settings-memory_duplicate}"/>
+						<Button Command="{Binding ClearCommand}"
+										Content="{loc:Loc settings-memory_clear}"
+										Foreground="{DynamicResource DangerBrush}"/>
 						<Button Command="{Binding DeleteCommand}"
 										Content="{loc:Loc settings-memory_delete}"
-										Classes="Danger"/>
-					</StackPanel>
+										Foreground="{DynamicResource DangerBrush}"/>
+					</WrapPanel>
 
 					<!-- Rename editor -->
 					<StackPanel Orientation="Horizontal"
@@ -127,8 +130,7 @@
 			<!-- Close -->
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
 				<Button Content="{loc:Loc close}"
-								Command="{Binding CloseCommand}"
-								Classes="Primary"/>
+								Command="{Binding CloseCommand}"/>
 			</StackPanel>
 
 		</StackPanel>

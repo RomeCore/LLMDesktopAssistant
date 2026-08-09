@@ -186,12 +186,14 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			});
 			generalContext["memory_blocks"] = effectiveChatMemoryOptions.EnableMemory && agent.Memory.EnableMemory
 				? effectiveMemoryBlocks.Where(b => b.Enabled)
-					.Select(b => b.Reference.Object!)
-					.Where(b => b != null)
+					.Select(b => (Block: b.Reference.Object!, Attachment: b))
+					.Where(b => b.Block != null)
 					.Select(b => new
 					{
-						name = b.Name,
-						description = b.Description
+						name = b.Block.Name,
+						can_read = b.Attachment.AllowsReading(),
+						can_write = b.Attachment.AllowsWriting(),
+						description = b.Block.Description
 					})
 				: null;
 

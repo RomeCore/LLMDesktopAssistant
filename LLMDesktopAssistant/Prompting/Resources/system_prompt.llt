@@ -71,6 +71,22 @@
 				<block>
 					<name>@block.name</name>
 					<description>@block.description</description>
+					@if block.can_read && block.can_write
+					{
+						<access>read-write</access>
+					}
+					else if block.can_read
+					{
+						<access>read-only</access>
+					}
+					else if block.can_write
+					{
+						<access>write-only</access>
+					}
+					else
+					{
+						<access>none</access>
+					}
 				</block>
 			}
 		</memory_blocks>

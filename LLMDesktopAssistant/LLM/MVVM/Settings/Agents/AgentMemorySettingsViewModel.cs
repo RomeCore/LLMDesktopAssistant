@@ -168,6 +168,51 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	}
 
 	/// <summary>
+	/// ViewModel item for a shared memory block in the "attach existing block" combo box.
+	/// Shows the block name with the block ID as a dimmed subtitle.
+	/// </summary>
+	public class MemoryBlockIdItemViewModel : ViewModelBase
+	{
+		private readonly MemoryBlock _block;
+
+		/// <summary>
+		/// Gets the identifier of the memory block.
+		/// </summary>
+		public string Id { get; }
+
+		/// <summary>
+		/// Gets the display name of the memory block.
+		/// </summary>
+		public string Name => _block.Name;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MemoryBlockIdItemViewModel"/> class.
+		/// </summary>
+		/// <param name="block">The memory block to represent.</param>
+		public MemoryBlockIdItemViewModel(MemoryBlock block)
+		{
+			_block = block;
+			Id = block.Id;
+			_block.PropertyChanged += Block_PropertyChanged;
+		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+				_block.PropertyChanged -= Block_PropertyChanged;
+		}
+
+		private void Block_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof(MemoryBlock.Name))
+				RaisePropertyChanged(nameof(Name));
+		}
+	}
+
+	/// <summary>
 	/// ViewModel for the per-agent memory settings tab.
 	/// The attached blocks are resolved through the effective (inherited) scope and are
 	/// listed as cards; block contents are edited through the
@@ -195,18 +240,16 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public static SettingsCategory<MemoryBlock> BlocksCategory { get; } = SettingsManager.GetCategory<MemoryBlock>();
 
 		/// <summary>
-		/// Gets the available shared memory block IDs for attaching existing blocks.
+		/// Gets the shared memory blocks available for attaching to the agent
+		/// (blocks that are not attached at the current effective scope).
 		/// </summary>
-		public RangeObservableCollection<SettingsIdItemViewModel> AvailableBlockIds { get; } =
-			[.. BlocksCategory.GetAvailableIds()
-				.Where(c => c != SettingsObject.DefaultId)
-				.Select(c => new SettingsIdItemViewModel { Id = c })];
+		public RangeObservableCollection<MemoryBlockIdItemViewModel> AvailableBlockIds { get; } = [];
 
-		private SettingsIdItemViewModel? _selectedAvailableBlockId;
+		private MemoryBlockIdItemViewModel? _selectedAvailableBlockId;
 		/// <summary>
 		/// Gets or sets the memory block selected in the "attach existing" combo box.
 		/// </summary>
-		public SettingsIdItemViewModel? SelectedAvailableBlockId
+		public MemoryBlockIdItemViewModel? SelectedAvailableBlockId
 		{
 			get => _selectedAvailableBlockId;
 			set => SetProperty(ref _selectedAvailableBlockId, value);
@@ -284,6 +327,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			MemorySettings.PropertyChanged -= MemorySettings_PropertyChanged;
 			DisposeItems();
+			DisposeAvailableBlocks();
 		}
 
 		private void MemorySettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -303,9 +347,16 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				item.Dispose();
 		}
 
+		private void DisposeAvailableBlocks()
+		{
+			foreach (var item in AvailableBlockIds)
+				item.Dispose();
+		}
+
 		private void UpdateBlocks()
 		{
 			DisposeItems();
+			UpdateAvailableBlocks();
 
 			var items = new List<MemoryBlockAttachmentItemViewModel>(EffectiveBlocks.Count);
 			foreach (var attachment in EffectiveBlocks)
@@ -314,13 +365,22 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			BlockItems = items;
 		}
 
+		private void UpdateAvailableBlocks()
+		{
+			DisposeAvailableBlocks();
+
+			var attachedIds = EffectiveBlocks.Select(b => b.Reference.Id).ToHashSet();
+			AvailableBlockIds.Reset(BlocksCategory.GetAvailableIds()
+				.Where(c => c != SettingsObject.DefaultId && !attachedIds.Contains(c))
+				.Select(c => new MemoryBlockIdItemViewModel(BlocksCategory.Get(c)!)));
+		}
+
 		private void AddBlock()
 		{
 			var id = GenerateBlockId();
 			var block = BlocksCategory.Get(id);
 			block.Name = LocalizationManager.LocalizeStatic("settings-memory_default_block_name");
 
-			AvailableBlockIds.Add(new SettingsIdItemViewModel { Id = id });
 			Attach(id);
 		}
 
@@ -359,7 +419,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			if (vm.DuplicatedBlockId is { } duplicatedId)
 			{
-				AvailableBlockIds.Add(new SettingsIdItemViewModel { Id = duplicatedId });
 				Attach(duplicatedId);
 			}
 
@@ -367,20 +426,12 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				foreach (var attachment in EffectiveBlocks.Where(b => b.Reference.Id == oldId))
 					attachment.Reference.Id = newId;
-
-				if (oldId != SettingsObject.DefaultId)
-					AvailableBlockIds.Remove(new SettingsIdItemViewModel { Id = oldId });
-				if (newId != SettingsObject.DefaultId && !AvailableBlockIds.Any(i => i.Id == newId))
-					AvailableBlockIds.Add(new SettingsIdItemViewModel { Id = newId });
 			}
 
 			if (vm.DeletedBlockId is { } deletedId)
 			{
 				foreach (var attachment in EffectiveBlocks.Where(b => b.Reference.Id == deletedId).ToList())
 					EffectiveBlocks.Remove(attachment);
-
-				if (deletedId != SettingsObject.DefaultId)
-					AvailableBlockIds.Remove(new SettingsIdItemViewModel { Id = deletedId });
 			}
 
 			if (vm.DuplicatedBlockId != null || vm.RenamedToId != null || vm.DeletedBlockId != null)

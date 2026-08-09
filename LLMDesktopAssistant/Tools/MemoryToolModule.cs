@@ -15,17 +15,19 @@ namespace LLMDesktopAssistant.Tools
 		private readonly Chat _chat;
 		private readonly IAgentManagementService _agentManager;
 		private readonly IMemoryFactStore _memoryFactStore;
+		private readonly IMemoryLogStore _memoryLogStore;
 
 		public MemoryToolModule(Chat chat, IAgentManagementService agentManager,
-			IMemoryFactStore memoryFactStore)
+			IMemoryFactStore memoryFactStore, IMemoryLogStore memoryLogStore)
 		{
 			_chat = chat;
 			_agentManager = agentManager;
 			_memoryFactStore = memoryFactStore;
+			_memoryLogStore = memoryLogStore;
 
 			AddTool(StoreAsync, new ToolInitializationInfo
 			{
-				Name = "memory-store",
+				Name = "memory-store_fact",
 				IsFixed = true,
 				Description = """
 					Stores a fact in the specified memory block with the given importance.
@@ -35,12 +37,24 @@ namespace LLMDesktopAssistant.Tools
 
 			AddTool(RetrieveAsync, new ToolInitializationInfo
 			{
-				Name = "memory-retrieve",
+				Name = "memory-retrieve_fact",
 				IsFixed = true,
 				Description = """
 					Retrieves facts from the specified memory blocks (or all enabled blocks) by the given query.
 					HyDE query is used to improve semantic matching and may be provided additionally.
 					""",
+				Category = "memory"
+			});
+
+			AddTool(ClearAsync, new ToolInitializationInfo
+			{
+				Name = "memory-clear",
+				IsFixed = true,
+				Description = """
+					Clears the stored facts and/or episodic logs from the specified memory block.
+					The block itself and its configuration are preserved.
+					""",
+				DefaultExpectedBehaviour = ToolBehaviour.MemoryClear,
 				Category = "memory"
 			});
 		}
@@ -58,13 +72,13 @@ namespace LLMDesktopAssistant.Tools
 			[Description("The importance of the fact, from 0.0 (least important) to 1.0 (most important)")] double importance,
 			ReactiveToolResult result,
 			ToolExecutionContext ctx,
-			[Description("Whether to supersede conflicting facts. false = append new fact, true = supersede conflicting fact")] bool? conflictSupersede = null,
+			[Description("The ID of the fact to supersede. If not provided, conflicts will be reported. If 0, the fact will be stored without superseding any existing facts.")] int? supersedeId = null,
 			CancellationToken cancellationToken = default)
 		{
 			result.StatusIcon = MaterialIconKind.DatabaseAdd;
 			result.StatusTitle = $"**{fact}** → *{block}*";
 
-			var targetBlock = GetBlock(ctx, block, requireWriting: true, requireFacts: true);
+			var targetBlock = GetBlocks(ctx, [block], requireReading: false, requireWriting: true, requireFacts: true).FirstOrDefault();
 			if (targetBlock is null)
 			{
 				result.ResultContent = $"Memory block '{block}' is not found or does not allow writing.";
@@ -84,14 +98,14 @@ namespace LLMDesktopAssistant.Tools
 					if (highestScore.CosineScore >= 0.9)
 					{
 						// Automatically supersede if the similarity is very high
-						conflictSupersede ??= true;
+						supersedeId ??= highestScore.Id;
 					}
 					else if (highestScore.CosineScore < 0.6)
 					{
-						conflictSupersede ??= false;
+						supersedeId ??= 0;
 					}
 
-					if (conflictSupersede is null)
+					if (supersedeId is null)
 					{
 						var conflicts = string.Join(Environment.NewLine, similarFacts
 							.Where(f => (f.CosineScore ?? 0) >= 0.6)
@@ -102,26 +116,32 @@ namespace LLMDesktopAssistant.Tools
 							Conflict detected with similar facts (cosine score >= 0.6):
 							{conflicts}
 
-							Call tool again with conflictSupersede=true to supersede the most similar fact or conflictSupersede=false to append a new fact.
+							Call tool again with supersedeId=<fact id> to supersede the desired fact or supersedeId=0 to append a new fact.
 							""";
-						result.CompleteWithSuccess();
-						return;
-					}
-					else if (conflictSupersede is true)
-					{
-						var storedFact = await _memoryFactStore.SupersedeAsync(targetBlock, highestScore.Id, fact, _chat.ChatId, messageId, importance, cancellationToken);
-						result.StatusIcon = MaterialIconKind.DatabaseEdit;
-						result.ResultContent = $"Fact stored with supersede successfully. ID: {storedFact.Id}, supersed fact: {highestScore.Text}";
 						result.CompleteWithSuccess();
 						return;
 					}
 					else
 					{
-						var storedFact = await _memoryFactStore.StoreAsync(targetBlock, fact, _chat.ChatId, messageId, importance, cancellationToken);
-						result.StatusIcon = MaterialIconKind.DatabaseCheck;
-						result.ResultContent = $"Fact stored successfully. ID: {storedFact.Id}";
-						result.CompleteWithSuccess();
-						return;
+						if (supersedeId == 0)
+						{
+							var storedFact = await _memoryFactStore.StoreAsync(targetBlock, fact, _chat.ChatId, messageId, importance, cancellationToken);
+							result.StatusIcon = MaterialIconKind.DatabaseCheck;
+							result.ResultContent = $"Fact stored successfully. ID: {storedFact.Id}";
+							result.CompleteWithSuccess();
+							return;
+						}
+						else
+						{
+							var storedFact = await _memoryFactStore.SupersedeAsync(targetBlock, supersedeId.Value, fact, _chat.ChatId, messageId, importance, cancellationToken);
+							result.StatusIcon = MaterialIconKind.DatabaseEdit;
+							if (supersedeId.Value == highestScore.Id)
+								result.ResultContent = $"Fact stored with supersede successfully. ID: {storedFact.Id}, supersed fact [id: {highestScore.Id}]: {highestScore.Text}";
+							else
+								result.ResultContent = $"Fact stored with supersede successfully. ID: {storedFact.Id}";
+							result.CompleteWithSuccess();
+							return;
+						}
 					}
 				}
 				else
@@ -144,14 +164,27 @@ namespace LLMDesktopAssistant.Tools
 
 		private async Task RetrieveAsync(
 			[Description("The memory blocks where the fact should be retrieved. Use null to retrieve from all enabled memory blocks")] string[]? blocks,
-			[Description("The query to retrieve by in user's language")] string query,
-			[Description("The hypotetical query to retrieve by in user's language. Examples: 'User is vegetarian' or 'User likes pizza'")] string hyDe,
+			[Description("""
+				The queries to retrieve by in user's language.
+				Use multiple HyDE (hypotetical) queries to greatly improve semantic matching.
+				Avoid direct questions (such as "What user's preferences about food?"),
+				use hypothetical answers instead (e.g. "The user's food preferences is vegetarian or meat eater.")
+				or keywords (e.g. "food preferences" or "dietary restrictions")
+				""")] string[] queries,
 			ReactiveToolResult result,
 			ToolExecutionContext ctx,
 			CancellationToken cancellationToken = default)
 		{
 			result.StatusIcon = MaterialIconKind.DatabaseSearch;
-			result.StatusTitle = $"**{query}**";
+
+			if (queries.Length == 0)
+			{
+				result.ResultContent = "No queries blocks to search by.";
+				result.CompleteWithError();
+				return;
+			}
+
+			result.StatusTitle = $"**{queries[0]}**";
 
 			var blocksToSearch = GetBlocks(ctx, blocks, requireReading: true, requireWriting: false, requireFacts: true);
 
@@ -166,11 +199,11 @@ namespace LLMDesktopAssistant.Tools
 			{
 				var perBlockResults = await Task.WhenAll(blocksToSearch.Select(async block =>
 				{
-					var queryResults = await _memoryFactStore.SearchAsync(block, query, maxCount: 10, cancellationToken: cancellationToken);
-					var hyDeResults = string.IsNullOrWhiteSpace(hyDe)
-						? []
-						: await _memoryFactStore.SearchAsync(block, hyDe, maxCount: 10, cancellationToken: cancellationToken);
-					return (block, MergeResults(queryResults, hyDeResults));
+					var queryBatches = await Task.WhenAll(queries.Select(query =>
+					{
+						return _memoryFactStore.SearchAsync(block, query, maxCount: 10, cancellationToken: cancellationToken);
+					}));
+					return (block, MergeResults(queryBatches));
 				}));
 
 				var sb = new StringBuilder();
@@ -212,10 +245,45 @@ namespace LLMDesktopAssistant.Tools
 			}
 		}
 
-		private MemoryBlock? GetBlock(ToolExecutionContext ctx, string name, bool requireWriting, bool requireFacts)
+		private async Task ClearAsync(
+			[Description("The memory block to clear")] string block,
+			ReactiveToolResult result,
+			ToolExecutionContext ctx,
+			[Description("Whether to clear the semantic facts. Defaults to true")] bool clearFacts = true,
+			[Description("Whether to clear the episodic logs. Defaults to false")] bool clearLogs = false,
+			CancellationToken cancellationToken = default)
 		{
-			var agent = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
-			return GetBlocks(ctx, [name], requireReading: false, requireWriting: requireWriting, requireFacts: requireFacts).FirstOrDefault();
+			result.StatusIcon = MaterialIconKind.DatabaseRefresh;
+			result.StatusTitle = $"**{block}**";
+
+			var targetBlock = GetBlocks(ctx, [block], requireReading: false, requireWriting: true, requireFacts: false).FirstOrDefault();
+			if (targetBlock is null)
+			{
+				result.ResultContent = $"Memory block '{block}' is not found or does not allow writing.";
+				result.CompleteWithError();
+				return;
+			}
+
+			try
+			{
+				int removedFacts = 0;
+				if (clearFacts && targetBlock.FactsEnabled)
+					removedFacts = await _memoryFactStore.ClearAsync(targetBlock, cancellationToken);
+
+				int removedLogs = 0;
+				if (clearLogs && targetBlock.LogsEnabled)
+					removedLogs = await _memoryLogStore.ClearAsync(targetBlock, cancellationToken);
+
+				result.StatusIcon = MaterialIconKind.DatabaseCheck;
+				result.ResultContent = $"Memory block '{block}' cleared. Removed facts: {removedFacts}, removed logs: {removedLogs}.";
+				result.CompleteWithSuccess();
+			}
+			catch (Exception ex)
+			{
+				result.StatusIcon = MaterialIconKind.DatabaseOff;
+				result.ResultContent = $"Failed to clear memory block '{block}'. Error: {ex.Message}";
+				result.CompleteWithError();
+			}
 		}
 
 		private List<MemoryBlock> GetBlocks(ToolExecutionContext ctx, string[]? names, bool requireReading, bool requireWriting, bool requireFacts)
@@ -240,10 +308,10 @@ namespace LLMDesktopAssistant.Tools
 			return attachments.Select(b => b.Reference.Object!).ToList();
 		}
 
-		private static List<MemoryFactResult> MergeResults(MemoryFactResult[] queryResults, MemoryFactResult[] hyDeResults)
+		private static List<MemoryFactResult> MergeResults(MemoryFactResult[][] queryBatches)
 		{
 			var merged = new Dictionary<int, MemoryFactResult>();
-			foreach (var fact in queryResults.Concat(hyDeResults))
+			foreach (var fact in queryBatches.SelectMany(b => b))
 			{
 				if (!merged.TryGetValue(fact.Id, out var existing) || (fact.RrfScore ?? 0) > (existing.RrfScore ?? 0))
 					merged[fact.Id] = fact;

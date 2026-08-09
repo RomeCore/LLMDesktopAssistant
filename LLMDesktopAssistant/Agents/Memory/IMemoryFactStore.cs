@@ -94,5 +94,15 @@ namespace LLMDesktopAssistant.Agents.Memory
 			string query,
 			int maxCount = 5,
 			CancellationToken cancellationToken = default);
+
+		/// <summary>
+		/// Clears all facts from the specified memory block, removing them from the
+		/// database, the keyword index and the semantic sector. The block configuration
+		/// itself is preserved.
+		/// </summary>
+		/// <param name="block">The memory block to clear.</param>
+		/// <param name="cancellationToken">The cancellation token to use for this operation.</param>
+		/// <returns>A task that represents the asynchronous operation. The result contains the number of removed facts.</returns>
+		Task<int> ClearAsync(MemoryBlock block, CancellationToken cancellationToken = default);
 	}
 }

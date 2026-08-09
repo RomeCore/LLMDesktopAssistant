@@ -3,7 +3,10 @@ using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Tools.MVVM;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
@@ -102,6 +105,12 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public AsyncRelayCommand DeleteCommand { get; }
 
 		/// <summary>
+		/// Gets the command that clears all facts and logs stored in the block,
+		/// keeping the block itself and its configuration.
+		/// </summary>
+		public AsyncRelayCommand ClearCommand { get; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="EditMemoryBlockDialogViewModel"/> class.
 		/// </summary>
 		/// <param name="block">The memory block to edit.</param>
@@ -117,6 +126,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			ConfirmRenameCommand = new AsyncRelayCommand(ConfirmRenameAsync);
 			CancelRenameCommand = new RelayCommand(() => IsEditingId = false);
 			DeleteCommand = new AsyncRelayCommand(DeleteAsync);
+			ClearCommand = new AsyncRelayCommand(ClearAsync);
 		}
 
 		private async Task DuplicateAsync()
@@ -163,13 +173,73 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		private async Task DeleteAsync()
 		{
+			var confirm = new FormsConfirmViewModel
+			{
+				Title = LocalizationManager.LocalizeStatic("settings-memory_delete_title"),
+				Description = LocalizationManager.LocalizeStatic("settings-memory_delete_confirm"),
+				ConfirmText = LocalizationManager.LocalizeStatic("settings-memory_delete"),
+				CancelText = LocalizationManager.LocalizeStatic("cancel"),
+				IsDanger = true
+			};
+
+			_ = DialogManager.ShowDialogAsync(confirm);
+			var confirmed = await confirm.Result;
+			DialogManager.CloseDialog();
+
+			if (!confirmed)
+				return;
+
 			var id = Block.Id;
+			try
+			{
+				await _databaseManager.DeleteAsync(id);
+				BlocksCategory.Remove(id);
 
-			BlocksCategory.Remove(id);
-			await _databaseManager.DeleteAsync(id);
+				DeletedBlockId = id;
+				DialogManager.CloseDialog(true);
 
-			DeletedBlockId = id;
-			DialogManager.CloseDialog(true);
+				var toast = ServiceRegistry.Provider.GetRequiredService<IToastService>();
+				toast.ShowSuccess(LocalizationManager.LocalizeStatic("settings-memory_delete_done"));
+			}
+			catch (Exception ex)
+			{
+				var toast = ServiceRegistry.Provider.GetRequiredService<IToastService>();
+				toast.ShowError(LocalizationManager.LocalizeStatic("settings-memory_delete_error"), ex.Message);
+			}
+		}
+
+		private async Task ClearAsync()
+		{
+			var confirm = new FormsConfirmViewModel
+			{
+				Title = LocalizationManager.LocalizeStatic("settings-memory_clear_title"),
+				Description = LocalizationManager.LocalizeStatic("settings-memory_clear_confirm"),
+				ConfirmText = LocalizationManager.LocalizeStatic("settings-memory_clear"),
+				CancelText = LocalizationManager.LocalizeStatic("cancel"),
+				IsDanger = true
+			};
+
+			_ = DialogManager.ShowDialogAsync(confirm);
+			var confirmed = await confirm.Result;
+			DialogManager.CloseDialog();
+
+			if (!confirmed)
+				return;
+
+			try
+			{
+				var (facts, logs) = await _databaseManager.ClearAsync(Block, clearFacts: true, clearLogs: true);
+
+				var toast = ServiceRegistry.Provider.GetRequiredService<IToastService>();
+				toast.ShowSuccess(
+					LocalizationManager.LocalizeStatic("settings-memory_clear_done"),
+					LocalizationManager.LocalizeStaticFormat("settings-memory_clear_result", facts, logs));
+			}
+			catch (Exception ex)
+			{
+				var toast = ServiceRegistry.Provider.GetRequiredService<IToastService>();
+				toast.ShowError(LocalizationManager.LocalizeStatic("settings-memory_clear_error"), ex.Message);
+			}
 		}
 
 		private static string GenerateBlockId()

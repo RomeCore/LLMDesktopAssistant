@@ -54,6 +54,36 @@ namespace LLMDesktopAssistant.Data
 		}
 
 		/// <inheritdoc/>
+		public Task<(int Facts, int Logs)> ClearAsync(
+			MemoryBlock block,
+			bool clearFacts,
+			bool clearLogs,
+			CancellationToken cancellationToken = default)
+		{
+			return ExecuteAsync(block, (db, _) =>
+			{
+				int facts = 0;
+				if (clearFacts)
+				{
+					facts = db.Facts.Count();
+					db.Facts.DeleteAll();
+					db.FactIndexes.DeleteAll();
+					db.FactSector.Clear();
+				}
+
+				int logs = 0;
+				if (clearLogs)
+				{
+					logs = db.Logs.Count();
+					db.Logs.DeleteAll();
+					db.LogIndexes.DeleteAll();
+				}
+
+				return Task.FromResult((facts, logs));
+			}, cancellationToken);
+		}
+
+		/// <inheritdoc/>
 		public async Task InvalidateAsync(string dataId)
 		{
 			foreach (var key in _cache.Keys)

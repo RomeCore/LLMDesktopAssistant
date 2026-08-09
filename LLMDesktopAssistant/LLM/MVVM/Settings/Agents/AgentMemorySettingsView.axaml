@@ -5,7 +5,6 @@
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
 			 xmlns:set="using:LLMDesktopAssistant.LLM.Settings"
-			 xmlns:appset="using:LLMDesktopAssistant.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentMemorySettingsView"
@@ -73,8 +72,14 @@
 								SelectedItem="{Binding SelectedAvailableBlockId}">
 
 				<ComboBox.ItemTemplate>
-					<DataTemplate x:DataType="appset:SettingsIdItemViewModel">
-						<TextBlock Text="{Binding DisplayId}"/>
+					<DataTemplate x:DataType="local:MemoryBlockIdItemViewModel">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<TextBlock Text="{Binding Name}"/>
+							<TextBlock Text="{Binding Id}"
+													 Opacity="0.5"
+													 FontSize="11"
+													 VerticalAlignment="Center"/>
+						</StackPanel>
 					</DataTemplate>
 				</ComboBox.ItemTemplate>
 
