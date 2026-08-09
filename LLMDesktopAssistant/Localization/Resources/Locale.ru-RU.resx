@@ -219,6 +219,15 @@
   <data name="input-press_key" xml:space="preserve">
     <value>Нажать клавишу</value>
   </data>
+  <data name="memory" xml:space="preserve">
+    <value>Память</value>
+  </data>
+  <data name="memory-retrieve" xml:space="preserve">
+    <value>Найти факты в памяти</value>
+  </data>
+  <data name="memory-store" xml:space="preserve">
+    <value>Сохранить факт в память</value>
+  </data>
   <data name="new_chat" xml:space="preserve">
     <value>Новый чат</value>
   </data>

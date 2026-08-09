@@ -26,6 +26,18 @@ namespace LLMDesktopAssistant.Agents
 		}
 
 		/// <summary>
+		/// Determines if the memory block attachment allows reading.
+		/// </summary>
+		/// <returns></returns>
+		public bool AllowsReading() => Mode == MemoryBlockAttachmentMode.Standard || Mode == MemoryBlockAttachmentMode.ReadOnly;
+
+		/// <summary>
+		/// Determines if the memory block attachment allows writing.
+		/// </summary>
+		/// <returns></returns>
+		public bool AllowsWriting() => Mode == MemoryBlockAttachmentMode.Standard || Mode == MemoryBlockAttachmentMode.WriteOnly;
+
+		/// <summary>
 		/// The memory block setting reference.
 		/// </summary>
 		public SettingsReference<MemoryBlock> Reference { get; init; } = new();

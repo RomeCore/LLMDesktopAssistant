@@ -219,6 +219,15 @@
   <data name="input-press_key" xml:space="preserve">
     <value>Press key</value>
   </data>
+  <data name="memory" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="memory-retrieve" xml:space="preserve">
+    <value>Retrieve memory facts</value>
+  </data>
+  <data name="memory-store" xml:space="preserve">
+    <value>Store memory fact</value>
+  </data>
   <data name="new_chat" xml:space="preserve">
     <value>New chat</value>
   </data>
