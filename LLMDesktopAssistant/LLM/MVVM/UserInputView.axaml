@@ -96,10 +96,6 @@
 										   FontWeight="Medium"
 										   VerticalAlignment="Center"
 										   TextTrimming="CharacterEllipsis"/>
-								<TextBlock Text="{Binding Login}"
-										   Opacity="0.6"
-										   FontSize="11"
-										   VerticalAlignment="Center"/>
 							</StackPanel>
 						</DataTemplate>
 					</ComboBox.ItemTemplate>
