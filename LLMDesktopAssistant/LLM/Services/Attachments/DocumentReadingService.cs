@@ -3,12 +3,14 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Wordprocessing;
+using LLMDesktopAssistant.Services;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 
 namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
+	[Service(typeof(IDocumentReadingService))]
 	public class DocumentReadingService : IDocumentReadingService
 	{
 		public string ExtractText(string filePath, int startPage, int pageCount)
