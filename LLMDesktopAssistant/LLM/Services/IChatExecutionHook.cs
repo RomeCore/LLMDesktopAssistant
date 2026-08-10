@@ -1,3 +1,5 @@
+using LLMDesktopAssistant.LLM.Domain;
+
 namespace LLMDesktopAssistant.LLM.Services
 {
 	/// <summary>
@@ -11,7 +13,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <summary>
 		/// Gets the execution order of the hook. Hooks run in ascending order.
 		/// </summary>
-		int Order { get; }
+		int Order => 0;
 
 		/// <summary>
 		/// Called before the LLM generates a response to the user's input and before prompt is built.
@@ -19,7 +21,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <param name="context"></param>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
-		Task OnResponsePrepareAsync(ChatPreExecutionHookContext context, CancellationToken cancellationToken = default);
+		Task OnResponsePrepareAsync(ChatPrepareExecutionHookContext context, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
 		/// <summary>
 		/// Called after each LLM response cycle is completed. Hooks are awaited
@@ -28,7 +30,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// </summary>
 		/// <param name="context">The context of the completed response cycle.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		Task OnResponseCompletedAsync(ChatExecutionHookContext context, CancellationToken cancellationToken = default);
+		Task OnAgentResponseCompletedAsync(ChatAgentResponseExecutionHookContext context, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
 		/// <summary>
 		/// Called once after the whole agent response chain has finished.
@@ -37,6 +39,15 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// </summary>
 		/// <param name="context">The context of the finished execution.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		Task OnExecutionFinishedAsync(ChatExecutionHookContext context, CancellationToken cancellationToken = default);
+		Task OnAgentExecutionFinishedAsync(ChatAgentExecutionHookContext context, CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+		/// <summary>
+		/// Called once after the whole multi-agent response chain has finished (all agents in all execution stages have completed).
+		/// The execution pipeline does not wait for the completion of this method
+		/// (fire-and-forget semantics).
+		/// </summary>
+		/// <param name="chat">The chat instance that has finished execution.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		Task OnExecutionFinishedAsync(Chat chat, CancellationToken cancellationToken = default) => Task.CompletedTask;
 	}
 }

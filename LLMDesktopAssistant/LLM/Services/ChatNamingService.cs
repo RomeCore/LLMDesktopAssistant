@@ -25,12 +25,12 @@ namespace LLMDesktopAssistant.LLM.Services
 		IChatPromptBuilder promptBuilder,
 		TemplateLibrary templates,
 		MessagesInterface messagesInterface
-		) : ChatExecutionHookBase, IChatNamingService
+		) : IChatNamingService, IChatExecutionHook
 	{
 		private readonly SemaphoreSlim _semaphore = new(1, 1);
 
 		/// <inheritdoc />
-		public override Task OnExecutionFinishedAsync(ChatExecutionHookContext context, CancellationToken cancellationToken = default)
+		public Task OnExecutionFinishedAsync(Chat chat, CancellationToken cancellationToken = default)
 		{
 			return TryNameChatAsync(cancellationToken);
 		}

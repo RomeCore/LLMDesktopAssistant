@@ -74,6 +74,8 @@ namespace LLMDesktopAssistant.LLM.Services
 						if (cycles == 0)
 							toastService.ShowWarning(LocalizationManager.LocalizeStatic("chat_toast_agent_selection_failed"),
 								LocalizationManager.LocalizeStatic("chat_toast_agent_selection_failed_desc"));
+						else
+							await RunExecutionFinishedHooksAsync(cancellationToken);
 						return;
 					}
 
@@ -145,6 +147,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				}
 
 				var completionSource = new CompletionSource();
+				var responsesBuilder = ImmutableList.CreateBuilder<Domain.AssistantMessage>();
 				var domainResponseMessage = new Domain.AssistantMessage
 				{
 					CreatedAt = DateTime.Now,
@@ -153,6 +156,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					AgentStageId = agentStageId,
 					CompletionToken = completionSource.Token
 				};
+				responsesBuilder.Add(domainResponseMessage);
 				int cycle = 0;
 
 				string prefixReasoningContent = string.Empty;
@@ -174,7 +178,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				var timeRequested = DateTime.Now;
 				DateTime? timeFirstToken = null;
 
-				await RunResponsePrepareHooksAsync(new ChatPreExecutionHookContext
+				await RunResponsePrepareHooksAsync(new ChatPrepareExecutionHookContext
 				{
 					Chat = chat,
 					Agent = agent,
@@ -328,7 +332,7 @@ namespace LLMDesktopAssistant.LLM.Services
 										success: true);
 								}
 
-								await RunResponseCompletedHooksAsync(new ChatExecutionHookContext
+								await RunResponseCompletedHooksAsync(new ChatAgentResponseExecutionHookContext
 								{
 									Chat = chat,
 									Agent = agent,
@@ -392,11 +396,11 @@ namespace LLMDesktopAssistant.LLM.Services
 						{
 							// Invoke execution-finished hooks (e.g. auto-naming) fire-and-forget
 							if (toolExecutionTasks.Count == 0)
-								_ = RunExecutionFinishedHooksAsync(new ChatExecutionHookContext
+								await RunAgentExecutionFinishedHooksAsync(new ChatAgentExecutionHookContext
 								{
 									Chat = chat,
 									Agent = agent,
-									Response = domainResponseMessage,
+									Responses = responsesBuilder.ToImmutable(),
 									Cycle = cycle
 								}, cancellationToken);
 
@@ -417,6 +421,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						AgentStageId = agentStageId,
 						CompletionToken = completionSource.Token
 					};
+					responsesBuilder.Add(domainResponseMessage);
 					cycle++;
 
 					storage.AppendMessage(domainResponseMessage);
@@ -424,7 +429,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					timeRequested = DateTime.Now;
 					timeFirstToken = null;
 
-					await RunResponsePrepareHooksAsync(new ChatPreExecutionHookContext
+					await RunResponsePrepareHooksAsync(new ChatPrepareExecutionHookContext
 					{
 						Chat = chat,
 						Agent = agent,
@@ -465,7 +470,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// </summary>
 		/// <param name="context">The context of the preview response cycle.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		private async Task RunResponsePrepareHooksAsync(ChatPreExecutionHookContext context, CancellationToken cancellationToken)
+		private async Task RunResponsePrepareHooksAsync(ChatPrepareExecutionHookContext context, CancellationToken cancellationToken)
 		{
 			foreach (var hook in _executionHooks)
 			{
@@ -485,19 +490,19 @@ namespace LLMDesktopAssistant.LLM.Services
 		}
 
 		/// <summary>
-		/// Invokes <see cref="IChatExecutionHook.OnResponseCompletedAsync"/> on all registered
+		/// Invokes <see cref="IChatExecutionHook.OnAgentResponseCompletedAsync"/> on all registered
 		/// hooks in ascending <see cref="IChatExecutionHook.Order"/>, awaiting each one.
 		/// Failures are logged and do not propagate to the execution pipeline.
 		/// </summary>
 		/// <param name="context">The context of the completed response cycle.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		private async Task RunResponseCompletedHooksAsync(ChatExecutionHookContext context, CancellationToken cancellationToken)
+		private async Task RunResponseCompletedHooksAsync(ChatAgentResponseExecutionHookContext context, CancellationToken cancellationToken)
 		{
 			foreach (var hook in _executionHooks)
 			{
 				try
 				{
-					await hook.OnResponseCompletedAsync(context, cancellationToken);
+					await hook.OnAgentResponseCompletedAsync(context, cancellationToken);
 				}
 				catch (OperationCanceledException)
 				{
@@ -511,19 +516,47 @@ namespace LLMDesktopAssistant.LLM.Services
 		}
 
 		/// <summary>
+		/// Invokes <see cref="IChatExecutionHook.OnAgentExecutionFinishedAsync"/> on all registered
+		/// hooks in ascending <see cref="IChatExecutionHook.Order"/> without awaiting them
+		/// (fire-and-forget). Failures are logged and do not propagate to the execution pipeline.
+		/// </summary>
+		/// <param name="context">The context of the finished execution.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		private Task RunAgentExecutionFinishedHooksAsync(ChatAgentExecutionHookContext context, CancellationToken cancellationToken)
+		{
+			foreach (var hook in _executionHooks)
+			{
+				try
+				{
+					_ = hook.OnAgentExecutionFinishedAsync(context, cancellationToken);
+				}
+				catch (OperationCanceledException)
+				{
+					throw;
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Hook {Hook} failed in OnExecutionFinished: {Error}", hook.GetType().Name, ex.Message);
+				}
+			}
+
+			return Task.CompletedTask;
+		}
+
+		/// <summary>
 		/// Invokes <see cref="IChatExecutionHook.OnExecutionFinishedAsync"/> on all registered
 		/// hooks in ascending <see cref="IChatExecutionHook.Order"/> without awaiting them
 		/// (fire-and-forget). Failures are logged and do not propagate to the execution pipeline.
 		/// </summary>
 		/// <param name="context">The context of the finished execution.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		private Task RunExecutionFinishedHooksAsync(ChatExecutionHookContext context, CancellationToken cancellationToken)
+		private Task RunExecutionFinishedHooksAsync(CancellationToken cancellationToken)
 		{
 			foreach (var hook in _executionHooks)
 			{
 				try
 				{
-					_ = hook.OnExecutionFinishedAsync(context, cancellationToken);
+					_ = hook.OnExecutionFinishedAsync(chat, cancellationToken);
 				}
 				catch (OperationCanceledException)
 				{

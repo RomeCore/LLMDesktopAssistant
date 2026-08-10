@@ -6,9 +6,9 @@ namespace LLMDesktopAssistant.LLM.Services
 	[ChatService(typeof(IMessageRevealService))]
 	public class MessageRevealService(
 		Chat chat
-	) : ChatExecutionHookBase, IMessageRevealService
+	) : IMessageRevealService, IChatExecutionHook
 	{
-		public override Task OnResponsePrepareAsync(ChatPreExecutionHookContext context, CancellationToken cancellationToken = default)
+		public Task OnResponsePrepareAsync(ChatPrepareExecutionHookContext context, CancellationToken cancellationToken = default)
 		{
 			RevealMessages();
 			return Task.CompletedTask;

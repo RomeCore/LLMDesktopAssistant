@@ -21,10 +21,10 @@ namespace LLMDesktopAssistant.LLM.Services
 		TemplateLibrary templates,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager
-		) : ChatExecutionHookBase, IChatSummarizationService
+		) : IChatSummarizationService, IChatExecutionHook
 	{
 		/// <inheritdoc />
-		public override Task OnResponseCompletedAsync(ChatExecutionHookContext context, CancellationToken cancellationToken = default)
+		public Task OnAgentResponseCompletedAsync(ChatAgentResponseExecutionHookContext context, CancellationToken cancellationToken = default)
 		{
 			return context.UsageMetadata != null
 				? TrySummarizeChatAsync(context.UsageMetadata, cancellationToken)
@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		}
 
 		/// <inheritdoc />
-		public override int Order => 10;
+		public int Order => 10;
 		public async Task TrySummarizeChatAsync(IUsageMetadata lastUsageMetadata, CancellationToken cancellationToken = default)
 		{
 			var effectiveOptions = chat.Settings.Memory.GetEffectiveSummarization();

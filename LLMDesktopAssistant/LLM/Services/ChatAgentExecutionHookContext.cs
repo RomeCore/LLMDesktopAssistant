@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	/// <summary>
 	/// The context passed to <see cref="IChatExecutionHook"/> methods.
 	/// </summary>
-	public sealed class ChatExecutionHookContext
+	public sealed class ChatAgentExecutionHookContext
 	{
 		/// <summary>
 		/// Gets the chat instance where the execution is happening.
@@ -20,15 +20,9 @@ namespace LLMDesktopAssistant.LLM.Services
 		public required ChatAgentDescriptor Agent { get; init; }
 
 		/// <summary>
-		/// Gets the assistant message that was generated in the completed cycle.
+		/// Gets the assistant messages that was generated in the completed cycle.
 		/// </summary>
-		public required AssistantMessage Response { get; init; }
-
-		/// <summary>
-		/// Gets the usage metadata of the last LLM response, or <see langword="null"/>
-		/// when it is not available (for example, in <see cref="IChatExecutionHook.OnExecutionFinishedAsync"/>).
-		/// </summary>
-		public IUsageMetadata? UsageMetadata { get; init; }
+		public required ImmutableList<AssistantMessage> Responses { get; init; }
 
 		/// <summary>
 		/// Gets a value indicating whether the completed cycle contained tool calls.
