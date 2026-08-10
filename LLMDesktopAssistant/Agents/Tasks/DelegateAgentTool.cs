@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		private readonly object? _methodTarget;
 		private readonly MethodInfo _method;
 		private readonly ParameterInfo[] _parameters;
-		private readonly ImmutableDictionary<string, int> _parameterMappings;
+		private readonly ImmutableDictionary<JsonMemberAccessor, int> _parameterMappings;
 		private readonly int _ctMapping = -1;
 
 		public override string Name { get; }
@@ -44,27 +44,46 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				)
 				throw new ArgumentException("Return type must be AgentToolCallResult or Task<AgentToolCallResult>.", nameof(method));
 
+			var requiredSchemaProperties = new JsonArray();
+			var schemaProperties = new JsonObject();
+			var argumentSchema = new JsonObject
+			{
+				["type"] = "object",
+				["properties"] = schemaProperties,
+				["additionalProperties"] = false
+			};
+
 			var methodAccessor = new JsonMemberAccessor(method);
-			var schemaProperties = new JsonSchemaGeneratorProperties();
-			var schema = _schemaGenerator.GenerateSchema(methodAccessor, schemaProperties)!.AsObject();
-			var mappingsBuilder = ImmutableDictionary.CreateBuilder<string, int>();
+			var mappingsBuilder = ImmutableDictionary.CreateBuilder<JsonMemberAccessor, int>();
 
 			var parameters = method.GetParameters();
-			foreach (var param in parameters)
+			for (int paramIndex = 0; paramIndex < parameters.Length; paramIndex++)
 			{
-				if (param.ParameterType == typeof(CancellationToken))
+				var parameter = parameters[paramIndex];
+
+				if (parameter.ParameterType == typeof(CancellationToken))
 				{
 					if (_ctMapping != -1)
 						throw new ArgumentException("Multiple parameters of type CancellationToken are not supported.", nameof(method));
-					_ctMapping = param.Position;
+					_ctMapping = parameter.Position;
 				}
 				else
 				{
-					var argName = param.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name
-						?? param.Name!;
-					mappingsBuilder.Add(argName, param.Position);
+					var parameterAccessor = new JsonMemberAccessor(parameter);
+					if (!parameterAccessor.Include)
+						continue;
+
+					var parameterSchema = JsonSchemaGenerator.Generate(parameterAccessor);
+					schemaProperties.Add(parameterAccessor.Name, parameterSchema);
+					if (parameterAccessor.Required)
+						requiredSchemaProperties.Add(parameterAccessor.Name);
+
+					mappingsBuilder.Add(parameterAccessor, parameter.Position);
 				}
 			}
+
+			if (requiredSchemaProperties.Count > 0)
+				argumentSchema["required"] = requiredSchemaProperties;
 
 			_methodTarget = methodTarget;
 			_method = method;
@@ -74,7 +93,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			Name = name;
 			DisplayName = displayName ?? name;
 			Description = description;
-			ArgumentSchema = schema;
+			ArgumentSchema = argumentSchema;
 		}
 
 		public override Task<AgentToolCallPreResult> PreExecuteAsync(JsonNode? arguments, CancellationToken cancellationToken = default)
@@ -85,7 +104,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public override async Task<AgentToolCallResult> ExecuteAsync(JsonNode? arguments, object? sharedContext, CancellationToken cancellationToken = default)
 		{
 			var objArgs = arguments as JsonObject ?? [];
-			var inParams = new object[_parameters.Length];
+			var inParams = new object?[_parameters.Length];
 
 			try
 			{
@@ -93,14 +112,21 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					if (_parameters[i].HasDefaultValue)
 						inParams[i] = _parameters[i].DefaultValue!;
 
-				foreach (var kvp in _parameterMappings)
+				foreach (var (accessor, paramIndex) in _parameterMappings)
 				{
-					var arg = objArgs[kvp.Key];
-					if (arg == null)
-						continue;
-
-					var type = _parameters[kvp.Value].ParameterType;
-					inParams[kvp.Value] = JsonSerializer.Deserialize(arg, type)!;
+					if (objArgs.ContainsKey(accessor.Name))
+					{
+						var arg = objArgs[accessor.Name];
+						var type = _parameters[paramIndex].ParameterType;
+						inParams[paramIndex] = ToolArgsJsonNodeConverter.Convert(arg, type, accessor.Name)!;
+					}
+					else
+					{
+						if (accessor.HasDefaultValue)
+							inParams[paramIndex] = accessor.DefaultValue;
+						else
+							throw new ArgumentException($"Missing required parameter '{accessor.Name}'.", nameof(arguments));
+					}
 				}
 
 				if (_ctMapping != -1)

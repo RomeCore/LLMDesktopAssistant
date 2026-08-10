@@ -47,7 +47,7 @@ namespace LLMDesktopAssistant.Tools
 					"void or Task.", nameof(method));
 
 			var parameters = method.GetParameters();
-			var parameterMappings = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			var parameterMappings = new Dictionary<JsonMemberAccessor, int>();
 
 			int toolExecutionContextMapping = -1;
 			int originalArgsMapping = -1;
@@ -114,7 +114,7 @@ namespace LLMDesktopAssistant.Tools
 					if (parameterAccessor.Required)
 						requiredSchemaProperties.Add(parameterAccessor.Name);
 
-					parameterMappings.Add(parameterAccessor.Name, paramIndex);
+					parameterMappings.Add(parameterAccessor, paramIndex);
 				}
 			}
 
@@ -139,14 +139,21 @@ namespace LLMDesktopAssistant.Tools
 					foreach (var (i, serviceType) in serviceMappings)
 						inParams[i] = context.Chat.Services.GetService(serviceType);
 
-					foreach (var (name, paramIndex) in parameterMappings)
+					foreach (var (accessor, paramIndex) in parameterMappings)
 					{
-						var arg = objArgs[name];
-						if (arg == null)
-							continue;
-
-						var type = parameters[paramIndex].ParameterType;
-						inParams[paramIndex] = ToolArgsJsonNodeConverter.Convert(arg, type, name)!;
+						if (objArgs.ContainsKey(accessor.Name))
+						{
+							var arg = objArgs[accessor.Name];
+							var type = parameters[paramIndex].ParameterType;
+							inParams[paramIndex] = ToolArgsJsonNodeConverter.Convert(arg, type, accessor.Name)!;
+						}
+						else
+						{
+							if (accessor.HasDefaultValue)
+								inParams[paramIndex] = accessor.DefaultValue;
+							else
+								throw new ArgumentException($"Missing required parameter '{accessor.Name}'.", nameof(args));
+						}
 					}
 
 					if (toolExecutionContextMapping != -1)
