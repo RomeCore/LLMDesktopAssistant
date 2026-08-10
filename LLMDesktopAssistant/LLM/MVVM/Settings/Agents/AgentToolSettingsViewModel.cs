@@ -208,12 +208,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		public bool? Enabled
 		{
-			get => Tools.All(t => t.Enabled == true) ? true : Tools.All(t => t.Enabled == false) ? false : null;
+			get => Tools.All(t => t.IsFixed) || Tools.Where(t => !t.IsFixed).All(t => t.Enabled == true) ? true : Tools.Where(t => !t.IsFixed).All(t => t.Enabled == false) ? false : null;
 			set
 			{
 				if (Enabled != value)
 					foreach (var tool in Tools)
-						tool.Enabled = value;
+						if (!tool.IsFixed)
+							tool.Enabled = value;
 			}
 		}
 
