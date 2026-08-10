@@ -2873,6 +2873,12 @@
   <data name="settings-memory_enable_memory" xml:space="preserve">
     <value>Enable conversation memory</value>
   </data>
+  <data name="settings-memory_manual_control" xml:space="preserve">
+    <value>Manual control (via tools)</value>
+  </data>
+  <data name="settings-memory_manual_control_hint" xml:space="preserve">
+    <value>Allow the agent to control memory manually using memory tools.</value>
+  </data>
   <data name="settings-memory_auto_retrieval" xml:space="preserve">
     <value>Automatic retrieval</value>
   </data>

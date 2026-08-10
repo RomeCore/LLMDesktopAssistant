@@ -45,6 +45,13 @@
 		<CheckBox Content="{loc:Loc settings-memory_enable_memory}"
 						  IsChecked="{Binding EffectiveMemoryOptions.EnableMemory, Mode=TwoWay}"/>
 
+		<!-- Manual control (via tools) -->
+		<CheckBox Content="{loc:Loc settings-memory_manual_control}"
+				  IsChecked="{Binding EffectiveMemoryOptions.ManualControlEnabled, Mode=TwoWay}"
+				  IsEnabled="{Binding EffectiveMemoryOptions.EnableMemory}"
+				  ToolTip.Tip="{loc:Loc settings-memory_manual_control_hint}"/>
+
+
 		<!-- Automatic retrieval -->
 		<Grid ColumnDefinitions="Auto,*"
 			  IsEnabled="{Binding EffectiveMemoryOptions.EnableMemory}">

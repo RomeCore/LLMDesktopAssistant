@@ -184,7 +184,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				path = s.Path,
 				body = s.InjectionMode is SkillInjectionMode.Full ? s.BodyGetter() : null
 			});
-			generalContext["memory_blocks"] = effectiveChatMemoryOptions.EnableMemory && agent.Memory.EnableMemory
+			generalContext["memory_blocks"] = effectiveChatMemoryOptions.EnableMemory && effectiveChatMemoryOptions.ManualControlEnabled && agent.Memory.EnableMemory
 				? effectiveMemoryBlocks.Where(b => b.Enabled)
 					.Select(b => (Block: b.Reference.Object!, Attachment: b))
 					.Where(b => b.Block != null)

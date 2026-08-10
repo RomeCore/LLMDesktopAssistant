@@ -14,6 +14,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 		private readonly IAgentManagementService _agentManager;
 
 		/// <summary>
+		/// Gets the chat instance where the tools are executed.
+		/// </summary>
+		protected Chat Chat => _chat;
+
+		/// <summary>
+		/// Gets the agent management service used to resolve agent memory attachments.
+		/// </summary>
+		protected IAgentManagementService AgentManager => _agentManager;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="MemoryToolModuleBase"/> class.
 		/// </summary>
 		/// <param name="chat">The chat instance where the tools are executed.</param>
@@ -24,22 +34,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			_agentManager = agentManager;
 		}
 
-		/// <summary>
-		/// Gets the chat instance where the tools are executed.
-		/// </summary>
-		protected Chat Chat => _chat;
-
-		/// <summary>
-		/// Gets the agent management service used to resolve agent memory attachments.
-		/// </summary>
-		protected IAgentManagementService AgentManager => _agentManager;
-
 		/// <inheritdoc/>
 		public override IEnumerable<ToolInfo> GetTools()
 		{
-			if (!_chat.Settings.Memory.GetEffectiveMemoryOptions().EnableMemory)
-				return [];
-			return base.GetTools();
+			var memoryOpts = _chat.Settings.Memory.GetEffectiveMemoryOptions();
+			if (memoryOpts.EnableMemory && memoryOpts.ManualControlEnabled)
+				return base.GetTools();
+			return [];
 		}
 
 		/// <summary>

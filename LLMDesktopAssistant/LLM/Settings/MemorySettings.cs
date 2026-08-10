@@ -9,6 +9,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _enableMemory, value);
 		}
 
+		private bool _manualControlEnabled = true;
+		/// <summary>
+		/// Gets or sets a value indicating whether manual agent control (via tools) is enabled.
+		/// </summary>
+		public bool ManualControlEnabled
+		{
+			get => _manualControlEnabled;
+			set => SetProperty(ref _manualControlEnabled, value);
+		}
+
 		private bool _automaticRetrievalEnabled;
 		/// <summary>
 		/// Gets or sets a value indicating whether automatic retrieval of memory is enabled.

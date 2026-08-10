@@ -2873,6 +2873,12 @@
   <data name="settings-memory_enable_memory" xml:space="preserve">
     <value>Включить память разговора</value>
   </data>
+  <data name="settings-memory_manual_control" xml:space="preserve">
+    <value>Ручное управление (через инструменты)</value>
+  </data>
+  <data name="settings-memory_manual_control_hint" xml:space="preserve">
+    <value>Разрешить агенту управлять памятью вручную с помощью инструментов памяти.</value>
+  </data>
   <data name="settings-memory_auto_retrieval" xml:space="preserve">
     <value>Автоматический поиск</value>
   </data>
