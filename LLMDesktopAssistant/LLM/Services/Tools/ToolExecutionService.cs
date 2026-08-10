@@ -154,6 +154,12 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							return;
 						}
 					}
+					catch (ArgumentException aex)
+					{
+						toolCall.Status = ToolStatus.Error;
+						toolCall.ResultContent = aex.Message;
+						return;
+					}
 					catch (Exception ex)
 					{
 						Log.Debug(ex, "Error during preview execution of tool '{ToolName}': {ExceptionMessage}", toolCall.ToolName, ex.Message);

@@ -137,7 +137,7 @@ namespace LLMDesktopAssistant.Tools
 				}
 				catch (Exception ex)
 				{
-					throw new ArgumentException($"Failed to deserialize pre-executor arguments: {ex.Message}", nameof(args), ex);
+					throw new ArgumentException($"Failed to deserialize pre-executor arguments: {ex.Message}", ex);
 				}
 
 				var value = method.Invoke(target, inParams)!;
