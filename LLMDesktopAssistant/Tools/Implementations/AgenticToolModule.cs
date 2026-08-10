@@ -8,8 +8,8 @@ using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Providers;
-using LLTSharp;
 using Material.Icons;
 using RCLargeLanguageModels;
 using SixLabors.ImageSharp;
@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	public class AgenticToolModule : ToolModule
 	{
 		private readonly Chat _chat;
-		private readonly TemplateLibrary _templateLibrary;
+		private readonly TemplateLibraryAccessor _templates;
 		private readonly WorkingDirectoryAccessService _fileAccess;
 		private readonly IAgentManagementService _agentManager;
 		private readonly IAgentTaskExecutor _agentTaskExecutor;
@@ -28,12 +28,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly ISkillsetBuildingService _skillsetBuildingService;
 		private readonly IModelManager _modelManager;
 
-		public AgenticToolModule(Chat chat, TemplateLibrary templateLibrary, WorkingDirectoryAccessService fileAccess,
+		public AgenticToolModule(Chat chat, TemplateLibraryAccessor templates, WorkingDirectoryAccessService fileAccess,
 			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor,
 			IToolsetBuildingService toolsetBuildingService, ISkillsetBuildingService skillsetBuildingService, IModelManager modelManager)
 		{
 			_chat = chat;
-			_templateLibrary = templateLibrary;
+			_templates = templates;
 			_fileAccess = fileAccess;
 			_agentManager = agentManager;
 			_agentTaskExecutor = agentTaskExecutor;
@@ -304,7 +304,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					TriggeredMessage = ctx.Message,
 					Model = llm,
 					InitialMessages = [
-						new AgentSystemMessage { Content = _templateLibrary.Retrieve("image_describer_prompt").Render().ToString()! },
+						new AgentSystemMessage { Content = _templates.GetTextTemplate("image_describer_prompt").Render().ToString()! },
 						new AgentUserMessage {
 							Content = "Please describe the image.",
 							Attachments = [new AgentAttachment

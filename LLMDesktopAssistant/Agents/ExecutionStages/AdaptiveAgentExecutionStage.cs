@@ -3,9 +3,9 @@ using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Utils.Json;
-using LLTSharp;
 using RCLargeLanguageModels;
 using Serilog;
 
@@ -68,7 +68,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 				throw new InvalidOperationException($"Agentic router model '{routerModelName}' is not available: {ex.Message}");
 			}
 
-			var templateLibrary = context.Services.GetRequiredService<TemplateLibrary>();
+			var templates = context.Services.GetRequiredService<TemplateLibraryAccessor>();
 			var agentTaskExecutor = context.Services.GetRequiredService<IAgentTaskExecutor>();
 
 			var agents = selectFrom
@@ -80,7 +80,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 
 			var agentNames = string.Join("\n", agents.Select(a => a.Info.Name));
 
-			var template = (IMessagesTemplate)templateLibrary.Retrieve("router_prompt");
+			var template = templates.GetMessagesTemplate("router_prompt");
 			var messages = template.RenderToAgent(new
 			{
 				agents = agents.Select(a => new

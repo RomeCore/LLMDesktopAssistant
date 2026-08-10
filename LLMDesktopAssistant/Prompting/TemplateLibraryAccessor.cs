@@ -1,0 +1,50 @@
+﻿using System.Globalization;
+using LLMDesktopAssistant.Services;
+using LLTSharp;
+using LLTSharp.Locale;
+using LLTSharp.Metadata;
+using LLTSharp.Metadata.Types;
+
+namespace LLMDesktopAssistant.Prompting
+{
+	[Service]
+	public class TemplateLibraryAccessor(
+		TemplateLibrary templateLibrary
+	)
+	{
+		private LanguageMetadata GetCurrentLanguageMetadata()
+		{
+			return new LanguageMetadata(new LanguageCode(CultureInfo.CurrentCulture));
+		}
+
+		private T GetTemplateInternal<T>(string id, IMetadata[] metadata)
+			where T : ITemplate
+		{
+			var languageMetadata = GetCurrentLanguageMetadata();
+			if (metadata.Length == 0)
+				metadata = [new TemplateIdentifierMetadata(id), languageMetadata];
+			else
+				metadata = [new TemplateIdentifierMetadata(id), languageMetadata, .. metadata];
+			var lastTemplate = (templateLibrary.TryRetrieveBestAllWithFallback(metadata)?.LastOrDefault())
+				?? throw new KeyNotFoundException($"No templates found for the given ID '{id}'");
+			if (lastTemplate is not T result)
+				throw new InvalidCastException($"The retrieved template of ID '{id}' is not an instance of {typeof(T)}.");
+			return result;
+		}
+
+		public ITemplate GetTemplate(string id, params IMetadata[] metadata)
+		{
+			return GetTemplateInternal<ITemplate>(id, metadata);
+		}
+
+		public ITextTemplate GetTextTemplate(string id, params IMetadata[] metadata)
+		{
+			return GetTemplateInternal<ITextTemplate>(id, metadata);
+		}
+
+		public IMessagesTemplate GetMessagesTemplate(string id, params IMetadata[] metadata)
+		{
+			return GetTemplateInternal<IMessagesTemplate>(id, metadata);
+		}
+	}
+}

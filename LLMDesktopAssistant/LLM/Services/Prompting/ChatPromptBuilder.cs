@@ -1,4 +1,3 @@
-using System.Globalization;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
@@ -10,8 +9,6 @@ using LLMDesktopAssistant.Prompting.Plugins;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Users;
 using LLTSharp;
-using LLTSharp.Locale;
-using LLTSharp.Metadata.Types;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Tools;
@@ -28,7 +25,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 	[ChatService(typeof(IChatPromptBuilder))]
 	public class ChatPromptBuilder(
 		Chat chat,
-		TemplateLibrary templates,
+		TemplateLibraryAccessor templates,
 		IPromptRegistry promptRegistry,
 		IAgentManagementService agentManager,
 		IUserManagementService userManager,
@@ -56,11 +53,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				ToolStatus.Cancelled => ToolResultStatus.Cancelled,
 				_ => ToolResultStatus.NoResult
 			};
-		}
-
-		private LanguageMetadata GetCurrentLanguageMetadata()
-		{
-			return new LanguageMetadata(new LanguageCode(CultureInfo.CurrentCulture));
 		}
 
 		private bool IsUserMessageVisibleToAgent(BranchedMessage message, ChatAgentDescriptor agent)
@@ -137,8 +129,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 		private string BuildSystemPrompt(ChatAgentDescriptor agent, TemplateFunctionSet functions)
 		{
-			var language = GetCurrentLanguageMetadata();
-			var template = templates.TryRetrieveBestAllWithFallback("system_prompt", language)?.LastOrDefault() as ITextTemplate;
+			var template = templates.GetTextTemplate("system_prompt");
 			var promptSettings = agent.Prompts;
 
 			var generalContext = new Dictionary<string, object?>();
@@ -204,8 +195,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			TemplateFunctionSet functions)
 		{
 			var userMessage = message.AsUserMessage();
-			var language = GetCurrentLanguageMetadata();
-			var template = templates.TryRetrieveBestAllWithFallback("user_message_prompt", language)?.LastOrDefault() as ITextTemplate;
+			var template = templates.GetTextTemplate("user_message_prompt");
 
 			var context = new Dictionary<string, object?>();
 			foreach (var expander in promptSystemContextExpanders)
@@ -230,8 +220,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			ChatAgentDescriptor agent, TemplateFunctionSet functions)
 		{
 			var userMessage = message.AsUserMessage();
-			var language = GetCurrentLanguageMetadata();
-			var template = templates.TryRetrieveBestAllWithFallback("user_message_prompt", language)?.LastOrDefault() as ITextTemplate;
+			var template = templates.GetTextTemplate("user_message_prompt");
 
 			var context = new Dictionary<string, object?>();
 			foreach (var expander in promptMessageContextExpanders)
@@ -262,10 +251,9 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var exposure = senderDescriptor.Read.GetEffectiveExposureMode(chat.Settings); // What sender agent exposes
 			var permissions = agent.Read.GetEffectiveReadPermissions(chat.Settings); // What current agent can see
 
-			var language = GetCurrentLanguageMetadata();
 			if (exposure.HasFlag(AgentExposureMode.IdentifySelfAsUser) || permissions.HasFlag(AgentReadPermissions.IdentifyAgentsAsUsers))
 			{
-				var template = templates.TryRetrieveBestAllWithFallback("user_message_prompt", language)?.LastOrDefault() as ITextTemplate;
+				var template = templates.GetTextTemplate("user_message_prompt");
 
 				var context = new Dictionary<string, object?>();
 				foreach (var expander in promptMessageContextExpanders)
@@ -291,7 +279,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			}
 			else
 			{
-				var template = templates.TryRetrieveBestAllWithFallback("foreign_assistant_prompt", language)?.LastOrDefault() as ITextTemplate;
+				var template = templates.GetTextTemplate("foreign_assistant_prompt");
 
 				var context = new Dictionary<string, object?>();
 				foreach (var expander in promptMessageContextExpanders)

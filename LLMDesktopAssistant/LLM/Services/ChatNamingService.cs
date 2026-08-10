@@ -3,9 +3,9 @@ using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Utils;
-using LLTSharp;
 using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services
@@ -23,7 +23,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager,
 		IChatPromptBuilder promptBuilder,
-		TemplateLibrary templates,
+		TemplateLibraryAccessor templates,
 		MessagesInterface messagesInterface
 		) : IChatNamingService, IChatExecutionHook
 	{
@@ -68,7 +68,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					return false;
 				}
 
-				var namingTemplate = (ITextTemplate)templates.Retrieve("naming_prompt")!;
+				var namingTemplate = templates.GetTextTemplate("naming_prompt");
 				var namingPrompt = namingTemplate.Render();
 				var namingInput = BuildNamingInput();
 

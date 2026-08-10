@@ -6,8 +6,8 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Providers;
-using LLTSharp;
 using RCLargeLanguageModels.Metadata;
 using Serilog;
 
@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	public class ChatSummarizationService(
 		Chat chat,
 		IChatPromptBuilder promptBuilder,
-		TemplateLibrary templates,
+		TemplateLibraryAccessor templates,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager
 		) : IChatSummarizationService, IChatExecutionHook
@@ -130,7 +130,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				Log.Information("Started summarization process.");
 
-				var summarizerTemplate = (ITextTemplate)templates.Retrieve("summarization_prompt")!;
+				var summarizerTemplate = templates.GetTextTemplate("summarization_prompt");
 				var summarizerPrompt = summarizerTemplate.Render();
 				var summarizerInput = BuildSummarizerInput(message);
 
