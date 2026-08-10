@@ -231,6 +231,26 @@
   <data name="memory-store_fact" xml:space="preserve">
     <value>Store memory fact</value>
   </data>
+  <data name="memory-append_log" xml:space="preserve">
+    <value>Append memory log</value>
+  </data>
+  <data name="memory-delete_log" xml:space="preserve">
+    <value>Delete memory log</value>
+  </data>
+  <data name="memory-search_log" xml:space="preserve">
+    <value>Search memory logs</value>
+  </data>
+  <data name="memory-view_logs" xml:space="preserve">
+    <value>View memory logs</value>
+  </data>
+
+  <data name="memory-view_logs_status_latest" xml:space="preserve">
+    <value>Latest **{0}**</value>
+  </data>
+  <data name="memory-view_logs_status_time_window" xml:space="preserve">
+    <value>Time window</value>
+  </data>
+
   <data name="new_chat" xml:space="preserve">
     <value>New chat</value>
   </data>

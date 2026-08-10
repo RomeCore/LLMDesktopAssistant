@@ -7,18 +7,15 @@ using Material.Icons;
 namespace LLMDesktopAssistant.Tools.Implementations.Memory
 {
 	[ToolModule]
-	public class MemoryClearToolModule : ToolModule
+	public class MemoryClearToolModule : MemoryToolModuleBase
 	{
-		private readonly Chat _chat;
-		private readonly IAgentManagementService _agentManager;
 		private readonly IMemoryFactStore _memoryFactStore;
 		private readonly IMemoryLogStore _memoryLogStore;
 
 		public MemoryClearToolModule(Chat chat, IAgentManagementService agentManager,
 			IMemoryFactStore memoryFactStore, IMemoryLogStore memoryLogStore)
+			: base(chat, agentManager)
 		{
-			_chat = chat;
-			_agentManager = agentManager;
 			_memoryFactStore = memoryFactStore;
 			_memoryLogStore = memoryLogStore;
 
@@ -33,13 +30,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess | ToolBehaviour.MemoryClear,
 				Category = "memory"
 			});
-		}
-
-		public override IEnumerable<ToolInfo> GetTools()
-		{
-			if (!_chat.Settings.Memory.GetEffectiveMemoryOptions().EnableMemory)
-				return [];
-			return base.GetTools();
 		}
 
 		private async Task ClearAsync(
@@ -81,28 +71,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				result.ResultContent = $"Failed to clear memory block '{block}'. Error: {ex.Message}";
 				result.CompleteWithError();
 			}
-		}
-
-		private List<MemoryBlock> GetBlocks(ToolExecutionContext ctx, string[]? names, bool requireReading, bool requireWriting, bool requireFacts)
-		{
-			var agent = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
-			var attachments = agent.Memory.GetEffectiveBlocks(_chat.Settings)
-				.Where(b => b.Enabled && b.Reference.Object != null);
-
-			if (names is not null)
-			{
-				var namesSet = names.ToHashSet();
-				attachments = attachments.Where(b => namesSet.Contains(b.Reference.Object!.Name));
-			}
-
-			if (requireReading)
-				attachments = attachments.Where(b => b.AllowsReading());
-			if (requireWriting)
-				attachments = attachments.Where(b => b.AllowsWriting());
-			if (requireFacts)
-				attachments = attachments.Where(b => b.Reference.Object!.FactsEnabled);
-
-			return attachments.Select(b => b.Reference.Object!).ToList();
 		}
 	}
 }

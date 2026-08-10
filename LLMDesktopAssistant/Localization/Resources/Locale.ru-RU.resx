@@ -231,6 +231,26 @@
   <data name="memory-store_fact" xml:space="preserve">
     <value>Сохранить факт в память</value>
   </data>
+  <data name="memory-append_log" xml:space="preserve">
+    <value>Добавить лог в память</value>
+  </data>
+  <data name="memory-delete_log" xml:space="preserve">
+    <value>Удалить лог из памяти</value>
+  </data>
+  <data name="memory-search_log" xml:space="preserve">
+    <value>Найти логи в памяти</value>
+  </data>
+  <data name="memory-view_logs" xml:space="preserve">
+    <value>Просмотреть логи памяти</value>
+  </data>
+
+  <data name="memory-view_logs_status_latest" xml:space="preserve">
+    <value>Последние **{0}**</value>
+  </data>
+  <data name="memory-view_logs_status_time_window" xml:space="preserve">
+    <value>Временное окно</value>
+  </data>
+
   <data name="new_chat" xml:space="preserve">
     <value>Новый чат</value>
   </data>

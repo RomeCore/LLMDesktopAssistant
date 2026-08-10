@@ -1,0 +1,304 @@
+using System.ComponentModel;
+using System.Text;
+using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Agents;
+using LLMDesktopAssistant.Localization;
+using Material.Icons;
+
+namespace LLMDesktopAssistant.Tools.Implementations.Memory
+{
+	/// <summary>
+	/// Provides tools for appending, searching, viewing and deleting episodic memory logs
+	/// in the memory blocks attached to the sender agent.
+	/// </summary>
+	[ToolModule]
+	public class MemoryLogToolModule : MemoryToolModuleBase
+	{
+		private readonly IMemoryLogStore _memoryLogStore;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MemoryLogToolModule"/> class.
+		/// </summary>
+		/// <param name="chat">The chat instance where the tools are executed.</param>
+		/// <param name="agentManager">The agent management service used to resolve agent memory attachments.</param>
+		/// <param name="memoryLogStore">The store used to access episodic memory logs.</param>
+		public MemoryLogToolModule(Chat chat, IAgentManagementService agentManager,
+			IMemoryLogStore memoryLogStore)
+			: base(chat, agentManager)
+		{
+			_memoryLogStore = memoryLogStore;
+
+			AddTool(AppendAsync, new ToolInitializationInfo
+			{
+				Name = "memory-append_log",
+				IsFixed = true,
+				Description = """
+					Appends a new episodic log entry to the specified memory block.
+					Logs are immutable: they cannot be edited, only deleted. The log text is added to the keyword search index.
+					""",
+				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				Category = "memory"
+			});
+
+			AddTool(SearchAsync, new ToolInitializationInfo
+			{
+				Name = "memory-search_log",
+				IsFixed = true,
+				Description = """
+					Searches active episodic logs in the specified memory blocks (or all enabled blocks) using BM25 keyword search.
+					Transient, consolidated and ignored logs are excluded from search results.
+					""",
+				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				Category = "memory"
+			});
+
+			AddTool(ViewLogsAsync, new ToolInitializationInfo
+			{
+				Name = "memory-view_logs",
+				IsFixed = true,
+				Description = """
+					Views active and transient episodic logs of the specified memory blocks (or all enabled blocks).
+					Logs can be filtered by a real-time window and/or an alternative timeline ordinal window.
+					When no window is specified, the most recent logs are returned. Logs are ordered by their begin time, newest first.
+					""",
+				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				Category = "memory"
+			});
+
+			AddTool(DeleteAsync, new ToolInitializationInfo
+			{
+				Name = "memory-delete_log",
+				IsFixed = false,
+				Description = """
+					Permanently deletes an episodic log from the specified memory block by its ID.
+					The log is removed from the database and the keyword index and cannot be restored.
+					""",
+				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				Category = "memory"
+			});
+		}
+
+		private async Task AppendAsync(
+			[Description("The memory block where the log should be appended")] string block,
+			[Description("The text of the log describing what happened. Must not be empty.")] string text,
+			[Description("The importance of the log, from 0.0 (least important) to 1.0 (most important)")] double importance,
+			ReactiveToolResult result,
+			ToolExecutionContext ctx,
+			[Description("The real-time timestamp when the log began in UTC ISO 8601 format (e.g. 2026-08-10T15:00:00Z). Defaults to now.")] DateTime? timeStampBegin = null,
+			[Description("The real-time timestamp when the log ended in UTC ISO 8601 format (e.g. 2026-08-10T15:00:00Z). Defaults to timeStampBegin.")] DateTime? timeStampEnd = null,
+			[Description("The alternative timeline ordinal when the log began (for example, the day number)")] double timeLineOrdinalBegin = 0,
+			[Description("The alternative timeline details when the log began (for example, \"Day 3, 14:00\")")] string timeLineDetailsBegin = "",
+			[Description("The alternative timeline ordinal when the log ended. Defaults to the begin ordinal.")] double? timeLineOrdinalEnd = null,
+			[Description("The alternative timeline details when the log ended. Defaults to the begin details.")] string? timeLineDetailsEnd = null,
+			CancellationToken cancellationToken = default)
+		{
+			result.StatusIcon = MaterialIconKind.DatabaseAdd;
+			result.StatusTitle = $"**{text}** → *{block}*";
+
+			var targetBlock = GetBlocks(ctx, [block], requireReading: false, requireWriting: true, requireLogs: true).FirstOrDefault();
+			if (targetBlock is null)
+			{
+				result.ResultContent = $"Memory block '{block}' is not found or does not allow writing.";
+				result.CompleteWithError();
+				return;
+			}
+
+			try
+			{
+				int messageId = ctx.FindMessageId();
+
+				var log = await _memoryLogStore.AppendAsync(
+					targetBlock,
+					text,
+					timeStampBegin: timeStampBegin,
+					timeStampEnd: timeStampEnd,
+					timeLineOrdinalBegin: timeLineOrdinalBegin,
+					timeLineDetailsBegin: timeLineDetailsBegin,
+					timeLineOrdinalEnd: timeLineOrdinalEnd ?? timeLineOrdinalBegin,
+					timeLineDetailsEnd: string.IsNullOrEmpty(timeLineDetailsEnd) ? timeLineDetailsBegin : timeLineDetailsEnd,
+					sourceChatId: Chat.ChatId,
+					sourceMessageId: messageId,
+					importance: importance,
+					cancellationToken: cancellationToken);
+
+				result.StatusIcon = MaterialIconKind.DatabaseCheck;
+				result.ResultContent = $"Log appended successfully. ID: {log.Id}";
+				result.CompleteWithSuccess();
+			}
+			catch (Exception ex)
+			{
+				result.StatusIcon = MaterialIconKind.DatabaseOff;
+				result.ResultContent = $"Failed to append log to memory block '{block}'. Error: {ex.Message}";
+				result.CompleteWithError();
+			}
+		}
+
+		private async Task SearchAsync(
+			[Description("The memory blocks where the logs should be searched. Use null to search in all enabled memory blocks")] string[]? blocks,
+			[Description("The search query text")] string query,
+			ReactiveToolResult result,
+			ToolExecutionContext ctx,
+			[Description("The maximum number of logs to return")] int maxCount = 5,
+			CancellationToken cancellationToken = default)
+		{
+			result.StatusIcon = MaterialIconKind.DatabaseSearch;
+			result.StatusTitle = $"**{query}**";
+
+			var blocksToSearch = GetBlocks(ctx, blocks, requireReading: true, requireWriting: false, requireLogs: true);
+
+			if (blocksToSearch.Count == 0)
+			{
+				result.ResultContent = "No memory blocks to search in.";
+				result.CompleteWithError();
+				return;
+			}
+
+			try
+			{
+				var perBlockResults = await Task.WhenAll(blocksToSearch.Select(block =>
+					_memoryLogStore.SearchAsync(block, query, maxCount, cancellationToken)));
+
+				var sb = new StringBuilder();
+				int totalFound = 0;
+
+				for (int i = 0; i < blocksToSearch.Count; i++)
+				{
+					var block = blocksToSearch[i];
+					var logs = perBlockResults[i];
+					if (logs.Length == 0)
+						continue;
+
+					totalFound += logs.Length;
+					sb.AppendLine($"### {block.Name}");
+					foreach (var log in logs)
+					{
+						var bm25Score = log.Bm25Score?.ToString("0.00") ?? "unknown";
+						sb.AppendLine($"- **{log.Text}** [id: {log.Id}] (bm25 score: {bm25Score}, importance: {log.Importance:0.00}, {log.TimeStampBegin:yyyy-MM-dd HH:mm} UTC)");
+					}
+					sb.AppendLine();
+				}
+
+				if (totalFound == 0)
+				{
+					result.ResultContent = "No matching logs found.";
+					result.CompleteWithSuccess();
+					return;
+				}
+
+				result.UseMarkdown = true;
+				result.ResultContent = sb.ToString();
+				result.CompleteWithSuccess();
+			}
+			catch (Exception ex)
+			{
+				result.StatusIcon = MaterialIconKind.DatabaseOff;
+				result.ResultContent = $"Failed to search logs. Error: {ex.Message}";
+				result.CompleteWithError();
+			}
+		}
+
+		private async Task ViewLogsAsync(
+			[Description("The memory blocks where the logs should be viewed. Use null to view logs in all enabled memory blocks")] string[]? blocks,
+			ReactiveToolResult result,
+			ToolExecutionContext ctx,
+			[Description("The inclusive lower bound of the real-time window in UTC ISO 8601 format (e.g. 2026-08-10T15:00:00Z)")] DateTime? from = null,
+			[Description("The inclusive upper bound of the real-time window in UTC ISO 8601 format (e.g. 2026-08-10T15:00:00Z)")] DateTime? to = null,
+			[Description("The inclusive lower bound of the alternative timeline ordinal window (for example, the day number)")] double? timeLineFrom = null,
+			[Description("The inclusive upper bound of the alternative timeline ordinal window")] double? timeLineTo = null,
+			[Description("The maximum number of logs to return. When no time window is specified, the most recent logs are returned.")] int maxCount = 20,
+			CancellationToken cancellationToken = default)
+		{
+			result.StatusIcon = MaterialIconKind.DatabaseSearch;
+			result.StatusTitle = from.HasValue || to.HasValue || timeLineFrom.HasValue || timeLineTo.HasValue
+				? LocalizationManager.LocalizeStatic("memory-view_logs_status_time_window")
+				: LocalizationManager.LocalizeStaticFormat("memory-view_logs_status_latest", maxCount);
+
+			var blocksToView = GetBlocks(ctx, blocks, requireReading: true, requireWriting: false, requireLogs: true);
+
+			if (blocksToView.Count == 0)
+			{
+				result.ResultContent = "No memory blocks to view.";
+				result.CompleteWithError();
+				return;
+			}
+
+			try
+			{
+				var perBlockResults = await Task.WhenAll(blocksToView.Select(block =>
+					_memoryLogStore.GetByTimeAsync(block, from, to, timeLineFrom, timeLineTo, maxCount, cancellationToken)));
+
+				var sb = new StringBuilder();
+				int totalFound = 0;
+
+				for (int i = 0; i < blocksToView.Count; i++)
+				{
+					var block = blocksToView[i];
+					var logs = perBlockResults[i];
+					if (logs.Length == 0)
+						continue;
+
+					totalFound += logs.Length;
+					sb.AppendLine($"### {block.Name}");
+					foreach (var log in logs)
+					{
+						var timeline = string.IsNullOrEmpty(log.TimeLineDetailsBegin) ? "" : $", timeline: {log.TimeLineDetailsBegin}";
+						sb.AppendLine($"- **{log.Text}** [id: {log.Id}] ({log.TimeStampBegin:yyyy-MM-dd HH:mm} UTC, status: {log.Status}, importance: {log.Importance:0.00}{timeline})");
+					}
+					sb.AppendLine();
+				}
+
+				if (totalFound == 0)
+				{
+					result.ResultContent = "No logs found in the specified time window.";
+					result.CompleteWithSuccess();
+					return;
+				}
+
+				result.UseMarkdown = true;
+				result.ResultContent = sb.ToString();
+				result.CompleteWithSuccess();
+			}
+			catch (Exception ex)
+			{
+				result.StatusIcon = MaterialIconKind.DatabaseOff;
+				result.ResultContent = $"Failed to view logs. Error: {ex.Message}";
+				result.CompleteWithError();
+			}
+		}
+
+		private async Task DeleteAsync(
+			[Description("The memory block that contains the log")] string block,
+			[Description("The ID of the log to delete")] int logId,
+			ReactiveToolResult result,
+			ToolExecutionContext ctx,
+			CancellationToken cancellationToken = default)
+		{
+			result.StatusIcon = MaterialIconKind.DatabaseRemove;
+			result.StatusTitle = $"**{block}** [id: {logId}]";
+
+			var targetBlock = GetBlocks(ctx, [block], requireReading: false, requireWriting: true, requireLogs: true).FirstOrDefault();
+			if (targetBlock is null)
+			{
+				result.ResultContent = $"Memory block '{block}' is not found or does not allow writing.";
+				result.CompleteWithError();
+				return;
+			}
+
+			try
+			{
+				await _memoryLogStore.HardDeleteAsync(targetBlock, logId, cancellationToken);
+
+				result.StatusIcon = MaterialIconKind.DatabaseCheck;
+				result.ResultContent = $"Log [id: {logId}] permanently deleted from memory block '{block}'.";
+				result.CompleteWithSuccess();
+			}
+			catch (Exception ex)
+			{
+				result.StatusIcon = MaterialIconKind.DatabaseOff;
+				result.ResultContent = $"Failed to delete log [id: {logId}] in memory block '{block}'. Error: {ex.Message}";
+				result.CompleteWithError();
+			}
+		}
+	}
+}

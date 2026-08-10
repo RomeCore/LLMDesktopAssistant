@@ -8,17 +8,14 @@ using Material.Icons;
 namespace LLMDesktopAssistant.Tools.Implementations.Memory
 {
 	[ToolModule]
-	public class MemoryFactToolModule : ToolModule
+	public class MemoryFactToolModule : MemoryToolModuleBase
 	{
-		private readonly Chat _chat;
-		private readonly IAgentManagementService _agentManager;
 		private readonly IMemoryFactStore _memoryFactStore;
 
 		public MemoryFactToolModule(Chat chat, IAgentManagementService agentManager,
 			IMemoryFactStore memoryFactStore)
+			: base(chat, agentManager)
 		{
-			_chat = chat;
-			_agentManager = agentManager;
 			_memoryFactStore = memoryFactStore;
 
 			AddTool(StoreAsync, new ToolInitializationInfo
@@ -56,13 +53,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
 				Category = "memory"
 			});
-		}
-
-		public override IEnumerable<ToolInfo> GetTools()
-		{
-			if (!_chat.Settings.Memory.GetEffectiveMemoryOptions().EnableMemory)
-				return [];
-			return base.GetTools();
 		}
 
 		private async Task StoreAsync(
@@ -124,7 +114,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					{
 						if (supersedeId == 0)
 						{
-							var storedFact = await _memoryFactStore.StoreAsync(targetBlock, fact, _chat.ChatId, messageId, importance, cancellationToken);
+							var storedFact = await _memoryFactStore.StoreAsync(targetBlock, fact, Chat.ChatId, messageId, importance, cancellationToken);
 							result.StatusIcon = MaterialIconKind.DatabaseCheck;
 							result.ResultContent = $"Fact stored successfully. ID: {storedFact.Id}";
 							result.CompleteWithSuccess();
@@ -132,7 +122,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 						}
 						else
 						{
-							var storedFact = await _memoryFactStore.SupersedeAsync(targetBlock, supersedeId.Value, fact, _chat.ChatId, messageId, importance, cancellationToken);
+							var storedFact = await _memoryFactStore.SupersedeAsync(targetBlock, supersedeId.Value, fact, Chat.ChatId, messageId, importance, cancellationToken);
 							result.StatusIcon = MaterialIconKind.DatabaseEdit;
 							if (supersedeId.Value == highestScore.Id)
 								result.ResultContent = $"Fact stored with supersede successfully. ID: {storedFact.Id}, supersed fact [id: {highestScore.Id}]: {highestScore.Text}";
@@ -145,7 +135,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				}
 				else
 				{
-					var storedFact = await _memoryFactStore.StoreAsync(targetBlock, fact, _chat.ChatId, messageId, importance, cancellationToken);
+					var storedFact = await _memoryFactStore.StoreAsync(targetBlock, fact, Chat.ChatId, messageId, importance, cancellationToken);
 					result.StatusIcon = MaterialIconKind.DatabaseCheck;
 					result.ResultContent = $"Fact stored successfully. ID: {storedFact.Id}";
 					result.CompleteWithSuccess();
@@ -284,28 +274,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				result.ResultContent = $"Failed to forget fact [id: {factId}] in memory block '{block}'. Error: {ex.Message}";
 				result.CompleteWithError();
 			}
-		}
-
-		private List<MemoryBlock> GetBlocks(ToolExecutionContext ctx, string[]? names, bool requireReading, bool requireWriting, bool requireFacts)
-		{
-			var agent = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
-			var attachments = agent.Memory.GetEffectiveBlocks(_chat.Settings)
-				.Where(b => b.Enabled && b.Reference.Object != null);
-
-			if (names is not null)
-			{
-				var namesSet = names.ToHashSet();
-				attachments = attachments.Where(b => namesSet.Contains(b.Reference.Object!.Name));
-			}
-
-			if (requireReading)
-				attachments = attachments.Where(b => b.AllowsReading());
-			if (requireWriting)
-				attachments = attachments.Where(b => b.AllowsWriting());
-			if (requireFacts)
-				attachments = attachments.Where(b => b.Reference.Object!.FactsEnabled);
-
-			return attachments.Select(b => b.Reference.Object!).ToList();
 		}
 
 		private static List<MemoryFactResult> MergeResults(MemoryFactResult[][] queryBatches)
