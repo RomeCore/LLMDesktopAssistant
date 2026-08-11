@@ -48,7 +48,7 @@ public class SettingsReferenceTests
 
 		var category = SettingsManager.GetCategory<TestSettings>();
 		var json = JsonSerializer.Serialize(
-			category.GetAvailableIds().ToDictionary(id => id, id => SettingsManager.Get<TestSettings>(id)),
+			category.Ids.ToDictionary(id => id, id => SettingsManager.Get<TestSettings>(id)),
 			SettingsManager.jsonOptions);
 
 		var deserialized = JsonSerializer.Deserialize<Dictionary<string, TestSettings>>(json, SettingsManager.jsonOptions)!;

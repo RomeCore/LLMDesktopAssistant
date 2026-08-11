@@ -75,7 +75,7 @@ namespace LLMDesktopAssistant.Settings
 			where TSettings : SettingsObject, new()
 		{
 			var category = GetCategory<TSettings>();
-			return category.GetAvailableIds();
+			return category.Ids;
 		}
 
 		/// <summary>

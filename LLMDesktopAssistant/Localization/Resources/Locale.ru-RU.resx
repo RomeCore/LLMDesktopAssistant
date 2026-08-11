@@ -243,14 +243,12 @@
   <data name="memory-view_logs" xml:space="preserve">
     <value>Просмотреть логи памяти</value>
   </data>
-
   <data name="memory-view_logs_status_latest" xml:space="preserve">
     <value>Последние **{0}**</value>
   </data>
   <data name="memory-view_logs_status_time_window" xml:space="preserve">
     <value>Временное окно</value>
   </data>
-
   <data name="new_chat" xml:space="preserve">
     <value>Новый чат</value>
   </data>
@@ -2549,6 +2547,12 @@
   <data name="chat_summarization_task" xml:space="preserve">
     <value>Суммаризация чата</value>
   </data>
+  <data name="memory_recording_task" xml:space="preserve">
+    <value>Запись памяти</value>
+  </data>
+  <data name="memory_retrieval_task" xml:space="preserve">
+    <value>Извлечение памяти</value>
+  </data>
   <data name="task_details" xml:space="preserve">
     <value>Детали задачи</value>
   </data>
@@ -2911,5 +2915,8 @@
   </data>
   <data name="tool_behaviour_memoryaccess_hint" xml:space="preserve">
     <value>Инструмент имеет доступ к семантической памяти (факты, логи, состояние).</value>
+  </data>
+  <data name="chat_memory_retrieval_status" xml:space="preserve">
+    <value>Достаём память</value>
   </data>
 </root>

@@ -244,7 +244,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		private static string GenerateBlockId()
 		{
-			var taken = BlocksCategory.GetAvailableIds().ToHashSet();
+			var taken = BlocksCategory.Ids.ToHashSet();
 			int i = 1;
 			while (taken.Contains($"block-{i}"))
 				i++;

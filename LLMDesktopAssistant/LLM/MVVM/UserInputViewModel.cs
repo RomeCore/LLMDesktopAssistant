@@ -138,9 +138,27 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 
 		/// <summary>
-		/// Gets the conversation manager that manages the current conversation.
+		/// Gets the current chat instance.
 		/// </summary>
 		public Chat Chat { get; }
+
+		private static readonly SettingsCategory<ChatSettings> chatSettingsCategory = SettingsManager.GetCategory<ChatSettings>();
+
+		private SettingsIdItemViewModel _selectedSettingsId;
+		public SettingsIdItemViewModel SelectedSettingsId
+		{
+			get => _selectedSettingsId;
+			set
+			{
+				if (SetProperty(ref _selectedSettingsId, value))
+					Chat.Settings = chatSettingsCategory.Get(value.Id);
+			}
+		}
+
+		/// <summary>
+		/// Gets a list of settings IDs for the current chat.
+		/// </summary>
+		public RangeObservableCollection<SettingsIdItemViewModel> SettingsIds { get; }
 
 		/// <summary>
 		/// Gets or sets the chat model selected in the input bar.
@@ -184,9 +202,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		private void Models_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			// The generated SelectionInheritance setter raises PropertyChanged with the
-			// name of the inherited property ("Selection") when the level changes.
-			if (e.PropertyName != "Selection")
+			if (e.PropertyName != nameof(Chat.Settings.Models.Selection))
 				return;
 
 			TrackEffectiveSelection();
@@ -331,6 +347,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			private set => SetProperty(ref _isGenerating, value);
 		}
 
+		private IDisposable? _generationCtsSubscription;
+
 		public ImmutableList<UserMessageVisibilityItemModel> Visibilities { get; } = [
 			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.Always, Title = "message_visibility_always", Icon = MaterialIconKind.Eye },
 			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.RevealAfterSend, Title = "message_visibility_reveal_after_send", Icon = MaterialIconKind.Clock },
@@ -378,7 +396,18 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			Chat = chatVM.Chat;
 			ChatViewModel = chatVM;
 
-			Chat.SubscribeChanged(nameof(Chat.Settings), _ => TrackModelSelection(), out _settingsSubscription);
+			chatSettingsCategory.Ids.CollectionChanged += SettingsIds_CollectionChanged;
+			SettingsIds = [ .. chatSettingsCategory.Ids
+				.Where(c => c != SettingsObject.DefaultId)
+				.Select(c => new SettingsIdItemViewModel { Id = c })
+				.Prepend(SettingsIdItemViewModel.Default) ];
+			_selectedSettingsId = SettingsIds.First(id => id.Id == Chat.Settings.Id);
+
+			Chat.SubscribeChanged(nameof(Chat.Settings), _ =>
+			{
+				TrackModelSelection();
+				SelectedSettingsId = SettingsIds.First(id => id.Id == Chat.Settings.Id);
+			}, out _settingsSubscription);
 			TrackModelSelection();
 
 			Chat.SubscribeChanged(nameof(Chat.Settings), _ => TrackUsers(), out _usersSettingsSubscription);
@@ -424,12 +453,21 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				{
 					IsGenerating = Chat.GenerationCts != null;
 				});
-			});
+			}, out _generationCtsSubscription);
 
 			_selectedVisibility = Visibilities[0];
 		}
 
+		private void SettingsIds_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.OldItems != null)
+				foreach (string id in e.OldItems)
+					SettingsIds.Remove(SettingsIds.First(s => s.Id == id));
 
+			if (e.NewItems != null)
+				foreach (string id in e.NewItems)
+					SettingsIds.Add(new SettingsIdItemViewModel { Id = id });
+		}
 
 		public UserInput? GetCurrentUserInput()
 		{
@@ -535,6 +573,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 			if (disposing)
 			{
+				SettingsManager.GetCategory<ChatSettings>().Ids.CollectionChanged -= SettingsIds_CollectionChanged;
+
 				_settingsSubscription?.Dispose();
 				_modelsSubscription?.Dispose();
 				_settingsSubscription = null;
@@ -548,6 +588,9 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				if (_trackedSelection is not null)
 					_trackedSelection.PropertyChanged -= EffectiveSelection_PropertyChanged;
 				_trackedSelection = null;
+
+				_generationCtsSubscription?.Dispose();
+				_generationCtsSubscription = null;
 			}
 		}
 	}

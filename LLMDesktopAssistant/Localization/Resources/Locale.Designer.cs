@@ -772,6 +772,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Retrieving memory.
+        /// </summary>
+        public static string chat_memory_retrieval_status {
+            get {
+                return ResourceManager.GetString("chat_memory_retrieval_status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Chat naming.
         /// </summary>
         public static string chat_naming_task {
@@ -2590,6 +2599,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Append memory log.
+        /// </summary>
+        public static string memory_append_log {
+            get {
+                return ResourceManager.GetString("memory-append_log", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Read only.
         /// </summary>
         public static string memory_attachment_mode_readonly {
@@ -2626,11 +2644,38 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete memory log.
+        /// </summary>
+        public static string memory_delete_log {
+            get {
+                return ResourceManager.GetString("memory-delete_log", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Forget memory fact.
         /// </summary>
         public static string memory_forget_fact {
             get {
                 return ResourceManager.GetString("memory-forget_fact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Memory recording.
+        /// </summary>
+        public static string memory_recording_task {
+            get {
+                return ResourceManager.GetString("memory_recording_task", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Memory retrieval.
+        /// </summary>
+        public static string memory_retrieval_task {
+            get {
+                return ResourceManager.GetString("memory_retrieval_task", resourceCulture);
             }
         }
         
@@ -2644,11 +2689,47 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Search memory logs.
+        /// </summary>
+        public static string memory_search_log {
+            get {
+                return ResourceManager.GetString("memory-search_log", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Store memory fact.
         /// </summary>
         public static string memory_store_fact {
             get {
                 return ResourceManager.GetString("memory-store_fact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на View memory logs.
+        /// </summary>
+        public static string memory_view_logs {
+            get {
+                return ResourceManager.GetString("memory-view_logs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Latest **{0}**.
+        /// </summary>
+        public static string memory_view_logs_status_latest {
+            get {
+                return ResourceManager.GetString("memory-view_logs_status_latest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Time window.
+        /// </summary>
+        public static string memory_view_logs_status_time_window {
+            get {
+                return ResourceManager.GetString("memory-view_logs_status_time_window", resourceCulture);
             }
         }
         
@@ -5097,6 +5178,24 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_memory_hint {
             get {
                 return ResourceManager.GetString("settings-memory_hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Manual control (via tools).
+        /// </summary>
+        public static string settings_memory_manual_control {
+            get {
+                return ResourceManager.GetString("settings-memory_manual_control", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Allow the agent to control memory manually using memory tools..
+        /// </summary>
+        public static string settings_memory_manual_control_hint {
+            get {
+                return ResourceManager.GetString("settings-memory_manual_control_hint", resourceCulture);
             }
         }
         

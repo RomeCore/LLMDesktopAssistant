@@ -1,0 +1,156 @@
+using System.Text;
+using LLMDesktopAssistant.Agents.Tasks;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Agents;
+using LLMDesktopAssistant.LLM.Services.Prompting;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Prompting.Hooks;
+using LLMDesktopAssistant.Providers;
+using LLMDesktopAssistant.Tools;
+using Material.Icons;
+using Serilog;
+
+namespace LLMDesktopAssistant.Agents.Memory
+{
+	/// <summary>
+	/// Automatically retrieves relevant memory before the agent generates its first response of the round.
+	/// Runs a dedicated retrieval agent that searches facts and episodic logs via delegate tools,
+	/// then attaches the resulting digest to the pending assistant message with
+	/// <see cref="AttachedMessageMode.AgentPrivate"/> mode so that only the agent itself sees it.
+	/// </summary>
+	[ChatService(typeof(IChatExecutionHook))]
+	public class AutomaticMemoryReader(
+		IMemoryFactStore memoryFactStore,
+		IMemoryLogStore memoryLogStore,
+		IAgentTaskExecutor agentTaskExecutor,
+		IModelManager modelManager,
+		TemplateLibraryAccessor templates,
+		IAgentManagementService agentManager
+	) : IChatExecutionHook
+	{
+		/// <inheritdoc />
+		public int Order => 0;
+
+		/// <inheritdoc />
+		public async Task OnResponsePrepareAsync(ChatPrepareExecutionHookContext context, CancellationToken cancellationToken = default)
+		{
+			try
+			{
+				await RetrieveAsync(context, cancellationToken);
+			}
+			catch (OperationCanceledException)
+			{
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "Automatic memory retrieval failed: {Error}", ex.Message);
+			}
+		}
+
+		private async Task RetrieveAsync(ChatPrepareExecutionHookContext context, CancellationToken cancellationToken)
+		{
+			if (context.Cycle != 0)
+				return;
+
+			var chat = context.Chat;
+			var memoryOptions = chat.Settings.Memory.GetEffectiveMemoryOptions();
+			if (!memoryOptions.AutomaticRetrievalEnabled || !memoryOptions.EnableMemory)
+				return;
+
+			var agent = context.Agent;
+			if (!agent.Memory.EnableMemory)
+				return;
+
+			var model = modelManager.TryGetModel(memoryOptions.RetrievalModel);
+			if (model is null)
+				return;
+
+			var attachments = agent.Memory.GetEffectiveBlocks(chat.Settings)
+				.Where(b => b.Enabled && b.Reference.Object is not null && b.AllowsReading())
+				.ToList();
+			var factBlocks = attachments.Where(b => b.Reference.Object!.FactsEnabled)
+				.Select(b => b.Reference.Object!).ToList();
+			var logBlocks = attachments.Where(b => b.Reference.Object!.LogsEnabled)
+				.Select(b => b.Reference.Object!).ToList();
+			if (factBlocks.Count == 0 && logBlocks.Count == 0)
+				return;
+
+			var input = BuildRetrievalInput(chat, context);
+			if (string.IsNullOrWhiteSpace(input))
+				return;
+
+			chat.StatusIcon = MaterialIconKind.Database;
+			chat.StatusText = LocalizationManager.LocalizeStatic("chat_memory_retrieval_status");
+
+			var template = templates.GetMessagesTemplate("memory_retrieval_prompt");
+			var messages = template.RenderToAgent(new
+			{
+				blocks = attachments.Select(b => new
+				{
+					name = b.Reference.Object!.Name,
+					can_read = b.AllowsReading(),
+					can_write = b.AllowsWriting(),
+					description = b.Reference.Object!.Description
+				}).ToArray(),
+				input
+			});
+
+			var tools = new AutomaticMemoryTools(memoryFactStore, memoryLogStore, chat, factBlocks, logBlocks, 0)
+				.CreateReaderTools();
+
+			var task = agentTaskExecutor.Execute(new AgentTaskLaunchParameters
+			{
+				TaskName = LocalizationManager.LocalizeStatic("memory_retrieval_task"),
+				TriggeredChat = chat,
+				Model = model,
+				InitialMessages = [.. messages],
+				Tools = tools,
+				AutoApproveBehaviours = ToolBehaviour.MemoryAccess,
+				TimeOut = TimeSpan.FromMinutes(3),
+				CompletionExpiryTime = TimeSpan.Zero
+			}, cancellationToken);
+
+			await task;
+
+			var digest = task.LastGeneratedContent;
+			if (string.IsNullOrWhiteSpace(digest))
+				return;
+
+			context.Response.AdditionalViewModels.Add(new AttachedMessageAdditionalViewModel
+			{
+				Mode = AttachedMessageMode.AgentPrivate,
+				Content = digest
+			});
+		}
+
+		private string BuildRetrievalInput(Chat chat, ChatPrepareExecutionHookContext context)
+		{
+			// The last round contains the pending (empty) response placeholder, so take up to two
+			// fully visible rounds plus the current user messages.
+			var rounds = MessagesInterface.GroupMessagesIntoRounds(chat.Messages, 2);
+			var sb = new StringBuilder();
+
+			foreach (var round in rounds)
+			{
+				foreach (var branched in round)
+				{
+					switch (branched.Message)
+					{
+						case UserMessage userMessage when AgentMessageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent, chat.Settings):
+							sb.Append("User: ").AppendLine(userMessage.Content);
+							break;
+						case AssistantMessage assistantMessage when !string.IsNullOrEmpty(assistantMessage.Content)
+							&& AgentMessageVisibility.IsAssistantMessageVisibleToAgent(branched, context.Agent, agentManager, chat.Settings):
+							sb.Append("Assistant: ").AppendLine(assistantMessage.Content);
+							break;
+					}
+				}
+				sb.AppendLine();
+			}
+
+			return sb.ToString().Trim();
+		}
+	}
+}

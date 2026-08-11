@@ -23,15 +23,5 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// Gets the assistant messages that was generated in the completed cycle.
 		/// </summary>
 		public required ImmutableList<AssistantMessage> Responses { get; init; }
-
-		/// <summary>
-		/// Gets a value indicating whether the completed cycle contained tool calls.
-		/// </summary>
-		public bool HasToolCalls { get; init; }
-
-		/// <summary>
-		/// Gets the zero-based index of the completed cycle within the agent response chain.
-		/// </summary>
-		public int Cycle { get; init; }
 	}
 }

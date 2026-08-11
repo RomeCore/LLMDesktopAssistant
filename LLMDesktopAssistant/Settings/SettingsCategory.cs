@@ -24,6 +24,12 @@ namespace LLMDesktopAssistant.Settings
 		private readonly string _filePath;
 		private readonly ConcurrentDictionary<string, (TSettings, ChangeTracker)> _objects = [];
 		private readonly Debounce _saveDebounce = new(debouncePassedResult: true);
+		private readonly RangeObservableCollection<string> _ids = [];
+
+		/// <summary>
+		/// Gets a read-only collection of IDs for all settings objects in this category.
+		/// </summary>
+		public ReadOnlyObservableCollection<string> Ids { get; }
 
 		/// <summary>
 		/// Initializes a new settings category with the specified name and folder location.
@@ -38,6 +44,8 @@ namespace LLMDesktopAssistant.Settings
 			
 			_name = name.Trim();
 			_filePath = Path.Combine(folder, _name + ".json");
+
+			Ids = new ReadOnlyObservableCollection<string>(_ids);
 
 			Load();
 		}
@@ -56,7 +64,8 @@ namespace LLMDesktopAssistant.Settings
 			{
 				var tracker = new ChangeTracker(obj, SaveDebounced);
 				obj.Id = id;
-				_objects.TryAdd(id, (obj, tracker));
+				if (_objects.TryAdd(id, (obj, tracker)))
+					_ids.Add(id);
 			}
 		}
 
@@ -69,6 +78,7 @@ namespace LLMDesktopAssistant.Settings
 			}
 
 			_objects.Clear();
+			_ids.Clear();
 		}
 
 		private async void SaveDebounced()
@@ -111,6 +121,7 @@ namespace LLMDesktopAssistant.Settings
 				{
 					Id = id
 				};
+				_ids.Add(id);
 				var tracker = new ChangeTracker(obj, SaveDebounced);
 				SaveDebounced();
 				return (obj, tracker);
@@ -153,6 +164,7 @@ namespace LLMDesktopAssistant.Settings
 				throw new ArgumentException("Id cannot be null or whitespace.", nameof(id));
 			if (_objects.TryRemove(id, out var objTuple))
 			{
+				_ids.Remove(id);
 				objTuple.Item2.Dispose();
 				objTuple.Item1.Dispose();
 				SaveDebounced();
@@ -178,6 +190,8 @@ namespace LLMDesktopAssistant.Settings
 				return false;
 			if (!_objects.TryRemove(idFrom, out var objTuple))
 				return false;
+			_ids.Remove(idFrom);
+			_ids.Add(idTo);
 			_objects.TryAdd(idTo, objTuple);
 			objTuple.Item1.Id = idTo;
 			SaveDebounced();
@@ -208,17 +222,9 @@ namespace LLMDesktopAssistant.Settings
 			copy.Id = idTo;
 			var tracker = new ChangeTracker(copy, SaveDebounced);
 			_objects.TryAdd(idTo, (copy, tracker));
+			_ids.Add(idTo);
 			SaveDebounced();
 			return true;
-		}
-
-		/// <summary>
-		/// Retrieves all available setting IDs currently loaded in memory.
-		/// </summary>
-		/// <returns>An array of setting IDs.</returns>
-		public string[] GetAvailableIds()
-		{
-			return _objects.Keys.ToArray();
 		}
 	}
 }

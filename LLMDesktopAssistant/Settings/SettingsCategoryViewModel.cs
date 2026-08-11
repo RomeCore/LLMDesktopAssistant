@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.Settings
 
 		public static SettingsCategory<TSettings> Category { get; } = SettingsManager.GetCategory<TSettings>();
 
-		public RangeObservableCollection<SettingsIdItemViewModel> Ids { get; } = [ .. Category.GetAvailableIds()
+		public RangeObservableCollection<SettingsIdItemViewModel> Ids { get; } = [ .. Category.Ids
 			.Where(c => c != SettingsObject.DefaultId)
 			.Select(c => new SettingsIdItemViewModel { Id = c })
 			.Prepend(SettingsIdItemViewModel.Default) ];

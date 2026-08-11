@@ -400,8 +400,7 @@ namespace LLMDesktopAssistant.LLM.Services
 								{
 									Chat = chat,
 									Agent = agent,
-									Responses = responsesBuilder.ToImmutable(),
-									Cycle = cycle
+									Responses = responsesBuilder.ToImmutable()
 								}, cancellationToken);
 
 							completionSource.Complete();

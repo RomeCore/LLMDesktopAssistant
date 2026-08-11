@@ -304,7 +304,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// <summary>
 		/// Gets the available shared toolset configuration IDs.
 		/// </summary>
-		public RangeObservableCollection<SettingsIdItemViewModel> ToolsetIds { get; } = [ ..ToolsetCategory.GetAvailableIds()
+		public RangeObservableCollection<SettingsIdItemViewModel> ToolsetIds { get; } = [ ..ToolsetCategory.Ids
 			.Where(c => c != SettingsObject.DefaultId)
 			.Select(c => new SettingsIdItemViewModel { Id = c })
 			.Prepend(SettingsIdItemViewModel.Default) ];

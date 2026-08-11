@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -12,6 +12,8 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// <summary>
 		/// Groups messages into rounds.
 		/// A round = [one or more consecutive user messages] + [one or more consecutive assistant messages].
+		/// Assistant messages never start a new round; a new round begins only with a user message
+		/// that follows an assistant message (or with the very first message).
 		/// </summary>
 		/// <param name="messages">List of messages to group.</param>
 		public static List<List<BranchedMessage>> GroupMessagesIntoRounds(IReadOnlyList<BranchedMessage> messages)
@@ -21,39 +23,34 @@ namespace LLMDesktopAssistant.LLM.Services
 				return rounds;
 
 			List<BranchedMessage>? currentRound = null;
-			bool? lastWasUser = null;
 
 			foreach (var branched in messages)
 			{
-				bool isUser = branched.Message is Domain.UserMessage;
-				bool isAssistant = branched.Message is Domain.AssistantMessage;
-
-				if (isUser)
+				if (branched.Message is Domain.UserMessage)
 				{
-					// Start a new round if previous was assistant, or first message is user
-					if (lastWasUser == false || lastWasUser == null)
+					// Start a new round if the previous message was an assistant message (the current round is closed)
+					if (currentRound is null || currentRound[^1].Message is not Domain.UserMessage)
 					{
 						currentRound = [branched];
 						rounds.Add(currentRound);
 					}
 					else
 					{
-						currentRound?.Add(branched);
+						currentRound.Add(branched);
 					}
-					lastWasUser = true;
 				}
-				else if (isAssistant)
+				else
 				{
-					if (lastWasUser == true || lastWasUser == null)
+					// Assistant messages complete the current round and never start a new one
+					if (currentRound is null)
 					{
 						currentRound = [branched];
 						rounds.Add(currentRound);
 					}
 					else
 					{
-						currentRound?.Add(branched);
+						currentRound.Add(branched);
 					}
-					lastWasUser = false;
 				}
 			}
 

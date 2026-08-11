@@ -55,73 +55,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			};
 		}
 
-		private bool IsUserMessageVisibleToAgent(BranchedMessage message, ChatAgentDescriptor agent)
-		{
-			var userMessage = message.AsUserMessage();
-			var permissions = agent.Read.GetEffectiveReadPermissions(chat.Settings);
-
-			if (!permissions.HasFlag(AgentReadPermissions.UserMessages))
-				return false;
-
-			switch (userMessage.Visibility)
-			{
-				case MessageVisibility.OnlyUsers:
-					return false;
-				case MessageVisibility.OnlyAgents:
-				case MessageVisibility.Always:
-				case MessageVisibility.RevealAfterSend:
-				default:
-					break;
-			}
-
-			// If its a white list, then 'contains' must return true to skip this check -> true == true
-			// If its a black list, then 'contains' must return false to skip this check -> false == false
-			if (userMessage.VisibleTo.Contains(agent.Id.ToString()) != userMessage.IsVisibleToWhiteList)
-				return false;
-
-			return true;
-		}
-
-		private bool IsAssistantMessageVisibleToAgent(BranchedMessage message, ChatAgentDescriptor agent)
-		{
-			var assistantMessage = message.AsAssistantMessage();
-			var messageAgentId = assistantMessage.SenderAgentId;
-			var agentDescriptor = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
-			var exposure = agentDescriptor.Read.GetEffectiveExposureMode(chat.Settings); // What sender agent exposes
-			var permissions = agent.Read.GetEffectiveReadPermissions(chat.Settings); // What current agent can see
-
-			// Own messages
-			if (messageAgentId == agent.Id)
-			{
-				if (permissions.HasFlag(AgentReadPermissions.OwnMessages))
-					return true;
-
-				return false;
-			}
-
-			// Other agent messages
-			if (!permissions.HasFlag(AgentReadPermissions.OtherAgentMessages))
-				return false;
-
-			// Messages with tool calls
-			if (assistantMessage.ToolCalls.Count > 0 && !(permissions.HasFlag(AgentReadPermissions.MessagesWithToolCalls)
-				&& exposure.HasFlag(AgentExposureMode.MessagesWithToolCalls)))
-				return false;
-
-			// Apply agent ID filter (white/black list)
-			var filter = agent.Read.AgentIdsReadFilter;
-			if (filter.Count > 0)
-			{
-				bool inFilter = filter.Contains(messageAgentId);
-				if (agent.Read.IsFilterWhiteList && !inFilter)
-					return false;
-				if (!agent.Read.IsFilterWhiteList && inFilter)
-					return false;
-			}
-
-			return true;
-		}
-
 		public string RenderSystemPrompt(ChatAgentDescriptor agent)
 		{
 			return BuildSystemPrompt(agent, GetTemplateFunctions());
@@ -324,14 +257,14 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		{
 			if (message.Message is Domain.UserMessage)
 			{
-				if (!IsUserMessageVisibleToAgent(message, agent))
+				if (!AgentMessageVisibility.IsUserMessageVisibleToAgent(message, agent, chat.Settings))
 					return [];
 
 				return [BuildUserMessageForAgent(message, agent, functions)];
 			}
 			else if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
-				if (!IsAssistantMessageVisibleToAgent(message, agent))
+				if (!AgentMessageVisibility.IsAssistantMessageVisibleToAgent(message, agent, agentManager, chat.Settings))
 					return [];
 
 				// Own assistant message — full fidelity with tool calls
@@ -449,12 +382,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				}
 				if (message is Domain.UserMessage)
 				{
-					if (!IsUserMessageVisibleToAgent(branchedMessage, agent))
+					if (!AgentMessageVisibility.IsUserMessageVisibleToAgent(branchedMessage, agent, chat.Settings))
 						continue;
 				}
 				else if (message is Domain.AssistantMessage assistantMessage)
 				{
-					if (assistantMessage.IsCompleted && !IsAssistantMessageVisibleToAgent(branchedMessage, agent))
+					if (assistantMessage.IsCompleted && !AgentMessageVisibility.IsAssistantMessageVisibleToAgent(branchedMessage, agent, agentManager, chat.Settings))
 						continue;
 				}
 

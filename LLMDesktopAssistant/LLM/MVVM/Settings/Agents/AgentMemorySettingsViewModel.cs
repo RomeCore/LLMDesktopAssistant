@@ -370,7 +370,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			DisposeAvailableBlocks();
 
 			var attachedIds = EffectiveBlocks.Select(b => b.Reference.Id).ToHashSet();
-			AvailableBlockIds.Reset(BlocksCategory.GetAvailableIds()
+			AvailableBlockIds.Reset(BlocksCategory.Ids
 				.Where(c => c != SettingsObject.DefaultId && !attachedIds.Contains(c))
 				.Select(c => new MemoryBlockIdItemViewModel(BlocksCategory.Get(c)!)));
 		}
@@ -440,7 +440,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		private static string GenerateBlockId()
 		{
-			var taken = BlocksCategory.GetAvailableIds().ToHashSet();
+			var taken = BlocksCategory.Ids.ToHashSet();
 			int i = 1;
 			while (taken.Contains($"block-{i}"))
 				i++;

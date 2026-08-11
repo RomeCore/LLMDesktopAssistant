@@ -243,14 +243,12 @@
   <data name="memory-view_logs" xml:space="preserve">
     <value>View memory logs</value>
   </data>
-
   <data name="memory-view_logs_status_latest" xml:space="preserve">
     <value>Latest **{0}**</value>
   </data>
   <data name="memory-view_logs_status_time_window" xml:space="preserve">
     <value>Time window</value>
   </data>
-
   <data name="new_chat" xml:space="preserve">
     <value>New chat</value>
   </data>
@@ -2549,6 +2547,12 @@
   <data name="chat_summarization_task" xml:space="preserve">
     <value>Chat summarization</value>
   </data>
+  <data name="memory_recording_task" xml:space="preserve">
+    <value>Memory recording</value>
+  </data>
+  <data name="memory_retrieval_task" xml:space="preserve">
+    <value>Memory retrieval</value>
+  </data>
   <data name="task_details" xml:space="preserve">
     <value>Task details</value>
   </data>
@@ -2911,5 +2915,8 @@
   </data>
   <data name="tool_behaviour_memoryaccess_hint" xml:space="preserve">
     <value>Tool has access to semantic memory (facts, logs, state).</value>
+  </data>
+  <data name="chat_memory_retrieval_status" xml:space="preserve">
+    <value>Retrieving memory</value>
   </data>
 </root>
