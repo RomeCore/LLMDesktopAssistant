@@ -37,7 +37,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					Appends a new episodic log entry to the specified memory block.
 					Logs are immutable: they cannot be edited, only deleted. The log text is added to the keyword search index.
 					""",
-				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryWrite,
 				Category = "memory"
 			});
 
@@ -49,7 +49,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					Searches active episodic logs in the specified memory blocks (or all enabled blocks) using BM25 keyword search.
 					Transient, consolidated and ignored logs are excluded from search results.
 					""",
-				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryRead,
 				Category = "memory"
 			});
 
@@ -62,7 +62,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					Logs can be filtered by a real-time window and/or an alternative timeline ordinal window.
 					When no window is specified, the most recent logs are returned. Logs are ordered by their begin time, newest first.
 					""",
-				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryRead,
 				Category = "memory"
 			});
 
@@ -74,7 +74,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					Permanently deletes an episodic log from the specified memory block by its ID.
 					The log is removed from the database and the keyword index and cannot be restored.
 					""",
-				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryDelete,
 				Category = "memory"
 			});
 		}

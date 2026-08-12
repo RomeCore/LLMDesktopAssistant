@@ -1,0 +1,249 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatDatabaseSettingsView"
+			 x:DataType="local:ChatDatabaseSettingsViewModel"
+			 x:Name="VMRoot">
+
+	<StackPanel Margin="8" Spacing="8">
+
+		<!-- ============================================================ -->
+		<!-- HEADER -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc chat_settings_databases}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+					  ItemsSource="{x:Static local:InheritanceLevelItem.AllProfile}"
+					  SelectedItem="{Binding SelectedDatabaseConnectionInheritance}"
+					  VerticalAlignment="Center"
+					  Margin="0,0,8,0"
+					  MinWidth="120">
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+
+			<Button Grid.Column="2"
+					Command="{Binding AddDatabaseConnectionCommand}"
+					Classes="IconButton"
+					ToolTip.Tip="{loc:Loc db_add_connection}">
+				<ico:MaterialIcon Kind="Plus"/>
+			</Button>
+		</Grid>
+
+		<TextBlock Text="{loc:Loc db_hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"
+				   Margin="0,0,0,8"/>
+
+		<!-- ============================================================ -->
+		<!-- CUSTOM CONNECTION -->
+		<!-- ============================================================ -->
+		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+				BorderThickness="1"
+				CornerRadius="4"
+				Padding="8">
+			<StackPanel Spacing="6">
+				<Grid ColumnDefinitions="Auto,*">
+					<RadioButton Grid.Column="0"
+								 IsChecked="{Binding EffectiveDatabaseConnection.IsCustomActive, Mode=OneWay}"
+								 Command="{Binding SetCustomActiveCommand}"
+								 VerticalAlignment="Center"
+								 Margin="0,0,6,0"
+								 ToolTip.Tip="{loc:Loc env_active}"/>
+
+					<TextBlock Grid.Column="1"
+							   Text="{loc:Loc db_custom_connection}"
+							   FontWeight="Bold"
+							   VerticalAlignment="Center"/>
+				</Grid>
+
+				<Grid ColumnDefinitions="*,Auto">
+					<ComboBox Grid.Column="0"
+							  ItemsSource="{Binding ConnectorTypes}"
+							  SelectedItem="{Binding SelectedCustomConnectorTypeItem}"
+							  VerticalAlignment="Center"
+							  Margin="0,0,6,0">
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="local:DatabaseConnectorTypeItem">
+								<TextBlock Text="{Binding DisplayName}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+
+					<Button Grid.Column="1"
+							Command="{Binding TestCustomConnectionCommand}"
+							Classes="IconButton"
+							IsEnabled="{Binding IsCustomTesting, Converter={StaticResource InverseBooleanConverter}}"
+							ToolTip.Tip="{loc:Loc db_test_connection}">
+						<ico:MaterialIcon Kind="LanConnect"/>
+					</Button>
+				</Grid>
+
+				<TextBox Text="{Binding EffectiveDatabaseConnection.CustomConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						 PlaceholderText="{loc:Loc db_connection_string_placeholder}"
+						 UseFloatingPlaceholder="True"
+						 VerticalContentAlignment="Center"/>
+
+				<TextBlock Text="{Binding CustomTestResultText}"
+						   Foreground="#4CAF50"
+						   TextWrapping="Wrap"
+						   IsVisible="{Binding IsCustomTestSuccessful}"/>
+				<TextBlock Text="{Binding CustomTestResultText}"
+						   Foreground="#F44336"
+						   TextWrapping="Wrap"
+						   IsVisible="{Binding IsCustomTestFailed}"/>
+			</StackPanel>
+		</Border>
+
+		<!-- ============================================================ -->
+		<!-- NAMED CONNECTIONS -->
+		<!-- ============================================================ -->
+		<ItemsControl ItemsSource="{Binding ConnectionItems}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Vertical" Spacing="8"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate DataType="local:DatabaseConnectionItemViewModel">
+					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+							BorderThickness="1"
+							CornerRadius="4"
+							Padding="8">
+						<StackPanel Spacing="6">
+							<!-- Header row: Active | Name | Enabled | buttons -->
+							<Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto">
+
+								<RadioButton Grid.Column="0"
+											 IsChecked="{Binding Setting.IsActive, Mode=OneWay}"
+											 Command="{Binding #VMRoot.DataContext.SetActiveDatabaseConnectionCommand}"
+											 CommandParameter="{Binding}"
+											 VerticalAlignment="Center"
+											 Margin="0,0,6,0"
+											 ToolTip.Tip="{loc:Loc env_active}"/>
+
+								<TextBox Grid.Column="1"
+										 Text="{Binding Setting.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+										 PlaceholderText="{loc:Loc env_name}"
+										 UseFloatingPlaceholder="True"
+										 VerticalContentAlignment="Center"
+										 MinWidth="120"
+										 Margin="0,0,6,0"/>
+
+								<CheckBox Grid.Column="2"
+										  IsChecked="{Binding Setting.IsEnabled}"
+										  Content="{loc:Loc env_enabled}"/>
+
+								<Button Grid.Column="4"
+										Command="{Binding #VMRoot.DataContext.MoveDatabaseConnectionUpCommand}"
+										CommandParameter="{Binding}"
+										Classes="IconButton"
+										Margin="2,0"
+										ToolTip.Tip="{loc:Loc env_move_up}">
+									<ico:MaterialIcon Kind="ChevronUp"/>
+								</Button>
+
+								<Button Grid.Column="5"
+										Command="{Binding #VMRoot.DataContext.MoveDatabaseConnectionDownCommand}"
+										CommandParameter="{Binding}"
+										Classes="IconButton"
+										Margin="2,0"
+										ToolTip.Tip="{loc:Loc env_move_down}">
+									<ico:MaterialIcon Kind="ChevronDown"/>
+								</Button>
+
+								<Button Grid.Column="6"
+										Command="{Binding #VMRoot.DataContext.RemoveDatabaseConnectionCommand}"
+										CommandParameter="{Binding}"
+										Classes="IconButton"
+										Margin="2,0"
+										ToolTip.Tip="{loc:Loc env_remove}">
+									<ico:MaterialIcon Kind="Delete"/>
+								</Button>
+							</Grid>
+
+							<!-- Type row -->
+							<Grid ColumnDefinitions="*,Auto">
+								<ComboBox Grid.Column="0"
+										  ItemsSource="{Binding #VMRoot.DataContext.ConnectorTypes}"
+										  SelectedItem="{Binding SelectedConnectorTypeItem}"
+										  VerticalAlignment="Center"
+										  Margin="0,0,6,0">
+									<ComboBox.ItemTemplate>
+										<DataTemplate x:DataType="local:DatabaseConnectorTypeItem">
+											<TextBlock Text="{Binding DisplayName}"/>
+										</DataTemplate>
+									</ComboBox.ItemTemplate>
+								</ComboBox>
+
+								<Button Grid.Column="1"
+										Command="{Binding #VMRoot.DataContext.BrowseSqliteFileCommand}"
+										CommandParameter="{Binding}"
+										Classes="IconButton"
+										ToolTip.Tip="{loc:Loc db_browse_sqlite_file}">
+									<ico:MaterialIcon Kind="FolderOpen"/>
+								</Button>
+							</Grid>
+
+							<!-- Connection string row -->
+							<Grid ColumnDefinitions="Auto,*,Auto">
+
+								<ToggleButton Grid.Column="0"
+											  IsChecked="{Binding Setting.UseEncryptedConnectionString}"
+											  Classes="IconButton"
+											  Margin="0,0,6,0"
+											  VerticalAlignment="Center"
+											  ToolTip.Tip="{loc:Loc db_use_encrypted_connection_string}">
+									<ico:MaterialIcon Kind="Lock"/>
+								</ToggleButton>
+
+								<TextBox Grid.Column="1"
+										 Text="{Binding Setting.RawConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+										 PlaceholderText="{loc:Loc db_connection_string_placeholder}"
+										 UseFloatingPlaceholder="True"
+										 VerticalContentAlignment="Center"
+										 Margin="0,0,6,0"
+										 IsVisible="{Binding Setting.UseEncryptedConnectionString, Converter={StaticResource InverseBooleanConverter}}"/>
+
+								<ctrl:ApiKeySelectorControl Grid.Column="1"
+															 ApiKeyId="{Binding Setting.EncryptedConnectionStringId, Mode=TwoWay}"
+															 IsVisible="{Binding Setting.UseEncryptedConnectionString}"/>
+
+								<Button Grid.Column="2"
+										Command="{Binding TestCommand}"
+										Classes="IconButton"
+										IsEnabled="{Binding IsTesting, Converter={StaticResource InverseBooleanConverter}}"
+										ToolTip.Tip="{loc:Loc db_test_connection}">
+									<ico:MaterialIcon Kind="LanConnect"/>
+								</Button>
+							</Grid>
+
+							<TextBlock Text="{Binding TestResultText}"
+									   Foreground="#4CAF50"
+									   TextWrapping="Wrap"
+									   IsVisible="{Binding IsTestSuccessful}"/>
+							<TextBlock Text="{Binding TestResultText}"
+									   Foreground="#F44336"
+									   TextWrapping="Wrap"
+									   IsVisible="{Binding IsTestFailed}"/>
+						</StackPanel>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</StackPanel>
+</UserControl>

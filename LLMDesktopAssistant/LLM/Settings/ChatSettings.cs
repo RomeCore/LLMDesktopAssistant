@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Settings;
 
 namespace LLMDesktopAssistant.LLM.Settings
@@ -69,6 +69,17 @@ namespace LLMDesktopAssistant.LLM.Settings
 			get => _environmentSettings;
 			set => SetProperty(ref _environmentSettings, value);
 		}
+
+		private ChatDatabaseSettings _databaseSettings = new();
+		/// <summary>
+		/// Settings related to database connections.
+		/// </summary>
+		public ChatDatabaseSettings Databases
+		{
+			get => _databaseSettings;
+			set => SetProperty(ref _databaseSettings, value);
+		}
+
 
 		private ChatToolSettings _toolsSettings = new();
 		/// <summary>

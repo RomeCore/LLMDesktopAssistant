@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				Description = """
 					Stores a fact in the specified memory block with the given importance.
 					""",
-				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryWrite,
 				Category = "memory"
 			});
 
@@ -37,7 +37,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					Retrieves facts with their IDs from the specified memory blocks (or all enabled blocks) by the given query.
 					HyDE query is used to improve semantic matching and may be provided additionally.
 					""",
-				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryRead,
 				Category = "memory"
 			});
 
@@ -50,7 +50,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					By default performs a soft delete: the fact is marked as Deleted and can be restored later.
 					Use mode="hard" to remove the fact permanently.
 					""",
-				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess,
+				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryDelete,
 				Category = "memory"
 			});
 		}

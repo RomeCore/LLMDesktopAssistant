@@ -1,4 +1,6 @@
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.ApiKeys;
+using LLMDesktopAssistant.Data.Connectors;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Settings;
 using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
@@ -268,6 +270,11 @@ namespace LLMDesktopAssistant.LLM.Settings
 		private void InitializeTree()
 		{
 			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_users"),
+				MaterialIconKind.AccountCircle,
+				() => new ChatUserSettingsViewModel(Settings.Users.Users)));
+
+			SettingsTree.Add(
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("agents"),
 				MaterialIconKind.Robot,
 				() => new ChatAgentsSettingsViewModel(Settings.Agents, _agentManager)));
@@ -283,15 +290,17 @@ namespace LLMDesktopAssistant.LLM.Settings
 				() => new ChatModelSettingsViewModel(Settings.Models)));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_users"),
-				MaterialIconKind.AccountCircle,
-				() => new ChatUserSettingsViewModel(Settings.Users.Users)));
-
-			SettingsTree.Add(
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_environment"),
 				MaterialIconKind.FolderSettings,
 				() => new ChatEnvironmentSettingsViewModel(Settings.Environment,
 					Chat.Services.GetServices<IScriptEngineEnvConfigurationProvider>(), Chat.Services.GetService<IExplorerOpener>())));
+
+			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_databases"),
+				MaterialIconKind.DatabaseSearch,
+				() => new ChatDatabaseSettingsViewModel(Settings.Databases,
+					Chat.Services.GetRequiredService<IApiKeyManagerService>(),
+					Chat.Services.GetServices<IDatabaseConnector>())));
 
 			SettingsTree.Add(
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_mcp"),

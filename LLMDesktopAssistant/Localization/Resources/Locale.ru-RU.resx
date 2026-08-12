@@ -2901,18 +2901,37 @@
   <data name="memory-clear" xml:space="preserve">
     <value>Очистить блок памяти</value>
   </data>
-  <data name="tool_behaviour_memoryclear" xml:space="preserve">
+  <data name="tool_behaviour_semanticmemoryclear" xml:space="preserve">
     <value>Очистка семантической памяти</value>
   </data>
-  <data name="tool_behaviour_memoryclear_hint" xml:space="preserve">
+  <data name="tool_behaviour_semanticmemoryclear_hint" xml:space="preserve">
     <value>Инструмент очищает блоки семантической памяти и может привести к потере данных.</value>
   </data>
-  <data name="tool_behaviour_memoryaccess" xml:space="preserve">
-    <value>Доступ к семантической памяти</value>
+  <data name="tool_behaviour_semanticmemoryread" xml:space="preserve">
+    <value>Чтение семантической памяти</value>
   </data>
-  <data name="tool_behaviour_memoryaccess_hint" xml:space="preserve">
-    <value>Инструмент имеет доступ к семантической памяти (факты, логи, состояние).</value>
+  <data name="tool_behaviour_semanticmemoryread_hint" xml:space="preserve">
+    <value>Инструмент может читать факты и логи из семантической памяти.</value>
   </data>
+  <data name="tool_behaviour_databaseread" xml:space="preserve">
+    <value>Чтение базы данных</value>
+  </data>
+  <data name="tool_behaviour_databaseread_hint" xml:space="preserve">
+    <value>Инструмент читает данные из подключённой базы данных.</value>
+  </data>
+  <data name="tool_behaviour_databasechange" xml:space="preserve">
+    <value>Изменение базы данных</value>
+  </data>
+  <data name="tool_behaviour_databasechange_hint" xml:space="preserve">
+    <value>Инструмент изменяет данные или схему в подключённой базе данных.</value>
+  </data>
+  <data name="tool_behaviour_databasecustomconnect" xml:space="preserve">
+    <value>Кастомное подключение к базе данных</value>
+  </data>
+  <data name="tool_behaviour_databasecustomconnect_hint" xml:space="preserve">
+    <value>Инструмент подключается к базе данных по произвольной строке подключения.</value>
+  </data>
+
   <data name="chat_memory_retrieval_status" xml:space="preserve">
     <value>Достаём память</value>
   </data>
@@ -3077,5 +3096,59 @@
   </data>
   <data name="settings-memory_logs_time_search_error" xml:space="preserve">
     <value>Ошибка поиска по времени</value>
+  </data>
+  <data name="tool_behaviour_semanticmemorywrite" xml:space="preserve">
+    <value>Запись в семантическую память</value>
+  </data>
+  <data name="tool_behaviour_semanticmemorywrite_hint" xml:space="preserve">
+    <value>Инструмент может записывать факты и логи в семантическую память.</value>
+  </data>
+  <data name="tool_behaviour_semanticmemorydelete" xml:space="preserve">
+    <value>Удаление вхождений семантической памяти</value>
+  </data>
+  <data name="tool_behaviour_semanticmemorydelete_hint" xml:space="preserve">
+    <value>Инструмент удаляет факты и логи из семантической памяти.</value>
+  </data>
+  <data name="chat_settings_databases" xml:space="preserve">
+    <value>Базы данных</value>
+  </data>
+  <data name="db_add_connection" xml:space="preserve">
+    <value>Добавить подключение</value>
+  </data>
+  <data name="db_hint" xml:space="preserve">
+    <value>Настройте именованные подключения к базам данных и кастомную строку подключения для агента.</value>
+  </data>
+  <data name="db_custom_connection" xml:space="preserve">
+    <value>Кастомное подключение</value>
+  </data>
+  <data name="db_connection_string_placeholder" xml:space="preserve">
+    <value>Строка подключения</value>
+  </data>
+  <data name="db_test_connection" xml:space="preserve">
+    <value>Проверить подключение</value>
+  </data>
+  <data name="db_test_ok" xml:space="preserve">
+    <value>Подключение успешно.</value>
+  </data>
+  <data name="db_test_failed" xml:space="preserve">
+    <value>Ошибка подключения.</value>
+  </data>
+  <data name="db_test_empty_connection_string" xml:space="preserve">
+    <value>Строка подключения пуста.</value>
+  </data>
+  <data name="db_test_connector_not_found" xml:space="preserve">
+    <value>Коннектор для {0} недоступен.</value>
+  </data>
+  <data name="db_new_connection" xml:space="preserve">
+    <value>Новое подключение</value>
+  </data>
+  <data name="db_select_sqlite_file" xml:space="preserve">
+    <value>Выберите файл базы данных SQLite</value>
+  </data>
+  <data name="db_browse_sqlite_file" xml:space="preserve">
+    <value>Выбрать SQLite файл</value>
+  </data>
+  <data name="db_use_encrypted_connection_string" xml:space="preserve">
+    <value>Хранить строку подключения в зашифрованном виде</value>
   </data>
 </root>

@@ -24,7 +24,7 @@ public enum ToolBehaviour : ulong
 	/// <summary>
 	/// All behaviour flags combined.
 	/// </summary>
-	All = 0x7FFFFFFF,
+	All = 0xFFFFFFFFFFFFFFFF,
 
 	// ────────────────────────────── Filesystem ──────────────────────────────
 
@@ -70,49 +70,78 @@ public enum ToolBehaviour : ulong
 	/// </summary>
 	DirectoryDelete = 1 << 6,
 
+	// ────────────────────────────── Semantic memory ────────────────────────
+
+	/// <summary>
+	/// The tool reads semantic memory.
+	/// </summary>
+	SemanticMemoryRead = 1 << 7,
+
+	/// <summary>
+	/// The tool writes to semantic memory.
+	/// </summary>
+	SemanticMemoryWrite = 1 << 8,
+
+	/// <summary>
+	/// The tool deletes entries from semantic memory.
+	/// </summary>
+	SemanticMemoryDelete = 1 << 9,
+
+	/// <summary>
+	/// The tool clears semantic memory blocks.
+	/// Examples: <c>memory-clear</c>.
+	/// </summary>
+	SemanticMemoryClear = 1 << 10,
+
+	// ────────────────────────────── Database ───────────────────────────────
+
+	/// <summary>
+	/// The tool reads from a connected database.
+	/// </summary>
+	DatabaseRead = 1 << 11,
+
+	/// <summary>
+	/// The tool changes data or schema in a connected database.
+	/// </summary>
+	DatabaseChange = 1 << 12,
+
+	/// <summary>
+	/// The tool connects to a database with custom parameters.
+	/// </summary>
+	DatabaseCustomConnect = 1 << 13,
+
 	// ────────────────────────────── Security ────────────────────────────────
 
 	/// <summary>
 	/// The tool may read or expose sensitive information such as passwords,
 	/// API keys, tokens, or other secrets from files or environment.
 	/// </summary>
-	ReadSecrets = 1 << 7,
+	ReadSecrets = 1 << 14,
 
 	/// <summary>
 	/// The tool accesses locations outside the configured working directory (including rules)
 	/// (e.g., system paths, user home, temporary folders).
 	/// This may indicate potential sandbox escape or unintended data exposure.
 	/// </summary>
-	AccessOutsideWorkdir = 1 << 8,
+	AccessOutsideWorkdir = 1 << 15,
 
 	/// <summary>
 	/// The tool changes the current working directory from the list of allowed paths.
 	/// </summary>
-	WorkdirChange = 1 << 9,
+	WorkdirChange = 1 << 16,
 
 	/// <summary>
 	/// The tool writes text data to the clipboard.
 	/// Examples: <c>clipboard-copy</c>.
 	/// </summary>
-	ClipboardWrite = 1 << 10,
+	ClipboardWrite = 1 << 17,
 
 	/// <summary>
 	/// The tool reads text data from the clipboard.
 	/// This may involve reading sensitive data (passwords, tokens, etc.).
 	/// Examples: <c>clipboard-read</c>.
 	/// </summary>
-	ClipboardRead = 1 << 11,
-
-	/// <summary>
-	/// The tool accesses semantic memory
-	/// </summary>
-	MemoryAccess = 1 << 12,
-
-	/// <summary>
-	/// The tool clears semantic memory blocks.
-	/// Examples: <c>memory-clear</c>.
-	/// </summary>
-	MemoryClear = 1 << 13,
+	ClipboardRead = 1 << 18,
 
 	// ────────────────────────────── Network ─────────────────────────────────
 
@@ -121,7 +150,7 @@ public enum ToolBehaviour : ulong
 	/// Includes HTTP requests, web searches, file downloads, and webhook calls.
 	/// Examples: <c>web-fetch</c>, <c>web-search</c>, <c>web-download</c>.
 	/// </summary>
-	InternetAccess = 1 << 14,
+	InternetAccess = 1 << 19,
 
 	// ────────────────────────────── Performance ─────────────────────────────
 
@@ -131,7 +160,7 @@ public enum ToolBehaviour : ulong
 	/// or network latency. Examples: <c>fs-grep</c> on large codebase,
 	/// large file downloads, AI model inference (image description).
 	/// </summary>
-	LongRunningTask = 1 << 15,
+	LongRunningTask = 1 << 20,
 
 	// ────────────────────────────── Execution ───────────────────────────────
 
@@ -140,13 +169,13 @@ public enum ToolBehaviour : ulong
 	/// This includes running shell commands, scripts, or binaries.
 	/// Examples: <c>execute-shell</c>, <c>execute-python</c>.
 	/// </summary>
-	ExecuteExternalProcess = 1 << 16,
+	ExecuteExternalProcess = 1 << 21,
 
 	/// <summary>
 	/// The tool may perform actions that are potentially unexpected or uncontrollable,
 	/// such as executing scripts that is not analyzed yet.
 	/// </summary>
-	PossiblyUnexpected = 1 << 17,
+	PossiblyUnexpected = 1 << 22,
 
 	/// <summary>
 	/// The tool runs commands in an embedded terminal emulator with
@@ -154,7 +183,7 @@ public enum ToolBehaviour : ulong
 	/// and potential for arbitrary command execution.
 	/// Examples: <c>execute-shell</c> with <c>runTerminal: true</c>.
 	/// </summary>
-	RunTerminal = 1 << 18,
+	RunTerminal = 1 << 23,
 
 	// ────────────────────────────── User Interaction ────────────────────────
 
@@ -162,7 +191,7 @@ public enum ToolBehaviour : ulong
 	/// The tool requires special user input, such as prompts for confirmation, various forms,
 	/// file uploads, or custom UI elements. Examples: <c>forms-input</c>, <c>forms-submit</c>.
 	/// </summary>
-	UserInteraction = 1 << 19,
+	UserInteraction = 1 << 24,
 
 	// ────────────────────────────── Agents ──────────────────────────────────
 
@@ -172,7 +201,7 @@ public enum ToolBehaviour : ulong
 	/// carefully monitored to prevent runaway agent loops.
 	/// Examples: <c>agent-describe_image</c>, agent delegation calls.
 	/// </summary>
-	AgentExecution = 1 << 20,
+	AgentExecution = 1 << 25,
 
 	// ────────────────────────────── Meta ────────────────────────────────────
 
@@ -183,7 +212,7 @@ public enum ToolBehaviour : ulong
 	/// it can alter the assistant's capabilities on the fly.
 	/// Examples: <c>metatools-create_or_update</c>, <c>metatools-delete</c>, <c>lua-register_or_update_script</c>.
 	/// </summary>
-	ScriptAccess = 1 << 21,
+	ScriptAccess = 1 << 26,
 
 	// ────────────────────────────── Source ─────────────────────────────────
 

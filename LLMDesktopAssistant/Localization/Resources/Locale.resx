@@ -2901,18 +2901,37 @@
   <data name="memory-clear" xml:space="preserve">
     <value>Clear memory block</value>
   </data>
-  <data name="tool_behaviour_memoryclear" xml:space="preserve">
+  <data name="tool_behaviour_semanticmemoryclear" xml:space="preserve">
     <value>Semantic memory clear</value>
   </data>
-  <data name="tool_behaviour_memoryclear_hint" xml:space="preserve">
+  <data name="tool_behaviour_semanticmemoryclear_hint" xml:space="preserve">
     <value>The tool clears semantic memory blocks and may cause data loss.</value>
   </data>
-  <data name="tool_behaviour_memoryaccess" xml:space="preserve">
-    <value>Semantic memory access</value>
+  <data name="tool_behaviour_semanticmemoryread" xml:space="preserve">
+    <value>Semantic memory read</value>
   </data>
-  <data name="tool_behaviour_memoryaccess_hint" xml:space="preserve">
-    <value>Tool has access to semantic memory (facts, logs, state).</value>
+  <data name="tool_behaviour_semanticmemoryread_hint" xml:space="preserve">
+    <value>Tool can read facts and logs from semantic memory.</value>
   </data>
+  <data name="tool_behaviour_databaseread" xml:space="preserve">
+    <value>Database read</value>
+  </data>
+  <data name="tool_behaviour_databaseread_hint" xml:space="preserve">
+    <value>The tool reads data from a connected database.</value>
+  </data>
+  <data name="tool_behaviour_databasechange" xml:space="preserve">
+    <value>Database change</value>
+  </data>
+  <data name="tool_behaviour_databasechange_hint" xml:space="preserve">
+    <value>The tool changes data or schema in a connected database.</value>
+  </data>
+  <data name="tool_behaviour_databasecustomconnect" xml:space="preserve">
+    <value>Custom database connection</value>
+  </data>
+  <data name="tool_behaviour_databasecustomconnect_hint" xml:space="preserve">
+    <value>The tool connects to a database using a custom connection string.</value>
+  </data>
+
   <data name="chat_memory_retrieval_status" xml:space="preserve">
     <value>Retrieving memory</value>
   </data>
@@ -3077,5 +3096,59 @@
   </data>
   <data name="settings-memory_logs_time_search_error" xml:space="preserve">
     <value>Time search failed</value>
+  </data>
+  <data name="tool_behaviour_semanticmemorywrite" xml:space="preserve">
+    <value>Semantic memory write</value>
+  </data>
+  <data name="tool_behaviour_semanticmemorywrite_hint" xml:space="preserve">
+    <value>Tool can write facts and logs to semantic memory.</value>
+  </data>
+  <data name="tool_behaviour_semanticmemorydelete" xml:space="preserve">
+    <value>Semantic memory delete entry</value>
+  </data>
+  <data name="tool_behaviour_semanticmemorydelete_hint" xml:space="preserve">
+    <value>Tool removes facts and logs from semantic memory.</value>
+  </data>
+  <data name="chat_settings_databases" xml:space="preserve">
+    <value>Databases</value>
+  </data>
+  <data name="db_add_connection" xml:space="preserve">
+    <value>Add connection</value>
+  </data>
+  <data name="db_hint" xml:space="preserve">
+    <value>Configure named database connections and a custom connection string for the agent.</value>
+  </data>
+  <data name="db_custom_connection" xml:space="preserve">
+    <value>Custom connection</value>
+  </data>
+  <data name="db_connection_string_placeholder" xml:space="preserve">
+    <value>Connection string</value>
+  </data>
+  <data name="db_test_connection" xml:space="preserve">
+    <value>Test connection</value>
+  </data>
+  <data name="db_test_ok" xml:space="preserve">
+    <value>Connection successful.</value>
+  </data>
+  <data name="db_test_failed" xml:space="preserve">
+    <value>Connection failed.</value>
+  </data>
+  <data name="db_test_empty_connection_string" xml:space="preserve">
+    <value>Connection string is empty.</value>
+  </data>
+  <data name="db_test_connector_not_found" xml:space="preserve">
+    <value>Connector for {0} is not available.</value>
+  </data>
+  <data name="db_new_connection" xml:space="preserve">
+    <value>New connection</value>
+  </data>
+  <data name="db_select_sqlite_file" xml:space="preserve">
+    <value>Select SQLite database file</value>
+  </data>
+  <data name="db_browse_sqlite_file" xml:space="preserve">
+    <value>Browse SQLite file</value>
+  </data>
+  <data name="db_use_encrypted_connection_string" xml:space="preserve">
+    <value>Store connection string encrypted</value>
   </data>
 </root>

@@ -96,8 +96,10 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.WorkdirChange => MaterialIconKind.FolderArrowRight,
 		ToolBehaviour.ClipboardWrite => MaterialIconKind.ClipboardPlus,
 		ToolBehaviour.ClipboardRead => MaterialIconKind.ClipboardText,
-		ToolBehaviour.MemoryAccess => MaterialIconKind.Database,
-		ToolBehaviour.MemoryClear => MaterialIconKind.DatabaseRemove,
+		ToolBehaviour.SemanticMemoryRead => MaterialIconKind.Database,
+		ToolBehaviour.SemanticMemoryWrite => MaterialIconKind.DatabaseAdd,
+		ToolBehaviour.SemanticMemoryDelete => MaterialIconKind.DatabaseRemove,
+		ToolBehaviour.SemanticMemoryClear => MaterialIconKind.DatabaseRemove,
 		ToolBehaviour.InternetAccess => MaterialIconKind.Web,
 		ToolBehaviour.LongRunningTask => MaterialIconKind.TimerSand,
 		ToolBehaviour.ExecuteExternalProcess => MaterialIconKind.Console,
@@ -118,19 +120,24 @@ public class ToolBehaviourFlagInfo
 	/// </summary>
 	private static IBrush GetColor(ToolBehaviour flag) => flag switch
 	{
+		// Highly dangerous (dark red)
+		ToolBehaviour.DirectoryDelete => Brushes.DarkRed,
+		ToolBehaviour.ReadSecrets => Brushes.DarkRed,
+		ToolBehaviour.ExecuteExternalProcess => Brushes.DarkRed,
+		ToolBehaviour.SemanticMemoryClear => Brushes.DarkRed,
+		ToolBehaviour.ScriptAccess => Brushes.DarkRed,
+
 		// Dangerous (red)
 		ToolBehaviour.FileDelete => Brushes.Red,
-		ToolBehaviour.DirectoryDelete => Brushes.Red,
-		ToolBehaviour.ReadSecrets => Brushes.Red,
-		ToolBehaviour.ExecuteExternalProcess => Brushes.Red,
 		ToolBehaviour.PossiblyUnexpected => Brushes.Red,
-		ToolBehaviour.MemoryClear => Brushes.Red,
-		ToolBehaviour.ScriptAccess => Brushes.Red,
+		ToolBehaviour.DatabaseCustomConnect => Brushes.Red,
+		ToolBehaviour.SemanticMemoryDelete => Brushes.Red,
 		ToolBehaviour.AgentExecution => Brushes.Red,
 
 		// Warning (yellow/orange)
 		ToolBehaviour.FileEdit => Brushes.Orange,
 		ToolBehaviour.DirectoryEdit => Brushes.Orange,
+		ToolBehaviour.DatabaseChange => Brushes.Orange,
 		ToolBehaviour.InternetAccess => Brushes.Orange,
 		ToolBehaviour.RunTerminal => Brushes.Orange,
 		ToolBehaviour.WorkdirChange => Brushes.Orange,
@@ -140,9 +147,11 @@ public class ToolBehaviourFlagInfo
 		ToolBehaviour.FileRead => Brushes.DodgerBlue,
 		ToolBehaviour.DirectoryRead => Brushes.DodgerBlue,
 		ToolBehaviour.FileDirectoryCreate => Brushes.DodgerBlue,
+		ToolBehaviour.DatabaseRead => Brushes.DodgerBlue,
+		ToolBehaviour.SemanticMemoryRead => Brushes.DodgerBlue,
+		ToolBehaviour.SemanticMemoryWrite => Brushes.DodgerBlue,
 		ToolBehaviour.ClipboardRead => Brushes.DodgerBlue,
 		ToolBehaviour.ClipboardWrite => Brushes.DodgerBlue,
-		ToolBehaviour.MemoryAccess => Brushes.DodgerBlue,
 		ToolBehaviour.LongRunningTask => Brushes.DodgerBlue,
 		ToolBehaviour.UserInteraction => Brushes.DodgerBlue,
 

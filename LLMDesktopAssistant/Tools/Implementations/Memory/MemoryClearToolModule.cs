@@ -27,7 +27,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					Clears the stored facts and/or episodic logs from the specified memory block.
 					The block itself and its configuration are preserved.
 					""",
-				DefaultExpectedBehaviour = ToolBehaviour.MemoryAccess | ToolBehaviour.MemoryClear,
+				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryClear,
 				Category = "memory"
 			});
 		}

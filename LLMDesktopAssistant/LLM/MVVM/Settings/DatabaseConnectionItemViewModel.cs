@@ -1,0 +1,147 @@
+using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.ApiKeys;
+using LLMDesktopAssistant.Data.Connectors;
+using LLMDesktopAssistant.Localization;
+
+namespace LLMDesktopAssistant.LLM.Settings
+{
+	/// <summary>
+	/// Wraps a <see cref="DatabaseConnectionSetting"/> and provides the connection test command
+	/// with its status for the settings UI.
+	/// </summary>
+	public class DatabaseConnectionItemViewModel : ViewModelBase
+	{
+		private readonly IApiKeyManagerService _apiKeyManager;
+		private readonly ImmutableList<IDatabaseConnector> _connectors;
+
+		private bool _isTesting;
+		private bool? _testResult;
+		private string? _testResultMessage;
+
+		/// <summary>
+		/// Gets the wrapped database connection setting.
+		/// </summary>
+		public DatabaseConnectionSetting Setting { get; }
+
+		/// <summary>
+		/// Gets or sets the connector type item selected for the connection.
+		/// </summary>
+		public DatabaseConnectorTypeItem SelectedConnectorTypeItem
+		{
+			get => DatabaseConnectorTypeItem.FromValue(Setting.ConnectorType);
+			set
+			{
+				if (value is not null)
+					Setting.ConnectorType = value.Value;
+			}
+		}
+
+		/// <summary>
+		/// Gets the command that tests the connection.
+		/// </summary>
+		public IAsyncRelayCommand TestCommand { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether the connection is currently being tested.
+		/// </summary>
+		public bool IsTesting
+		{
+			get => _isTesting;
+			private set => SetProperty(ref _isTesting, value);
+		}
+
+		/// <summary>
+		/// Gets the result of the last connection test, or <see langword="null"/> if no test has been performed yet.
+		/// </summary>
+		public bool? TestResult
+		{
+			get => _testResult;
+			private set
+			{
+				if (SetProperty(ref _testResult, value))
+				{
+					RaisePropertyChanged(nameof(TestResultText));
+					RaisePropertyChanged(nameof(IsTestSuccessful));
+					RaisePropertyChanged(nameof(IsTestFailed));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the localized message to display for the last test result.
+		/// </summary>
+		public string? TestResultText
+		{
+			get
+			{
+				if (TestResult is null)
+					return null;
+				if (TestResult == true)
+					return LocalizationManager.LocalizeStatic("db_test_ok");
+				return string.IsNullOrWhiteSpace(_testResultMessage)
+					? LocalizationManager.LocalizeStatic("db_test_failed")
+					: _testResultMessage;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the last test finished successfully.
+		/// </summary>
+		public bool IsTestSuccessful => TestResult == true;
+
+		/// <summary>
+		/// Gets a value indicating whether the last test failed.
+		/// </summary>
+		public bool IsTestFailed => TestResult == false;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DatabaseConnectionItemViewModel"/> class.
+		/// </summary>
+		/// <param name="setting">The database connection setting to wrap.</param>
+		/// <param name="apiKeyManager">The API key manager used to resolve encrypted connection strings.</param>
+		/// <param name="connectors">The available database connectors.</param>
+		public DatabaseConnectionItemViewModel(DatabaseConnectionSetting setting,
+			IApiKeyManagerService apiKeyManager, IEnumerable<IDatabaseConnector> connectors)
+		{
+			Setting = setting;
+			_apiKeyManager = apiKeyManager;
+			_connectors = connectors.ToImmutableList();
+			TestCommand = new AsyncRelayCommand(TestAsync);
+		}
+
+		private async Task TestAsync(CancellationToken cancellationToken)
+		{
+			IsTesting = true;
+			TestResult = null;
+			_testResultMessage = null;
+			try
+			{
+				var connectionString = Setting.GetConnectionString(_apiKeyManager);
+				if (string.IsNullOrWhiteSpace(connectionString))
+					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_connection_string"));
+
+				var connector = _connectors.FirstOrDefault(c => c.Type == Setting.ConnectorType)
+					?? throw new InvalidOperationException(string.Format(
+						LocalizationManager.LocalizeStatic("db_test_connector_not_found"), Setting.ConnectorType));
+
+				await using var connection = await connector.ConnectAsync(connectionString, cancellationToken);
+				await connection.TestConnectionAsync(cancellationToken);
+				TestResult = true;
+			}
+			catch (OperationCanceledException)
+			{
+				TestResult = null;
+				_testResultMessage = null;
+			}
+			catch (Exception ex)
+			{
+				TestResult = false;
+				_testResultMessage = ex.Message;
+			}
+			finally
+			{
+				IsTesting = false;
+			}
+		}
+	}
+}
