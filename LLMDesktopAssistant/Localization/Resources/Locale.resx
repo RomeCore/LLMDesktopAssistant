@@ -2931,7 +2931,6 @@
   <data name="tool_behaviour_databasecustomconnect_hint" xml:space="preserve">
     <value>The tool connects to a database using a custom connection string.</value>
   </data>
-
   <data name="chat_memory_retrieval_status" xml:space="preserve">
     <value>Retrieving memory</value>
   </data>
@@ -3154,8 +3153,8 @@
   <data name="db-list" xml:space="preserve">
     <value>List database connections</value>
   </data>
-  <data name="db-connect" xml:space="preserve">
-    <value>Connect to a database</value>
+  <data name="db-switch" xml:space="preserve">
+    <value>Switch active database</value>
   </data>
   <data name="db-schema" xml:space="preserve">
     <value>Show database schema</value>
@@ -3165,5 +3164,26 @@
   </data>
   <data name="database" xml:space="preserve">
     <value>Database</value>
+  </data>
+  <data name="db_active_connections" xml:space="preserve">
+    <value>Active connections</value>
+  </data>
+  <data name="db_no_connections" xml:space="preserve">
+    <value>No active connections.</value>
+  </data>
+  <data name="db_connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="db_disconnect" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="db_disconnect_all" xml:space="preserve">
+    <value>Disconnect all</value>
+  </data>
+  <data name="db_connected" xml:space="preserve">
+    <value>Connected.</value>
+  </data>
+  <data name="db_test_empty_name" xml:space="preserve">
+    <value>Connection name is empty.</value>
   </data>
 </root>

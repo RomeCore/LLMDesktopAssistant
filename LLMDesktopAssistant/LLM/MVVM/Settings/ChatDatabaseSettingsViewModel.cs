@@ -55,6 +55,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 	{
 		private readonly IApiKeyManagerService _apiKeyManager;
 		private readonly IDatabaseConnectionCache _cache;
+		private readonly IDatabaseConnectionManager _connectionManager;
+		private readonly HashSet<DatabaseConnectionSetting> _subscribedSettings = [];
+		private DatabaseConnectionSettings? _subscribedEffectiveConnection;
 
 		private bool _isCustomTesting;
 		private bool? _customTestResult;
@@ -108,6 +111,17 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// </summary>
 		public RangeObservableCollection<DatabaseConnectionItemViewModel> ConnectionItems { get; } = [];
 
+		/// <summary>
+		/// Gets the manager items representing all configured connections (named and custom)
+		/// with their current connection state from the cache.
+		/// </summary>
+		public RangeObservableCollection<DatabaseConnectionManagerItem> ManagerItems { get; } = [];
+
+		/// <summary>
+		/// Gets a value indicating whether no connections are currently configured.
+		/// </summary>
+		public bool IsManagerEmpty => ManagerItems.Count == 0;
+
 		public IRelayCommand AddDatabaseConnectionCommand { get; }
 		public IRelayCommand<DatabaseConnectionItemViewModel> RemoveDatabaseConnectionCommand { get; }
 		public IRelayCommand<DatabaseConnectionItemViewModel> MoveDatabaseConnectionUpCommand { get; }
@@ -116,6 +130,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public IRelayCommand<DatabaseConnectionItemViewModel> SetActiveDatabaseConnectionCommand { get; }
 		public IRelayCommand<DatabaseConnectionItemViewModel> BrowseSqliteFileCommand { get; }
 		public IAsyncRelayCommand TestCustomConnectionCommand { get; }
+		public IAsyncRelayCommand ConnectCustomCommand { get; }
+		public IAsyncRelayCommand<DatabaseConnectionManagerItem> DisconnectManagerItemCommand { get; }
+		public IAsyncRelayCommand DisconnectAllCommand { get; }
 
 		/// <summary>
 		/// Gets a value indicating whether the custom connection is currently being tested.
@@ -176,13 +193,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// <param name="settings">The database settings to edit.</param>
 		/// <param name="apiKeyManager">The API key manager used to resolve encrypted connection strings.</param>
 		/// <param name="cache">The database connection cache providing the supported connector types and connection tests.</param>
+		/// <param name="connectionManager">The connection manager used to activate and disconnect connections.</param>
 		public ChatDatabaseSettingsViewModel(ChatDatabaseSettings settings,
 			IApiKeyManagerService apiKeyManager,
-			IDatabaseConnectionCache cache)
+			IDatabaseConnectionCache cache,
+			IDatabaseConnectionManager connectionManager)
 		{
 			DatabaseSettings = settings;
 			_apiKeyManager = apiKeyManager;
 			_cache = cache;
+			_connectionManager = connectionManager;
 
 			_selectedDatabaseConnectionInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.DatabaseConnectionInheritance);
 			ConnectorTypes = cache.SupportedConnectors
@@ -190,8 +210,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 				.ToImmutableList();
 
 			settings.PropertyChanged += DatabaseSettings_PropertyChanged;
+			cache.ConnectionsChanged += Cache_ConnectionsChanged;
+			_subscribedEffectiveConnection = EffectiveDatabaseConnection;
+			_subscribedEffectiveConnection.PropertyChanged += EffectiveConnection_PropertyChanged;
 
 			RebuildConnectionItems();
+			RebuildManagerItems();
 
 			AddDatabaseConnectionCommand = new RelayCommand(AddDatabaseConnection);
 			RemoveDatabaseConnectionCommand = new RelayCommand<DatabaseConnectionItemViewModel>(RemoveDatabaseConnection);
@@ -201,6 +225,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 			SetActiveDatabaseConnectionCommand = new RelayCommand<DatabaseConnectionItemViewModel>(SetActiveDatabaseConnection);
 			BrowseSqliteFileCommand = new AsyncRelayCommand<DatabaseConnectionItemViewModel>(BrowseSqliteFile);
 			TestCustomConnectionCommand = new AsyncRelayCommand(TestCustomConnectionAsync);
+			ConnectCustomCommand = new AsyncRelayCommand(ConnectCustomAsync);
+			DisconnectManagerItemCommand = new AsyncRelayCommand<DatabaseConnectionManagerItem>(DisconnectManagerItemAsync);
+			DisconnectAllCommand = new AsyncRelayCommand(DisconnectAllAsync);
 		}
 
 		private void DatabaseSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -211,8 +238,70 @@ namespace LLMDesktopAssistant.LLM.Settings
 				RaisePropertyChanged(nameof(SelectedDatabaseConnectionInheritance));
 				RaisePropertyChanged(nameof(EffectiveDatabaseConnection));
 				RaisePropertyChanged(nameof(SelectedCustomConnectorTypeItem));
+
+				if (_subscribedEffectiveConnection is not null)
+					_subscribedEffectiveConnection.PropertyChanged -= EffectiveConnection_PropertyChanged;
+				_subscribedEffectiveConnection = EffectiveDatabaseConnection;
+				_subscribedEffectiveConnection.PropertyChanged += EffectiveConnection_PropertyChanged;
+
 				RebuildConnectionItems();
+				RebuildManagerItems();
 			}
+		}
+
+		private void Cache_ConnectionsChanged(object? sender, EventArgs e) => RebuildManagerItems();
+
+		private void EffectiveConnection_PropertyChanged(object? sender, PropertyChangedEventArgs e) => RebuildManagerItems();
+
+		private void Setting_PropertyChanged(object? sender, PropertyChangedEventArgs e) => RebuildManagerItems();
+
+		/// <summary>
+		/// Rebuilds the manager list from the connections that are currently open in the cache.
+		/// Each cached connection is displayed with the name of the matching configured
+		/// connection, or as an anonymous custom connection when no match is found.
+		/// </summary>
+		private void RebuildManagerItems()
+		{
+			foreach (var item in ManagerItems)
+				item.Dispose();
+			ManagerItems.Clear();
+
+			foreach (var setting in _subscribedSettings)
+				setting.PropertyChanged -= Setting_PropertyChanged;
+			_subscribedSettings.Clear();
+
+			var settings = EffectiveDatabaseConnection;
+			foreach (var setting in settings.Items)
+			{
+				setting.PropertyChanged += Setting_PropertyChanged;
+				_subscribedSettings.Add(setting);
+			}
+
+			var anonymousCounts = new Dictionary<string, int>();
+
+			foreach (var (type, connectionString) in _cache.ActiveConnections)
+			{
+				// Resolve a friendly name from the configured connections by connection string.
+				var named = settings.Items.FirstOrDefault(i => i.IsEnabled
+					&& i.ConnectorType == type
+					&& string.Equals(i.GetConnectionString(_apiKeyManager), connectionString, StringComparison.OrdinalIgnoreCase));
+
+				if (named is not null && !string.IsNullOrWhiteSpace(named.Name))
+				{
+					ManagerItems.Add(new DatabaseConnectionManagerItem(named.Name, type, connectionString, isAnonymous: false));
+					continue;
+				}
+
+				var key = type.ToString();
+				anonymousCounts.TryGetValue(key, out var count);
+				anonymousCounts[key] = count + 1;
+				var displayName = count == 0
+					? $"{LocalizationManager.LocalizeStatic("db_custom_connection")}"
+					: $"{LocalizationManager.LocalizeStatic("db_custom_connection")} #{count + 1}";
+				ManagerItems.Add(new DatabaseConnectionManagerItem(displayName, type, connectionString, isAnonymous: true));
+			}
+
+			RaisePropertyChanged(nameof(IsManagerEmpty));
 		}
 
 		private void RebuildConnectionItems()
@@ -260,11 +349,13 @@ namespace LLMDesktopAssistant.LLM.Settings
 							ConnectionItems.Add(CreateItemViewModel(setting));
 					break;
 			}
+
+			RebuildManagerItems();
 		}
 
 		private DatabaseConnectionItemViewModel CreateItemViewModel(DatabaseConnectionSetting setting)
 		{
-			return new DatabaseConnectionItemViewModel(setting, _apiKeyManager, _cache);
+			return new DatabaseConnectionItemViewModel(setting, _apiKeyManager, _cache, _connectionManager);
 		}
 
 		private void SetCustomActive()
@@ -341,6 +432,37 @@ namespace LLMDesktopAssistant.LLM.Settings
 				item.Setting.RawConnectionString = $"Data Source={result[0].Path.LocalPath}";
 		}
 
+		private async Task ConnectCustomAsync(CancellationToken cancellationToken)
+		{
+			IsCustomTesting = true;
+			CustomTestResult = null;
+			_customTestResultMessage = null;
+			try
+			{
+				var connection = EffectiveDatabaseConnection;
+				if (string.IsNullOrWhiteSpace(connection.CustomConnectionString))
+					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_connection_string"));
+
+				_connectionManager.Activate(connection.CustomConnectionString, connection.CustomConnectorType);
+				await _connectionManager.GetCurrentAsync(cancellationToken);
+				CustomTestResult = true;
+			}
+			catch (OperationCanceledException)
+			{
+				_customTestResultMessage = null;
+				CustomTestResult = null;
+			}
+			catch (Exception ex)
+			{
+				_customTestResultMessage = ex.Message;
+				CustomTestResult = false;
+			}
+			finally
+			{
+				IsCustomTesting = false;
+			}
+		}
+
 		private async Task TestCustomConnectionAsync(CancellationToken cancellationToken)
 		{
 			IsCustomTesting = true;
@@ -357,18 +479,39 @@ namespace LLMDesktopAssistant.LLM.Settings
 			}
 			catch (OperationCanceledException)
 			{
-				CustomTestResult = null;
 				_customTestResultMessage = null;
+				CustomTestResult = null;
 			}
 			catch (Exception ex)
 			{
-				CustomTestResult = false;
 				_customTestResultMessage = ex.Message;
+				CustomTestResult = false;
 			}
 			finally
 			{
 				IsCustomTesting = false;
 			}
+		}
+
+		private async Task DisconnectManagerItemAsync(DatabaseConnectionManagerItem? item, CancellationToken cancellationToken)
+		{
+			if (item is null)
+				return;
+
+			item.SetBusy(true);
+			try
+			{
+				await _cache.DisconnectAsync(item.ConnectorType, item.ConnectionString);
+			}
+			finally
+			{
+				item.SetBusy(false);
+			}
+		}
+
+		private async Task DisconnectAllAsync()
+		{
+			await _connectionManager.DisconnectAllAsync();
 		}
 
 		/// <inheritdoc/>
@@ -379,9 +522,92 @@ namespace LLMDesktopAssistant.LLM.Settings
 			if (disposing)
 			{
 				DatabaseSettings.PropertyChanged -= DatabaseSettings_PropertyChanged;
+				_cache.ConnectionsChanged -= Cache_ConnectionsChanged;
+				if (_subscribedEffectiveConnection is not null)
+					_subscribedEffectiveConnection.PropertyChanged -= EffectiveConnection_PropertyChanged;
+				foreach (var setting in _subscribedSettings)
+					setting.PropertyChanged -= Setting_PropertyChanged;
+				_subscribedSettings.Clear();
 				foreach (var item in ConnectionItems)
+					item.Dispose();
+				foreach (var item in ManagerItems)
 					item.Dispose();
 			}
 		}
+	}
+
+	/// <summary>
+	/// Represents a single connection that is currently open in the
+	/// <see cref="IDatabaseConnectionCache"/>. When the connection string matches a
+	/// configured connection, its name is shown; otherwise the item is displayed
+	/// as an anonymous custom connection.
+	/// </summary>
+	public class DatabaseConnectionManagerItem : ViewModelBase
+	{
+		private bool _isBusy;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DatabaseConnectionManagerItem"/> class.
+		/// </summary>
+		/// <param name="displayName">The display name of the connection.</param>
+		/// <param name="connectorType">The connector type of the connection.</param>
+		/// <param name="connectionString">The connection string of the open connection.</param>
+		/// <param name="isAnonymous">Whether the connection is anonymous (no matching configured connection).</param>
+		public DatabaseConnectionManagerItem(string displayName, DatabaseConnectorType connectorType,
+			string connectionString, bool isAnonymous)
+		{
+			DisplayName = displayName;
+			ConnectorType = connectorType;
+			ConnectionString = connectionString;
+			IsAnonymous = isAnonymous;
+		}
+
+		/// <summary>
+		/// Gets the display name of the connection.
+		/// </summary>
+		public string DisplayName { get; }
+
+		/// <summary>
+		/// Gets the display name of the connector type.
+		/// </summary>
+		public string TypeDisplayName => ConnectorType.ToString();
+
+		/// <summary>
+		/// Gets the connector type of the connection.
+		/// </summary>
+		public DatabaseConnectorType ConnectorType { get; }
+
+		/// <summary>
+		/// Gets the connection string of the open connection.
+		/// </summary>
+		public string ConnectionString { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether the connection is anonymous
+		/// (no matching configured connection was found).
+		/// </summary>
+		public bool IsAnonymous { get; }
+
+		/// <summary>
+		/// Gets the truncated connection string shown for anonymous connections.
+		/// </summary>
+		public string? Subtitle => IsAnonymous
+			? (ConnectionString.Length > 100 ? ConnectionString[..100] + "..." : ConnectionString)
+			: null;
+
+		/// <summary>
+		/// Gets a value indicating whether a disconnect operation is in progress.
+		/// </summary>
+		public bool IsBusy
+		{
+			get => _isBusy;
+			private set => SetProperty(ref _isBusy, value);
+		}
+
+		/// <summary>
+		/// Sets the busy state of the item.
+		/// </summary>
+		/// <param name="value">The new busy state.</param>
+		public void SetBusy(bool value) => IsBusy = value;
 	}
 }

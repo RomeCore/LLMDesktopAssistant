@@ -46,7 +46,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 			AddTool(ConnectAsync, null, ConnectPreview, new ToolInitializationInfo
 			{
-				Name = "db-connect",
+				Name = "db-switch",
 				IsFixed = true,
 				Description = """
 					Activates a database connection for the current chat session: a named connection from the chat settings (pass its name, see db-list) or a custom database by a raw connection string with the specified connector type. Only switches the active connection string; the real connection is opened lazily on the first use (db-schema or db-execute).

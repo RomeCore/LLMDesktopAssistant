@@ -17,6 +17,12 @@ namespace LLMDesktopAssistant.Utils
 		private readonly Timer? _cleanupTimer;
 
 		/// <summary>
+		/// Occurs when an item is removed from the cache, including automatic
+		/// removal of expired items by the cleanup timer.
+		/// </summary>
+		public event EventHandler? ItemRemoved;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="AsyncCache{TKey, TValue}"/> class.
 		/// </summary>
 		/// <param name="factory">Async factory method to create items when they're not found in cache.</param>
@@ -130,14 +136,14 @@ namespace LLMDesktopAssistant.Utils
 				}
 
 				// Remove expired item
-				_storage.TryRemove(key, out var expired);
-
-				if (expired != null)
+				if (_storage.TryRemove(key, out var expired))
 				{
 					if (expired.Value is IAsyncDisposable asyncDisposable)
 						await asyncDisposable.DisposeAsync();
 					else if (expired.Value is IDisposable disposable)
 						disposable.Dispose();
+
+					ItemRemoved?.Invoke(this, EventArgs.Empty);
 				}
 			}
 
@@ -171,7 +177,8 @@ namespace LLMDesktopAssistant.Utils
 		/// <returns>The refreshed item task.</returns>
 		public async Task<TValue> RefreshAsync(TKey key, CancellationToken cancellationToken = default)
 		{
-			_storage.TryRemove(key, out _);
+			if (_storage.TryRemove(key, out _))
+				ItemRemoved?.Invoke(this, EventArgs.Empty);
 			return await GetAsync(key, cancellationToken).ConfigureAwait(false);
 		}
 
@@ -214,6 +221,9 @@ namespace LLMDesktopAssistant.Utils
 					disposable.Dispose();
 			}
 
+			if (removed)
+				ItemRemoved?.Invoke(this, EventArgs.Empty);
+
 			return removed;
 		}
 
@@ -235,6 +245,9 @@ namespace LLMDesktopAssistant.Utils
 					disposable.Dispose();
 			}
 
+			if (removed)
+				ItemRemoved?.Invoke(this, EventArgs.Empty);
+
 			return removed;
 		}
 
@@ -247,21 +260,22 @@ namespace LLMDesktopAssistant.Utils
 				return;
 
 			var now = DateTimeOffset.Now;
+			bool removedAny = false;
 			foreach (var (key, item) in _storage)
 			{
-				if (now - item.LastAccess >= _slidingExpiration)
+				if (now - item.LastAccess >= _slidingExpiration && _storage.TryRemove(key, out var expired))
 				{
-					_storage.TryRemove(key, out var expired);
+					removedAny = true;
 
-					if (expired != null)
-					{
-						if (expired.Value is IAsyncDisposable asyncDisposable)
-							asyncDisposable.DisposeAsync();
-						else if (expired.Value is IDisposable disposable)
-							disposable.Dispose();
-					}
+					if (expired.Value is IAsyncDisposable asyncDisposable)
+						asyncDisposable.DisposeAsync();
+					else if (expired.Value is IDisposable disposable)
+						disposable.Dispose();
 				}
 			}
+
+			if (removedAny)
+				ItemRemoved?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -274,21 +288,22 @@ namespace LLMDesktopAssistant.Utils
 				return;
 
 			var now = DateTimeOffset.Now;
+			bool removedAny = false;
 			foreach (var (key, item) in _storage)
 			{
-				if (now - item.LastAccess >= _slidingExpiration)
+				if (now - item.LastAccess >= _slidingExpiration && _storage.TryRemove(key, out var expired))
 				{
-					_storage.TryRemove(key, out var expired);
+					removedAny = true;
 
-					if (expired != null)
-					{
-						if (expired.Value is IAsyncDisposable asyncDisposable)
-							await asyncDisposable.DisposeAsync();
-						else if (expired.Value is IDisposable disposable)
-							disposable.Dispose();
-					}
+					if (expired.Value is IAsyncDisposable asyncDisposable)
+						await asyncDisposable.DisposeAsync();
+					else if (expired.Value is IDisposable disposable)
+						disposable.Dispose();
 				}
 			}
+
+			if (removedAny)
+				ItemRemoved?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>

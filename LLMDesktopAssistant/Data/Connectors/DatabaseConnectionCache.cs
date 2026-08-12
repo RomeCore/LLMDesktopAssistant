@@ -27,15 +27,25 @@ namespace LLMDesktopAssistant.Data.Connectors
 			_cache = new AsyncCache<(DatabaseConnectorType, string), IDatabaseConnection>(CreateConnectionAsync,
 				slidingExpirationTime: TimeSpan.FromHours(1),
 				cleanupInterval: TimeSpan.FromMinutes(10));
+			_cache.ItemRemoved += (_, _) => ConnectionsChanged?.Invoke(this, EventArgs.Empty);
 		}
+
+		/// <inheritdoc/>
+		public event EventHandler? ConnectionsChanged;
 
 		/// <inheritdoc/>
 		public IEnumerable<DatabaseConnectorType> SupportedConnectors => _supportedConnectors;
 
 		/// <inheritdoc/>
-		public Task<IDatabaseConnection> GetAsync(DatabaseConnectorType type, string connectionString, CancellationToken cancellationToken = default)
+		public IReadOnlyCollection<(DatabaseConnectorType Type, string ConnectionString)> ActiveConnections =>
+			_cache.Keys.ToImmutableArray();
+
+		/// <inheritdoc/>
+		public async Task<IDatabaseConnection> GetAsync(DatabaseConnectorType type, string connectionString, CancellationToken cancellationToken = default)
 		{
-			return _cache.GetAsync((type, connectionString), cancellationToken);
+			var connection = await _cache.GetAsync((type, connectionString), cancellationToken);
+			ConnectionsChanged?.Invoke(this, EventArgs.Empty);
+			return connection;
 		}
 
 		/// <inheritdoc/>
@@ -56,6 +66,7 @@ namespace LLMDesktopAssistant.Data.Connectors
 		public async Task DisconnectAsync(DatabaseConnectorType type, string connectionString)
 		{
 			await _cache.TryRemoveAsync((type, connectionString));
+			ConnectionsChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <inheritdoc/>
@@ -63,6 +74,7 @@ namespace LLMDesktopAssistant.Data.Connectors
 		{
 			foreach (var key in _cache.Keys)
 				await _cache.TryRemoveAsync(key);
+			ConnectionsChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <inheritdoc/>

@@ -2931,7 +2931,6 @@
   <data name="tool_behaviour_databasecustomconnect_hint" xml:space="preserve">
     <value>Инструмент подключается к базе данных по произвольной строке подключения.</value>
   </data>
-
   <data name="chat_memory_retrieval_status" xml:space="preserve">
     <value>Достаём память</value>
   </data>
@@ -3154,8 +3153,8 @@
   <data name="db-list" xml:space="preserve">
     <value>Получить список подключений к базам данных</value>
   </data>
-  <data name="db-connect" xml:space="preserve">
-    <value>Подключиться к базе данных</value>
+  <data name="db-switch" xml:space="preserve">
+    <value>Переключить активную базу данных</value>
   </data>
   <data name="db-schema" xml:space="preserve">
     <value>Показать схему базы данных</value>
@@ -3165,5 +3164,26 @@
   </data>
   <data name="database" xml:space="preserve">
     <value>Базы данных</value>
+  </data>
+  <data name="db_active_connections" xml:space="preserve">
+    <value>Активные подключения</value>
+  </data>
+  <data name="db_no_connections" xml:space="preserve">
+    <value>Нет активных подключений.</value>
+  </data>
+  <data name="db_connect" xml:space="preserve">
+    <value>Подключить</value>
+  </data>
+  <data name="db_disconnect" xml:space="preserve">
+    <value>Отключить</value>
+  </data>
+  <data name="db_disconnect_all" xml:space="preserve">
+    <value>Отключить все</value>
+  </data>
+  <data name="db_connected" xml:space="preserve">
+    <value>Подключено.</value>
+  </data>
+  <data name="db_test_empty_name" xml:space="preserve">
+    <value>Имя подключения пустое.</value>
   </data>
 </root>

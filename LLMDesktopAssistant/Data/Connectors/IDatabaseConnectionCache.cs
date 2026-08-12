@@ -9,6 +9,16 @@ namespace LLMDesktopAssistant.Data.Connectors
 	public interface IDatabaseConnectionCache : IAsyncDisposable
 	{
 		/// <summary>
+		/// Occurs when the set of cached connections changes (a connection is opened or closed).
+		/// </summary>
+		event EventHandler? ConnectionsChanged;
+
+		/// <summary>
+		/// Gets the connections that are currently open in the cache.
+		/// </summary>
+		IReadOnlyCollection<(DatabaseConnectorType Type, string ConnectionString)> ActiveConnections { get; }
+
+		/// <summary>
 		/// Gets the database connector types available on the current platform
 		/// (derived from the registered <see cref="IDatabaseConnector"/> services).
 		/// </summary>

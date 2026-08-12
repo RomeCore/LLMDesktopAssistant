@@ -13,6 +13,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	{
 		private readonly IApiKeyManagerService _apiKeyManager;
 		private readonly IDatabaseConnectionCache _cache;
+		private readonly IDatabaseConnectionManager _connectionManager;
 
 		private bool _isTesting;
 		private bool? _testResult;
@@ -40,6 +41,11 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// Gets the command that tests the connection.
 		/// </summary>
 		public IAsyncRelayCommand TestCommand { get; }
+
+		/// <summary>
+		/// Gets the command that activates and opens the connection.
+		/// </summary>
+		public IAsyncRelayCommand ConnectCommand { get; }
 
 		/// <summary>
 		/// Gets a value indicating whether the connection is currently being tested.
@@ -100,20 +106,58 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// <param name="setting">The database connection setting to wrap.</param>
 		/// <param name="apiKeyManager">The API key manager used to resolve encrypted connection strings.</param>
 		/// <param name="cache">The cache used to test the connection.</param>
+		/// <param name="connectionManager">The connection manager used to activate the connection.</param>
 		public DatabaseConnectionItemViewModel(DatabaseConnectionSetting setting,
-			IApiKeyManagerService apiKeyManager, IDatabaseConnectionCache cache)
+			IApiKeyManagerService apiKeyManager, IDatabaseConnectionCache cache,
+			IDatabaseConnectionManager connectionManager)
 		{
 			Setting = setting;
 			_apiKeyManager = apiKeyManager;
 			_cache = cache;
+			_connectionManager = connectionManager;
 			TestCommand = new AsyncRelayCommand(TestAsync);
+			ConnectCommand = new AsyncRelayCommand(ConnectAsync);
+		}
+
+		private async Task ConnectAsync(CancellationToken cancellationToken)
+		{
+			IsTesting = true;
+			TestResult = null;
+			_testResultMessage = null;
+			try
+			{
+				if (string.IsNullOrWhiteSpace(Setting.Name))
+					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_name"));
+
+				var connectionString = Setting.GetConnectionString(_apiKeyManager);
+				if (string.IsNullOrWhiteSpace(connectionString))
+					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_connection_string"));
+
+				_connectionManager.Activate(Setting.Name);
+				await _connectionManager.GetCurrentAsync(cancellationToken);
+				TestResult = true;
+			}
+			catch (OperationCanceledException)
+			{
+				_testResultMessage = null;
+				TestResult = null;
+			}
+			catch (Exception ex)
+			{
+				_testResultMessage = ex.Message;
+				TestResult = false;
+			}
+			finally
+			{
+				IsTesting = false;
+			}
 		}
 
 		private async Task TestAsync(CancellationToken cancellationToken)
 		{
 			IsTesting = true;
-			TestResult = null;
 			_testResultMessage = null;
+			TestResult = null;
 			try
 			{
 				var connectionString = Setting.GetConnectionString(_apiKeyManager);
