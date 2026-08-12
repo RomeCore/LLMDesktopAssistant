@@ -216,7 +216,7 @@ namespace LLMDesktopAssistant.Utils
 			if (removedItem != null)
 			{
 				if (removedItem.Value is IAsyncDisposable asyncDisposable)
-					asyncDisposable.DisposeAsync();
+					_ = asyncDisposable.DisposeAsync();
 				else if (removedItem.Value is IDisposable disposable)
 					disposable.Dispose();
 			}

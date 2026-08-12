@@ -41,7 +41,7 @@ namespace LLMDesktopAssistant.Desktop.Data.Connectors
 			public async Task TestConnectionAsync(CancellationToken cancellationToken = default)
 			{
 				await _connection.OpenAsync(cancellationToken);
-				_connection.Close();
+				await _connection.CloseAsync();
 			}
 
 			/// <inheritdoc/>
@@ -148,9 +148,10 @@ namespace LLMDesktopAssistant.Desktop.Data.Connectors
 			}
 
 			/// <inheritdoc/>
-			public ValueTask DisposeAsync()
+			public async ValueTask DisposeAsync()
 			{
-				return _connection.DisposeAsync();
+				await _connection.CloseAsync();
+				await _connection.DisposeAsync();
 			}
 
 			private async Task OpenIfNeededAsync(CancellationToken cancellationToken)

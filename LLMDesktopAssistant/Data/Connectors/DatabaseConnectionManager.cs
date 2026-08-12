@@ -71,7 +71,7 @@ namespace LLMDesktopAssistant.Data.Connectors
 			foreach (var item in settings.Items)
 				item.IsActive = false;
 
-			return $"custom ({settings.CustomConnectorType})";
+			return $"custom connection (string: {nameOrConnectionString}, type: {settings.CustomConnectorType})";
 		}
 
 		/// <inheritdoc/>

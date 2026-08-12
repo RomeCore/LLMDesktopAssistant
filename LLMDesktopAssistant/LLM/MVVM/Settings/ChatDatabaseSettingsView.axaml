@@ -303,7 +303,8 @@
 										Command="{Binding ConnectCommand}"
 										Classes="IconButton"
 										IsEnabled="{Binding IsTesting, Converter={StaticResource InverseBooleanConverter}}"
-										ToolTip.Tip="{loc:Loc db_connect}">
+										ToolTip.Tip="{loc:Loc db_connect}"
+										Margin="0,0,4,0">
 									<ico:MaterialIcon Kind="Play"/>
 								</Button>
 

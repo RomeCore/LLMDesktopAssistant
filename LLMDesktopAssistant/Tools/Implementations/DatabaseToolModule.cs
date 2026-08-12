@@ -106,7 +106,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			sb.AppendLine();
 			sb.AppendLine("### Custom connection");
 			sb.AppendLine(settings.IsCustomActive && !string.IsNullOrEmpty(settings.CustomConnectionString)
-				? $"- **custom** ({settings.CustomConnectorType}, active)"
+				? $"- **{settings.CustomConnectionString}** ({settings.CustomConnectorType}, active)"
 				: "- Not configured or inactive.");
 
 			result.StatusIcon = MaterialIconKind.Database;
@@ -144,7 +144,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				var description = _connectionManager.Activate(nameOrConnectionString, parsedConnectorType);
 
 				result.StatusIcon = MaterialIconKind.DatabaseCheck;
-				result.StatusTitle = $"**{description}**";
+				result.StatusTitle = $"**{nameOrConnectionString}**";
 				result.ResultContent = $"Database connection **{description}** is now active. The connection will be opened on the first use (db-schema or db-execute).";
 				result.CompleteWithSuccess();
 			}
@@ -174,7 +174,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 
 			result.StatusIcon = MaterialIconKind.DatabaseSearch;
-			result.StatusTitle = "**schema**";
 
 			try
 			{

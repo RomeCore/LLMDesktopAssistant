@@ -166,9 +166,10 @@ namespace LLMDesktopAssistant.Data.Connectors
 			}
 
 			/// <inheritdoc/>
-			public ValueTask DisposeAsync()
+			public async ValueTask DisposeAsync()
 			{
-				return _connection.DisposeAsync();
+				await _connection.CloseAsync();
+				await _connection.DisposeAsync();
 			}
 
 			private async Task OpenIfNeededAsync(CancellationToken cancellationToken)

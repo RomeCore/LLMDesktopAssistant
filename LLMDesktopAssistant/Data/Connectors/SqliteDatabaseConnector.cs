@@ -41,6 +41,7 @@ namespace LLMDesktopAssistant.Data.Connectors
 			{
 				await _connection.OpenAsync(cancellationToken);
 				await _connection.CloseAsync();
+				SqliteConnection.ClearPool(_connection);
 			}
 
 			/// <inheritdoc/>
@@ -142,9 +143,11 @@ namespace LLMDesktopAssistant.Data.Connectors
 			}
 
 			/// <inheritdoc/>
-			public ValueTask DisposeAsync()
+			public async ValueTask DisposeAsync()
 			{
-				return _connection.DisposeAsync();
+				await _connection.CloseAsync();
+				await _connection.DisposeAsync();
+				SqliteConnection.ClearPool(_connection);
 			}
 
 			private async Task OpenIfNeededAsync(CancellationToken cancellationToken)
