@@ -1,5 +1,4 @@
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Settings;
 using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
@@ -13,6 +12,7 @@ using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.Agents.Memory;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {

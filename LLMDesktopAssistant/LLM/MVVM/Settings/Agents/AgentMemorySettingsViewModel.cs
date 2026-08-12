@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Controls.Dialogs;
-using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;

@@ -1,6 +1,6 @@
-using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Data;
 
-namespace LLMDesktopAssistant.Data
+namespace LLMDesktopAssistant.Agents.Memory
 {
 	/// <summary>
 	/// Provides centralized access to memory databases, caching them per memory block

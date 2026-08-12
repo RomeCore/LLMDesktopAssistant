@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Controls.Dialogs;
-using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;

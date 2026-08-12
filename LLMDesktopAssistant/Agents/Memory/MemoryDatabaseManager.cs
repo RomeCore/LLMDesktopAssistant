@@ -1,14 +1,14 @@
 using System.Collections.Concurrent;
-using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Data
+namespace LLMDesktopAssistant.Agents.Memory
 {
 	/// <summary>
 	/// Default implementation of <see cref="IMemoryDatabaseManager"/> backed by an
-	/// <see cref="Utils.AsyncCache{TKey, TValue}"/> keyed by the memory block and the
+	/// <see cref="AsyncCache{TKey, TValue}"/> keyed by the memory block and the
 	/// embedding model. Changing the embedding model transparently creates a fresh
 	/// database instance, and the semantic sector is rebuilt with the new model.
 	/// </summary>
@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.Data
 	public class MemoryDatabaseManager : IMemoryDatabaseManager, IDisposable
 	{
 		private readonly IModelManager _modelManager;
-		private readonly Utils.AsyncCache<(string DataId, string ModelName), MemoryDatabase> _cache;
+		private readonly AsyncCache<(string DataId, string ModelName), MemoryDatabase> _cache;
 		private readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = [];
 
 		/// <summary>
@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.Data
 		public MemoryDatabaseManager(IModelManager modelManager)
 		{
 			_modelManager = modelManager;
-			_cache = new Utils.AsyncCache<(string DataId, string ModelName), MemoryDatabase>(CreateAsync,
+			_cache = new AsyncCache<(string DataId, string ModelName), MemoryDatabase>(CreateAsync,
 				slidingExpirationTime: TimeSpan.FromMinutes(10), cleanupInterval: TimeSpan.FromMinutes(10));
 		}
 
