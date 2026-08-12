@@ -122,9 +122,9 @@ namespace LLMDesktopAssistant.Data.Connectors
 						viewCommand.CommandText = """
 							SELECT view_definition
 							FROM information_schema.views
-							WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name = $name
+							WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name = @name
 							""";
-						viewCommand.Parameters.AddWithValue("$name", name);
+						viewCommand.Parameters.AddWithValue("name", name);
 						var sql = await viewCommand.ExecuteScalarAsync(cancellationToken) as string;
 						sb.AppendLine("```sql");
 						sb.AppendLine(sql ?? "unknown");
@@ -148,10 +148,10 @@ namespace LLMDesktopAssistant.Data.Connectors
 						      AND tc.table_name = kcu.table_name
 						      AND tc.constraint_type = 'PRIMARY KEY'
 						WHERE c.table_schema NOT IN ('pg_catalog', 'information_schema')
-						  AND c.table_name = $name
+						  AND c.table_name = @name
 						ORDER BY c.column_name
 						""";
-					columnCommand.Parameters.AddWithValue("$name", name);
+					columnCommand.Parameters.AddWithValue("name", name);
 					await using var reader = await columnCommand.ExecuteReaderAsync(cancellationToken);
 
 					sb.AppendLine("| Column | Type | NotNull | Default | PK |");
