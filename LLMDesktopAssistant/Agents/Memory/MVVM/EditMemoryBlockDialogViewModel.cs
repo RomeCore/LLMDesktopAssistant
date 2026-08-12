@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
@@ -7,7 +6,7 @@ using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools.MVVM;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
+namespace LLMDesktopAssistant.Agents.Memory.MVVM
 {
 	/// <summary>
 	/// ViewModel for the "Edit Memory Block" dialog. Edits the block contents directly

@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
+namespace LLMDesktopAssistant.Agents.Memory.MVVM
 {
 	/// <summary>
 	/// View for the "Edit Memory Block" dialog.
