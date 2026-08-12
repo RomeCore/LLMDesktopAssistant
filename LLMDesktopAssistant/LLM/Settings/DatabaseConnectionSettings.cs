@@ -10,6 +10,18 @@ namespace LLMDesktopAssistant.LLM.Settings
 	/// </summary>
 	public class DatabaseConnectionSettings : NotifyPropertyChanged
 	{
+		private bool _isCustomActive;
+		/// <summary>
+		/// Gets or sets a value indicating whether the custom connection string is currently active.
+		/// When <see langword="true"/>, <see cref="CustomConnectionString"/> takes precedence over
+		/// the active named connection.
+		/// </summary>
+		public bool IsCustomActive
+		{
+			get => _isCustomActive;
+			set => SetProperty(ref _isCustomActive, value);
+		}
+
 		private string? _customConnectionString;
 		/// <summary>
 		/// Gets or sets the custom connection string used when <see cref="IsCustomActive"/> is <see langword="true"/>.
@@ -28,19 +40,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 		{
 			get => _customConnectorType;
 			set => SetProperty(ref _customConnectorType, value);
-		}
-
-
-		private bool _isCustomActive;
-		/// <summary>
-		/// Gets or sets a value indicating whether the custom connection string is currently active.
-		/// When <see langword="true"/>, <see cref="CustomConnectionString"/> takes precedence over
-		/// the active named connection.
-		/// </summary>
-		public bool IsCustomActive
-		{
-			get => _isCustomActive;
-			set => SetProperty(ref _isCustomActive, value);
 		}
 
 		private readonly RangeObservableCollection<DatabaseConnectionSetting> _items = [];

@@ -3151,4 +3151,19 @@
   <data name="db_use_encrypted_connection_string" xml:space="preserve">
     <value>Store connection string encrypted</value>
   </data>
+  <data name="db-list" xml:space="preserve">
+    <value>List database connections</value>
+  </data>
+  <data name="db-connect" xml:space="preserve">
+    <value>Connect to a database</value>
+  </data>
+  <data name="db-schema" xml:space="preserve">
+    <value>Show database schema</value>
+  </data>
+  <data name="db-execute" xml:space="preserve">
+    <value>Execute a SQL statement</value>
+  </data>
+  <data name="database" xml:space="preserve">
+    <value>Database</value>
+  </data>
 </root>

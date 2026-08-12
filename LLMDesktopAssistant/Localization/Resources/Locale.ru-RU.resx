@@ -3151,4 +3151,19 @@
   <data name="db_use_encrypted_connection_string" xml:space="preserve">
     <value>Хранить строку подключения в зашифрованном виде</value>
   </data>
+  <data name="db-list" xml:space="preserve">
+    <value>Получить список подключений к базам данных</value>
+  </data>
+  <data name="db-connect" xml:space="preserve">
+    <value>Подключиться к базе данных</value>
+  </data>
+  <data name="db-schema" xml:space="preserve">
+    <value>Показать схему базы данных</value>
+  </data>
+  <data name="db-execute" xml:space="preserve">
+    <value>Выполнить SQL-запрос</value>
+  </data>
+  <data name="database" xml:space="preserve">
+    <value>Базы данных</value>
+  </data>
 </root>
