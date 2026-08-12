@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Data.Connectors
+namespace LLMDesktopAssistant.Data.Connectors
 {
 	/// <summary>
 	/// Enumerates the types of database connectors that can be used.
@@ -9,6 +9,11 @@
 		/// Represents a connection to an SQL Server database.
 		/// </summary>
 		SQLServer,
+
+		/// <summary>
+		/// Represents a connection to a PostgreSQL database.
+		/// </summary>
+		PostgreSQL,
 
 		/// <summary>
 		/// Represents a connection to a SQLite database.

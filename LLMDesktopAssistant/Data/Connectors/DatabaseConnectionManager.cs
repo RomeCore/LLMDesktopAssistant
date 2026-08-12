@@ -2,12 +2,14 @@ using System.Collections.Immutable;
 using LLMDesktopAssistant.ApiKeys;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Data.Connectors
 {
 	/// <summary>
-	/// Default implementation of <see cref="IDatabaseConnectionManager"/>.
+	/// Default implementation of <see cref="IDatabaseConnectionManager"/>. Switching the
+	/// active database only updates the chat settings; the actual connections are opened
+	/// lazily on first use and cached by their connector type and connection string.
 	/// </summary>
 	[ChatService(typeof(IDatabaseConnectionManager))]
 	public class DatabaseConnectionManager : IDatabaseConnectionManager
@@ -15,8 +17,8 @@ namespace LLMDesktopAssistant.Data.Connectors
 		private readonly Chat _chat;
 		private readonly IApiKeyManagerService _apiKeyManager;
 		private readonly ImmutableList<IDatabaseConnector> _connectors;
-		private IDatabaseConnection? _current;
-		private string? _currentDescription;
+		private readonly ImmutableArray<DatabaseConnectorType> _supportedConnectors;
+		private readonly AsyncCache<(DatabaseConnectorType Type, string ConnectionString), IDatabaseConnection> _cache;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DatabaseConnectionManager"/> class.
@@ -29,82 +31,118 @@ namespace LLMDesktopAssistant.Data.Connectors
 			_chat = chat;
 			_apiKeyManager = apiKeyManager;
 			_connectors = connectors.ToImmutableList();
+			_supportedConnectors = _connectors.Select(c => c.Type).Distinct().OrderBy(t => (int)t).ToImmutableArray();
+			_cache = new AsyncCache<(DatabaseConnectorType, string), IDatabaseConnection>(CreateConnectionAsync,
+				slidingExpirationTime: TimeSpan.FromHours(1),
+				cleanupInterval: TimeSpan.FromMinutes(10));
 		}
 
 		/// <inheritdoc/>
-		public IDatabaseConnection? Current => _current;
+		public IEnumerable<DatabaseConnectorType> SupportedConnectors => _supportedConnectors;
 
 		/// <inheritdoc/>
-		public string? CurrentDescription => _currentDescription;
+		public bool IsActiveConfigured
+		{
+			get
+			{
+				var active = ResolveActive();
+				return active is not null && !string.IsNullOrWhiteSpace(active.Value.ConnectionString);
+			}
+		}
 
 		/// <inheritdoc/>
-		public async Task<IDatabaseConnection> ConnectAsync(string nameOrConnectionString, string? connectorType = null, CancellationToken cancellationToken = default)
+		public string Activate(string nameOrConnectionString, DatabaseConnectorType? connectorType = null)
 		{
 			var settings = _chat.Settings.Databases.GetEffectiveDatabaseConnection();
 			var named = settings.Items.FirstOrDefault(i => i.IsEnabled &&
 				string.Equals(i.Name, nameOrConnectionString, StringComparison.OrdinalIgnoreCase));
 
-			DatabaseConnectorType type;
-			string? connectionString;
-			string description;
-
 			if (named is not null)
 			{
-				type = named.ConnectorType;
-				connectionString = named.GetConnectionString(_apiKeyManager);
-				description = named.Name!;
-			}
-			else
-			{
-				type = ParseConnectorType(connectorType ?? nameof(DatabaseConnectorType.SQLite));
-				connectionString = nameOrConnectionString;
-				description = $"custom ({type})";
+				settings.IsCustomActive = false;
+
+				// Prevent activating multiple named connections with the same name.
+				bool onceFlag = true;
+				foreach (var item in settings.Items)
+				{
+					item.IsActive = item == named && onceFlag;
+					if (item.IsActive)
+						onceFlag = false;
+				}
+
+				return named.Name!;
 			}
 
+			settings.IsCustomActive = true;
+			settings.CustomConnectionString = nameOrConnectionString;
+			settings.CustomConnectorType = connectorType ?? DatabaseConnectorType.SQLite;
+			foreach (var item in settings.Items)
+				item.IsActive = false;
+
+			return $"custom ({settings.CustomConnectorType})";
+		}
+
+		/// <inheritdoc/>
+		public async Task<IDatabaseConnection> GetCurrentAsync(CancellationToken cancellationToken = default)
+		{
+			var active = ResolveActive()
+				?? throw new InvalidOperationException("No active database connection. Call db-connect first.");
+
+			var (type, connectionString, _) = active;
 			if (string.IsNullOrWhiteSpace(connectionString))
-				throw new InvalidOperationException($"Connection string for '{nameOrConnectionString}' is empty.");
+				throw new InvalidOperationException($"Connection string for '{active.Description}' is empty.");
 
-			var connector = _connectors.FirstOrDefault(c => c.Type == type)
-				?? throw new NotSupportedException($"No connector registered for database type '{type}'.");
-
-			Disconnect();
-
-			var connection = await connector.ConnectAsync(connectionString, cancellationToken);
-			_current = connection;
-			_currentDescription = description;
-			return connection;
+			return await _cache.GetAsync((type, connectionString), cancellationToken);
 		}
 
 		/// <inheritdoc/>
-		public void Disconnect()
+		public async Task DisconnectAsync()
 		{
-			if (_current is not null)
+			var active = ResolveActive();
+			if (active is null || string.IsNullOrWhiteSpace(active.Value.ConnectionString))
+				return;
+
+			await _cache.TryRemoveAsync((active.Value.Type, active.Value.ConnectionString));
+		}
+
+		/// <inheritdoc/>
+		public async Task DisconnectAllAsync()
+		{
+			foreach (var key in _cache.Keys)
+				await _cache.TryRemoveAsync(key);
+		}
+
+		/// <inheritdoc/>
+		public async ValueTask DisposeAsync()
+		{
+			await DisconnectAllAsync();
+			_cache.Dispose();
+		}
+
+		private Task<IDatabaseConnection> CreateConnectionAsync((DatabaseConnectorType Type, string ConnectionString) key, CancellationToken cancellationToken)
+		{
+			var connector = _connectors.FirstOrDefault(c => c.Type == key.Type)
+				?? throw new NotSupportedException($"No connector registered for database type '{key.Type}'.");
+
+			return connector.ConnectAsync(key.ConnectionString, cancellationToken);
+		}
+
+		private (DatabaseConnectorType Type, string ConnectionString, string Description)? ResolveActive()
+		{
+			var settings = _chat.Settings.Databases.GetEffectiveDatabaseConnection();
+
+			if (settings.IsCustomActive && !string.IsNullOrWhiteSpace(settings.CustomConnectionString))
+				return (settings.CustomConnectorType, settings.CustomConnectionString, $"custom ({settings.CustomConnectorType})");
+
+			var named = settings.Items.FirstOrDefault(i => i.IsEnabled && i.IsActive);
+			if (named is not null)
 			{
-				_current.DisposeAsync().AsTask().GetAwaiter().GetResult();
-				_current = null;
-				_currentDescription = null;
+				var connectionString = named.GetConnectionString(_apiKeyManager);
+				if (!string.IsNullOrWhiteSpace(connectionString))
+					return (named.ConnectorType, connectionString, named.Name!);
 			}
-		}
 
-		/// <inheritdoc/>
-		public ValueTask DisposeAsync()
-		{
-			if (_current is null)
-				return ValueTask.CompletedTask;
-
-			var current = _current;
-			_current = null;
-			_currentDescription = null;
-			return current.DisposeAsync();
-		}
-
-		private static DatabaseConnectorType ParseConnectorType(string connectorType)
-		{
-			if (Enum.TryParse<DatabaseConnectorType>(connectorType, ignoreCase: true, out var parsed))
-				return parsed;
-			throw new ArgumentException(
-				$"Unknown connector type '{connectorType}'. Expected one of: {string.Join(", ", Enum.GetNames<DatabaseConnectorType>())}.",
-				nameof(connectorType));
+			return null;
 		}
 	}
 }

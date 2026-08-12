@@ -130,13 +130,13 @@ namespace LLMDesktopAssistant.LLM.Settings
 			}
 			catch (OperationCanceledException)
 			{
-				TestResult = null;
 				_testResultMessage = null;
+				TestResult = null;
 			}
 			catch (Exception ex)
 			{
-				TestResult = false;
 				_testResultMessage = ex.Message;
+				TestResult = false;
 			}
 			finally
 			{

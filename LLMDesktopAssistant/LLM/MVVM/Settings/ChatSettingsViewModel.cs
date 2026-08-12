@@ -300,6 +300,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				MaterialIconKind.DatabaseSearch,
 				() => new ChatDatabaseSettingsViewModel(Settings.Databases,
 					Chat.Services.GetRequiredService<IApiKeyManagerService>(),
+					Chat.Services.GetRequiredService<IDatabaseConnectionManager>(),
 					Chat.Services.GetServices<IDatabaseConnector>())));
 
 			SettingsTree.Add(

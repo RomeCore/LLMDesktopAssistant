@@ -20,7 +20,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 		public static readonly ImmutableList<DatabaseConnectorTypeItem> All =
 		[
 			new() { Value = DatabaseConnectorType.SQLite, DisplayName = "SQLite" },
-			new() { Value = DatabaseConnectorType.SQLServer, DisplayName = "SQL Server" }
+			new() { Value = DatabaseConnectorType.SQLServer, DisplayName = "SQL Server" },
+			new() { Value = DatabaseConnectorType.PostgreSQL, DisplayName = "PostgreSQL" }
 		];
 
 		/// <summary>
@@ -174,18 +175,20 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// </summary>
 		/// <param name="settings">The database settings to edit.</param>
 		/// <param name="apiKeyManager">The API key manager used to resolve encrypted connection strings.</param>
+		/// <param name="connectionManager">The database connection manager providing the supported connector types.</param>
 		/// <param name="connectors">The available database connectors.</param>
 		public ChatDatabaseSettingsViewModel(ChatDatabaseSettings settings,
-			IApiKeyManagerService apiKeyManager, IEnumerable<IDatabaseConnector> connectors)
+			IApiKeyManagerService apiKeyManager,
+			IDatabaseConnectionManager connectionManager,
+			IEnumerable<IDatabaseConnector> connectors)
 		{
 			DatabaseSettings = settings;
 			_apiKeyManager = apiKeyManager;
 			_connectors = connectors.ToImmutableList();
 
 			_selectedDatabaseConnectionInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.DatabaseConnectionInheritance);
-			ConnectorTypes = _connectors
-				.Select(c => DatabaseConnectorTypeItem.FromValue(c.Type))
-				.DistinctBy(i => i.Value)
+			ConnectorTypes = connectionManager.SupportedConnectors
+				.Select(DatabaseConnectorTypeItem.FromValue)
 				.ToImmutableList();
 
 			settings.PropertyChanged += DatabaseSettings_PropertyChanged;

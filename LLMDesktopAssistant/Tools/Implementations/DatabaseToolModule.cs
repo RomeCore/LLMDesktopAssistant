@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using System.Text;
+using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Data.Connectors;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Tools.Meta;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools.Implementations
@@ -47,10 +49,18 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Name = "db-connect",
 				IsFixed = true,
 				Description = """
-					Connects to a database: a named connection from the chat settings (pass its name, see db-list) or a custom database by a raw connection string with the specified connector type.
+					Activates a database connection for the current chat session: a named connection from the chat settings (pass its name, see db-list) or a custom database by a raw connection string with the specified connector type. Only switches the active connection string; the real connection is opened lazily on the first use (db-schema or db-execute).
 					""",
-				DefaultExpectedBehaviour = ToolBehaviour.DatabaseRead | ToolBehaviour.DatabaseCustomConnect,
-				Category = "database"
+				DefaultExpectedBehaviour = ToolBehaviour.DatabaseCustomConnect,
+				Category = "database",
+				ModifyArgumentSchema = schema =>
+				{
+					var properties = schema["properties"]!;
+
+					var connectorType = properties["connectorType"]!;
+					connectorType["enum"] = new JsonArray(_connectionManager.SupportedConnectors
+						.Select(v => JsonValue.Create(v.ToString().ToLower())).ToArray());
+				}
 			});
 
 			AddTool(GetSchemaAsync, new ToolInitializationInfo
@@ -58,7 +68,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Name = "db-schema",
 				IsFixed = true,
 				Description = """
-					Shows the schema of the currently connected database: tables, views and their columns.
+					Shows the schema of the active database: tables, views and their columns.
 					Call db-connect first if no connection is active.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.DatabaseRead,
@@ -70,7 +80,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Name = "db-execute",
 				IsFixed = false,
 				Description = """
-					Executes a SQL statement against the currently connected database and returns the result.
+					Executes a SQL statement against the active database and returns the result.
 					SELECT-like statements return a markdown table of rows; modifying statements (INSERT, UPDATE, DELETE, DDL) return the number of affected rows.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.DatabaseRead | ToolBehaviour.DatabaseChange,
@@ -90,7 +100,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			else
 			{
 				foreach (var item in items)
-					sb.AppendLine($"- **{item.Name}** ({item.ConnectorType}, {(item.IsActive ? "active" : "inactive")}, {(item.UseEncryptedConnectionString ? "encrypted" : "plain")})");
+					sb.AppendLine($"- **{item.Name}** ({item.ConnectorType}, {(item.IsActive ? "active" : "inactive")})");
 			}
 
 			sb.AppendLine();
@@ -99,14 +109,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				? $"- **custom** ({settings.CustomConnectorType}, active)"
 				: "- Not configured or inactive.");
 
-			if (_connectionManager.Current is not null)
-			{
-				sb.AppendLine();
-				sb.AppendLine($"### Current session connection: **{_connectionManager.CurrentDescription}**");
-			}
-
 			result.StatusIcon = MaterialIconKind.Database;
-			result.StatusTitle = "**connections**";
 			result.UseMarkdown = true;
 			result.ResultContent = sb.ToString();
 			result.CompleteWithSuccess();
@@ -122,49 +125,56 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			return new PreviewToolExecutionResult
 			{
 				StatusTitle = $"**{nameOrConnectionString}**",
-				ExpectedBehaviour = isNamed ? ToolBehaviour.DatabaseRead : ToolBehaviour.DatabaseCustomConnect
+				ExpectedBehaviour = isNamed ? ToolBehaviour.None : ToolBehaviour.DatabaseCustomConnect
 			};
 		}
 
-		private async Task ConnectAsync(
+		private Task ConnectAsync(
 			[Description("The name of the configured database connection (see db-list) or a raw connection string")] string nameOrConnectionString,
 			ReactiveToolResult result,
-			[Description("The connector type for a custom connection string: 'sqlite' or 'sqlserver'. Ignored when connecting to a named connection.")] string? connectorType = null,
-			CancellationToken cancellationToken = default)
+			[Description("The connector type for a custom connection string. Ignored when connecting to a named connection.")] string? connectorType = null)
 		{
-			result.StatusIcon = MaterialIconKind.Database;
+			result.StatusIcon = MaterialIconKind.DatabaseArrowRight;
 			result.StatusTitle = $"**{nameOrConnectionString}**";
 
 			try
 			{
-				await _connectionManager.ConnectAsync(nameOrConnectionString, connectorType, cancellationToken);
+				var parsedConnectorType = connectorType != null
+					? Enum.Parse<DatabaseConnectorType>(connectorType, true) : (DatabaseConnectorType?)null;
+				var description = _connectionManager.Activate(nameOrConnectionString, parsedConnectorType);
 
 				result.StatusIcon = MaterialIconKind.DatabaseCheck;
-				result.StatusTitle = $"**{_connectionManager.CurrentDescription}**";
-				result.ResultContent = $"Connected to database **{_connectionManager.CurrentDescription}** ({_connectionManager.Current!.Type}).";
+				result.StatusTitle = $"**{description}**";
+				result.ResultContent = $"Database connection **{description}** is now active. The connection will be opened on the first use (db-schema or db-execute).";
 				result.CompleteWithSuccess();
 			}
 			catch (Exception ex)
 			{
 				result.StatusIcon = MaterialIconKind.DatabaseOff;
-				result.ResultContent = $"Failed to connect to database. Error: {ex.Message}";
+				result.ResultContent = $"Failed to activate the database connection. Error: {ex.Message}";
 				result.CompleteWithError();
 			}
+
+			return Task.CompletedTask;
 		}
 
 		private async Task GetSchemaAsync(ReactiveToolResult result, CancellationToken cancellationToken = default)
 		{
-			var connection = _connectionManager.Current;
-			if (connection is null)
+			IDatabaseConnection connection;
+			try
+			{
+				connection = await _connectionManager.GetCurrentAsync(cancellationToken);
+			}
+			catch (Exception ex)
 			{
 				result.StatusIcon = MaterialIconKind.DatabaseOff;
-				result.ResultContent = "No active database connection. Call db-connect first.";
+				result.ResultContent = $"Failed to open the database connection. Error: {ex.Message}";
 				result.CompleteWithError();
 				return;
 			}
 
 			result.StatusIcon = MaterialIconKind.DatabaseSearch;
-			result.StatusTitle = $"**{_connectionManager.CurrentDescription}**";
+			result.StatusTitle = "**schema**";
 
 			try
 			{
@@ -182,7 +192,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private PreviewToolExecutionResult? ExecutePreview(string query)
 		{
-			if (_connectionManager.Current is null)
+			if (!_connectionManager.IsActiveConfigured)
 			{
 				return new PreviewToolExecutionResult
 				{
@@ -205,11 +215,15 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			ReactiveToolResult result,
 			CancellationToken cancellationToken = default)
 		{
-			var connection = _connectionManager.Current;
-			if (connection is null)
+			IDatabaseConnection connection;
+			try
+			{
+				connection = await _connectionManager.GetCurrentAsync(cancellationToken);
+			}
+			catch (Exception ex)
 			{
 				result.StatusIcon = MaterialIconKind.DatabaseOff;
-				result.ResultContent = "No active database connection. Call db-connect first.";
+				result.ResultContent = $"Failed to open the database connection. Error: {ex.Message}";
 				result.CompleteWithError();
 				return;
 			}
