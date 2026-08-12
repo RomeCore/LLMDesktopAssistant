@@ -54,7 +54,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	public class ChatDatabaseSettingsViewModel : ViewModelBase
 	{
 		private readonly IApiKeyManagerService _apiKeyManager;
-		private readonly ImmutableList<IDatabaseConnector> _connectors;
+		private readonly IDatabaseConnectionCache _cache;
 
 		private bool _isCustomTesting;
 		private bool? _customTestResult;
@@ -175,19 +175,17 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// </summary>
 		/// <param name="settings">The database settings to edit.</param>
 		/// <param name="apiKeyManager">The API key manager used to resolve encrypted connection strings.</param>
-		/// <param name="connectionManager">The database connection manager providing the supported connector types.</param>
-		/// <param name="connectors">The available database connectors.</param>
+		/// <param name="cache">The database connection cache providing the supported connector types and connection tests.</param>
 		public ChatDatabaseSettingsViewModel(ChatDatabaseSettings settings,
 			IApiKeyManagerService apiKeyManager,
-			IDatabaseConnectionManager connectionManager,
-			IEnumerable<IDatabaseConnector> connectors)
+			IDatabaseConnectionCache cache)
 		{
 			DatabaseSettings = settings;
 			_apiKeyManager = apiKeyManager;
-			_connectors = connectors.ToImmutableList();
+			_cache = cache;
 
 			_selectedDatabaseConnectionInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.DatabaseConnectionInheritance);
-			ConnectorTypes = connectionManager.SupportedConnectors
+			ConnectorTypes = cache.SupportedConnectors
 				.Select(DatabaseConnectorTypeItem.FromValue)
 				.ToImmutableList();
 
@@ -266,7 +264,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 		private DatabaseConnectionItemViewModel CreateItemViewModel(DatabaseConnectionSetting setting)
 		{
-			return new DatabaseConnectionItemViewModel(setting, _apiKeyManager, _connectors);
+			return new DatabaseConnectionItemViewModel(setting, _apiKeyManager, _cache);
 		}
 
 		private void SetCustomActive()
@@ -354,12 +352,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				if (string.IsNullOrWhiteSpace(connection.CustomConnectionString))
 					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_connection_string"));
 
-				var connector = _connectors.FirstOrDefault(c => c.Type == connection.CustomConnectorType)
-					?? throw new InvalidOperationException(string.Format(
-						LocalizationManager.LocalizeStatic("db_test_connector_not_found"), connection.CustomConnectorType));
-
-				await using var dbConnection = await connector.ConnectAsync(connection.CustomConnectionString, cancellationToken);
-				await dbConnection.TestConnectionAsync(cancellationToken);
+				await _cache.TestAsync(connection.CustomConnectorType, connection.CustomConnectionString, cancellationToken);
 				CustomTestResult = true;
 			}
 			catch (OperationCanceledException)

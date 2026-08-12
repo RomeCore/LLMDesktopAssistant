@@ -2,10 +2,10 @@ namespace LLMDesktopAssistant.Data.Connectors
 {
 	/// <summary>
 	/// Manages the active database connection of a chat session: switches the active
-	/// connection string in the chat settings and provides lazily created, cached
-	/// database connections to the database tools.
+	/// connection string in the chat settings and resolves the actual connections via
+	/// the application-wide <see cref="IDatabaseConnectionCache"/>.
 	/// </summary>
-	public interface IDatabaseConnectionManager : IAsyncDisposable
+	public interface IDatabaseConnectionManager
 	{
 		/// <summary>
 		/// Gets a value indicating whether a non-empty connection string is currently

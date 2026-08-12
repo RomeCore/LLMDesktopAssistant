@@ -12,7 +12,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 	public class DatabaseConnectionItemViewModel : ViewModelBase
 	{
 		private readonly IApiKeyManagerService _apiKeyManager;
-		private readonly ImmutableList<IDatabaseConnector> _connectors;
+		private readonly IDatabaseConnectionCache _cache;
 
 		private bool _isTesting;
 		private bool? _testResult;
@@ -99,13 +99,13 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// </summary>
 		/// <param name="setting">The database connection setting to wrap.</param>
 		/// <param name="apiKeyManager">The API key manager used to resolve encrypted connection strings.</param>
-		/// <param name="connectors">The available database connectors.</param>
+		/// <param name="cache">The cache used to test the connection.</param>
 		public DatabaseConnectionItemViewModel(DatabaseConnectionSetting setting,
-			IApiKeyManagerService apiKeyManager, IEnumerable<IDatabaseConnector> connectors)
+			IApiKeyManagerService apiKeyManager, IDatabaseConnectionCache cache)
 		{
 			Setting = setting;
 			_apiKeyManager = apiKeyManager;
-			_connectors = connectors.ToImmutableList();
+			_cache = cache;
 			TestCommand = new AsyncRelayCommand(TestAsync);
 		}
 
@@ -120,12 +120,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				if (string.IsNullOrWhiteSpace(connectionString))
 					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_connection_string"));
 
-				var connector = _connectors.FirstOrDefault(c => c.Type == Setting.ConnectorType)
-					?? throw new InvalidOperationException(string.Format(
-						LocalizationManager.LocalizeStatic("db_test_connector_not_found"), Setting.ConnectorType));
-
-				await using var connection = await connector.ConnectAsync(connectionString, cancellationToken);
-				await connection.TestConnectionAsync(cancellationToken);
+				await _cache.TestAsync(Setting.ConnectorType, connectionString, cancellationToken);
 				TestResult = true;
 			}
 			catch (OperationCanceledException)
