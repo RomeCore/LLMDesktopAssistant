@@ -2,13 +2,10 @@ using System.Text;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
-using LLMDesktopAssistant.Prompting.Hooks;
 using LLMDesktopAssistant.Providers;
-using LLMDesktopAssistant.Tools;
 using Serilog;
 
 namespace LLMDesktopAssistant.Agents.Memory
@@ -99,9 +96,8 @@ namespace LLMDesktopAssistant.Agents.Memory
 				Model = model,
 				InitialMessages = [.. messages],
 				Tools = tools,
-				AutoApproveBehaviours = ToolBehaviour.MemoryAccess,
 				TimeOut = TimeSpan.FromMinutes(3),
-				CompletionExpiryTime = TimeSpan.Zero
+				CompletionExpiryTime = TimeSpan.FromMinutes(3)
 			});
 
 			await task;
@@ -109,7 +105,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 
 		private static string BuildRecordingInput(Chat chat, ChatAgentExecutionHookContext context)
 		{
-			var rounds = MessagesInterface.GroupMessagesIntoRounds(chat.Messages);
+			var rounds = MessagesInterface.GroupMessagesIntoRounds(chat.Messages, 1);
 			if (rounds.Count == 0)
 				return string.Empty;
 
@@ -121,10 +117,12 @@ namespace LLMDesktopAssistant.Agents.Memory
 			{
 				switch (branched.Message)
 				{
-					case UserMessage userMessage when AgentMessageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent, chat.Settings):
+					case UserMessage userMessage when !string.IsNullOrWhiteSpace(userMessage.Content)
+						&& AgentMessageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent, chat.Settings):
 						sb.Append("User: ").AppendLine(userMessage.Content);
 						break;
-					case AssistantMessage assistantMessage when responseSet.Contains(assistantMessage):
+					case AssistantMessage assistantMessage when !string.IsNullOrWhiteSpace(assistantMessage.Content)
+						&& responseSet.Contains(assistantMessage):
 						sb.Append("Assistant: ").AppendLine(assistantMessage.Content);
 						break;
 				}

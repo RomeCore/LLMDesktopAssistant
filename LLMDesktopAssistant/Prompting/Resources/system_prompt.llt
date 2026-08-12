@@ -65,7 +65,7 @@
 	{
 		<memory_blocks>
 			The following memory blocks provide context for the conversation.
-			You can access these blocks by calling the `memory-store` and `memory-retrieve` tools.
+			You can access these blocks by calling the `memory-*` tools (if available).
 			@foreach block in memory_blocks
 			{
 				<block>

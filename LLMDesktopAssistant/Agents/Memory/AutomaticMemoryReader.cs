@@ -107,9 +107,8 @@ namespace LLMDesktopAssistant.Agents.Memory
 				Model = model,
 				InitialMessages = [.. messages],
 				Tools = tools,
-				AutoApproveBehaviours = ToolBehaviour.MemoryAccess,
 				TimeOut = TimeSpan.FromMinutes(3),
-				CompletionExpiryTime = TimeSpan.Zero
+				CompletionExpiryTime = TimeSpan.FromMinutes(3)
 			}, cancellationToken);
 
 			await task;
@@ -121,7 +120,11 @@ namespace LLMDesktopAssistant.Agents.Memory
 			context.Response.AdditionalViewModels.Add(new AttachedMessageAdditionalViewModel
 			{
 				Mode = AttachedMessageMode.AgentPrivate,
-				Content = digest
+				Content = $"""
+					<memory_digest>
+					{digest}
+					</memory_digest>
+					"""
 			});
 		}
 
