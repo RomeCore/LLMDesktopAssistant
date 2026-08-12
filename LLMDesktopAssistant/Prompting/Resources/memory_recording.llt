@@ -16,10 +16,11 @@
 		## Workflow
 
 		1. **Search first.** Always start by calling `search_facts` with several hypothetical queries to find facts already stored in memory that are relevant to the current round. This gives you the IDs of existing facts.
-		2. **Record new facts.** Use `record_fact` for important new information that is not yet in memory: user preferences, project details, decisions, constraints, technical facts, outcomes.
-		3. **Supersede outdated facts.** Use `supersede_fact` when new information contradicts or updates an existing fact found by `search_facts`.
-		4. **Forget irrelevant facts.** Use `forget_fact` when an existing fact is no longer true or relevant.
-		5. **Append one log.** Call `append_log` preferably once with a concise episodic summary of the round: what happened, what was decided, what was done and what was the result. Use the alternative timeline arguments when the round is part of a longer narrative, for example a sprint day or a game session.
+		2. **Check existing logs.** Use `search_logs` to find episodic logs by keywords, or `view_logs` (optionally with a real-time or game-time window) to see what was already recorded for recent rounds. This prevents duplicate logs and gives you context for a consistent summary.
+		3. **Record new facts.** Use `record_fact` for important new information that is not yet in memory: user preferences, project details, decisions, constraints, technical facts, outcomes.
+		4. **Supersede outdated facts.** Use `supersede_fact` when new information contradicts or updates an existing fact found by `search_facts`.
+		5. **Forget irrelevant facts.** Use `forget_fact` when an existing fact is no longer true or relevant.
+		6. **Append one log.** Call `append_log` preferably once with a concise episodic summary of the round: what happened, what was decided, what was done and what was the result. Use the alternative timeline arguments when the round is part of a longer narrative, for example a sprint day or a game session.
 
 		## Fact quality guidelines
 

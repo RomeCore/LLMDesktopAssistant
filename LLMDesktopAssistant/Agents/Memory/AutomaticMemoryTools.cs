@@ -46,10 +46,14 @@ namespace LLMDesktopAssistant.Agents.Memory
 			}
 			if (logBlocks.Count > 0)
 			{
-				/*AddTool(tools, "search_logs", """
+				AddTool(tools, "search_logs", """
 					Searches the episodic logs of the memory blocks using BM25 keyword search.
 					Transient, consolidated and ignored logs are excluded from search results.
-					""", SearchLogsAsync);*/
+					""", SearchLogsAsync);
+				AddTool(tools, "view_logs", """
+					Views active and transient episodic logs of the memory blocks within the given time window (real time and/or alternative timeline).
+					When no window is specified, the most recent logs are returned. Logs are ordered by their begin time, newest first.
+					""", ViewLogsAsync);
 				AddTool(tools, "append_log", """
 					Appends a new episodic log entry to the specified memory block.
 					Logs are immutable: they cannot be edited, only deleted. The log text is added to the keyword search index.
@@ -67,15 +71,24 @@ namespace LLMDesktopAssistant.Agents.Memory
 		{
 			var tools = ImmutableList.CreateBuilder<AgentTool>();
 			if (factBlocks.Count > 0)
+			{
 				AddTool(tools, "search_facts", """
 					Searches the memory blocks for facts relevant to the given queries and returns them with their IDs and relevance scores.
 					Use multiple hypothetical queries to greatly improve semantic matching.
 					""", SearchFactsAsync);
+			}
 			if (logBlocks.Count > 0)
+			{
 				AddTool(tools, "search_logs", """
 					Searches the episodic logs of the memory blocks using BM25 keyword search.
 					Transient, consolidated and ignored logs are excluded from search results.
 					""", SearchLogsAsync);
+				AddTool(tools, "view_logs", """
+					Views active and transient episodic logs of the memory blocks within the given time window (real time and/or alternative timeline).
+					When no window is specified, the most recent logs are returned. Logs are ordered by their begin time, newest first.
+					""", ViewLogsAsync);
+			}
+
 			return tools.ToImmutable();
 		}
 
@@ -287,6 +300,53 @@ namespace LLMDesktopAssistant.Agents.Memory
 			catch (Exception ex)
 			{
 				return Error($"Failed to search logs. Error: {ex.Message}");
+			}
+		}
+
+		private async Task<AgentToolCallResult> ViewLogsAsync(
+			[Description("The memory blocks where the logs should be viewed. Use null to view logs in all available memory blocks")] string[]? blocks,
+			[Description("The inclusive lower bound of the real-time window in UTC ISO 8601 format (e.g. 2026-08-10T15:00:00Z)")] DateTime? from = null,
+			[Description("The inclusive upper bound of the real-time window in UTC ISO 8601 format (e.g. 2026-08-10T15:00:00Z)")] DateTime? to = null,
+			[Description("The inclusive lower bound of the alternative timeline ordinal window (for example, the day number)")] double? timeLineFrom = null,
+			[Description("The inclusive upper bound of the alternative timeline ordinal window")] double? timeLineTo = null,
+			[Description("The maximum number of logs to return. When no time window is specified, the most recent logs are returned.")] int maxCount = 20,
+			CancellationToken cancellationToken = default)
+		{
+			var blocksToView = ResolveBlocks(logBlocks, blocks);
+			if (blocksToView.Count == 0)
+				return Error("No memory blocks to view.");
+
+			try
+			{
+				var perBlockResults = await Task.WhenAll(blocksToView.Select(block =>
+					logStore.GetByTimeAsync(block, from, to, timeLineFrom, timeLineTo, maxCount, cancellationToken)));
+				var sb = new StringBuilder();
+				int totalFound = 0;
+
+				for (int i = 0; i < blocksToView.Count; i++)
+				{
+					var logs = perBlockResults[i];
+					if (logs.Length == 0)
+						continue;
+
+					totalFound += logs.Length;
+					sb.AppendLine($"### {blocksToView[i].Name}");
+					foreach (var log in logs)
+					{
+						var timeline = string.IsNullOrEmpty(log.TimeLineDetailsBegin) ? "" : $", timeline: {log.TimeLineDetailsBegin}";
+						sb.AppendLine($"- **{log.Text}** [id: {log.Id}] ({log.TimeStampBegin:yyyy-MM-dd HH:mm} UTC, status: {log.Status}, importance: {log.Importance:0.00}{timeline})");
+					}
+					sb.AppendLine();
+				}
+
+				if (totalFound == 0)
+					return Success("No logs found in the specified time window.");
+
+				return Success(sb.ToString());
+			}
+			catch (Exception ex)
+			{
+				return Error($"Failed to view logs. Error: {ex.Message}");
 			}
 		}
 

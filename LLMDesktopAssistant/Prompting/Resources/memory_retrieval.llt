@@ -16,7 +16,7 @@
 		## Workflow
 
 		1. Call `search_facts` with multiple hypothetical (HyDE) queries. Formulate them as hypothetical answers rather than questions, e.g. "The user's food preferences is vegetarian" instead of "What does the user eat?".
-		2. Call `search_logs` for relevant episodic context: recent events, ongoing tasks, narrative timeline.
+		2. Call `search_logs` for relevant episodic context: recent events, ongoing tasks, narrative timeline. When you need logs from a specific period rather than by keywords (e.g. the last hour, a particular day or game-time window), use `view_logs` with the `from`/`to` (real time) or `timeLineFrom`/`timeLineTo` (alternative timeline) arguments; without a window `view_logs` returns the most recent logs.
 		3. Compose the digest from the retrieved facts and logs.
 
 		## Digest requirements
