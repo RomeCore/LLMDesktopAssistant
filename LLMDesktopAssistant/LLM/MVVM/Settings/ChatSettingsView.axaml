@@ -6,12 +6,13 @@
 			 xmlns:local="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:conv="using:LLMDesktopAssistant.Converters"
+			 xmlns:beh="using:LLMDesktopAssistant.Controls.Behaviours"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.Settings.ChatSettingsView"
-			 x:DataType="local:ChatSettingsViewModel">
+			 x:DataType="local:ChatSettingsViewModel"
+			 beh:DialogLayoutBehaviour.DialogMargin="50">
 	
-	<Grid ColumnDefinitions="240,4,*"
-				Width="900" Height="700">
+	<Grid ColumnDefinitions="240,4,*">
 		
 		<TreeView ItemsSource="{Binding SettingsTree}"
 							SelectedItem="{Binding SelectedNode, Mode=TwoWay}"

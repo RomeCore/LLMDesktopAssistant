@@ -82,15 +82,15 @@
 					<!-- Надеюсь, что ни у кого не найдется монитор с разрешением больше 1000000 на 1000000 -->
 					<Rectangle Fill="{DynamicResource DialogHostOverlayBackgroundMixinBrush}"
 										 Focusable="False"
-										 HorizontalAlignment="Stretch"
-										 VerticalAlignment="Stretch"
+										 HorizontalAlignment="Center"
+										 VerticalAlignment="Center"
 										 Width="1000000" Height="1000000"/>
 
-					<Border Name="PART_ContentBackground"
+					<Border Name="PART_Dialog_ContentBackground"
 									HorizontalAlignment="Center"
 									VerticalAlignment="Center">
 						<Border.Styles>
-							<Style Selector="Border#PART_ContentBackground">
+							<Style Selector="Border#PART_Dialog_ContentBackground">
 									<Setter Property="BorderBrush" Value="{Binding (dialogHostAvalonia:DialogHostStyle.BorderBrush), RelativeSource={RelativeSource AncestorType=dialogHostAvalonia:DialogHost}}" />
 									<Setter Property="BorderThickness" Value="{Binding (dialogHostAvalonia:DialogHostStyle.BorderThickness), RelativeSource={RelativeSource AncestorType=dialogHostAvalonia:DialogHost}}" />
 									<Setter Property="CornerRadius" Value="{Binding (dialogHostAvalonia:DialogHostStyle.CornerRadius), RelativeSource={RelativeSource AncestorType=dialogHostAvalonia:DialogHost}}" />
