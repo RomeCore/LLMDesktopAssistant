@@ -86,23 +86,27 @@
 
 		</StackPanel>
 
-		<!-- Add -->
-		<StackPanel DockPanel.Dock="Top"
-					Orientation="Horizontal"
-					Spacing="6"
-					Margin="0,2,0,6">
+		<!-- Add / Clear -->
+		<Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6" Margin="0,2,0,6">
 
 			<Button Command="{Binding AddLogCommand}"
 					Classes="AccentButton"
 					Content="{loc:Loc settings-memory_logs_add}"/>
 
-			<TextBlock Text="{loc:Loc settings-memory_logs_hint}"
+			<TextBlock Grid.Column="1"
+					   Text="{loc:Loc settings-memory_logs_hint}"
 					   Opacity="0.5"
 					   FontSize="12"
 					   VerticalAlignment="Center"
 					   TextWrapping="Wrap"/>
 
-		</StackPanel>
+			<Button Grid.Column="2"
+					Command="{Binding ClearLogsCommand}"
+					Content="{loc:Loc settings-memory_logs_clear}"
+					Foreground="{DynamicResource DangerBrush}"
+					VerticalAlignment="Center"/>
+
+		</Grid>
 
 		<!-- Results -->
 		<ScrollViewer VerticalScrollBarVisibility="Auto">

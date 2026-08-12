@@ -49,6 +49,11 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		public AsyncRelayCommand AddFactCommand { get; }
 
 		/// <summary>
+		/// Gets the command that permanently deletes all facts of the block after a confirmation.
+		/// </summary>
+		public AsyncRelayCommand ClearFactsCommand { get; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="MemoryBlockFactsViewModel"/> class.
 		/// </summary>
 		/// <param name="block">The memory block whose facts are managed.</param>
@@ -60,6 +65,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 
 			SearchCommand = new AsyncRelayCommand(SearchAsync);
 			AddFactCommand = new AsyncRelayCommand(AddFactAsync);
+			ClearFactsCommand = new AsyncRelayCommand(ClearFactsAsync);
 		}
 
 		private async Task SearchAsync()
@@ -103,6 +109,37 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 			catch (Exception ex)
 			{
 				ShowError(LocalizationManager.LocalizeStatic("settings-memory_fact_add_error"), ex.Message);
+			}
+		}
+
+		private async Task ClearFactsAsync()
+		{
+			var confirm = new ConfirmDialogViewModel
+			{
+				Title = LocalizationManager.LocalizeStatic("settings-memory_facts_clear_title"),
+				Description = LocalizationManager.LocalizeStatic("settings-memory_facts_clear_confirm"),
+				ConfirmText = LocalizationManager.LocalizeStatic("settings-memory_facts_clear"),
+				CancelText = LocalizationManager.LocalizeStatic("cancel"),
+				IsDanger = true
+			};
+
+			_ = DialogManager.ShowDialogAsync(confirm);
+			if (!await confirm.Result)
+				return;
+
+			try
+			{
+				int count = await _factStore.ClearAsync(_block);
+				SearchResults.Clear();
+				RaisePropertyChanged(nameof(HasResults));
+
+				ServiceRegistry.Provider.GetRequiredService<IToastService>().ShowSuccess(
+					LocalizationManager.LocalizeStatic("settings-memory_facts_clear_done"),
+					LocalizationManager.LocalizeStaticFormat("settings-memory_facts_clear_result", count));
+			}
+			catch (Exception ex)
+			{
+				ShowError(LocalizationManager.LocalizeStatic("settings-memory_facts_clear_error"), ex.Message);
 			}
 		}
 

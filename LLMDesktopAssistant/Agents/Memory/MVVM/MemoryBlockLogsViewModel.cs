@@ -125,6 +125,11 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		public AsyncRelayCommand AddLogCommand { get; }
 
 		/// <summary>
+		/// Gets the command that permanently deletes all logs of the block after a confirmation.
+		/// </summary>
+		public AsyncRelayCommand ClearLogsCommand { get; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="MemoryBlockLogsViewModel"/> class.
 		/// </summary>
 		/// <param name="block">The memory block whose logs are managed.</param>
@@ -136,6 +141,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 
 			SearchCommand = new AsyncRelayCommand(SearchAsync);
 			AddLogCommand = new AsyncRelayCommand(AddLogAsync);
+			ClearLogsCommand = new AsyncRelayCommand(ClearLogsAsync);
 		}
 
 		private async Task SearchAsync()
@@ -221,6 +227,37 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 			catch (Exception ex)
 			{
 				ShowError(LocalizationManager.LocalizeStatic("settings-memory_log_add_error"), ex.Message);
+			}
+		}
+
+		private async Task ClearLogsAsync()
+		{
+			var confirm = new ConfirmDialogViewModel
+			{
+				Title = LocalizationManager.LocalizeStatic("settings-memory_logs_clear_title"),
+				Description = LocalizationManager.LocalizeStatic("settings-memory_logs_clear_confirm"),
+				ConfirmText = LocalizationManager.LocalizeStatic("settings-memory_logs_clear"),
+				CancelText = LocalizationManager.LocalizeStatic("cancel"),
+				IsDanger = true
+			};
+
+			_ = DialogManager.ShowDialogAsync(confirm);
+			if (!await confirm.Result)
+				return;
+
+			try
+			{
+				int count = await _logStore.ClearAsync(_block);
+				SearchResults.Clear();
+				RaisePropertyChanged(nameof(HasResults));
+
+				ServiceRegistry.Provider.GetRequiredService<IToastService>().ShowSuccess(
+					LocalizationManager.LocalizeStatic("settings-memory_logs_clear_done"),
+					LocalizationManager.LocalizeStaticFormat("settings-memory_logs_clear_result", count));
+			}
+			catch (Exception ex)
+			{
+				ShowError(LocalizationManager.LocalizeStatic("settings-memory_logs_clear_error"), ex.Message);
 			}
 		}
 

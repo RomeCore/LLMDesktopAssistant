@@ -3186,4 +3186,41 @@
   <data name="db_test_empty_name" xml:space="preserve">
     <value>Connection name is empty.</value>
   </data>
+  <data name="settings-memory_facts_clear" xml:space="preserve">
+    <value>Delete all facts</value>
+  </data>
+  <data name="settings-memory_facts_clear_title" xml:space="preserve">
+    <value>Delete all facts?</value>
+  </data>
+  <data name="settings-memory_facts_clear_confirm" xml:space="preserve">
+    <value>All facts stored in this block will be permanently deleted. This action cannot be undone.</value>
+  </data>
+  <data name="settings-memory_facts_clear_done" xml:space="preserve">
+    <value>All facts deleted</value>
+  </data>
+  <data name="settings-memory_facts_clear_result" xml:space="preserve">
+    <value>Deleted facts: {0}.</value>
+  </data>
+  <data name="settings-memory_facts_clear_error" xml:space="preserve">
+    <value>Failed to delete facts</value>
+  </data>
+  <data name="settings-memory_logs_clear" xml:space="preserve">
+    <value>Delete all logs</value>
+  </data>
+  <data name="settings-memory_logs_clear_title" xml:space="preserve">
+    <value>Delete all logs?</value>
+  </data>
+  <data name="settings-memory_logs_clear_confirm" xml:space="preserve">
+    <value>All logs stored in this block will be permanently deleted. This action cannot be undone.</value>
+  </data>
+  <data name="settings-memory_logs_clear_done" xml:space="preserve">
+    <value>All logs deleted</value>
+  </data>
+  <data name="settings-memory_logs_clear_result" xml:space="preserve">
+    <value>Deleted logs: {0}.</value>
+  </data>
+  <data name="settings-memory_logs_clear_error" xml:space="preserve">
+    <value>Failed to delete logs</value>
+  </data>
+
 </root>

@@ -3186,4 +3186,41 @@
   <data name="db_test_empty_name" xml:space="preserve">
     <value>Имя подключения пустое.</value>
   </data>
+  <data name="settings-memory_facts_clear" xml:space="preserve">
+    <value>Удалить все факты</value>
+  </data>
+  <data name="settings-memory_facts_clear_title" xml:space="preserve">
+    <value>Удалить все факты?</value>
+  </data>
+  <data name="settings-memory_facts_clear_confirm" xml:space="preserve">
+    <value>Все факты, хранящиеся в этом блоке, будут безвозвратно удалены. Это действие нельзя отменить.</value>
+  </data>
+  <data name="settings-memory_facts_clear_done" xml:space="preserve">
+    <value>Все факты удалены</value>
+  </data>
+  <data name="settings-memory_facts_clear_result" xml:space="preserve">
+    <value>Удалено фактов: {0}.</value>
+  </data>
+  <data name="settings-memory_facts_clear_error" xml:space="preserve">
+    <value>Не удалось удалить факты</value>
+  </data>
+  <data name="settings-memory_logs_clear" xml:space="preserve">
+    <value>Удалить все логи</value>
+  </data>
+  <data name="settings-memory_logs_clear_title" xml:space="preserve">
+    <value>Удалить все логи?</value>
+  </data>
+  <data name="settings-memory_logs_clear_confirm" xml:space="preserve">
+    <value>Все логи, хранящиеся в этом блоке, будут безвозвратно удалены. Это действие нельзя отменить.</value>
+  </data>
+  <data name="settings-memory_logs_clear_done" xml:space="preserve">
+    <value>Все логи удалены</value>
+  </data>
+  <data name="settings-memory_logs_clear_result" xml:space="preserve">
+    <value>Удалено логов: {0}.</value>
+  </data>
+  <data name="settings-memory_logs_clear_error" xml:space="preserve">
+    <value>Не удалось удалить логи</value>
+  </data>
+
 </root>
