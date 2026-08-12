@@ -1,0 +1,143 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="520" d:DesignHeight="480"
+			 xmlns:local="using:LLMDesktopAssistant.Agents.Memory.MVVM"
+			 x:Class="LLMDesktopAssistant.Agents.Memory.MVVM.AddLogDialogView"
+			 x:DataType="local:AddLogDialogViewModel">
+
+	<Border Background="{DynamicResource CardBackground}"
+			BorderBrush="{DynamicResource CardBorderBrush}"
+			BorderThickness="1"
+			CornerRadius="8"
+			Padding="16"
+			Margin="4"
+			MinWidth="440"
+			MaxWidth="640">
+
+		<StackPanel Orientation="Vertical" Spacing="12">
+
+			<!-- Title -->
+			<TextBlock Text="{Binding Title}"
+					   FontSize="16"
+					   FontWeight="Bold"
+					   TextWrapping="Wrap"/>
+
+			<!-- Log text -->
+			<TextBox Text="{Binding Text, Mode=TwoWay}"
+					 PlaceholderText="{Binding Placeholder}"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 MinLines="2"
+					 MaxLines="6"/>
+
+			<!-- Importance -->
+			<Grid ColumnDefinitions="Auto,*,80" ColumnSpacing="8">
+				<TextBlock Text="{Binding ImportanceLabel}"
+						   VerticalAlignment="Center"/>
+				<Slider Grid.Column="1"
+						Value="{Binding Importance, Mode=TwoWay}"
+						Minimum="0.0"
+						Maximum="1.0"
+						TickFrequency="0.05"
+						TickPlacement="Outside"
+						IsSnapToTickEnabled="True"
+						VerticalAlignment="Center"/>
+				<TextBlock Grid.Column="2"
+						   Text="{Binding Importance, StringFormat=F2}"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Right"/>
+			</Grid>
+
+			<!-- Real-time window -->
+			<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+					BorderThickness="1"
+					CornerRadius="4"
+					Padding="8">
+
+				<StackPanel Spacing="6">
+
+					<TextBlock Text="{Binding BeginLabel}"
+							   FontWeight="Medium"/>
+
+					<Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+						<DatePicker SelectedDate="{Binding BeginDate, Mode=TwoWay}"/>
+						<TimePicker Grid.Column="1"
+									SelectedTime="{Binding BeginTime, Mode=TwoWay}"/>
+					</Grid>
+
+					<TextBlock Text="{Binding EndLabel}"
+							   FontWeight="Medium"/>
+
+					<Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+						<DatePicker SelectedDate="{Binding EndDate, Mode=TwoWay}"/>
+						<TimePicker Grid.Column="1"
+									SelectedTime="{Binding EndTime, Mode=TwoWay}"/>
+					</Grid>
+
+				</StackPanel>
+
+			</Border>
+
+			<!-- Alternative timeline window -->
+			<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+					BorderThickness="1"
+					CornerRadius="4"
+					Padding="8">
+
+				<StackPanel Spacing="6">
+
+					<TextBlock Text="{Binding TimelineLabel}"
+							   FontWeight="Medium"/>
+
+					<Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="8">
+						<TextBlock Text="{Binding OrdinalLabel}"
+								   VerticalAlignment="Center"/>
+						<NumericUpDown Grid.Column="1"
+									   Value="{Binding TimeLineOrdinalBegin, Mode=TwoWay}"/>
+						<TextBlock Grid.Column="2"
+								   Text="{Binding DetailsLabel}"
+								   VerticalAlignment="Center"/>
+						<TextBox Grid.Column="3"
+								 Text="{Binding TimeLineDetailsBegin, Mode=TwoWay}"/>
+					</Grid>
+
+					<Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="8">
+						<TextBlock Text="{Binding OrdinalLabel}"
+								   VerticalAlignment="Center"/>
+						<NumericUpDown Grid.Column="1"
+									   Value="{Binding TimeLineOrdinalEnd, Mode=TwoWay}"/>
+						<TextBlock Grid.Column="2"
+								   Text="{Binding DetailsLabel}"
+								   VerticalAlignment="Center"/>
+						<TextBox Grid.Column="3"
+								 Text="{Binding TimeLineDetailsEnd, Mode=TwoWay}"/>
+					</Grid>
+
+				</StackPanel>
+
+			</Border>
+
+			<!-- Buttons -->
+			<StackPanel Orientation="Horizontal"
+						HorizontalAlignment="Right"
+						Spacing="8"
+						Margin="0,8,0,0">
+
+				<Button Content="{Binding CancelText}"
+						Command="{Binding CancelCommand}"
+						Classes="Secondary"
+						MinWidth="80"/>
+
+				<Button Content="{Binding SubmitText}"
+						Command="{Binding SubmitCommand}"
+						MinWidth="80"/>
+
+			</StackPanel>
+
+		</StackPanel>
+
+	</Border>
+
+</UserControl>

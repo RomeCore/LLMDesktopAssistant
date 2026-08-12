@@ -4,18 +4,21 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.Tools.MVVM;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.Agents.Memory.MVVM
 {
 	/// <summary>
 	/// ViewModel for the "Edit Memory Block" dialog. Edits the block contents directly
 	/// and also hosts block management operations: duplicate, rename and delete.
+	/// The dialog is split into sections selected through a tree: block information,
+	/// facts management and logs management.
 	/// </summary>
 	[ViewModelFor(typeof(EditMemoryBlockDialogView))]
 	public class EditMemoryBlockDialogViewModel : ViewModelBase
 	{
 		private readonly IMemoryDatabaseManager _databaseManager;
+		private EditMemoryBlockSection? _selectedSection;
 
 		/// <summary>
 		/// Gets the memory block being edited.
@@ -109,11 +112,33 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		public AsyncRelayCommand ClearCommand { get; }
 
 		/// <summary>
+		/// Gets the tree of sections of the dialog. The sections are created lazily when
+		/// selected: block information, facts management and logs management.
+		/// </summary>
+		public IReadOnlyList<EditMemoryBlockSection> Sections { get; }
+
+		/// <summary>
+		/// Gets or sets the currently selected section. Selecting a section creates its view
+		/// model lazily on first access.
+		/// </summary>
+		public EditMemoryBlockSection? SelectedSection
+		{
+			get => _selectedSection;
+			set => SetProperty(ref _selectedSection, value);
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="EditMemoryBlockDialogViewModel"/> class.
 		/// </summary>
 		/// <param name="block">The memory block to edit.</param>
 		/// <param name="databaseManager">The memory database manager used for block database operations.</param>
-		public EditMemoryBlockDialogViewModel(MemoryBlock block, IMemoryDatabaseManager databaseManager)
+		/// <param name="factStore">The fact store used by the facts management section.</param>
+		/// <param name="logStore">The log store used by the logs management section.</param>
+		public EditMemoryBlockDialogViewModel(
+			MemoryBlock block,
+			IMemoryDatabaseManager databaseManager,
+			IMemoryFactStore factStore,
+			IMemoryLogStore logStore)
 		{
 			Block = block;
 			_databaseManager = databaseManager;
@@ -125,6 +150,37 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 			CancelRenameCommand = new RelayCommand(() => IsEditingId = false);
 			DeleteCommand = new AsyncRelayCommand(DeleteAsync);
 			ClearCommand = new AsyncRelayCommand(ClearAsync);
+
+			Sections =
+			[
+				new EditMemoryBlockSection(LocalizationManager.LocalizeStatic("settings-memory_section_info"),
+					MaterialIconKind.InfoCircle,
+					() => this),
+
+				new EditMemoryBlockSection(LocalizationManager.LocalizeStatic("settings-memory_section_facts"),
+					MaterialIconKind.FormatListBulleted,
+					() => new MemoryBlockFactsViewModel(Block, factStore)),
+
+				new EditMemoryBlockSection(LocalizationManager.LocalizeStatic("settings-memory_section_logs"),
+					MaterialIconKind.History,
+					() => new MemoryBlockLogsViewModel(Block, logStore))
+			];
+			_selectedSection = Sections[0];
+		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				foreach (var section in Sections)
+				{
+					if (!ReferenceEquals(section.ViewModel, this) && section.ViewModel is IDisposable disposable)
+						disposable.Dispose();
+				}
+			}
 		}
 
 		private async Task DuplicateAsync()
@@ -171,7 +227,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 
 		private async Task DeleteAsync()
 		{
-			var confirm = new FormsConfirmViewModel
+			var confirm = new ConfirmDialogViewModel
 			{
 				Title = LocalizationManager.LocalizeStatic("settings-memory_delete_title"),
 				Description = LocalizationManager.LocalizeStatic("settings-memory_delete_confirm"),
@@ -208,7 +264,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 
 		private async Task ClearAsync()
 		{
-			var confirm = new FormsConfirmViewModel
+			var confirm = new ConfirmDialogViewModel
 			{
 				Title = LocalizationManager.LocalizeStatic("settings-memory_clear_title"),
 				Description = LocalizationManager.LocalizeStatic("settings-memory_clear_confirm"),

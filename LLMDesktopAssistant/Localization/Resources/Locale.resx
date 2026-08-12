@@ -2898,9 +2898,6 @@
   <data name="settings-memory_block_logs" xml:space="preserve">
     <value>Store episodic logs</value>
   </data>
-  <data name="settings-memory_block_state" xml:space="preserve">
-    <value>Store exact state</value>
-  </data>
   <data name="memory-clear" xml:space="preserve">
     <value>Clear memory block</value>
   </data>
@@ -2918,5 +2915,167 @@
   </data>
   <data name="chat_memory_retrieval_status" xml:space="preserve">
     <value>Retrieving memory</value>
+  </data>
+  <data name="settings-memory_section_info" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="settings-memory_section_facts" xml:space="preserve">
+    <value>Facts</value>
+  </data>
+  <data name="settings-memory_section_logs" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="settings-memory_facts_search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="settings-memory_facts_search_placeholder" xml:space="preserve">
+    <value>Search facts...</value>
+  </data>
+  <data name="settings-memory_facts_search_error" xml:space="preserve">
+    <value>Fact search failed</value>
+  </data>
+  <data name="settings-memory_facts_add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="settings-memory_facts_new_placeholder" xml:space="preserve">
+    <value>New fact text...</value>
+  </data>
+  <data name="settings-memory_facts_importance" xml:space="preserve">
+    <value>Importance</value>
+  </data>
+  <data name="settings-memory_facts_no_results" xml:space="preserve">
+    <value>No results</value>
+  </data>
+  <data name="settings-memory_fact_add_done" xml:space="preserve">
+    <value>Fact stored. ID: {0}</value>
+  </data>
+  <data name="settings-memory_fact_add_error" xml:space="preserve">
+    <value>Failed to store fact</value>
+  </data>
+  <data name="settings-memory_fact_delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="settings-memory_fact_delete_title" xml:space="preserve">
+    <value>Delete fact?</value>
+  </data>
+  <data name="settings-memory_fact_delete_confirm" xml:space="preserve">
+    <value>Fact [id: {0}] will be soft-deleted and hidden from search. It can be restored later.</value>
+  </data>
+  <data name="settings-memory_fact_delete_done" xml:space="preserve">
+    <value>Fact deleted</value>
+  </data>
+  <data name="settings-memory_fact_delete_error" xml:space="preserve">
+    <value>Failed to delete fact</value>
+  </data>
+  <data name="settings-memory_fact_supersede" xml:space="preserve">
+    <value>Supersede</value>
+  </data>
+  <data name="settings-memory_fact_supersede_title" xml:space="preserve">
+    <value>Supersede fact</value>
+  </data>
+  <data name="settings-memory_fact_supersede_desc" xml:space="preserve">
+    <value>Enter the replacement text for fact [id: {0}]. The old fact will be marked as superseded.</value>
+  </data>
+  <data name="settings-memory_fact_supersede_label" xml:space="preserve">
+    <value>Replacement text</value>
+  </data>
+  <data name="settings-memory_fact_supersede_done" xml:space="preserve">
+    <value>Fact superseded. New ID: {0}</value>
+  </data>
+  <data name="settings-memory_fact_supersede_error" xml:space="preserve">
+    <value>Failed to supersede fact</value>
+  </data>
+  <data name="settings-memory_logs_search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="settings-memory_logs_search_placeholder" xml:space="preserve">
+    <value>Search logs...</value>
+  </data>
+  <data name="settings-memory_logs_search_error" xml:space="preserve">
+    <value>Log search failed</value>
+  </data>
+  <data name="settings-memory_logs_add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="settings-memory_logs_new_placeholder" xml:space="preserve">
+    <value>New log text...</value>
+  </data>
+  <data name="settings-memory_logs_importance" xml:space="preserve">
+    <value>Importance</value>
+  </data>
+  <data name="settings-memory_logs_no_results" xml:space="preserve">
+    <value>No results</value>
+  </data>
+  <data name="settings-memory_log_add_done" xml:space="preserve">
+    <value>Log appended. ID: {0}</value>
+  </data>
+  <data name="settings-memory_log_add_error" xml:space="preserve">
+    <value>Failed to append log</value>
+  </data>
+  <data name="settings-memory_log_delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="settings-memory_log_delete_title" xml:space="preserve">
+    <value>Delete log?</value>
+  </data>
+  <data name="settings-memory_log_delete_confirm" xml:space="preserve">
+    <value>Log [id: {0}] will be permanently deleted and cannot be restored.</value>
+  </data>
+  <data name="settings-memory_log_delete_done" xml:space="preserve">
+    <value>Log deleted</value>
+  </data>
+  <data name="settings-memory_log_delete_error" xml:space="preserve">
+    <value>Failed to delete log</value>
+  </data>
+  <data name="settings-memory_fact_add_title" xml:space="preserve">
+    <value>Add fact</value>
+  </data>
+  <data name="settings-memory_fact_add_placeholder" xml:space="preserve">
+    <value>Enter the fact text...</value>
+  </data>
+  <data name="settings-memory_facts_hint" xml:space="preserve">
+    <value>The fact is stored with an importance score and becomes searchable.</value>
+  </data>
+  <data name="settings-memory_log_add_title" xml:space="preserve">
+    <value>Add log</value>
+  </data>
+  <data name="settings-memory_log_add_placeholder" xml:space="preserve">
+    <value>Enter the log text...</value>
+  </data>
+  <data name="settings-memory_log_begin" xml:space="preserve">
+    <value>Begin</value>
+  </data>
+  <data name="settings-memory_log_end" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="settings-memory_log_timeline" xml:space="preserve">
+    <value>Timeline</value>
+  </data>
+  <data name="settings-memory_log_ordinal" xml:space="preserve">
+    <value>Ordinal</value>
+  </data>
+  <data name="settings-memory_log_details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="settings-memory_logs_hint" xml:space="preserve">
+    <value>Logs are immutable: the text cannot be changed after appending.</value>
+  </data>
+  <data name="settings-memory_logs_search_by_time" xml:space="preserve">
+    <value>By time</value>
+  </data>
+  <data name="settings-memory_logs_from" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="settings-memory_logs_to" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="settings-memory_logs_ordinal_from" xml:space="preserve">
+    <value>Ordinal from</value>
+  </data>
+  <data name="settings-memory_logs_ordinal_to" xml:space="preserve">
+    <value>Ordinal to</value>
+  </data>
+  <data name="settings-memory_logs_time_search_error" xml:space="preserve">
+    <value>Time search failed</value>
   </data>
 </root>

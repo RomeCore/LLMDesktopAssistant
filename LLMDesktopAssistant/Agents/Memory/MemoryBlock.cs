@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Settings;
 
 namespace LLMDesktopAssistant.Agents.Memory
 {
@@ -68,14 +68,5 @@ namespace LLMDesktopAssistant.Agents.Memory
 			set => SetProperty(ref _logsEnabled, value);
 		}
 
-		private bool _stateEnabled = false;
-		/// <summary>
-		/// Gets or sets a value indicating whether the exact state object is enabled for this memory block.
-		/// </summary>
-		public bool StateEnabled
-		{
-			get => _stateEnabled;
-			set => SetProperty(ref _stateEnabled, value);
-		}
 	}
 }

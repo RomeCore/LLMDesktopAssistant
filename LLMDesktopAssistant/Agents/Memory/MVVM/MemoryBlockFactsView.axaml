@@ -1,0 +1,99 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="360"
+			 xmlns:local="using:LLMDesktopAssistant.Agents.Memory.MVVM"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 x:Class="LLMDesktopAssistant.Agents.Memory.MVVM.MemoryBlockFactsView"
+			 x:DataType="local:MemoryBlockFactsViewModel">
+
+	<DockPanel>
+
+		<!-- Search -->
+		<Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,0,0,6">
+			<TextBox Text="{Binding SearchQuery, Mode=TwoWay}"
+					 PlaceholderText="{loc:Loc settings-memory_facts_search_placeholder}"/>
+			<Button Grid.Column="1"
+					Command="{Binding SearchCommand}"
+					Content="{loc:Loc settings-memory_facts_search}"/>
+		</Grid>
+
+		<!-- Add -->
+		<StackPanel DockPanel.Dock="Top"
+					Orientation="Horizontal"
+					Spacing="6"
+					Margin="0,2,0,6">
+
+			<Button Command="{Binding AddFactCommand}"
+					Classes="AccentButton"
+					Content="{loc:Loc settings-memory_facts_add}"/>
+
+			<TextBlock Text="{loc:Loc settings-memory_facts_hint}"
+					   Opacity="0.5"
+					   FontSize="12"
+					   VerticalAlignment="Center"
+					   TextWrapping="Wrap"/>
+
+		</StackPanel>
+
+		<!-- Results -->
+		<ScrollViewer VerticalScrollBarVisibility="Auto">
+			<StackPanel Spacing="2">
+
+				<TextBlock Text="{loc:Loc settings-memory_facts_no_results}"
+						   Opacity="0.5"
+						   IsVisible="{Binding HasResults, Converter={StaticResource InverseBooleanConverter}}"/>
+
+				<ItemsControl ItemsSource="{Binding SearchResults}">
+
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="local:MemoryFactItemViewModel">
+							<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+									BorderThickness="0,0,0,1"
+									Padding="4,4">
+
+								<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+
+									<StackPanel Grid.Column="0" Spacing="2">
+										<TextBlock Text="{Binding Text}"
+												   TextWrapping="Wrap"/>
+										<TextBlock Text="{Binding Scores}"
+												   FontSize="11"
+												   Opacity="0.6"/>
+										<TextBlock Text="{Binding CreatedAt}"
+												   FontSize="11"
+												   Opacity="0.4"/>
+									</StackPanel>
+
+									<Button Grid.Column="1"
+											Command="{Binding SupersedeCommand}"
+											Classes="IconButton"
+											VerticalAlignment="Center"
+											ToolTip.Tip="{loc:Loc settings-memory_fact_supersede}">
+										<ico:MaterialIcon Kind="SwapHorizontal"/>
+									</Button>
+
+									<Button Grid.Column="2"
+											Command="{Binding DeleteCommand}"
+											Classes="IconButton"
+											VerticalAlignment="Center"
+											ToolTip.Tip="{loc:Loc settings-memory_fact_delete}">
+										<ico:MaterialIcon Kind="Delete"/>
+									</Button>
+
+								</Grid>
+
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+
+				</ItemsControl>
+
+			</StackPanel>
+		</ScrollViewer>
+
+	</DockPanel>
+
+</UserControl>

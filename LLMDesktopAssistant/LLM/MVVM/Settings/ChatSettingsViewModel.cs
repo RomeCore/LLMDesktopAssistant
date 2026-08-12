@@ -390,7 +390,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 						() => new AgentMemorySettingsViewModel(
 							descriptor.Memory,
 							Settings,
-							Chat.Services.GetRequiredService<IMemoryDatabaseManager>())),
+							Chat.Services.GetRequiredService<IMemoryDatabaseManager>(),
+							Chat.Services.GetRequiredService<IMemoryFactStore>(),
+							Chat.Services.GetRequiredService<IMemoryLogStore>())),
 				};
 
 				SettingsTree.Add(new SettingsAgentParentNode(descriptor.Info, isGlobal, agentChildren));

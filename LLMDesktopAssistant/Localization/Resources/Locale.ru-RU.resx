@@ -2898,9 +2898,6 @@
   <data name="settings-memory_block_logs" xml:space="preserve">
     <value>Хранить эпизодические логи</value>
   </data>
-  <data name="settings-memory_block_state" xml:space="preserve">
-    <value>Хранить точное состояние</value>
-  </data>
   <data name="memory-clear" xml:space="preserve">
     <value>Очистить блок памяти</value>
   </data>
@@ -2918,5 +2915,167 @@
   </data>
   <data name="chat_memory_retrieval_status" xml:space="preserve">
     <value>Достаём память</value>
+  </data>
+  <data name="settings-memory_section_info" xml:space="preserve">
+    <value>Информация</value>
+  </data>
+  <data name="settings-memory_section_facts" xml:space="preserve">
+    <value>Факты</value>
+  </data>
+  <data name="settings-memory_section_logs" xml:space="preserve">
+    <value>Логи</value>
+  </data>
+  <data name="settings-memory_facts_search" xml:space="preserve">
+    <value>Найти</value>
+  </data>
+  <data name="settings-memory_facts_search_placeholder" xml:space="preserve">
+    <value>Поиск фактов...</value>
+  </data>
+  <data name="settings-memory_facts_search_error" xml:space="preserve">
+    <value>Ошибка поиска фактов</value>
+  </data>
+  <data name="settings-memory_facts_add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="settings-memory_facts_new_placeholder" xml:space="preserve">
+    <value>Текст нового факта...</value>
+  </data>
+  <data name="settings-memory_facts_importance" xml:space="preserve">
+    <value>Важность</value>
+  </data>
+  <data name="settings-memory_facts_no_results" xml:space="preserve">
+    <value>Ничего не найдено</value>
+  </data>
+  <data name="settings-memory_fact_add_done" xml:space="preserve">
+    <value>Факт сохранён. ID: {0}</value>
+  </data>
+  <data name="settings-memory_fact_add_error" xml:space="preserve">
+    <value>Не удалось сохранить факт</value>
+  </data>
+  <data name="settings-memory_fact_delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="settings-memory_fact_delete_title" xml:space="preserve">
+    <value>Удалить факт?</value>
+  </data>
+  <data name="settings-memory_fact_delete_confirm" xml:space="preserve">
+    <value>Факт [id: {0}] будет помечен как удалённый и скрыт из поиска. Его можно будет восстановить.</value>
+  </data>
+  <data name="settings-memory_fact_delete_done" xml:space="preserve">
+    <value>Факт удалён</value>
+  </data>
+  <data name="settings-memory_fact_delete_error" xml:space="preserve">
+    <value>Не удалось удалить факт</value>
+  </data>
+  <data name="settings-memory_fact_supersede" xml:space="preserve">
+    <value>Заменить</value>
+  </data>
+  <data name="settings-memory_fact_supersede_title" xml:space="preserve">
+    <value>Замена факта</value>
+  </data>
+  <data name="settings-memory_fact_supersede_desc" xml:space="preserve">
+    <value>Введите текст замены для факта [id: {0}]. Старый факт будет помечен как заменённый.</value>
+  </data>
+  <data name="settings-memory_fact_supersede_label" xml:space="preserve">
+    <value>Текст замены</value>
+  </data>
+  <data name="settings-memory_fact_supersede_done" xml:space="preserve">
+    <value>Факт заменён. Новый ID: {0}</value>
+  </data>
+  <data name="settings-memory_fact_supersede_error" xml:space="preserve">
+    <value>Не удалось заменить факт</value>
+  </data>
+  <data name="settings-memory_logs_search" xml:space="preserve">
+    <value>Найти</value>
+  </data>
+  <data name="settings-memory_logs_search_placeholder" xml:space="preserve">
+    <value>Поиск логов...</value>
+  </data>
+  <data name="settings-memory_logs_search_error" xml:space="preserve">
+    <value>Ошибка поиска логов</value>
+  </data>
+  <data name="settings-memory_logs_add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="settings-memory_logs_new_placeholder" xml:space="preserve">
+    <value>Текст нового лога...</value>
+  </data>
+  <data name="settings-memory_logs_importance" xml:space="preserve">
+    <value>Важность</value>
+  </data>
+  <data name="settings-memory_logs_no_results" xml:space="preserve">
+    <value>Ничего не найдено</value>
+  </data>
+  <data name="settings-memory_log_add_done" xml:space="preserve">
+    <value>Лог добавлен. ID: {0}</value>
+  </data>
+  <data name="settings-memory_log_add_error" xml:space="preserve">
+    <value>Не удалось добавить лог</value>
+  </data>
+  <data name="settings-memory_log_delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="settings-memory_log_delete_title" xml:space="preserve">
+    <value>Удалить лог?</value>
+  </data>
+  <data name="settings-memory_log_delete_confirm" xml:space="preserve">
+    <value>Лог [id: {0}] будет удалён безвозвратно и не может быть восстановлен.</value>
+  </data>
+  <data name="settings-memory_log_delete_done" xml:space="preserve">
+    <value>Лог удалён</value>
+  </data>
+  <data name="settings-memory_log_delete_error" xml:space="preserve">
+    <value>Не удалось удалить лог</value>
+  </data>
+  <data name="settings-memory_fact_add_title" xml:space="preserve">
+    <value>Добавить факт</value>
+  </data>
+  <data name="settings-memory_fact_add_placeholder" xml:space="preserve">
+    <value>Введите текст факта...</value>
+  </data>
+  <data name="settings-memory_facts_hint" xml:space="preserve">
+    <value>Факт сохраняется с оценкой важности и становится доступным для поиска.</value>
+  </data>
+  <data name="settings-memory_log_add_title" xml:space="preserve">
+    <value>Добавить лог</value>
+  </data>
+  <data name="settings-memory_log_add_placeholder" xml:space="preserve">
+    <value>Введите текст лога...</value>
+  </data>
+  <data name="settings-memory_log_begin" xml:space="preserve">
+    <value>Начало</value>
+  </data>
+  <data name="settings-memory_log_end" xml:space="preserve">
+    <value>Конец</value>
+  </data>
+  <data name="settings-memory_log_timeline" xml:space="preserve">
+    <value>Таймлайн</value>
+  </data>
+  <data name="settings-memory_log_ordinal" xml:space="preserve">
+    <value>Ординал</value>
+  </data>
+  <data name="settings-memory_log_details" xml:space="preserve">
+    <value>Детали</value>
+  </data>
+  <data name="settings-memory_logs_hint" xml:space="preserve">
+    <value>Логи неизменяемы: текст нельзя изменить после добавления.</value>
+  </data>
+  <data name="settings-memory_logs_search_by_time" xml:space="preserve">
+    <value>По времени</value>
+  </data>
+  <data name="settings-memory_logs_from" xml:space="preserve">
+    <value>От</value>
+  </data>
+  <data name="settings-memory_logs_to" xml:space="preserve">
+    <value>До</value>
+  </data>
+  <data name="settings-memory_logs_ordinal_from" xml:space="preserve">
+    <value>Ординал от</value>
+  </data>
+  <data name="settings-memory_logs_ordinal_to" xml:space="preserve">
+    <value>Ординал до</value>
+  </data>
+  <data name="settings-memory_logs_time_search_error" xml:space="preserve">
+    <value>Ошибка поиска по времени</value>
   </data>
 </root>

@@ -2,138 +2,196 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="640"
+			 mc:Ignorable="d" d:DesignWidth="760" d:DesignHeight="640"
 			 xmlns:local="using:LLMDesktopAssistant.Agents.Memory.MVVM"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 xmlns:beh="using:LLMDesktopAssistant.Controls.Behaviours"
 			 x:Class="LLMDesktopAssistant.Agents.Memory.MVVM.EditMemoryBlockDialogView"
-			 x:DataType="local:EditMemoryBlockDialogViewModel">
+			 x:DataType="local:EditMemoryBlockDialogViewModel"
+			 beh:DialogLayoutBehaviour.DialogMargin="100">
 
-	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Orientation="Vertical" Spacing="10" Margin="16" Width="440">
+	<DockPanel>
 
-			<!-- Header -->
-			<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,6">
+		<!-- Header: dialog title and close button -->
+		<Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="10,8,10,4">
+
+			<StackPanel Orientation="Horizontal" Spacing="8">
 				<ico:MaterialIcon Kind="Database" Width="20" Height="20"
-												  VerticalAlignment="Center"
-												  Foreground="{DynamicResource PrimaryAccentBrush}"/>
+								  VerticalAlignment="Center"
+								  Foreground="{DynamicResource PrimaryAccentBrush}"/>
 				<TextBlock Text="{loc:Loc settings-memory_block_editor}"
-								   FontSize="{DynamicResource FontSizeL}"
-								   FontWeight="Bold"
-								   VerticalAlignment="Center"/>
+						   FontSize="{DynamicResource FontSizeL}"
+						   FontWeight="Bold"
+						   VerticalAlignment="Center"/>
 			</StackPanel>
 
-			<!-- Block ID + management -->
-			<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-							BorderThickness="1"
-							CornerRadius="4"
-							Padding="8">
-				<StackPanel Spacing="6">
+			<Button Grid.Column="1"
+					Command="{Binding CloseCommand}"
+					Classes="IconButton"
+					ToolTip.Tip="{loc:Loc close}">
+				<ico:MaterialIcon Kind="Close"/>
+			</Button>
 
-					<StackPanel Orientation="Horizontal" Spacing="8">
+		</Grid>
 
-						<TextBlock Text="{loc:Loc settings-memory_block_id}"
-											 FontWeight="Medium"
-											 VerticalAlignment="Center"/>
+		<Grid ColumnDefinitions="180,4,*" DockPanel.Dock="Top">
 
-						<TextBlock Text="{Binding BlockId}"
-											 Opacity="0.7"
-											 FontSize="12"
-											 VerticalAlignment="Center"
-											 TextTrimming="CharacterEllipsis"
-											 ToolTip.Tip="{Binding BlockId}"/>
+			<TreeView ItemsSource="{Binding Sections}"
+					  SelectedItem="{Binding SelectedSection, Mode=TwoWay}"
+					  BorderThickness="0"
+					  Margin="4">
 
-					</StackPanel>
-					
-					<WrapPanel Grid.Column="2" Orientation="Horizontal" ItemSpacing="4" LineSpacing="4">
-						<Button Command="{Binding RenameCommand}"
-										Content="{loc:Loc settings-memory_rename}"/>
-						<Button Command="{Binding DuplicateCommand}"
-										Content="{loc:Loc settings-memory_duplicate}"/>
-						<Button Command="{Binding ClearCommand}"
-										Content="{loc:Loc settings-memory_clear}"
-										Foreground="{DynamicResource DangerBrush}"/>
-						<Button Command="{Binding DeleteCommand}"
-										Content="{loc:Loc settings-memory_delete}"
-										Foreground="{DynamicResource DangerBrush}"/>
-					</WrapPanel>
+				<TreeView.DataTemplates>
 
-					<!-- Rename editor -->
-					<StackPanel Orientation="Horizontal"
-											Spacing="4"
-											IsVisible="{Binding IsEditingId}">
+					<DataTemplate x:DataType="local:EditMemoryBlockSection">
+						<StackPanel Orientation="Horizontal" Spacing="6" Margin="4,3">
+							<ico:MaterialIcon Kind="{Binding Icon}"
+											  Width="16" Height="16"
+											  VerticalAlignment="Center"
+											  Opacity="0.8"/>
+							<TextBlock Text="{Binding DisplayName}"
+									   VerticalAlignment="Center"/>
+						</StackPanel>
+					</DataTemplate>
 
-						<TextBox MinWidth="160"
-										 VerticalAlignment="Center"
-										 Text="{Binding NewId}"/>
+				</TreeView.DataTemplates>
 
-						<Button Command="{Binding ConfirmRenameCommand}"
-										Classes="IconButton"
-										ToolTip.Tip="{loc:Loc settings-memory_rename_confirm}">
-							<ico:MaterialIcon Kind="Check"/>
-						</Button>
+			</TreeView>
 
-						<Button Command="{Binding CancelRenameCommand}"
-										Classes="IconButton"
-										ToolTip.Tip="{loc:Loc cancel}">
-							<ico:MaterialIcon Kind="Cancel"/>
-						</Button>
+			<GridSplitter Grid.Column="1"
+						  Width="4"
+						  ResizeDirection="Columns"
+						  HorizontalAlignment="Stretch"/>
 
-					</StackPanel>
+			<ContentControl Grid.Column="2"
+							Content="{Binding SelectedSection.ViewModel}"
+							Margin="6"
+							HorizontalContentAlignment="Stretch"
+							VerticalContentAlignment="Stretch">
 
-				</StackPanel>
-			</Border>
+					<ContentControl.DataTemplates>
 
-			<!-- Name -->
-			<StackPanel Orientation="Vertical" Spacing="4">
-				<TextBlock Text="{loc:Loc settings-memory_block_name}"
-								   FontWeight="Medium"/>
-				<TextBox Text="{Binding Block.Name, Mode=TwoWay}"/>
-			</StackPanel>
+						<!-- Block information section: the edit form of the dialog itself -->
+						<DataTemplate x:DataType="local:EditMemoryBlockDialogViewModel">
+							<ScrollViewer VerticalScrollBarVisibility="Auto">
 
-			<!-- Description -->
-			<StackPanel Orientation="Vertical" Spacing="4">
-				<TextBlock Text="{loc:Loc settings-memory_block_description}"
-								   FontWeight="Medium"/>
-				<TextBox Text="{Binding Block.Description, Mode=TwoWay}"
-								 AcceptsReturn="True"
-								 MinHeight="70"
-								 TextWrapping="Wrap"/>
-			</StackPanel>
+								<StackPanel Orientation="Vertical" Spacing="10"
+											HorizontalAlignment="Stretch">
 
-			<!-- Storage -->
-			<StackPanel Orientation="Vertical" Spacing="4">
-				<TextBlock Text="{loc:Loc settings-memory_block_storage}"
-								   FontWeight="Medium"/>
-				<CheckBox Content="{loc:Loc settings-memory_block_facts}"
-								  IsChecked="{Binding Block.FactsEnabled, Mode=TwoWay}"/>
-				<CheckBox Content="{loc:Loc settings-memory_block_logs}"
-								  IsChecked="{Binding Block.LogsEnabled, Mode=TwoWay}"/>
-				<CheckBox Content="{loc:Loc settings-memory_block_state}"
-								  IsChecked="{Binding Block.StateEnabled, Mode=TwoWay}"/>
-			</StackPanel>
+									<!-- Block ID + management -->
+									<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+											BorderThickness="1"
+											CornerRadius="4"
+											Padding="8">
+										<StackPanel Spacing="6">
 
-			<!-- Models -->
-			<StackPanel Orientation="Vertical" Spacing="4">
-				<TextBlock Text="{loc:Loc settings-memory_block_embedding_model}"
-								   FontWeight="Medium"/>
-				<ctrl:ModelSelectorControl SelectedModel="{Binding Block.EmbeddingModel, Mode=TwoWay}"/>
-			</StackPanel>
+											<StackPanel Orientation="Horizontal" Spacing="8">
 
-			<StackPanel Orientation="Vertical" Spacing="4">
-				<TextBlock Text="{loc:Loc settings-memory_block_maintainer_model}"
-								   FontWeight="Medium"/>
-				<ctrl:ModelSelectorControl SelectedModel="{Binding Block.MaintainerModel, Mode=TwoWay}"/>
-			</StackPanel>
+												<TextBlock Text="{loc:Loc settings-memory_block_id}"
+														   FontWeight="Medium"
+														   VerticalAlignment="Center"/>
 
-			<!-- Close -->
-			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-				<Button Content="{loc:Loc close}"
-								Command="{Binding CloseCommand}"/>
-			</StackPanel>
+												<TextBlock Text="{Binding BlockId}"
+														   Opacity="0.7"
+														   FontSize="12"
+														   VerticalAlignment="Center"
+														   TextTrimming="CharacterEllipsis"
+														   ToolTip.Tip="{Binding BlockId}"/>
 
-		</StackPanel>
-	</ScrollViewer>
+											</StackPanel>
+
+											<WrapPanel Orientation="Horizontal" ItemSpacing="4" LineSpacing="4">
+												<Button Command="{Binding RenameCommand}"
+														Content="{loc:Loc settings-memory_rename}"/>
+												<Button Command="{Binding DuplicateCommand}"
+														Content="{loc:Loc settings-memory_duplicate}"/>
+												<Button Command="{Binding ClearCommand}"
+														Content="{loc:Loc settings-memory_clear}"
+														Foreground="{DynamicResource DangerBrush}"/>
+												<Button Command="{Binding DeleteCommand}"
+														Content="{loc:Loc settings-memory_delete}"
+														Foreground="{DynamicResource DangerBrush}"/>
+											</WrapPanel>
+
+											<!-- Rename editor -->
+											<StackPanel Orientation="Horizontal"
+														Spacing="4"
+														IsVisible="{Binding IsEditingId}">
+
+												<TextBox MinWidth="160"
+														 VerticalAlignment="Center"
+														 Text="{Binding NewId}"/>
+
+												<Button Command="{Binding ConfirmRenameCommand}"
+														Classes="IconButton"
+														ToolTip.Tip="{loc:Loc settings-memory_rename_confirm}">
+													<ico:MaterialIcon Kind="Check"/>
+												</Button>
+
+												<Button Command="{Binding CancelRenameCommand}"
+														Classes="IconButton"
+														ToolTip.Tip="{loc:Loc cancel}">
+													<ico:MaterialIcon Kind="Cancel"/>
+												</Button>
+
+											</StackPanel>
+
+										</StackPanel>
+									</Border>
+
+									<!-- Name -->
+									<StackPanel Orientation="Vertical" Spacing="4">
+										<TextBlock Text="{loc:Loc settings-memory_block_name}"
+												   FontWeight="Medium"/>
+										<TextBox Text="{Binding Block.Name, Mode=TwoWay}"/>
+									</StackPanel>
+
+									<!-- Description -->
+									<StackPanel Orientation="Vertical" Spacing="4">
+										<TextBlock Text="{loc:Loc settings-memory_block_description}"
+												   FontWeight="Medium"/>
+										<TextBox Text="{Binding Block.Description, Mode=TwoWay}"
+												 AcceptsReturn="True"
+												 MinHeight="70"
+												 TextWrapping="Wrap"/>
+									</StackPanel>
+
+									<!-- Storage -->
+									<StackPanel Orientation="Vertical" Spacing="4">
+										<TextBlock Text="{loc:Loc settings-memory_block_storage}"
+												   FontWeight="Medium"/>
+										<CheckBox Content="{loc:Loc settings-memory_block_facts}"
+												  IsChecked="{Binding Block.FactsEnabled, Mode=TwoWay}"/>
+										<CheckBox Content="{loc:Loc settings-memory_block_logs}"
+												  IsChecked="{Binding Block.LogsEnabled, Mode=TwoWay}"/>
+									</StackPanel>
+
+									<!-- Models -->
+									<StackPanel Orientation="Vertical" Spacing="4">
+										<TextBlock Text="{loc:Loc settings-memory_block_embedding_model}"
+												   FontWeight="Medium"/>
+										<ctrl:ModelSelectorControl SelectedModel="{Binding Block.EmbeddingModel, Mode=TwoWay}"/>
+									</StackPanel>
+
+									<StackPanel Orientation="Vertical" Spacing="4">
+										<TextBlock Text="{loc:Loc settings-memory_block_maintainer_model}"
+												   FontWeight="Medium"/>
+										<ctrl:ModelSelectorControl SelectedModel="{Binding Block.MaintainerModel, Mode=TwoWay}"/>
+									</StackPanel>
+
+								</StackPanel>
+
+							</ScrollViewer>
+						</DataTemplate>
+
+				</ContentControl.DataTemplates>
+
+			</ContentControl>
+
+		</Grid>
+
+	</DockPanel>
 
 </UserControl>

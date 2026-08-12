@@ -52,7 +52,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 	/// <summary>
 	/// ViewModel item for a single memory block attached to the agent.
-	/// Provides enabled toggle, attachment mode selector and a remove command.
+	/// Provides the block card header (enabled toggle, attachment mode selector, edit and
+	/// remove commands) and a tree of sections: block information, facts and logs management.
 	/// </summary>
 	public class MemoryBlockAttachmentItemViewModel : ViewModelBase
 	{
@@ -223,6 +224,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	{
 		private readonly ChatSettings _chatSettings;
 		private readonly IMemoryDatabaseManager _databaseManager;
+		private readonly IMemoryFactStore _factStore;
+		private readonly IMemoryLogStore _logStore;
 
 		/// <summary>
 		/// Gets the underlying agent memory settings.
@@ -304,11 +307,20 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// <param name="settings">The agent memory settings to edit.</param>
 		/// <param name="chatSettings">The chat settings used to resolve inherited settings.</param>
 		/// <param name="databaseManager">The memory database manager used for block database operations.</param>
-		public AgentMemorySettingsViewModel(AgentMemorySettings settings, ChatSettings chatSettings, IMemoryDatabaseManager databaseManager)
+		/// <param name="factStore">The fact store used by the block edit dialog.</param>
+		/// <param name="logStore">The log store used by the block edit dialog.</param>
+		public AgentMemorySettingsViewModel(
+			AgentMemorySettings settings,
+			ChatSettings chatSettings,
+			IMemoryDatabaseManager databaseManager,
+			IMemoryFactStore factStore,
+			IMemoryLogStore logStore)
 		{
 			MemorySettings = settings;
 			_chatSettings = chatSettings;
 			_databaseManager = databaseManager;
+			_factStore = factStore;
+			_logStore = logStore;
 
 			_selectedBlocksInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.BlocksInheritance);
 			settings.PropertyChanged += MemorySettings_PropertyChanged;
@@ -411,7 +423,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			if (item?.Block is not { } block)
 				return;
 
-			var vm = new EditMemoryBlockDialogViewModel(block, _databaseManager);
+			var vm = new EditMemoryBlockDialogViewModel(block, _databaseManager, _factStore, _logStore);
 			var result = await DialogManager.ShowDialogAsync(vm);
 
 			if (result is not true)

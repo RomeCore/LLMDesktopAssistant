@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="440" d:DesignHeight="300"
+			 xmlns:local="using:LLMDesktopAssistant.Agents.Memory.MVVM"
+			 x:Class="LLMDesktopAssistant.Agents.Memory.MVVM.AddFactDialogView"
+			 x:DataType="local:AddFactDialogViewModel">
+
+	<Border Background="{DynamicResource CardBackground}"
+			BorderBrush="{DynamicResource CardBorderBrush}"
+			BorderThickness="1"
+			CornerRadius="8"
+			Padding="16"
+			Margin="4"
+			MinWidth="360"
+			MaxWidth="560">
+
+		<StackPanel Orientation="Vertical" Spacing="12">
+
+			<!-- Title -->
+			<TextBlock Text="{Binding Title}"
+					   FontSize="16"
+					   FontWeight="Bold"
+					   TextWrapping="Wrap"/>
+
+			<!-- Fact text -->
+			<TextBox Text="{Binding Text, Mode=TwoWay}"
+					 PlaceholderText="{Binding Placeholder}"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 MinLines="3"
+					 MaxLines="8"/>
+
+			<!-- Importance -->
+			<Grid ColumnDefinitions="Auto,*,80" ColumnSpacing="8">
+				<TextBlock Text="{Binding ImportanceLabel}"
+						   VerticalAlignment="Center"/>
+				<Slider Grid.Column="1"
+						Value="{Binding Importance, Mode=TwoWay}"
+						Minimum="0.0"
+						Maximum="1.0"
+						TickFrequency="0.05"
+						TickPlacement="Outside"
+						IsSnapToTickEnabled="True"
+						VerticalAlignment="Center"/>
+				<TextBlock Grid.Column="2"
+						   Text="{Binding Importance, StringFormat=F2}"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Right"/>
+			</Grid>
+
+			<!-- Buttons -->
+			<StackPanel Orientation="Horizontal"
+						HorizontalAlignment="Right"
+						Spacing="8"
+						Margin="0,8,0,0">
+
+				<Button Content="{Binding CancelText}"
+						Command="{Binding CancelCommand}"
+						Classes="Secondary"
+						MinWidth="80"/>
+
+				<Button Content="{Binding SubmitText}"
+						Command="{Binding SubmitCommand}"
+						MinWidth="80"/>
+
+			</StackPanel>
+
+		</StackPanel>
+
+	</Border>
+
+</UserControl>
