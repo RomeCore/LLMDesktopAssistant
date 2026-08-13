@@ -552,7 +552,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				agentToolCall.Result = new AgentToolCallResult
 				{
 					Success = result.Success,
-					Content = string.IsNullOrEmpty(additionalNotes) ?
+					Content = !string.IsNullOrEmpty(additionalNotes) ?
 						$"{result.Content}\nUser has provided additional notes: {additionalNotes}." :
 						result.Content,
 					Attachments = result.Attachments
