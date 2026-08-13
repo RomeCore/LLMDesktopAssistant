@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
@@ -23,16 +24,21 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		private readonly IToolApprovalService _toolApprovalService;
 		private readonly IUsageStatsCollector _usageStatsCollector;
 		private readonly IAgentTaskDispatcher _dispatcher;
+		private readonly IMemoryFactStore _memoryFactStore;
+		private readonly IMemoryLogStore _memoryLogStore;
 
 		public AgentTask? Current => _currentTask.Value;
 
 		public AgentTaskExecutor(IModelManager modelManager, IToolApprovalService toolApprovalService,
-			IUsageStatsCollector usageStatsCollector, IAgentTaskDispatcher dispatcher)
+			IUsageStatsCollector usageStatsCollector, IAgentTaskDispatcher dispatcher,
+			IMemoryFactStore memoryFactStore, IMemoryLogStore memoryLogStore)
 		{
 			_modelManager = modelManager;
 			_toolApprovalService = toolApprovalService;
 			_usageStatsCollector = usageStatsCollector;
 			_dispatcher = dispatcher;
+			_memoryFactStore = memoryFactStore;
+			_memoryLogStore = memoryLogStore;
 		}
 
 		public AgentTask Execute(AgentTaskLaunchParameters parameters, CancellationToken cancellationToken = default)
@@ -65,6 +71,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 			var agentTools = parameters.Tools;
 			string? additionalPrompt = null;
+			var additionalPromptParts = new StringBuilder();
 			if (parameters.Skills.Count > 0)
 			{
 				agentTools = agentTools.RemoveAll(t => t.Name == "skill-load");
@@ -94,8 +101,29 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					</available_skills>
 					""";
 
-				additionalPrompt = skillPrompt;
+				additionalPromptParts.AppendLine(skillPrompt);
 			}
+
+			if (parameters.MemoryBlocks is { Count: > 0 } memoryBlocks)
+			{
+				var readableFactBlocks = memoryBlocks.Where(b => b.CanRead && b.Block.FactsEnabled).Select(b => b.Block).ToList();
+				var writableFactBlocks = memoryBlocks.Where(b => b.CanWrite && b.Block.FactsEnabled).Select(b => b.Block).ToList();
+				var readableLogBlocks = memoryBlocks.Where(b => b.CanRead && b.Block.LogsEnabled).Select(b => b.Block).ToList();
+				var writableLogBlocks = memoryBlocks.Where(b => b.CanWrite && b.Block.LogsEnabled).Select(b => b.Block).ToList();
+
+				var memoryTools = new AutomaticMemoryTools(_memoryFactStore, _memoryLogStore, 0,
+					readableFactBlocks, writableFactBlocks, readableLogBlocks, writableLogBlocks, 0).CreateManualTools();
+
+				foreach (var tool in memoryTools)
+					if (agentTools.All(t => t.Name != tool.Name))
+						agentTools = agentTools.Add(tool);
+
+				additionalPromptParts.AppendLine(BuildMemoryBlocksPrompt(memoryBlocks));
+			}
+
+			if (additionalPromptParts.Length > 0)
+				additionalPrompt = additionalPromptParts.ToString();
+
 			var tools = agentTools.ToImmutableDictionary(k => k.Name);
 
 			model = model.WithTools(agentTools.Select(t => new FunctionTool(t.Name, t.Description, t.ArgumentSchema,
@@ -145,6 +173,36 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			}, CancellationToken.None);
 
 			return task;
+		}
+
+		private static string BuildMemoryBlocksPrompt(IReadOnlyList<TaskMemoryBlock> blocks)
+		{
+			var sb = new StringBuilder();
+			foreach (var block in blocks)
+			{
+				sb.AppendLine("\t<memory_block>");
+				sb.AppendLine($"\t\t<name>{block.Block.Name}</name>");
+				if (!string.IsNullOrEmpty(block.Block.Description))
+					sb.AppendLine($"\t\t<description>{block.Block.Description}</description>");
+				if (block.CanRead && block.CanWrite)
+					sb.AppendLine($"\t\t<access>read-write</access>");
+				else if (block.CanRead)
+					sb.AppendLine($"\t\t<access>read-only</access>");
+				else if (block.CanWrite)
+					sb.AppendLine($"\t\t<access>write-only</access>");
+				else
+					throw new InvalidOperationException("Memory block must have at least one access mode.");
+				sb.AppendLine("\t</memory_block>");
+			}
+
+			return $"""
+				<available_memory_blocks>
+					The following memory blocks are accessible via the provided memory tools.
+					Search tools are available for readable blocks and write tools for writable blocks.
+					Use them to read or update the assistant's persistent memory when the task requires it.
+				{sb}
+				</available_memory_blocks>
+				""";
 		}
 
 		private async Task ExecuteAsync(AgentTask task, LLModel model,

@@ -1,22 +1,53 @@
 using System.ComponentModel;
 using System.Text;
 using LLMDesktopAssistant.Agents.Tasks;
-using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.Agents.Memory
 {
 	/// <summary>
-	/// Creates the delegate tools used by the automatic memory recording and retrieval agents.
-	/// The tools operate on the pre-resolved memory blocks and do not require user confirmation.
+	/// Creates the delegate tools used by the automatic memory recording and retrieval agents
+	/// and by agent tasks. The tools operate on the pre-resolved memory blocks
+	/// and do not require user confirmation.
 	/// </summary>
-	public sealed class AutomaticMemoryTools(
-		IMemoryFactStore factStore,
-		IMemoryLogStore logStore,
-		Chat chat,
-		IReadOnlyList<MemoryBlock> factBlocks,
-		IReadOnlyList<MemoryBlock> logBlocks,
-		int sourceMessageId)
+	public sealed class AutomaticMemoryTools
 	{
+		private readonly IMemoryFactStore _factStore;
+		private readonly IMemoryLogStore _logStore;
+		private readonly int _sourceChatId;
+		private readonly int _sourceMessageId;
+		private readonly IReadOnlyList<MemoryBlock> _readableFactBlocks;
+		private readonly IReadOnlyList<MemoryBlock> _writableFactBlocks;
+		private readonly IReadOnlyList<MemoryBlock> _readableLogBlocks;
+		private readonly IReadOnlyList<MemoryBlock> _writableLogBlocks;
+
+		/// <summary>
+		/// Initializes a new instance with a single block list used for both reading and writing.
+		/// Intended for the automatic memory hooks that pre-filter blocks by access mode.
+		/// </summary>
+		public AutomaticMemoryTools(IMemoryFactStore factStore, IMemoryLogStore logStore, int sourceChatId,
+			IReadOnlyList<MemoryBlock> factBlocks, IReadOnlyList<MemoryBlock> logBlocks, int sourceMessageId)
+			: this(factStore, logStore, sourceChatId, factBlocks, factBlocks, logBlocks, logBlocks, sourceMessageId)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance with separate readable and writable block lists,
+		/// used to build the manual task toolset with per-block access enforcement.
+		/// </summary>
+		public AutomaticMemoryTools(IMemoryFactStore factStore, IMemoryLogStore logStore, int sourceChatId,
+			IReadOnlyList<MemoryBlock> readableFactBlocks, IReadOnlyList<MemoryBlock> writableFactBlocks,
+			IReadOnlyList<MemoryBlock> readableLogBlocks, IReadOnlyList<MemoryBlock> writableLogBlocks,
+			int sourceMessageId)
+		{
+			_factStore = factStore;
+			_logStore = logStore;
+			_sourceChatId = sourceChatId;
+			_sourceMessageId = sourceMessageId;
+			_readableFactBlocks = readableFactBlocks;
+			_writableFactBlocks = writableFactBlocks;
+			_readableLogBlocks = readableLogBlocks;
+			_writableLogBlocks = writableLogBlocks;
+		}
 		/// <summary>
 		/// Creates the tools available to the automatic memory recorder:
 		/// searching, storing, superseding, forgetting facts and appending episodic logs.
@@ -25,7 +56,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 		public ImmutableList<AgentTool> CreateRecorderTools()
 		{
 			var tools = ImmutableList.CreateBuilder<AgentTool>();
-			if (factBlocks.Count > 0)
+			if (_readableFactBlocks.Count > 0)
 			{
 				AddTool(tools, "search_facts", """
 					Searches the memory blocks for facts relevant to the given queries and returns them with their IDs and relevance scores.
@@ -44,7 +75,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 					Use it when an existing fact is no longer true or relevant.
 					""", ForgetFactAsync);
 			}
-			if (logBlocks.Count > 0)
+			if (_readableLogBlocks.Count > 0)
 			{
 				AddTool(tools, "search_logs", """
 					Searches the episodic logs of the memory blocks using BM25 keyword search.
@@ -70,14 +101,14 @@ namespace LLMDesktopAssistant.Agents.Memory
 		public ImmutableList<AgentTool> CreateReaderTools()
 		{
 			var tools = ImmutableList.CreateBuilder<AgentTool>();
-			if (factBlocks.Count > 0)
+			if (_readableFactBlocks.Count > 0)
 			{
 				AddTool(tools, "search_facts", """
 					Searches the memory blocks for facts relevant to the given queries and returns them with their IDs and relevance scores.
 					Use multiple hypothetical queries to greatly improve semantic matching.
 					""", SearchFactsAsync);
 			}
-			if (logBlocks.Count > 0)
+			if (_readableLogBlocks.Count > 0)
 			{
 				AddTool(tools, "search_logs", """
 					Searches the episodic logs of the memory blocks using BM25 keyword search.
@@ -89,6 +120,57 @@ namespace LLMDesktopAssistant.Agents.Memory
 					""", ViewLogsAsync);
 			}
 
+			return tools.ToImmutable();
+		}
+
+		/// <summary>
+		/// Creates the manual memory toolset for agent tasks: search and view tools over readable
+		/// blocks, and write tools over writable blocks, with per-block access enforcement.
+		/// </summary>
+		/// <returns>The list of agent tools.</returns>
+		public ImmutableList<AgentTool> CreateManualTools()
+		{
+			var tools = ImmutableList.CreateBuilder<AgentTool>();
+			if (_readableFactBlocks.Count > 0)
+			{
+				AddTool(tools, "search_facts", """
+					Searches the memory blocks for facts relevant to the given queries and returns them with their IDs and relevance scores.
+					Use multiple hypothetical queries to greatly improve semantic matching.
+					""", SearchFactsAsync);
+			}
+			if (_writableFactBlocks.Count > 0)
+			{
+				AddTool(tools, "record_fact", """
+					Stores a new fact in the specified memory block with the given importance.
+					If a very similar fact already exists (cosine score >= 0.9), it is automatically superseded.
+					""", RecordFactAsync);
+				AddTool(tools, "supersede_fact", """
+					Replaces an existing fact (by its ID) with a new fact in the specified memory block.
+					Use it when the new information contradicts or updates an existing fact.
+					""", SupersedeFactAsync);
+				AddTool(tools, "forget_fact", """
+					Forgets (soft-deletes) a fact from the specified memory block by its ID.
+					Use it when an existing fact is no longer true or relevant.
+					""", ForgetFactAsync);
+			}
+			if (_readableLogBlocks.Count > 0)
+			{
+				AddTool(tools, "search_logs", """
+					Searches the episodic logs of the memory blocks using BM25 keyword search.
+					Transient, consolidated and ignored logs are excluded from search results.
+					""", SearchLogsAsync);
+				AddTool(tools, "view_logs", """
+					Views active and transient episodic logs of the memory blocks within the given time window (real time and/or alternative timeline).
+					When no window is specified, the most recent logs are returned. Logs are ordered by their begin time, newest first.
+					""", ViewLogsAsync);
+			}
+			if (_writableLogBlocks.Count > 0)
+			{
+				AddTool(tools, "append_log", """
+					Appends a new episodic log entry to the specified memory block.
+					Logs are immutable: they cannot be edited, only deleted. The log text is added to the keyword search index.
+					""", AppendLogAsync);
+			}
 			return tools.ToImmutable();
 		}
 
@@ -106,14 +188,14 @@ namespace LLMDesktopAssistant.Agents.Memory
 				""")] string[] queries,
 			CancellationToken cancellationToken = default)
 		{
-			var blocksToSearch = ResolveBlocks(factBlocks, blocks);
+			var blocksToSearch = ResolveBlocks(_readableFactBlocks, blocks);
 			if (blocksToSearch.Count == 0)
 				return Error("No memory blocks to search in.");
 
 			try
 			{
 				var perBlockResults = await Task.WhenAll(blocksToSearch.Select(block => Task.WhenAll(
-					queries.Select(query => factStore.SearchAsync(block, query, maxCount: 10, cancellationToken)))));
+					queries.Select(query => _factStore.SearchAsync(block, query, maxCount: 10, cancellationToken)))));
 				var sb = new StringBuilder();
 				int totalFound = 0;
 
@@ -151,24 +233,24 @@ namespace LLMDesktopAssistant.Agents.Memory
 			[Description("The importance of the fact, from 0.0 (least important) to 1.0 (most important)")] double importance,
 			CancellationToken cancellationToken = default)
 		{
-			var targetBlock = factBlocks.FirstOrDefault(b => b.Name == block);
+			var targetBlock = _writableFactBlocks.FirstOrDefault(b => b.Name == block);
 			if (targetBlock is null)
 				return Error($"Memory block '{block}' is not found or does not allow writing.");
 
 			try
 			{
-				var similarFacts = await factStore.SearchAsync(targetBlock, fact, maxCount: 10, cancellationToken);
+				var similarFacts = await _factStore.SearchAsync(targetBlock, fact, maxCount: 10, cancellationToken);
 				var highestScore = similarFacts.MaxBy(f => f.CosineScore ?? 0);
 
 				if (highestScore is not null && highestScore.CosineScore >= 0.9)
 				{
-					var storedFact = await factStore.SupersedeAsync(targetBlock, highestScore.Id, fact,
-						chat.ChatId, sourceMessageId, importance, cancellationToken);
+					var storedFact = await _factStore.SupersedeAsync(targetBlock, highestScore.Id, fact,
+						_sourceChatId, _sourceMessageId, importance, cancellationToken);
 					return Success($"Fact stored with supersede successfully. ID: {storedFact.Id}, superseded fact [id: {highestScore.Id}]: {highestScore.Text}");
 				}
 
-				var stored = await factStore.StoreAsync(targetBlock, fact,
-					chat.ChatId, sourceMessageId, importance, cancellationToken);
+				var stored = await _factStore.StoreAsync(targetBlock, fact,
+					_sourceChatId, _sourceMessageId, importance, cancellationToken);
 				return Success($"Fact stored successfully. ID: {stored.Id}");
 			}
 			catch (Exception ex)
@@ -184,14 +266,14 @@ namespace LLMDesktopAssistant.Agents.Memory
 			[Description("The importance of the replacement fact, from 0.0 (least important) to 1.0 (most important)")] double importance,
 			CancellationToken cancellationToken = default)
 		{
-			var targetBlock = factBlocks.FirstOrDefault(b => b.Name == block);
+			var targetBlock = _writableFactBlocks.FirstOrDefault(b => b.Name == block);
 			if (targetBlock is null)
 				return Error($"Memory block '{block}' is not found or does not allow writing.");
 
 			try
 			{
-				var storedFact = await factStore.SupersedeAsync(targetBlock, supersededId, fact,
-					chat.ChatId, sourceMessageId, importance, cancellationToken);
+				var storedFact = await _factStore.SupersedeAsync(targetBlock, supersededId, fact,
+					_sourceChatId, _sourceMessageId, importance, cancellationToken);
 				return Success($"Fact stored with supersede successfully. ID: {storedFact.Id}");
 			}
 			catch (Exception ex)
@@ -205,13 +287,13 @@ namespace LLMDesktopAssistant.Agents.Memory
 			[Description("The ID of the fact to forget")] int factId,
 			CancellationToken cancellationToken = default)
 		{
-			var targetBlock = factBlocks.FirstOrDefault(b => b.Name == block);
+			var targetBlock = _writableFactBlocks.FirstOrDefault(b => b.Name == block);
 			if (targetBlock is null)
 				return Error($"Memory block '{block}' is not found or does not allow writing.");
 
 			try
 			{
-				await factStore.SoftDeleteAsync(targetBlock, factId, cancellationToken);
+				await _factStore.SoftDeleteAsync(targetBlock, factId, cancellationToken);
 				return Success($"Fact [id: {factId}] forgotten in memory block '{block}'. It can be restored later.");
 			}
 			catch (Exception ex)
@@ -232,13 +314,13 @@ namespace LLMDesktopAssistant.Agents.Memory
 			[Description("The alternative timeline details when the log ended. Defaults to the begin details.")] string? timeLineDetailsEnd = null,
 			CancellationToken cancellationToken = default)
 		{
-			var targetBlock = logBlocks.FirstOrDefault(b => b.Name == block);
+			var targetBlock = _writableLogBlocks.FirstOrDefault(b => b.Name == block);
 			if (targetBlock is null)
 				return Error($"Memory block '{block}' is not found or does not allow writing.");
 
 			try
 			{
-				var log = await logStore.AppendAsync(
+				var log = await _logStore.AppendAsync(
 					targetBlock,
 					text,
 					timeStampBegin: timeStampBegin,
@@ -247,8 +329,8 @@ namespace LLMDesktopAssistant.Agents.Memory
 					timeLineDetailsBegin: timeLineDetailsBegin,
 					timeLineOrdinalEnd: timeLineOrdinalEnd ?? timeLineOrdinalBegin,
 					timeLineDetailsEnd: string.IsNullOrEmpty(timeLineDetailsEnd) ? timeLineDetailsBegin : timeLineDetailsEnd,
-					sourceChatId: chat.ChatId,
-					sourceMessageId: sourceMessageId,
+					sourceChatId: _sourceChatId,
+					sourceMessageId: _sourceMessageId,
 					importance: importance,
 					cancellationToken: cancellationToken);
 				return Success($"Log appended successfully. ID: {log.Id}");
@@ -265,14 +347,14 @@ namespace LLMDesktopAssistant.Agents.Memory
 			[Description("The maximum number of logs to return")] int maxCount = 5,
 			CancellationToken cancellationToken = default)
 		{
-			var blocksToSearch = ResolveBlocks(logBlocks, blocks);
+			var blocksToSearch = ResolveBlocks(_readableLogBlocks, blocks);
 			if (blocksToSearch.Count == 0)
 				return Error("No memory blocks to search in.");
 
 			try
 			{
 				var perBlockResults = await Task.WhenAll(blocksToSearch.Select(block =>
-					logStore.SearchAsync(block, query, maxCount, cancellationToken)));
+					_logStore.SearchAsync(block, query, maxCount, cancellationToken)));
 				var sb = new StringBuilder();
 				int totalFound = 0;
 
@@ -312,14 +394,14 @@ namespace LLMDesktopAssistant.Agents.Memory
 			[Description("The maximum number of logs to return. When no time window is specified, the most recent logs are returned.")] int maxCount = 20,
 			CancellationToken cancellationToken = default)
 		{
-			var blocksToView = ResolveBlocks(logBlocks, blocks);
+			var blocksToView = ResolveBlocks(_readableLogBlocks, blocks);
 			if (blocksToView.Count == 0)
 				return Error("No memory blocks to view.");
 
 			try
 			{
 				var perBlockResults = await Task.WhenAll(blocksToView.Select(block =>
-					logStore.GetByTimeAsync(block, from, to, timeLineFrom, timeLineTo, maxCount, cancellationToken)));
+					_logStore.GetByTimeAsync(block, from, to, timeLineFrom, timeLineTo, maxCount, cancellationToken)));
 				var sb = new StringBuilder();
 				int totalFound = 0;
 

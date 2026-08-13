@@ -97,7 +97,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				input
 			});
 
-			var tools = new AutomaticMemoryTools(memoryFactStore, memoryLogStore, chat, factBlocks, logBlocks, 0)
+			var tools = new AutomaticMemoryTools(memoryFactStore, memoryLogStore, chat.ChatId, factBlocks, logBlocks, 0)
 				.CreateReaderTools();
 
 			var task = agentTaskExecutor.Execute(new AgentTaskLaunchParameters

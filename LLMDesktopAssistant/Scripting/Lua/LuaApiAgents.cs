@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;
@@ -117,6 +118,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			          the body (can be async).
 
 			      Mixed example: { "webreaper", { name = "my_skill", ... } }
+
+			    - memory_blocks: table (optional) — Array of memory block names (strings)
+			      to make accessible to the agent via memory tools (search, record, etc.).
+			      The blocks are resolved from the executing agent's memory attachments;
+			      memory must be enabled for both the chat and the agent. If omitted,
+			      no memory tools are available to the agent.
+
+			        { "project_notes", "user_preferences" }
 
 			  RETURNS:
 			    - If a single property table is passed: table — array of response messages
@@ -601,6 +610,35 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				}
 			}
 
+			// Resolve memory blocks: explicit array of block names requested by the script.
+			ImmutableList<TaskMemoryBlock>? memoryBlocks = null;
+			var memoryBlocksOption = parameters.Get("memory_blocks");
+			if (memoryBlocksOption is LuaTable memoryBlocksOptionTable)
+			{
+				var tec = ctx.TryGetToolExecutionContext();
+				var senderAgent = tec != null ? _agentManager.TryGetAgentDescriptor(tec.Message.SenderAgentId) : null;
+				var available = tec != null && senderAgent != null
+					? TaskMemoryBlock.ResolveBlocks(tec.Chat, senderAgent)
+					: [];
+				var availableMap = available.ToImmutableDictionary(b => b.Block.Name);
+
+				var resolvedBlocks = ImmutableList.CreateBuilder<TaskMemoryBlock>();
+				foreach (var blockValue in memoryBlocksOptionTable.Values)
+				{
+					var blockName = (blockValue as LuaString)?.Value;
+					if (string.IsNullOrEmpty(blockName))
+						throw new Exception("memory_blocks must be an array of block name strings.");
+
+					if (!availableMap.TryGetValue(blockName, out var block))
+						throw new Exception($"memory block '{blockName}' is not available.");
+
+					resolvedBlocks.Add(block);
+				}
+
+				if (resolvedBlocks.Count > 0)
+					memoryBlocks = resolvedBlocks.ToImmutable();
+			}
+
 			var taskTitle = parameters.Get("task_title") is LuaString taskTitleStr ? taskTitleStr.Value : null;
 
 			async Task<LuaTable> ExecuteAgent()
@@ -622,6 +660,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					InitialMessages = [.. messages],
 					Tools = [.. tools],
 					Skills = [.. skills],
+					MemoryBlocks = memoryBlocks,
 					AutoApproveBehaviours = autoApproveBehaviours,
 					DisallowedBehaviours = disallowedBehaviours
 				}, ctx.CancellationToken);

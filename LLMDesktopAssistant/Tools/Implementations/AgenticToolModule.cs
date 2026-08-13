@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Text;
+using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
@@ -68,6 +69,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			[Description("A list of tool names that can be used by agent.")] string[] allowedTools,
 			[Description("A list of skill names that can be used by agent.")] string[] allowedSkills,
 			ToolExecutionContext ctx,
+			[Description("""
+				A list of memory block names to make accessible to the agent via memory tools.
+				Memory must be enabled for the chat and the calling agent.
+				""")] string[]? memoryBlocks = null,
 			[Description("""
 				If true - waits for end of execution and returns the contents of last message.
 				If false - returns agent task ID immediately, the agent will continue to run in the background.
@@ -151,6 +156,33 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					errorSb.Append("Valid skill names: " + string.Join(", ", skillMap.Keys));
 			}
 
+			ImmutableList<TaskMemoryBlock>? resolvedMemoryBlocks = null;
+			if (memoryBlocks is { Length: > 0 })
+			{
+				var available = TaskMemoryBlock.ResolveBlocks(_chat, agentDescriptor);
+				var availableMap = available.ToImmutableDictionary(b => b.Block.Name);
+				var resolved = ImmutableList.CreateBuilder<TaskMemoryBlock>();
+
+				int notFound = 0;
+				foreach (var blockName in memoryBlocks.Distinct())
+				{
+					if (availableMap.TryGetValue(blockName, out var block))
+					{
+						resolved.Add(block);
+					}
+					else
+					{
+						notFound++;
+						errorSb.AppendLine("Memory block was not found: " + blockName);
+					}
+				}
+
+				if (notFound > 0)
+					errorSb.Append("Valid memory block names: " + string.Join(", ", availableMap.Keys));
+
+				resolvedMemoryBlocks = resolved.ToImmutable();
+			}
+
 			if (errorSb.Length > 0)
 			{
 				return new ReactiveToolResult
@@ -175,6 +207,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Model = llm,
 					Tools = tools.ToImmutableList(),
 					Skills = skills.ToImmutableList(),
+					MemoryBlocks = resolvedMemoryBlocks is { Count: > 0 } ? resolvedMemoryBlocks : null,
 					InitialMessages = [
 						new AgentSystemMessage { Content = systemPrompt },
 						new AgentUserMessage { Content = userMessage }
