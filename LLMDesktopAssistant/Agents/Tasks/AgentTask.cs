@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents.Tasks
@@ -84,6 +84,16 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		{
 			get => _completed;
 			internal set => SetProperty(ref _completed, value);
+		}
+
+		private int _iterationCount;
+		/// <summary>
+		/// The number of tool call loop iterations completed by this task.
+		/// </summary>
+		public int IterationCount
+		{
+			get => _iterationCount;
+			internal set => SetProperty(ref _iterationCount, value);
 		}
 
 		private Exception? _exception;

@@ -52,6 +52,10 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			if (!Enum.IsDefined(parameters.Behaviour))
 				throw new ArgumentException("Invalid behaviour value.", nameof(parameters.Behaviour));
 
+			if (parameters.FeedbackFunc != null && parameters.Behaviour != AgentTaskExecutionBehaviour.Normal)
+				throw new ArgumentException("Feedback function is only supported for the normal execution behaviour.",
+					nameof(parameters.FeedbackFunc));
+
 			var completionSource = new TaskCompletionSource<AgentTask>();
 			var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 			if (parameters.TimeOut is { } timeout && timeout > TimeSpan.Zero)
@@ -74,7 +78,6 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			var additionalPromptParts = new StringBuilder();
 			if (parameters.Skills.Count > 0)
 			{
-				agentTools = agentTools.RemoveAll(t => t.Name == "skill-load");
 				agentTools = agentTools.Add(new SkillLoadTool
 				{
 					Skills = parameters.Skills.ToImmutableDictionary(s => s.Name),
@@ -111,19 +114,41 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				var readableLogBlocks = memoryBlocks.Where(b => b.CanRead && b.Block.LogsEnabled).Select(b => b.Block).ToList();
 				var writableLogBlocks = memoryBlocks.Where(b => b.CanWrite && b.Block.LogsEnabled).Select(b => b.Block).ToList();
 
-				var memoryTools = new AutomaticMemoryTools(_memoryFactStore, _memoryLogStore, 0,
-					readableFactBlocks, writableFactBlocks, readableLogBlocks, writableLogBlocks, 0).CreateManualTools();
+				agentTools = agentTools.AddRange(new AutomaticMemoryTools(_memoryFactStore, _memoryLogStore, 0,
+					readableFactBlocks, writableFactBlocks, readableLogBlocks, writableLogBlocks, 0).CreateManualTools());
 
-				foreach (var tool in memoryTools)
-					if (agentTools.All(t => t.Name != tool.Name))
-						agentTools = agentTools.Add(tool);
+				var sb = new StringBuilder();
+				foreach (var block in memoryBlocks)
+				{
+					sb.AppendLine("\t<memory_block>");
+					sb.AppendLine($"\t\t<name>{block.Block.Name}</name>");
+					if (!string.IsNullOrEmpty(block.Block.Description))
+						sb.AppendLine($"\t\t<description>{block.Block.Description}</description>");
+					if (block.CanRead && block.CanWrite)
+						sb.AppendLine($"\t\t<access>read-write</access>");
+					else if (block.CanRead)
+						sb.AppendLine($"\t\t<access>read-only</access>");
+					else if (block.CanWrite)
+						sb.AppendLine($"\t\t<access>write-only</access>");
+					else
+						throw new InvalidOperationException("Memory block must have at least one access mode.");
+					sb.AppendLine("\t</memory_block>");
+				}
 
-				additionalPromptParts.AppendLine(BuildMemoryBlocksPrompt(memoryBlocks));
+				additionalPromptParts.AppendLine($"""
+					<available_memory_blocks>
+						The following memory blocks are accessible via the provided memory tools.
+						Search tools are available for readable blocks and write tools for writable blocks.
+						Use them to read or update the assistant's persistent memory when the task requires it.
+					{sb}
+					</available_memory_blocks>
+					""");
 			}
 
 			if (additionalPromptParts.Length > 0)
 				additionalPrompt = additionalPromptParts.ToString();
 
+			agentTools = agentTools.GroupBy(t => t.Name).Select(t => t.Last()).ToImmutableList();
 			var tools = agentTools.ToImmutableDictionary(k => k.Name);
 
 			model = model.WithTools(agentTools.Select(t => new FunctionTool(t.Name, t.Description, t.ArgumentSchema,
@@ -175,36 +200,6 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			return task;
 		}
 
-		private static string BuildMemoryBlocksPrompt(IReadOnlyList<TaskMemoryBlock> blocks)
-		{
-			var sb = new StringBuilder();
-			foreach (var block in blocks)
-			{
-				sb.AppendLine("\t<memory_block>");
-				sb.AppendLine($"\t\t<name>{block.Block.Name}</name>");
-				if (!string.IsNullOrEmpty(block.Block.Description))
-					sb.AppendLine($"\t\t<description>{block.Block.Description}</description>");
-				if (block.CanRead && block.CanWrite)
-					sb.AppendLine($"\t\t<access>read-write</access>");
-				else if (block.CanRead)
-					sb.AppendLine($"\t\t<access>read-only</access>");
-				else if (block.CanWrite)
-					sb.AppendLine($"\t\t<access>write-only</access>");
-				else
-					throw new InvalidOperationException("Memory block must have at least one access mode.");
-				sb.AppendLine("\t</memory_block>");
-			}
-
-			return $"""
-				<available_memory_blocks>
-					The following memory blocks are accessible via the provided memory tools.
-					Search tools are available for readable blocks and write tools for writable blocks.
-					Use them to read or update the assistant's persistent memory when the task requires it.
-				{sb}
-				</available_memory_blocks>
-				""";
-		}
-
 		private async Task ExecuteAsync(AgentTask task, LLModel model,
 			ImmutableDictionary<string, AgentTool> tools, List<IMessage> nativeMessages)
 		{
@@ -220,6 +215,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 			while (true)
 			{
+				task.IterationCount++;
 				Stopwatch messageExecutionTimer = new(), inferenceTimer = new();
 				messageExecutionTimer.Start();
 				inferenceTimer.Start();
@@ -245,6 +241,10 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 					async Task<IToolMessage> ProcessToolCall(IToolCall toolCall)
 					{
+						// Do not execute tool if the task is configured to only respond.
+						if (task.LaunchParameters.Behaviour is AgentTaskExecutionBehaviour.OnlyResponse)
+							return new ToolMessage(string.Empty, toolCall.Id, toolCall.ToolName);
+
 						await semaphore.WaitAsync(cancellationToken);
 						try
 						{
@@ -364,9 +364,26 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 					nativeMessages.AddRange(await Task.WhenAll(toolCallTasks));
 
-					if (agentMessage.ToolCalls.Count == 0 || task.LaunchParameters.Behaviour
+					if (task.LaunchParameters.Behaviour
 						is AgentTaskExecutionBehaviour.ExecuteOnce or AgentTaskExecutionBehaviour.OnlyResponse)
 						break;
+
+					if (agentMessage.ToolCalls.Count == 0)
+					{
+						if (task.LaunchParameters.FeedbackFunc is not null)
+						{
+							var feedbackMessage = await task.LaunchParameters.FeedbackFunc.Invoke(task, cancellationToken);
+							if (feedbackMessage != null)
+							{
+								task.Messages.Add(feedbackMessage);
+								nativeMessages.Add(new UserMessage(Senders.User, feedbackMessage.Content ?? string.Empty,
+									feedbackMessage.Attachments.Select(ConvertAttachmentFromAgent)));
+								continue;
+							}
+						}
+
+						break;
+					}
 				}
 				catch (Exception ex)
 				{
@@ -391,10 +408,6 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		private async Task<IToolMessage> ExecuteToolAsync(IToolCall toolCall, AgentAssistantMessage message,
 			AgentTask task, ImmutableDictionary<string, AgentTool> tools, CancellationToken cancellationToken = default)
 		{
-			// Do not execute tool if the task is configured to only respond.
-			if (task.LaunchParameters.Behaviour is AgentTaskExecutionBehaviour.OnlyResponse)
-				return new ToolMessage(string.Empty, toolCall.Id, toolCall.ToolName);
-
 			if (toolCall is not IFunctionToolCall functionCall)
 				throw new ArgumentException($"Tool call '{toolCall}' is not a function tool call.");
 

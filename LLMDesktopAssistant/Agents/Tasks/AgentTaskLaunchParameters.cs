@@ -46,6 +46,17 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public AgentTaskExecutionBehaviour Behaviour { get; init; } = AgentTaskExecutionBehaviour.Normal;
 
 		/// <summary>
+		/// The feedback function invoked each time the tool call loop of the task is finished,
+		/// i.e. when the model produced a response without tool calls. If the function returns
+		/// a non-null user message, the message is added to the conversation and the task
+		/// continues execution so the model can respond to it. The function is called again
+		/// each time the loop finishes, so the caller must guard against infinite loops,
+		/// e.g. by limiting the number of feedback rounds using <see cref="AgentTask.IterationCount"/>.
+		/// Supported only for the <see cref="AgentTaskExecutionBehaviour.Normal"/> behaviour.
+		/// </summary>
+		public Func<AgentTask, CancellationToken, Task<AgentUserMessage?>>? FeedbackFunc { get; init; }
+
+		/// <summary>
 		/// The maximum number of parallel tool calls that can be executed at once.
 		/// </summary>
 		public int MaxParallelToolCalls { get; init; } = 20;
