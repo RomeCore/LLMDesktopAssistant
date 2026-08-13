@@ -11,6 +11,13 @@
 			 x:DataType="local:ChatManagerViewModel"
 			 x:Name="VMRoot">
 
+	<UserControl.Styles>
+		<!-- Chat tabs fill the whole ListBoxItem area (the base theme adds a large padding) -->
+		<Style Selector="ListBox.ChatTabsListBox > ListBoxItem">
+			<Setter Property="Padding" Value="0"/>
+		</Style>
+	</UserControl.Styles>
+
 	<SplitView x:Name="ChatSplitView"
 						 PanePlacement="Right"
 						 CompactPaneLength="0"
@@ -154,6 +161,7 @@
 				<!-- Opened chats tabs with inline rename & AI rename -->
 				<ListBox ItemsSource="{Binding OpenedChats}"
 								 SelectedItem="{Binding SelectedChat}"
+								 Classes="ChatTabsListBox"
 								 DockPanel.Dock="Left">
 					
 					<ListBox.ItemsPanel>
@@ -165,9 +173,8 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate x:DataType="local:OpenedChatViewModel">
 							
-							<Border Margin="2,0"
-											CornerRadius="6"
-											Padding="6,2"
+							<Border CornerRadius="6"
+											Padding="10"
 											Background="{Binding StatusColorHex}">
 								
 								<Border.Transitions>
