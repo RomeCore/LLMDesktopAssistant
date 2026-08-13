@@ -15,7 +15,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	public class ToolExecutionService(
 		Chat chat,
 		IAgentManagementService agentManager,
-		IToolApprovalService toolApprovalService
+		IToolApprovalService toolApprovalService,
+		IChatExecutionStatusService executionStatusService
 	) : IToolExecutionService
 	{
 		private readonly ConcurrentDictionary<string, SemaphoreSlim> _synchronizationGroups = [];
@@ -190,6 +191,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 				if (decision == ToolPolicyDecision.Ask && !toolHandledDecisions.HasFlag(ToolPolicyDecision.Ask))
 				{
+					using var confirmation = executionStatusService.WithConfirmation();
+
 					var tcs = new TaskCompletionSource<ToolConsentResult>(TaskCreationOptions.RunContinuationsAsynchronously);
 					toolCall.UserConfirmationSource = tcs;
 					toolCall.Status = ToolStatus.WaitingForApproval;

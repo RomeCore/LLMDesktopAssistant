@@ -27,7 +27,8 @@ namespace LLMDesktopAssistant.Agents.Memory
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager,
 		TemplateLibraryAccessor templates,
-		IAgentManagementService agentManager
+		IAgentManagementService agentManager,
+		IChatStatusService statusService
 	) : IChatExecutionHook
 	{
 		/// <inheritdoc />
@@ -81,8 +82,8 @@ namespace LLMDesktopAssistant.Agents.Memory
 			if (string.IsNullOrWhiteSpace(input))
 				return;
 
-			chat.StatusIcon = MaterialIconKind.Database;
-			chat.StatusText = LocalizationManager.LocalizeStatic("chat_memory_retrieval_status");
+			statusService.Icon = MaterialIconKind.Database;
+			statusService.Text = LocalizationManager.LocalizeStatic("chat_memory_retrieval_status");
 
 			var template = templates.GetMessagesTemplate("memory_retrieval_prompt");
 			var messages = template.RenderToAgent(new

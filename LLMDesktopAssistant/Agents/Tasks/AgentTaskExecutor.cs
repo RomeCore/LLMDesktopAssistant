@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Data;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
@@ -40,6 +41,13 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			_memoryFactStore = memoryFactStore;
 			_memoryLogStore = memoryLogStore;
 		}
+
+		private static IChatExecutionStatusService? GetExecutionStatusService(AgentTask task)
+		{
+			var chat = task.LaunchParameters.TriggeredChat;
+			return chat?.Services.GetService<IChatExecutionStatusService>();
+		}
+
 
 		public AgentTask Execute(AgentTaskLaunchParameters parameters, CancellationToken cancellationToken = default)
 		{
@@ -166,6 +174,8 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				task.Status = AgentTaskStatus.Executing;
 				_currentTask.Value = task;
 				_dispatcher.OnBeginTask(task);
+
+				using var execution = GetExecutionStatusService(task)?.WithExecution();
 
 				try
 				{
@@ -511,6 +521,8 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 				if (decision == ToolPolicyDecision.Ask)
 				{
+					using var confirmation = GetExecutionStatusService(task)?.WithConfirmation();
+
 					var request = new AgentToolCallConfirmationRequest
 					{
 						ToolCall = agentToolCall,

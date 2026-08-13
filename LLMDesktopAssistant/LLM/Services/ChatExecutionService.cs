@@ -35,7 +35,9 @@ namespace LLMDesktopAssistant.LLM.Services
 		IToolsetCacheService toolsetCache,
 		IMCPManagementService mcpManager,
 		IUsageStatsCollector usageStatsCollector,
-		IToastService toastService
+		IToastService toastService,
+		IChatExecutionStatusService executionStatusService,
+		IChatStatusService statusService
 	) : IChatExecutionService
 	{
 		private readonly List<IChatExecutionHook> _executionHooks = executionHooks.OrderBy(h => h.Order).ToList();
@@ -43,6 +45,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public async Task GenerateResponseAsync(CancellationToken cancellationToken = default)
 		{
+			using var execution = executionStatusService.WithExecution();
+
 			try
 			{
 				int cycles = 0;
@@ -61,8 +65,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 					if (nextAgentId == null || agentStageId == null)
 					{
-						chat.StatusIcon = MaterialIconKind.RobotConfused;
-						chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_selecting_agent");
+						statusService.Icon = MaterialIconKind.RobotConfused;
+						statusService.Text = LocalizationManager.LocalizeStatic("chat_status_selecting_agent");
 
 						var agentTuple = await agentOrderer.GetNextAgentAsync(cancellationToken);
 						nextAgentId = agentTuple?.Item1;
@@ -102,8 +106,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 			finally
 			{
-				chat.StatusIcon = MaterialIconKind.ChatProcessing;
-				chat.StatusText = null;
+				statusService.Icon = MaterialIconKind.ChatProcessing;
+				statusService.Text = null;
 			}
 		}
 
@@ -140,8 +144,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				if (mcpManager.HasMCPConnections())
 				{
-					chat.StatusIcon = MaterialIconKind.Connection;
-					chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_mcp_connections");
+					statusService.Icon = MaterialIconKind.Connection;
+					statusService.Text = LocalizationManager.LocalizeStatic("chat_status_waiting_for_mcp_connections");
 
 					await mcpManager.EnsureCurrentMCPConnectionsAsync(cancellationToken);
 				}
@@ -186,8 +190,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					Cycle = cycle
 				}, cancellationToken);
 
-				chat.StatusIcon = MaterialIconKind.ChatProcessing;
-				chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
+				statusService.Icon = MaterialIconKind.ChatProcessing;
+				statusService.Text = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
 
 				var inputMessages = promptBuilder.Build(agent);
 				toolsetCache.Invalidate(agent);
@@ -253,8 +257,8 @@ namespace LLMDesktopAssistant.LLM.Services
 						{
 							timeFirstToken ??= DateTime.Now;
 
-							chat.StatusIcon = MaterialIconKind.ChatProcessing;
-							chat.StatusText = null;
+							statusService.Icon = MaterialIconKind.ChatProcessing;
+							statusService.Text = null;
 						}
 
 						domainResponseMessage.Status = AssistantMessageStatus.Streaming;
@@ -436,8 +440,8 @@ namespace LLMDesktopAssistant.LLM.Services
 						Cycle = cycle
 					}, cancellationToken);
 
-					chat.StatusIcon = MaterialIconKind.ChatProcessing;
-					chat.StatusText = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
+					statusService.Icon = MaterialIconKind.ChatProcessing;
+					statusService.Text = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
 
 					inputMessages = promptBuilder.Build(agent);
 					toolsetCache.Invalidate(agent);
@@ -457,8 +461,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			}
 			finally
 			{
-				chat.StatusIcon = MaterialIconKind.ChatProcessing;
-				chat.StatusText = null;
+				statusService.Icon = MaterialIconKind.ChatProcessing;
+				statusService.Text = null;
 			}
 		}
 

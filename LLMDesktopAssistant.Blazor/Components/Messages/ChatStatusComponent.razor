@@ -1,15 +1,15 @@
-@using LLMDesktopAssistant.LLM.Domain
+@using LLMDesktopAssistant.LLM.Services
 
 @implements IDisposable
 
-@inject Chat chat
+@inject IChatStatusService statusService
 
 <div class="chat-status-bar @(_animating ? "chat-status-animating" : "")" 
 	 style="display: @(_isActive ? "flex" : "none")">
 	
-	<MaterialIconComponent Kind="@chat.StatusIcon" Size="16" Color="#0078d4" />
+	<MaterialIconComponent Kind="@statusService.Icon" Size="16" Color="#0078d4" />
 	
-	<span class="chat-status-text">@chat.StatusText</span>
+	<span class="chat-status-text">@statusService.Text</span>
 	<span class="chat-status-dots">@_animatedDots</span>
 </div>
 
@@ -24,14 +24,14 @@
 	{
 		await base.OnInitializedAsync();
 
-		chat.PropertyChanged += ChatPropertyChanged;
+		statusService.PropertyChanged += StatusServicePropertyChanged;
 
 		UpdateStatusFromChat();
 	}
 
-	private void ChatPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	private void StatusServicePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName is nameof(Chat.StatusText) or nameof(Chat.StatusIcon))
+		if (e.PropertyName is nameof(IChatStatusService.Text) or nameof(IChatStatusService.Icon))
 		{
 			InvokeAsync(UpdateStatusFromChat);
 		}
@@ -39,7 +39,7 @@
 
 	private void UpdateStatusFromChat()
 	{
-		_isActive = chat.StatusText != null;
+		_isActive = statusService.Text != null;
 		StateHasChanged();
 
 		if (_isActive && _dotTimer == null)
@@ -80,7 +80,7 @@
 
 	public void Dispose()
 	{
-		chat.PropertyChanged -= ChatPropertyChanged;
+		statusService.PropertyChanged -= StatusServicePropertyChanged;
 		StopDotTimer();
 	}
 }

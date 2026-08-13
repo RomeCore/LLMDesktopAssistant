@@ -6,7 +6,6 @@ using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
-using Material.Icons;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -87,26 +86,6 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _generationCts;
 			set => SetProperty(ref _generationCts, value);
-		}
-
-		private MaterialIconKind _statusIcon;
-		/// <summary>
-		/// Gets or sets the icon kind to display in the status bar of the chat window.
-		/// </summary>
-		public MaterialIconKind StatusIcon
-		{
-			get => _statusIcon;
-			set => SetProperty(ref _statusIcon, value);
-		}
-
-		private string? _statusText;
-		/// <summary>
-		/// Gets or sets the text to display in the status bar of the chat window.
-		/// </summary>
-		public string? StatusText
-		{
-			get => _statusText;
-			set => SetProperty(ref _statusText, value);
 		}
 
 		private ChatSettings _settings = SettingsManager.Get<ChatSettings>();

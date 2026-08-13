@@ -165,7 +165,16 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate x:DataType="local:OpenedChatViewModel">
 							
-							<Border Margin="2,0">
+							<Border Margin="2,0"
+											CornerRadius="6"
+											Padding="6,2"
+											Background="{Binding StatusColorHex}">
+								
+								<Border.Transitions>
+									<Transitions>
+										<BrushTransition Property="Background" Duration="0:0:0.4"/>
+									</Transitions>
+								</Border.Transitions>
 							
 								<StackPanel Orientation="Horizontal"
 														VerticalAlignment="Center"
@@ -178,11 +187,21 @@
 										<StackPanel Orientation="Vertical"
 																VerticalAlignment="Center">
 											
-											<TextBlock Text="{Binding SelectedAvailable.Title}"
-																 FontSize="14"
-																 PointerPressed="TabTitleTextBlock_PointerPressed"
-																 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
-																 Cursor="Hand"/>
+											<StackPanel Orientation="Horizontal"
+																	Spacing="4">
+												
+												<ico:MaterialIcon Kind="{Binding StatusIcon}"
+																					Width="14" Height="14"
+																					VerticalAlignment="Center"
+																					IsVisible="{Binding HasStatus}"/>
+												
+												<TextBlock Text="{Binding SelectedAvailable.Title}"
+																	 FontSize="14"
+																	 PointerPressed="TabTitleTextBlock_PointerPressed"
+																	 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
+																	 Cursor="Hand"/>
+												
+											</StackPanel>
 											
 											<StackPanel Orientation="Horizontal" Spacing="4">
 												

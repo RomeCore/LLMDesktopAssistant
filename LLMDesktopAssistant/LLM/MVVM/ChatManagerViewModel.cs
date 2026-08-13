@@ -5,6 +5,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services.Instances;
+using Material.Icons;
 using Serilog;
 
 namespace LLMDesktopAssistant.LLM.MVVM
@@ -113,6 +114,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			get => _currentChat;
 			private set => SetProperty(ref _currentChat, value);
 		}
+
+		private IChatExecutionStatusService? _executionStatusService;
 
 		private AvailableChatViewModel? _selectedAvailable;
 		public AvailableChatViewModel? SelectedAvailable
@@ -258,12 +261,25 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		{
 			available.IsSelected = false;
 			chat.PropertyChanged -= OnChatPropertyChanged;
+
+			if (_executionStatusService != null)
+			{
+				_executionStatusService.PropertyChanged -= OnExecutionStatusServicePropertyChanged;
+				_executionStatusService = null;
+			}
 		}
 
 		private void LockAvailableChat(AvailableChatViewModel available, Chat chat)
 		{
 			available.IsSelected = true;
 			chat.PropertyChanged += OnChatPropertyChanged;
+
+			_executionStatusService = chat.Services.GetRequiredService<IChatExecutionStatusService>();
+			_executionStatusService.PropertyChanged += OnExecutionStatusServicePropertyChanged;
+
+			RaisePropertyChanged(nameof(StatusIcon));
+			RaisePropertyChanged(nameof(HasStatus));
+			RaisePropertyChanged(nameof(StatusColorHex));
 		}
 
 		private void OnChatPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -272,6 +288,41 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			_selectedAvailable!.Title = chat.Title;
 			_selectedAvailable!.Topic = chat.Topic;
 		}
+
+		private void OnExecutionStatusServicePropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof(IChatExecutionStatusService.Status))
+			{
+				RaisePropertyChanged(nameof(StatusIcon));
+				RaisePropertyChanged(nameof(HasStatus));
+				RaisePropertyChanged(nameof(StatusColorHex));
+			}
+		}
+
+		/// <summary>
+		/// The status icon to display on the chat tab based on the current chat status.
+		/// </summary>
+		public MaterialIconKind StatusIcon => _executionStatusService?.Status switch
+		{
+			ChatStatus.Executing => MaterialIconKind.TimerSand,
+			ChatStatus.Confirming => MaterialIconKind.QuestionMarkCircle,
+			_ => MaterialIconKind.ChatProcessing
+		};
+
+		/// <summary>
+		/// Whether the chat tab should display a status icon.
+		/// </summary>
+		public bool HasStatus => _executionStatusService?.Status != ChatStatus.Idle;
+
+		/// <summary>
+		/// The background color hex of the chat tab based on the current chat status.
+		/// </summary>
+		public string StatusColorHex => _executionStatusService?.Status switch
+		{
+			ChatStatus.Executing => "#3342A5F5",
+			ChatStatus.Confirming => "#33FFC107",
+			_ => "#00000000"
+		};
 
 		private void OpenConversation(AvailableChatViewModel available)
 		{

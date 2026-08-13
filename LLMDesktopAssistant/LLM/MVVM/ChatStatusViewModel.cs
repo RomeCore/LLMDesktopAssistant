@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Timers;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using Material.Icons;
 using Timer = System.Timers.Timer;
 
@@ -9,24 +10,24 @@ namespace LLMDesktopAssistant.LLM.MVVM;
 [ViewModelFor(typeof(ChatStatusView))]
 public class ChatStatusViewModel : ViewModelBase
 {
-	private readonly Chat _chat;
+	private readonly IChatStatusService _statusService;
 	private readonly Timer _dotTimer;
 	private int _dotCount;
 
 	/// <summary>
 	/// Whether the status is currently visible.
 	/// </summary>
-	public bool IsActive => _chat.StatusText != null;
+	public bool IsActive => _statusService.Text != null;
 
 	/// <summary>
 	/// The icon to display based on the current chat status.
 	/// </summary>
-	public MaterialIconKind IconKind => _chat.StatusIcon;
+	public MaterialIconKind IconKind => _statusService.Icon;
 
 	/// <summary>
-	/// The current status text directly from Chat model.
+	/// The current status text directly from the chat status service.
 	/// </summary>
-	public string? StatusText => _chat.StatusText;
+	public string? StatusText => _statusService.Text;
 
 	private string _animatedDots = "";
 	/// <summary>
@@ -40,9 +41,9 @@ public class ChatStatusViewModel : ViewModelBase
 
 	public ChatStatusViewModel(Chat chat)
 	{
-		_chat = chat;
+		_statusService = chat.Services.GetRequiredService<IChatStatusService>();
 
-		_chat.PropertyChanged += OnChatPropertyChanged;
+		_statusService.PropertyChanged += OnStatusServicePropertyChanged;
 
 		_dotTimer = new Timer(400);
 		_dotTimer.Elapsed += OnDotTimerElapsed;
@@ -52,9 +53,9 @@ public class ChatStatusViewModel : ViewModelBase
 			_dotTimer.Start();
 	}
 
-	private void OnChatPropertyChanged(object? sender, PropertyChangedEventArgs e)
+	private void OnStatusServicePropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName is nameof(Chat.StatusText) or nameof(Chat.StatusIcon))
+		if (e.PropertyName is nameof(IChatStatusService.Text) or nameof(IChatStatusService.Icon))
 		{
 			InvokeUI(() =>
 			{
@@ -94,7 +95,7 @@ public class ChatStatusViewModel : ViewModelBase
 
 		if (disposing)
 		{
-			_chat.PropertyChanged -= OnChatPropertyChanged;
+			_statusService.PropertyChanged -= OnStatusServicePropertyChanged;
 			_dotTimer.Stop();
 			_dotTimer.Dispose();
 		}
