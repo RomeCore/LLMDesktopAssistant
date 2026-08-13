@@ -133,40 +133,40 @@ namespace LLMDesktopAssistant.Agents.Memory
 			var tools = ImmutableList.CreateBuilder<AgentTool>();
 			if (_readableFactBlocks.Count > 0)
 			{
-				AddTool(tools, "search_facts", """
+				AddTool(tools, "memory-search_facts", """
 					Searches the memory blocks for facts relevant to the given queries and returns them with their IDs and relevance scores.
 					Use multiple hypothetical queries to greatly improve semantic matching.
 					""", SearchFactsAsync);
 			}
 			if (_writableFactBlocks.Count > 0)
 			{
-				AddTool(tools, "record_fact", """
+				AddTool(tools, "memory-record_fact", """
 					Stores a new fact in the specified memory block with the given importance.
 					If a very similar fact already exists (cosine score >= 0.9), it is automatically superseded.
 					""", RecordFactAsync);
-				AddTool(tools, "supersede_fact", """
+				AddTool(tools, "memory-supersede_fact", """
 					Replaces an existing fact (by its ID) with a new fact in the specified memory block.
 					Use it when the new information contradicts or updates an existing fact.
 					""", SupersedeFactAsync);
-				AddTool(tools, "forget_fact", """
+				AddTool(tools, "memory-forget_fact", """
 					Forgets (soft-deletes) a fact from the specified memory block by its ID.
 					Use it when an existing fact is no longer true or relevant.
 					""", ForgetFactAsync);
 			}
 			if (_readableLogBlocks.Count > 0)
 			{
-				AddTool(tools, "search_logs", """
+				AddTool(tools, "memory-search_logs", """
 					Searches the episodic logs of the memory blocks using BM25 keyword search.
 					Transient, consolidated and ignored logs are excluded from search results.
 					""", SearchLogsAsync);
-				AddTool(tools, "view_logs", """
+				AddTool(tools, "memory-view_logs", """
 					Views active and transient episodic logs of the memory blocks within the given time window (real time and/or alternative timeline).
 					When no window is specified, the most recent logs are returned. Logs are ordered by their begin time, newest first.
 					""", ViewLogsAsync);
 			}
 			if (_writableLogBlocks.Count > 0)
 			{
-				AddTool(tools, "append_log", """
+				AddTool(tools, "memory-append_log", """
 					Appends a new episodic log entry to the specified memory block.
 					Logs are immutable: they cannot be edited, only deleted. The log text is added to the keyword search index.
 					""", AppendLogAsync);
