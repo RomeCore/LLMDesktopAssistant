@@ -215,7 +215,6 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 			while (true)
 			{
-				task.IterationCount++;
 				Stopwatch messageExecutionTimer = new(), inferenceTimer = new();
 				messageExecutionTimer.Start();
 				inferenceTimer.Start();
@@ -378,6 +377,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 								task.Messages.Add(feedbackMessage);
 								nativeMessages.Add(new UserMessage(Senders.User, feedbackMessage.Content ?? string.Empty,
 									feedbackMessage.Attachments.Select(ConvertAttachmentFromAgent)));
+								task.FeedbackIterations++;
 								continue;
 							}
 						}

@@ -86,14 +86,17 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			internal set => SetProperty(ref _completed, value);
 		}
 
-		private int _iterationCount;
+		private int _feedbackIterations;
 		/// <summary>
-		/// The number of tool call loop iterations completed by this task.
+		/// The number of feedback rounds completed by this task, i.e. how many times the task
+		/// continued execution after the model produced a response without tool calls
+		/// via <see cref="AgentTaskLaunchParameters.FeedbackFunc"/>.
+		/// Zero when no feedback rounds were performed.
 		/// </summary>
-		public int IterationCount
+		public int FeedbackIterations
 		{
-			get => _iterationCount;
-			internal set => SetProperty(ref _iterationCount, value);
+			get => _feedbackIterations;
+			internal set => SetProperty(ref _feedbackIterations, value);
 		}
 
 		private Exception? _exception;

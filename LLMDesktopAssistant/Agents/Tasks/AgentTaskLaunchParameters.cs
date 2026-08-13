@@ -51,7 +51,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// a non-null user message, the message is added to the conversation and the task
 		/// continues execution so the model can respond to it. The function is called again
 		/// each time the loop finishes, so the caller must guard against infinite loops,
-		/// e.g. by limiting the number of feedback rounds using <see cref="AgentTask.IterationCount"/>.
+		/// e.g. by limiting the number of feedback rounds using <see cref="AgentTask.FeedbackIterations"/>.
 		/// Supported only for the <see cref="AgentTaskExecutionBehaviour.Normal"/> behaviour.
 		/// </summary>
 		public Func<AgentTask, CancellationToken, Task<AgentUserMessage?>>? FeedbackFunc { get; init; }
