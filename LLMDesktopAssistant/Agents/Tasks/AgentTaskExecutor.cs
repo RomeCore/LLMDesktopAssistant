@@ -24,6 +24,8 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		private readonly IUsageStatsCollector _usageStatsCollector;
 		private readonly IAgentTaskDispatcher _dispatcher;
 
+		public AgentTask? Current => _currentTask.Value;
+
 		public AgentTaskExecutor(IModelManager modelManager, IToolApprovalService toolApprovalService,
 			IUsageStatsCollector usageStatsCollector, IAgentTaskDispatcher dispatcher)
 		{
