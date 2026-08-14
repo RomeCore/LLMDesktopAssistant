@@ -2898,6 +2898,9 @@
   <data name="settings-memory_block_logs" xml:space="preserve">
     <value>Хранить эпизодические логи</value>
   </data>
+  <data name="settings-memory_block_warning_no_content" xml:space="preserve">
+    <value>Факты и логи отключены для этого блока. Агент не сможет читать или записывать в него данные.</value>
+  </data>
   <data name="memory-clear" xml:space="preserve">
     <value>Очистить блок памяти</value>
   </data>

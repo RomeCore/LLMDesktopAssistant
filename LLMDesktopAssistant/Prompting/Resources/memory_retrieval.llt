@@ -10,7 +10,7 @@
 
 		@foreach block in blocks
 		{
-			- **@block.name**: @block.description
+			- **@block.name** (Access: @if block.can_read && block.can_write {read-write} else if block.can_read {read-only} else if block.can_write {write-only} else {none}, Types: @if block.facts_enabled && block.logs_enabled {facts, logs} else if block.facts_enabled {facts} else if block.logs_enabled {logs} else {none}): @block.description
 		}
 
 		## Workflow

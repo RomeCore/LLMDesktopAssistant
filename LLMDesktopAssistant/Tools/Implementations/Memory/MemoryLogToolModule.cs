@@ -97,10 +97,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			result.StatusIcon = MaterialIconKind.DatabaseAdd;
 			result.StatusTitle = $"**{text}** → *{block}*";
 
-			var targetBlock = GetBlocks(ctx, [block], requireReading: false, requireWriting: true, requireLogs: true).FirstOrDefault();
+			var (targetBlock, error) = GetBlock(ctx, block, requireReading: false, requireWriting: true, requireLogs: true);
 			if (targetBlock is null)
 			{
-				result.ResultContent = $"Memory block '{block}' is not found or does not allow writing.";
+				result.ResultContent = error ?? $"Memory block '{block}' is not available.";
 				result.CompleteWithError();
 				return;
 			}
@@ -147,26 +147,26 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			result.StatusIcon = MaterialIconKind.DatabaseSearch;
 			result.StatusTitle = $"**{query}**";
 
-			var blocksToSearch = GetBlocks(ctx, blocks, requireReading: true, requireWriting: false, requireLogs: true);
+			var resolution = GetBlocks(ctx, blocks, requireReading: true, requireWriting: false, requireLogs: true);
 
-			if (blocksToSearch.Count == 0)
+			if (!resolution.HasBlocks)
 			{
-				result.ResultContent = "No memory blocks to search in.";
+				result.ResultContent = resolution.BuildError("No memory blocks with logs enabled are available to search in.");
 				result.CompleteWithError();
 				return;
 			}
 
 			try
 			{
-				var perBlockResults = await Task.WhenAll(blocksToSearch.Select(block =>
+				var perBlockResults = await Task.WhenAll(resolution.Blocks.Select(block =>
 					_memoryLogStore.SearchAsync(block, query, minImportance: minImportance, maxCount, cancellationToken)));
 
 				var sb = new StringBuilder();
 				int totalFound = 0;
 
-				for (int i = 0; i < blocksToSearch.Count; i++)
+				for (int i = 0; i < resolution.Blocks.Count; i++)
 				{
-					var block = blocksToSearch[i];
+					var block = resolution.Blocks[i];
 					var logs = perBlockResults[i];
 					if (logs.Length == 0)
 						continue;
@@ -179,6 +179,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 						sb.AppendLine($"- **{log.Text}** [id: {log.Id}] (bm25 score: {bm25Score}, importance: {log.Importance:0.00}, {log.TimeStampBegin:yyyy-MM-dd HH:mm} UTC)");
 					}
 					sb.AppendLine();
+				}
+				if (resolution.Excluded.Count > 0)
+				{
+					sb.AppendLine("Note: some blocks were excluded from search.");
+					sb.AppendJoin(' ', resolution.Excluded.Values);
 				}
 
 				if (totalFound == 0)
@@ -217,31 +222,29 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				? LocalizationManager.LocalizeStatic("memory-view_logs_status_time_window")
 				: LocalizationManager.LocalizeStaticFormat("memory-view_logs_status_latest", maxCount);
 
-			var blocksToView = GetBlocks(ctx, blocks, requireReading: true, requireWriting: false, requireLogs: true);
+			var resolution = GetBlocks(ctx, blocks, requireReading: true, requireWriting: false, requireLogs: true);
 
-			if (blocksToView.Count == 0)
+			if (!resolution.HasBlocks)
 			{
-				result.ResultContent = "No memory blocks to view.";
+				result.ResultContent = resolution.BuildError("No memory blocks with logs enabled are available to view.");
 				result.CompleteWithError();
 				return;
 			}
 
 			try
 			{
-				var perBlockResults = await Task.WhenAll(blocksToView.Select(block =>
+				var perBlockResults = await Task.WhenAll(resolution.Blocks.Select(block =>
 					_memoryLogStore.GetByTimeAsync(block, from, to, timeLineFrom, timeLineTo, minImportance, maxCount, cancellationToken)));
 
 				var sb = new StringBuilder();
-				int totalFound = 0;
 
-				for (int i = 0; i < blocksToView.Count; i++)
+				for (int i = 0; i < resolution.Blocks.Count; i++)
 				{
-					var block = blocksToView[i];
+					var block = resolution.Blocks[i];
 					var logs = perBlockResults[i];
 					if (logs.Length == 0)
 						continue;
 
-					totalFound += logs.Length;
 					sb.AppendLine($"### {block.Name}");
 					foreach (var log in logs)
 					{
@@ -251,11 +254,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					sb.AppendLine();
 				}
 
-				if (totalFound == 0)
+				if (sb.Length == 0)
+					sb.AppendLine("No logs found in the specified time window.");
+
+				if (resolution.Excluded.Count > 0)
 				{
-					result.ResultContent = "No logs found in the specified time window.";
-					result.CompleteWithSuccess();
-					return;
+					sb.AppendLine("Note: some blocks were excluded from search.");
+					sb.AppendJoin(' ', resolution.Excluded.Values);
 				}
 
 				result.UseMarkdown = true;
@@ -280,10 +285,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			result.StatusIcon = MaterialIconKind.DatabaseRemove;
 			result.StatusTitle = $"**{block}** [id: {logId}]";
 
-			var targetBlock = GetBlocks(ctx, [block], requireReading: false, requireWriting: true, requireLogs: true).FirstOrDefault();
+			var (targetBlock, error) = GetBlock(ctx, block, requireReading: false, requireWriting: true, requireLogs: true);
 			if (targetBlock is null)
 			{
-				result.ResultContent = $"Memory block '{block}' is not found or does not allow writing.";
+				result.ResultContent = error ?? $"Memory block '{block}' is not available.";
 				result.CompleteWithError();
 				return;
 			}

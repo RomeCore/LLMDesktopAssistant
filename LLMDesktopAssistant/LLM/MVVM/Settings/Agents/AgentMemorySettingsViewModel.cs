@@ -82,6 +82,19 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public string? Description => Block?.Description;
 
 		/// <summary>
+		/// Gets a value indicating whether the attached block has both facts and logs disabled,
+		/// which makes it useless for the agent.
+		/// </summary>
+		public bool HasInvalidSettings => Block is { FactsEnabled: false, LogsEnabled: false };
+
+		/// <summary>
+		/// Gets the warning message shown when the attached block has both facts and logs disabled.
+		/// </summary>
+		public string? InvalidSettingsMessage => HasInvalidSettings
+			? LocalizationManager.LocalizeStatic("settings-memory_block_warning_no_content")
+			: null;
+
+		/// <summary>
 		/// Gets the list of available attachment modes for the ComboBox.
 		/// </summary>
 		public ImmutableList<MemoryBlockAttachmentModeItem> ModeList { get; } = MemoryBlockAttachmentModeItem.All;
@@ -154,10 +167,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		private void Block_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName is nameof(MemoryBlock.Name) or nameof(MemoryBlock.Description))
+			if (e.PropertyName is nameof(MemoryBlock.Name) or nameof(MemoryBlock.Description)
+				or nameof(MemoryBlock.FactsEnabled) or nameof(MemoryBlock.LogsEnabled))
 			{
 				RaisePropertyChanged(nameof(Name));
 				RaisePropertyChanged(nameof(Description));
+				RaisePropertyChanged(nameof(HasInvalidSettings));
+				RaisePropertyChanged(nameof(InvalidSettingsMessage));
 			}
 		}
 

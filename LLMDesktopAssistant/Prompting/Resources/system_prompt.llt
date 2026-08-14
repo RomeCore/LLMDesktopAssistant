@@ -87,6 +87,22 @@
 					{
 						<access>none</access>
 					}
+					@if block.facts_enabled && block.logs_enabled
+					{
+						<types>facts,logs</types>
+					}
+					else if block.facts_enabled
+					{
+						<types>facts</types>
+					}
+					else if block.logs_enabled
+					{
+						<types>logs</types>
+					}
+					else
+					{
+						<types>none</types>
+					}
 				</block>
 			}
 		</memory_blocks>

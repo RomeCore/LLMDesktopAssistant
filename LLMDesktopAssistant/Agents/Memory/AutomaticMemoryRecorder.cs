@@ -58,13 +58,13 @@ namespace LLMDesktopAssistant.Agents.Memory
 			if (model is null)
 				return;
 
-			var attachments = agent.Memory.GetEffectiveBlocks(chat.Settings)
-				.Where(b => b.Enabled && b.Reference.Object is not null && b.AllowsWriting())
+			var attachments = agent.Memory.GetEnabledBlocks(chat.Settings)
+				.Where(b => b.Attachment.AllowsWriting())
 				.ToList();
-			var factBlocks = attachments.Where(b => b.Reference.Object!.FactsEnabled)
-				.Select(b => b.Reference.Object!).ToList();
-			var logBlocks = attachments.Where(b => b.Reference.Object!.LogsEnabled)
-				.Select(b => b.Reference.Object!).ToList();
+			var factBlocks = attachments.Where(b => b.Block.FactsEnabled)
+				.Select(b => b.Block).ToList();
+			var logBlocks = attachments.Where(b => b.Block.LogsEnabled)
+				.Select(b => b.Block).ToList();
 			if (factBlocks.Count == 0 && logBlocks.Count == 0)
 				return;
 
@@ -77,10 +77,12 @@ namespace LLMDesktopAssistant.Agents.Memory
 			{
 				blocks = attachments.Select(b => new
 				{
-					name = b.Reference.Object!.Name,
-					can_read = b.AllowsReading(),
-					can_write = b.AllowsWriting(),
-					description = b.Reference.Object!.Description
+					name = b.Block.Name,
+					can_read = b.Attachment.AllowsReading(),
+					can_write = b.Attachment.AllowsWriting(),
+					facts_enabled = b.Block.FactsEnabled,
+					logs_enabled = b.Block.LogsEnabled,
+					description = b.Block.Description
 				}).ToArray(),
 				input
 			});

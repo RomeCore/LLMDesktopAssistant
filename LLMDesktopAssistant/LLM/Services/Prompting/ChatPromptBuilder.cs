@@ -76,7 +76,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var effectivePersona = promptSettings.GetEffectivePersona(chat.Settings);
 			var effectiveSpecialization = promptSettings.GetEffectiveSpecialization(chat.Settings);
 			var effectiveChatMemoryOptions = chat.Settings.Memory.GetEffectiveMemoryOptions();
-			var effectiveMemoryBlocks = agent.Memory.GetEffectiveBlocks(chat.Settings);
 
 			generalContext["prompt"] = effectiveSystemPrompt;
 			generalContext["components"] = effectiveComponents
@@ -109,14 +108,14 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				body = s.InjectionMode is SkillInjectionMode.Full ? s.BodyGetter() : null
 			});
 			generalContext["memory_blocks"] = effectiveChatMemoryOptions.EnableMemory && effectiveChatMemoryOptions.ManualControlEnabled && agent.Memory.EnableMemory
-				? effectiveMemoryBlocks.Where(b => b.Enabled)
-					.Select(b => (Block: b.Reference.Object!, Attachment: b))
-					.Where(b => b.Block != null)
+				? agent.Memory.GetEnabledBlocks(chat.Settings)
 					.Select(b => new
 					{
 						name = b.Block.Name,
 						can_read = b.Attachment.AllowsReading(),
 						can_write = b.Attachment.AllowsWriting(),
+						facts_enabled = b.Block.FactsEnabled,
+						logs_enabled = b.Block.LogsEnabled,
 						description = b.Block.Description
 					})
 				: null;

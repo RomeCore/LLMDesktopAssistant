@@ -56,9 +56,8 @@ namespace LLMDesktopAssistant.Agents.Memory
 			if (!memoryOptions.EnableMemory || !memoryOptions.ManualControlEnabled || !agent.Memory.EnableMemory)
 				return [];
 
-			return agent.Memory.GetEffectiveBlocks(chat.Settings)
-				.Where(b => b.Enabled && b.Reference.Object is not null)
-				.Select(FromAttachment)
+			return agent.Memory.GetEnabledBlocks(chat.Settings)
+				.Select(b => FromAttachment(b.Attachment))
 				.ToImmutableList();
 		}
 	}

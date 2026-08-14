@@ -43,10 +43,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			result.StatusIcon = MaterialIconKind.DatabaseRefresh;
 			result.StatusTitle = $"**{block}**";
 
-			var targetBlock = GetBlocks(ctx, [block], requireReading: false, requireWriting: true, requireFacts: false).FirstOrDefault();
+			var (targetBlock, error) = GetBlock(ctx, block, requireReading: false, requireWriting: true);
 			if (targetBlock is null)
 			{
-				result.ResultContent = $"Memory block '{block}' is not found or does not allow writing.";
+				result.ResultContent = error ?? $"Memory block '{block}' is not available.";
 				result.CompleteWithError();
 				return;
 			}

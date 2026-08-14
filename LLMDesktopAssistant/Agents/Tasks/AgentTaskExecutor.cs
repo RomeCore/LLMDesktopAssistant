@@ -133,13 +133,21 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					if (!string.IsNullOrEmpty(block.Block.Description))
 						sb.AppendLine($"\t\t<description>{block.Block.Description}</description>");
 					if (block.CanRead && block.CanWrite)
-						sb.AppendLine($"\t\t<access>read-write</access>");
+						sb.AppendLine("\t\t<access>read-write</access>");
 					else if (block.CanRead)
-						sb.AppendLine($"\t\t<access>read-only</access>");
+						sb.AppendLine("\t\t<access>read-only</access>");
 					else if (block.CanWrite)
-						sb.AppendLine($"\t\t<access>write-only</access>");
+						sb.AppendLine("\t\t<access>write-only</access>");
 					else
 						throw new InvalidOperationException("Memory block must have at least one access mode.");
+					if (block.Block.FactsEnabled && block.Block.LogsEnabled)
+						sb.AppendLine("\t\t<types>facts,logs</types>");
+					else if (block.Block.FactsEnabled)
+						sb.AppendLine("\t\t<types>facts</types>");
+					else if (block.Block.LogsEnabled)
+						sb.AppendLine("\t\t<types>logs</types>");
+					else
+						sb.AppendLine("\t\t<types>none</types>");
 					sb.AppendLine("\t</memory_block>");
 				}
 

@@ -2898,6 +2898,9 @@
   <data name="settings-memory_block_logs" xml:space="preserve">
     <value>Store episodic logs</value>
   </data>
+  <data name="settings-memory_block_warning_no_content" xml:space="preserve">
+    <value>Facts and logs are disabled for this block. The agent cannot read or write any memory to it.</value>
+  </data>
   <data name="memory-clear" xml:space="preserve">
     <value>Clear memory block</value>
   </data>

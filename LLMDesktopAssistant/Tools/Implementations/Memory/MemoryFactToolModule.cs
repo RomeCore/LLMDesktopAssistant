@@ -67,10 +67,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			result.StatusIcon = MaterialIconKind.DatabaseAdd;
 			result.StatusTitle = $"**{fact}** → *{block}*";
 
-			var targetBlock = GetBlocks(ctx, [block], requireReading: false, requireWriting: true, requireFacts: true).FirstOrDefault();
+			var (targetBlock, error) = GetBlock(ctx, block, requireReading: false, requireWriting: true, requireFacts: true);
 			if (targetBlock is null)
 			{
-				result.ResultContent = $"Memory block '{block}' is not found or does not allow writing.";
+				result.ResultContent = error ?? $"Memory block '{block}' is not available.";
 				result.CompleteWithError();
 				return;
 			}
@@ -176,18 +176,18 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 
 			result.StatusTitle = $"**{queries[0]}**";
 
-			var blocksToSearch = GetBlocks(ctx, blocks, requireReading: true, requireWriting: false, requireFacts: true);
+			var resolution = GetBlocks(ctx, blocks, requireReading: true, requireWriting: false, requireFacts: true);
 
-			if (blocksToSearch.Count == 0)
+			if (!resolution.HasBlocks)
 			{
-				result.ResultContent = "No memory blocks to search in.";
+				result.ResultContent = resolution.BuildError("No memory blocks with facts enabled are available to search in.");
 				result.CompleteWithError();
 				return;
 			}
 
 			try
 			{
-				var perBlockResults = await Task.WhenAll(blocksToSearch.Select(async block =>
+				var perBlockResults = await Task.WhenAll(resolution.Blocks.Select(async block =>
 				{
 					var queryBatches = await Task.WhenAll(queries.Select(query =>
 					{
@@ -215,11 +215,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					sb.AppendLine();
 				}
 
-				if (totalFound == 0)
+				if (sb.Length == 0)
+					sb.AppendLine("No matching facts found.");
+
+				if (resolution.Excluded.Count > 0)
 				{
-					result.ResultContent = "No matching facts found.";
-					result.CompleteWithSuccess();
-					return;
+					sb.AppendLine("Note: some blocks were excluded from search.");
+					sb.AppendJoin(' ', resolution.Excluded.Values);
 				}
 
 				result.UseMarkdown = true;
@@ -246,10 +248,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			result.StatusIcon = MaterialIconKind.DatabaseRemove;
 			result.StatusTitle = $"**{block}** [id: {factId}]";
 
-			var targetBlock = GetBlocks(ctx, [block], requireReading: false, requireWriting: true, requireFacts: true).FirstOrDefault();
+			var (targetBlock, error) = GetBlock(ctx, block, requireReading: false, requireWriting: true, requireFacts: true);
 			if (targetBlock is null)
 			{
-				result.ResultContent = $"Memory block '{block}' is not found or does not allow writing.";
+				result.ResultContent = error ?? $"Memory block '{block}' is not available.";
 				result.CompleteWithError();
 				return;
 			}
