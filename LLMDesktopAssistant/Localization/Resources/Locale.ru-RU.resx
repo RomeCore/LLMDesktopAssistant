@@ -2952,6 +2952,9 @@
   <data name="settings-memory_facts_search_error" xml:space="preserve">
     <value>Ошибка поиска фактов</value>
   </data>
+  <data name="settings-memory_facts_min_importance" xml:space="preserve">
+    <value>Мин. важность</value>
+  </data>
   <data name="settings-memory_facts_add" xml:space="preserve">
     <value>Добавить</value>
   </data>
@@ -3011,6 +3014,9 @@
   </data>
   <data name="settings-memory_logs_search_error" xml:space="preserve">
     <value>Ошибка поиска логов</value>
+  </data>
+  <data name="settings-memory_logs_min_importance" xml:space="preserve">
+    <value>Мин. важность</value>
   </data>
   <data name="settings-memory_logs_add" xml:space="preserve">
     <value>Добавить</value>

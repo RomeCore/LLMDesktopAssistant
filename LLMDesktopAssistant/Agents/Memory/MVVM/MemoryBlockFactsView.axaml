@@ -12,10 +12,19 @@
 	<DockPanel>
 
 		<!-- Search -->
-		<Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,0,0,6">
+		<Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6" Margin="0,0,0,6">
 			<TextBox Text="{Binding SearchQuery, Mode=TwoWay}"
 					 PlaceholderText="{loc:Loc settings-memory_facts_search_placeholder}"/>
-			<Button Grid.Column="1"
+			<NumericUpDown Grid.Column="1"
+						   Value="{Binding MinImportance, Mode=TwoWay}"
+						   Minimum="0"
+						   Maximum="1"
+						   Increment="0.05"
+						   FormatString="0.00"
+						   Width="90"
+						   VerticalAlignment="Center"
+						   ToolTip.Tip="{loc:Loc settings-memory_facts_min_importance}"/>
+			<Button Grid.Column="2"
 					Command="{Binding SearchCommand}"
 					Content="{loc:Loc settings-memory_facts_search}"/>
 		</Grid>

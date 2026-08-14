@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Office2010.Excel;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.MemoryModels;
 using LLMDesktopAssistant.Services;
@@ -12,7 +13,6 @@ namespace LLMDesktopAssistant.Agents.Memory
 	[Service(typeof(IMemoryFactStore))]
 	public class MemoryFactStore : IMemoryFactStore
 	{
-		private const int CandidateCount = 30;
 		private const int RrfK = 60;
 		private const double Bm25K1 = 1.2;
 		private const double Bm25B = 0.75;
@@ -230,26 +230,29 @@ namespace LLMDesktopAssistant.Agents.Memory
 		public Task<MemoryFactResult[]> SearchAsync(
 			MemoryBlock block,
 			string query,
+			double minImportance = 0.0,
 			int maxCount = 5,
 			CancellationToken cancellationToken = default)
 		{
 			ArgumentException.ThrowIfNullOrWhiteSpace(query);
 			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCount);
 
-			return _provider.ExecuteAsync(block, (db, ct) => SearchInternalAsync(db, query, maxCount, ct), cancellationToken);
+			return _provider.ExecuteAsync(block, (db, ct) => SearchInternalAsync(db, query, minImportance, maxCount, ct), cancellationToken);
 		}
 
 		private static async Task<MemoryFactResult[]> SearchInternalAsync(
 			MemoryDatabase db,
 			string query,
+			double minImportance,
 			int maxCount,
 			CancellationToken cancellationToken)
 		{
 			if (db.FactSector.Count == 0)
 				return [];
 
-			var vectorResults = await db.FactSector.QueryAsync(query, CandidateCount, cancellationToken: cancellationToken);
-			var bm25Results = Bm25Search(db, query, CandidateCount);
+			Func<int, bool>? filter = minImportance > 0 ? fi => db.Facts.FindById(fi).Importance >= minImportance : null;
+			var vectorResults = await db.FactSector.QueryAsync(query, maxCount, filter: filter, cancellationToken: cancellationToken);
+			var bm25Results = Bm25Search(db, query, minImportance, maxCount);
 
 			var vectorScores = vectorResults.ToDictionary(r => r.Item, r => (double)r.Score);
 			var bm25Scores = bm25Results.ToDictionary(r => r.Id, r => r.Score);
@@ -259,11 +262,8 @@ namespace LLMDesktopAssistant.Agents.Memory
 			var facts = new List<MemoryFactResult>();
 			foreach (var (id, rrfScore) in fused)
 			{
-				if (facts.Count >= maxCount)
-					break;
-
 				var fact = db.Facts.FindById(id);
-				if (fact is { Status: MemoryFactStatus.Active })
+				if (fact.Status is MemoryFactStatus.Active)
 				{
 					fact.AccessCount++;
 					fact.LastAccessedAt = DateTime.Now;
@@ -298,13 +298,13 @@ namespace LLMDesktopAssistant.Agents.Memory
 		/// <param name="query">The search query text.</param>
 		/// <param name="topN">The maximum number of facts to return.</param>
 		/// <returns>The best-scoring facts together with their BM25 scores.</returns>
-		private static (int Id, double Score)[] Bm25Search(MemoryDatabase db, string query, int topN)
+		private static (int Id, double Score)[] Bm25Search(MemoryDatabase db, string query, double minImportance, int topN)
 		{
 			var tokens = MemoryTokenizer.Tokenize(query);
 			if (tokens.Count == 0)
 				return [];
 
-			var activeFacts = db.Facts.Find(f => f.Status == MemoryFactStatus.Active).ToList();
+			var activeFacts = db.Facts.Find(f => f.Status == MemoryFactStatus.Active && f.Importance >= minImportance).ToList();
 			if (activeFacts.Count == 0)
 				return [];
 

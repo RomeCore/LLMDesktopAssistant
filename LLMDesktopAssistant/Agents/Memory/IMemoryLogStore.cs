@@ -46,10 +46,16 @@ namespace LLMDesktopAssistant.Agents.Memory
 		/// </summary>
 		/// <param name="block">The memory block to search.</param>
 		/// <param name="query">The search query text. Must not be empty or whitespace.</param>
+		/// <param name="minImportance">The minimum importance score of the logs. Logs with lower scores are excluded.</param>
 		/// <param name="maxCount">The maximum number of logs to return.</param>
 		/// <param name="cancellationToken">The cancellation token to use for this operation.</param>
 		/// <returns>A task that represents the asynchronous operation. The result contains the matching logs.</returns>
-		Task<MemoryLogResult[]> SearchAsync(MemoryBlock block, string query, int maxCount = 5, CancellationToken cancellationToken = default);
+		Task<MemoryLogResult[]> SearchAsync(
+			MemoryBlock block,
+			string query,
+			double minImportance = 0.0,
+			int maxCount = 5,
+			CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Gets the active and transient logs of the specified memory block within the given
@@ -61,6 +67,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 		/// <param name="to">The inclusive upper bound of the real-time window.</param>
 		/// <param name="timeLineFrom">The inclusive lower bound of the alternative time ordinal window.</param>
 		/// <param name="timeLineTo">The inclusive upper bound of the alternative time ordinal window.</param>
+		/// <param name="minImportance">The minimum importance score of the logs. Logs with lower scores are excluded.</param>
 		/// <param name="maxCount">The maximum number of logs to return.</param>
 		/// <param name="cancellationToken">The cancellation token to use for this operation.</param>
 		/// <returns>A task that represents the asynchronous operation. The result contains the matching logs.</returns>
@@ -70,6 +77,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			DateTime? to = null,
 			double? timeLineFrom = null,
 			double? timeLineTo = null,
+			double minImportance = 0.0,
 			int maxCount = 100,
 			CancellationToken cancellationToken = default);
 

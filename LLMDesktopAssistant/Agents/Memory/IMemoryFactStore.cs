@@ -86,12 +86,14 @@ namespace LLMDesktopAssistant.Agents.Memory
 		/// </summary>
 		/// <param name="block">The memory block to search.</param>
 		/// <param name="query">The search query text. Must not be empty or whitespace.</param>
+		/// <param name="minImportance">The minimum importance score of facts to return.</param>
 		/// <param name="maxCount">The maximum number of facts to return.</param>
 		/// <param name="cancellationToken">The cancellation token to use for this operation.</param>
 		/// <returns>A task that represents the asynchronous operation. The result contains the matching facts.</returns>
 		Task<MemoryFactResult[]> SearchAsync(
 			MemoryBlock block,
 			string query,
+			double minImportance = 0.0,
 			int maxCount = 5,
 			CancellationToken cancellationToken = default);
 

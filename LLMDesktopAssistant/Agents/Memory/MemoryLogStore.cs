@@ -87,13 +87,14 @@ namespace LLMDesktopAssistant.Agents.Memory
 		public Task<MemoryLogResult[]> SearchAsync(
 			MemoryBlock block,
 			string query,
+			double minImportance = 0.0,
 			int maxCount = 5,
 			CancellationToken cancellationToken = default)
 		{
 			ArgumentException.ThrowIfNullOrWhiteSpace(query);
 			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCount);
 
-			return _provider.ExecuteAsync(block, (db, _) => Task.FromResult(SearchInternal(db, query, maxCount)), cancellationToken);
+			return _provider.ExecuteAsync(block, (db, _) => Task.FromResult(SearchInternal(db, query, minImportance, maxCount)), cancellationToken);
 		}
 
 		/// <inheritdoc/>
@@ -103,12 +104,13 @@ namespace LLMDesktopAssistant.Agents.Memory
 			DateTime? to = null,
 			double? timeLineFrom = null,
 			double? timeLineTo = null,
+			double minImportance = 0.0,
 			int maxCount = 100,
 			CancellationToken cancellationToken = default)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCount);
 
-			return _provider.ExecuteAsync(block, (db, _) => Task.FromResult(GetByTimeInternal(db, from, to, timeLineFrom, timeLineTo, maxCount)), cancellationToken);
+			return _provider.ExecuteAsync(block, (db, _) => Task.FromResult(GetByTimeInternal(db, from, to, timeLineFrom, timeLineTo, minImportance, maxCount)), cancellationToken);
 		}
 
 		/// <inheritdoc/>
@@ -218,13 +220,17 @@ namespace LLMDesktopAssistant.Agents.Memory
 			}, cancellationToken);
 		}
 
-		private static MemoryLogResult[] SearchInternal(MemoryDatabase db, string query, int maxCount)
+		private static MemoryLogResult[] SearchInternal(
+			MemoryDatabase db,
+			string query,
+			double minImportance,
+			int maxCount)
 		{
 			var tokens = MemoryTokenizer.Tokenize(query);
 			if (tokens.Count == 0)
 				return [];
 
-			var activeLogs = db.Logs.Find(l => l.Status == MemoryLogStatus.Active).ToList();
+			var activeLogs = db.Logs.Find(l => l.Status == MemoryLogStatus.Active && l.Importance >= minImportance).ToList();
 			if (activeLogs.Count == 0)
 				return [];
 
@@ -259,8 +265,9 @@ namespace LLMDesktopAssistant.Agents.Memory
 
 			return scores
 				.OrderByDescending(pair => pair.Value)
-				.Take(maxCount)
 				.Select(pair => ToResult(db.Logs.FindById(pair.Key), pair.Value))
+				.Where(log => log.Importance >= minImportance)
+				.Take(maxCount)
 				.ToArray();
 		}
 
@@ -270,15 +277,17 @@ namespace LLMDesktopAssistant.Agents.Memory
 			DateTime? to,
 			double? timeLineFrom,
 			double? timeLineTo,
+			double minImportance,
 			int maxCount)
 		{
 			return db.Logs
-				.Find(l => l.Status == MemoryLogStatus.Active || l.Status == MemoryLogStatus.Transient)
-				.Where(l =>
+				.Find(l =>
+					(l.Status == MemoryLogStatus.Active || l.Status == MemoryLogStatus.Transient) &&
 					(from == null || l.TimeStampEnd >= from.Value) &&
 					(to == null || l.TimeStampBegin <= to.Value) &&
 					(timeLineFrom == null || l.TimeLineOrdinalEnd >= timeLineFrom.Value) &&
-					(timeLineTo == null || l.TimeLineOrdinalBegin <= timeLineTo.Value))
+					(timeLineTo == null || l.TimeLineOrdinalBegin <= timeLineTo.Value) &&
+					(l.Importance >= minImportance))
 				.OrderByDescending(l => l.TimeStampBegin)
 				.Take(maxCount)
 				.Select(l => ToResult(l, null))

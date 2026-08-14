@@ -58,7 +58,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				Name = "memory-view_logs",
 				IsFixed = true,
 				Description = """
-					Views active and transient episodic logs of the specified memory blocks (or all enabled blocks).
+					Views episodic logs of the specified memory blocks (or all enabled blocks).
+					These logs are used to store events (such as such as game, DnD or development history).
 					Logs can be filtered by a real-time window and/or an alternative timeline ordinal window.
 					When no window is specified, the most recent logs are returned. Logs are ordered by their begin time, newest first.
 					""",
@@ -140,6 +141,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			ReactiveToolResult result,
 			ToolExecutionContext ctx,
 			[Description("The maximum number of logs to return")] int maxCount = 5,
+			[Description("The minimum importance score of the logs. Logs with lower scores are excluded.")] double minImportance = 0.0,
 			CancellationToken cancellationToken = default)
 		{
 			result.StatusIcon = MaterialIconKind.DatabaseSearch;
@@ -157,7 +159,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			try
 			{
 				var perBlockResults = await Task.WhenAll(blocksToSearch.Select(block =>
-					_memoryLogStore.SearchAsync(block, query, maxCount, cancellationToken)));
+					_memoryLogStore.SearchAsync(block, query, minImportance: minImportance, maxCount, cancellationToken)));
 
 				var sb = new StringBuilder();
 				int totalFound = 0;
@@ -207,6 +209,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			[Description("The inclusive lower bound of the alternative timeline ordinal window (for example, the day number)")] double? timeLineFrom = null,
 			[Description("The inclusive upper bound of the alternative timeline ordinal window")] double? timeLineTo = null,
 			[Description("The maximum number of logs to return. When no time window is specified, the most recent logs are returned.")] int maxCount = 20,
+			[Description("The minimum importance score of the logs. Logs with lower scores are excluded.")] double minImportance = 0.0,
 			CancellationToken cancellationToken = default)
 		{
 			result.StatusIcon = MaterialIconKind.DatabaseSearch;
@@ -226,7 +229,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			try
 			{
 				var perBlockResults = await Task.WhenAll(blocksToView.Select(block =>
-					_memoryLogStore.GetByTimeAsync(block, from, to, timeLineFrom, timeLineTo, maxCount, cancellationToken)));
+					_memoryLogStore.GetByTimeAsync(block, from, to, timeLineFrom, timeLineTo, minImportance, maxCount, cancellationToken)));
 
 				var sb = new StringBuilder();
 				int totalFound = 0;
@@ -243,7 +246,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					foreach (var log in logs)
 					{
 						var timeline = string.IsNullOrEmpty(log.TimeLineDetailsBegin) ? "" : $", timeline: {log.TimeLineDetailsBegin}";
-						sb.AppendLine($"- **{log.Text}** [id: {log.Id}] ({log.TimeStampBegin:yyyy-MM-dd HH:mm} UTC, status: {log.Status}, importance: {log.Importance:0.00}{timeline})");
+						sb.AppendLine($"- {log.Text} [id: {log.Id}] ({log.TimeStampBegin:yyyy-MM-dd HH:mm} UTC, status: {log.Status}, importance: {log.Importance:0.00}{timeline})");
 					}
 					sb.AppendLine();
 				}

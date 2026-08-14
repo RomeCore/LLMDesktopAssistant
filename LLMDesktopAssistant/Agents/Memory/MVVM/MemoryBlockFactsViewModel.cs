@@ -38,6 +38,17 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		/// </summary>
 		public bool HasResults => SearchResults.Count > 0;
 
+		private double _minImportance;
+		/// <summary>
+		/// Gets or sets the minimum importance score of facts to return in search results,
+		/// from 0.0 (any importance) to 1.0 (only the most important).
+		/// </summary>
+		public double MinImportance
+		{
+			get => _minImportance;
+			set => SetProperty(ref _minImportance, value);
+		}
+
 		/// <summary>
 		/// Gets the command that searches facts by <see cref="SearchQuery"/>.
 		/// </summary>
@@ -75,7 +86,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 
 			try
 			{
-				var results = await _factStore.SearchAsync(_block, SearchQuery, maxCount: 20);
+				var results = await _factStore.SearchAsync(_block, SearchQuery, minImportance: MinImportance, maxCount: 20);
 				SearchResults.Reset(results.Select(r => new MemoryFactItemViewModel(_block, _factStore, r, RemoveResult)));
 				RaisePropertyChanged(nameof(HasResults));
 			}

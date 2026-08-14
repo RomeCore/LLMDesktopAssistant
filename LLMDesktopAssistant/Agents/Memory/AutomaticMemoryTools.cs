@@ -186,6 +186,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				Use multiple hypothetical (HyDE) queries to greatly improve semantic matching.
 				Avoid direct questions, use hypothetical answers instead (e.g. "The user's food preferences is vegetarian or meat eater.")
 				""")] string[] queries,
+			[Description("The minimum importance score of facts to return, from 0.0 (any importance) to 1.0 (only the most important)")] double minImportance = 0.0,
 			CancellationToken cancellationToken = default)
 		{
 			var blocksToSearch = ResolveBlocks(_readableFactBlocks, blocks);
@@ -195,7 +196,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			try
 			{
 				var perBlockResults = await Task.WhenAll(blocksToSearch.Select(block => Task.WhenAll(
-					queries.Select(query => _factStore.SearchAsync(block, query, maxCount: 10, cancellationToken)))));
+					queries.Select(query => _factStore.SearchAsync(block, query, minImportance: minImportance, maxCount: 10, cancellationToken)))));
 				var sb = new StringBuilder();
 				int totalFound = 0;
 
@@ -239,7 +240,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 
 			try
 			{
-				var similarFacts = await _factStore.SearchAsync(targetBlock, fact, maxCount: 10, cancellationToken);
+				var similarFacts = await _factStore.SearchAsync(targetBlock, fact, maxCount: 10, cancellationToken: cancellationToken);
 				var highestScore = similarFacts.MaxBy(f => f.CosineScore ?? 0);
 
 				if (highestScore is not null && highestScore.CosineScore >= 0.9)
@@ -345,6 +346,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			[Description("The memory blocks where the logs should be searched. Use null to search in all available memory blocks")] string[]? blocks,
 			[Description("The search query text")] string query,
 			[Description("The maximum number of logs to return")] int maxCount = 5,
+			[Description("The minimum importance score of the logs. Logs with lower scores are excluded.")] double minImportance = 0.0,
 			CancellationToken cancellationToken = default)
 		{
 			var blocksToSearch = ResolveBlocks(_readableLogBlocks, blocks);
@@ -354,7 +356,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			try
 			{
 				var perBlockResults = await Task.WhenAll(blocksToSearch.Select(block =>
-					_logStore.SearchAsync(block, query, maxCount, cancellationToken)));
+					_logStore.SearchAsync(block, query, minImportance: minImportance, maxCount, cancellationToken)));
 				var sb = new StringBuilder();
 				int totalFound = 0;
 
@@ -392,6 +394,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			[Description("The inclusive lower bound of the alternative timeline ordinal window (for example, the day number)")] double? timeLineFrom = null,
 			[Description("The inclusive upper bound of the alternative timeline ordinal window")] double? timeLineTo = null,
 			[Description("The maximum number of logs to return. When no time window is specified, the most recent logs are returned.")] int maxCount = 20,
+			[Description("The minimum importance score of the logs. Logs with lower scores are excluded.")] double minImportance = 0.0,
 			CancellationToken cancellationToken = default)
 		{
 			var blocksToView = ResolveBlocks(_readableLogBlocks, blocks);
@@ -401,7 +404,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			try
 			{
 				var perBlockResults = await Task.WhenAll(blocksToView.Select(block =>
-					_logStore.GetByTimeAsync(block, from, to, timeLineFrom, timeLineTo, maxCount, cancellationToken)));
+					_logStore.GetByTimeAsync(block, from, to, timeLineFrom, timeLineTo, minImportance, maxCount, cancellationToken)));
 				var sb = new StringBuilder();
 				int totalFound = 0;
 

@@ -14,7 +14,7 @@
 		<!-- Search -->
 		<StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,6">
 
-			<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+			<Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
 
 				<ToggleButton IsChecked="{Binding IsTimeSearch, Mode=TwoWay}"
 							  Content="{loc:Loc settings-memory_logs_search_by_time}"
@@ -25,7 +25,17 @@
 						 PlaceholderText="{loc:Loc settings-memory_logs_search_placeholder}"
 						 IsVisible="{Binding IsTimeSearch, Converter={StaticResource InverseBooleanConverter}}"/>
 
-				<Button Grid.Column="2"
+				<NumericUpDown Grid.Column="2"
+							   Value="{Binding MinImportance, Mode=TwoWay}"
+							   Minimum="0"
+							   Maximum="1"
+							   Increment="0.05"
+							   FormatString="0.00"
+							   Width="90"
+							   VerticalAlignment="Center"
+							   ToolTip.Tip="{loc:Loc settings-memory_logs_min_importance}"/>
+
+				<Button Grid.Column="3"
 						Command="{Binding SearchCommand}"
 						Content="{loc:Loc settings-memory_logs_search}"/>
 

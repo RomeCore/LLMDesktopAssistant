@@ -162,6 +162,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				""")] string[] queries,
 			ReactiveToolResult result,
 			ToolExecutionContext ctx,
+			[Description("The minimum importance score of facts to return, from 0.0 (any importance) to 1.0 (only the most important)")] double minImportance = 0.0,
 			CancellationToken cancellationToken = default)
 		{
 			result.StatusIcon = MaterialIconKind.DatabaseSearch;
@@ -190,7 +191,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				{
 					var queryBatches = await Task.WhenAll(queries.Select(query =>
 					{
-						return _memoryFactStore.SearchAsync(block, query, maxCount: 10, cancellationToken: cancellationToken);
+						return _memoryFactStore.SearchAsync(block, query, minImportance: minImportance, maxCount: 10, cancellationToken: cancellationToken);
 					}));
 					return (block, MergeResults(queryBatches));
 				}));

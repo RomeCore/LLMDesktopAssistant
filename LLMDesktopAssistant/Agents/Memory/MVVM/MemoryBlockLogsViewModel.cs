@@ -114,6 +114,17 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		/// </summary>
 		public bool HasResults => SearchResults.Count > 0;
 
+		private double _minImportance;
+		/// <summary>
+		/// Gets or sets the minimum importance score of logs to return in search results,
+		/// from 0.0 (any importance) to 1.0 (only the most important).
+		/// </summary>
+		public double MinImportance
+		{
+			get => _minImportance;
+			set => SetProperty(ref _minImportance, value);
+		}
+
 		/// <summary>
 		/// Gets the command that searches logs by <see cref="SearchQuery"/> or by the time windows.
 		/// </summary>
@@ -157,7 +168,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 
 			try
 			{
-				var results = await _logStore.SearchAsync(_block, SearchQuery, maxCount: 20);
+				var results = await _logStore.SearchAsync(_block, SearchQuery, minImportance: MinImportance, maxCount: 20);
 				SearchResults.Reset(results.Select(l => new MemoryLogItemViewModel(_block, _logStore, l, RemoveResult)));
 				RaisePropertyChanged(nameof(HasResults));
 			}
@@ -177,6 +188,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 					to: Combine(ToDate, ToTime),
 					timeLineFrom: (double?)TimeLineFrom,
 					timeLineTo: (double?)TimeLineTo,
+					minImportance: MinImportance,
 					maxCount: 100);
 
 				SearchResults.Reset(results.Select(l => new MemoryLogItemViewModel(_block, _logStore, l, RemoveResult)));
