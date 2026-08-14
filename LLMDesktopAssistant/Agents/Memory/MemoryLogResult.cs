@@ -23,17 +23,17 @@ namespace LLMDesktopAssistant.Agents.Memory
 		public required MemoryLogStatus Status { get; init; }
 
 		/// <summary>
-		/// Gets the date and time when the log was created in the UTC timezone.
+		/// Gets the date and time when the log was created in the local timezone.
 		/// </summary>
 		public required DateTime CreatedAt { get; init; }
 
 		/// <summary>
-		/// Gets the real-time timestamp when the log began in the UTC timezone.
+		/// Gets the real-time timestamp when the log began in the local timezone.
 		/// </summary>
 		public required DateTime TimeStampBegin { get; init; }
 
 		/// <summary>
-		/// Gets the real-time timestamp when the log ended in the UTC timezone.
+		/// Gets the real-time timestamp when the log ended in the local timezone.
 		/// </summary>
 		public required DateTime TimeStampEnd { get; init; }
 

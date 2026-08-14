@@ -23,17 +23,17 @@ namespace LLMDesktopAssistant.Agents.Memory
 		public required MemoryFactStatus Status { get; init; }
 
 		/// <summary>
-		/// Gets the date and time when the fact was created in the UTC timezone.
+		/// Gets the date and time when the fact was created in the local timezone.
 		/// </summary>
 		public required DateTime CreatedAt { get; init; }
 
 		/// <summary>
-		/// Gets the date and time when the fact was last updated in the UTC timezone.
+		/// Gets the date and time when the fact was last updated in the local timezone.
 		/// </summary>
 		public required DateTime UpdatedAt { get; init; }
 
 		/// <summary>
-		/// Gets the date and time when the fact was last accessed in the UTC timezone.
+		/// Gets the date and time when the fact was last accessed in the local timezone.
 		/// Null when the fact has never been accessed.
 		/// </summary>
 		public required DateTime? LastAccessedAt { get; init; }

@@ -56,6 +56,6 @@ namespace LLMDesktopAssistant.Data.UsageModels
 		/// <summary>
 		/// The timestamp when the usage record was created.
 		/// </summary>
-		public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+		public DateTime Timestamp { get; set; } = DateTime.Now;
 	}
 }

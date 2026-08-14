@@ -65,7 +65,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				{
 					fact.Status = MemoryFactStatus.Superseded;
 					fact.SupersededBy = storedFact.Id;
-					fact.UpdatedAt = DateTime.UtcNow;
+					fact.UpdatedAt = DateTime.Now;
 					db.Facts.Update(fact);
 				}
 
@@ -87,7 +87,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				if (fact.Status == MemoryFactStatus.Active)
 				{
 					fact.Status = MemoryFactStatus.Deleted;
-					fact.UpdatedAt = DateTime.UtcNow;
+					fact.UpdatedAt = DateTime.Now;
 					db.Facts.Update(fact);
 				}
 
@@ -136,7 +136,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 
 				fact.Status = MemoryFactStatus.Active;
 				fact.SupersededBy = 0;
-				fact.UpdatedAt = DateTime.UtcNow;
+				fact.UpdatedAt = DateTime.Now;
 				db.Facts.Update(fact);
 
 				try
@@ -157,7 +157,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				{
 					fact.Status = previousStatus;
 					fact.SupersededBy = previousSupersededBy;
-					fact.UpdatedAt = DateTime.UtcNow;
+					fact.UpdatedAt = DateTime.Now;
 					db.Facts.Update(fact);
 					db.FactIndexes.DeleteMany(fi => fi.FactId == fact.Id);
 					throw;
@@ -266,7 +266,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				if (fact is { Status: MemoryFactStatus.Active })
 				{
 					fact.AccessCount++;
-					fact.LastAccessedAt = DateTime.UtcNow;
+					fact.LastAccessedAt = DateTime.Now;
 					db.Facts.Update(fact);
 
 					facts.Add(new MemoryFactResult

@@ -1,4 +1,4 @@
-﻿using LiteDB;
+using LiteDB;
 
 namespace LLMDesktopAssistant.Data.MemoryModels
 {
@@ -8,26 +8,26 @@ namespace LLMDesktopAssistant.Data.MemoryModels
 		public int Id { get; set; }
 
 		/// <summary>
-		/// The date and time when the log was created in the UTC timezone.
+		/// The date and time when the log was created in the local timezone.
 		/// </summary>
-		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+		public DateTime CreatedAt { get; set; } = DateTime.Now;
 
 		/// <summary>
-		/// The date and time when the log was last updated in the UTC timezone.
+		/// The date and time when the log was last updated in the local timezone.
 		/// </summary>
-		public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+		public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
 
 
 		/// <summary>
-		/// The timestamp when the log began in the UTC timezone. This is used to filter logs based on time.
+		/// The timestamp when the log began in the local timezone. This is used to filter logs based on time.
 		/// </summary>
-		public DateTime TimeStampBegin { get; set; } = DateTime.UtcNow;
+		public DateTime TimeStampBegin { get; set; } = DateTime.Now;
 
 		/// <summary>
-		/// The timestamp when the log ended in the UTC timezone. This is used to filter logs based on time.
+		/// The timestamp when the log ended in the local timezone. This is used to filter logs based on time.
 		/// </summary>
-		public DateTime TimeStampEnd { get; set; } = DateTime.UtcNow;
+		public DateTime TimeStampEnd { get; set; } = DateTime.Now;
 
 		public double TimeLineOrdinalBegin { get; set; } = 0;
 

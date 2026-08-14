@@ -8,17 +8,17 @@ namespace LLMDesktopAssistant.Data.MemoryModels
 		public int Id { get; set; }
 
 		/// <summary>
-		/// The date and time when the fact was created in the UTC timezone.
+		/// The date and time when the fact was created in the local timezone.
 		/// </summary>
-		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+		public DateTime CreatedAt { get; set; } = DateTime.Now;
 
 		/// <summary>
-		/// The date and time when the fact was last updated in the UTC timezone.
+		/// The date and time when the fact was last updated in the local timezone.
 		/// </summary>
-		public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+		public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
 		/// <summary>
-		/// The date and time when the fact was last accessed in the UTC timezone.
+		/// The date and time when the fact was last accessed in the local timezone.
 		/// Null when the fact has never been accessed.
 		/// </summary>
 		public DateTime? LastAccessedAt { get; set; } = null;

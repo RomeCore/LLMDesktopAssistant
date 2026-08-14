@@ -46,7 +46,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			return _provider.ExecuteAsync(block, (db, _) =>
 			{
 				var tokens = MemoryTokenizer.Tokenize(text);
-				var now = DateTime.UtcNow;
+				var now = DateTime.Now;
 
 				var model = new MemoryLogModel
 				{
@@ -171,7 +171,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 
 				log.Status = MemoryLogStatus.Active;
 				log.ConsolidatedBy = 0;
-				log.UpdatedAt = DateTime.UtcNow;
+				log.UpdatedAt = DateTime.Now;
 				db.Logs.Update(log);
 
 				try
@@ -190,7 +190,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				{
 					log.Status = previousStatus;
 					log.ConsolidatedBy = previousConsolidatedBy;
-					log.UpdatedAt = DateTime.UtcNow;
+					log.UpdatedAt = DateTime.Now;
 					db.Logs.Update(log);
 					db.LogIndexes.DeleteMany(i => i.LogId == log.Id);
 					throw;
@@ -209,7 +209,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 
 				log.Status = status;
 				log.ConsolidatedBy = consolidatedIntoId;
-				log.UpdatedAt = DateTime.UtcNow;
+				log.UpdatedAt = DateTime.Now;
 				db.Logs.Update(log);
 
 				db.LogIndexes.DeleteMany(i => i.LogId == logId);

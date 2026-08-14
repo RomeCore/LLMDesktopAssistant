@@ -63,7 +63,7 @@ namespace LLMDesktopAssistant.Data
 				DurationMs = durationMs,
 				Success = success,
 				ErrorMessage = errorMessage,
-				Timestamp = DateTime.UtcNow
+				Timestamp = DateTime.Now
 			};
 
 			_database.UsageRecords.Insert(record);
