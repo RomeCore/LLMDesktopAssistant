@@ -145,11 +145,11 @@ namespace LLMDesktopAssistant.Tools
 			if (info.DescriptionGetter == null)
 				throw new InvalidOperationException($"Description of the {nameof(ToolInitializationInfo)} must be set before tool creation.");
 
-			var (argSchema, _executor) = ToolExecutorCreator.Create(executor);
+			var (argSchema, _executor, parameters) = ToolExecutorCreator.Create(executor);
 			var _streamingAnalyzer = streamingAnalyzer != null ?
 				StreamingToolArgumentAnalyzerCreator.Create(streamingAnalyzer) : null;
 			var _previewExecutor = previewExecutor != null ?
-				PreviewToolExecutorCreator.Create(previewExecutor) : null;
+				PreviewToolExecutorCreator.Create(previewExecutor, parameters) : null;
 
 			info.ModifyArgumentSchema?.Invoke(argSchema);
 

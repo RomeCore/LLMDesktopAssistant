@@ -11,7 +11,8 @@ namespace LLMDesktopAssistant.Tools
 	{
 		public static (
 			JsonObject ArgumentSchema,
-			Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor)
+			Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor,
+			IDictionary<string, JsonMemberAccessor> Parameters)
 
 			Create(Delegate executor)
 		{
@@ -20,7 +21,8 @@ namespace LLMDesktopAssistant.Tools
 
 		public static (
 			JsonObject ArgumentSchema,
-			Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor)
+			Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> Executor,
+			IDictionary<string, JsonMemberAccessor> Parameters)
 
 			Create(object? target, MethodInfo method)
 		{
@@ -48,6 +50,7 @@ namespace LLMDesktopAssistant.Tools
 
 			var parameters = method.GetParameters();
 			var parameterMappings = new Dictionary<JsonMemberAccessor, int>();
+			var parameterMetaInfos = new Dictionary<string, JsonMemberAccessor>();
 
 			int toolExecutionContextMapping = -1;
 			int originalArgsMapping = -1;
@@ -106,6 +109,8 @@ namespace LLMDesktopAssistant.Tools
 				else
 				{
 					var parameterAccessor = new JsonMemberAccessor(parameter);
+					parameterMetaInfos.Add(parameter.Name ??
+						throw new ArgumentException("Method contains parameter without a name.", nameof(method)), parameterAccessor);
 					if (!parameterAccessor.Include)
 						continue;
 
@@ -225,7 +230,7 @@ namespace LLMDesktopAssistant.Tools
 				}
 			}
 
-			return (argumentSchema, Func);
+			return (argumentSchema, Func, parameterMetaInfos);
 		}
 	}
 }
