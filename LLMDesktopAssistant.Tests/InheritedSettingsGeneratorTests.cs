@@ -88,6 +88,18 @@ public class InheritedSettingsGeneratorTests
 			{
 				public LLMDesktopAssistant.LLM.Settings.ChatSettings InheritedChatSettings { get; set; } = new();
 			}
+
+			public static class ApplicationSettingsAccessor
+			{
+				private static ApplicationSettings? _applicationSettings;
+
+				public static ApplicationSettings ApplicationSettings => _applicationSettings ??= SettingsManager.Get<ApplicationSettings>();
+
+				public static void SetApplicationSettings(ApplicationSettings applicationSettings)
+				{
+					_applicationSettings = applicationSettings;
+				}
+			}
 		}
 
 		namespace LLMDesktopAssistant.Settings
@@ -125,20 +137,21 @@ public class InheritedSettingsGeneratorTests
 		Assert.Contains("GetEffectiveSystemPrompt", generated);
 		Assert.Contains("SetEffectiveSystemPrompt", generated);
 		Assert.Contains("chatSettings.InheritedAgentSettings.Prompts.SystemPrompt", generated);
-		Assert.Contains("appSettings.InheritedChatSettings.InheritedAgentSettings.Prompts.SystemPrompt", generated);
+		Assert.Contains("ApplicationSettingsAccessor.ApplicationSettings.InheritedChatSettings.InheritedAgentSettings.Prompts.SystemPrompt", generated);
 
 		// Chat-level setting: 2-level resolution
 		Assert.Contains("ChatModelInheritance", generated);
 		Assert.Contains("GetEffectiveChatModel", generated);
 		Assert.Contains("SetEffectiveChatModel", generated);
-		Assert.Contains("appSettings.InheritedChatSettings.Models.ChatModel", generated);
+		Assert.Contains("ApplicationSettingsAccessor.ApplicationSettings.InheritedChatSettings.Models.ChatModel", generated);
 
 		// Default levels
 		Assert.Contains("ChatSettingsInheritanceLevel.Agent", generated); // agent setting default
 		Assert.Contains("ChatSettingsInheritanceLevel.Profile", generated); // chat setting default
 
-		// appSettings is resolved directly via SettingsManager, not passed as an argument
-		Assert.Contains("SettingsManager.Get<global::LLMDesktopAssistant.Settings.Application.ApplicationSettings>()", generated);
+		// appSettings is resolved via ApplicationSettingsAccessor, not passed as an argument
+		Assert.Contains("global::LLMDesktopAssistant.Settings.Application.ApplicationSettingsAccessor.ApplicationSettings", generated);
+		Assert.DoesNotContain("SettingsManager.Get<global::LLMDesktopAssistant.Settings.Application.ApplicationSettings>()", generated);
 		Assert.DoesNotContain("GetEffectiveSystemPrompt(global::LLMDesktopAssistant.Settings.Application.ApplicationSettings", generated);
 		Assert.DoesNotContain("GetEffectiveChatModel(global::LLMDesktopAssistant.Settings.Application.ApplicationSettings", generated);
 
@@ -239,6 +252,18 @@ public class InheritedSettingsGeneratorTests
 				{
 					public LLMDesktopAssistant.LLM.Settings.ChatSettings InheritedChatSettings { get; set; } = new();
 				}
+
+				public static class ApplicationSettingsAccessor
+				{
+					private static ApplicationSettings? _applicationSettings;
+
+					public static ApplicationSettings ApplicationSettings => _applicationSettings ??= SettingsManager.Get<ApplicationSettings>();
+
+					public static void SetApplicationSettings(ApplicationSettings applicationSettings)
+					{
+						_applicationSettings = applicationSettings;
+					}
+				}
 			}
 
 			namespace LLMDesktopAssistant.Settings
@@ -257,7 +282,7 @@ public class InheritedSettingsGeneratorTests
 		Assert.Contains("GetEffectivePersona", generated);
 		Assert.Contains("SetEffectivePersona", generated);
 		Assert.Contains("chatSettings.InheritedAgentSettings.Prompts.Persona", generated);
-		Assert.Contains("appSettings.InheritedChatSettings.InheritedAgentSettings.Prompts.Persona", generated);
+		Assert.Contains("ApplicationSettingsAccessor.ApplicationSettings.InheritedChatSettings.InheritedAgentSettings.Prompts.Persona", generated);
 		Assert.Contains("global::LLMDesktopAssistant.Agents.PersonaSettings GetEffectivePersona", generated);
 
 		var errors = outputCompilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error).ToList();

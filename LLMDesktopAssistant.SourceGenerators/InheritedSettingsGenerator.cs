@@ -26,9 +26,8 @@ namespace LLMDesktopAssistant.SourceGenerators
 		private const string ChatSettingAttributeName = "LLMDesktopAssistant.SourceGenerators.InheritedChatSettingAttribute";
 
 		private const string InheritanceLevelType = "global::LLMDesktopAssistant.LLM.Settings.ChatSettingsInheritanceLevel";
-		private const string ApplicationSettingsType = "global::LLMDesktopAssistant.Settings.Application.ApplicationSettings";
+		private const string ApplicationSettingsAccessorType = "global::LLMDesktopAssistant.Settings.Application.ApplicationSettingsAccessor";
 		private const string ChatSettingsType = "global::LLMDesktopAssistant.LLM.Settings.ChatSettings";
-		private const string SettingsManagerType = "global::LLMDesktopAssistant.Settings.SettingsManager";
 		private const string NotifyPropertyChangedType = "LLMDesktopAssistant.NotifyPropertyChanged";
 
 		private static readonly SymbolDisplayFormat _typeFormat = SymbolDisplayFormat.FullyQualifiedFormat
@@ -236,8 +235,6 @@ namespace LLMDesktopAssistant.SourceGenerators
 				sb.Append(ChatSettingsType).Append(" chatSettings");
 			sb.AppendLine(")");
 			sb.AppendLine("\t\t{");
-			sb.Append("\t\t\tvar appSettings = ").Append(SettingsManagerType).Append(".Get<").Append(ApplicationSettingsType).Append(">();").AppendLine();
-			sb.AppendLine();
 			sb.Append("\t\t\tswitch (").Append(property.Name).Append("Inheritance)").AppendLine();
 			sb.AppendLine("\t\t\t{");
 
@@ -248,7 +245,7 @@ namespace LLMDesktopAssistant.SourceGenerators
 			}
 
 			sb.Append("\t\t\t\tcase ").Append(level).Append(".Application:").AppendLine();
-			sb.Append("\t\t\t\t\treturn appSettings.InheritedChatSettings");
+			sb.Append("\t\t\t\t\treturn ").Append(ApplicationSettingsAccessorType).Append(".ApplicationSettings.InheritedChatSettings");
 			if (property.Kind == SettingKind.Agent)
 				sb.Append(".InheritedAgentSettings");
 			sb.Append('.').Append(route).Append('.').Append(property.Name).Append(';').AppendLine();
@@ -264,8 +261,6 @@ namespace LLMDesktopAssistant.SourceGenerators
 				sb.Append(ChatSettingsType).Append(" chatSettings, ");
 			sb.Append(property.Type).Append(" value)").AppendLine();
 			sb.AppendLine("\t\t{");
-			sb.Append("\t\t\tvar appSettings = ").Append(SettingsManagerType).Append(".Get<").Append(ApplicationSettingsType).Append(">();").AppendLine();
-			sb.AppendLine();
 			sb.Append("\t\t\tswitch (").Append(property.Name).Append("Inheritance)").AppendLine();
 			sb.AppendLine("\t\t\t{");
 
@@ -277,7 +272,7 @@ namespace LLMDesktopAssistant.SourceGenerators
 			}
 
 			sb.Append("\t\t\t\tcase ").Append(level).Append(".Application:").AppendLine();
-			sb.Append("\t\t\t\t\tappSettings.InheritedChatSettings");
+			sb.Append("\t\t\t\t\t").Append(ApplicationSettingsAccessorType).Append(".ApplicationSettings.InheritedChatSettings");
 			if (property.Kind == SettingKind.Agent)
 				sb.Append(".InheritedAgentSettings");
 			sb.Append('.').Append(route).Append('.').Append(property.Name).Append(" = value;").AppendLine();
