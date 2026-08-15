@@ -5,6 +5,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {
@@ -23,7 +24,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "shell-bash",
 					Description = $"Executes UNIX BASH command or script from the current working directory. Examples: `git status`, `python script.py`",
-					Category = "scripting",
+					TitleKey = Locale.GetKey("tool.name.shell-bash"),
+					DescriptionKey = Locale.GetKey("tool.description.shell-bash"),
+					CategoryKey = Locale.GetKey("tool.category.scripting"),
 					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
 				});
 
@@ -32,7 +35,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "shell-batch",
 					Description = $"Executes WINDOWS BATCH command or script from the current working directory. Examples: `git status`, `python script.py`",
-					Category = "scripting",
+					TitleKey = Locale.GetKey("tool.name.shell-batch"),
+					DescriptionKey = Locale.GetKey("tool.description.shell-batch"),
+					CategoryKey = Locale.GetKey("tool.category.scripting"),
 					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
 				});
 
@@ -41,7 +46,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "shell-powershell",
 					Description = $"Executes WINDOWS POWERSHELL command or script from the current working directory. Examples: `git status`, `python script.py`",
-					Category = "scripting",
+					TitleKey = Locale.GetKey("tool.name.shell-powershell"),
+					DescriptionKey = Locale.GetKey("tool.description.shell-powershell"),
+					CategoryKey = Locale.GetKey("tool.category.scripting"),
 					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
 				});
 

@@ -35,7 +35,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 					Description = """
 						Gets list of available search engines that can be used in `web-search`.
 						""",
-					Category = "web",
+					TitleKey = Locale.GetKey("tool.name.web-search_get_engines"),
+					DescriptionKey = Locale.GetKey("tool.description.web-search_get_engines"),
+					CategoryKey = Locale.GetKey("tool.category.web"),
 					DefaultExpectedBehaviour = ToolBehaviour.None
 				});
 
@@ -47,7 +49,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 						Search through the web using SearXNG and web scraping techniques.
 						Returns results from multiple search engines (Google, Bing, etc.).
 						""",
-					Category = "web",
+					TitleKey = Locale.GetKey("tool.name.web-search"),
+					DescriptionKey = Locale.GetKey("tool.description.web-search"),
+					CategoryKey = Locale.GetKey("tool.category.web"),
 					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 		}

@@ -67,7 +67,7 @@ namespace LLMDesktopAssistant.Tools
 			var toolCall = new ToolCall
 			{
 				ToolName = tool.Name,
-				Title = tool.DisplayName,
+
 				CompletionToken = ct,
 				Id = ToolCallId.Generate(),
 				Arguments = args?.ToJsonString() ?? "{}"

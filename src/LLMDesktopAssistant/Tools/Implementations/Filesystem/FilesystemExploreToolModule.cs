@@ -34,7 +34,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						If file exists, it will read the content of the file by lines (automatically selects 1-200 lines).
 						If both exists, it will do both actions.
 						""",
-					Category = "filesystem",
+					TitleKey = Locale.GetKey("tool.name.fs-read_entry"),
+					DescriptionKey = Locale.GetKey("tool.description.fs-read_entry"),
+					CategoryKey = Locale.GetKey("tool.category.filesystem"),
 					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.DirectoryRead | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}

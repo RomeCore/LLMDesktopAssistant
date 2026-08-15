@@ -21,19 +21,19 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		private readonly ToolInfo _toolInfo;
 		private ToolChange? _change;
 
+		public ToolInfo Info => _toolInfo;
+		public string Name { get; }
+
 		public bool IsCategory => false;
+		public LocaleKeyBase Category { get; }
 
 		public IBrush? TitlePrefixForeground { get; }
 		public string? TitlePrefix { get; }
-		public string Title { get; }
 
-		public ToolInfo Info => _toolInfo;
-		public string Name { get; }
-		public string Description { get; }
+		public LocaleKeyBase Description { get; }
+		public LocaleKeyBase Title { get; }
 
 		public bool IsFixed => _toolInfo.IsFixed;
-		public IBrush? DescriptionOpacityMask { get; }
-		public string Category { get; }
 		public ICommand ResetCommand { get; }
 
 		/// <summary>
@@ -59,22 +59,12 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					TitlePrefixForeground = Brushes.Magenta;
 					break;
 			}
-			Title = tool.DisplayName ?? tool.Tool.Name;
 
-			Name = tool.Tool.Name;
-			Description = tool.Tool.Description;
-			Category = tool.Category;
+			Name = tool.Name;
+			Title = tool.TitleKey ?? Locale.GetConstKey(tool.Name);
+			Description = tool.DescriptionKey ?? Locale.GetConstKey(tool.DescriptionGetter());
+			Category = tool.CategoryKey ?? Locale.GetKey("tool.category.unknown");
 			ResetCommand = new RelayCommand(Reset);
-
-			if (Description.Count(c => c == '\n') >= 5 || Description.Length > 750)
-			{
-				var gradientBrush = new LinearGradientBrush();
-				gradientBrush.StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative);
-				gradientBrush.EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative);
-				gradientBrush.GradientStops.Add(new GradientStop(Colors.White, 0.5));
-				gradientBrush.GradientStops.Add(new GradientStop(Colors.Transparent, 1.0));
-				DescriptionOpacityMask = gradientBrush;
-			}
 
 			_change = _toolset.ToolChanges.FirstOrDefault(x => x.ToolName == Name);
 		}
@@ -142,7 +132,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		public IBrush? TitlePrefixForeground { get; }
 		public string? TitlePrefix { get; }
-		public string Title { get; }
+		public LocaleKeyBase Title { get; }
 		public string? TitleSuffix { get; }
 
 		public int ToolCount => Tools.Count;
@@ -157,7 +147,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public ImmutableList<ToolItemViewModel> Tools { get; }
 		public ICommand ResetCommand { get; }
 
-		public ToolCategoryViewModel(string title, IEnumerable<ToolItemViewModel> tools)
+		public ToolCategoryViewModel(LocaleKeyBase title, IEnumerable<ToolItemViewModel> tools)
 		{
 			Tools = tools.ToImmutableList();
 			ResetCommand = new RelayCommand(ResetAllTools);

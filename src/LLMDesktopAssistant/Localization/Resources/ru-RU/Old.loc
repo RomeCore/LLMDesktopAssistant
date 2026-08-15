@@ -6,8 +6,6 @@
 
 add: Добавить
 agent-ask_question: Спросить агента
-agent-call: Вызвать агента
-agent-describe_image: Описать изображение
 agent-launch: Запустить агента
 agent_info: Об агенте
 agent_info_clear_image: Удалить аватарку
@@ -21,7 +19,6 @@ agent_info_profile_image_hint: Выберите изображение для п
 agent_info_select_image: Выбрать изображение
 agent_selection_task: Выбор агента
 agent_tasks: Задачи агентов
-agents: Агенты
 application-applicate_hint: Вложить
 application-description: Семантическое описание
 application-end_byte: Конечный байт
@@ -121,8 +118,6 @@ chats: Чаты
 check_failure: неудача
 check_success: успех
 clear_completed: Очистить завершённые
-clipboard-copy: Скопировать в буфер обмена
-clipboard-read: Чтение из буфера обмена
 close: Закрыть
 coin_heads: Орёл
 coin_tails: Решка
@@ -132,17 +127,11 @@ copy: Скопировать в буфер обмена
 copy-arguments: Скопировать аргументы
 copy-result: Скопировать результат
 copy_markdown: Скопировать Markdown
-csx-execute: Выполнить C# скрипт
 danger_level_auto_approve: Уровень авто-подтверждения
 danger_level_dangerous: Опасно
 danger_level_default: По умолчанию (спрашивать для всех)
 danger_level_safe: Безопасно
 danger_level_warning: Предупреждение
-database: Базы данных
-db-execute: Выполнить SQL-запрос
-db-list: Получить список подключений к базам данных
-db-schema: Показать схему базы данных
-db-switch: Переключить активную базу данных
 db_active_connections: Активные подключения
 db_add_connection: Добавить подключение
 db_browse_sqlite_file: Выбрать SQLite файл
@@ -200,9 +189,7 @@ env_workdir_hint: Рабочие директории определяют па�
 env_write: Запись
 error_model: Ошибка: {0}
 execute: Выполнить
-execute-python: Выполнить Python скрипт
 execute-python_repl: Выполнить Python скрипт при помощи REPL
-execute-python_venv_shell: Выполнить Shell скрипт в виртуальном окружении Python
 execute_using_repl: Выполнить при помощи REPL
 execution_checker_always: Всегда
 exposure_attachments: Вложения
@@ -218,12 +205,6 @@ exposure_reasoning_hint: Показывать рассуждения и мысл
 exposure_tool_calls: Вызовы инструментов
 exposure_tool_calls_hint: Показывать вызовы инструментов и их результаты от этого агента другим агентам.
 file_contains_secrets: {0} (содержит секреты/ключи)
-filesystem: Файловая система
-forms: Формы
-forms-choice: Выбор вариантов
-forms-confirm: Подтверждение действия
-forms-file_picker: Выбор файла
-forms-input: Форма ввода
 forms_canceled: Отменено
 forms_confirmed: Подтверждено
 forms_custom_option: Свой вариант...
@@ -234,7 +215,6 @@ forms_make_selection: Сделайте выбор
 forms_select_file: Выбрать файл...
 forms_selected_files: Выбранные файлы
 forms_selection_confirmed: Выбор подтверждён
-fs-apply_diff: Применить изменения к файлу
 fs-changes_deleted: удалено несколько строк
 fs-changes_inserted: вставлено несколько строк
 fs-changes_lines_replaced: Изменено {0} строк
@@ -243,11 +223,6 @@ fs-changes_none: без изменений
 fs-changes_text_replaced: Заменено {0} вхождений
 fs-changes_updated: обновлён
 fs-copied: скопировано
-fs-copy_directory: Скопировать директорию
-fs-copy_file: Скопировать файл
-fs-create_directory: Создать директорию
-fs-delete_directory: Удалить директорию
-fs-delete_file: Удалить файл
 fs-deleted: удалено
 fs-diff_accepted: Принято
 fs-diff_confirm: Применить
@@ -256,37 +231,23 @@ fs-diff_declined: Отклонено
 fs-diff_disable_all: Отключить все
 fs-diff_enable_all: Включить все
 fs-diff_toggle_chunk: Включить/выключить этот блок изменений
-fs-edit: Редактирование файла
 fs-edit_changes_applied_none: {0} (без изменений)
 fs-edit_changes_count: {0} изменение(й) ({1})
 fs-entries: {0} элементов
-fs-get_file_info: Получить информацию о файле
-fs-glob: Поиск по маске
 fs-glob_found_count: Найдено {0}...
 fs-glob_no_matches: Совпадений не найдено
 fs-glob_results: {0} результат(ов)
 fs-glob_searching: Поиск **{0}**...
-fs-grep: Поиск в файловой системе
 fs-grep_collecting_files: Собираем файлы...
 fs-grep_collecting_files_count: Собираем файлы... ({0} найдено)
 fs-grep_completed: Найдено {0} совпадающих файлов
 fs-grep_scanning_files: Сканируем файлы...
 fs-list_directory: Чтение файлов в директории
-fs-move_directory: Переместить директорию
-fs-open_file: Открыть файл
-fs-open_in_explorer: Открыть в проводнике
 fs-opened: открыто
-fs-read_binary_file: Прочитать бинарный файл
-fs-read_document_file: Прочитать документ
-fs-read_entry: Чтение файла/директории
-fs-rename_file: Переименовать файл
 fs-renamed: Переименовано
 fs-replace: Заменить текст в файле
 fs-replace_lines: Заменить строки в файле
-fs-write_binary_file: Записать в бинарный файл
-fs-write_file: Записать в файл
 fs-write_file_streaming_status: {0} ({1} строк...)
-general: Общие
 general-print: Напечатать
 image_describer_status: Описываем... *{0} токенов*
 input: Ввод
@@ -296,31 +257,12 @@ input-move_mouse_delta: Сдвинуть мышь
 input-press_key: Нажать клавишу
 lines_count: {0} строк
 list_shuffled: Перемешан список из {0} элементов
-lua-execute: Выполнить Lua скрипт
-lua-get_script_info: Получить информацию о Lua-скрипте
-lua-list_scripts: Получить список Lua-скриптов
-lua-move_script: Переместить Lua-скрипт
-lua-register_or_update_script: Зарегистрировать или обновить Lua-скрипт
-lua-remove_script: Удалить Lua-скрипт
-math-calculate: Вычислить
-math-solve: Решить математическое уравнение
-math-solve_complex: Решить комплексное уравнение
 math_solve_status: {0} *({1} корней)*
 math_solve_status_no_roots: {0} *(без корней)*
-mathematics: Математика
 mcp-connection_type: Способ подключения
 mcp-endpoint: Команда/URL
 mcp_manager_header: Менеджер MCP
 mcp_manager_hint: Менеджер MCP
-memory: Память
-memory-append_log: Добавить лог в память
-memory-clear: Очистить блок памяти
-memory-delete_log: Удалить лог из памяти
-memory-forget_fact: Забыть факт из памяти
-memory-retrieve_fact: Найти факты в памяти
-memory-search_log: Найти логи в памяти
-memory-store_fact: Сохранить факт в память
-memory-view_logs: Просмотреть логи памяти
 memory-view_logs_status_latest: Последние **{0}**
 memory-view_logs_status_time_window: Временное окно
 memory_attachment_mode_readonly: Только чтение
@@ -341,12 +283,6 @@ message_visibility_always: Всегда
 message_visibility_only_agents: Только агентам
 message_visibility_only_users: Только другим пользователям
 message_visibility_reveal_after_send: После отправки
-metatools: Мета-инструменты
-metatools-create_or_update: Создать или обновить мета-инструмент
-metatools-delete: Удалить мета-инструмент
-metatools-get_info: Получить информацию о мета-инструменте
-metatools-list: Получить список мета-инструментов
-metatools-rename: Переименовать мета-инструмент
 model_capability_chat: Чат
 model_capability_completion: Завершение
 model_capability_embeddings: Эмбеддинги
@@ -453,20 +389,10 @@ prompt_use_custom_persona: Использовать кастомную перс�
 prompt_use_custom_specialization: Использовать свою специализацию
 prompt_user_nickname_hint: Как ассистент должен звать вас?
 prompt_user_nickname_placeholder: например, Иван
-python-get_installed_packages_list: Получить список установленных пакетов Python
 python-repl_get_var: Получить переменную из Python REPL
 python-repl_reset: Сбросить контекст Python REPL
 python_meta_venv_activate_script_path_hint: Скрипт активации виртуального окружения Python для мета-инструментов
 python_venv_activate_script_path_hint: Скрипт активации виртуального окружения Python
-random: Рандом
-random-GUID: Сгенерировать GUID
-random-check_chance: Проверка шанса
-random-coin_flip: Подкинуть монетку
-random-dice_roll: Бросить кубик
-random-float: Сгенерировать дробное число
-random-integer: Сгенерировать целое число
-random-items_from_list: Выбрать случайные элементы из списка
-random-shuffle_list: Перемешать список
 reasoning: Мышление
 reasoning_default: По умолчанию
 reasoning_disabled: Отключено
@@ -487,7 +413,6 @@ reset: Сбросить
 sample: Образец
 save: Сохранить
 save_markdown: Сохранить Markdown
-scripting: Скриптинг
 select_model: Выберите модель
 select_python_meta_venv_activate_script: Выберите скрипт активации виртуального окружения Python для мета-инструментов
 select_python_venv_activate_script: Выберите скрипт активации виртуального окружения Python
@@ -773,10 +698,6 @@ settings_stage_stop_chance: Шанс остановки
 settings_stage_weight_tooltip: Вероятность выбора агента (0 = всегда пропускать, 1 = никогда не пропускать)
 settings_stage_weighted_agents: Взвешенные агенты
 settings_toggle_agent_active: Включить/выключить агента
-shell-bash: Выполнить Bash скрипт
-shell-batch: Выполнить Batch скрипт
-shell-powershell: Выполнить Powershell скрипт
-skill-load: Прочитать навык
 skill_diagnostic_fileaccesserror: Ошибка доступа к файлу
 skill_diagnostic_fileaccesserror_hint: Не удалось прочитать файл SKILL.md. Проверьте права доступа.
 skill_diagnostic_generalparsingerror: Ошибка парсинга
@@ -803,7 +724,6 @@ skill_diagnostic_yamlparsingerror: Ошибка синтаксиса YAML
 skill_diagnostic_yamlparsingerror_hint: YAML frontmatter содержит недопустимый синтаксис.
 skill_injection_mode_default: Имя + описание
 skill_injection_mode_full: Полное тело
-skills: Навыки
 specialization_clear: Очистить специализацию
 stage_type_adaptive: Адаптивный
 stage_type_mention_only: Только по упоминанию
@@ -838,9 +758,6 @@ task_status_pending: Ожидание
 task_status_success: Успешно
 task_status_unknown: Неизвестно
 temporary_chat: временный
-time: Время
-time-get: Получить текущее время
-time-wait: Подождать
 time_wait_completed: Завершено ({0})
 time_wait_status: Ждём... {0} осталось
 title: Niggalink AI
@@ -969,19 +886,9 @@ user_select_image: Выбрать изображение...
 user_select_image_title: Выберите изображение профиля пользователя
 user_select_prompt: Выберите пользователя из списка для редактирования
 voice_chat: Голосовой чат
-wd-list: Получить список рабочих директорий
-wd-switch: Сменить рабочую директорию
-web: Веб
-web-download: Скачать
-web-fetch: Получить веб-контент
 web-get: GET запрос
 web-get_html: Получить HTML
-web-parse: Парсинг HTML
 web-post: POST запрос
-web-request: Веб-запрос
-web-search: Поиск в интернете
-web-search_get_engines: Получить список доступных движков веб-поиска
-web-status: Проверить веб-статус
 web_search_results: {0} *({1} результатов)*
 webui_anonymous: Анонимус
 webui_assistant: Ассистент
@@ -1044,5 +951,4 @@ webui_register_title: Регистрация
 webui_resend: Отправить заново
 webui_result: Результат
 webui_stop_generation: Остановить генерацию
-workdir: Рабочие директории
 working_directory_hint: Рабочая директория

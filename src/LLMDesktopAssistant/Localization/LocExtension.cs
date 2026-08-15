@@ -89,7 +89,7 @@ namespace LLMDesktopAssistant.Localization
 				var key = values[0]?.ToString();
 				if (string.IsNullOrEmpty(key)) return null;
 
-				var localizedValue = values[0] is LocaleKey localeKey
+				var localizedValue = values[0] is LocaleKeyBase localeKey
 					? localeKey.Value
 					: LocalizationManager.LocalizeStatic(key);
 

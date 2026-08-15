@@ -85,7 +85,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 						// The return value is used as the structured result when `Result.SetStructured` was not called.
 						return "done";
 						""",
-					Category = "C#",
+					TitleKey = Locale.GetKey("tool.name.csx-execute"),
+					DescriptionKey = Locale.GetKey("tool.description.csx-execute"),
+					CategoryKey = Locale.GetConstKey("C#"),
 					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
 				});
 		}

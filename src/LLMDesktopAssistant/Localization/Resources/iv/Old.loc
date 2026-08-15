@@ -6,8 +6,6 @@
 
 add: Add
 agent-ask_question: Ask agent
-agent-call: Call agent
-agent-describe_image: Describe image
 agent-launch: Launch agent
 agent_info: Agent info
 agent_info_clear_image: Clear image
@@ -21,7 +19,6 @@ agent_info_profile_image_hint: Paste a base64-encoded image to use as the agent'
 agent_info_select_image: Select image
 agent_selection_task: Agent selection
 agent_tasks: Agent Tasks
-agents: Agents
 application-applicate_hint: Applicate
 application-description: Semantic description
 application-end_byte: End byte
@@ -121,8 +118,6 @@ chats: Chats
 check_failure: failure
 check_success: success
 clear_completed: Clear completed
-clipboard-copy: Copy to clipboard
-clipboard-read: Read from clipboard
 close: Close
 coin_heads: Heads
 coin_tails: Tails
@@ -132,17 +127,11 @@ copy: Copy to clipboard
 copy-arguments: Copy arguments
 copy-result: Copy result
 copy_markdown: Copy Markdown
-csx-execute: Execute C# script
 danger_level_auto_approve: Auto-approve level
 danger_level_dangerous: Dangerous
 danger_level_default: Default (ask for all)
 danger_level_safe: Safe
 danger_level_warning: Warning
-database: Database
-db-execute: Execute a SQL statement
-db-list: List database connections
-db-schema: Show database schema
-db-switch: Switch active database
 db_active_connections: Active connections
 db_add_connection: Add connection
 db_browse_sqlite_file: Browse SQLite file
@@ -200,9 +189,7 @@ env_workdir_hint: Working directories define folders the assistant can access. T
 env_write: Write
 error_model: Error: {0}
 execute: Execute
-execute-python: Execute Python script
 execute-python_repl: Execute Python script using REPL
-execute-python_venv_shell: Execute Shell script in Python virt. environment
 execute_using_repl: Execute using REPL
 execution_checker_always: Always
 exposure_attachments: Attachments
@@ -218,12 +205,6 @@ exposure_reasoning_hint: Expose the reasoning/thoughts of this agent to other ag
 exposure_tool_calls: Tool calls
 exposure_tool_calls_hint: Expose tool calls and their results from this agent to other agents.
 file_contains_secrets: {0} (contains secrets)
-filesystem: File system
-forms: Forms
-forms-choice: Choose options
-forms-confirm: Confirm action
-forms-file_picker: File picker
-forms-input: Input form
 forms_canceled: Cancelled
 forms_confirmed: Confirmed
 forms_custom_option: Custom option...
@@ -234,7 +215,6 @@ forms_make_selection: Make your selection
 forms_select_file: Select file...
 forms_selected_files: Selected files
 forms_selection_confirmed: Selection confirmed
-fs-apply_diff: Apply patch to file
 fs-changes_deleted: deleted some lines
 fs-changes_inserted: inserted some lines
 fs-changes_lines_replaced: Replaced {0} lines
@@ -243,11 +223,6 @@ fs-changes_none: no changes
 fs-changes_text_replaced: Replaced {0} entries
 fs-changes_updated: updated
 fs-copied: copied
-fs-copy_directory: Copy directory
-fs-copy_file: Copy file
-fs-create_directory: Create directory
-fs-delete_directory: Delete directory
-fs-delete_file: Delete file
 fs-deleted: deleted
 fs-diff_accepted: Accepted
 fs-diff_confirm: Confirm
@@ -256,37 +231,23 @@ fs-diff_declined: Declined
 fs-diff_disable_all: Disable All
 fs-diff_enable_all: Enable All
 fs-diff_toggle_chunk: Toggle this change chunk
-fs-edit: Edit file
 fs-edit_changes_applied_none: {0} *(no changes)*
 fs-edit_changes_count: {0} change(s) ({1})
 fs-entries: {0} entries
-fs-get_file_info: Get file info
-fs-glob: Glob search
 fs-glob_found_count: Found {0} item(s)...
 fs-glob_no_matches: No matches found
 fs-glob_results: {0} result(s)
 fs-glob_searching: Searching for **{0}**...
-fs-grep: Filesystem search
 fs-grep_collecting_files: Collecting files...
 fs-grep_collecting_files_count: Collecting files... ({0} found)
 fs-grep_completed: Found {0} matching files
 fs-grep_scanning_files: Scanning files...
 fs-list_directory: List files in directory
-fs-move_directory: Move directory
-fs-open_file: Open file
-fs-open_in_explorer: Open in explorer
 fs-opened: opened
-fs-read_binary_file: Read binary file
-fs-read_document_file: Read document
-fs-read_entry: Read file/directory
-fs-rename_file: Rename file
 fs-renamed: renamed
 fs-replace: Replace text in file
 fs-replace_lines: Replace lines in file
-fs-write_binary_file: Write binary file
-fs-write_file: Write file
 fs-write_file_streaming_status: {0} ({1} lines...)
-general: General
 general-print: Print
 image_describer_status: Describing... *{0} tokens*
 input: Input
@@ -296,31 +257,12 @@ input-move_mouse_delta: Move mouse
 input-press_key: Press key
 lines_count: {0} lines
 list_shuffled: Shuffled list of {0} items
-lua-execute: Execute Lua script
-lua-get_script_info: Get Lua script info
-lua-list_scripts: List Lua scripts
-lua-move_script: Move Lua script
-lua-register_or_update_script: Register or update Lua script
-lua-remove_script: Remove Lua script
-math-calculate: Calculate
-math-solve: Solve math equation
-math-solve_complex: Solve complex equation
 math_solve_status: {0} *({1} roots)*
 math_solve_status_no_roots: {0} *(no roots)*
-mathematics: Mathematics
 mcp-connection_type: Connection type
 mcp-endpoint: Endpoint
 mcp_manager_header: MCP manager
 mcp_manager_hint: MCP manager
-memory: Memory
-memory-append_log: Append memory log
-memory-clear: Clear memory block
-memory-delete_log: Delete memory log
-memory-forget_fact: Forget memory fact
-memory-retrieve_fact: Retrieve memory facts
-memory-search_log: Search memory logs
-memory-store_fact: Store memory fact
-memory-view_logs: View memory logs
 memory-view_logs_status_latest: Latest **{0}**
 memory-view_logs_status_time_window: Time window
 memory_attachment_mode_readonly: Read only
@@ -341,12 +283,6 @@ message_visibility_always: Always
 message_visibility_only_agents: Only to agents
 message_visibility_only_users: Only to users
 message_visibility_reveal_after_send: After send
-metatools: Meta-tools
-metatools-create_or_update: Create or update meta-tool
-metatools-delete: Delete meta-tool
-metatools-get_info: Get information about meta-tool
-metatools-list: List meta-tools
-metatools-rename: Rename meta-tool
 model_capability_chat: Chat Completions
 model_capability_completion: Completions
 model_capability_embeddings: Embeddings
@@ -453,20 +389,10 @@ prompt_use_custom_persona: Use custom persona
 prompt_use_custom_specialization: Use custom specialization
 prompt_user_nickname_hint: How assistant should call you?
 prompt_user_nickname_placeholder: e.g. John
-python-get_installed_packages_list: Get Python installed packages
 python-repl_get_var: Get Python REPL variable
 python-repl_reset: Reset Python REPL context
 python_meta_venv_activate_script_path_hint: Python Venv activation script for metatools
 python_venv_activate_script_path_hint: Python Venv activation script
-random: Random
-random-GUID: Generate GUID
-random-check_chance: Check chance
-random-coin_flip: Flip a coin
-random-dice_roll: Roll dices
-random-float: Generate random decimal number
-random-integer: Generate random integer
-random-items_from_list: Select random items from list
-random-shuffle_list: Shuffle list
 reasoning: Reasoning process
 reasoning_default: Default
 reasoning_disabled: Disabled
@@ -487,7 +413,6 @@ reset: Reset
 sample: Sample
 save: Save
 save_markdown: Save Markdown
-scripting: Scripting
 select_model: Select model
 select_python_meta_venv_activate_script: Select Python Venv activation script for metatools
 select_python_venv_activate_script: Select Python Venv activation script
@@ -773,10 +698,6 @@ settings_stage_stop_chance: Stop chance
 settings_stage_weight_tooltip: Probability of being selected (0 = always skipped, 1 = never skipped)
 settings_stage_weighted_agents: Weighted agents
 settings_toggle_agent_active: Toggle agent active/inactive
-shell-bash: Execute Bash script
-shell-batch: Execute Batch script
-shell-powershell: Execute Powershell script
-skill-load: Load skill
 skill_diagnostic_fileaccesserror: File Access Error
 skill_diagnostic_fileaccesserror_hint: Unable to read the SKILL.md file. Check file permissions.
 skill_diagnostic_generalparsingerror: Parse Error
@@ -803,7 +724,6 @@ skill_diagnostic_yamlparsingerror: YAML Syntax Error
 skill_diagnostic_yamlparsingerror_hint: The YAML frontmatter contains invalid syntax.
 skill_injection_mode_default: Name + Description
 skill_injection_mode_full: Full Body
-skills: Skills
 specialization_clear: Clear specialization
 stage_type_adaptive: Adaptive
 stage_type_mention_only: Mention only
@@ -838,9 +758,6 @@ task_status_pending: Pending
 task_status_success: Success
 task_status_unknown: Unknown
 temporary_chat: temporary
-time: Time
-time-get: Get current time
-time-wait: Wait
 time_wait_completed: Completed ({0})
 time_wait_status: Waiting... {0} remaining
 title: Niggalink AI
@@ -969,19 +886,9 @@ user_select_image: Choose Image...
 user_select_image_title: Select user profile image
 user_select_prompt: Select a user from the list to edit
 voice_chat: Voice chat
-wd-list: List working directories
-wd-switch: Switch working directory
-web: Web
-web-download: Download
-web-fetch: Fetch web content
 web-get: GET request
 web-get_html: Fetch HTML
-web-parse: Web parse
 web-post: POST request
-web-request: Web request
-web-search: Web search
-web-search_get_engines: Get avaliable web-search engines
-web-status: Check web status
 web_search_results: {0} *({1} results)*
 webui_anonymous: Anonymous
 webui_assistant: Assistant
@@ -1044,5 +951,4 @@ webui_register_title: Register
 webui_resend: Resend
 webui_result: Result
 webui_stop_generation: Stop generation
-workdir: Working directories
 working_directory_hint: Working directory

@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 		public override string Name => ChatToolInfo.Name;
 
-		public override string DisplayName => ChatToolInfo.DisplayName ?? ChatToolInfo.Name;
+		public override string DisplayName => ChatToolInfo.TitleKey?.RawValue ?? ChatToolInfo.Name;
 
 		public override string Description => ChatToolInfo.DescriptionGetter();
 
@@ -56,8 +56,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			{
 				CompletionToken = CompletionToken.Success,
 				Id = ToolCallId.Generate(),
-				ToolName = ChatToolInfo.Name,
-				Title = ChatToolInfo.DisplayName
+				ToolName = ChatToolInfo.Name
 			};
 			dummyMessage.ToolCalls.Add(dummyToolCall);
 

@@ -3,6 +3,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -20,7 +21,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "wd-list",
 					Description = "Lists all working directories configured for the current chat session.",
-					Category = "workdir"
+					TitleKey = Locale.GetKey("tool.name.wd-list"),
+					DescriptionKey = Locale.GetKey("tool.description.wd-list"),
+					CategoryKey = Locale.GetKey("tool.category.workdir")
 				});
 
 			AddTool(SwitchWorkingDirectory, null, SwitchWorkingDirectoryPreview,
@@ -28,7 +31,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "wd-switch",
 					Description = "Switches the working directory for the current chat session.",
-					Category = "workdir",
+					TitleKey = Locale.GetKey("tool.name.wd-switch"),
+					DescriptionKey = Locale.GetKey("tool.description.wd-switch"),
+					CategoryKey = Locale.GetKey("tool.category.workdir"),
 					DefaultExpectedBehaviour = ToolBehaviour.WorkdirChange,
 					SynchronizationGroup = "wd-switch" // Prevent parallel execution of this tool
 				});

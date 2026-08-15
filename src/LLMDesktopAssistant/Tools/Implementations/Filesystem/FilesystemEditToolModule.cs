@@ -78,7 +78,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						- Regex delete (remove debug lines):
 						  fs-edit(path: "file.cs", match: "Console\.WriteLine", operation: "delete", useRegex: true)
 						""",
-					Category = "filesystem",
+					TitleKey = Locale.GetKey("tool.name.fs-edit"),
+					DescriptionKey = Locale.GetKey("tool.description.fs-edit"),
+					CategoryKey = Locale.GetKey("tool.category.filesystem"),
 					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,
 					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
 					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup

@@ -79,7 +79,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 						Use `manuals(...)` function to get the documentation for a specific namespace, `print(manuals(_G))`
 						or `print(manuals(dass.agents, dass.tool, dass.tool.result))` for example.
 						""",
-					Category = "Lua",
+					TitleKey = Locale.GetKey("tool.name.lua-execute"),
+					DescriptionKey = Locale.GetKey("tool.description.lua-execute"),
+					CategoryKey = Locale.GetConstKey("Lua"),
 					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
 				});
 		}

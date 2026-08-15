@@ -522,7 +522,6 @@ namespace LLMDesktopAssistant.LLM.Services
 				MessageId = model.Id,
 				ToolCallId = toolCall.Id,
 				ToolName = toolCall.ToolName,
-				Title = toolCall.Title,
 				FunctionArguments = toolCall.Arguments,
 				Status = toolCall.Status switch
 				{
@@ -932,7 +931,6 @@ namespace LLMDesktopAssistant.LLM.Services
 					{
 						Id = toolCallModel.ToolCallId,
 						ToolName = toolCallModel.ToolName,
-						Title = toolCallModel.Title,
 						Arguments = toolCallModel.FunctionArguments,
 						ResultContent = toolCallModel.ResultContent,
 						Attachments = [.. toolAttachments],

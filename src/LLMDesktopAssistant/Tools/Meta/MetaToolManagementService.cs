@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text.Json.Nodes;
-using DocumentFormat.OpenXml.Wordprocessing;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting;
@@ -212,8 +212,8 @@ namespace LLMDesktopAssistant.Tools.Meta
 						ArgumentSchema = tool.ArgumentSchema ?? [],
 						Executor = engine.CreateExecutor(tool),
 						DefaultExpectedBehaviour = ToolBehaviour.Meta | tool.Behaviours,
-						DisplayName = tool.Title,
-						Category = tool.Category,
+						TitleKey = tool.Title != null ? Locale.GetConstKey(tool.Title) : null,
+						CategoryKey = tool.Category != null ? Locale.GetKey($"tool.category.{tool.Category}") : null,
 						Source = ToolSource.Meta,
 						ApprovalLevel = tool.ApprovalLevel,
 						Enabled = true

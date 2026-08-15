@@ -1,0 +1,103 @@
+// Tool names and categories.
+// %namespace: tool - keys are used as tool.name.* and tool.category.* by ToolInitializationInfo.
+
+%locale: ru-RU
+%namespace: tool
+
+// Tool names
+name.agent-call: Вызвать агента
+name.agent-describe_image: Описать изображение
+name.clipboard-copy: Скопировать в буфер обмена
+name.clipboard-read: Чтение из буфера обмена
+name.csx-execute: Выполнить C# скрипт
+name.db-execute: Выполнить SQL-запрос
+name.db-list: Получить список подключений к базам данных
+name.db-schema: Показать схему базы данных
+name.db-switch: Переключить активную базу данных
+name.execute-python: Выполнить Python скрипт
+name.execute-python_venv_shell: Выполнить Shell скрипт в виртуальном окружении Python
+name.forms-choice: Выбор вариантов
+name.forms-confirm: Подтверждение действия
+name.forms-file_picker: Выбор файла
+name.forms-input: Форма ввода
+name.fs-apply_diff: Применить изменения к файлу
+name.fs-copy_directory: Скопировать директорию
+name.fs-copy_file: Скопировать файл
+name.fs-create_directory: Создать директорию
+name.fs-delete_directory: Удалить директорию
+name.fs-delete_file: Удалить файл
+name.fs-edit: Редактирование файла
+name.fs-get_file_info: Получить информацию о файле
+name.fs-glob: Поиск по маске
+name.fs-grep: Поиск в файловой системе
+name.fs-move_directory: Переместить директорию
+name.fs-open_file: Открыть файл
+name.fs-open_in_explorer: Открыть в проводнике
+name.fs-read_binary_file: Прочитать бинарный файл
+name.fs-read_document_file: Прочитать документ
+name.fs-read_entry: Чтение файла/директории
+name.fs-rename_file: Переименовать файл
+name.fs-write_binary_file: Записать в бинарный файл
+name.fs-write_file: Записать в файл
+name.lua-execute: Выполнить Lua скрипт
+name.lua-get_script_info: Получить информацию о Lua-скрипте
+name.lua-list_scripts: Получить список Lua-скриптов
+name.lua-move_script: Переместить Lua-скрипт
+name.lua-register_or_update_script: Зарегистрировать или обновить Lua-скрипт
+name.lua-remove_script: Удалить Lua-скрипт
+name.math-calculate: Вычислить
+name.math-solve: Решить математическое уравнение
+name.math-solve_complex: Решить комплексное уравнение
+name.memory-append_log: Добавить лог в память
+name.memory-clear: Очистить блок памяти
+name.memory-delete_log: Удалить лог из памяти
+name.memory-forget_fact: Забыть факт из памяти
+name.memory-retrieve_fact: Найти факты в памяти
+name.memory-search_log: Найти логи в памяти
+name.memory-store_fact: Сохранить факт в память
+name.memory-view_logs: Просмотреть логи памяти
+name.metatools-create_or_update: Создать или обновить мета-инструмент
+name.metatools-delete: Удалить мета-инструмент
+name.metatools-get_info: Получить информацию о мета-инструменте
+name.metatools-list: Получить список мета-инструментов
+name.metatools-rename: Переименовать мета-инструмент
+name.python-get_installed_packages_list: Получить список установленных пакетов Python
+name.random-check_chance: Проверка шанса
+name.random-coin_flip: Подкинуть монетку
+name.random-dice_roll: Бросить кубик
+name.random-float: Сгенерировать дробное число
+name.random-GUID: Сгенерировать GUID
+name.random-integer: Сгенерировать целое число
+name.random-items_from_list: Выбрать случайные элементы из списка
+name.random-shuffle_list: Перемешать список
+name.shell-bash: Выполнить Bash скрипт
+name.shell-batch: Выполнить Batch скрипт
+name.shell-powershell: Выполнить Powershell скрипт
+name.skill-load: Прочитать навык
+name.time-get: Получить текущее время
+name.time-wait: Подождать
+name.wd-list: Получить список рабочих директорий
+name.wd-switch: Сменить рабочую директорию
+name.web-download: Скачать
+name.web-fetch: Получить веб-контент
+name.web-parse: Парсинг HTML
+name.web-request: Веб-запрос
+name.web-search: Поиск в интернете
+name.web-search_get_engines: Получить список доступных движков веб-поиска
+name.web-status: Проверить веб-статус
+
+// Tool categories
+category.agents: Агенты
+category.database: Базы данных
+category.filesystem: Файловая система
+category.forms: Формы
+category.general: Общие
+category.mathematics: Математика
+category.memory: Память
+category.metatools: Мета-инструменты
+category.random: Рандом
+category.scripting: Скриптинг
+category.skills: Навыки
+category.time: Время
+category.web: Веб
+category.workdir: Рабочие директории

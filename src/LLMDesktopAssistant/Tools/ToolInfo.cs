@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Localization;
 using RCLargeLanguageModels.Tools;
 
 namespace LLMDesktopAssistant.Tools
@@ -94,14 +95,22 @@ namespace LLMDesktopAssistant.Tools
 		public string? SynchronizationGroup { get; init; }
 
 		/// <summary>
-		/// Gets or sets the user-friendly display name of the tool. If not set, the tool's name will be used as the display name.
+		/// Gets or sets the localization key of the user-friendly display name of the tool.
+		/// If not set, the tool's name is used as the display name.
 		/// </summary>
-		public string? DisplayName { get; init; }
+		public LocaleKeyBase? TitleKey { get; init; }
 
 		/// <summary>
-		/// Gets or sets the category of the tool. Defaults to "general".
+		/// Gets or sets the localization key of the tool description shown in the UI.
+		/// If not set, the raw description from <see cref="DescriptionGetter"/> is used.
 		/// </summary>
-		public string Category { get; init; } = "general";
+		public LocaleKeyBase? DescriptionKey { get; init; }
+
+		/// <summary>
+		/// Gets or sets the localization key of the tool category shown in the UI.
+		/// If not set, an unknown category placeholder is used.
+		/// </summary>
+		public LocaleKeyBase? CategoryKey { get; init; }
 
 		/// <summary>
 		/// Gets or sets the source of the tool. Defaults to "native".
@@ -166,8 +175,9 @@ namespace LLMDesktopAssistant.Tools
 				DefaultSelfHandledDecisions = info.DefaultSelfHandledDecisions,
 				Executor = _executor,
 				SynchronizationGroup = info.SynchronizationGroup,
-				DisplayName = info.DisplayName,
-				Category = info.Category,
+				TitleKey = info.TitleKey,
+				DescriptionKey = info.DescriptionKey,
+				CategoryKey = info.CategoryKey,
 				ApprovalLevel = info.ApprovalLevel,
 				Enabled = info.Enabled,
 				IsFixed = info.IsFixed,

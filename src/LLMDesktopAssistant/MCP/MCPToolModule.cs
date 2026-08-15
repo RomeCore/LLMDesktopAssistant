@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using ModelContextProtocol.Client;
@@ -86,8 +87,8 @@ namespace LLMDesktopAssistant.MCP
 				Executor = CreateExecutor(connection, mcpTool),
 				Source = ToolSource.MCP,
 				DefaultExpectedBehaviour = ToolBehaviour.MCP,
-				DisplayName = mcpTool.Title ?? mcpTool.Name,
-				Category = connection.Info.Name
+				TitleKey = Locale.GetConstKey(mcpTool.Title ?? mcpTool.Name),
+				CategoryKey = Locale.GetConstKey(connection.Info.Name)
 			};
 			return toolInfo;
 		}

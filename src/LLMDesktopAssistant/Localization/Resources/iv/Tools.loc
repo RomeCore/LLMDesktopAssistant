@@ -1,0 +1,103 @@
+// Tool names and categories.
+// %namespace: tool - keys are used as tool.name.* and tool.category.* by ToolInitializationInfo.
+
+%locale: 
+%namespace: tool
+
+// Tool names
+name.agent-call: Call agent
+name.agent-describe_image: Describe image
+name.clipboard-copy: Copy to clipboard
+name.clipboard-read: Read from clipboard
+name.csx-execute: Execute C# script
+name.db-execute: Execute a SQL statement
+name.db-list: List database connections
+name.db-schema: Show database schema
+name.db-switch: Switch active database
+name.execute-python: Execute Python script
+name.execute-python_venv_shell: Execute Shell script in Python virt. environment
+name.forms-choice: Choose options
+name.forms-confirm: Confirm action
+name.forms-file_picker: File picker
+name.forms-input: Input form
+name.fs-apply_diff: Apply patch to file
+name.fs-copy_directory: Copy directory
+name.fs-copy_file: Copy file
+name.fs-create_directory: Create directory
+name.fs-delete_directory: Delete directory
+name.fs-delete_file: Delete file
+name.fs-edit: Edit file
+name.fs-get_file_info: Get file info
+name.fs-glob: Glob search
+name.fs-grep: Filesystem search
+name.fs-move_directory: Move directory
+name.fs-open_file: Open file
+name.fs-open_in_explorer: Open in explorer
+name.fs-read_binary_file: Read binary file
+name.fs-read_document_file: Read document
+name.fs-read_entry: Read file/directory
+name.fs-rename_file: Rename file
+name.fs-write_binary_file: Write binary file
+name.fs-write_file: Write file
+name.lua-execute: Execute Lua script
+name.lua-get_script_info: Get Lua script info
+name.lua-list_scripts: List Lua scripts
+name.lua-move_script: Move Lua script
+name.lua-register_or_update_script: Register or update Lua script
+name.lua-remove_script: Remove Lua script
+name.math-calculate: Calculate
+name.math-solve: Solve math equation
+name.math-solve_complex: Solve complex equation
+name.memory-append_log: Append memory log
+name.memory-clear: Clear memory block
+name.memory-delete_log: Delete memory log
+name.memory-forget_fact: Forget memory fact
+name.memory-retrieve_fact: Retrieve memory facts
+name.memory-search_log: Search memory logs
+name.memory-store_fact: Store memory fact
+name.memory-view_logs: View memory logs
+name.metatools-create_or_update: Create or update meta-tool
+name.metatools-delete: Delete meta-tool
+name.metatools-get_info: Get information about meta-tool
+name.metatools-list: List meta-tools
+name.metatools-rename: Rename meta-tool
+name.python-get_installed_packages_list: Get Python installed packages
+name.random-check_chance: Check chance
+name.random-coin_flip: Flip a coin
+name.random-dice_roll: Roll dices
+name.random-float: Generate random decimal number
+name.random-GUID: Generate GUID
+name.random-integer: Generate random integer
+name.random-items_from_list: Select random items from list
+name.random-shuffle_list: Shuffle list
+name.shell-bash: Execute Bash script
+name.shell-batch: Execute Batch script
+name.shell-powershell: Execute Powershell script
+name.skill-load: Load skill
+name.time-get: Get current time
+name.time-wait: Wait
+name.wd-list: List working directories
+name.wd-switch: Switch working directory
+name.web-download: Download
+name.web-fetch: Fetch web content
+name.web-parse: Web parse
+name.web-request: Web request
+name.web-search: Web search
+name.web-search_get_engines: Get avaliable web-search engines
+name.web-status: Check web status
+
+// Tool categories
+category.agents: Agents
+category.database: Database
+category.filesystem: File system
+category.forms: Forms
+category.general: General
+category.mathematics: Mathematics
+category.memory: Memory
+category.metatools: Meta-tools
+category.random: Random
+category.scripting: Scripting
+category.skills: Skills
+category.time: Time
+category.web: Web
+category.workdir: Working directories

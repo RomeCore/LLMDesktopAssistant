@@ -4,6 +4,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using Material.Icons;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Memory
 {
@@ -37,7 +38,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					The block itself and its configuration are preserved.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryClear,
-				Category = "memory"
+				TitleKey = Locale.GetKey("tool.name.memory-clear"),
+				DescriptionKey = Locale.GetKey("tool.description.memory-clear"),
+				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
 		}
 

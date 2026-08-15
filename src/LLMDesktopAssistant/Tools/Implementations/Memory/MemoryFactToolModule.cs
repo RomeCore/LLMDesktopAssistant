@@ -5,6 +5,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using Material.Icons;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Memory
 {
@@ -34,7 +35,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					Stores a fact in the specified memory block with the given importance.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryWrite,
-				Category = "memory"
+				TitleKey = Locale.GetKey("tool.name.memory-store_fact"),
+				DescriptionKey = Locale.GetKey("tool.description.memory-store_fact"),
+				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
 
 			AddTool(RetrieveAsync, new ToolInitializationInfo
@@ -46,7 +49,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					HyDE query is used to improve semantic matching and may be provided additionally.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryRead,
-				Category = "memory"
+				TitleKey = Locale.GetKey("tool.name.memory-retrieve_fact"),
+				DescriptionKey = Locale.GetKey("tool.description.memory-retrieve_fact"),
+				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
 
 			AddTool(ForgetAsync, new ToolInitializationInfo
@@ -59,7 +64,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					Use mode="hard" to remove the fact permanently.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryDelete,
-				Category = "memory"
+				TitleKey = Locale.GetKey("tool.name.memory-forget_fact"),
+				DescriptionKey = Locale.GetKey("tool.description.memory-forget_fact"),
+				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
 		}
 

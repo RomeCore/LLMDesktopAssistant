@@ -157,9 +157,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var result = new LuaTable();
 			result["name"] = new LuaString(tool.Name);
 			result["description"] = new LuaString(tool.DescriptionGetter());
-			result["category"] = new LuaString(tool.Category);
-			if (tool.DisplayName != null)
-				result["display_name"] = new LuaString(tool.DisplayName);
+			result["category"] = new LuaString(tool.CategoryKey?.Key ?? string.Empty);
+			if (tool.TitleKey != null)
+				result["display_name"] = new LuaString(tool.TitleKey.Key);
 			result["enabled"] = LuaBoolean.FromBoolean(tool.Enabled);
 			result["approval_level"] = new LuaString(tool.ApprovalLevel.ToString());
 			result["source"] = new LuaString(tool.Source.ToString().ToLower());

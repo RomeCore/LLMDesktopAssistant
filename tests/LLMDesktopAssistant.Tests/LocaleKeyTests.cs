@@ -12,7 +12,7 @@ public class LocaleKeyTests
 			["test.count"] = "Count: {0}"
 		};
 
-		public override string Localize(string key) => _values.GetValueOrDefault(key, key);
+		public override string? TryLocalize(string key) => _values.GetValueOrDefault(key);
 
 		public override IEnumerable<string> GetAvailableLanguages() => ["en-US", "ru-RU"];
 

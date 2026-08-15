@@ -4,6 +4,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using Material.Icons;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -26,7 +27,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Name = "skill-load",
 				IsFixed = true,
 				Description = "Loads a skill (SKILL.md format) by its name.",
-				Category = "skills",
+				TitleKey = Locale.GetKey("tool.name.skill-load"),
+				DescriptionKey = Locale.GetKey("tool.description.skill-load"),
+				CategoryKey = Locale.GetKey("tool.category.skills"),
 				DefaultExpectedBehaviour = ToolBehaviour.None
 			});
 		}

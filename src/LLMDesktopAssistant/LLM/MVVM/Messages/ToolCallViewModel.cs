@@ -3,6 +3,8 @@ using Avalonia.Input.Platform;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
@@ -14,26 +16,11 @@ namespace LLMDesktopAssistant.LLM.Messages
 	{
 		private readonly ToolCall toolCall;
 
-		private string _toolName = string.Empty;
-		public string ToolName
-		{
-			get => _toolName;
-			set => SetProperty(ref _toolName, value);
-		}
+		public string ToolName { get; }
 
-		private string _toolTitle = string.Empty;
-		public string ToolTitle
-		{
-			get => _toolTitle;
-			set => SetProperty(ref _toolTitle, value);
-		}
+		public LocaleKeyBase ToolTitle { get; }
 
-		private string _toolCallId = string.Empty;
-		public string ToolCallId
-		{
-			get => _toolCallId;
-			set => SetProperty(ref _toolCallId, value);
-		}
+		public string ToolCallId { get; }
 
 		private string _arguments = string.Empty;
 		public string Arguments
@@ -331,7 +318,8 @@ namespace LLMDesktopAssistant.LLM.Messages
 			this.toolCall = toolCall;
 
 			ToolName = toolCall.ToolName;
-			ToolTitle = toolCall.Title ?? toolCall.ToolName;
+			ToolTitle = chat.Services.GetService<IToolsetCacheService>()?.AvailableTools.GetValueOrDefault(toolCall.ToolName)
+				?.TitleKey ?? Locale.GetConstKey(toolCall.ToolName);
 			ToolCallId = toolCall.Id;
 			try
 			{

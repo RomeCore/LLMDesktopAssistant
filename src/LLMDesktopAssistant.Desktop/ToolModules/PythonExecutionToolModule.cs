@@ -38,7 +38,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "execute-python",
 					Description = "Executes Python in isolated virtual environment (global variables are not accessible between scripts) from the working directory. It returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!'). Displays live output in a terminal.",
-					Category = "Python",
+					TitleKey = Locale.GetKey("tool.name.execute-python"),
+					DescriptionKey = Locale.GetKey("tool.description.execute-python"),
+					CategoryKey = Locale.GetConstKey("Python"),
 					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
 				});
 
@@ -47,7 +49,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "execute-python_venv_shell",
 					Description = "Executes shell script in a Python's virtual environment from the working directory. Useful for installing packages via 'pip'. Displays live output in a terminal.",
-					Category = "Python",
+					TitleKey = Locale.GetKey("tool.name.execute-python_venv_shell"),
+					DescriptionKey = Locale.GetKey("tool.description.execute-python_venv_shell"),
+					CategoryKey = Locale.GetConstKey("Python"),
 					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
 				});
 
@@ -56,7 +60,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "python-get_installed_packages_list",
 					Description = "Returns the list of installed packages in the current Python's virtual environment.",
-					Category = "Python",
+					TitleKey = Locale.GetKey("tool.name.python-get_installed_packages_list"),
+					DescriptionKey = Locale.GetKey("tool.description.python-get_installed_packages_list"),
+					CategoryKey = Locale.GetConstKey("Python"),
 					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess
 				});
 		}

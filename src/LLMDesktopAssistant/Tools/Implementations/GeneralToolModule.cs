@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Avalonia.Input.Platform;
 using RCLargeLanguageModels.Tools;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -14,7 +15,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "clipboard-copy",
 					Description = "Copies a piece of text to the clipboard, use when neccessary.",
-					Category = "general",
+					TitleKey = Locale.GetKey("tool.name.clipboard-copy"),
+					DescriptionKey = Locale.GetKey("tool.description.clipboard-copy"),
+					CategoryKey = Locale.GetKey("tool.category.general"),
 					DefaultExpectedBehaviour = ToolBehaviour.ClipboardWrite
 				});
 
@@ -23,7 +26,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "clipboard-read",
 					Description = "Reads the current content of the clipboard.",
-					Category = "general",
+					TitleKey = Locale.GetKey("tool.name.clipboard-read"),
+					DescriptionKey = Locale.GetKey("tool.description.clipboard-read"),
+					CategoryKey = Locale.GetKey("tool.category.general"),
 					DefaultExpectedBehaviour = ToolBehaviour.ClipboardRead
 				});
 		}

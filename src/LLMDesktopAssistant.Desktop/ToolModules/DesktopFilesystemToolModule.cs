@@ -5,6 +5,7 @@ using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {
@@ -24,7 +25,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					Name = "fs-open_file",
 					Description = "Opens a file from the working directory with its default application.",
-					Category = "filesystem",
+					TitleKey = Locale.GetKey("tool.name.fs-open_file"),
+					DescriptionKey = Locale.GetKey("tool.description.fs-open_file"),
+					CategoryKey = Locale.GetKey("tool.category.filesystem"),
 					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.FileRead |
 						ToolBehaviour.AccessOutsideWorkdir
 				});
@@ -36,7 +39,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					Description = "Opens a file or directory in the system file explorer. " +
 						"Files are revealed and selected, directories are opened, and non-existent paths " +
 						"fall back to opening their parent directory.",
-					Category = "filesystem",
+					TitleKey = Locale.GetKey("tool.name.fs-open_in_explorer"),
+					DescriptionKey = Locale.GetKey("tool.description.fs-open_in_explorer"),
+					CategoryKey = Locale.GetKey("tool.category.filesystem"),
 					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}

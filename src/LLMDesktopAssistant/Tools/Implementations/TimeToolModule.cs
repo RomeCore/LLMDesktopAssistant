@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
 
@@ -14,7 +14,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "time-get",
 					Description = "Gets the current time in the specified timezone.",
-					Category = "time"
+					TitleKey = Locale.GetKey("tool.name.time-get"),
+					DescriptionKey = Locale.GetKey("tool.description.time-get"),
+					CategoryKey = Locale.GetKey("tool.category.time")
 				});
 
 			AddTool(TimeWait,
@@ -22,7 +24,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "time-wait",
 					Description = "Waits for a specified duration with real-time progress updates.",
-					Category = "time",
+					TitleKey = Locale.GetKey("tool.name.time-wait"),
+					DescriptionKey = Locale.GetKey("tool.description.time-wait"),
+					CategoryKey = Locale.GetKey("tool.category.time"),
 					DefaultExpectedBehaviour = ToolBehaviour.LongRunningTask
 				});
 		}

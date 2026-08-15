@@ -7,6 +7,7 @@ using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
 using RCLargeLanguageModels.Json.Schema;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Web
 {
@@ -29,7 +30,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				{
 					Name = "web-status",
 					Description = "Check if a website is accessible and return status code.",
-					Category = "web",
+					TitleKey = Locale.GetKey("tool.name.web-status"),
+					DescriptionKey = Locale.GetKey("tool.description.web-status"),
+					CategoryKey = Locale.GetKey("tool.category.web"),
 					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 
@@ -38,7 +41,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				{
 					Name = "web-request",
 					Description = "Perform a request to a specified URL and method.",
-					Category = "web",
+					TitleKey = Locale.GetKey("tool.name.web-request"),
+					DescriptionKey = Locale.GetKey("tool.description.web-request"),
+					CategoryKey = Locale.GetKey("tool.category.web"),
 					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 
@@ -47,7 +52,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				{
 					Name = "web-download",
 					Description = "Download a file from a specified URL into the working directory.",
-					Category = "web",
+					TitleKey = Locale.GetKey("tool.name.web-download"),
+					DescriptionKey = Locale.GetKey("tool.description.web-download"),
+					CategoryKey = Locale.GetKey("tool.category.web"),
 					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.InternetAccess
 				});
 		}

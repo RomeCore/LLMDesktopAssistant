@@ -18,6 +18,17 @@ namespace LLMDesktopAssistant.Localization
 		}
 
 		/// <summary>
+		/// Gets a <see cref="ConstLocaleKey"/> for the specified value. The returned instance always returns
+		/// the same <paramref name="value"/> regardless of the current language.
+		/// </summary>
+		/// <param name="value">The value to return.</param>
+		/// <returns>The <see cref="ConstLocaleKey"/> instance.</returns>
+		public static ConstLocaleKey GetConstKey(string value)
+		{
+			return new ConstLocaleKey(value);
+		}
+
+		/// <summary>
 		/// Gets the localized value for the specified key. If the key is not found, the key itself is returned.
 		/// </summary>
 		/// <param name="key">The full localization key.</param>

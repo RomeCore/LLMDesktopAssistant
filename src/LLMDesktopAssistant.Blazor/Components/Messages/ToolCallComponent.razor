@@ -1,12 +1,15 @@
 @using System.ComponentModel
 @using LLMDesktopAssistant.LLM.Domain
 @using LLMDesktopAssistant.LLM.Messages
+@using LLMDesktopAssistant.LLM.Services.Tools
 @using LLMDesktopAssistant.Utils
 @using Material.Icons
 
 @implements IDisposable
 
 @rendermode InteractiveServer
+
+@inject IToolsetCacheService ToolsetCache
 
 <div class="toolcall-item" data-status="@ToolCall.Status">
 	<span class="toolcall-icon">
@@ -79,7 +82,8 @@
 
 	protected override void OnInitialized()
 	{
-		_title = LocalizationManager.LocalizeStatic(ToolCall.Title ?? ToolCall.ToolName);
+		_title = ToolsetCache.AvailableTools.GetValueOrDefault(ToolCall.ToolName)
+			?.TitleKey?.Value ?? LocalizationManager.LocalizeStatic(ToolCall.ToolName);
 
 		ToolCall.PropertyChanged += OnToolCallPropertyChanged;
 	}

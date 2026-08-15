@@ -25,7 +25,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					Name = "fs-write_file",
 					Description = "Writes text content to a file inside working directory.",
-					Category = "filesystem",
+					TitleKey = Locale.GetKey("tool.name.fs-write_file"),
+					DescriptionKey = Locale.GetKey("tool.description.fs-write_file"),
+					CategoryKey = Locale.GetKey("tool.category.filesystem"),
 					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir,
 					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
 					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup

@@ -8,13 +8,29 @@ namespace LLMDesktopAssistant.Localization
 	/// Instances are cached per key and implement <see cref="INotifyPropertyChanged"/> so that
 	/// bindings to <see cref="Value"/> are updated automatically when the language changes.
 	/// </summary>
-	public sealed class LocaleKey : INotifyPropertyChanged, IEquatable<LocaleKey>
+	public sealed class LocaleKey : LocaleKeyBase, IEquatable<LocaleKey>
 	{
 		private static readonly ConcurrentDictionary<string, LocaleKey> Cache = new();
 
-		private LocaleKey(string key)
+		private bool _isValueCached = false;
+		private string? _cachedValue = null;
+
+		public override string? RawValue
 		{
-			Key = key;
+			get
+			{
+				if (!_isValueCached)
+				{
+					_cachedValue = LocalizationManager.TryLocalizeStatic(Key);
+					_isValueCached = true;
+					return _cachedValue;
+				}
+				return _cachedValue;
+			}
+		}
+
+		private LocaleKey(string key) : base(key)
+		{
 			LocalizationManager.StaticLanguageChanged += OnStaticLanguageChanged;
 		}
 
@@ -28,38 +44,14 @@ namespace LLMDesktopAssistant.Localization
 			return Cache.GetOrAdd(key, static k => new LocaleKey(k));
 		}
 
-		/// <summary>
-		/// Gets the full localization key.
-		/// </summary>
-		public string Key { get; }
-
-		/// <summary>
-		/// Gets the localized value for the current language.
-		/// </summary>
-		public string Value => LocalizationManager.LocalizeStatic(Key);
-
-		/// <summary>
-		/// Gets the localized value for the current language. Returns null if key is not found.
-		/// </summary>
-		public string? RawValue => LocalizationManager.TryLocalizeStatic(Key);
-
-		/// <summary>
-		/// Formats the localized value with the specified arguments using <see cref="string.Format(string, object?[])"/>.
-		/// </summary>
-		/// <param name="args">The arguments to substitute into the format string.</param>
-		/// <returns>The formatted localized string.</returns>
-		public string Format(params object?[] args)
+		public static implicit operator string(LocaleKey key)
 		{
-			return string.Format(Value, args);
+			return key.Value;
 		}
 
-		/// <summary>
-		/// Returns the localized value of the key.
-		/// </summary>
-		/// <returns>The localized string.</returns>
-		public override string ToString()
+		public static implicit operator LocaleKey(string key)
 		{
-			return Value;
+			return GetOrCreate(key);
 		}
 
 		/// <inheritdoc />
@@ -81,12 +73,12 @@ namespace LLMDesktopAssistant.Localization
 		}
 
 		/// <inheritdoc />
-		public event PropertyChangedEventHandler? PropertyChanged;
-
-		private static readonly PropertyChangedEventArgs _cachedPropertyChangedArgs = new(nameof(Value));
+		public override event PropertyChangedEventHandler? PropertyChanged;
 
 		private void OnStaticLanguageChanged(object? sender, string language)
 		{
+			_isValueCached = false;
+			_cachedValue = null;
 			PropertyChanged?.Invoke(this, _cachedPropertyChangedArgs);
 		}
 	}

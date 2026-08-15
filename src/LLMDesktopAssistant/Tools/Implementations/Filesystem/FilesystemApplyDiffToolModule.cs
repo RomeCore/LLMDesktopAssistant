@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
@@ -34,7 +34,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						4: third line
 						Note: Works best if you know line numbers when looking file with fs-explore(showLineNumbers = true)
 						""",
-					Category = "filesystem",
+					TitleKey = Locale.GetKey("tool.name.fs-apply_diff"),
+					DescriptionKey = Locale.GetKey("tool.description.fs-apply_diff"),
+					CategoryKey = Locale.GetKey("tool.category.filesystem"),
 					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,
 					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
 					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup

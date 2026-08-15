@@ -3,6 +3,7 @@ using System.Text;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Scripting.Lua;
 using Material.Icons;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 {
@@ -24,7 +25,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 				{
 					Name = "lua-register_or_update_script",
 					Description = BuildRegisterOrUpdateDescription(),
-					Category = "Lua",
+					TitleKey = Locale.GetKey("tool.name.lua-register_or_update_script"),
+					DescriptionKey = Locale.GetKey("tool.description.lua-register_or_update_script"),
+					CategoryKey = Locale.GetConstKey("Lua"),
 					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
 				});
 
@@ -33,7 +36,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 				{
 					Name = "lua-remove_script",
 					Description = "Removes a registered Lua user script by its path. The path is relative to the Lua scripts directory.",
-					Category = "Lua",
+					TitleKey = Locale.GetKey("tool.name.lua-remove_script"),
+					DescriptionKey = Locale.GetKey("tool.description.lua-remove_script"),
+					CategoryKey = Locale.GetConstKey("Lua"),
 					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
 				});
 
@@ -42,7 +47,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 				{
 					Name = "lua-move_script",
 					Description = "Moves or renames a Lua user script from one path to another. Both paths are relative to the Lua scripts directory.",
-					Category = "Lua",
+					TitleKey = Locale.GetKey("tool.name.lua-move_script"),
+					DescriptionKey = Locale.GetKey("tool.description.lua-move_script"),
+					CategoryKey = Locale.GetConstKey("Lua"),
 					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
 				});
 
@@ -51,7 +58,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 				{
 					Name = "lua-list_scripts",
 					Description = "Lists all registered Lua user scripts with their namespace, path, and manuals.",
-					Category = "Lua"
+					TitleKey = Locale.GetKey("tool.name.lua-list_scripts"),
+					DescriptionKey = Locale.GetKey("tool.description.lua-list_scripts"),
+					CategoryKey = Locale.GetConstKey("Lua")
 				});
 
 			AddTool(GetLuaScriptInfo,
@@ -59,7 +68,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 				{
 					Name = "lua-get_script_info",
 					Description = "Gets detailed information about a specific Lua user script including its full content.",
-					Category = "Lua"
+					TitleKey = Locale.GetKey("tool.name.lua-get_script_info"),
+					DescriptionKey = Locale.GetKey("tool.description.lua-get_script_info"),
+					CategoryKey = Locale.GetConstKey("Lua")
 				});
 		}
 

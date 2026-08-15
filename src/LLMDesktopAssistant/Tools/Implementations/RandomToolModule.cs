@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
 
@@ -16,7 +16,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "random-GUID",
 					Description = "Generates a globally unique identifier (GUID).",
-					Category = "random"
+					TitleKey = Locale.GetKey("tool.name.random-GUID"),
+					DescriptionKey = Locale.GetKey("tool.description.random-GUID"),
+					CategoryKey = Locale.GetKey("tool.category.random")
 				});
 
 			AddTool(GenerateRandomInteger,
@@ -24,7 +26,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "random-integer",
 					Description = "Generates a random integer number.",
-					Category = "random"
+					TitleKey = Locale.GetKey("tool.name.random-integer"),
+					DescriptionKey = Locale.GetKey("tool.description.random-integer"),
+					CategoryKey = Locale.GetKey("tool.category.random")
 				});
 
 			AddTool(GenerateRandomFloat,
@@ -32,7 +36,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "random-float",
 					Description = "Generates a random floating-point number.",
-					Category = "random"
+					TitleKey = Locale.GetKey("tool.name.random-float"),
+					DescriptionKey = Locale.GetKey("tool.description.random-float"),
+					CategoryKey = Locale.GetKey("tool.category.random")
 				});
 
 			AddTool(GenerateCoinFlip,
@@ -40,7 +46,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "random-coin_flip",
 					Description = "Simulates flipping a coin. Returns 'Heads' or 'Tails'.",
-					Category = "random"
+					TitleKey = Locale.GetKey("tool.name.random-coin_flip"),
+					DescriptionKey = Locale.GetKey("tool.description.random-coin_flip"),
+					CategoryKey = Locale.GetKey("tool.category.random")
 				});
 
 			AddTool(GenerateCheckChance,
@@ -48,7 +56,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "random-check_chance",
 					Description = "Simulates a chance check with a given probability. Returns 'Success' or 'Failure'.",
-					Category = "random"
+					TitleKey = Locale.GetKey("tool.name.random-check_chance"),
+					DescriptionKey = Locale.GetKey("tool.description.random-check_chance"),
+					CategoryKey = Locale.GetKey("tool.category.random")
 				});
 
 			AddTool(GenerateRandomDiceRoll,
@@ -56,7 +66,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "random-dice_roll",
 					Description = "Simulates rolling dice (e.g., 2d6, 1d20).",
-					Category = "random"
+					TitleKey = Locale.GetKey("tool.name.random-dice_roll"),
+					DescriptionKey = Locale.GetKey("tool.description.random-dice_roll"),
+					CategoryKey = Locale.GetKey("tool.category.random")
 				});
 
 			AddTool(GenerateRandomItemsFromList,
@@ -64,7 +76,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "random-items_from_list",
 					Description = "Selects a random item from a provided list.",
-					Category = "random"
+					TitleKey = Locale.GetKey("tool.name.random-items_from_list"),
+					DescriptionKey = Locale.GetKey("tool.description.random-items_from_list"),
+					CategoryKey = Locale.GetKey("tool.category.random")
 				});
 
 			AddTool(GenerateRandomShuffledList,
@@ -72,7 +86,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "random-shuffle_list",
 					Description = "Returns a shuffled version of a provided list.",
-					Category = "random"
+					TitleKey = Locale.GetKey("tool.name.random-shuffle_list"),
+					DescriptionKey = Locale.GetKey("tool.description.random-shuffle_list"),
+					CategoryKey = Locale.GetKey("tool.category.random")
 				});
 		}
 

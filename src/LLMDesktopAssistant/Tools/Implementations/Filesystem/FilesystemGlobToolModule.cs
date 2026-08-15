@@ -48,7 +48,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						- `[!A-Z]*.md`            - Markdown files not starting with uppercase letter
 						- `{include,src}/**/*.h`  - header files in 'include' or 'src' directories
 						""",
-					Category = "filesystem",
+					TitleKey = Locale.GetKey("tool.name.fs-glob"),
+					DescriptionKey = Locale.GetKey("tool.description.fs-glob"),
+					CategoryKey = Locale.GetKey("tool.category.filesystem"),
 					DefaultExpectedBehaviour = ToolBehaviour.DirectoryRead | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}

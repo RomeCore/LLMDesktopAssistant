@@ -5,6 +5,7 @@ using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Web;
 using Material.Icons;
 using RCLargeLanguageModels.Json.Schema;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Web
 {
@@ -27,7 +28,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				{
 					Name = "web-fetch",
 					Description = "Fetch webcite content from a specified URL.",
-					Category = "web",
+					TitleKey = Locale.GetKey("tool.name.web-fetch"),
+					DescriptionKey = Locale.GetKey("tool.description.web-fetch"),
+					CategoryKey = Locale.GetKey("tool.category.web"),
 					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 
@@ -36,7 +39,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				{
 					Name = "web-parse",
 					Description = "Fetch HTML content and parse specific elements by tag or class.",
-					Category = "web",
+					TitleKey = Locale.GetKey("tool.name.web-parse"),
+					DescriptionKey = Locale.GetKey("tool.description.web-parse"),
+					CategoryKey = Locale.GetKey("tool.category.web"),
 					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
 				});
 		}

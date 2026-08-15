@@ -49,7 +49,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "agent-call",
 					Description = "Calls another LLM agent with provided system message and user message with set of allowed tools.",
-					Category = "agents",
+					TitleKey = Locale.GetKey("tool.name.agent-call"),
+					DescriptionKey = Locale.GetKey("tool.description.agent-call"),
+					CategoryKey = Locale.GetKey("tool.category.agents"),
 					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
 				});
 
@@ -58,7 +60,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "agent-describe_image",
 					Description = "Describes an image using another LLM agent.",
-					Category = "agents",
+					TitleKey = Locale.GetKey("tool.name.agent-describe_image"),
+					DescriptionKey = Locale.GetKey("tool.description.agent-describe_image"),
+					CategoryKey = Locale.GetKey("tool.category.agents"),
 					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask |
 						ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
 				});

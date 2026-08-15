@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
@@ -24,7 +24,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						Searches for pattern in files using regex.
 						Use this tool with care, as it can be slow and resource-intensive.
 						""",
-					Category = "filesystem",
+					TitleKey = Locale.GetKey("tool.name.fs-grep"),
+					DescriptionKey = Locale.GetKey("tool.description.fs-grep"),
+					CategoryKey = Locale.GetKey("tool.category.filesystem"),
 					DefaultExpectedBehaviour = ToolBehaviour.DirectoryRead | ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
 				});
 		}

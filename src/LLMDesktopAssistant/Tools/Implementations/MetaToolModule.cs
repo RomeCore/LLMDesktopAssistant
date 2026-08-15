@@ -6,6 +6,7 @@ using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools.Meta;
 using RCLargeLanguageModels.Json.Schema;
 using RCLargeLanguageModels.Tools;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -29,7 +30,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "metatools-create_or_update",
 					Description = BuildCreateOrUpdateDescription(),
-					Category = "metatools",
+					TitleKey = Locale.GetKey("tool.name.metatools-create_or_update"),
+					DescriptionKey = Locale.GetKey("tool.description.metatools-create_or_update"),
+					CategoryKey = Locale.GetKey("tool.category.metatools"),
 					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess,
 					ModifyArgumentSchema = schema =>
 					{
@@ -51,7 +54,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "metatools-list",
 					Description = "Lists all existing meta tools. Use it for understanding what tools you can tweak or modify.",
-					Category = "metatools"
+					TitleKey = Locale.GetKey("tool.name.metatools-list"),
+					DescriptionKey = Locale.GetKey("tool.description.metatools-list"),
+					CategoryKey = Locale.GetKey("tool.category.metatools")
 				});
 
 			AddTool(GetToolInfo,
@@ -59,7 +64,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "metatools-get_info",
 					Description = "Gets detailed information about a specific meta tool by its name. Use it for understanding the details of a particular tool.",
-					Category = "metatools"
+					TitleKey = Locale.GetKey("tool.name.metatools-get_info"),
+					DescriptionKey = Locale.GetKey("tool.description.metatools-get_info"),
+					CategoryKey = Locale.GetKey("tool.category.metatools")
 				});
 
 			AddTool(RenameMetaTool,
@@ -67,7 +74,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "metatools-rename",
 					Description = "Renames an existing meta tool to a new name. The original tool must exist and the new name must not conflict with any other tools.",
-					Category = "metatools",
+					TitleKey = Locale.GetKey("tool.name.metatools-rename"),
+					DescriptionKey = Locale.GetKey("tool.description.metatools-rename"),
+					CategoryKey = Locale.GetKey("tool.category.metatools"),
 					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
 				});
 
@@ -76,7 +85,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					Name = "metatools-delete",
 					Description = "Removes an existing meta tool. The tool must exist and cannot be a default tool.",
-					Category = "metatools",
+					TitleKey = Locale.GetKey("tool.name.metatools-delete"),
+					DescriptionKey = Locale.GetKey("tool.description.metatools-delete"),
+					CategoryKey = Locale.GetKey("tool.category.metatools"),
 					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
 				});
 		}
