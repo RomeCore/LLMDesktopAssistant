@@ -1,4 +1,5 @@
 ﻿using LiteDB;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
 
@@ -24,6 +25,11 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		/// Gets or sets the tool name that being/been called.
 		/// </summary>
 		public string ToolName { get; set; } = string.Empty;
+
+		/// <summary>
+		/// Gets or sets the title of the tool call.
+		/// </summary>
+		public LocaleKeyBase? Title { get; set; }
 
 		/// <summary>
 		/// Gets or sets the LLM API-specific tool call id that used by LLM to correctly bind each tool call to the tool message.

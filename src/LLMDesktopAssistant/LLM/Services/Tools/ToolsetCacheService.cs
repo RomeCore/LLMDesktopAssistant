@@ -7,8 +7,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	/// The default implementation of the <see cref="IToolsetCacheService"/> interface.
 	/// </summary>
 	[ChatService(typeof(IToolsetCacheService))]
-	public class ToolsetCacheService(IToolsetBuildingService builder) : IToolsetCacheService
+	public class ToolsetCacheService : IToolsetCacheService
 	{
+		private readonly IToolsetBuildingService _builder;
 		private ImmutableDictionary<string, ToolInfo> _availableTools = [], _validTools = [], _validAliasedTools = [];
 
 		public ImmutableDictionary<string, ToolInfo> AvailableTools => _availableTools;
@@ -17,10 +18,15 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 		public ImmutableDictionary<string, ToolInfo> ValidAliasedTools => _validAliasedTools;
 
+		public ToolsetCacheService(IToolsetBuildingService builder)
+		{
+			_builder = builder;
+		}
+
 		public void Invalidate(ChatAgentDescriptor agent)
 		{
-			_availableTools = builder.GetAvailableTools().ToImmutableDictionary(t => t.Name);
-			_validTools = builder.GetToolsForAgent(agent).ToImmutableDictionary(t => t.Name);
+			_availableTools = _builder.GetAvailableTools().ToImmutableDictionary(t => t.Name);
+			_validTools = _builder.GetToolsForAgent(agent).ToImmutableDictionary(t => t.Name);
 			_validAliasedTools = BuildDictionaryWithAliases(_validTools.Values);
 		}
 

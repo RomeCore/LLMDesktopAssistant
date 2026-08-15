@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
@@ -15,6 +16,11 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// Gets or sets the name of the tool being called.
 		/// </summary>
 		public required string ToolName { get; init; }
+
+		/// <summary>
+		/// Gets or sets the title of the tool call, which can be localized.
+		/// </summary>
+		public LocaleKeyBase? Title { get; init; }
 
 		/// <summary>
 		/// Gets or sets the ID of the tool call.

@@ -318,8 +318,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 			this.toolCall = toolCall;
 
 			ToolName = toolCall.ToolName;
-			ToolTitle = chat.Services.GetService<IToolsetCacheService>()?.AvailableTools.GetValueOrDefault(toolCall.ToolName)
-				?.TitleKey ?? Locale.GetConstKey(toolCall.ToolName);
+			ToolTitle = toolCall.Title ?? new ConstLocaleKey(toolCall.ToolName);
 			ToolCallId = toolCall.Id;
 			try
 			{

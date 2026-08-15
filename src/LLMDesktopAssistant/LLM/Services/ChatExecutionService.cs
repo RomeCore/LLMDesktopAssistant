@@ -228,6 +228,7 @@ namespace LLMDesktopAssistant.LLM.Services
 							Status = ToolStatus.None,
 							Id = toolCall.Id,
 							ToolName = toolInfo?.Name ?? toolCall.ToolName,
+							Title = toolInfo?.TitleKey,
 							Arguments = funtionCall.Args,
 							CompletionToken = toolCallCompletionSource.Token
 						};
