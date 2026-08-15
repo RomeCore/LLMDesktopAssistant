@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Browser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Desktop", "LLMDesktopAssistant.Desktop\LLMDesktopAssistant.Desktop.csproj", "{5C04DFE7-E212-0635-4A98-D4731355C554}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.iOS", "LLMDesktopAssistant.iOS\LLMDesktopAssistant.iOS.csproj", "{46329E21-FB2C-EA11-3182-A040A5CA0FEF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Blazor", "LLMDesktopAssistant.Blazor\LLMDesktopAssistant.Blazor.csproj", "{F000687E-E836-4254-8E6F-00CE6E630318}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Tests", "LLMDesktopAssistant.Tests\LLMDesktopAssistant.Tests.csproj", "{1BC9AC63-9648-45DB-B600-DB4D61A2119D}"
@@ -63,18 +61,6 @@ Global
 		{5C04DFE7-E212-0635-4A98-D4731355C554}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5C04DFE7-E212-0635-4A98-D4731355C554}.Release|x64.ActiveCfg = Release|Any CPU
 		{5C04DFE7-E212-0635-4A98-D4731355C554}.Release|x64.Build.0 = Release|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Debug|x64.Build.0 = Debug|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Debug|x64.Deploy.0 = Debug|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Release|x64.ActiveCfg = Release|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Release|x64.Build.0 = Release|Any CPU
-		{46329E21-FB2C-EA11-3182-A040A5CA0FEF}.Release|x64.Deploy.0 = Release|Any CPU
 		{F000687E-E836-4254-8E6F-00CE6E630318}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F000687E-E836-4254-8E6F-00CE6E630318}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F000687E-E836-4254-8E6F-00CE6E630318}.Debug|x64.ActiveCfg = Debug|Any CPU

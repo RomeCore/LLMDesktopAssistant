@@ -20,11 +20,6 @@
 		<PackageReference Include="LiveMarkdown.Avalonia.Math" Version="2.2.2" />
 		<PackageReference Include="LiveMarkdown.Avalonia.Mermaid" Version="2.2.2" />
 		<PackageReference Include="Tmds.DBus.Protocol" Version="0.94.2" />
-		<PackageReference Include="Whisper.net" Version="1.9.1" />
-		<PackageReference Include="Whisper.net.Runtime" Version="1.9.1" />
-		<PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.9.1" />
-		<PackageReference Include="Whisper.net.Runtime.NoAvx" Version="1.9.1" />
-		<PackageReference Include="System.Speech" Version="10.0.9" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
 		<PackageReference Include="NAudio" Version="2.3.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
