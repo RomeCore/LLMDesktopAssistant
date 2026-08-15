@@ -5,6 +5,8 @@
 %locale: ru-RU
 
 add: Добавить
+tool_source_meta: Мета
+tool_source_mcp: MCP
 agent-ask_question: Спросить агента
 agent-launch: Запустить агента
 agent_info: Об агенте

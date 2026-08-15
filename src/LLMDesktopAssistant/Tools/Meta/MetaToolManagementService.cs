@@ -213,7 +213,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 						Executor = engine.CreateExecutor(tool),
 						DefaultExpectedBehaviour = ToolBehaviour.Meta | tool.Behaviours,
 						TitleKey = tool.Title != null ? Locale.GetConstKey(tool.Title) : null,
-						CategoryKey = tool.Category != null ? Locale.GetKey($"tool.category.{tool.Category}") : null,
+						CategoryKey = tool.Category != null ? Locale.GetConstKey(tool.Category) : null,
 						Source = ToolSource.Meta,
 						ApprovalLevel = tool.ApprovalLevel,
 						Enabled = true

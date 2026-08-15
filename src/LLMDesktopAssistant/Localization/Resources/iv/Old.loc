@@ -5,6 +5,8 @@
 %locale: 
 
 add: Add
+tool_source_meta: Meta
+tool_source_mcp: MCP
 agent-ask_question: Ask agent
 agent-launch: Launch agent
 agent_info: Agent info

@@ -327,7 +327,7 @@
 												Spacing="4"
 												ClipToBounds="True">
 
-							<TextBlock Text="{Binding TitlePrefix}"
+							<TextBlock Text="{loc:Loc {Binding TitlePrefix}}"
 												 Foreground="{Binding TitlePrefixForeground}"
 												 IsVisible="{Binding TitlePrefix, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
 												 Opacity="0.7"/>

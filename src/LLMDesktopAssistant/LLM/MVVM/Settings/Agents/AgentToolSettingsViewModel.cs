@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public LocaleKeyBase Category { get; }
 
 		public IBrush? TitlePrefixForeground { get; }
-		public string? TitlePrefix { get; }
+		public LocaleKeyBase? TitlePrefix { get; }
 
 		public LocaleKeyBase Description { get; }
 		public LocaleKeyBase Title { get; }
@@ -50,12 +50,12 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			switch (tool.Source)
 			{
 				case ToolSource.MCP:
-					TitlePrefix = Locale.Get("tool_source_mcp");
+					TitlePrefix = Locale.GetKey("tool_source_mcp");
 					TitlePrefixForeground = Brushes.LightGreen;
 					break;
 
 				case ToolSource.Meta:
-					TitlePrefix = Locale.Get("tool_source_meta");
+					TitlePrefix = Locale.GetKey("tool_source_meta");
 					TitlePrefixForeground = Brushes.Magenta;
 					break;
 			}
