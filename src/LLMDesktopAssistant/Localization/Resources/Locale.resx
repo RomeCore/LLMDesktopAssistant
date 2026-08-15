@@ -405,6 +405,15 @@
   <data name="settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="settings_application" xml:space="preserve">
+    <value>Application settings</value>
+  </data>
+  <data name="settings_language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="settings_language_system" xml:space="preserve">
+    <value>System</value>
+  </data>
   <data name="fs-write_file" xml:space="preserve">
     <value>Write file</value>
   </data>

@@ -53,13 +53,13 @@
 						</ToggleButton>
 						
 						<ListBox ItemsSource="{Binding TopSidebarItems}"
-										 SelectedItem="{Binding SelectedSidebarItem}"
+										 SelectedItem="{Binding SelectedTopSidebarItem}"
 										 DockPanel.Dock="Top">
 
 						</ListBox>
 						
 						<ListBox ItemsSource="{Binding BottomSidebarItems}"
-										 SelectedItem="{Binding SelectedSidebarItem}"
+										 SelectedItem="{Binding SelectedBottomSidebarItem}"
 										 DockPanel.Dock="Bottom">
 
 						</ListBox>

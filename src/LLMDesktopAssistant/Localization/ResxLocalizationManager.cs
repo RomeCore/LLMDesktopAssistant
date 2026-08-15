@@ -1,7 +1,8 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Resources;
 using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Settings.Application;
 
 namespace LLMDesktopAssistant.Localization
 {
@@ -29,6 +30,11 @@ namespace LLMDesktopAssistant.Localization
 			else
 				_currentCulture = null; // Default to neutral culture if current UI culture is not supported
 			Locale.Culture = _currentCulture;
+
+			// Apply the language saved in the application settings, if any.
+			var savedLanguage = ApplicationSettingsAccessor.ApplicationSettings.Language.System;
+			if (!string.IsNullOrEmpty(savedLanguage))
+				CurrentLanguage = savedLanguage;
 		}
 
 		public override IEnumerable<string> GetAvailableLanguages()
@@ -47,6 +53,7 @@ namespace LLMDesktopAssistant.Localization
 			{
 				_currentCulture = culture;
 				Locale.Culture = _currentCulture;
+				ApplicationSettingsAccessor.ApplicationSettings.Language.System = language;
 				return true;
 			}
 			return false;

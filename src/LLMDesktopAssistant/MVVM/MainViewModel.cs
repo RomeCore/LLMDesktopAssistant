@@ -5,6 +5,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Settings.Application;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
@@ -32,18 +33,59 @@ namespace LLMDesktopAssistant.MVVM
 
 		public RangeObservableCollection<MainViewModelSidebarItemViewModel> BottomSidebarItems { get; }
 
-		private MainViewModelSidebarItemViewModel? _selectedSidebarItem;
-		public MainViewModelSidebarItemViewModel? SelectedSidebarItem
+		private MainViewModelSidebarItemViewModel? _selectedTopSidebarItem;
+		/// <summary>
+		/// Gets or sets the currently selected top sidebar item. Selecting an item clears the bottom selection.
+		/// </summary>
+		public MainViewModelSidebarItemViewModel? SelectedTopSidebarItem
 		{
-			get => _selectedSidebarItem;
+			get => _selectedTopSidebarItem;
 			set
 			{
-				var prev = _selectedSidebarItem;
-				if (SetProperty(ref _selectedSidebarItem, value))
+				if (SetProperty(ref _selectedTopSidebarItem, value))
 				{
-					prev?.IsSelected = false;
-					_selectedSidebarItem?.IsSelected = true;
+					if (value is not null)
+					{
+						SelectedBottomSidebarItem = null;
+						SelectSidebarItem(value);
+					}
 				}
+			}
+		}
+
+		private MainViewModelSidebarItemViewModel? _selectedBottomSidebarItem;
+		/// <summary>
+		/// Gets or sets the currently selected bottom sidebar item. Selecting an item clears the top selection.
+		/// </summary>
+		public MainViewModelSidebarItemViewModel? SelectedBottomSidebarItem
+		{
+			get => _selectedBottomSidebarItem;
+			set
+			{
+				if (SetProperty(ref _selectedBottomSidebarItem, value))
+				{
+					if (value is not null)
+					{
+						SelectedTopSidebarItem = null;
+						SelectSidebarItem(value);
+					}
+				}
+			}
+		}
+
+		private MainViewModelSidebarItemViewModel? _selectedSidebarItem;
+		/// <summary>
+		/// Gets the currently selected sidebar item.
+		/// </summary>
+		public MainViewModelSidebarItemViewModel? SelectedSidebarItem => _selectedSidebarItem;
+
+		private void SelectSidebarItem(MainViewModelSidebarItemViewModel item)
+		{
+			var prev = _selectedSidebarItem;
+			if (SetProperty(ref _selectedSidebarItem, item))
+			{
+				prev?.IsSelected = false;
+				item.IsSelected = true;
 			}
 		}
 
@@ -51,6 +93,7 @@ namespace LLMDesktopAssistant.MVVM
 		public MCPManagerViewModel MCPManager { get; }
 		public PromptManagerViewModel PromptManager { get; }
 		public AgentTaskDispatcherViewModel AgentTaskDispatcher { get; }
+		public ApplicationSettingsViewModel ApplicationSettings { get; }
 
 		public MainViewModel()
 		{
@@ -90,7 +133,15 @@ namespace LLMDesktopAssistant.MVVM
 				Content = AgentTaskDispatcher
 			});
 
-			SelectedSidebarItem = TopSidebarItems[0];
+			ApplicationSettings = new ApplicationSettingsViewModel();
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.Cog,
+				Title = "settings_application",
+				Content = ApplicationSettings
+			});
+
+			SelectedTopSidebarItem = TopSidebarItems[0];
 		}
 	}
 }

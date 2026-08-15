@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.LLM.Settings;
 
 namespace LLMDesktopAssistant.Settings.Application
 {
@@ -13,6 +13,16 @@ namespace LLMDesktopAssistant.Settings.Application
 		{
 			get => _inheritedChatSettings;
 			set => SetProperty(ref _inheritedChatSettings, value);
+		}
+
+		private ApplicationLanguageSettings _language = new();
+		/// <summary>
+		/// Gets or sets the language settings of the application.
+		/// </summary>
+		public ApplicationLanguageSettings Language
+		{
+			get => _language;
+			set => SetProperty(ref _language, value);
 		}
 	}
 }

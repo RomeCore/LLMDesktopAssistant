@@ -405,6 +405,15 @@
   <data name="settings" xml:space="preserve">
     <value>Настройки</value>
   </data>
+  <data name="settings_application" xml:space="preserve">
+    <value>Настройки приложения</value>
+  </data>
+  <data name="settings_language" xml:space="preserve">
+    <value>Язык</value>
+  </data>
+  <data name="settings_language_system" xml:space="preserve">
+    <value>Системный</value>
+  </data>
   <data name="fs-write_file" xml:space="preserve">
     <value>Записать в файл</value>
   </data>

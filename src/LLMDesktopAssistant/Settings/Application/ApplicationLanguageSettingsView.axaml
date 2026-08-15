@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.Settings.Application"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 x:Class="LLMDesktopAssistant.Settings.Application.ApplicationLanguageSettingsView"
+			 x:DataType="local:ApplicationLanguageSettingsViewModel">
+
+	<StackPanel Margin="10" Spacing="8">
+
+		<TextBlock Text="{loc:Loc settings_language}"
+				   FontWeight="Bold"
+				   FontSize="{DynamicResource FontSizeL}"/>
+
+		<ComboBox ItemsSource="{Binding AvailableLanguages}"
+				  SelectedItem="{Binding CurrentLanguage}"
+				  MinWidth="220"
+				  HorizontalAlignment="Left">
+			<ComboBox.ItemTemplate>
+				<DataTemplate x:DataType="local:LanguageItemViewModel">
+					<TextBlock Text="{Binding DisplayName}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+
+	</StackPanel>
+
+</UserControl>

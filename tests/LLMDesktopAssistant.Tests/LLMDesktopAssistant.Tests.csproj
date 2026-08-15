@@ -16,12 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LLMDesktopAssistant\LLMDesktopAssistant.csproj" />
-    <ProjectReference Include="..\LLMDesktopAssistant.SourceGenerators\LLMDesktopAssistant.SourceGenerators.csproj" />
-
-		<!--
-    <ProjectReference Include="..\LLMDesktopAssistant.Desktop\LLMDesktopAssistant.Desktop.csproj" />
-		-->
+    <ProjectReference Include="..\..\src\LLMDesktopAssistant.SourceGenerators\LLMDesktopAssistant.SourceGenerators.csproj" />
+    <ProjectReference Include="..\..\src\LLMDesktopAssistant\LLMDesktopAssistant.csproj" />
   </ItemGroup>
 
   <ItemGroup>
