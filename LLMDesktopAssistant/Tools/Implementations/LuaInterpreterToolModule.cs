@@ -1,7 +1,7 @@
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Scripting.Lua;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools.Implementations

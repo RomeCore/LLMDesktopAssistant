@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text;
 using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Scripting.Lua;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools.Implementations

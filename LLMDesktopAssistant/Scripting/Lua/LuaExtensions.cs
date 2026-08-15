@@ -2,7 +2,7 @@ using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.Tools;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.Scripting.Lua
 {
 	public static class LuaExtensions
 	{

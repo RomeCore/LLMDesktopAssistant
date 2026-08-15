@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using RCParsing;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.Scripting.Lua
 {
 	[Service(typeof(ILuaUserScriptManager))]
 	public class LuaUserScriptManager : ILuaUserScriptManager

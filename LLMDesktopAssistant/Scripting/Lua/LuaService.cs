@@ -2,10 +2,9 @@
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.Scripting.Lua;
 using Serilog;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.Scripting.Lua
 {
 	[ChatService]
 	public class LuaService

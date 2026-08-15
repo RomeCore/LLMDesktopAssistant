@@ -4,7 +4,7 @@ using AsyncLua.Values;
 using LLTSharp;
 using LLTSharp.DataAccessors;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.Scripting.Lua
 {
 	public static class StructuredLuaConverter
 	{

@@ -1,7 +1,6 @@
-﻿using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.Tools.Meta;
+﻿using LLMDesktopAssistant.Tools.Meta;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.Scripting.Lua
 {
 	public class LuaMetaToolEngineDescriptor : IMetaToolEngineDescriptor
 	{

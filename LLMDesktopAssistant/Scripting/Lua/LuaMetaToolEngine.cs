@@ -1,15 +1,11 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
-using RCParsing;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
-namespace LLMDesktopAssistant.Scripting
+namespace LLMDesktopAssistant.Scripting.Lua
 {
 	/// <summary>
 	/// Lua implementation of <see cref="IMetaToolEngine"/>.

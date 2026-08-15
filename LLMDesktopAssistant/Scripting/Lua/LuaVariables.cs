@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Scripting
+﻿namespace LLMDesktopAssistant.Scripting.Lua
 {
 	public static class LuaVariables
 	{
