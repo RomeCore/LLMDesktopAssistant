@@ -1,21 +1,21 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.5.11626.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant", "LLMDesktopAssistant\LLMDesktopAssistant.csproj", "{431CEFDF-7621-42A9-B6E2-551A7AEF84EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant", "src\LLMDesktopAssistant\LLMDesktopAssistant.csproj", "{431CEFDF-7621-42A9-B6E2-551A7AEF84EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Android", "LLMDesktopAssistant.Android\LLMDesktopAssistant.Android.csproj", "{55605F69-B953-05C3-23D1-8B92E7106A32}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Android", "src\LLMDesktopAssistant.Android\LLMDesktopAssistant.Android.csproj", "{55605F69-B953-05C3-23D1-8B92E7106A32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Browser", "LLMDesktopAssistant.Browser\LLMDesktopAssistant.Browser.csproj", "{CB7F10B9-E4A0-7D60-15B1-A914A1AC1162}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Browser", "src\LLMDesktopAssistant.Browser\LLMDesktopAssistant.Browser.csproj", "{CB7F10B9-E4A0-7D60-15B1-A914A1AC1162}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Desktop", "LLMDesktopAssistant.Desktop\LLMDesktopAssistant.Desktop.csproj", "{5C04DFE7-E212-0635-4A98-D4731355C554}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Desktop", "src\LLMDesktopAssistant.Desktop\LLMDesktopAssistant.Desktop.csproj", "{5C04DFE7-E212-0635-4A98-D4731355C554}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Blazor", "LLMDesktopAssistant.Blazor\LLMDesktopAssistant.Blazor.csproj", "{F000687E-E836-4254-8E6F-00CE6E630318}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Blazor", "src\LLMDesktopAssistant.Blazor\LLMDesktopAssistant.Blazor.csproj", "{F000687E-E836-4254-8E6F-00CE6E630318}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Tests", "LLMDesktopAssistant.Tests\LLMDesktopAssistant.Tests.csproj", "{1BC9AC63-9648-45DB-B600-DB4D61A2119D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.Tests", "tests\LLMDesktopAssistant.Tests\LLMDesktopAssistant.Tests.csproj", "{1BC9AC63-9648-45DB-B600-DB4D61A2119D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.SourceGenerators", "LLMDesktopAssistant.SourceGenerators\LLMDesktopAssistant.SourceGenerators.csproj", "{E4EDA296-0691-FEDD-2DA5-9070CAACA505}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMDesktopAssistant.SourceGenerators", "src\LLMDesktopAssistant.SourceGenerators\LLMDesktopAssistant.SourceGenerators.csproj", "{E4EDA296-0691-FEDD-2DA5-9070CAACA505}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
