@@ -22,10 +22,9 @@ public class LocFileLocalizationManagerTests : IDisposable
 			Directory.Delete(_userLocaleDirectory, recursive: true);
 	}
 
-	private LocFileLocalizationManager CreateManager(ResxLocalizationManager? fallback = null)
+	private LocFileLocalizationManager CreateManager()
 	{
 		return new LocFileLocalizationManager(
-			fallback: fallback,
 			userLocaleDirectory: _userLocaleDirectory,
 			resourceAssembly: Assembly.GetExecutingAssembly());
 	}
@@ -103,17 +102,6 @@ public class LocFileLocalizationManagerTests : IDisposable
 	}
 
 	[Fact]
-	public void FallsBackToResxManager()
-	{
-		var resxManager = new ResxLocalizationManager();
-		resxManager.CurrentLanguage = "English (US)";
-		var manager = CreateManager(resxManager);
-
-		// "save" exists in resx but not in .loc files.
-		Assert.Equal("Save", manager.Localize("save"));
-	}
-
-	[Fact]
 	public void MissingKeyReturnsKeyItself()
 	{
 		var manager = CreateManager();
@@ -122,15 +110,13 @@ public class LocFileLocalizationManagerTests : IDisposable
 	}
 
 	[Fact]
-	public void GetAvailableLanguages_ContainsFallbackAndLocFileLanguages()
+	public void GetAvailableLanguages_ContainsLocFileLanguages()
 	{
-		var resxManager = new ResxLocalizationManager();
-		var manager = CreateManager(resxManager);
+		var manager = CreateManager();
 
 		var languages = manager.GetAvailableLanguages().ToArray();
 
-		Assert.Contains("English (US)", languages);
-		Assert.Contains("Русский (Россия)", languages);
+		Assert.Contains("русский (Россия)", languages);
 	}
 
 	[Fact]

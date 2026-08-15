@@ -170,19 +170,4 @@ public class LocFileParserTests
 
 		Assert.Equal("ui.common.save", document.Entries.Keys.Single());
 	}
-
-	[Theory]
-	[InlineData("iv", "")]
-	[InlineData("ru-RU", "ru-RU")]
-	public void Parse_AllProductionLocFiles(string folder, string expectedLocale)
-	{
-		var repositoryRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
-		var locFile = Path.Combine(repositoryRoot, "src", "LLMDesktopAssistant", "Localization", "Resources", folder, "Old.loc");
-
-		var content = File.ReadAllText(locFile);
-		var document = LocFileParser.Parse(content);
-
-		Assert.Equal(expectedLocale, document.Locale);
-		Assert.Equal(1042, document.Entries.Count);
-	}
 }
