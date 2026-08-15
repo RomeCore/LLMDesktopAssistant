@@ -1,14 +1,9 @@
-using System.Collections.Concurrent;
-using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
 using LLMDesktopAssistant.Utils;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
 namespace LLMDesktopAssistant.Scripting.CSX
@@ -21,31 +16,22 @@ namespace LLMDesktopAssistant.Scripting.CSX
 	[ChatService(typeof(IMetaToolEngine))]
 	public class CSharpScriptMetaToolEngine : IMetaToolEngine
 	{
-		private static readonly ScriptOptions Options = ScriptOptions.Default
-			.AddReferences(GetLoadedAssemblies())
-			.WithImports(
-				"System",
-				"System.Collections.Generic",
-				"System.Linq",
-				"System.Net.Http",
-				"System.Text",
-				"System.Text.Json",
-				"System.Text.Json.Nodes",
-				"System.Threading",
-				"System.Threading.Tasks",
-				"LLMDesktopAssistant",
-				"LLMDesktopAssistant.Tools",
-				"LLMDesktopAssistant.Tools.Meta",
-				"LLMDesktopAssistant.Scripting",
-				"LLMDesktopAssistant.Utils");
-
-		private readonly ConcurrentDictionary<string, Script<object?>> _compiledScripts = new();
+		private readonly CSharpScriptService _scriptService;
 
 		/// <inheritdoc/>
 		public ScriptLanguageType Language => ScriptLanguageType.CSharpScript;
 
 		/// <inheritdoc/>
 		public IMetaToolEngineDescriptor Descriptor { get; } = new CSharpScriptMetaToolEngineDescriptor();
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSharpScriptMetaToolEngine"/> class.
+		/// </summary>
+		/// <param name="scriptService">The service used to run C# scripts.</param>
+		public CSharpScriptMetaToolEngine(CSharpScriptService scriptService)
+		{
+			_scriptService = scriptService;
+		}
 
 		/// <inheritdoc/>
 		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool)
@@ -58,16 +44,17 @@ namespace LLMDesktopAssistant.Scripting.CSX
 				{
 					try
 					{
-						var script = GetOrCreateScript(tool.ExecutionCode);
+						var workdir = context.Chat.Services.GetService<WorkingDirectoryAccessService>()?.GetWorkingDirectory();
+
 						var globals = new CSharpScriptGlobals
 						{
 							ToolArgs = args,
 							Context = context,
-							Result = new CSharpScriptToolResult(reactiveResult)
+							Result = new CSharpScriptToolResult(reactiveResult),
+							Workdir = workdir ?? Directories.DefaultWorkingDirectory,
 						};
 
-						var state = await script.RunAsync(globals: globals, cancellationToken: cancellationToken);
-						var returnValue = state.ReturnValue;
+						var returnValue = await _scriptService.RunAsync(tool.ExecutionCode, globals, cancellationToken);
 
 						if (reactiveResult.StructuredResult == null && returnValue != null)
 						{
@@ -100,28 +87,6 @@ namespace LLMDesktopAssistant.Scripting.CSX
 
 				return Task.FromResult(reactiveResult);
 			};
-		}
-
-		private Script<object?> GetOrCreateScript(string code)
-		{
-			var key = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(code)));
-			return _compiledScripts.GetOrAdd(key, _ => CSharpScript.Create<object?>(code, Options, typeof(CSharpScriptGlobals)));
-		}
-
-		private static IReadOnlyList<Assembly> GetLoadedAssemblies()
-		{
-			try
-			{
-				return ReflectionUtility.AllAssemblies
-					.Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
-					.ToArray();
-			}
-			catch (InvalidOperationException)
-			{
-				return AppDomain.CurrentDomain.GetAssemblies()
-					.Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
-					.ToArray();
-			}
 		}
 	}
 }

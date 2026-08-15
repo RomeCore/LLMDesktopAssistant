@@ -3231,5 +3231,7 @@
   <data name="settings-memory_logs_clear_error" xml:space="preserve">
     <value>Failed to delete logs</value>
   </data>
-
+  <data name="csx-execute" xml:space="preserve">
+    <value>Execute C# script</value>
+  </data>
 </root>

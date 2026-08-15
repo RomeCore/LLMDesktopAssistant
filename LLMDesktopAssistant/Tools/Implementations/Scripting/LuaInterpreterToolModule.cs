@@ -4,7 +4,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Scripting.Lua;
 using Material.Icons;
 
-namespace LLMDesktopAssistant.Tools.Implementations
+namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 {
 	[ToolModule]
 	public class LuaInterpreterToolModule : ToolModule

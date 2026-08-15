@@ -10,7 +10,7 @@ public class CSharpScriptMetaToolEngineTests
 {
 	private static readonly MetaToolSerializer Serializer = new();
 	private static readonly IMetaToolEngineDescriptor Descriptor = new CSharpScriptMetaToolEngineDescriptor();
-	private static readonly CSharpScriptMetaToolEngine Engine = new();
+	private static readonly CSharpScriptMetaToolEngine Engine = new(new CSharpScriptService());
 
 	private static MetaTool CreateTool(string executionCode) => new()
 	{

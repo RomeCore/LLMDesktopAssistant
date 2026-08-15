@@ -4,7 +4,7 @@ using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Scripting.Lua;
 using Material.Icons;
 
-namespace LLMDesktopAssistant.Tools.Implementations
+namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 {
 	/// <summary>
 	/// Module for managing user Lua scripts — scripts that are loaded into the Lua environment

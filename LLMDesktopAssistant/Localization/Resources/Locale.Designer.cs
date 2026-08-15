@@ -1213,6 +1213,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Execute C# script.
+        /// </summary>
+        public static string csx_execute {
+            get {
+                return ResourceManager.GetString("csx-execute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Auto-approve level.
         /// </summary>
         public static string danger_level_auto_approve {
@@ -5227,6 +5236,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Facts and logs are disabled for this block. The agent cannot read or write any memory to it..
+        /// </summary>
+        public static string settings_memory_block_warning_no_content {
+            get {
+                return ResourceManager.GetString("settings-memory_block_warning_no_content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Memory blocks.
         /// </summary>
         public static string settings_memory_blocks {
@@ -5542,6 +5560,60 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete all facts.
+        /// </summary>
+        public static string settings_memory_facts_clear {
+            get {
+                return ResourceManager.GetString("settings-memory_facts_clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на All facts stored in this block will be permanently deleted. This action cannot be undone..
+        /// </summary>
+        public static string settings_memory_facts_clear_confirm {
+            get {
+                return ResourceManager.GetString("settings-memory_facts_clear_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на All facts deleted.
+        /// </summary>
+        public static string settings_memory_facts_clear_done {
+            get {
+                return ResourceManager.GetString("settings-memory_facts_clear_done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Failed to delete facts.
+        /// </summary>
+        public static string settings_memory_facts_clear_error {
+            get {
+                return ResourceManager.GetString("settings-memory_facts_clear_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Deleted facts: {0}..
+        /// </summary>
+        public static string settings_memory_facts_clear_result {
+            get {
+                return ResourceManager.GetString("settings-memory_facts_clear_result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete all facts?.
+        /// </summary>
+        public static string settings_memory_facts_clear_title {
+            get {
+                return ResourceManager.GetString("settings-memory_facts_clear_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на The fact is stored with an importance score and becomes searchable..
         /// </summary>
         public static string settings_memory_facts_hint {
@@ -5556,6 +5628,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_memory_facts_importance {
             get {
                 return ResourceManager.GetString("settings-memory_facts_importance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Min importance.
+        /// </summary>
+        public static string settings_memory_facts_min_importance {
+            get {
+                return ResourceManager.GetString("settings-memory_facts_min_importance", resourceCulture);
             }
         }
         
@@ -5749,6 +5830,60 @@ namespace LLMDesktopAssistant.Localization.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete all logs.
+        /// </summary>
+        public static string settings_memory_logs_clear {
+            get {
+                return ResourceManager.GetString("settings-memory_logs_clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на All logs stored in this block will be permanently deleted. This action cannot be undone..
+        /// </summary>
+        public static string settings_memory_logs_clear_confirm {
+            get {
+                return ResourceManager.GetString("settings-memory_logs_clear_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на All logs deleted.
+        /// </summary>
+        public static string settings_memory_logs_clear_done {
+            get {
+                return ResourceManager.GetString("settings-memory_logs_clear_done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Failed to delete logs.
+        /// </summary>
+        public static string settings_memory_logs_clear_error {
+            get {
+                return ResourceManager.GetString("settings-memory_logs_clear_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Deleted logs: {0}..
+        /// </summary>
+        public static string settings_memory_logs_clear_result {
+            get {
+                return ResourceManager.GetString("settings-memory_logs_clear_result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Delete all logs?.
+        /// </summary>
+        public static string settings_memory_logs_clear_title {
+            get {
+                return ResourceManager.GetString("settings-memory_logs_clear_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на From.
         /// </summary>
         public static string settings_memory_logs_from {
@@ -5772,6 +5907,15 @@ namespace LLMDesktopAssistant.Localization.Resources {
         public static string settings_memory_logs_importance {
             get {
                 return ResourceManager.GetString("settings-memory_logs_importance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Min importance.
+        /// </summary>
+        public static string settings_memory_logs_min_importance {
+            get {
+                return ResourceManager.GetString("settings-memory_logs_min_importance", resourceCulture);
             }
         }
         
