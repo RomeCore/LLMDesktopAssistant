@@ -1,0 +1,9 @@
+// Russian locale.
+// User files in %LOCALAPPDATA%\.llmassist\locale override these embedded resources.
+
+%locale: ru-RU
+%namespace: common
+
+default: По умолчанию
+save: Сохранить
+add: Добавить

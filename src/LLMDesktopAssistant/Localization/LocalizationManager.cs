@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services;
 
 namespace LLMDesktopAssistant.Localization
 {
@@ -7,6 +7,24 @@ namespace LLMDesktopAssistant.Localization
 	/// </summary>
 	public abstract class LocalizationManager : NotifyPropertyChanged
 	{
+		private static LocalizationManager? _overrideManager;
+
+		/// <summary>
+		/// Sets the manager used by the static localization methods. Intended for testing purposes.
+		/// </summary>
+		/// <param name="manager">The manager to use, or <see langword="null"/> to resolve from the service registry.</param>
+		internal static void SetOverrideManager(LocalizationManager? manager)
+		{
+			_overrideManager = manager;
+		}
+
+
+		/// <summary>
+		/// Event that is raised when the language changes. Subscribers do not need a reference to a manager instance,
+		/// which makes it suitable for lightweight objects such as <see cref="LocaleKey"/>.
+		/// </summary>
+		public static event EventHandler<string>? StaticLanguageChanged;
+
 		/// <summary>
 		/// Localizes a given key using the current localization manager.
 		/// </summary>
@@ -14,7 +32,7 @@ namespace LLMDesktopAssistant.Localization
 		/// <returns>The localized string, or the original key if not found.</returns>
 		public static string LocalizeStatic(string key)
 		{
-			return ServiceRegistry.Provider.GetRequiredService<LocalizationManager>()?.Localize(key) ?? key;
+			return (_overrideManager ?? ServiceRegistry.Provider?.GetService<LocalizationManager>())?.Localize(key) ?? key;
 		}
 
 		/// <summary>
@@ -25,14 +43,11 @@ namespace LLMDesktopAssistant.Localization
 		/// <returns>The localized string, or the original key if not found.</returns>
 		public static string LocalizeStaticFormat(string formatKey, params object?[] formatArgs)
 		{
-			var format = ServiceRegistry.Provider.GetRequiredService<LocalizationManager>()?.Localize(formatKey) ?? formatKey;
+			var format = (_overrideManager ?? ServiceRegistry.Provider?.GetService<LocalizationManager>())?.Localize(formatKey) ?? formatKey;
 			return string.Format(format, formatArgs);
 		}
 
-		/// <summary>
-		/// Event that is raised when the language changes.
-		/// </summary>
-		public event EventHandler<string>? LanguageChanged;
+
 
 		private string _currentLanguage = string.Empty;
 		/// <summary>
@@ -49,10 +64,16 @@ namespace LLMDesktopAssistant.Localization
 					{
 						SetProperty(ref _currentLanguage, value);
 						LanguageChanged?.Invoke(this, _currentLanguage);
+						StaticLanguageChanged?.Invoke(null, _currentLanguage);
 					}
 				}
 			}
 		}
+
+		/// <summary>
+		/// Event that is raised when the language changes.
+		/// </summary>
+		public event EventHandler<string>? LanguageChanged;
 
 		/// <summary>
 		/// Localizes a given key to the current language.

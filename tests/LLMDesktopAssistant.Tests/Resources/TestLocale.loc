@@ -1,0 +1,10 @@
+// Embedded test locale — verifies that .loc files are loaded from assembly resources.
+
+%locale: ru-RU
+%namespace: embedded
+
+hello: Привет из embedded
+multiline """
+Строка 1
+Строка 2
+"""

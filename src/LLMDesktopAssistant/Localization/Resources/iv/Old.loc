@@ -1,0 +1,1048 @@
+// Legacy resx keys, kept for the migration period.
+// Migrate keys from this file into properly named .loc files (see RULES.md),
+// then remove the migrated entries from here.
+
+%locale: 
+
+add: Add
+agent-ask_question: Ask agent
+agent-call: Call agent
+agent-describe_image: Describe image
+agent-launch: Launch agent
+agent_info: Agent info
+agent_info_clear_image: Clear image
+agent_info_description: Description
+agent_info_description_hint: Provide a brief description of the agent's role and purpose. This helps other agents understand when to delegate tasks.
+agent_info_description_placeholder: Enter agent description...
+agent_info_name_hint: Set a custom name for this agent. This name is used in the agent list and in the chat.
+agent_info_name_placeholder: Enter agent name...
+agent_info_profile_image: Profile image
+agent_info_profile_image_hint: Paste a base64-encoded image to use as the agent's avatar.
+agent_info_select_image: Select image
+agent_selection_task: Agent selection
+agent_tasks: Agent Tasks
+agents: Agents
+application-applicate_hint: Applicate
+application-description: Semantic description
+application-end_byte: End byte
+application-end_line: End line
+application-full_contents: Full contents
+application-full_hexadecimal: Full hexadecimal dump
+application-hexadecimal_partial: Partial hexadecimal dump
+application-mode_hint: Application mode
+application-only_reference: Only reference
+application-partial_contents: Partial contents
+application-start_byte: Start byte
+application-start_line: Start line
+approval_level: Approval Level
+approval_level_alwaysapprove: Auto-approve
+approval_level_alwaysask: Always ask
+approval_level_alwaysdisallow: Always disallow
+approval_level_policyapproveorask: Policy: never disallow
+approval_level_policyaskordisallow: Policy: never auto-approve
+approval_level_policyautoapproveunlessdisallowed: Policy: auto-approve unless disallowed
+approval_level_policyautodisallowunlessapproved: Policy: auto-disallow unless approved
+approval_level_policybased: Policy-based
+approve: Approve
+ask_for_confirmation: Ask
+ask_for_confirmation_tooltip: Whether to ask before executing tool
+assistant_role: Assistant
+attachment-add_url_hint: Add URL
+attachment-apply_native: Apply as native LLM attachment
+attachment-attach_files_hint: Attach files
+attachment-copy_to_working_directory: Copy to working directory
+attachment-drop_files_here: Drop files here
+attachment-url_hint: Attachment URL
+attachments_manager_title: Attach
+blazor_host_copy_url: Copy URL to clipboard
+blazor_host_open_browser: Open in browser
+blazor_host_password: Password
+blazor_host_password_placeholder: Leave empty for no password
+blazor_host_port: Endpoint URL
+blazor_host_settings: Settings
+blazor_host_start: Start
+blazor_host_status: Status
+blazor_host_status_running: Running
+blazor_host_status_stopped: Stopped
+blazor_host_stop: Stop
+blazor_host_title: Blazor WebUI
+blazor_host_url: Endpoint URL
+browser: Browser
+browser-execute_javascript: Browser: Execute script
+browser-get_html: Browser: Get markup
+browser-navigate_to_uri: Browser: Navigate to URI
+calculate: Calculate
+cancel: Cancel
+cancel-tool: Cancel tool
+cancel_task: Cancel task
+chat: Chat
+chat-attach_file_hint: Attach file...
+chat-cancel_edit_hint: Cancel editing
+chat-enable_mcp: Enable MCP
+chat-enable_tools: Enable tools
+chat-input_hint: Enter your message...
+chat-send_button_hint: Send message
+chat-settings_hint: Settings
+chat-stop_button_hint: Stop generation
+chat_manager_no_messages_to_rename: Cannot rename chat
+chat_manager_no_messages_to_rename_desc: Chat has no messages
+chat_memory_retrieval_status: Retrieving memory
+chat_naming_task: Chat naming
+chat_settings_databases: Databases
+chat_settings_environment: Environment
+chat_settings_execution: Execution
+chat_settings_general: General
+chat_settings_global: Global
+chat_settings_llm_properties: LLM Properties
+chat_settings_mcp: MCP
+chat_settings_memory: Memory
+chat_settings_models: Models
+chat_settings_prompts: Prompts
+chat_settings_read: Read permissions
+chat_settings_skills: Skills
+chat_settings_summarization: Summarization
+chat_settings_tools: Tools
+chat_settings_users: Users
+chat_settings_users_hint: Users that participate in this chat. The agent can address each user by name.
+chat_status_selecting_agent: Selecting agent
+chat_status_waiting_for_first_response: Waiting for first token
+chat_status_waiting_for_mcp_connections: Connecting to MCP
+chat_status_waiting_for_tools: Executing tools
+chat_summarization_task: Chat summarization
+chat_toast_agent_selection_failed: Agent selection failed
+chat_toast_agent_selection_failed_desc: Failed to select an agent for response generation.
+chat_toast_generation_failed: Generation failed
+chat_toast_generation_failed_desc: An error occurred while generating the response: {0}
+chat_toast_llm_not_configured: LLM not configured
+chat_toast_llm_not_configured_desc: Chat LLM is not configured. Please configure it in the chat settings.
+chat_toast_operation_cancelled: Operation cancelled
+chat_toast_operation_cancelled_desc: Response generation was cancelled.
+chats: Chats
+check_failure: failure
+check_success: success
+clear_completed: Clear completed
+clipboard-copy: Copy to clipboard
+clipboard-read: Read from clipboard
+close: Close
+coin_heads: Heads
+coin_tails: Tails
+confirmation_needed: ⚠ CONFIRMATION NEEDED
+connect: Connect
+copy: Copy to clipboard
+copy-arguments: Copy arguments
+copy-result: Copy result
+copy_markdown: Copy Markdown
+csx-execute: Execute C# script
+danger_level_auto_approve: Auto-approve level
+danger_level_dangerous: Dangerous
+danger_level_default: Default (ask for all)
+danger_level_safe: Safe
+danger_level_warning: Warning
+database: Database
+db-execute: Execute a SQL statement
+db-list: List database connections
+db-schema: Show database schema
+db-switch: Switch active database
+db_active_connections: Active connections
+db_add_connection: Add connection
+db_browse_sqlite_file: Browse SQLite file
+db_connect: Connect
+db_connected: Connected.
+db_connection_string_placeholder: Connection string
+db_custom_connection: Custom connection
+db_disconnect: Disconnect
+db_disconnect_all: Disconnect all
+db_hint: Configure named database connections and a custom connection string for the agent.
+db_new_connection: New connection
+db_no_connections: No active connections.
+db_select_sqlite_file: Select SQLite database file
+db_test_connection: Test connection
+db_test_connector_not_found: Connector for {0} is not available.
+db_test_empty_connection_string: Connection string is empty.
+db_test_empty_name: Connection name is empty.
+db_test_failed: Connection failed.
+db_test_ok: Connection successful.
+db_use_encrypted_connection_string: Store connection string encrypted
+delete: Delete
+dice_rolled: Rolled
+disconnect: Disconnect
+edit: Edit
+empty_model: Empty
+enable: Enable
+env_access_denied: Access denied
+env_access_rules_hint: Access rules override default permissions for specific directories. More specific rules (longer paths) take precedence over broader ones. To deny access to a directory, uncheck all permissions (Read, Write, Execute) for that rule.
+env_active: Active
+env_add_access_rule: Add access rule
+env_add_working_directory: Add working directory
+env_additional_settings: Additional settings
+env_browse: Browse...
+env_check_configuration: Check configuration
+env_check_failed: Environment check failed
+env_check_ok: Environment is ready
+env_directory_access_rules: Directory Access Rules
+env_enabled: Enabled
+env_execute: Execute
+env_move_down: Move down
+env_move_up: Move up
+env_name: Name
+env_open_in_explorer: Open in explorer
+env_path: Path
+env_python_environments: Python Environments
+env_python_hint: Configure Python virtual environments for script execution. The main venv is used for running Python scripts. An optional separate environment can be specified for meta-tools.
+env_python_meta_venv_hint: Path to activate.bat (optional)
+env_python_meta_venv_script: Python meta-tools venv activate script
+env_python_venv_hint: Path to activate.bat
+env_python_venv_script: Python venv activate script
+env_read: Read
+env_remove: Remove
+env_select_script: Select script
+env_workdir_hint: Working directories define folders the assistant can access. The active directory (selected via radio button) serves as the root for relative paths — all file operations use this directory as the base. You can add multiple directories; the agent can switch between them automatically using its tools.
+env_write: Write
+error_model: Error: {0}
+execute: Execute
+execute-python: Execute Python script
+execute-python_repl: Execute Python script using REPL
+execute-python_venv_shell: Execute Shell script in Python virt. environment
+execute_using_repl: Execute using REPL
+execution_checker_always: Always
+exposure_attachments: Attachments
+exposure_attachments_hint: Expose attachments from this agent's messages to other agents.
+exposure_content: Content
+exposure_content_hint: Expose the main content/text of this agent's messages to other agents.
+exposure_identify_self_as_user: Identify self as user
+exposure_identify_self_as_user_hint: When enabled, this agent identifies itself as a user to other agents. Tool calls and reasoning become inaccessible regardless of other flags.
+exposure_messages_with_tool_calls: Messages with tool calls
+exposure_messages_with_tool_calls_hint: Expose messages that contain tool calls. If disabled, such messages may be hidden entirely from other agents.
+exposure_reasoning: Reasoning
+exposure_reasoning_hint: Expose the reasoning/thoughts of this agent to other agents.
+exposure_tool_calls: Tool calls
+exposure_tool_calls_hint: Expose tool calls and their results from this agent to other agents.
+file_contains_secrets: {0} (contains secrets)
+filesystem: File system
+forms: Forms
+forms-choice: Choose options
+forms-confirm: Confirm action
+forms-file_picker: File picker
+forms-input: Input form
+forms_canceled: Cancelled
+forms_confirmed: Confirmed
+forms_custom_option: Custom option...
+forms_field_required: Field "{0}" is required.
+forms_file_selected: File selected
+forms_form_submitted: Form submitted
+forms_make_selection: Make your selection
+forms_select_file: Select file...
+forms_selected_files: Selected files
+forms_selection_confirmed: Selection confirmed
+fs-apply_diff: Apply patch to file
+fs-changes_deleted: deleted some lines
+fs-changes_inserted: inserted some lines
+fs-changes_lines_replaced: Replaced {0} lines
+fs-changes_modified: modified
+fs-changes_none: no changes
+fs-changes_text_replaced: Replaced {0} entries
+fs-changes_updated: updated
+fs-copied: copied
+fs-copy_directory: Copy directory
+fs-copy_file: Copy file
+fs-create_directory: Create directory
+fs-delete_directory: Delete directory
+fs-delete_file: Delete file
+fs-deleted: deleted
+fs-diff_accepted: Accepted
+fs-diff_confirm: Confirm
+fs-diff_decline: Decline
+fs-diff_declined: Declined
+fs-diff_disable_all: Disable All
+fs-diff_enable_all: Enable All
+fs-diff_toggle_chunk: Toggle this change chunk
+fs-edit: Edit file
+fs-edit_changes_applied_none: {0} *(no changes)*
+fs-edit_changes_count: {0} change(s) ({1})
+fs-entries: {0} entries
+fs-get_file_info: Get file info
+fs-glob: Glob search
+fs-glob_found_count: Found {0} item(s)...
+fs-glob_no_matches: No matches found
+fs-glob_results: {0} result(s)
+fs-glob_searching: Searching for **{0}**...
+fs-grep: Filesystem search
+fs-grep_collecting_files: Collecting files...
+fs-grep_collecting_files_count: Collecting files... ({0} found)
+fs-grep_completed: Found {0} matching files
+fs-grep_scanning_files: Scanning files...
+fs-list_directory: List files in directory
+fs-move_directory: Move directory
+fs-open_file: Open file
+fs-open_in_explorer: Open in explorer
+fs-opened: opened
+fs-read_binary_file: Read binary file
+fs-read_document_file: Read document
+fs-read_entry: Read file/directory
+fs-rename_file: Rename file
+fs-renamed: renamed
+fs-replace: Replace text in file
+fs-replace_lines: Replace lines in file
+fs-write_binary_file: Write binary file
+fs-write_file: Write file
+fs-write_file_streaming_status: {0} ({1} lines...)
+general: General
+general-print: Print
+image_describer_status: Describing... *{0} tokens*
+input: Input
+input-enter_text: Enter text
+input-move_mouse: Move mouse
+input-move_mouse_delta: Move mouse
+input-press_key: Press key
+lines_count: {0} lines
+list_shuffled: Shuffled list of {0} items
+lua-execute: Execute Lua script
+lua-get_script_info: Get Lua script info
+lua-list_scripts: List Lua scripts
+lua-move_script: Move Lua script
+lua-register_or_update_script: Register or update Lua script
+lua-remove_script: Remove Lua script
+math-calculate: Calculate
+math-solve: Solve math equation
+math-solve_complex: Solve complex equation
+math_solve_status: {0} *({1} roots)*
+math_solve_status_no_roots: {0} *(no roots)*
+mathematics: Mathematics
+mcp-connection_type: Connection type
+mcp-endpoint: Endpoint
+mcp_manager_header: MCP manager
+mcp_manager_hint: MCP manager
+memory: Memory
+memory-append_log: Append memory log
+memory-clear: Clear memory block
+memory-delete_log: Delete memory log
+memory-forget_fact: Forget memory fact
+memory-retrieve_fact: Retrieve memory facts
+memory-search_log: Search memory logs
+memory-store_fact: Store memory fact
+memory-view_logs: View memory logs
+memory-view_logs_status_latest: Latest **{0}**
+memory-view_logs_status_time_window: Time window
+memory_attachment_mode_readonly: Read only
+memory_attachment_mode_standard: Read & Write
+memory_attachment_mode_writeonly: Write only
+memory_recording_task: Memory recording
+memory_retrieval_task: Memory retrieval
+message_context_shield: Context shield is active, the upper messages not visible to agents
+message_summary: Summary
+message_token_cost_cache_hit: Cache hit
+message_token_cost_cache_miss: Cache miss
+message_token_cost_generation_time: Gen. time
+message_token_cost_input: Input
+message_token_cost_model: Model
+message_token_cost_output: Output
+message_token_cost_ttft: TTFT
+message_visibility_always: Always
+message_visibility_only_agents: Only to agents
+message_visibility_only_users: Only to users
+message_visibility_reveal_after_send: After send
+metatools: Meta-tools
+metatools-create_or_update: Create or update meta-tool
+metatools-delete: Delete meta-tool
+metatools-get_info: Get information about meta-tool
+metatools-list: List meta-tools
+metatools-rename: Rename meta-tool
+model_capability_chat: Chat Completions
+model_capability_completion: Completions
+model_capability_embeddings: Embeddings
+model_capability_label: Cap
+model_capability_reasoning: Reasoning
+model_capability_reranking: Reranking
+model_capability_streaming: Streaming
+model_capability_tools: Tool Calling
+model_capability_unknown: Unknown
+model_modality_audio: Audio
+model_modality_image: Image
+model_modality_in: In
+model_modality_out: Out
+model_modality_text: Text
+model_modality_unknown: Unknown
+model_modality_video: Video
+model_provider_deepseek: DeepSeek
+model_provider_novita: Novita
+model_provider_ollama: Ollama
+model_provider_openai: OpenAI
+model_provider_openai-compat: OpenAI Compatible
+model_provider_openrouter: OpenRouter
+model_selector_available_models: Available Models
+model_selector_deselect_all: Deselect all
+model_selector_failed: Failed to load models
+model_selector_manage_tooltip: Manage providers & models
+model_selector_no_models: No models available
+model_selector_none: — None —
+model_selector_refresh: Refresh Models
+model_selector_select_all: Select all
+name: Name
+new_chat: New chat
+new_temporary_chat: New temporary chat
+next_branch: Next branch
+no_topic: no topic
+ok: Ok
+only_running: Only running
+open_in_new_tab: Open in new tab
+perm_identify_agents_as_users: Identify agents as users
+perm_identify_agents_as_users_hint: Other agents will be visible and treated as user messages to this agent.
+perm_messages_with_tool_calls: Messages with tool calls
+perm_messages_with_tool_calls_hint: Agent can read messages that contain tool calls from other agents. If disabled, messages with tool calls are filtered out.
+perm_other_agent_attachments: Other agent attachments
+perm_other_agent_attachments_hint: Agent can read attachments from other agents.
+perm_other_agent_content: Other agent main content
+perm_other_agent_content_hint: Agent can read main message's content from other agents.
+perm_other_agent_messages: Other agent messages
+perm_other_agent_messages_hint: Agent can read messages from other agents.
+perm_other_agent_reasoning: Other agent reasoning
+perm_other_agent_reasoning_hint: Agent can read the reasoning/thoughts of other agents.
+perm_other_agent_tool_calls: Other agent tool calls
+perm_other_agent_tool_calls_hint: Agent can read tool calls and results from other agents.
+perm_own_messages: Own messages
+perm_own_messages_hint: Agent can read its own previous messages.
+perm_user_attachments: User attachments
+perm_user_attachments_hint: Agent can read files attached by the user.
+perm_user_messages: User messages
+perm_user_messages_hint: Agent can read messages sent by the user.
+personality_hint: Personality
+policy: Policy
+previous_branch: Previous branch
+prompt_assistant_nickname_hint: The assistant nickname
+prompt_assistant_nickname_placeholder: e.g. Assistant
+prompt_behavior_sliders: Behavior sliders
+prompt_behavior_sliders_hint: Adjust behavior sliders to control the assistant's tone, style, and personality
+prompt_category: Category
+prompt_category_uncategorized: Uncategorized
+prompt_components: Additional components
+prompt_components_hint: Select additional prompt components to append to the system message
+prompt_custom_persona_hint: Enter custom persona...
+prompt_custom_persona_placeholder: Describe the persona in detail...
+prompt_custom_specialization_hint: Enter custom specialization description...
+prompt_custom_specialization_placeholder: Describe the professional role you want the assistant to have...
+prompt_edit_component: Edit Component
+prompt_edit_persona: Edit Persona
+prompt_edit_specialization: Edit Specialization
+prompt_import: Import
+prompt_import_component: Import component
+prompt_import_persona: Import persona
+prompt_import_specialization: Import specialization
+prompt_manager_header: Prompt manager
+prompt_manager_hint: Prompt manager
+prompt_name: Name
+prompt_names: Names
+prompt_new_component: New component
+prompt_new_persona: New persona
+prompt_new_specialization: New specialization
+prompt_persona: Persona
+prompt_personas: Personas
+prompt_preview_header: System Prompt Preview
+prompt_preview_toggle: Toggle system prompt preview
+prompt_select_persona: Select persona...
+prompt_select_specialization: Select specialization...
+prompt_selected_persona_hint: Select a persona to apply to the chat
+prompt_selected_specialization_hint: Select a specialization to define the assistant's professional role
+prompt_specialization: Specialization
+prompt_specialization_hint: Choose a professional specialization for the assistant. This defines what the assistant knows and can do.
+prompt_specializations: Specializations
+prompt_system_prompt: System prompt
+prompt_system_prompt_hint: Enter system prompt...
+prompt_system_prompt_placeholder: for example, You are a helpful assistant
+prompt_text: Text
+prompt_use_custom_persona: Use custom persona
+prompt_use_custom_specialization: Use custom specialization
+prompt_user_nickname_hint: How assistant should call you?
+prompt_user_nickname_placeholder: e.g. John
+python-get_installed_packages_list: Get Python installed packages
+python-repl_get_var: Get Python REPL variable
+python-repl_reset: Reset Python REPL context
+python_meta_venv_activate_script_path_hint: Python Venv activation script for metatools
+python_venv_activate_script_path_hint: Python Venv activation script
+random: Random
+random-GUID: Generate GUID
+random-check_chance: Check chance
+random-coin_flip: Flip a coin
+random-dice_roll: Roll dices
+random-float: Generate random decimal number
+random-integer: Generate random integer
+random-items_from_list: Select random items from list
+random-shuffle_list: Shuffle list
+reasoning: Reasoning process
+reasoning_default: Default
+reasoning_disabled: Disabled
+reasoning_high: High
+reasoning_low: Low
+reasoning_maximum: Maximum
+reasoning_medium: Medium
+reasoning_minimal: Minimal
+reasoning_none: None
+reasoning_xhigh: X-High
+regenerate: Regenerate
+remove: Remove
+rename_chat_cancel: Cancel
+rename_chat_save: Save
+rename_with_ai: Rename with AI
+resend: Resend
+reset: Reset
+sample: Sample
+save: Save
+save_markdown: Save Markdown
+scripting: Scripting
+select_model: Select model
+select_python_meta_venv_activate_script: Select Python Venv activation script for metatools
+select_python_venv_activate_script: Select Python Venv activation script
+select_working_directory: Select working directory
+send_quick_action: Send "{0}"
+settings: Settings
+settings-agentic_model_hint: Agentic model
+settings-agentic_router_model_hint: Agentic routing model
+settings-agentic_tools_model_hint: Agentic tools model
+settings-chat_model_hint: Chat model
+settings-llm_additional_parameters: Additional parameters
+settings-llm_additional_parameters_hint: Custom parameters sent directly to the LLM API in JSON format. Parameter names must match the API specification.
+settings-llm_custom_model: Custom model
+settings-llm_enable_custom_model: Enable custom model
+settings-llm_enable_max_tokens: Enable max tokens override
+settings-llm_enable_reasoning: Enable reasoning settings override
+settings-llm_enable_temperature: Enable temperature override
+settings-llm_max_tokens: Max tokens
+settings-llm_max_tokens_value: Max output tokens
+settings-llm_param_name: Name
+settings-llm_param_value: Value (JSON)
+settings-llm_reasoning: Reasoning
+settings-llm_reasoning_level: Reasoning level
+settings-llm_temperature: Temperature
+settings-llm_temperature_value: Temperature value
+settings-mcp_servers: MCP servers
+settings-mcp_servers_hint: Select the MCP servers whose tools will be available to agents in this chat.
+settings-mcp_servers_toggle_hint: Enable or disable this MCP server
+settings-memory_add_block: New block
+settings-memory_attach: Attach
+settings-memory_attach_placeholder: Existing block...
+settings-memory_auto_recording: Automatic recording
+settings-memory_auto_retrieval: Automatic retrieval
+settings-memory_block_description: Description
+settings-memory_block_editor: Block editor
+settings-memory_block_embedding_model: Embedding model
+settings-memory_block_facts: Store semantic facts
+settings-memory_block_id: Block ID
+settings-memory_block_logs: Store episodic logs
+settings-memory_block_maintainer_model: Maintainer model
+settings-memory_block_name: Name
+settings-memory_block_storage: Block storage
+settings-memory_block_warning_no_content: Facts and logs are disabled for this block. The agent cannot read or write any memory to it.
+settings-memory_blocks: Memory blocks
+settings-memory_blocks_hint: Attach shared memory blocks to this agent. A block stores semantic facts, episodic logs and persistent state. Select a block in the list to edit its contents below.
+settings-memory_clear: Clear memory
+settings-memory_clear_confirm: All facts and logs stored in this block will be permanently deleted. This action cannot be undone.
+settings-memory_clear_done: Memory cleared
+settings-memory_clear_error: Failed to clear memory
+settings-memory_clear_result: Removed facts: {0}, removed logs: {1}.
+settings-memory_clear_title: Clear memory?
+settings-memory_copy_suffix: copy
+settings-memory_default_block_name: New memory block
+settings-memory_delete: Delete block
+settings-memory_delete_confirm: The block and all its contents (facts, logs, state) will be permanently deleted. This action cannot be undone.
+settings-memory_delete_done: Block deleted
+settings-memory_delete_error: Failed to delete block
+settings-memory_delete_title: Delete block?
+settings-memory_duplicate: Duplicate
+settings-memory_edit: Edit block
+settings-memory_enable: Enable agent memory
+settings-memory_enable_memory: Enable conversation memory
+settings-memory_fact_add_done: Fact stored. ID: {0}
+settings-memory_fact_add_error: Failed to store fact
+settings-memory_fact_add_placeholder: Enter the fact text...
+settings-memory_fact_add_title: Add fact
+settings-memory_fact_delete: Delete
+settings-memory_fact_delete_confirm: Fact [id: {0}] will be soft-deleted and hidden from search. It can be restored later.
+settings-memory_fact_delete_done: Fact deleted
+settings-memory_fact_delete_error: Failed to delete fact
+settings-memory_fact_delete_title: Delete fact?
+settings-memory_fact_supersede: Supersede
+settings-memory_fact_supersede_desc: Enter the replacement text for fact [id: {0}]. The old fact will be marked as superseded.
+settings-memory_fact_supersede_done: Fact superseded. New ID: {0}
+settings-memory_fact_supersede_error: Failed to supersede fact
+settings-memory_fact_supersede_label: Replacement text
+settings-memory_fact_supersede_title: Supersede fact
+settings-memory_facts_add: Add
+settings-memory_facts_clear: Delete all facts
+settings-memory_facts_clear_confirm: All facts stored in this block will be permanently deleted. This action cannot be undone.
+settings-memory_facts_clear_done: All facts deleted
+settings-memory_facts_clear_error: Failed to delete facts
+settings-memory_facts_clear_result: Deleted facts: {0}.
+settings-memory_facts_clear_title: Delete all facts?
+settings-memory_facts_hint: The fact is stored with an importance score and becomes searchable.
+settings-memory_facts_importance: Importance
+settings-memory_facts_min_importance: Min importance
+settings-memory_facts_new_placeholder: New fact text...
+settings-memory_facts_no_results: No results
+settings-memory_facts_search: Search
+settings-memory_facts_search_error: Fact search failed
+settings-memory_facts_search_placeholder: Search facts...
+settings-memory_hint: Configure how this chat records and retrieves conversation memory.
+settings-memory_log_add_done: Log appended. ID: {0}
+settings-memory_log_add_error: Failed to append log
+settings-memory_log_add_placeholder: Enter the log text...
+settings-memory_log_add_title: Add log
+settings-memory_log_begin: Begin
+settings-memory_log_delete: Delete
+settings-memory_log_delete_confirm: Log [id: {0}] will be permanently deleted and cannot be restored.
+settings-memory_log_delete_done: Log deleted
+settings-memory_log_delete_error: Failed to delete log
+settings-memory_log_delete_title: Delete log?
+settings-memory_log_details: Details
+settings-memory_log_end: End
+settings-memory_log_ordinal: Ordinal
+settings-memory_log_timeline: Timeline
+settings-memory_logs_add: Add
+settings-memory_logs_clear: Delete all logs
+settings-memory_logs_clear_confirm: All logs stored in this block will be permanently deleted. This action cannot be undone.
+settings-memory_logs_clear_done: All logs deleted
+settings-memory_logs_clear_error: Failed to delete logs
+settings-memory_logs_clear_result: Deleted logs: {0}.
+settings-memory_logs_clear_title: Delete all logs?
+settings-memory_logs_from: From
+settings-memory_logs_hint: Logs are immutable: the text cannot be changed after appending.
+settings-memory_logs_importance: Importance
+settings-memory_logs_min_importance: Min importance
+settings-memory_logs_new_placeholder: New log text...
+settings-memory_logs_no_results: No results
+settings-memory_logs_ordinal_from: Ordinal from
+settings-memory_logs_ordinal_to: Ordinal to
+settings-memory_logs_search: Search
+settings-memory_logs_search_by_time: By time
+settings-memory_logs_search_error: Log search failed
+settings-memory_logs_search_placeholder: Search logs...
+settings-memory_logs_time_search_error: Time search failed
+settings-memory_logs_to: To
+settings-memory_manual_control: Manual control (via tools)
+settings-memory_manual_control_hint: Allow the agent to control memory manually using memory tools.
+settings-memory_missing_block: Missing block ({0})
+settings-memory_options: Memory options
+settings-memory_remove: Detach
+settings-memory_rename: Rename
+settings-memory_rename_confirm: Confirm rename
+settings-memory_section_facts: Facts
+settings-memory_section_info: Information
+settings-memory_section_logs: Logs
+settings-models: Models
+settings-models_hint: Select the language models used for the chat, agentic routing, agentic tools and vision tasks.
+settings-skills_additional_dirs: Additional Skill Directories
+settings-skills_additional_dirs_hint: Additional directories to search for skills. Subdirectories containing SKILL.md or SKILL.mdx files will be loaded.
+settings-skills_additional_files: Additional Skill Files
+settings-skills_additional_files_hint: Additional individual SKILL.md or SKILL.mdx files to load.
+settings-skills_available: Available Skills
+settings-skills_available_hint: Skills discovered in skill directories. Only enabled skills are injected into agent prompts.
+settings-skills_diagnostic: ⚠
+settings-skills_dir_placeholder: Directory path...
+settings-skills_enable: Enable skills
+settings-skills_fetch_all: Fetch from all working directories
+settings-skills_file_placeholder: File path...
+settings-skills_injection_mode: Injection
+settings-skills_refresh: Refresh skills list
+settings-skills_select_directory: Select skill directory
+settings-skills_select_file: Select skill file
+settings-skills_skill_list: Skill Overrides
+settings-skills_skill_list_hint: Override skill settings for this agent. Disabled skills are excluded from the prompt. Toggle injection mode to include full skill body in the system prompt.
+settings-skills_sources: Skill sources
+settings-summarization: Auto-summarization
+settings-summarization_enabled: Enable chat auto-summarization
+settings-summarization_hint: When enabled, the conversation is automatically summarized and compacted once it grows beyond the trigger threshold.
+settings-summarization_ignore_last_rounds_hint: Ignore last rounds
+settings-summarization_trigger_tokens_hint: Trigger tokens
+settings-summarizer_model_hint: Summarizer model
+settings-tools_fetch_all: Fetch from all working directories
+settings-tools_fetch_all_hint: Search for meta tools in all working directories, not only in the active one.
+settings-use_mcp: Enable MCP
+settings-use_tools: Enable tools
+settings-vision_model_hint: Vision model
+settings_add_agent: Add new agent
+settings_add_stage: Add execution stage
+settings_agent_global: (global)
+settings_agent_list: Agent List
+settings_agent_read_filter: Agent filter
+settings_agent_read_filter_hint: Restricts which agents this agent can see based on whitelist or blacklist.
+settings_allow_context_shields: Allow context shields
+settings_allow_context_shields_hint: If enabled, the agent will respect context shields and will not see messages placed after them.
+settings_allow_summaries: Allow summaries
+settings_allow_summaries_hint: If enabled, the agent will be able to see summaries of the earlier chat history and stop reading at summarized segments.
+settings_apikey_add: Add API Key
+settings_apikey_add_title: Add API Key
+settings_apikey_edit_title: Edit API Key
+settings_apikey_error_name_required: Key name is required.
+settings_apikey_error_value_required: API key value is required.
+settings_apikey_manage: Manage API Keys
+settings_apikey_manage_title: Manage API Keys
+settings_apikey_name: Key Name
+settings_apikey_name_placeholder: e.g. OpenAI Production, DeepSeek Personal
+settings_apikey_none: None
+settings_apikey_scheme: Storage Scheme
+settings_apikey_scheme_encrypted: Encrypted (AES-256)
+settings_apikey_scheme_env: Environment Variable
+settings_apikey_scheme_raw: Raw (Plain Text)
+settings_apikey_value: API Key Value
+settings_apikey_value_placeholder: Enter your API key
+settings_application: Application settings
+settings_can_be_mentioned: Can be mentioned
+settings_can_be_mentioned_hint: Whether the agent can be mentioned by other agents and users, causing it to execute.
+settings_can_execute_again: Can execute again
+settings_can_execute_again_hint: Whether the agent can execute again after it has already executed in this cycle.
+settings_can_mention_others: Can mention others
+settings_can_mention_others_hint: Whether the agent can mention and trigger other agents.
+settings_clone_stage: Clone stage
+settings_context: Context
+settings_copy_to_local: Copy to chat agents
+settings_default_id: Default
+settings_deselect_all: Deselect all
+settings_execution_checker: Execution checker:
+settings_execution_checker_hint: The condition that determines when the agent should execute.
+settings_execution_order: Execution order:
+settings_execution_order_hint: Determines the order in which agents are executed. Lower numbers execute first.
+settings_execution_stages: Execution Stages
+settings_exposure_mode: Exposure mode
+settings_exposure_mode_hint: Controls what parts of this agent's messages are visible to other agents.
+settings_filter_blacklist: Blacklist
+settings_filter_mode: Filter mode:
+settings_filter_whitelist: Whitelist
+settings_language: Language
+settings_language_system: System
+settings_max_visible_rounds: Max visible rounds:
+settings_max_visible_rounds_hint: Limits how many recent conversation rounds (user message + assistant response) are visible to each agent. 0 means unlimited. Helps manage context window usage.
+settings_mentions: Mentions
+settings_move_agent_down: Move agent down in queue
+settings_move_agent_up: Move agent up in queue
+settings_move_stage_down: Move stage down
+settings_move_stage_up: Move stage up
+settings_profile: Profile:
+settings_promote_to_global: Promote to global
+settings_providers_add: Add
+settings_providers_add_title: Add Model Provider
+settings_providers_apikey: API Key
+settings_providers_cancel: Cancel
+settings_providers_close: Close
+settings_providers_connected: ✓ Connected
+settings_providers_connection_error: Error: {0}
+settings_providers_connection_failed: ✗ Connection failed
+settings_providers_connection_success: ✓ Connection successful
+settings_providers_custom_models: Custom Models
+settings_providers_delete: Delete
+settings_providers_disconnected: ✗ Failed
+settings_providers_edit: Edit
+settings_providers_edit_title: Edit Model Provider
+settings_providers_endpoint: Endpoint URI
+settings_providers_endpoint_placeholder: https://api.openai.com/v1
+settings_providers_manage_title: Model Providers
+settings_providers_models_count: {0} loaded, {1} selected, {2} custom models
+settings_providers_name: Provider Name
+settings_providers_name_placeholder: e.g. My OpenAI Provider
+settings_providers_no_custom_models: No custom models configured
+settings_providers_refresh_models: Refresh Models
+settings_providers_save: Save
+settings_providers_test_connection: Test Connection
+settings_providers_type: Provider Type
+settings_random_stage: Random
+settings_read_permissions: Read permissions
+settings_read_permissions_hint: Controls what types of messages and content this agent can read in the chat.
+settings_remove_agent: Remove agent
+settings_remove_stage: Remove stage
+settings_scope_agent: Agent profile
+settings_scope_application: Application
+settings_scope_profile: Chat profile
+settings_select_agent_first: Select an agent first
+settings_select_all: Select all
+settings_selected_agent: Selected agent:
+settings_sequential_stage: Sequential
+settings_stage_adaptive_additional_router_prompt: Additional agentic router prompt
+settings_stage_adaptive_agents: Agent pool
+settings_stage_adaptive_enforce_router_selection: Enforce selection
+settings_stage_adaptive_max_visible_rounds: Max visible rounds for router agent
+settings_stage_add_agent: Add agent to stage
+settings_stage_can_agents_be_skipped: Can agents be skipped (by weight)
+settings_stage_can_agents_execute_again: Can agents execute again
+settings_stage_enable_mentions: Enable @mentions
+settings_stage_max_cycles: Max cycles
+settings_stage_max_iterations: Max iterations
+settings_stage_mentionable_agents: Mentionable agents
+settings_stage_min_cycles: Min cycles
+settings_stage_min_iterations: Min iterations
+settings_stage_move_agent_down: Move agent down in stage
+settings_stage_move_agent_up: Move agent up in stage
+settings_stage_remove_agent: Remove agent from stage
+settings_stage_stop_chance: Stop chance
+settings_stage_weight_tooltip: Probability of being selected (0 = always skipped, 1 = never skipped)
+settings_stage_weighted_agents: Weighted agents
+settings_toggle_agent_active: Toggle agent active/inactive
+shell-bash: Execute Bash script
+shell-batch: Execute Batch script
+shell-powershell: Execute Powershell script
+skill-load: Load skill
+skill_diagnostic_fileaccesserror: File Access Error
+skill_diagnostic_fileaccesserror_hint: Unable to read the SKILL.md file. Check file permissions.
+skill_diagnostic_generalparsingerror: Parse Error
+skill_diagnostic_generalparsingerror_hint: An unexpected error occurred while parsing the skill file.
+skill_diagnostic_missingdescription: Missing Description
+skill_diagnostic_missingdescription_hint: The skill has no description. Add a description in YAML frontmatter or as the first paragraph.
+skill_diagnostic_missingfile: File Missing
+skill_diagnostic_missingfile_hint: The SKILL.md file could not be found at the expected location.
+skill_diagnostic_missingname: Missing Name
+skill_diagnostic_missingname_hint: The skill has no name defined in YAML frontmatter, header, or folder name.
+skill_diagnostic_missingyaml: Missing YAML
+skill_diagnostic_missingyaml_hint: The SKILL.md file does not have a YAML frontmatter block (--- ... ---).
+skill_diagnostic_missingyamldescription: Missing YAML Description
+skill_diagnostic_missingyamldescription_hint: The 'description' field is missing from the YAML frontmatter. A fallback was used.
+skill_diagnostic_missingyamlname: Missing YAML Name
+skill_diagnostic_missingyamlname_hint: The 'name' field is missing from the YAML frontmatter. A fallback name was used.
+skill_diagnostic_namedirectorymismatch: Name/Directory Mismatch
+skill_diagnostic_namedirectorymismatch_hint: The skill name does not match the name of the directory containing SKILL.md.
+skill_diagnostic_nameformaterror: Invalid Name Format
+skill_diagnostic_nameformaterror_hint: The skill name contains invalid characters. Skills must use lowercase letters, digits and hyphens.
+skill_diagnostic_yamldecodingerror: YAML Decode Error
+skill_diagnostic_yamldecodingerror_hint: Failed to deserialize the YAML frontmatter into the expected structure.
+skill_diagnostic_yamlparsingerror: YAML Syntax Error
+skill_diagnostic_yamlparsingerror_hint: The YAML frontmatter contains invalid syntax.
+skill_injection_mode_default: Name + Description
+skill_injection_mode_full: Full Body
+skills: Skills
+specialization_clear: Clear specialization
+stage_type_adaptive: Adaptive
+stage_type_mention_only: Mention only
+stage_type_random: Random
+stage_type_round_robin: Round Robin
+stage_type_sequential: Sequential
+summarize_message: Summarize this message and previous messages for context compression
+system_instructions_hint: System instructions
+system_role: System
+task_detail_behaviour: Execution behaviour
+task_detail_configuration: Configuration
+task_detail_error: Error
+task_detail_id: Task ID
+task_detail_inference_time: inference
+task_detail_input_cache_hit_tokens: in cache
+task_detail_input_tokens: in
+task_detail_max_parallel_tools: Max parallel tools
+task_detail_messages: Messages
+task_detail_output_tokens: out
+task_detail_parent: Parent task
+task_detail_reasoning: Reasoning
+task_detail_subtasks: Sub-tasks
+task_detail_time_to_first_token: first token
+task_detail_timeout: Timeout
+task_detail_tool_calls: Tool calls
+task_detail_tools_count: Available tools
+task_details: Task details
+task_status_cancelled: Cancelled
+task_status_executing: Executing
+task_status_failed: Failed
+task_status_pending: Pending
+task_status_success: Success
+task_status_unknown: Unknown
+temporary_chat: temporary
+time: Time
+time-get: Get current time
+time-wait: Wait
+time_wait_completed: Completed ({0})
+time_wait_status: Waiting... {0} remaining
+title: Niggalink AI
+toggle_context_shield: Toggle context shield
+toggle_subtasks: Toggle sub-tasks
+tool-approve-with-notes: Approve with notes
+tool-approve-with-wait-hint: Approve and ask agent to wait
+tool-arguments: Tool arguments:
+tool-cancel-with-reason: Cancel with reason
+tool-cancel-with-wait-hint: Cancel and ask agent to wait
+tool-commit-notes: Submit
+tool-executing: Executing...
+tool-notes-placeholder: Enter note/reason...
+tool-requires-approval: Requires approval
+tool-result: Tool result:
+tool-source_mcp: MCP
+tool-source_meta: Meta
+tool_behaviour_accessoutsideworkdir: Access outside working directory
+tool_behaviour_accessoutsideworkdir_hint: The tool accesses locations outside the configured working directory.
+tool_behaviour_adhoc: Ad-hoc (special tools)
+tool_behaviour_adhoc_hint: Special tools created for disposable execution (scripted tools, for example)
+tool_behaviour_agentexecution: Agent execution
+tool_behaviour_agentexecution_hint: The tool invokes, manages, or coordinates other AI agents.
+tool_behaviour_clipboardaccess: Clipboard access
+tool_behaviour_clipboardaccess_hint: The tool accesses the clipboard for reading or writing text data.
+tool_behaviour_clipboardread: Clipboard read
+tool_behaviour_clipboardread_hint: The tool reads text data from the clipboard.
+tool_behaviour_clipboardwrite: Clipboard write
+tool_behaviour_clipboardwrite_hint: The tool writes text data to the clipboard.
+tool_behaviour_databasechange: Database change
+tool_behaviour_databasechange_hint: The tool changes data or schema in a connected database.
+tool_behaviour_databasecustomconnect: Custom database connection
+tool_behaviour_databasecustomconnect_hint: The tool connects to a database using a custom connection string.
+tool_behaviour_databaseread: Database read
+tool_behaviour_databaseread_hint: The tool reads data from a connected database.
+tool_behaviour_directorydelete: Delete directories
+tool_behaviour_directorydelete_hint: The tool removes entire directory trees including their contents.
+tool_behaviour_directoryedit: Edit directories (move, rename, copy)
+tool_behaviour_directoryedit_hint: The tool modifies the directory structure (move, rename, copy).
+tool_behaviour_directoryread: Read directories
+tool_behaviour_directoryread_hint: The tool enumerates or lists the contents of directories.
+tool_behaviour_executeexternalprocess: Execute external process
+tool_behaviour_executeexternalprocess_hint: The tool spawns or executes an external operating system process.
+tool_behaviour_filedelete: Delete files
+tool_behaviour_filedelete_hint: The tool permanently removes files from the filesystem.
+tool_behaviour_filedirectorycreate: Create files and directories
+tool_behaviour_filedirectorycreate_hint: The tool creates new files or directories on the filesystem.
+tool_behaviour_fileedit: Edit files
+tool_behaviour_fileedit_hint: The tool modifies existing file content or metadata without deleting it.
+tool_behaviour_fileread: Read files
+tool_behaviour_fileread_hint: The tool reads the contents of files.
+tool_behaviour_internetaccess: Internet access
+tool_behaviour_internetaccess_hint: The tool performs network requests to external services or APIs.
+tool_behaviour_longrunningtask: Long-running task
+tool_behaviour_longrunningtask_hint: The tool may run for an extended period due to heavy computation or network latency.
+tool_behaviour_mcp: MCP (external server)
+tool_behaviour_mcp_hint: The tool originates from an external MCP server and may have unpredictable behaviour.
+tool_behaviour_meta: Meta-tool (LLM-created)
+tool_behaviour_meta_hint: The tool is a meta-tool created at runtime by the LLM via Lua/Python scripting.
+tool_behaviour_none: Safe (no specific behaviour)
+tool_behaviour_none_hint: Purely computational or informational tasks (math, random, time).
+tool_behaviour_policy: Behaviour policy
+tool_behaviour_policy_auto_approve: Auto-approve
+tool_behaviour_policy_default: Default
+tool_behaviour_policy_disallowed: Disallowed
+tool_behaviour_possiblyunexpected: Potentially unexpected actions
+tool_behaviour_possiblyunexpected_hint: The tool may perform unexpected or uncontrollable actions.
+tool_behaviour_readsecrets: Read secrets and sensitive data
+tool_behaviour_readsecrets_hint: The tool may expose sensitive information such as passwords, API keys or tokens.
+tool_behaviour_runterminal: Run in terminal
+tool_behaviour_runterminal_hint: The tool runs commands in an embedded terminal emulator with interactive I/O.
+tool_behaviour_scriptaccess: Tool and script access
+tool_behaviour_scriptaccess_hint: The tool creates, modifies, or deletes other tools and user scripts at runtime.
+tool_behaviour_semanticmemoryclear: Semantic memory clear
+tool_behaviour_semanticmemoryclear_hint: The tool clears semantic memory blocks and may cause data loss.
+tool_behaviour_semanticmemorydelete: Semantic memory delete entry
+tool_behaviour_semanticmemorydelete_hint: Tool removes facts and logs from semantic memory.
+tool_behaviour_semanticmemoryread: Semantic memory read
+tool_behaviour_semanticmemoryread_hint: Tool can read facts and logs from semantic memory.
+tool_behaviour_semanticmemorywrite: Semantic memory write
+tool_behaviour_semanticmemorywrite_hint: Tool can write facts and logs to semantic memory.
+tool_behaviour_userinteraction: User interaction (forms, confirmations)
+tool_behaviour_userinteraction_hint: The tool requires user input via forms, confirmations, file pickers, etc.
+tool_behaviour_workdirchange: Change working directory
+tool_behaviour_workdirchange_hint: The tool switches the active working directory, affecting the base for all relative file operations.
+tool_call_status_cancelled: Cancelled
+tool_call_status_confirming: Confirmation needed
+tool_call_status_executing: Executing...
+tool_call_status_failed: Failed
+tool_call_status_pending: Pending
+tool_call_status_pre_executing: Analyzing...
+tool_call_status_success: Success
+tool_call_status_unknown: Unknown
+tool_fixed: Fixed tool
+tool_fixed_hint: This tool is always enabled while its context is present and cannot be disabled.
+tool_name_suffix_hint: {0} tools
+tool_settings: Tools settings
+tools_auto_approve_behaviours: Auto-approve behaviours
+tools_disallowed_behaviours: Disallowed behaviours
+tools_hint: Tools
+toolset: Toolset
+toolset_create: Create toolset
+toolset_remove: Remove toolset
+toolset_rename: Rename toolset
+toolset_shared: Shared toolset:
+toolset_use_custom: Use custom toolset
+toolset_use_custom_hint: Edits apply only to this agent. When disabled, a shared toolset configuration is used.
+unnamed_task: (unnamed task)
+user_active_hint: User sending the next message
+user_add_title: Add user
+user_clear_image: Clear
+user_description: Description
+user_description_hint: Additional information about the user that agents can use to personalize responses
+user_edit_title: Edit user
+user_error_login_required: Login is required.
+user_login: Login
+user_login_hint: A unique identifier for the user account
+user_message_hidden: Message hidden
+user_message_visibility_hint: Visibility:
+user_name: Name
+user_name_hint: The display name shown in conversations and for agents
+user_profile_image: Profile Image
+user_profile_image_hint: Upload a profile image for the user. PNG and JPG supported, will be resized to 128x128.
+user_role: User
+user_select_image: Choose Image...
+user_select_image_title: Select user profile image
+user_select_prompt: Select a user from the list to edit
+voice_chat: Voice chat
+wd-list: List working directories
+wd-switch: Switch working directory
+web: Web
+web-download: Download
+web-fetch: Fetch web content
+web-get: GET request
+web-get_html: Fetch HTML
+web-parse: Web parse
+web-post: POST request
+web-request: Web request
+web-search: Web search
+web-search_get_engines: Get avaliable web-search engines
+web-status: Check web status
+web_search_results: {0} *({1} results)*
+webui_anonymous: Anonymous
+webui_assistant: Assistant
+webui_avatar_delete_title: Delete avatar
+webui_avatar_deleted: Avatar removed
+webui_avatar_error: Failed to load image
+webui_avatar_timeout: Image selection timed out. Please try again.
+webui_chat_input_placeholder: Enter message...
+webui_chat_title: dASS WebUI
+webui_delete: Delete
+webui_edit: Edit
+webui_login_btn: Sign in
+webui_login_create: Create
+webui_login_error: Invalid login or password. Please try again.
+webui_login_label: Login
+webui_login_loading: Signing in...
+webui_login_no_account: Don't have an account?
+webui_login_placeholder: Enter login...
+webui_login_title: Sign in
+webui_master_password_label: Chat master password
+webui_master_password_placeholder: Enter master password...
+webui_next_branch: Next branch
+webui_password_label: Password
+webui_password_placeholder: Enter password...
+webui_previous_branch: Previous branch
+webui_profile_avatar_updated: Avatar updated!
+webui_profile_btn: Profile
+webui_profile_cancel: Cancel
+webui_profile_close: Close
+webui_profile_description: Description
+webui_profile_description_placeholder: Description for agents...
+webui_profile_logout: Logout
+webui_profile_name: Name
+webui_profile_save: Save
+webui_profile_saved: Saved!
+webui_profile_saving: Saving...
+webui_profile_title: Profile settings
+webui_profile_title_attr: Profile settings
+webui_readiness_always_ready: Always ready
+webui_readiness_count_title: Ready / Online
+webui_readiness_ready: Ready
+webui_readiness_title_auto: Auto-ready
+webui_readiness_title_ready: Are you ready?
+webui_reasoning: Reasoning
+webui_regenerate: Regenerate
+webui_register_btn: Register
+webui_register_error_exists: A user with this login already exists.
+webui_register_error_password_mismatch: Passwords do not match!
+webui_register_error_password_short: Password is too short! Minimum 4 characters.
+webui_register_have_account: Already have an account?
+webui_register_loading: Registering...
+webui_register_login_link: Sign in
+webui_register_placeholder_confirm: Repeat password...
+webui_register_placeholder_login: Choose a login...
+webui_register_placeholder_name: Your name
+webui_register_placeholder_password: Choose a password...
+webui_register_subtitle: Create an account
+webui_register_success: Account created! You can now sign in.
+webui_register_title: Register
+webui_resend: Resend
+webui_result: Result
+webui_stop_generation: Stop generation
+workdir: Working directories
+working_directory_hint: Working directory

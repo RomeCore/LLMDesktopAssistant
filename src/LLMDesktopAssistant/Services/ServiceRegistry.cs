@@ -60,7 +60,8 @@ namespace LLMDesktopAssistant.Services
 
 			configureServices?.Invoke(collection);
 
-			foreach (var service in ReflectionUtility.GetTypesWithAttributes<object, ServiceAttribute>())
+			foreach (var service in ReflectionUtility.GetTypesWithAttributes<object, ServiceAttribute>()
+				.OrderBy(s => s.Attributes.OfType<ServiceAttribute>().Min(a => a.Order)))
 			{
 				foreach (var attribute in service.Attributes)
 				{

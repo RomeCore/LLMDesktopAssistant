@@ -6,10 +6,9 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Messages;
-using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Localization.Resources;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
@@ -51,12 +50,12 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			switch (tool.Source)
 			{
 				case ToolSource.MCP:
-					TitlePrefix = Locale.tool_source_mcp;
+					TitlePrefix = Locale.Get("tool_source_mcp");
 					TitlePrefixForeground = Brushes.LightGreen;
 					break;
 
 				case ToolSource.Meta:
-					TitlePrefix = Locale.tool_source_meta;
+					TitlePrefix = Locale.Get("tool_source_meta");
 					TitlePrefixForeground = Brushes.Magenta;
 					break;
 			}
@@ -164,19 +163,19 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			ResetCommand = new RelayCommand(ResetAllTools);
 
 			Title = title;
-			TitleSuffix = string.Format(Locale.tool_name_suffix_hint, ToolCount);
+			TitleSuffix = string.Format(Locale.Get("tool_name_suffix_hint"), ToolCount);
 
 			if (Tools.Select(t => t.Info.Source).GetAllEqualOrDefault() is ToolSource equalSource)
 			{
 				switch (equalSource)
 				{
 					case ToolSource.MCP:
-						TitlePrefix = Locale.tool_source_mcp;
+						TitlePrefix = Locale.Get("tool_source_mcp");
 						TitlePrefixForeground = Brushes.LightGreen;
 						break;
 
 					case ToolSource.Meta:
-						TitlePrefix = Locale.tool_source_meta;
+						TitlePrefix = Locale.Get("tool_source_meta");
 						TitlePrefixForeground = Brushes.Magenta;
 						break;
 				}

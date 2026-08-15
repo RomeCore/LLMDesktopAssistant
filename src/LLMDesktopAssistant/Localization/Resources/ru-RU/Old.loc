@@ -1,0 +1,1048 @@
+// Legacy resx keys, kept for the migration period.
+// Migrate keys from this file into properly named .loc files (see RULES.md),
+// then remove the migrated entries from here.
+
+%locale: ru-RU
+
+add: Добавить
+agent-ask_question: Спросить агента
+agent-call: Вызвать агента
+agent-describe_image: Описать изображение
+agent-launch: Запустить агента
+agent_info: Об агенте
+agent_info_clear_image: Удалить аватарку
+agent_info_description: Описание
+agent_info_description_hint: Кратко опишите роль и назначение агента. Это помогает другим агентам понимать, когда делегировать задачи.
+agent_info_description_placeholder: Введите описание агента...
+agent_info_name_hint: Задайте имя агента. Оно используется в списке агентов и в чате.
+agent_info_name_placeholder: Введите имя агента...
+agent_info_profile_image: Изображение профиля
+agent_info_profile_image_hint: Выберите изображение для профиля агента. Будет автоматически обрезано до 128x128.
+agent_info_select_image: Выбрать изображение
+agent_selection_task: Выбор агента
+agent_tasks: Задачи агентов
+agents: Агенты
+application-applicate_hint: Вложить
+application-description: Семантическое описание
+application-end_byte: Конечный байт
+application-end_line: Конечная строка
+application-full_contents: Полный текст
+application-full_hexadecimal: Полный hex-дамп
+application-hexadecimal_partial: Часть hex-дампа
+application-mode_hint: Режим вложения
+application-only_reference: Только ссылка
+application-partial_contents: Часть текста
+application-start_byte: Начальный байт
+application-start_line: Начальная строка
+approval_level: Уровень подтверждения
+approval_level_alwaysapprove: Авто-одобрение
+approval_level_alwaysask: Всегда спрашивать
+approval_level_alwaysdisallow: Всегда запрещать
+approval_level_policyapproveorask: Политика: никогда не запрещать
+approval_level_policyaskordisallow: Политика: никогда не одобрять автоматически
+approval_level_policyautoapproveunlessdisallowed: Политика: одобрять если не запрещено
+approval_level_policyautodisallowunlessapproved: Политика: запрещать если не одобрено
+approval_level_policybased: По политике
+approve: Подтвердить
+ask_for_confirmation: Спрашивать
+ask_for_confirmation_tooltip: Спрашивать перед выполнением инструмента
+assistant_role: Ассистент
+attachment-add_url_hint: Добавить URL
+attachment-apply_native: Приложить как native-вложение LLM
+attachment-attach_files_hint: Вложить файлы
+attachment-copy_to_working_directory: Копировать в рабочую директорию
+attachment-drop_files_here: Сбросьте файлы здесь
+attachment-url_hint: URL вложения
+attachments_manager_title: Вложить
+blazor_host_copy_url: Скопировать адрес
+blazor_host_open_browser: Открыть в браузере
+blazor_host_password: Пароль
+blazor_host_password_placeholder: Оставьте пустым, если пароль не нужен
+blazor_host_port: Адрес
+blazor_host_settings: Настройки
+blazor_host_start: Запустить
+blazor_host_status: Статус
+blazor_host_status_running: Запущен
+blazor_host_status_stopped: Остановлен
+blazor_host_stop: Остановить
+blazor_host_title: Blazor WebUI
+blazor_host_url: Адрес
+browser: Браузер
+browser-execute_javascript: Браузер: Выполнить скрипт
+browser-get_html: Браузер: Получить разметку
+browser-navigate_to_uri: Браузер: Навигация по адресу
+calculate: Вычислить
+cancel: Отмена
+cancel-tool: Отменить инструмент
+cancel_task: Отменить задачу
+chat: Чат
+chat-attach_file_hint: Прикрепить файл...
+chat-cancel_edit_hint: Отменить редактирование
+chat-enable_mcp: Включить MCP
+chat-enable_tools: Включить инструменты
+chat-input_hint: Введите сообщение...
+chat-send_button_hint: Отправить сообщение
+chat-settings_hint: Найстройки
+chat-stop_button_hint: Остановить генерацию
+chat_manager_no_messages_to_rename: Невозможно переименовать чат
+chat_manager_no_messages_to_rename_desc: В чате отсутствуют сообщения
+chat_memory_retrieval_status: Достаём память
+chat_naming_task: Именование чата
+chat_settings_databases: Базы данных
+chat_settings_environment: Окружение
+chat_settings_execution: Выполнение
+chat_settings_general: Общие
+chat_settings_global: Общие
+chat_settings_llm_properties: Параметры LLM
+chat_settings_mcp: MCP
+chat_settings_memory: Память
+chat_settings_models: Модели
+chat_settings_prompts: Промпты
+chat_settings_read: Права чтения
+chat_settings_skills: Навыки
+chat_settings_summarization: Суммаризация
+chat_settings_tools: Инструменты
+chat_settings_users: Пользователи
+chat_settings_users_hint: Пользователи, участвующие в этом чате. Агент может обращаться к каждому пользователю по имени.
+chat_status_selecting_agent: Подбираем агента
+chat_status_waiting_for_first_response: Ждём первый токен
+chat_status_waiting_for_mcp_connections: Подключаем MCP
+chat_status_waiting_for_tools: Выполняем инструменты
+chat_summarization_task: Суммаризация чата
+chat_toast_agent_selection_failed: Не удалось выбрать агента
+chat_toast_agent_selection_failed_desc: Не удалось выбрать агента для генерации ответа.
+chat_toast_generation_failed: Ошибка генерации
+chat_toast_generation_failed_desc: Произошла ошибка при генерации ответа: {0}
+chat_toast_llm_not_configured: LLM не настроена
+chat_toast_llm_not_configured_desc: LLM для чата не настроена. Пожалуйста, настройте её в настройках чата.
+chat_toast_operation_cancelled: Операция отменена
+chat_toast_operation_cancelled_desc: Генерация ответа была отменена.
+chats: Чаты
+check_failure: неудача
+check_success: успех
+clear_completed: Очистить завершённые
+clipboard-copy: Скопировать в буфер обмена
+clipboard-read: Чтение из буфера обмена
+close: Закрыть
+coin_heads: Орёл
+coin_tails: Решка
+confirmation_needed: ⚠ ТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ
+connect: Подключиться
+copy: Скопировать в буфер обмена
+copy-arguments: Скопировать аргументы
+copy-result: Скопировать результат
+copy_markdown: Скопировать Markdown
+csx-execute: Выполнить C# скрипт
+danger_level_auto_approve: Уровень авто-подтверждения
+danger_level_dangerous: Опасно
+danger_level_default: По умолчанию (спрашивать для всех)
+danger_level_safe: Безопасно
+danger_level_warning: Предупреждение
+database: Базы данных
+db-execute: Выполнить SQL-запрос
+db-list: Получить список подключений к базам данных
+db-schema: Показать схему базы данных
+db-switch: Переключить активную базу данных
+db_active_connections: Активные подключения
+db_add_connection: Добавить подключение
+db_browse_sqlite_file: Выбрать SQLite файл
+db_connect: Подключить
+db_connected: Подключено.
+db_connection_string_placeholder: Строка подключения
+db_custom_connection: Кастомное подключение
+db_disconnect: Отключить
+db_disconnect_all: Отключить все
+db_hint: Настройте именованные подключения к базам данных и кастомную строку подключения для агента.
+db_new_connection: Новое подключение
+db_no_connections: Нет активных подключений.
+db_select_sqlite_file: Выберите файл базы данных SQLite
+db_test_connection: Проверить подключение
+db_test_connector_not_found: Коннектор для {0} недоступен.
+db_test_empty_connection_string: Строка подключения пуста.
+db_test_empty_name: Имя подключения пустое.
+db_test_failed: Ошибка подключения.
+db_test_ok: Подключение успешно.
+db_use_encrypted_connection_string: Хранить строку подключения в зашифрованном виде
+delete: Удалить
+dice_rolled: Прокрутили
+disconnect: Отключиться
+edit: Редактировать
+empty_model: Пусто
+enable: Включить
+env_access_denied: Доступ запрещён
+env_access_rules_hint: Правила доступа переопределяют стандартные разрешения для конкретных директорий. Более специфичные правила (с более длинным путём) имеют приоритет над общими. Чтобы запретить доступ к директории, снимите все разрешения (Чтение, Запись, Выполнение) для этого правила.
+env_active: Активна
+env_add_access_rule: Добавить правило доступа
+env_add_working_directory: Добавить рабочую директорию
+env_additional_settings: Дополнительные настройки
+env_browse: Обзор...
+env_check_configuration: Проверить конфигурацию
+env_check_failed: Проверка окружения не удалась
+env_check_ok: Окружение готово
+env_directory_access_rules: Правила доступа к директориям
+env_enabled: Включено
+env_execute: Выполнение
+env_move_down: Вниз
+env_move_up: Вверх
+env_name: Название
+env_open_in_explorer: Открыть в проводнике
+env_path: Путь
+env_python_environments: Python окружения
+env_python_hint: Настройте виртуальные окружения Python для выполнения скриптов. Основное venv используется для запуска Python-скриптов. Отдельное окружение для мета-инструментов можно указать опционально.
+env_python_meta_venv_hint: Путь к activate.bat (опционально)
+env_python_meta_venv_script: Скрипт активации Python venv для мета-инструментов
+env_python_venv_hint: Путь к activate.bat
+env_python_venv_script: Скрипт активации Python venv
+env_read: Чтение
+env_remove: Удалить
+env_select_script: Выбрать скрипт
+env_workdir_hint: Рабочие директории определяют папки, к которым ассистент имеет доступ. Активная директория (выбранная радиокнопкой) используется как корень для относительных путей — все файловые операции используют эту директорию как базовую. Можно добавить несколько директорий; агент может переключаться между ними автоматически с помощью своих инструментов.
+env_write: Запись
+error_model: Ошибка: {0}
+execute: Выполнить
+execute-python: Выполнить Python скрипт
+execute-python_repl: Выполнить Python скрипт при помощи REPL
+execute-python_venv_shell: Выполнить Shell скрипт в виртуальном окружении Python
+execute_using_repl: Выполнить при помощи REPL
+execution_checker_always: Всегда
+exposure_attachments: Вложения
+exposure_attachments_hint: Показывать вложения из сообщений этого агента другим агентам.
+exposure_content: Содержимое
+exposure_content_hint: Показывать основной текст сообщений этого агента другим агентам.
+exposure_identify_self_as_user: Идентифицировать себя как пользователя
+exposure_identify_self_as_user_hint: При включении этот агент представляется другим агентам как пользователь. Вызовы инструментов и рассуждения становятся недоступны независимо от других флагов.
+exposure_messages_with_tool_calls: Сообщения с вызовами инструментов
+exposure_messages_with_tool_calls_hint: Показывать сообщения, содержащие вызовы инструментов. Если отключено, такие сообщения могут быть полностью скрыты от других агентов.
+exposure_reasoning: Рассуждения
+exposure_reasoning_hint: Показывать рассуждения и мысли этого агента другим агентам.
+exposure_tool_calls: Вызовы инструментов
+exposure_tool_calls_hint: Показывать вызовы инструментов и их результаты от этого агента другим агентам.
+file_contains_secrets: {0} (содержит секреты/ключи)
+filesystem: Файловая система
+forms: Формы
+forms-choice: Выбор вариантов
+forms-confirm: Подтверждение действия
+forms-file_picker: Выбор файла
+forms-input: Форма ввода
+forms_canceled: Отменено
+forms_confirmed: Подтверждено
+forms_custom_option: Свой вариант...
+forms_field_required: Поле "{0}" обязательно для заполнения.
+forms_file_selected: Файл выбран
+forms_form_submitted: Форма отправлена
+forms_make_selection: Сделайте выбор
+forms_select_file: Выбрать файл...
+forms_selected_files: Выбранные файлы
+forms_selection_confirmed: Выбор подтверждён
+fs-apply_diff: Применить изменения к файлу
+fs-changes_deleted: удалено несколько строк
+fs-changes_inserted: вставлено несколько строк
+fs-changes_lines_replaced: Изменено {0} строк
+fs-changes_modified: изменён
+fs-changes_none: без изменений
+fs-changes_text_replaced: Заменено {0} вхождений
+fs-changes_updated: обновлён
+fs-copied: скопировано
+fs-copy_directory: Скопировать директорию
+fs-copy_file: Скопировать файл
+fs-create_directory: Создать директорию
+fs-delete_directory: Удалить директорию
+fs-delete_file: Удалить файл
+fs-deleted: удалено
+fs-diff_accepted: Принято
+fs-diff_confirm: Применить
+fs-diff_decline: Отклонить
+fs-diff_declined: Отклонено
+fs-diff_disable_all: Отключить все
+fs-diff_enable_all: Включить все
+fs-diff_toggle_chunk: Включить/выключить этот блок изменений
+fs-edit: Редактирование файла
+fs-edit_changes_applied_none: {0} (без изменений)
+fs-edit_changes_count: {0} изменение(й) ({1})
+fs-entries: {0} элементов
+fs-get_file_info: Получить информацию о файле
+fs-glob: Поиск по маске
+fs-glob_found_count: Найдено {0}...
+fs-glob_no_matches: Совпадений не найдено
+fs-glob_results: {0} результат(ов)
+fs-glob_searching: Поиск **{0}**...
+fs-grep: Поиск в файловой системе
+fs-grep_collecting_files: Собираем файлы...
+fs-grep_collecting_files_count: Собираем файлы... ({0} найдено)
+fs-grep_completed: Найдено {0} совпадающих файлов
+fs-grep_scanning_files: Сканируем файлы...
+fs-list_directory: Чтение файлов в директории
+fs-move_directory: Переместить директорию
+fs-open_file: Открыть файл
+fs-open_in_explorer: Открыть в проводнике
+fs-opened: открыто
+fs-read_binary_file: Прочитать бинарный файл
+fs-read_document_file: Прочитать документ
+fs-read_entry: Чтение файла/директории
+fs-rename_file: Переименовать файл
+fs-renamed: Переименовано
+fs-replace: Заменить текст в файле
+fs-replace_lines: Заменить строки в файле
+fs-write_binary_file: Записать в бинарный файл
+fs-write_file: Записать в файл
+fs-write_file_streaming_status: {0} ({1} строк...)
+general: Общие
+general-print: Напечатать
+image_describer_status: Описываем... *{0} токенов*
+input: Ввод
+input-enter_text: Ввести текст
+input-move_mouse: Сдвинуть мышь
+input-move_mouse_delta: Сдвинуть мышь
+input-press_key: Нажать клавишу
+lines_count: {0} строк
+list_shuffled: Перемешан список из {0} элементов
+lua-execute: Выполнить Lua скрипт
+lua-get_script_info: Получить информацию о Lua-скрипте
+lua-list_scripts: Получить список Lua-скриптов
+lua-move_script: Переместить Lua-скрипт
+lua-register_or_update_script: Зарегистрировать или обновить Lua-скрипт
+lua-remove_script: Удалить Lua-скрипт
+math-calculate: Вычислить
+math-solve: Решить математическое уравнение
+math-solve_complex: Решить комплексное уравнение
+math_solve_status: {0} *({1} корней)*
+math_solve_status_no_roots: {0} *(без корней)*
+mathematics: Математика
+mcp-connection_type: Способ подключения
+mcp-endpoint: Команда/URL
+mcp_manager_header: Менеджер MCP
+mcp_manager_hint: Менеджер MCP
+memory: Память
+memory-append_log: Добавить лог в память
+memory-clear: Очистить блок памяти
+memory-delete_log: Удалить лог из памяти
+memory-forget_fact: Забыть факт из памяти
+memory-retrieve_fact: Найти факты в памяти
+memory-search_log: Найти логи в памяти
+memory-store_fact: Сохранить факт в память
+memory-view_logs: Просмотреть логи памяти
+memory-view_logs_status_latest: Последние **{0}**
+memory-view_logs_status_time_window: Временное окно
+memory_attachment_mode_readonly: Только чтение
+memory_attachment_mode_standard: Чтение и запись
+memory_attachment_mode_writeonly: Только запись
+memory_recording_task: Запись памяти
+memory_retrieval_task: Извлечение памяти
+message_context_shield: Контекстный щит активирован, сообщения выше не видны агентам
+message_summary: Сводка
+message_token_cost_cache_hit: Попадание в кеш
+message_token_cost_cache_miss: Промах кеша
+message_token_cost_generation_time: Время генерации
+message_token_cost_input: Вход
+message_token_cost_model: Модель
+message_token_cost_output: Выход
+message_token_cost_ttft: Первый токен
+message_visibility_always: Всегда
+message_visibility_only_agents: Только агентам
+message_visibility_only_users: Только другим пользователям
+message_visibility_reveal_after_send: После отправки
+metatools: Мета-инструменты
+metatools-create_or_update: Создать или обновить мета-инструмент
+metatools-delete: Удалить мета-инструмент
+metatools-get_info: Получить информацию о мета-инструменте
+metatools-list: Получить список мета-инструментов
+metatools-rename: Переименовать мета-инструмент
+model_capability_chat: Чат
+model_capability_completion: Завершение
+model_capability_embeddings: Эмбеддинги
+model_capability_label: Возм
+model_capability_reasoning: Рассуждение
+model_capability_reranking: Ранжирование
+model_capability_streaming: Стриминг
+model_capability_tools: Инструменты
+model_capability_unknown: Неизвестно
+model_modality_audio: Аудио
+model_modality_image: Изображение
+model_modality_in: Вход
+model_modality_out: Выход
+model_modality_text: Текст
+model_modality_unknown: Неизвестно
+model_modality_video: Видео
+model_provider_deepseek: DeepSeek
+model_provider_novita: Novita
+model_provider_ollama: Ollama
+model_provider_openai: OpenAI
+model_provider_openai-compat: OpenAI Совместимый
+model_provider_openrouter: OpenRouter
+model_selector_available_models: Доступные модели
+model_selector_deselect_all: Снять все
+model_selector_failed: Не удалось загрузить модели
+model_selector_manage_tooltip: Управление провайдерами и моделями
+model_selector_no_models: Нет доступных моделей
+model_selector_none: — Нет —
+model_selector_refresh: Обновить модели
+model_selector_select_all: Выбрать все
+name: Имя
+new_chat: Новый чат
+new_temporary_chat: Новый временный чат
+next_branch: Следующая ветка
+no_topic: без темы
+ok: Ок
+only_running: Только активные
+open_in_new_tab: Открыть в новой вкладке
+perm_identify_agents_as_users: Идентифицировать агентов как пользователей
+perm_identify_agents_as_users_hint: Другие агенты будут идентифицироваться как пользователи для этого агента.
+perm_messages_with_tool_calls: Сообщения с вызовами инструментов
+perm_messages_with_tool_calls_hint: Агент может читать сообщения, содержащие вызовы инструментов от других агентов. Если отключено, такие сообщения фильтруются.
+perm_other_agent_attachments: Вложения других агентов
+perm_other_agent_attachments_hint: Агент может читать вложения от других агентов.
+perm_other_agent_content: Основной контент других агентов
+perm_other_agent_content_hint: Агент может читать основной контент сообщений от других агентов.
+perm_other_agent_messages: Сообщения других агентов
+perm_other_agent_messages_hint: Агент может читать сообщения от других агентов.
+perm_other_agent_reasoning: Рассуждения других агентов
+perm_other_agent_reasoning_hint: Агент может читать рассуждения и мысли других агентов.
+perm_other_agent_tool_calls: Вызовы инструментов других агентов
+perm_other_agent_tool_calls_hint: Агент может читать вызовы инструментов и результаты других агентов.
+perm_own_messages: Свои сообщения
+perm_own_messages_hint: Агент может читать свои собственные предыдущие сообщения.
+perm_user_attachments: Вложения пользователя
+perm_user_attachments_hint: Агент может читать файлы, прикреплённые пользователем.
+perm_user_messages: Сообщения пользователя
+perm_user_messages_hint: Агент может читать сообщения, отправленные пользователем.
+personality_hint: Персона
+policy: Политика
+previous_branch: Предыдущая ветка
+prompt_assistant_nickname_hint: Имя ассистента
+prompt_assistant_nickname_placeholder: например, Ассистент
+prompt_behavior_sliders: Слайдеры поведения
+prompt_behavior_sliders_hint: Настройте слайдеры, чтобы управлять тоном, стилем и личностью ассистента
+prompt_category: Категория
+prompt_category_uncategorized: Без категории
+prompt_components: Дополнительные компоненты
+prompt_components_hint: Выберите дополнительные компоненты промпта, которые будут добавлены к системному сообщению
+prompt_custom_persona_hint: Введите кастомную персону...
+prompt_custom_persona_placeholder: Опишите персону в деталях...
+prompt_custom_specialization_hint: Введите описание специализации...
+prompt_custom_specialization_placeholder: Опишите профессиональную роль, которую должен выполнять ассистент...
+prompt_edit_component: Редактировать компонент
+prompt_edit_persona: Редактировать персону
+prompt_edit_specialization: Редактировать специализацию
+prompt_import: Импорт
+prompt_import_component: Импорт компонента
+prompt_import_persona: Импорт персоны
+prompt_import_specialization: Импорт специализации
+prompt_manager_header: Менеджер промптов
+prompt_manager_hint: Менеджер промптов
+prompt_name: Название
+prompt_names: Имена
+prompt_new_component: Новый компонент
+prompt_new_persona: Новая персона
+prompt_new_specialization: Новая специализация
+prompt_persona: Персона
+prompt_personas: Персоны
+prompt_preview_header: Предпросмотр системного промпта
+prompt_preview_toggle: Показать/скрыть предпросмотр системного промпта
+prompt_select_persona: Выберите персону...
+prompt_select_specialization: Выберите специализацию...
+prompt_selected_persona_hint: Выберите персону для применения к чату
+prompt_selected_specialization_hint: Выберите специализацию для определения профессиональной роли ассистента
+prompt_specialization: Специализация
+prompt_specialization_hint: Выберите профессиональную специализацию ассистента. Определяет, что ассистент знает и умеет.
+prompt_specializations: Специализации
+prompt_system_prompt: Системный промпт
+prompt_system_prompt_hint: Введите системный промпт...
+prompt_system_prompt_placeholder: например, You are a helpful assistant
+prompt_text: Текст
+prompt_use_custom_persona: Использовать кастомную персону
+prompt_use_custom_specialization: Использовать свою специализацию
+prompt_user_nickname_hint: Как ассистент должен звать вас?
+prompt_user_nickname_placeholder: например, Иван
+python-get_installed_packages_list: Получить список установленных пакетов Python
+python-repl_get_var: Получить переменную из Python REPL
+python-repl_reset: Сбросить контекст Python REPL
+python_meta_venv_activate_script_path_hint: Скрипт активации виртуального окружения Python для мета-инструментов
+python_venv_activate_script_path_hint: Скрипт активации виртуального окружения Python
+random: Рандом
+random-GUID: Сгенерировать GUID
+random-check_chance: Проверка шанса
+random-coin_flip: Подкинуть монетку
+random-dice_roll: Бросить кубик
+random-float: Сгенерировать дробное число
+random-integer: Сгенерировать целое число
+random-items_from_list: Выбрать случайные элементы из списка
+random-shuffle_list: Перемешать список
+reasoning: Мышление
+reasoning_default: По умолчанию
+reasoning_disabled: Отключено
+reasoning_high: Высокий
+reasoning_low: Низкий
+reasoning_maximum: Максимальный
+reasoning_medium: Средний
+reasoning_minimal: Минимальный
+reasoning_none: Отсутствует
+reasoning_xhigh: Очень высокий
+regenerate: Сгенерировать заново
+remove: Удалить
+rename_chat_cancel: Отмена
+rename_chat_save: Сохранить
+rename_with_ai: Переименовать через ИИ
+resend: Отправить заново
+reset: Сбросить
+sample: Образец
+save: Сохранить
+save_markdown: Сохранить Markdown
+scripting: Скриптинг
+select_model: Выберите модель
+select_python_meta_venv_activate_script: Выберите скрипт активации виртуального окружения Python для мета-инструментов
+select_python_venv_activate_script: Выберите скрипт активации виртуального окружения Python
+select_working_directory: Выберите рабочую папку
+send_quick_action: Отправить "{0}"
+settings: Настройки
+settings-agentic_model_hint: Агентная модель
+settings-agentic_router_model_hint: Модель для роутера агентов
+settings-agentic_tools_model_hint: Модель для агентных инструментов
+settings-chat_model_hint: Модель чата
+settings-llm_additional_parameters: Дополнительные параметры
+settings-llm_additional_parameters_hint: Пользовательские параметры, отправляемые напрямую в API LLM в формате JSON. Имена параметров должны соответствовать спецификации API.
+settings-llm_custom_model: Кастомная модель
+settings-llm_enable_custom_model: Включить кастомную модель
+settings-llm_enable_max_tokens: Включить переопределение макс. токенов
+settings-llm_enable_reasoning: Включить переопределение параметров рассуждений
+settings-llm_enable_temperature: Включить переопределение температуры
+settings-llm_max_tokens: Макс. токенов
+settings-llm_max_tokens_value: Максимум выходных токенов
+settings-llm_param_name: Имя
+settings-llm_param_value: Значение (JSON)
+settings-llm_reasoning: Рассуждения
+settings-llm_reasoning_level: Уровень рассуждений
+settings-llm_temperature: Температура
+settings-llm_temperature_value: Значение температуры
+settings-mcp_servers: MCP серверы
+settings-mcp_servers_hint: Выберите MCP-серверы, инструменты которых будут доступны агентам в этом чате.
+settings-mcp_servers_toggle_hint: Включить или отключить этот MCP-сервер
+settings-memory_add_block: Новый блок
+settings-memory_attach: Прикрепить
+settings-memory_attach_placeholder: Существующий блок...
+settings-memory_auto_recording: Автоматическая запись
+settings-memory_auto_retrieval: Автоматический поиск
+settings-memory_block_description: Описание
+settings-memory_block_editor: Редактор блока
+settings-memory_block_embedding_model: Модель эмбеддингов
+settings-memory_block_facts: Хранить семантические факты
+settings-memory_block_id: ID блока
+settings-memory_block_logs: Хранить эпизодические логи
+settings-memory_block_maintainer_model: Модель обслуживания
+settings-memory_block_name: Название
+settings-memory_block_storage: Хранилище блока
+settings-memory_block_warning_no_content: Факты и логи отключены для этого блока. Агент не сможет читать или записывать в него данные.
+settings-memory_blocks: Блоки памяти
+settings-memory_blocks_hint: Прикрепите общие блоки памяти к этому агенту. Блок хранит семантические факты, эпизодические логи и постоянное состояние. Выберите блок в списке, чтобы отредактировать его содержимое ниже.
+settings-memory_clear: Очистить память
+settings-memory_clear_confirm: Все факты и логи, хранящиеся в этом блоке, будут безвозвратно удалены. Это действие нельзя отменить.
+settings-memory_clear_done: Память очищена
+settings-memory_clear_error: Не удалось очистить память
+settings-memory_clear_result: Удалено фактов: {0}, логов: {1}.
+settings-memory_clear_title: Очистить память?
+settings-memory_copy_suffix: копия
+settings-memory_default_block_name: Новый блок памяти
+settings-memory_delete: Удалить блок
+settings-memory_delete_confirm: Блок и всё его содержимое (факты, логи, состояние) будут безвозвратно удалены. Это действие нельзя отменить.
+settings-memory_delete_done: Блок удалён
+settings-memory_delete_error: Не удалось удалить блок
+settings-memory_delete_title: Удалить блок?
+settings-memory_duplicate: Дублировать
+settings-memory_edit: Редактировать блок
+settings-memory_enable: Включить память агента
+settings-memory_enable_memory: Включить память разговора
+settings-memory_fact_add_done: Факт сохранён. ID: {0}
+settings-memory_fact_add_error: Не удалось сохранить факт
+settings-memory_fact_add_placeholder: Введите текст факта...
+settings-memory_fact_add_title: Добавить факт
+settings-memory_fact_delete: Удалить
+settings-memory_fact_delete_confirm: Факт [id: {0}] будет помечен как удалённый и скрыт из поиска. Его можно будет восстановить.
+settings-memory_fact_delete_done: Факт удалён
+settings-memory_fact_delete_error: Не удалось удалить факт
+settings-memory_fact_delete_title: Удалить факт?
+settings-memory_fact_supersede: Заменить
+settings-memory_fact_supersede_desc: Введите текст замены для факта [id: {0}]. Старый факт будет помечен как заменённый.
+settings-memory_fact_supersede_done: Факт заменён. Новый ID: {0}
+settings-memory_fact_supersede_error: Не удалось заменить факт
+settings-memory_fact_supersede_label: Текст замены
+settings-memory_fact_supersede_title: Замена факта
+settings-memory_facts_add: Добавить
+settings-memory_facts_clear: Удалить все факты
+settings-memory_facts_clear_confirm: Все факты, хранящиеся в этом блоке, будут безвозвратно удалены. Это действие нельзя отменить.
+settings-memory_facts_clear_done: Все факты удалены
+settings-memory_facts_clear_error: Не удалось удалить факты
+settings-memory_facts_clear_result: Удалено фактов: {0}.
+settings-memory_facts_clear_title: Удалить все факты?
+settings-memory_facts_hint: Факт сохраняется с оценкой важности и становится доступным для поиска.
+settings-memory_facts_importance: Важность
+settings-memory_facts_min_importance: Мин. важность
+settings-memory_facts_new_placeholder: Текст нового факта...
+settings-memory_facts_no_results: Ничего не найдено
+settings-memory_facts_search: Найти
+settings-memory_facts_search_error: Ошибка поиска фактов
+settings-memory_facts_search_placeholder: Поиск фактов...
+settings-memory_hint: Настройте запись и поиск памяти этого разговора.
+settings-memory_log_add_done: Лог добавлен. ID: {0}
+settings-memory_log_add_error: Не удалось добавить лог
+settings-memory_log_add_placeholder: Введите текст лога...
+settings-memory_log_add_title: Добавить лог
+settings-memory_log_begin: Начало
+settings-memory_log_delete: Удалить
+settings-memory_log_delete_confirm: Лог [id: {0}] будет удалён безвозвратно и не может быть восстановлен.
+settings-memory_log_delete_done: Лог удалён
+settings-memory_log_delete_error: Не удалось удалить лог
+settings-memory_log_delete_title: Удалить лог?
+settings-memory_log_details: Детали
+settings-memory_log_end: Конец
+settings-memory_log_ordinal: Ординал
+settings-memory_log_timeline: Таймлайн
+settings-memory_logs_add: Добавить
+settings-memory_logs_clear: Удалить все логи
+settings-memory_logs_clear_confirm: Все логи, хранящиеся в этом блоке, будут безвозвратно удалены. Это действие нельзя отменить.
+settings-memory_logs_clear_done: Все логи удалены
+settings-memory_logs_clear_error: Не удалось удалить логи
+settings-memory_logs_clear_result: Удалено логов: {0}.
+settings-memory_logs_clear_title: Удалить все логи?
+settings-memory_logs_from: От
+settings-memory_logs_hint: Логи неизменяемы: текст нельзя изменить после добавления.
+settings-memory_logs_importance: Важность
+settings-memory_logs_min_importance: Мин. важность
+settings-memory_logs_new_placeholder: Текст нового лога...
+settings-memory_logs_no_results: Ничего не найдено
+settings-memory_logs_ordinal_from: Ординал от
+settings-memory_logs_ordinal_to: Ординал до
+settings-memory_logs_search: Найти
+settings-memory_logs_search_by_time: По времени
+settings-memory_logs_search_error: Ошибка поиска логов
+settings-memory_logs_search_placeholder: Поиск логов...
+settings-memory_logs_time_search_error: Ошибка поиска по времени
+settings-memory_logs_to: До
+settings-memory_manual_control: Ручное управление (через инструменты)
+settings-memory_manual_control_hint: Разрешить агенту управлять памятью вручную с помощью инструментов памяти.
+settings-memory_missing_block: Блок отсутствует ({0})
+settings-memory_options: Параметры памяти
+settings-memory_remove: Открепить
+settings-memory_rename: Переименовать
+settings-memory_rename_confirm: Подтвердить переименование
+settings-memory_section_facts: Факты
+settings-memory_section_info: Информация
+settings-memory_section_logs: Логи
+settings-models: Модели
+settings-models_hint: Выберите языковые модели, используемые для чата, агентного роутинга, агентных инструментов и зрительных задач.
+settings-skills_additional_dirs: Дополнительные директории навыков
+settings-skills_additional_dirs_hint: Дополнительные директории для поиска навыков. Поддиректории с SKILL.md или SKILL.mdx будут загружены.
+settings-skills_additional_files: Дополнительные файлы навыков
+settings-skills_additional_files_hint: Дополнительные отдельные файлы SKILL.md или SKILL.mdx для загрузки.
+settings-skills_available: Доступные навыки
+settings-skills_available_hint: Навыки, найденные в директориях. Только включённые навыки внедряются в промпт агента.
+settings-skills_diagnostic: ⚠
+settings-skills_dir_placeholder: Путь к директории...
+settings-skills_enable: Включить навыки
+settings-skills_fetch_all: Искать во всех рабочих директориях
+settings-skills_file_placeholder: Путь к файлу...
+settings-skills_injection_mode: Инжекция
+settings-skills_refresh: Обновить список навыков
+settings-skills_select_directory: Выберите директорию навыка
+settings-skills_select_file: Выберите файл навыка
+settings-skills_skill_list: Переопределение навыков
+settings-skills_skill_list_hint: Переопределите настройки навыков для этого агента. Отключённые навыки исключаются из промпта. Переключите режим инжекции, чтобы включить полное тело навыка в системный промпт.
+settings-skills_sources: Источники навыков
+settings-summarization: Авто-суммаризация
+settings-summarization_enabled: Включить авто-суммаризацию чата
+settings-summarization_hint: При включении диалог автоматически суммаризируется и сжимается после превышения порога токенов.
+settings-summarization_ignore_last_rounds_hint: Игнорировать последние раунды
+settings-summarization_trigger_tokens_hint: Порог токенов
+settings-summarizer_model_hint: Модель суммаризации
+settings-tools_fetch_all: Искать во всех рабочих директориях
+settings-tools_fetch_all_hint: Искать мета-инструменты во всех рабочих директориях, а не только в активной.
+settings-use_mcp: Включить MCP
+settings-use_tools: Включить инструменты
+settings-vision_model_hint: Зрительная модель
+settings_add_agent: Добавить агента
+settings_add_stage: Добавить этап выполнения
+settings_agent_global: (глобальный)
+settings_agent_list: Список агентов
+settings_agent_read_filter: Фильтр агентов
+settings_agent_read_filter_hint: Ограничивает, каких агентов этот агент может видеть, на основе белого или чёрного списка.
+settings_allow_context_shields: Учитывать щиты контекста
+settings_allow_context_shields_hint: Если включено, агент будет уважать щиты контекста и не будет видеть сообщения, размещённые после них.
+settings_allow_summaries: Учитывать суммаризацию
+settings_allow_summaries_hint: Если включено, агент сможет видеть суммаризацию ранних сообщений чата и останавливаться на суммаризированных сегментах.
+settings_apikey_add: Добавить API-ключ
+settings_apikey_add_title: Добавить API-ключ
+settings_apikey_edit_title: Изменить API-ключ
+settings_apikey_error_name_required: Название ключа обязательно.
+settings_apikey_error_value_required: Значение API-ключа обязательно.
+settings_apikey_manage: Управление API-ключами
+settings_apikey_manage_title: Управление API-ключами
+settings_apikey_name: Название ключа
+settings_apikey_name_placeholder: Например: OpenAI Production, DeepSeek Personal
+settings_apikey_none: Нет
+settings_apikey_scheme: Способ хранения
+settings_apikey_scheme_encrypted: Зашифровано (AES-256)
+settings_apikey_scheme_env: Переменная окружения
+settings_apikey_scheme_raw: Открытый текст
+settings_apikey_value: Значение API-ключа
+settings_apikey_value_placeholder: Введите ваш API-ключ
+settings_application: Настройки приложения
+settings_can_be_mentioned: Можно упомянуть
+settings_can_be_mentioned_hint: Может ли агент быть упомянут другими агентами или пользователями, вызывая его выполнение.
+settings_can_execute_again: Может выполняться повторно
+settings_can_execute_again_hint: Разрешает агенту выполниться снова после того, как он уже отработал в текущем цикле.
+settings_can_mention_others: Может упоминать других
+settings_can_mention_others_hint: Может ли агент упоминать и вызывать других агентов.
+settings_clone_stage: Клонировать этап
+settings_context: Контекст
+settings_copy_to_local: Скопировать в чат
+settings_default_id: По умолчанию
+settings_deselect_all: Снять выбор со всех
+settings_execution_checker: Проверка выполнения:
+settings_execution_checker_hint: Условие, определяющее, когда агент должен выполниться.
+settings_execution_order: Порядок выполнения:
+settings_execution_order_hint: Определяет порядок выполнения агентов. Меньшие значения выполняются первыми.
+settings_execution_stages: Этапы выполнения
+settings_exposure_mode: Режим видимости
+settings_exposure_mode_hint: Определяет, какие части сообщений этого агента видны другим агентам.
+settings_filter_blacklist: Чёрный список
+settings_filter_mode: Режим фильтра:
+settings_filter_whitelist: Белый список
+settings_language: Язык
+settings_language_system: Системный
+settings_max_visible_rounds: Макс. видимых раундов:
+settings_max_visible_rounds_hint: Ограничивает количество последних раундов (сообщение пользователя + ответ ассистента), видимых каждому агенту. 0 — без лимита. Помогает экономить контекстное окно.
+settings_mentions: Упоминания
+settings_move_agent_down: Переместить агента вниз
+settings_move_agent_up: Переместить агента вверх
+settings_move_stage_down: Переместить этап вниз
+settings_move_stage_up: Переместить этап вверх
+settings_profile: Профиль:
+settings_promote_to_global: Сделать глобальным
+settings_providers_add: Добавить
+settings_providers_add_title: Добавить провайдера
+settings_providers_apikey: API-ключ
+settings_providers_cancel: Отмена
+settings_providers_close: Закрыть
+settings_providers_connected: ✓ Подключено
+settings_providers_connection_error: Ошибка: {0}
+settings_providers_connection_failed: ✗ Соединение не удалось
+settings_providers_connection_success: ✓ Соединение успешно
+settings_providers_custom_models: Пользовательские модели
+settings_providers_delete: Удалить
+settings_providers_disconnected: ✗ Не удалось
+settings_providers_edit: Редактировать
+settings_providers_edit_title: Редактировать провайдера
+settings_providers_endpoint: Endpoint URI
+settings_providers_endpoint_placeholder: https://api.openai.com/v1
+settings_providers_manage_title: Провайдеры моделей
+settings_providers_models_count: {0} загруженных, {1} выбранных, {2} кастомных моделей
+settings_providers_name: Имя провайдера
+settings_providers_name_placeholder: например, Мой OpenAI провайдер
+settings_providers_no_custom_models: Нет пользовательских моделей
+settings_providers_refresh_models: Обновить модели
+settings_providers_save: Сохранить
+settings_providers_test_connection: Проверить соединение
+settings_providers_type: Тип провайдера
+settings_random_stage: Случайный
+settings_read_permissions: Права на чтение
+settings_read_permissions_hint: Определяет, какие типы сообщений и контента этот агент может читать.
+settings_remove_agent: Удалить агента
+settings_remove_stage: Удалить этап
+settings_scope_agent: Профиль агента
+settings_scope_application: Приложение
+settings_scope_profile: Профиль чата
+settings_select_agent_first: Сначала выберите агента
+settings_select_all: Выбрать всех
+settings_selected_agent: Выбранный агент:
+settings_sequential_stage: Последовательный
+settings_stage_adaptive_additional_router_prompt: Дополнительный промпт для агента-роутера
+settings_stage_adaptive_agents: Пул агентов
+settings_stage_adaptive_enforce_router_selection: Обеспечить выбор
+settings_stage_adaptive_max_visible_rounds: Макс. количество видимых раундов для агента-роутера
+settings_stage_add_agent: Добавить агента в этап
+settings_stage_can_agents_be_skipped: Пропускать агентов (по весу)
+settings_stage_can_agents_execute_again: Агенты могут выполняться повторно
+settings_stage_enable_mentions: Включить @упоминания
+settings_stage_max_cycles: Макс. циклов
+settings_stage_max_iterations: Макс. итераций
+settings_stage_mentionable_agents: Упоминаемые агенты
+settings_stage_min_cycles: Мин. циклов
+settings_stage_min_iterations: Мин. итераций
+settings_stage_move_agent_down: Переместить агента вниз
+settings_stage_move_agent_up: Переместить агента вверх
+settings_stage_remove_agent: Удалить агента из этапа
+settings_stage_stop_chance: Шанс остановки
+settings_stage_weight_tooltip: Вероятность выбора агента (0 = всегда пропускать, 1 = никогда не пропускать)
+settings_stage_weighted_agents: Взвешенные агенты
+settings_toggle_agent_active: Включить/выключить агента
+shell-bash: Выполнить Bash скрипт
+shell-batch: Выполнить Batch скрипт
+shell-powershell: Выполнить Powershell скрипт
+skill-load: Прочитать навык
+skill_diagnostic_fileaccesserror: Ошибка доступа к файлу
+skill_diagnostic_fileaccesserror_hint: Не удалось прочитать файл SKILL.md. Проверьте права доступа.
+skill_diagnostic_generalparsingerror: Ошибка парсинга
+skill_diagnostic_generalparsingerror_hint: Непредвиденная ошибка при разборе файла навыка.
+skill_diagnostic_missingdescription: Отсутствует описание
+skill_diagnostic_missingdescription_hint: У навыка нет описания. Добавьте описание в YAML frontmatter или как первый абзац.
+skill_diagnostic_missingfile: Файл отсутствует
+skill_diagnostic_missingfile_hint: Файл SKILL.md не найден по ожидаемому пути.
+skill_diagnostic_missingname: Отсутствует имя
+skill_diagnostic_missingname_hint: У навыка нет имени ни в YAML frontmatter, ни в заголовке, ни в имени папки.
+skill_diagnostic_missingyaml: Отсутствует YAML
+skill_diagnostic_missingyaml_hint: В файле SKILL.md нет блока YAML frontmatter (--- ... ---).
+skill_diagnostic_missingyamldescription: Отсутствует описание в YAML
+skill_diagnostic_missingyamldescription_hint: Поле 'description' отсутствует в YAML frontmatter. Использовано резервное описание.
+skill_diagnostic_missingyamlname: Отсутствует имя в YAML
+skill_diagnostic_missingyamlname_hint: Поле 'name' отсутствует в YAML frontmatter. Использовано резервное имя.
+skill_diagnostic_namedirectorymismatch: Несовпадение имени и папки
+skill_diagnostic_namedirectorymismatch_hint: Имя навыка не совпадает с именем директории, содержащей SKILL.md.
+skill_diagnostic_nameformaterror: Недопустимый формат имени
+skill_diagnostic_nameformaterror_hint: Имя навыка содержит недопустимые символы. Разрешены строчные латинские буквы, цифры и дефисы.
+skill_diagnostic_yamldecodingerror: Ошибка декодирования YAML
+skill_diagnostic_yamldecodingerror_hint: Не удалось десериализовать YAML frontmatter в ожидаемую структуру.
+skill_diagnostic_yamlparsingerror: Ошибка синтаксиса YAML
+skill_diagnostic_yamlparsingerror_hint: YAML frontmatter содержит недопустимый синтаксис.
+skill_injection_mode_default: Имя + описание
+skill_injection_mode_full: Полное тело
+skills: Навыки
+specialization_clear: Очистить специализацию
+stage_type_adaptive: Адаптивный
+stage_type_mention_only: Только по упоминанию
+stage_type_random: Случайный
+stage_type_round_robin: По кругу
+stage_type_sequential: Последовательный
+summarize_message: Суммаризировать это сообщение и предыдущие для сжатия контекста
+system_instructions_hint: Системные инструкции
+system_role: Система
+task_detail_behaviour: Режим выполнения
+task_detail_configuration: Конфигурация
+task_detail_error: Ошибка
+task_detail_id: ID задачи
+task_detail_inference_time: инференс
+task_detail_input_cache_hit_tokens: вход кеш
+task_detail_input_tokens: вход
+task_detail_max_parallel_tools: Макс. параллельных тулов
+task_detail_messages: Сообщения
+task_detail_output_tokens: выход
+task_detail_parent: Родительская задача
+task_detail_reasoning: Размышления
+task_detail_subtasks: Подзадачи
+task_detail_time_to_first_token: первый токен
+task_detail_timeout: Таймаут
+task_detail_tool_calls: Вызовы инструментов
+task_detail_tools_count: Доступно инструментов
+task_details: Детали задачи
+task_status_cancelled: Отменено
+task_status_executing: Выполнение
+task_status_failed: Ошибка
+task_status_pending: Ожидание
+task_status_success: Успешно
+task_status_unknown: Неизвестно
+temporary_chat: временный
+time: Время
+time-get: Получить текущее время
+time-wait: Подождать
+time_wait_completed: Завершено ({0})
+time_wait_status: Ждём... {0} осталось
+title: Niggalink AI
+toggle_context_shield: Переключить щит контекста
+toggle_subtasks: Показать/скрыть подзадачи
+tool-approve-with-notes: Подтвердить с примечанием
+tool-approve-with-wait-hint: Подтвердить и попросить подождать
+tool-arguments: Аргументы:
+tool-cancel-with-reason: Отменить с пояснением
+tool-cancel-with-wait-hint: Отменить и попросить подождать
+tool-commit-notes: Отправить
+tool-executing: Выполняется...
+tool-notes-placeholder: Введите причину/пояснение...
+tool-requires-approval: Требуется подтверждение
+tool-result: Результат:
+tool-source_mcp: MCP
+tool-source_meta: Мета
+tool_behaviour_accessoutsideworkdir: Доступ за пределы рабочей директории
+tool_behaviour_accessoutsideworkdir_hint: Инструмент обращается к путям вне настроенной рабочей директории.
+tool_behaviour_adhoc: Специальные/одноразовые инструменты
+tool_behaviour_adhoc_hint: Специальные инструменты, созданные для одноразового запуска (например, внутри скриптов)
+tool_behaviour_agentexecution: Выполнение агентов
+tool_behaviour_agentexecution_hint: Инструмент вызывает, управляет или координирует других AI-агентов.
+tool_behaviour_clipboardaccess: Доступ к буферу обмена
+tool_behaviour_clipboardaccess_hint: Инструмент читает или записывает данные в буфер обмена.
+tool_behaviour_clipboardread: Чтение буфера обмена
+tool_behaviour_clipboardread_hint: Инструмент читает текстовые данные из буфера обмена.
+tool_behaviour_clipboardwrite: Запись в буфер обмена
+tool_behaviour_clipboardwrite_hint: Инструмент записывает текстовые данные в буфер обмена.
+tool_behaviour_databasechange: Изменение базы данных
+tool_behaviour_databasechange_hint: Инструмент изменяет данные или схему в подключённой базе данных.
+tool_behaviour_databasecustomconnect: Кастомное подключение к базе данных
+tool_behaviour_databasecustomconnect_hint: Инструмент подключается к базе данных по произвольной строке подключения.
+tool_behaviour_databaseread: Чтение базы данных
+tool_behaviour_databaseread_hint: Инструмент читает данные из подключённой базы данных.
+tool_behaviour_directorydelete: Удаление директорий
+tool_behaviour_directorydelete_hint: Инструмент удаляет целые деревья директорий вместе с содержимым.
+tool_behaviour_directoryedit: Редактирование директорий
+tool_behaviour_directoryedit_hint: Инструмент изменяет структуру директорий (перемещение, переименование, копирование).
+tool_behaviour_directoryread: Чтение директорий
+tool_behaviour_directoryread_hint: Инструмент перечисляет содержимое директорий.
+tool_behaviour_executeexternalprocess: Запуск внешнего процесса
+tool_behaviour_executeexternalprocess_hint: Инструмент запускает внешний процесс операционной системы.
+tool_behaviour_filedelete: Удаление файлов
+tool_behaviour_filedelete_hint: Инструмент навсегда удаляет файлы из файловой системы.
+tool_behaviour_filedirectorycreate: Создание файлов и директорий
+tool_behaviour_filedirectorycreate_hint: Инструмент создаёт новые файлы или директории в файловой системе.
+tool_behaviour_fileedit: Редактирование файлов
+tool_behaviour_fileedit_hint: Инструмент изменяет содержимое или метаданные файлов без удаления.
+tool_behaviour_fileread: Чтение файлов
+tool_behaviour_fileread_hint: Инструмент читает содержимое файлов.
+tool_behaviour_internetaccess: Доступ в интернет
+tool_behaviour_internetaccess_hint: Инструмент выполняет сетевые запросы к внешним сервисам или API.
+tool_behaviour_longrunningtask: Длительное выполнение
+tool_behaviour_longrunningtask_hint: Инструмент может выполняться долго из-за сложных вычислений или сетевых задержек.
+tool_behaviour_mcp: MCP (внешний сервер)
+tool_behaviour_mcp_hint: Инструмент получен с внешнего MCP-сервера и может иметь непредсказуемое поведение.
+tool_behaviour_meta: Мета-инструмент (создан LLM)
+tool_behaviour_meta_hint: Инструмент создан во время выполнения LLM через Lua/Python скриптинг.
+tool_behaviour_none: Безопасно (нет специфического поведения)
+tool_behaviour_none_hint: Вычислительные или информационные задачи (математика, случайные числа, время).
+tool_behaviour_policy: Политика поведения
+tool_behaviour_policy_auto_approve: Авто-одобрение
+tool_behaviour_policy_default: По умолчанию
+tool_behaviour_policy_disallowed: Запрещено
+tool_behaviour_possiblyunexpected: Потенциально неожиданные действия
+tool_behaviour_possiblyunexpected_hint: Инструмент может выполнять неожиданные или неконтролируемые действия.
+tool_behaviour_readsecrets: Чтение секретов и конфиденциальных данных
+tool_behaviour_readsecrets_hint: Инструмент может раскрыть пароли, API-ключи или токены.
+tool_behaviour_runterminal: Запуск в терминале
+tool_behaviour_runterminal_hint: Инструмент запускает команды во встроенном терминале с интерактивным вводом/выводом.
+tool_behaviour_scriptaccess: Доступ к инструментам и скриптам
+tool_behaviour_scriptaccess_hint: Инструмент создаёт, изменяет или удаляет другие инструменты и пользовательские скрипты во время выполнения.
+tool_behaviour_semanticmemoryclear: Очистка семантической памяти
+tool_behaviour_semanticmemoryclear_hint: Инструмент очищает блоки семантической памяти и может привести к потере данных.
+tool_behaviour_semanticmemorydelete: Удаление вхождений семантической памяти
+tool_behaviour_semanticmemorydelete_hint: Инструмент удаляет факты и логи из семантической памяти.
+tool_behaviour_semanticmemoryread: Чтение семантической памяти
+tool_behaviour_semanticmemoryread_hint: Инструмент может читать факты и логи из семантической памяти.
+tool_behaviour_semanticmemorywrite: Запись в семантическую память
+tool_behaviour_semanticmemorywrite_hint: Инструмент может записывать факты и логи в семантическую память.
+tool_behaviour_userinteraction: Взаимодействие с пользователем
+tool_behaviour_userinteraction_hint: Инструмент требует ввода от пользователя через формы, подтверждения, выбор файлов и т.д.
+tool_behaviour_workdirchange: Смена рабочей директории
+tool_behaviour_workdirchange_hint: Инструмент переключает активную рабочую директорию, изменяя базу для всех относительных файловых операций.
+tool_call_status_cancelled: Отменено
+tool_call_status_confirming: Требуется подтверждение
+tool_call_status_executing: Выполнение...
+tool_call_status_failed: Ошибка
+tool_call_status_pending: Ожидание
+tool_call_status_pre_executing: Анализ...
+tool_call_status_success: Успешно
+tool_call_status_unknown: Неизвестно
+tool_fixed: Фиксированный инструмент
+tool_fixed_hint: Этот инструмент всегда включён, пока присутствует его контекст, и не может быть отключён.
+tool_name_suffix_hint: {0} инструментов
+tool_settings: Настройки инструментов
+tools_auto_approve_behaviours: Авто-одобряемые поведения
+tools_disallowed_behaviours: Запрещённые поведения
+tools_hint: Инструменты
+toolset: Тулсет
+toolset_create: Создать тулсет
+toolset_remove: Удалить тулсет
+toolset_rename: Переименовать тулсет
+toolset_shared: Общий тулсет:
+toolset_use_custom: Использовать свой тулсет
+toolset_use_custom_hint: Изменения применяются только к этому агенту. При выключении используется общая конфигурация тулсета.
+unnamed_task: (безымянная задача)
+user_active_hint: Пользователь, от которого будет отправлено следующее сообщение
+user_add_title: Добавить пользователя
+user_clear_image: Очистить
+user_description: Описание
+user_description_hint: Дополнительная информация о пользователе, которую агенты могут использовать для персонализации ответов
+user_edit_title: Редактировать пользователя
+user_error_login_required: Логин обязателен.
+user_login: Логин
+user_login_hint: Уникальный идентификатор пользователя
+user_message_hidden: Сообщение скрыто
+user_message_visibility_hint: Видимость:
+user_name: Имя
+user_name_hint: Отображаемое имя в разговорах и для агентов
+user_profile_image: Изображение профиля
+user_profile_image_hint: Выберите изображение для профиля пользователя. Будет автоматически обрезано до 128x128.
+user_role: Пользователь
+user_select_image: Выбрать изображение...
+user_select_image_title: Выберите изображение профиля пользователя
+user_select_prompt: Выберите пользователя из списка для редактирования
+voice_chat: Голосовой чат
+wd-list: Получить список рабочих директорий
+wd-switch: Сменить рабочую директорию
+web: Веб
+web-download: Скачать
+web-fetch: Получить веб-контент
+web-get: GET запрос
+web-get_html: Получить HTML
+web-parse: Парсинг HTML
+web-post: POST запрос
+web-request: Веб-запрос
+web-search: Поиск в интернете
+web-search_get_engines: Получить список доступных движков веб-поиска
+web-status: Проверить веб-статус
+web_search_results: {0} *({1} результатов)*
+webui_anonymous: Анонимус
+webui_assistant: Ассистент
+webui_avatar_delete_title: Удалить аватарку
+webui_avatar_deleted: Аватарка удалена
+webui_avatar_error: Не удалось загрузить изображение
+webui_avatar_timeout: Время выбора изображения истекло. Попробуйте снова.
+webui_chat_input_placeholder: Введите сообщение...
+webui_chat_title: dASS WebUI
+webui_delete: Удалить
+webui_edit: Редактировать
+webui_login_btn: Войти
+webui_login_create: Создать
+webui_login_error: Некорректный логин или пароль. Попробуйте снова.
+webui_login_label: Логин
+webui_login_loading: Вход в систему...
+webui_login_no_account: Нет аккаунта?
+webui_login_placeholder: Введите логин...
+webui_login_title: Войдите в аккаунт
+webui_master_password_label: Пароль для входа в чат
+webui_master_password_placeholder: Введите мастер-пароль...
+webui_next_branch: Следующая ветка
+webui_password_label: Пароль
+webui_password_placeholder: Введите пароль...
+webui_previous_branch: Предыдущая ветка
+webui_profile_avatar_updated: Аватарка обновлена!
+webui_profile_btn: Профиль
+webui_profile_cancel: Отмена
+webui_profile_close: Закрыть
+webui_profile_description: Описание
+webui_profile_description_placeholder: Описание для агентов...
+webui_profile_logout: Выйти
+webui_profile_name: Имя
+webui_profile_save: Сохранить
+webui_profile_saved: Сохранено!
+webui_profile_saving: Сохранение...
+webui_profile_title: Настройки профиля
+webui_profile_title_attr: Настройки профиля
+webui_readiness_always_ready: Всегда готов
+webui_readiness_count_title: Готовых / Онлайн
+webui_readiness_ready: Готов
+webui_readiness_title_auto: Автоматически готовиться
+webui_readiness_title_ready: Ты готов?
+webui_reasoning: Рассуждения
+webui_regenerate: Перегенерировать
+webui_register_btn: Зарегистрироваться
+webui_register_error_exists: Пользователь с таким логином уже существует
+webui_register_error_password_mismatch: Пароли не совпадают!
+webui_register_error_password_short: Пароль слишком короткий! Минимум 4 символа.
+webui_register_have_account: Уже есть аккаунт?
+webui_register_loading: Идет регистрация...
+webui_register_login_link: Войти
+webui_register_placeholder_confirm: Повтори пароль...
+webui_register_placeholder_login: Придумай логин...
+webui_register_placeholder_name: Твоё имя
+webui_register_placeholder_password: Придумай пароль...
+webui_register_subtitle: Создай аккаунт
+webui_register_success: Аккаунт создан! Теперь можно войти
+webui_register_title: Регистрация
+webui_resend: Отправить заново
+webui_result: Результат
+webui_stop_generation: Остановить генерацию
+workdir: Рабочие директории
+working_directory_hint: Рабочая директория

@@ -56,6 +56,11 @@ namespace LLMDesktopAssistant.Utils
 		public static string Memory { get; }
 
 		/// <summary>
+		/// The path where to store the user locale files (.loc) that override the built-in localization.
+		/// </summary>
+		public static string LocaleFiles { get; }
+
+		/// <summary>
 		/// The path where to store the settings files. These are usually configuration files that need to persist across sessions.
 		/// </summary>
 		public static string Settings { get; }
@@ -96,6 +101,7 @@ namespace LLMDesktopAssistant.Utils
 			Metatools = Path.Combine(LocalAppData, "metatools");
 			Skills = Path.Combine(LocalAppData, "skills");
 			Memory = Path.Combine(LocalAppData, "memory");
+			LocaleFiles = Path.Combine(LocalAppData, "locale");
 			Settings = Path.Combine(LocalAppData, "settings");
 			Data = Path.Combine(LocalAppData, "data");
 			Models = Path.Combine(LocalAppData, "models");
@@ -114,6 +120,7 @@ namespace LLMDesktopAssistant.Utils
 			Directory.CreateDirectory(Metatools);
 			Directory.CreateDirectory(Skills);
 			Directory.CreateDirectory(Memory);
+			Directory.CreateDirectory(LocaleFiles);
 			Directory.CreateDirectory(Settings);
 			Directory.CreateDirectory(Data);
 			Directory.CreateDirectory(Models);

@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
@@ -89,7 +89,9 @@ namespace LLMDesktopAssistant.Localization
 				var key = values[0]?.ToString();
 				if (string.IsNullOrEmpty(key)) return null;
 
-				var localizedValue = LocalizationManager.LocalizeStatic(key);
+				var localizedValue = values[0] is LocaleKey localeKey
+					? localeKey.Value
+					: LocalizationManager.LocalizeStatic(key);
 
 				if (parameter is string format && !string.IsNullOrEmpty(format))
 				{

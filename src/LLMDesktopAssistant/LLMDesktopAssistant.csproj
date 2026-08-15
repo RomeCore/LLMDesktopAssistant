@@ -42,6 +42,7 @@
 
 		<EmbeddedResource Include="Prompting\Resources\system_prompt.llt" />
 		<EmbeddedResource Include="Prompting\Resources\user_prompt.llt" />
+		<EmbeddedResource Include="Localization\Resources\**\*.loc" />
 		<EmbeddedResource Include="Assets\TextMate\llt\package.json" />
 		<EmbeddedResource Include="Assets\TextMate\llt\language-configuration.json" />
 		<EmbeddedResource Include="Assets\TextMate\llt\syntaxes\llt.json" />
@@ -182,11 +183,6 @@
 		<Compile Update="LLM\MVVM\UserInputView.axaml.cs">
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>
-		</Compile>
-		<Compile Update="Localization\Resources\Locale.Designer.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>Locale.resx</DependentUpon>
 		</Compile>
 		<Compile Update="MCP\MCPManagerView.axaml.cs">
 		  <SubType>Code</SubType>

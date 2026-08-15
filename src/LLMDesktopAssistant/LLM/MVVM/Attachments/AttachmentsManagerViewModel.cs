@@ -7,7 +7,7 @@ using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services.Attachments;
-using LLMDesktopAssistant.Localization.Resources;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Attachments
@@ -142,7 +142,7 @@ namespace LLMDesktopAssistant.LLM.Attachments
 		{
 			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = Locale.select_working_directory,
+				Title = Locale.Get("select_working_directory"),
 				FileTypeFilter = [
 					new FilePickerFileType("All files (*.*)")
 				],
