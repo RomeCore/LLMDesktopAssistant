@@ -26,13 +26,23 @@ namespace LLMDesktopAssistant.Localization
 		public static event EventHandler<string>? StaticLanguageChanged;
 
 		/// <summary>
+		/// Tries to localize a given key using the current localization manager.
+		/// </summary>
+		/// <param name="key">The key to localize.</param>
+		/// <returns>The localized string, or null if not found.</returns>
+		public static string? TryLocalizeStatic(string key)
+		{
+			return (_overrideManager ?? ServiceRegistry.Provider?.GetService<LocalizationManager>())?.TryLocalize(key);
+		}
+
+		/// <summary>
 		/// Localizes a given key using the current localization manager.
 		/// </summary>
 		/// <param name="key">The key to localize.</param>
 		/// <returns>The localized string, or the original key if not found.</returns>
 		public static string LocalizeStatic(string key)
 		{
-			return (_overrideManager ?? ServiceRegistry.Provider?.GetService<LocalizationManager>())?.Localize(key) ?? key;
+			return (_overrideManager ?? ServiceRegistry.Provider?.GetService<LocalizationManager>())?.TryLocalize(key) ?? key;
 		}
 
 		/// <summary>
@@ -76,11 +86,21 @@ namespace LLMDesktopAssistant.Localization
 		public event EventHandler<string>? LanguageChanged;
 
 		/// <summary>
+		/// Tries to localize a given key to the current language.
+		/// </summary>
+		/// <param name="key">The key to localize.</param>
+		/// <returns>The localized value. If the key is not found, returns null.</returns>
+		public abstract string? TryLocalize(string key);
+
+		/// <summary>
 		/// Localizes a given key to the current language.
 		/// </summary>
 		/// <param name="key">The key to localize.</param>
 		/// <returns>The localized value. If the key is not found, returns the original key.</returns>
-		public abstract string Localize(string key);
+		public string Localize(string key)
+		{
+			return TryLocalize(key) ?? key;
+		}
 
 		/// <summary>
 		/// Gets a list of available languages. Languages are represented in human-readable format, for example "English (US)" or "Русский (Россия)".

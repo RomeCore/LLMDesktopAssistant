@@ -39,6 +39,11 @@ namespace LLMDesktopAssistant.Localization
 		public string Value => LocalizationManager.LocalizeStatic(Key);
 
 		/// <summary>
+		/// Gets the localized value for the current language. Returns null if key is not found.
+		/// </summary>
+		public string? RawValue => LocalizationManager.TryLocalizeStatic(Key);
+
+		/// <summary>
 		/// Formats the localized value with the specified arguments using <see cref="string.Format(string, object?[])"/>.
 		/// </summary>
 		/// <param name="args">The arguments to substitute into the format string.</param>
@@ -78,7 +83,7 @@ namespace LLMDesktopAssistant.Localization
 		/// <inheritdoc />
 		public event PropertyChangedEventHandler? PropertyChanged;
 
-		private static PropertyChangedEventArgs _cachedPropertyChangedArgs = new(nameof(Value));
+		private static readonly PropertyChangedEventArgs _cachedPropertyChangedArgs = new(nameof(Value));
 
 		private void OnStaticLanguageChanged(object? sender, string language)
 		{

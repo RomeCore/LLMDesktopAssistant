@@ -23,7 +23,6 @@ namespace LLMDesktopAssistant.Localization
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LocFileLocalizationManager"/> class.
 		/// </summary>
-		/// <param name="fallback">The fallback manager used for keys that are not found in .loc files, or <see langword="null"/>.</param>
 		/// <param name="userLocaleDirectory">The directory with user .loc files, or <see langword="null"/> to use the default location.</param>
 		/// <param name="resourceAssembly">The assembly whose embedded .loc resources are loaded, or <see langword="null"/> to use the current assembly.</param>
 		public LocFileLocalizationManager(string? userLocaleDirectory = null, Assembly? resourceAssembly = null)
@@ -39,7 +38,7 @@ namespace LLMDesktopAssistant.Localization
 		}
 
 		/// <inheritdoc />
-		public override string Localize(string key)
+		public override string? TryLocalize(string key)
 		{
 			if (_entriesByLocale.TryGetValue(_currentLocale, out var entries) && entries.TryGetValue(key, out var value))
 				return value;
@@ -50,7 +49,7 @@ namespace LLMDesktopAssistant.Localization
 				&& neutralEntries.TryGetValue(key, out value))
 				return value;
 
-			return key;
+			return null;
 		}
 
 		/// <inheritdoc />
