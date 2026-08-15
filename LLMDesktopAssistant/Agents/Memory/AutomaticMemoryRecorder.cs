@@ -46,7 +46,8 @@ namespace LLMDesktopAssistant.Agents.Memory
 		private async Task RecordAsync(ChatAgentExecutionHookContext context)
 		{
 			var chat = context.Chat;
-			var memoryOptions = chat.Settings.Memory.GetEffectiveMemoryOptions();
+			var chatSettings = chat.Services.GetRequiredService<IChatSettingsService>().Settings;
+			var memoryOptions = chatSettings.Memory.GetEffectiveMemoryOptions();
 			if (!memoryOptions.AutomaticRecordingEnabled || !memoryOptions.EnableMemory)
 				return;
 
@@ -58,7 +59,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			if (model is null)
 				return;
 
-			var attachments = agent.Memory.GetEnabledBlocks(chat.Settings)
+			var attachments = agent.Memory.GetEnabledBlocks(chatSettings)
 				.Where(b => b.Attachment.AllowsWriting())
 				.ToList();
 			var factBlocks = attachments.Where(b => b.Block.FactsEnabled)
@@ -111,6 +112,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			if (rounds.Count == 0)
 				return string.Empty;
 
+			var chatSettings = chat.Services.GetRequiredService<IChatSettingsService>().Settings;
 			var lastRound = rounds[^1];
 			var responseSet = context.Responses.ToHashSet();
 			var sb = new StringBuilder();
@@ -120,7 +122,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				switch (branched.Message)
 				{
 					case UserMessage userMessage when !string.IsNullOrWhiteSpace(userMessage.Content)
-						&& AgentMessageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent, chat.Settings):
+						&& AgentMessageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent, chatSettings):
 						sb.Append("User: ").AppendLine(userMessage.Content);
 						break;
 					case AssistantMessage assistantMessage when !string.IsNullOrWhiteSpace(assistantMessage.Content)

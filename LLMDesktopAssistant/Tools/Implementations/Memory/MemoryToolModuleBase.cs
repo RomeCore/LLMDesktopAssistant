@@ -1,5 +1,6 @@
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Memory
@@ -60,6 +61,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 	public abstract class MemoryToolModuleBase : ToolModule
 	{
 		private readonly Chat _chat;
+		private readonly IChatSettingsService _chatSettings;
 		private readonly IAgentManagementService _agentManager;
 
 		/// <summary>
@@ -76,17 +78,19 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 		/// Initializes a new instance of the <see cref="MemoryToolModuleBase"/> class.
 		/// </summary>
 		/// <param name="chat">The chat instance where the tools are executed.</param>
+		/// <param name="chatSettings">The settings service of the chat.</param>
 		/// <param name="agentManager">The agent management service used to resolve agent memory attachments.</param>
-		protected MemoryToolModuleBase(Chat chat, IAgentManagementService agentManager)
+		protected MemoryToolModuleBase(Chat chat, IChatSettingsService chatSettings, IAgentManagementService agentManager)
 		{
 			_chat = chat;
+			_chatSettings = chatSettings;
 			_agentManager = agentManager;
 		}
 
 		/// <inheritdoc/>
 		public override IEnumerable<ToolInfo> GetTools()
 		{
-			var memoryOpts = _chat.Settings.Memory.GetEffectiveMemoryOptions();
+			var memoryOpts = _chatSettings.Settings.Memory.GetEffectiveMemoryOptions();
 			if (memoryOpts.EnableMemory && memoryOpts.ManualControlEnabled)
 				return base.GetTools();
 			return [];
@@ -129,7 +133,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			bool requireReading, bool requireWriting, bool requireFacts = false, bool requireLogs = false)
 		{
 			var agent = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
-			var attachments = agent.Memory.GetEffectiveBlocks(_chat.Settings);
+			var attachments = agent.Memory.GetEffectiveBlocks(_chatSettings.Settings);
 
 			var blocks = new List<MemoryBlock>();
 			var excluded = new Dictionary<string, string>();

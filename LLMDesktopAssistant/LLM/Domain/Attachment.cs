@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using LiteDB;
 using LLMDesktopAssistant.Utils.Files;
 using RCLargeLanguageModels.Messages.Attachments;
@@ -29,7 +29,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 		public required string SourceUrl { get; init; }
 
 		/// <summary>
-		/// Gets or sets the local path relative to the working folder (see <c>Chat.Settings.WorkingFolder</c>).
+		/// Gets or sets the local path relative to the working folder (see <see cref="IChatSettingsService.Settings"/>).
 		/// This is where attachment file is copied and can be used for tools like Python, Filesystem, Shell interpreters, etc.
 		/// </summary>
 		public required string LocalPath { get; init; }

@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 
 namespace LLMDesktopAssistant.Agents.Memory
 {
@@ -52,11 +53,11 @@ namespace LLMDesktopAssistant.Agents.Memory
 		/// <returns>The resolved immutable list of snapshots.</returns>
 		public static ImmutableList<TaskMemoryBlock> ResolveBlocks(Chat chat, ChatAgentDescriptor agent)
 		{
-			var memoryOptions = chat.Settings.Memory.GetEffectiveMemoryOptions();
+			var memoryOptions = chat.Services.GetRequiredService<IChatSettingsService>().Settings.Memory.GetEffectiveMemoryOptions();
 			if (!memoryOptions.EnableMemory || !memoryOptions.ManualControlEnabled || !agent.Memory.EnableMemory)
 				return [];
 
-			return agent.Memory.GetEnabledBlocks(chat.Settings)
+			return agent.Memory.GetEnabledBlocks(chat.Services.GetRequiredService<IChatSettingsService>().Settings)
 				.Select(b => FromAttachment(b.Attachment))
 				.ToImmutableList();
 		}

@@ -12,19 +12,19 @@ namespace LLMDesktopAssistant.Data.Connectors
 	[ChatService(typeof(IDatabaseConnectionManager))]
 	public class DatabaseConnectionManager : IDatabaseConnectionManager
 	{
-		private readonly Chat _chat;
+		private readonly IChatSettingsService _chatSettings;
 		private readonly IApiKeyManagerService _apiKeyManager;
 		private readonly IDatabaseConnectionCache _cache;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DatabaseConnectionManager"/> class.
 		/// </summary>
-		/// <param name="chat">The chat whose settings contain the database connections.</param>
+		/// <param name="chatSettings">The settings service of the chat.</param>
 		/// <param name="apiKeyManager">The API key manager used to resolve encrypted connection strings.</param>
 		/// <param name="cache">The application-wide cache of database connections.</param>
-		public DatabaseConnectionManager(Chat chat, IApiKeyManagerService apiKeyManager, IDatabaseConnectionCache cache)
+		public DatabaseConnectionManager(IChatSettingsService chatSettings, IApiKeyManagerService apiKeyManager, IDatabaseConnectionCache cache)
 		{
-			_chat = chat;
+			_chatSettings = chatSettings;
 			_apiKeyManager = apiKeyManager;
 			_cache = cache;
 		}
@@ -45,7 +45,7 @@ namespace LLMDesktopAssistant.Data.Connectors
 		/// <inheritdoc/>
 		public string Activate(string nameOrConnectionString, DatabaseConnectorType? connectorType = null)
 		{
-			var settings = _chat.Settings.Databases.GetEffectiveDatabaseConnection();
+			var settings = _chatSettings.Settings.Databases.GetEffectiveDatabaseConnection();
 			var named = settings.Items.FirstOrDefault(i => i.IsEnabled &&
 				string.Equals(i.Name, nameOrConnectionString, StringComparison.OrdinalIgnoreCase));
 
@@ -105,7 +105,7 @@ namespace LLMDesktopAssistant.Data.Connectors
 
 		private (DatabaseConnectorType Type, string ConnectionString, string Description)? ResolveActive()
 		{
-			var settings = _chat.Settings.Databases.GetEffectiveDatabaseConnection();
+			var settings = _chatSettings.Settings.Databases.GetEffectiveDatabaseConnection();
 
 			if (settings.IsCustomActive && !string.IsNullOrWhiteSpace(settings.CustomConnectionString))
 				return (settings.CustomConnectorType, settings.CustomConnectionString, $"custom ({settings.CustomConnectorType})");

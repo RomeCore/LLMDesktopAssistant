@@ -1,5 +1,6 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 
@@ -82,13 +83,20 @@ namespace LLMDesktopAssistant.Tools
 
 			return new ToolExecutionContext
 			{
-				Chat = chat ?? new Chat(new ServiceCollection().BuildServiceProvider()),
+				Chat = chat ?? CreateDummyChat(),
 				Call = toolCall,
 				Message = message,
 				Info = tool,
 				RunningInUI = false,
 				PolicyDecision = ToolPolicyDecision.None
 			};
+		}
+
+		private static Chat CreateDummyChat()
+		{
+			var services = new ServiceCollection();
+			services.AddSingleton<IChatSettingsService, ChatSettingsService>();
+			return new Chat(services.BuildServiceProvider());
 		}
 	}
 }

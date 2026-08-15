@@ -142,6 +142,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		public Chat Chat { get; }
 
+		private readonly IChatSettingsService _settingsService;
+
 		private static readonly SettingsCategory<ChatSettings> chatSettingsCategory = SettingsManager.GetCategory<ChatSettings>();
 
 		private SettingsIdItemViewModel _selectedSettingsId;
@@ -151,7 +153,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			set
 			{
 				if (SetProperty(ref _selectedSettingsId, value))
-					Chat.Settings = chatSettingsCategory.Get(value.Id);
+					_settingsService.SetSettings(chatSettingsCategory.Get(value.Id));
 			}
 		}
 
@@ -166,16 +168,17 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		public string ChatModel
 		{
-			get => Chat.Settings.Models.GetEffectiveSelection().ChatModel;
+			get => _settingsService.Settings.Models.GetEffectiveSelection().ChatModel;
 			set
 			{
-				var selection = Chat.Settings.Models.GetEffectiveSelection();
+				var selection = _settingsService.Settings.Models.GetEffectiveSelection();
 				if (selection.ChatModel != value)
 					selection.ChatModel = value;
 			}
 		}
 
-		private IDisposable? _settingsSubscription;
+		private EventHandler? _settingsChangedHandler;
+		private EventHandler? _usersSettingsChangedHandler;
 		private IDisposable? _modelsSubscription;
 		private ModelSelectionSettings? _trackedSelection;
 
@@ -186,23 +189,23 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		private void TrackModelSelection()
 		{
 			_modelsSubscription?.Dispose();
-			Chat.Settings.SubscribeChanged(nameof(ChatSettings.Models), _ =>
+			_settingsService.Settings.SubscribeChanged(nameof(ChatSettings.Models), _ =>
 			{
-				Chat.Settings.Models.PropertyChanged -= Models_PropertyChanged;
-				Chat.Settings.Models.PropertyChanged += Models_PropertyChanged;
+				_settingsService.Settings.Models.PropertyChanged -= Models_PropertyChanged;
+				_settingsService.Settings.Models.PropertyChanged += Models_PropertyChanged;
 				TrackEffectiveSelection();
 				RaisePropertyChanged(nameof(ChatModel));
 			}, out _modelsSubscription);
 
-			Chat.Settings.Models.PropertyChanged -= Models_PropertyChanged;
-			Chat.Settings.Models.PropertyChanged += Models_PropertyChanged;
+			_settingsService.Settings.Models.PropertyChanged -= Models_PropertyChanged;
+			_settingsService.Settings.Models.PropertyChanged += Models_PropertyChanged;
 			TrackEffectiveSelection();
 			RaisePropertyChanged(nameof(ChatModel));
 		}
 
 		private void Models_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName != nameof(Chat.Settings.Models.Selection))
+			if (e.PropertyName != nameof(ChatSettings.Models.Selection))
 				return;
 
 			TrackEffectiveSelection();
@@ -215,7 +218,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		private void TrackEffectiveSelection()
 		{
-			var selection = Chat.Settings.Models.GetEffectiveSelection();
+			var selection = _settingsService.Settings.Models.GetEffectiveSelection();
 			if (ReferenceEquals(_trackedSelection, selection))
 				return;
 
@@ -237,9 +240,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		private void TrackUsers()
 		{
-			_usersSettingsSubscription?.Dispose();
-			Chat.Settings.Users.Users.CollectionChanged -= Users_CollectionChanged;
-			Chat.Settings.Users.Users.CollectionChanged += Users_CollectionChanged;
+			_settingsService.Settings.Users.Users.CollectionChanged -= Users_CollectionChanged;
+			_settingsService.Settings.Users.Users.CollectionChanged += Users_CollectionChanged;
 			RefreshUsers();
 		}
 
@@ -251,7 +253,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		private void RefreshUsers()
 		{
 			var currentLogin = SelectedUser?.Login;
-			Users.Reset(Chat.Settings.Users.Users);
+			Users.Reset(_settingsService.Settings.Users.Users);
 
 			SelectedUser = Users.FirstOrDefault(u => u.Login == currentLogin) ?? Users.FirstOrDefault();
 			RaisePropertyChanged(nameof(HasMultipleUsers));
@@ -386,37 +388,35 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		/// </summary>
 		public bool HasMultipleUsers => Users.Count > 1;
 
-		private IDisposable? _usersSettingsSubscription;
-
-
-
-
 		public UserInputViewModel(ChatViewModel chatVM)
 		{
 			Chat = chatVM.Chat;
 			ChatViewModel = chatVM;
+			_settingsService = Chat.Services.GetRequiredService<IChatSettingsService>();
 
 			chatSettingsCategory.Ids.CollectionChanged += SettingsIds_CollectionChanged;
 			SettingsIds = [ .. chatSettingsCategory.Ids
 				.Where(c => c != SettingsObject.DefaultId)
 				.Select(c => new SettingsIdItemViewModel { Id = c })
 				.Prepend(SettingsIdItemViewModel.Default) ];
-			_selectedSettingsId = SettingsIds.First(id => id.Id == Chat.Settings.Id);
+			_selectedSettingsId = SettingsIds.First(id => id.Id == _settingsService.Settings.Id);
 
-			Chat.SubscribeChanged(nameof(Chat.Settings), _ =>
+			_settingsChangedHandler = (_, _) =>
 			{
 				TrackModelSelection();
-				SelectedSettingsId = SettingsIds.First(id => id.Id == Chat.Settings.Id);
-			}, out _settingsSubscription);
+				SelectedSettingsId = SettingsIds.First(id => id.Id == _settingsService.Settings.Id);
+			};
+			_settingsService.SettingsChanged += _settingsChangedHandler;
 			TrackModelSelection();
 
-			Chat.SubscribeChanged(nameof(Chat.Settings), _ => TrackUsers(), out _usersSettingsSubscription);
+			_usersSettingsChangedHandler = (_, _) => TrackUsers();
+			_settingsService.SettingsChanged += _usersSettingsChangedHandler;
 			TrackUsers();
 
 			OpenSettingsCommand = new AsyncRelayCommand(async () =>
 			{
 				var viewModel = new SettingsCategoryViewModel<ChatSettings>(cs => new ChatSettingsViewModel(cs, Chat),
-					true, newSettings => Chat.Settings = newSettings, Chat.Settings.Id);
+					true, newSettings => _settingsService.SetSettings(newSettings), _settingsService.Settings.Id);
 				try
 				{
 					await DialogManager.ShowDialogAsync(viewModel);
@@ -575,16 +575,18 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				SettingsManager.GetCategory<ChatSettings>().Ids.CollectionChanged -= SettingsIds_CollectionChanged;
 
-				_settingsSubscription?.Dispose();
+				if (_settingsChangedHandler is not null)
+					_settingsService.SettingsChanged -= _settingsChangedHandler;
+				if (_usersSettingsChangedHandler is not null)
+					_settingsService.SettingsChanged -= _usersSettingsChangedHandler;
+				_settingsChangedHandler = null;
+				_usersSettingsChangedHandler = null;
+
 				_modelsSubscription?.Dispose();
-				_settingsSubscription = null;
 				_modelsSubscription = null;
+				_settingsService.Settings.Users.Users.CollectionChanged -= Users_CollectionChanged;
 
-				_usersSettingsSubscription?.Dispose();
-				_usersSettingsSubscription = null;
-				Chat.Settings.Users.Users.CollectionChanged -= Users_CollectionChanged;
-
-				Chat.Settings.Models.PropertyChanged -= Models_PropertyChanged;
+				_settingsService.Settings.Models.PropertyChanged -= Models_PropertyChanged;
 				if (_trackedSelection is not null)
 					_trackedSelection.PropertyChanged -= EffectiveSelection_PropertyChanged;
 				_trackedSelection = null;

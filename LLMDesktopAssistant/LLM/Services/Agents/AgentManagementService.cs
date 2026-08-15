@@ -6,20 +6,20 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 {
 	[ChatService(typeof(IAgentManagementService))]
 	public class AgentManagementService(
-		Chat chat
+		IChatSettingsService chatSettings
 	) : IAgentManagementService
 	{
 		public IEnumerable<Guid> ListAgentIds()
 		{
 			var agents = SettingsManager.Get<AgentsConfiguration>().Agents;
-			var chatAgents = chat.Settings.Agents.ChatAgents;
+			var chatAgents = chatSettings.Settings.Agents.ChatAgents;
 			return chatAgents.Concat(agents).Select(a => a.Id);
 		}
 
 		public IEnumerable<(ChatAgentDescriptor Agent, bool IsGlobal)> ListAgents()
 		{
 			var agents = SettingsManager.Get<AgentsConfiguration>().Agents;
-			var chatAgents = chat.Settings.Agents.ChatAgents;
+			var chatAgents = chatSettings.Settings.Agents.ChatAgents;
 			return chatAgents.Select(a => (a, false)).Concat(agents.Select(a => (a, true)));
 		}
 
@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 		public ChatAgentDescriptor? TryGetAgentDescriptor(Guid agentId)
 		{
 			var agents = SettingsManager.Get<AgentsConfiguration>().Agents;
-			var chatAgents = chat.Settings.Agents.ChatAgents;
+			var chatAgents = chatSettings.Settings.Agents.ChatAgents;
 
 			return chatAgents.Concat(agents).FirstOrDefault(a => a.Id == agentId);
 		}

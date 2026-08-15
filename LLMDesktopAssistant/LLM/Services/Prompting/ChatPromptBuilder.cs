@@ -25,6 +25,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 	[ChatService(typeof(IChatPromptBuilder))]
 	public class ChatPromptBuilder(
 		Chat chat,
+		IChatSettingsService chatSettings,
 		TemplateLibraryAccessor templates,
 		IPromptRegistry promptRegistry,
 		IAgentManagementService agentManager,
@@ -70,12 +71,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				expander.ExpandPromptContext(generalContext);
 			var componentsContext = generalContext.ToDictionary(); // Clone
 
-			var effectiveSystemPrompt = promptSettings.GetEffectiveSystemPrompt(chat.Settings);
-			var effectiveComponents = promptSettings.GetEffectivePromptComponents(chat.Settings);
-			var effectiveSliderValues = promptSettings.GetEffectiveSliderValues(chat.Settings);
-			var effectivePersona = promptSettings.GetEffectivePersona(chat.Settings);
-			var effectiveSpecialization = promptSettings.GetEffectiveSpecialization(chat.Settings);
-			var effectiveChatMemoryOptions = chat.Settings.Memory.GetEffectiveMemoryOptions();
+			var effectiveSystemPrompt = promptSettings.GetEffectiveSystemPrompt(chatSettings.Settings);
+			var effectiveComponents = promptSettings.GetEffectivePromptComponents(chatSettings.Settings);
+			var effectiveSliderValues = promptSettings.GetEffectiveSliderValues(chatSettings.Settings);
+			var effectivePersona = promptSettings.GetEffectivePersona(chatSettings.Settings);
+			var effectiveSpecialization = promptSettings.GetEffectiveSpecialization(chatSettings.Settings);
+			var effectiveChatMemoryOptions = chatSettings.Settings.Memory.GetEffectiveMemoryOptions();
 
 			generalContext["prompt"] = effectiveSystemPrompt;
 			generalContext["components"] = effectiveComponents
@@ -108,7 +109,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				body = s.InjectionMode is SkillInjectionMode.Full ? s.BodyGetter() : null
 			});
 			generalContext["memory_blocks"] = effectiveChatMemoryOptions.EnableMemory && effectiveChatMemoryOptions.ManualControlEnabled && agent.Memory.EnableMemory
-				? agent.Memory.GetEnabledBlocks(chat.Settings)
+				? agent.Memory.GetEnabledBlocks(chatSettings.Settings)
 					.Select(b => new
 					{
 						name = b.Block.Name,
@@ -164,7 +165,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			context["content"] = userMessage.Content;
 			context["attachments"] = userMessage.Attachments;
 			context["can_read_content"] = true;
-			bool canReadAttachments = agent.Read.GetEffectiveReadPermissions(chat.Settings).HasFlag(AgentReadPermissions.UserAttachments);
+			bool canReadAttachments = agent.Read.GetEffectiveReadPermissions(chatSettings.Settings).HasFlag(AgentReadPermissions.UserAttachments);
 			context["can_read_attachments"] = canReadAttachments;
 
 			var result = template!.Render(context, functions);
@@ -180,8 +181,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var assistantMessage = message.AsAssistantMessage();
 			var senderDescriptor = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
 			var agentName = senderDescriptor.Info.Name ?? senderDescriptor.Id.ToString()[..8];
-			var exposure = senderDescriptor.Read.GetEffectiveExposureMode(chat.Settings); // What sender agent exposes
-			var permissions = agent.Read.GetEffectiveReadPermissions(chat.Settings); // What current agent can see
+			var exposure = senderDescriptor.Read.GetEffectiveExposureMode(chatSettings.Settings); // What sender agent exposes
+			var permissions = agent.Read.GetEffectiveReadPermissions(chatSettings.Settings); // What current agent can see
 
 			if (exposure.HasFlag(AgentExposureMode.IdentifySelfAsUser) || permissions.HasFlag(AgentReadPermissions.IdentifyAgentsAsUsers))
 			{
@@ -256,14 +257,14 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		{
 			if (message.Message is Domain.UserMessage)
 			{
-				if (!AgentMessageVisibility.IsUserMessageVisibleToAgent(message, agent, chat.Settings))
+				if (!AgentMessageVisibility.IsUserMessageVisibleToAgent(message, agent, chatSettings.Settings))
 					return [];
 
 				return [BuildUserMessageForAgent(message, agent, functions)];
 			}
 			else if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
-				if (!AgentMessageVisibility.IsAssistantMessageVisibleToAgent(message, agent, agentManager, chat.Settings))
+				if (!AgentMessageVisibility.IsAssistantMessageVisibleToAgent(message, agent, agentManager, chatSettings.Settings))
 					return [];
 
 				// Own assistant message — full fidelity with tool calls
@@ -297,7 +298,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			if (message.Message is Domain.AssistantMessage assistantMessage)
 			{
 				var previewAgent = new ChatAgentDescriptor();
-				previewAgent.Read.SetEffectiveReadPermissions(chat.Settings, (AgentReadPermissions)0x7fffffff);
+				previewAgent.Read.SetEffectiveReadPermissions(chatSettings.Settings, (AgentReadPermissions)0x7fffffff);
 				return BuildForeignAgentMessageText(assistantMessage, previewAgent, functions).Content;
 			}
 
@@ -353,7 +354,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 		public IEnumerable<IMessage> Build(ChatAgentDescriptor agent)
 		{
-			var readContext = agent.Read.GetEffectiveContext(chat.Settings);
+			var readContext = agent.Read.GetEffectiveContext(chatSettings.Settings);
 			int maxRounds = readContext.MaxVisibleRounds;
 
 			var hooks = promptBuildingHooks.OrderBy(h => h.Order).ToList();
@@ -381,12 +382,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				}
 				if (message is Domain.UserMessage)
 				{
-					if (!AgentMessageVisibility.IsUserMessageVisibleToAgent(branchedMessage, agent, chat.Settings))
+					if (!AgentMessageVisibility.IsUserMessageVisibleToAgent(branchedMessage, agent, chatSettings.Settings))
 						continue;
 				}
 				else if (message is Domain.AssistantMessage assistantMessage)
 				{
-					if (assistantMessage.IsCompleted && !AgentMessageVisibility.IsAssistantMessageVisibleToAgent(branchedMessage, agent, agentManager, chat.Settings))
+					if (assistantMessage.IsCompleted && !AgentMessageVisibility.IsAssistantMessageVisibleToAgent(branchedMessage, agent, agentManager, chatSettings.Settings))
 						continue;
 				}
 

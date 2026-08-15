@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	[ChatService(typeof(IChatExecutionHook))]
 	public class ChatSummarizationService(
 		Chat chat,
+		IChatSettingsService chatSettings,
 		IChatPromptBuilder promptBuilder,
 		TemplateLibraryAccessor templates,
 		IAgentTaskExecutor agentTaskExecutor,
@@ -35,7 +36,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		public int Order => 10;
 		public async Task TrySummarizeChatAsync(IUsageMetadata lastUsageMetadata, CancellationToken cancellationToken = default)
 		{
-			var effectiveOptions = chat.Settings.Memory.GetEffectiveSummarization();
+			var effectiveOptions = chatSettings.Settings.Memory.GetEffectiveSummarization();
 			var summarizationLLM = modelManager.TryGetModel(effectiveOptions.SummarizerModel);
 
 			try
@@ -119,7 +120,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public async Task SummarizeMessageWithPreviousMessagesAsync(ChatMessage message, CancellationToken cancellationToken = default)
 		{
-			var effectiveOptions = chat.Settings.Memory.GetEffectiveSummarization();
+			var effectiveOptions = chatSettings.Settings.Memory.GetEffectiveSummarization();
 			var summarizationLLM = modelManager.TryGetModel(effectiveOptions.SummarizerModel);
 
 			try

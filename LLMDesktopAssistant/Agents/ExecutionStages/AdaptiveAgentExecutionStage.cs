@@ -53,7 +53,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			if (await base.SelectNextAgentAsync(selectFrom, context, cancellationToken) is Guid nextAgent)
 				return nextAgent;
 
-			var routerModelName = context.Chat.Settings.Models.GetEffectiveSelection().AgenticRouterModel;
+			var routerModelName = context.Chat.Services.GetRequiredService<IChatSettingsService>().Settings.Models.GetEffectiveSelection().AgenticRouterModel;
 			if (string.IsNullOrEmpty(routerModelName))
 				throw new InvalidOperationException("Agentic router model is not selected. Please select a router model in chat settings.");
 

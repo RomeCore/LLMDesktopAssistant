@@ -20,6 +20,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	[ChatService(typeof(IChatExecutionHook))]
 	public class ChatNamingService(
 		Chat chat,
+		IChatSettingsService chatSettings,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager,
 		IChatPromptBuilder promptBuilder,
@@ -61,7 +62,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			
 			try
 			{
-				var namingLLM = modelManager.TryGetModel(chat.Settings.Memory.GetEffectiveSummarization().SummarizerModel);
+				var namingLLM = modelManager.TryGetModel(chatSettings.Settings.Memory.GetEffectiveSummarization().SummarizerModel);
 				if (namingLLM == null)
 				{
 					Log.Warning("Cannot name chat: no naming LLM available.");

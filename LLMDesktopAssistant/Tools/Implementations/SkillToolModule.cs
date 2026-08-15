@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using Material.Icons;
@@ -9,14 +10,14 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	[ToolModule]
 	public class SkillToolModule : ToolModule
 	{
-		private readonly Chat _chat;
+		private readonly IChatSettingsService _chatSettings;
 		private readonly IAgentManagementService _agentManager;
 		private readonly ISkillsetBuildingService _skillsetBuilder;
 
-		public SkillToolModule(Chat chat, IAgentManagementService agentManager,
+		public SkillToolModule(IChatSettingsService chatSettings, IAgentManagementService agentManager,
 			ISkillsetBuildingService skillsetBuilder)
 		{
-			_chat = chat;
+			_chatSettings = chatSettings;
 			_agentManager = agentManager;
 			_skillsetBuilder = skillsetBuilder;
 
@@ -32,7 +33,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		public override IEnumerable<ToolInfo> GetTools()
 		{
-			if (!_chat.Settings.Skills.EnableSkills)
+			if (!_chatSettings.Settings.Skills.EnableSkills)
 				return [];
 			return base.GetTools();
 		}

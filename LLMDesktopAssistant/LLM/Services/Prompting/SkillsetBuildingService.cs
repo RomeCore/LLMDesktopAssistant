@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
 	[ChatService(typeof(ISkillsetBuildingService))]
 	public class SkillsetBuildingService(
-		Chat chat,
+		IChatSettingsService chatSettings,
 		ISkillLocator skillLocator,
 		ISkillLoader skillLoader,
 		IPromptRegistry promptRegistry,
@@ -82,7 +82,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 		public IEnumerable<SkillInfo> GetSkillsForAgent(ChatAgentDescriptor agent)
 		{
-			if (!chat.Settings.Skills.EnableSkills)
+			if (!chatSettings.Settings.Skills.EnableSkills)
 				return [];
 
 			var settings = agent.Skills;
@@ -92,7 +92,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var skills = GetAvailableSkills();
 			var result = new List<SkillInfo>();
 
-			var changes = settings.GetEffectiveSkillChanges(chat.Settings).ToDictionary(c => c.SkillName, c => c);
+			var changes = settings.GetEffectiveSkillChanges(chatSettings.Settings).ToDictionary(c => c.SkillName, c => c);
 			foreach (var skillInfo in skills)
 			{
 				if (skillInfo.Diagnostic?.IsFatal == true)

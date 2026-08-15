@@ -6,12 +6,13 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 	[ChatService(typeof(IAgentOrderingService))]
 	public class AgentOrderingService(
 		Chat chat,
+		IChatSettingsService chatSettings,
 		IServiceProvider services
 	) : IAgentOrderingService
 	{
 		public async Task<(Guid, Guid)?> GetNextAgentAsync(CancellationToken cancellationToken = default)
 		{
-			var stages = chat.Settings.Agents.ExecutionStages
+			var stages = chatSettings.Settings.Agents.ExecutionStages
 				.ToList();
 			if (!stages.Any(s => s.Enabled))
 				return null;
@@ -154,7 +155,7 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 			if (previousStageId == null)
 				return -1;
 
-			var stages = chat.Settings.Agents.ExecutionStages;
+			var stages = chatSettings.Settings.Agents.ExecutionStages;
 
 			for (int i = 0; i < stages.Count; i++)
 			{

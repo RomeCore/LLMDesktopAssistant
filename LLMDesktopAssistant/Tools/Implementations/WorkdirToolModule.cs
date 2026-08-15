@@ -1,5 +1,6 @@
 using System.Text;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
@@ -8,11 +9,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	[ToolModule(chatScoped: true)]
 	public class WorkdirToolModule : ToolModule
 	{
-		private readonly Chat _chat;
+		private readonly IChatSettingsService _chatSettings;
 
-		public WorkdirToolModule(Chat chat)
+		public WorkdirToolModule(IChatSettingsService chatSettings)
 		{
-			_chat = chat;
+			_chatSettings = chatSettings;
 
 			AddTool(ListWorkingDirectories,
 				new ToolInitializationInfo
@@ -37,7 +38,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			var sb = new StringBuilder();
 
-			var workingDirectories = _chat.Settings.Environment.GetEffectiveWorkingDirectories();
+			var workingDirectories = _chatSettings.Settings.Environment.GetEffectiveWorkingDirectories();
 
 			if (workingDirectories.IsDefaultWorkingDirectoryEnabled)
 				sb.AppendLine($"- *{Directories.DefaultWorkingDirectoryName}*: {Directories.DefaultWorkingDirectory}{(workingDirectories.IsDefaultWorkingDirectoryActive ? " **(ACTIVE)**" : "")}");
@@ -62,7 +63,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private PreviewToolExecutionResult SwitchWorkingDirectoryPreview(string name)
 		{
-			var workingDirectories = _chat.Settings.Environment.GetEffectiveWorkingDirectories();
+			var workingDirectories = _chatSettings.Settings.Environment.GetEffectiveWorkingDirectories();
 			if (name == Directories.DefaultWorkingDirectoryName && workingDirectories.IsDefaultWorkingDirectoryEnabled)
 			{
 				return new PreviewToolExecutionResult
@@ -93,7 +94,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private ReactiveToolResult SwitchWorkingDirectory(string name)
 		{
-			var workingDirectories = _chat.Settings.Environment.GetEffectiveWorkingDirectories();
+			var workingDirectories = _chatSettings.Settings.Environment.GetEffectiveWorkingDirectories();
 			if (name == Directories.DefaultWorkingDirectoryName && workingDirectories.IsDefaultWorkingDirectoryEnabled)
 			{
 				workingDirectories.IsDefaultWorkingDirectoryActive = true;

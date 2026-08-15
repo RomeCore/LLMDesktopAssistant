@@ -21,15 +21,15 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	[ToolModule]
 	public class PythonExecutionToolModule : TerminalBasedToolModule
 	{
-		private readonly Chat _chat;
+		private readonly IChatSettingsService _chatSettings;
 		private readonly WorkingDirectoryAccessService _fileAccess;
 		private readonly PythonHelperService _pythonHelperService;
 
-		public PythonExecutionToolModule(Chat chat, WorkingDirectoryAccessService fileAccess,
+		public PythonExecutionToolModule(IChatSettingsService chatSettings, WorkingDirectoryAccessService fileAccess,
 			PythonHelperService pythonHelperService, IProcessLauncher processLauncher)
 			: base(processLauncher)
 		{
-			_chat = chat;
+			_chatSettings = chatSettings;
 			_fileAccess = fileAccess;
 			_pythonHelperService = pythonHelperService;
 
@@ -97,7 +97,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			ToolExecutionContext context,
 			CancellationToken cancellationToken = default)
 		{
-			var workDir = _chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
+			var workDir = _chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 
 			string pyFile;
 			bool isTemporaryFile;
@@ -143,7 +143,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				{
 					StatusIcon = MaterialIconKind.LanguagePython,
 					StatusTitle = null,
-					ProcessParameters = _pythonHelperService.CreateLaunchParameters(_chat.Settings.Environment,
+					ProcessParameters = _pythonHelperService.CreateLaunchParameters(_chatSettings.Settings.Environment,
 						$"python \"{pyFile}\"", "Python", runTerminal, false)
 				}, context, cancellationToken);
 
@@ -211,7 +211,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			{
 				StatusIcon = MaterialIconKind.LanguagePython,
 				StatusTitle = null,
-				ProcessParameters = _pythonHelperService.CreateLaunchParameters(_chat.Settings.Environment,
+				ProcessParameters = _pythonHelperService.CreateLaunchParameters(_chatSettings.Settings.Environment,
 					shell, "Python Shell", runTerminal, false)
 			}, context, cancellationToken);
 		}
@@ -227,7 +227,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			{
 				StatusIcon = MaterialIconKind.LanguagePython,
 				StatusTitle = null,
-				ProcessParameters = _pythonHelperService.CreateLaunchParameters(_chat.Settings.Environment,
+				ProcessParameters = _pythonHelperService.CreateLaunchParameters(_chatSettings.Settings.Environment,
 					"pip list", "Python Shell", false, false)
 			}, context, cancellationToken);
 		}

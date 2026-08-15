@@ -21,6 +21,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	public class AgenticToolModule : ToolModule
 	{
 		private readonly Chat _chat;
+		private readonly IChatSettingsService _chatSettings;
 		private readonly TemplateLibraryAccessor _templates;
 		private readonly WorkingDirectoryAccessService _fileAccess;
 		private readonly IAgentManagementService _agentManager;
@@ -29,11 +30,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly ISkillsetBuildingService _skillsetBuildingService;
 		private readonly IModelManager _modelManager;
 
-		public AgenticToolModule(Chat chat, TemplateLibraryAccessor templates, WorkingDirectoryAccessService fileAccess,
+		public AgenticToolModule(Chat chat, IChatSettingsService chatSettings, TemplateLibraryAccessor templates, WorkingDirectoryAccessService fileAccess,
 			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor,
 			IToolsetBuildingService toolsetBuildingService, ISkillsetBuildingService skillsetBuildingService, IModelManager modelManager)
 		{
 			_chat = chat;
+			_chatSettings = chatSettings;
 			_templates = templates;
 			_fileAccess = fileAccess;
 			_agentManager = agentManager;
@@ -79,7 +81,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				""")] bool wait = true,
 			CancellationToken cancellationToken = default)
 		{
-			var modelName = _chat.Settings.Models.GetEffectiveSelection().AgenticToolsModel;
+			var modelName = _chatSettings.Settings.Models.GetEffectiveSelection().AgenticToolsModel;
 			if (string.IsNullOrEmpty(modelName))
 				return new ReactiveToolResult
 				{
@@ -191,7 +193,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}.CompleteWithError();
 			}
 
-			var policy = agentDescriptor.Tools.GetEffectivePolicy(ctx.Chat.Settings);
+			var policy = agentDescriptor.Tools.GetEffectivePolicy(_chatSettings.Settings);
 			ToolBehaviour autoApproveBehaviours = policy.AutoApproveBehaviours,
 				disallowedBehaviours = policy.DisallowedBehaviours;
 
@@ -293,7 +295,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			result.StatusTitle = $"**{path}**";
 			result.UseMarkdown = true;
 
-			var modelName = _chat.Settings.Models.GetEffectiveSelection().VisionModel;
+			var modelName = _chatSettings.Settings.Models.GetEffectiveSelection().VisionModel;
 			if (string.IsNullOrEmpty(modelName))
 			{
 				result.ResultContent = $"No vision model selected. Say user to select a vision model first.";

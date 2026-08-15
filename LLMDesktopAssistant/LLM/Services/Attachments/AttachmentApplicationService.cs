@@ -6,7 +6,7 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
 	[ChatService(typeof(IAttachmentApplicationService))]
 	public class AttachmentApplicationService(
-		Chat chat
+		IChatSettingsService chatSettings
 		) : IAttachmentApplicationService
 	{
 		private static readonly HttpClient HttpClient = new()
@@ -91,7 +91,7 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 		{
 			var sourceUri = parameters.SourceUri;
 
-			var workingDir = chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
+			var workingDir = chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 			var attachmentsDir = Path.Combine(workingDir, Directories.WorkingHome, "attachments");
 			Directory.CreateDirectory(attachmentsDir);
 

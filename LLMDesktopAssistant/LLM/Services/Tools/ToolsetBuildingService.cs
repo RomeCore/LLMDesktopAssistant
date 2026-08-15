@@ -12,6 +12,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	[ChatService(typeof(IToolsetBuildingService))]
 	public class ToolsetBuildingService(
 		Chat chat,
+		IChatSettingsService chatSettings,
 		IMCPManagementService mcpManager,
 		IServiceProvider services
 		) : IToolsetBuildingService
@@ -71,7 +72,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 		public IEnumerable<ToolInfo> GetToolsForAgent(ChatAgentDescriptor agent)
 		{
-			if (!chat.Settings.Tools.EnableTools)
+			if (!chatSettings.Settings.Tools.EnableTools)
 				return [];
 
 			var settings = agent.Tools;
@@ -81,7 +82,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			var tools = GetAvailableTools();
 			var result = new List<ToolInfo>();
 
-			var toolset = settings.GetEffectiveToolset(chat.Settings).GetEffectiveConfiguration();
+			var toolset = settings.GetEffectiveToolset(chatSettings.Settings).GetEffectiveConfiguration();
 			var changes = toolset.ToolChanges.ToDictionary(c => c.ToolName, c => c);
 			foreach (var toolInfo in tools)
 			{

@@ -2,8 +2,6 @@ using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.MVVM.ContextTabs;
 using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.LLM.Settings;
-using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 
@@ -86,16 +84,6 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _generationCts;
 			set => SetProperty(ref _generationCts, value);
-		}
-
-		private ChatSettings _settings = SettingsManager.Get<ChatSettings>();
-		/// <summary>
-		/// Gets or sets the chat settings.
-		/// </summary>
-		public ChatSettings Settings
-		{
-			get => _settings;
-			set => SetProperty(ref _settings, value);
 		}
 
 		private ChatContextTabViewModelCollection _contextTabs = [];

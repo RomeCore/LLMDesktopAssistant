@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Text;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
@@ -21,11 +22,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 		/// Initializes a new instance of the <see cref="MemoryLogToolModule"/> class.
 		/// </summary>
 		/// <param name="chat">The chat instance where the tools are executed.</param>
+		/// <param name="chatSettings">The settings service of the chat.</param>
 		/// <param name="agentManager">The agent management service used to resolve agent memory attachments.</param>
 		/// <param name="memoryLogStore">The store used to access episodic memory logs.</param>
-		public MemoryLogToolModule(Chat chat, IAgentManagementService agentManager,
+		public MemoryLogToolModule(Chat chat, IChatSettingsService chatSettings, IAgentManagementService agentManager,
 			IMemoryLogStore memoryLogStore)
-			: base(chat, agentManager)
+			: base(chat, chatSettings, agentManager)
 		{
 			_memoryLogStore = memoryLogStore;
 

@@ -7,17 +7,17 @@ namespace LLMDesktopAssistant.LLM.Services
 {
 	[ChatService(typeof(IMCPManagementService))]
 	public class MCPManagementService(
-		Chat chat
+		IChatSettingsService chatSettings
 		) : IMCPManagementService
 	{
 		private MCPConnectionInfo[] _usedConnections = [];
 
 		public bool HasMCPConnections()
 		{
-			if (!chat.Settings.Mcp.EnableMcp)
+			if (!chatSettings.Settings.Mcp.EnableMcp)
 				return false;
 
-			var usedServerIds = chat.Settings.Mcp.GetEffectiveUsedMcpServers()
+			var usedServerIds = chatSettings.Settings.Mcp.GetEffectiveUsedMcpServers()
 				.Intersect(SettingsManager.Get<MCPConfiguration>().Servers.Select(s => s.Id));
 
 			return usedServerIds.Any();
@@ -25,13 +25,13 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public async Task EnsureCurrentMCPConnectionsAsync(CancellationToken cancellationToken = default)
 		{
-			if (!chat.Settings.Mcp.EnableMcp)
+			if (!chatSettings.Settings.Mcp.EnableMcp)
 			{
 				_usedConnections = [];
 				return;
 			}
 
-			var usedServerIds = chat.Settings.Mcp.GetEffectiveUsedMcpServers()
+			var usedServerIds = chatSettings.Settings.Mcp.GetEffectiveUsedMcpServers()
 				.Intersect(SettingsManager.Get<MCPConfiguration>().Servers.Select(s => s.Id));
 
 			var usedConnectionTasks = usedServerIds.Select(id => MCPManager.EnsureConnectionAsync(id, cancellationToken));
@@ -40,7 +40,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		public MCPToolModule[] GetMCPTools()
 		{
-			if (!chat.Settings.Mcp.EnableMcp)
+			if (!chatSettings.Settings.Mcp.EnableMcp)
 				return [];
 
 			return _usedConnections.Select(c => c.ToolModule).ToArray();

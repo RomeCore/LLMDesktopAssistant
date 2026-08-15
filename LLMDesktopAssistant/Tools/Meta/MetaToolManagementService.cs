@@ -24,14 +24,14 @@ namespace LLMDesktopAssistant.Tools.Meta
 
 		private readonly ConcurrentDictionary<string, MetaToolCacheEntry> _cache = [];
 
-		private readonly Chat _chat;
+		private readonly IChatSettingsService _chatSettings;
 		private readonly IMetaToolSerializer _serializer;
 		private readonly Dictionary<string, IMetaToolEngine> _enginesByExtension;
 		private readonly Dictionary<ScriptLanguageType, IMetaToolEngine> _enginesByLanguage;
 
-		public MetaToolManagementService(IMetaToolSerializer serializer, IEnumerable<IMetaToolEngine> engines, Chat chat)
+		public MetaToolManagementService(IMetaToolSerializer serializer, IEnumerable<IMetaToolEngine> engines, IChatSettingsService chatSettings)
 		{
-			_chat = chat;
+			_chatSettings = chatSettings;
 			_serializer = serializer;
 			_enginesByExtension = new Dictionary<string, IMetaToolEngine>(StringComparer.OrdinalIgnoreCase);
 			_enginesByLanguage = [];
@@ -134,9 +134,9 @@ namespace LLMDesktopAssistant.Tools.Meta
 		private List<(string Path, bool IsLocal)> GetMetaToolFiles()
 		{
 			var files = Directory.Exists(Directories.Metatools) ? Directory.GetFiles(Directories.Metatools).Select(f => (f, false)).ToList() : [];
-			if (_chat.Settings.Tools.FetchFromAllWorkingDirectories)
+			if (_chatSettings.Settings.Tools.FetchFromAllWorkingDirectories)
 			{
-				foreach (var workdir in _chat.Settings.Environment.GetEffectiveWorkingDirectories().GetEnabledWorkingDirectories())
+				foreach (var workdir in _chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetEnabledWorkingDirectories())
 				{
 					var searchDir = Path.Combine(workdir, Directories.WorkingHome, "metatools");
 					if (Directory.Exists(searchDir))
@@ -145,7 +145,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 			}
 			else
 			{
-				var workdir = _chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
+				var workdir = _chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 				var searchDir = Path.Combine(workdir, Directories.WorkingHome, "metatools");
 				if (Directory.Exists(searchDir))
 					files.AddRange(Directory.GetFiles(searchDir).Select(f => (f, true)));
@@ -171,7 +171,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 
 			var extension = Path.GetExtension(oldFile.Path);
 			var newFile = oldFile.IsLocal
-				? Path.Combine(_chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory(), Directories.WorkingHome, "metatools", newName + extension)
+				? Path.Combine(_chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory(), Directories.WorkingHome, "metatools", newName + extension)
 				: Path.Combine(Directories.Metatools, newName + extension);
 
 			if (File.Exists(newFile))
@@ -269,7 +269,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 			if (filePath is null)
 			{
 				if (tool.IsLocal)
-					filePath = Path.Combine(_chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory(), Directories.WorkingHome, "metatools", tool.Name + engineDescriptor.MainExtension);
+					filePath = Path.Combine(_chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory(), Directories.WorkingHome, "metatools", tool.Name + engineDescriptor.MainExtension);
 				else
 					filePath = Path.Combine(Directories.Metatools, tool.Name + engineDescriptor.MainExtension);
 			}

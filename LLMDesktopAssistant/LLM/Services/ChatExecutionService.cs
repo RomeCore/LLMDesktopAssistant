@@ -24,6 +24,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	[ChatService(typeof(IChatExecutionService))]
 	public class ChatExecutionService(
 		Chat chat,
+		IChatSettingsService chatSettings,
 		IAgentOrderingService agentOrderer,
 		IAgentManagementService agentManager,
 		IChatStorageService storage,
@@ -127,10 +128,10 @@ namespace LLMDesktopAssistant.LLM.Services
 				LLModel llm;
 				try
 				{
-					var customModel = agent.Generation.GetEffectiveCustomModel(chat.Settings);
+					var customModel = agent.Generation.GetEffectiveCustomModel(chatSettings.Settings);
 					var modelName = customModel.EnableCustomModel && !string.IsNullOrEmpty(customModel.Model)
 						? customModel.Model
-						: chat.Settings.Models.GetEffectiveSelection().ChatModel;
+						: chatSettings.Settings.Models.GetEffectiveSelection().ChatModel;
 					llm = modelManager.GetModel(modelName);
 				}
 				catch
@@ -140,7 +141,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					toastService.ShowError(toastTitle, toastDesc);
 					throw new ToastedException(toastTitle, toastDesc);
 				}
-				llm = llm.WithProperties(propertiesBuilder.BuildProperties(agent, chat.Settings));
+				llm = llm.WithProperties(propertiesBuilder.BuildProperties(agent, chatSettings.Settings));
 
 				if (mcpManager.HasMCPConnections())
 				{

@@ -56,7 +56,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				return;
 
 			var chat = context.Chat;
-			var memoryOptions = chat.Settings.Memory.GetEffectiveMemoryOptions();
+			var memoryOptions = chat.Services.GetRequiredService<IChatSettingsService>().Settings.Memory.GetEffectiveMemoryOptions();
 			if (!memoryOptions.AutomaticRetrievalEnabled || !memoryOptions.EnableMemory)
 				return;
 
@@ -68,7 +68,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			if (model is null)
 				return;
 
-			var attachments = agent.Memory.GetEnabledBlocks(chat.Settings)
+			var attachments = agent.Memory.GetEnabledBlocks(chat.Services.GetRequiredService<IChatSettingsService>().Settings)
 				.Where(b => b.Attachment.AllowsReading())
 				.ToList();
 			var factBlocks = attachments.Where(b => b.Block.FactsEnabled)
@@ -138,17 +138,18 @@ namespace LLMDesktopAssistant.Agents.Memory
 			var rounds = MessagesInterface.GroupMessagesIntoRounds(chat.Messages, 2);
 			var sb = new StringBuilder();
 
+			var chatSettings = chat.Services.GetRequiredService<IChatSettingsService>().Settings;
 			foreach (var round in rounds)
 			{
 				foreach (var branched in round)
 				{
 					switch (branched.Message)
 					{
-						case UserMessage userMessage when AgentMessageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent, chat.Settings):
+						case UserMessage userMessage when AgentMessageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent, chatSettings):
 							sb.Append("User: ").AppendLine(userMessage.Content);
 							break;
 						case AssistantMessage assistantMessage when !string.IsNullOrEmpty(assistantMessage.Content)
-							&& AgentMessageVisibility.IsAssistantMessageVisibleToAgent(branched, context.Agent, agentManager, chat.Settings):
+							&& AgentMessageVisibility.IsAssistantMessageVisibleToAgent(branched, context.Agent, agentManager, chatSettings):
 							sb.Append("Assistant: ").AppendLine(assistantMessage.Content);
 							break;
 					}

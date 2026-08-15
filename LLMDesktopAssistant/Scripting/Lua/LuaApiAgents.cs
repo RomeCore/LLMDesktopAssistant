@@ -4,6 +4,7 @@ using AsyncLua.Values;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Services.Tools;
@@ -369,7 +370,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    there's an error in agent's parameters; runtime errors are returned as strings.
 			""";
 
-		private readonly Chat _chat;
+		private readonly IChatSettingsService _chatSettings;
 		private readonly IAgentTaskExecutor _agentTaskExecutor;
 		private readonly IModelManager _modelManager;
 		private readonly IAgentManagementService _agentManager;
@@ -377,10 +378,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private readonly IToolsetCacheService _toolsetCache;
 		private LuaService _luaService = null!;
 
-		public LuaApiAgents(Chat chat, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
+		public LuaApiAgents(IChatSettingsService chatSettings, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
 			IAgentManagementService agentManager, ISkillsetBuildingService skillsetBuilder, IToolsetCacheService toolsetCache)
 		{
-			_chat = chat;
+			_chatSettings = chatSettings;
 			_agentTaskExecutor = agentTaskExecutor;
 			_modelManager = modelManager;
 			_agentManager = agentManager;
@@ -507,7 +508,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			// Resolve model name and LLM.
 			var modelName = (parameters.Get("model") as LuaString)?.Value;
 			if (string.IsNullOrEmpty(modelName))
-				modelName = _chat.Settings.Models.GetEffectiveSelection().AgenticToolsModel;
+				modelName = _chatSettings.Settings.Models.GetEffectiveSelection().AgenticToolsModel;
 			if (string.IsNullOrEmpty(modelName))
 				throw new Exception("agentic model is not selected.");
 
@@ -646,8 +647,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				var tec = ctx.TryGetToolExecutionContext();
 				var agentToolSettings = tec != null ? _agentManager.TryGetAgentDescriptor(tec.Message.SenderAgentId)?.Tools : null;
 
-				var policy = agentToolSettings?.GetEffectivePolicy(_chat.Settings)
-					?? _chat.Settings.InheritedAgentSettings.Tools.GetEffectivePolicy(_chat.Settings);
+				var policy = agentToolSettings?.GetEffectivePolicy(_chatSettings.Settings)
+					?? _chatSettings.Settings.InheritedAgentSettings.Tools.GetEffectivePolicy(_chatSettings.Settings);
 				ToolBehaviour autoApproveBehaviours = policy.AutoApproveBehaviours,
 					disallowedBehaviours = policy.DisallowedBehaviours;
 

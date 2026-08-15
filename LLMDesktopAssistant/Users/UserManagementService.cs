@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Settings;
 using Serilog;
@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.Users
 {
 	[ChatService(typeof(IUserManagementService))]
 	public class UserManagementService(
-		Chat chat,
+		IChatSettingsService chatSettings,
 		IPasswordHashingService hasher
 	) : IUserManagementService
 	{
@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.Users
 
 		public IEnumerable<UserInformation> GetLocalUsers()
 		{
-			return chat.Settings.Users.Users;
+			return chatSettings.Settings.Users.Users;
 		}
 
 		public IEnumerable<UserInformation> GetRemoteUsers()
@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.Users
 
 		public bool IsLocalUser(string userLogin)
 		{
-			return chat.Settings.Users.Users.Any(u => u.Login == userLogin);
+			return chatSettings.Settings.Users.Users.Any(u => u.Login == userLogin);
 		}
 
 		public IEnumerable<UserInformation> GetActiveUsers()

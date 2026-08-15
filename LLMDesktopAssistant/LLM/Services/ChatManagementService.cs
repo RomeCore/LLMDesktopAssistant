@@ -36,7 +36,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			chat.ChatId = chatId;
 
 			// Ensure at least one default agent exists for this chat
-			chat.Settings.Agents.EnsureDefaultAgent();
+			scope.ServiceProvider.GetRequiredService<IChatSettingsService>().Settings.Agents.EnsureDefaultAgent();
 
 			var storage = scope.ServiceProvider.GetRequiredService<IChatStorageService>();
 			storage.Reload();

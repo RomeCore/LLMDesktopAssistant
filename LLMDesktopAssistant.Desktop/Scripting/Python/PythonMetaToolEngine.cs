@@ -3,11 +3,13 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
 using LLMDesktopAssistant.Utils;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.Desktop.Scripting.Python
 {
@@ -47,8 +49,8 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 						{tool.ExecutionCode}
 						""";
 
-					var chat = context.Chat;
-					var workDir = chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
+					var chatSettings = context.Chat.Services.GetRequiredService<IChatSettingsService>().Settings;
+					var workDir = chatSettings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 
 					var tempPyFile = Path.GetFullPath(Path.Combine(workDir, $"{Guid.NewGuid()}.py"));
 					File.WriteAllText(tempPyFile, pythonCode);
@@ -57,7 +59,7 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 					try
 					{
 						process = _processLauncher.Launch(_pythonHelperService.CreateLaunchParameters(
-							chat.Settings.Environment, $"python \"{tempPyFile}\"", "Python Meta", false, true), cancellationToken);
+							chatSettings.Environment, $"python \"{tempPyFile}\"", "Python Meta", false, true), cancellationToken);
 
 						int exitCode = await process;
 						return ReactiveToolResult.Create(exitCode == 0, process.Output + $"\nProcess exited with code {exitCode}. Check terminal output above for details.");

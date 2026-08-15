@@ -14,6 +14,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	[ChatService(typeof(IToolExecutionService))]
 	public class ToolExecutionService(
 		Chat chat,
+		IChatSettingsService chatSettings,
 		IAgentManagementService agentManager,
 		IToolApprovalService toolApprovalService,
 		IChatExecutionStatusService executionStatusService
@@ -170,7 +171,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				cancellationToken.ThrowIfCancellationRequested();
 
 				var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
-				var policy = senderAgent.Tools.GetEffectivePolicy(chat.Settings);
+				var policy = senderAgent.Tools.GetEffectivePolicy(chatSettings.Settings);
 				var autoApproveBehaviours = policy.AutoApproveBehaviours;
 				var disallowedBehaviours = policy.DisallowedBehaviours;
 

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
@@ -11,13 +11,11 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	[ToolModule(chatScoped: true)]
 	public class ShellExecutionToolModule : TerminalBasedToolModule
 	{
-		private readonly Chat _chat;
 		private readonly WorkingDirectoryAccessService _wdAccess;
 
-		public ShellExecutionToolModule(Chat chat, WorkingDirectoryAccessService wdAccess,
+		public ShellExecutionToolModule(WorkingDirectoryAccessService wdAccess,
 			IProcessLauncher processLauncher) : base(processLauncher)
 		{
-			_chat = chat;
 			_wdAccess = wdAccess;
 
 			AddTool(ExecuteBash, ExecuteBashStreaming, ExecuteBashPreview,

@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using LLMDesktopAssistant.LLM.Services;
 
 namespace LLMDesktopAssistant.Agents.ExecutionStages
 {
@@ -15,7 +16,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			AgentPreExecutionContext context, CancellationToken cancellationToken = default)
 		{
 			if (context.PreviousAgentExecuted.HasValue && 
-				!context.AgentManager.GetAgentDescriptor(context.PreviousAgentExecuted.Value).ExecutionConditions.GetEffectiveMention(context.Chat.Settings).CanMentionOthers)
+				!context.AgentManager.GetAgentDescriptor(context.PreviousAgentExecuted.Value).ExecutionConditions.GetEffectiveMention(context.Chat.Services.GetRequiredService<IChatSettingsService>().Settings).CanMentionOthers)
 				return Task.FromResult<Guid?>(null);
 
 			var strToSearch = context.Chat.Messages.LastOrDefault()?.Message.Content;
@@ -25,7 +26,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 
 			var agents = selectFrom
 				.Select(a => context.AgentManager.GetAgentDescriptor(a.AgentId))
-				.Where(a => a.ExecutionConditions.GetEffectiveMention(context.Chat.Settings).CanBeMentioned)
+				.Where(a => a.ExecutionConditions.GetEffectiveMention(context.Chat.Services.GetRequiredService<IChatSettingsService>().Settings).CanBeMentioned)
 				.ToList();
 
 			if (agents.Count == 0)

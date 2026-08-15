@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Data.Connectors;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Tools.Meta;
 using Material.Icons;
 
@@ -20,17 +21,17 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			"SELECT", "WITH", "PRAGMA", "EXPLAIN", "SHOW", "DESCRIBE"
 		};
 
-		private readonly Chat _chat;
+		private readonly IChatSettingsService _chatSettings;
 		private readonly IDatabaseConnectionManager _connectionManager;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DatabaseToolModule"/> class.
 		/// </summary>
-		/// <param name="chat">The chat whose settings contain the database connections.</param>
+		/// <param name="chatSettings">The settings service of the chat.</param>
 		/// <param name="connectionManager">The manager of the active database connection of the chat.</param>
-		public DatabaseToolModule(Chat chat, IDatabaseConnectionManager connectionManager)
+		public DatabaseToolModule(IChatSettingsService chatSettings, IDatabaseConnectionManager connectionManager)
 		{
-			_chat = chat;
+			_chatSettings = chatSettings;
 			_connectionManager = connectionManager;
 
 			AddTool(ListAsync, new ToolInitializationInfo
@@ -90,7 +91,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private Task ListAsync(ReactiveToolResult result, CancellationToken cancellationToken = default)
 		{
-			var settings = _chat.Settings.Databases.GetEffectiveDatabaseConnection();
+			var settings = _chatSettings.Settings.Databases.GetEffectiveDatabaseConnection();
 			var sb = new StringBuilder();
 
 			sb.AppendLine("### Named connections");
@@ -118,7 +119,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 		private PreviewToolExecutionResult? ConnectPreview(string nameOrConnectionString)
 		{
-			var settings = _chat.Settings.Databases.GetEffectiveDatabaseConnection();
+			var settings = _chatSettings.Settings.Databases.GetEffectiveDatabaseConnection();
 			bool isNamed = settings.Items.Any(i => i.IsEnabled &&
 				string.Equals(i.Name, nameOrConnectionString, StringComparison.OrdinalIgnoreCase));
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Data;
@@ -16,7 +16,8 @@ namespace LLMDesktopAssistant.LLM.Services
 {
 	[ChatService(typeof(IChatStorageService))]
 	public class ChatStorageService(
-		Chat chat
+		Chat chat,
+		IChatSettingsService chatSettings
 	) : Disposable, IChatStorageService
 	{
 		readonly int chatId = chat.ChatId;
@@ -50,7 +51,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			chat.Title = chatModel.Title;
 			chat.Topic = chatModel.Topic;
-			chat.Settings = SettingsManager.Get<ChatSettings>(chatModel.SettingsProfile);
+			chatSettings.SetSettings(SettingsManager.Get<ChatSettings>(chatModel.SettingsProfile));
 
 			var currentNodeId = chatModel.RootNodeId;
 			while (currentNodeId != -1)
@@ -81,7 +82,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				chatModel.Title = chat.Title;
 				chatModel.Topic = chat.Topic;
-				chatModel.SettingsProfile = chat.Settings.Id;
+				chatModel.SettingsProfile = chatSettings.Settings.Id;
 
 				database.Chats.Update(chatModel);
 			}

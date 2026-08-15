@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using Material.Icons;
 
@@ -12,9 +13,17 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 		private readonly IMemoryFactStore _memoryFactStore;
 		private readonly IMemoryLogStore _memoryLogStore;
 
-		public MemoryClearToolModule(Chat chat, IAgentManagementService agentManager,
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MemoryClearToolModule"/> class.
+		/// </summary>
+		/// <param name="chat">The chat instance where the tools are executed.</param>
+		/// <param name="chatSettings">The settings service of the chat.</param>
+		/// <param name="agentManager">The agent management service used to resolve agent memory attachments.</param>
+		/// <param name="memoryFactStore">The store used to clear semantic memory facts.</param>
+		/// <param name="memoryLogStore">The store used to clear episodic memory logs.</param>
+		public MemoryClearToolModule(Chat chat, IChatSettingsService chatSettings, IAgentManagementService agentManager,
 			IMemoryFactStore memoryFactStore, IMemoryLogStore memoryLogStore)
-			: base(chat, agentManager)
+			: base(chat, chatSettings, agentManager)
 		{
 			_memoryFactStore = memoryFactStore;
 			_memoryLogStore = memoryLogStore;

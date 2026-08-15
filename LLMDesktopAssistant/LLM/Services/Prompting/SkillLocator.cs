@@ -6,7 +6,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
 	[ChatService(typeof(ISkillLocator))]
 	public class SkillLocator(
-		Chat chat
+		IChatSettingsService chatSettings
 	) : ISkillLocator
 	{
 		public IEnumerable<string> LocateSkillFiles()
@@ -14,14 +14,14 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			// 1. Skill directories
 			List<string> potentialSkillDirectories = [];
 
-			var skillSources = chat.Settings.Skills.GetEffectiveSources();
+			var skillSources = chatSettings.Settings.Skills.GetEffectiveSources();
 			potentialSkillDirectories.AddRange(skillSources.AdditionalSkillDirectories);
 
 			string[] projectPaths;
 			if (skillSources.FetchFromAllWorkingDirectories)
-				projectPaths = [..chat.Settings.Environment.GetEffectiveWorkingDirectories().GetEnabledWorkingDirectories()];
+				projectPaths = [..chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetEnabledWorkingDirectories()];
 			else
-				projectPaths = [chat.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory()];
+				projectPaths = [chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory()];
 
 			List<string> sharedCheckPaths = [
 				$"{Directories.WorkingHome}/skills", // .llmassist/skills

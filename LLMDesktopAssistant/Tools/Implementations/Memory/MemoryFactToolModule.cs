@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Text;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using Material.Icons;
 
@@ -12,9 +13,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 	{
 		private readonly IMemoryFactStore _memoryFactStore;
 
-		public MemoryFactToolModule(Chat chat, IAgentManagementService agentManager,
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MemoryFactToolModule"/> class.
+		/// </summary>
+		/// <param name="chat">The chat instance where the tools are executed.</param>
+		/// <param name="chatSettings">The settings service of the chat.</param>
+		/// <param name="agentManager">The agent management service used to resolve agent memory attachments.</param>
+		/// <param name="memoryFactStore">The store used to store and manage semantic memory facts.</param>
+		public MemoryFactToolModule(Chat chat, IChatSettingsService chatSettings, IAgentManagementService agentManager,
 			IMemoryFactStore memoryFactStore)
-			: base(chat, agentManager)
+			: base(chat, chatSettings, agentManager)
 		{
 			_memoryFactStore = memoryFactStore;
 
