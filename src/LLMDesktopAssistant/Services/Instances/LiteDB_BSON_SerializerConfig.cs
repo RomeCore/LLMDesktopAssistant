@@ -25,6 +25,8 @@ namespace LLMDesktopAssistant.Services.Instances
 				return doc;
 			}, bson =>
 			{
+				if (bson.IsNull)
+					return null!;
 				var doc = bson.AsDocument;
 				var type = doc["type"].AsString;
 				var key = doc["key"].AsString;
