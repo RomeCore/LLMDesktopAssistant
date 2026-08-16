@@ -39,10 +39,10 @@
 		<EmbeddedResource Include="Prompting\Resources\summarizer.llt" />
 		<EmbeddedResource Include="Prompting\Resources\memory_recording.llt" />
 		<EmbeddedResource Include="Prompting\Resources\memory_retrieval.llt" />
-
 		<EmbeddedResource Include="Prompting\Resources\system_prompt.llt" />
 		<EmbeddedResource Include="Prompting\Resources\user_prompt.llt" />
 		<EmbeddedResource Include="Localization\Resources\**\*.loc" />
+		<EmbeddedResource Include="..\..\docs\help\**\*.md" LogicalName="HelpDocs.%(RecursiveDir)%(Filename)%(Extension)" WithCulture="false" />
 		<EmbeddedResource Include="Assets\TextMate\llt\package.json" />
 		<EmbeddedResource Include="Assets\TextMate\llt\language-configuration.json" />
 		<EmbeddedResource Include="Assets\TextMate\llt\syntaxes\llt.json" />

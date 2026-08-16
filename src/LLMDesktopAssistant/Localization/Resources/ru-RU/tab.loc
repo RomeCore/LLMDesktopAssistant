@@ -1,0 +1,9 @@
+%locale: ru-RU
+%namespace: tab
+
+title.chat: Чат
+title.mcp_manager: MCP
+title.prompt_manager: Менеджер промптов
+title.agent_tasks: Задачи агентов
+title.help: Справка
+title.settings: Настройки приложения

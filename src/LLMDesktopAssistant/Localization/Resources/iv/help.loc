@@ -1,0 +1,4 @@
+%locale:
+%namespace: help
+
+select_document: Select a document from the tree on the left.

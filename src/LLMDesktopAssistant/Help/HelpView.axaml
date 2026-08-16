@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 x:Class="LLMDesktopAssistant.Help.HelpView"
+			 x:CompileBindings="False">
+
+	<Grid ColumnDefinitions="280,*">
+
+		<TreeView Grid.Column="0"
+				  Margin="8"
+				  ItemsSource="{Binding RootNodes}"
+				  SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
+
+			<TreeView.ItemTemplate>
+				<TreeDataTemplate ItemsSource="{Binding Children}">
+					<TextBlock Text="{Binding Title}"/>
+				</TreeDataTemplate>
+			</TreeView.ItemTemplate>
+
+		</TreeView>
+
+		<ctrl:MarkdownControl Grid.Column="1"
+							  Margin="16,8"
+							  MarkdownText="{Binding MarkdownText}"/>
+
+	</Grid>
+
+</UserControl>

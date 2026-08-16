@@ -1,0 +1,4 @@
+%locale: ru-RU
+%namespace: help
+
+select_document: Выберите документ из дерева слева.

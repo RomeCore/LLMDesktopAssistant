@@ -1,7 +1,9 @@
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.Agents.Tasks.MVVM;
+using LLMDesktopAssistant.Help;
 using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Services;
@@ -15,7 +17,7 @@ namespace LLMDesktopAssistant.MVVM
 	{
 		public required MaterialIconKind Icon { get; init; }
 
-		public required string Title { get; init; }
+		public required LocaleKeyBase Title { get; init; }
 
 		public required object? Content { get; init; }
 
@@ -93,6 +95,7 @@ namespace LLMDesktopAssistant.MVVM
 		public MCPManagerViewModel MCPManager { get; }
 		public PromptManagerViewModel PromptManager { get; }
 		public AgentTaskDispatcherViewModel AgentTaskDispatcher { get; }
+		public HelpViewModel Help { get; }
 		public ApplicationSettingsViewModel ApplicationSettings { get; }
 
 		public MainViewModel()
@@ -104,7 +107,7 @@ namespace LLMDesktopAssistant.MVVM
 			TopSidebarItems.Add(new MainViewModelSidebarItemViewModel
 			{
 				Icon = MaterialIconKind.Message,
-				Title = "chat",
+				Title = Locale.GetKey("tab.title.chat"),
 				Content = ChatManager
 			});
 
@@ -112,7 +115,7 @@ namespace LLMDesktopAssistant.MVVM
 			TopSidebarItems.Add(new MainViewModelSidebarItemViewModel
 			{
 				Icon = MaterialIconKind.Connection,
-				Title = "mcp_manager_hint",
+				Title = Locale.GetKey("tab.title.mcp_manager"),
 				Content = MCPManager
 			});
 
@@ -120,7 +123,7 @@ namespace LLMDesktopAssistant.MVVM
 			TopSidebarItems.Add(new MainViewModelSidebarItemViewModel
 			{
 				Icon = MaterialIconKind.Text,
-				Title = "prompt_manager_hint",
+				Title = Locale.GetKey("tab.title.prompt_manager"),
 				Content = PromptManager
 			});
 
@@ -129,15 +132,23 @@ namespace LLMDesktopAssistant.MVVM
 			TopSidebarItems.Add(new MainViewModelSidebarItemViewModel
 			{
 				Icon = MaterialIconKind.TimerSandComplete,
-				Title = "agent_tasks",
+				Title = Locale.GetKey("tab.title.agent_tasks"),
 				Content = AgentTaskDispatcher
+			});
+
+			Help = new HelpViewModel(ServiceRegistry.Provider.GetRequiredService<HelpDocumentStore>());
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.BookOpen,
+				Title = Locale.GetKey("tab.title.help"),
+				Content = Help
 			});
 
 			ApplicationSettings = new ApplicationSettingsViewModel();
 			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
 			{
 				Icon = MaterialIconKind.Cog,
-				Title = "settings_application",
+				Title = Locale.GetKey("tab.title.settings"),
 				Content = ApplicationSettings
 			});
 
