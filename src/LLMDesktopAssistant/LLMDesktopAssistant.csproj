@@ -30,6 +30,7 @@
 		<EmbeddedResource Include="Prompting\Resources\**\*.llt" />
 		<EmbeddedResource Include="Localization\Resources\**\*.loc" />
 		<EmbeddedResource Include="..\..\docs\help\**\*.md" Visible="False" LogicalName="HelpDocs.%(RecursiveDir)%(Filename)%(Extension)" WithCulture="false" />
+		<AvaloniaResource Include="..\..\docs\help\**\*.png" Visible="False" Link="Assets\help\%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -17,6 +17,10 @@ public partial class MarkdownControl : UserControl
 		AvaloniaProperty.Register<MarkdownControl, bool>(
 			nameof(UsePlaintext));
 
+	public static readonly StyledProperty<Func<Uri, bool>?> OpenLinkProperty =
+		AvaloniaProperty.Register<MarkdownControl, Func<Uri, bool>?>(
+			nameof(OpenLink));
+
 	public string MarkdownText
 	{
 		get => GetValue(MarkdownTextProperty);
@@ -27,6 +31,12 @@ public partial class MarkdownControl : UserControl
 	{
 		get => GetValue(UsePlaintextProperty);
 		set => SetValue(UsePlaintextProperty, value);
+	}
+
+	public Func<Uri, bool>? OpenLink
+	{
+		get => GetValue(OpenLinkProperty);
+		set => SetValue(OpenLinkProperty, value);
 	}
 
 	static MarkdownControl()
@@ -41,7 +51,21 @@ public partial class MarkdownControl : UserControl
 	{
 		InitializeComponent();
 
+		var thisRef = new WeakReference<MarkdownControl>(this);
+		void MarkdownRenderer_LinkClick(object? sender, LinkClickedEventArgs e)
+		{
+			if (thisRef.TryGetTarget(out var markdownControl))
+			{
+				if (e.HRef != null)
+				{
+					if (markdownControl.OpenLink?.Invoke(e.HRef) is true)
+						return;
+					ServiceRegistry.Provider.GetService<ILinkOpener>()?.OpenLink(e.HRef);
+				}
+			}
+		}
 		MarkdownRenderer.LinkClick += MarkdownRenderer_LinkClick;
+
 		MarkdownRenderer.ImageBasePath = null;
 		MarkdownRenderer.CodeBlockColorTheme = TextMateSharp.Grammars.ThemeName.Monokai;
 		MarkdownRenderer.MarkdownBuilder = _markdownBuilder;
@@ -65,14 +89,6 @@ public partial class MarkdownControl : UserControl
 			string delta = newText[_markdownBuilder.Length..];
 			if (!string.IsNullOrEmpty(delta))
 				_markdownBuilder.Append(delta);
-		}
-	}
-
-	private void MarkdownRenderer_LinkClick(object? sender, LinkClickedEventArgs e)
-	{
-		if (e.HRef != null)
-		{
-			ServiceRegistry.Provider.GetService<ILinkOpener>()?.OpenLink(e.HRef);
 		}
 	}
 }

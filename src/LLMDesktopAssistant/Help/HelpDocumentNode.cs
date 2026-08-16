@@ -8,6 +8,7 @@ namespace LLMDesktopAssistant.Help;
 /// </summary>
 public class HelpDocumentNode : NotifyPropertyChanged
 {
+	private string _title = string.Empty;
 	/// <summary>
 	/// Gets the localized title of the node.
 	/// </summary>
@@ -16,7 +17,6 @@ public class HelpDocumentNode : NotifyPropertyChanged
 		get => _title;
 		private set => SetProperty(ref _title, value);
 	}
-	private string _title = string.Empty;
 
 	/// <summary>
 	/// Gets the full path of the node without the locale suffix (for example <c>chat/tools</c>).

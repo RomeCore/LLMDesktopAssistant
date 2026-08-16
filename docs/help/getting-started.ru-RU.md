@@ -35,3 +35,5 @@ dASS — это мощный ассистент на базе LLM с:
 | Общение в чате | [chat](chat.md) |
 | Тулы | [tools](tools.md) |
 | Агенты | [chat/agents](chat/agents.md) |
+
+![Баннер dASS](assets/dass.png)

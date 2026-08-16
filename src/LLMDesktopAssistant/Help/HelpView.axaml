@@ -3,16 +3,18 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+			 xmlns:local="using:LLMDesktopAssistant.Help"
 			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 xmlns:md="using:LiveMarkdown.Avalonia"
 			 x:Class="LLMDesktopAssistant.Help.HelpView"
-			 x:CompileBindings="False">
+			 x:DataType="local:HelpViewModel">
 
 	<Grid ColumnDefinitions="280,*">
 
 		<TreeView Grid.Column="0"
-				  Margin="8"
-				  ItemsSource="{Binding RootNodes}"
-				  SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
+							Margin="8"
+							ItemsSource="{Binding RootNodes}"
+							SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
 
 			<TreeView.ItemTemplate>
 				<TreeDataTemplate ItemsSource="{Binding Children}">
@@ -22,9 +24,15 @@
 
 		</TreeView>
 
-		<ctrl:MarkdownControl Grid.Column="1"
-							  Margin="16,8"
-							  MarkdownText="{Binding MarkdownText}"/>
+		<ScrollViewer Grid.Column="1"
+									Margin="4"
+									Padding="12,4"
+									VerticalScrollBarVisibility="Auto">
+
+			<ctrl:MarkdownControl MarkdownText="{Binding MarkdownText}"
+														OpenLink="{Binding LinkClicked}"/>
+			
+		</ScrollViewer>
 
 	</Grid>
 

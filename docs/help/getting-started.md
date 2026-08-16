@@ -35,3 +35,5 @@ dASS is a powerful LLM-powered assistant with:
 | Chatting | [chat](chat.md) |
 | Tools | [tools](tools.md) |
 | Agents | [chat/agents](chat/agents.md) |
+
+![dASS banner](assets/dass.png)
