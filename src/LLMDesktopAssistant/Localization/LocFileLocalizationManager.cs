@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Reflection;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings.Application;
@@ -17,7 +16,6 @@ namespace LLMDesktopAssistant.Localization
 	{
 		private readonly Assembly _resourceAssembly;
 		private readonly Dictionary<string, Dictionary<string, string>> _entriesByLocale = new(StringComparer.OrdinalIgnoreCase);
-		private readonly Dictionary<string, string> _languageMap = new(StringComparer.Ordinal);
 		private string _currentLocale = string.Empty;
 
 		/// <summary>
@@ -30,7 +28,6 @@ namespace LLMDesktopAssistant.Localization
 			_resourceAssembly = resourceAssembly ?? Assembly.GetExecutingAssembly();
 			LoadEmbeddedFiles();
 			LoadUserFiles(userLocaleDirectory ?? Directories.LocaleFiles);
-			InitializeLanguageMap();
 
 			var savedLanguage = ApplicationSettingsAccessor.ApplicationSettings.Language.System;
 			if (!string.IsNullOrEmpty(savedLanguage))
@@ -55,15 +52,15 @@ namespace LLMDesktopAssistant.Localization
 		/// <inheritdoc />
 		public override IEnumerable<string> GetAvailableLanguages()
 		{
-			return _languageMap.Keys;
+			return _entriesByLocale.Keys.OrderBy(l => l, StringComparer.Ordinal);
 		}
 
 		/// <inheritdoc />
 		protected override bool TryChangeLanguage(string language)
 		{
-			if (_languageMap.TryGetValue(language, out var locale))
+			if (_entriesByLocale.ContainsKey(language))
 			{
-				_currentLocale = locale;
+				_currentLocale = language;
 				ApplicationSettingsAccessor.ApplicationSettings.Language.System = language;
 				return true;
 			}
@@ -133,31 +130,6 @@ namespace LLMDesktopAssistant.Localization
 					else
 						entries[key] = value; // User files override embedded and earlier user files.
 				}
-			}
-		}
-
-		private void InitializeLanguageMap()
-		{
-			// Then add the locales that appear in .loc files.
-			foreach (var locale in _entriesByLocale.Keys.OrderBy(l => l, StringComparer.Ordinal))
-			{
-				var displayName = GetDisplayName(locale);
-				_languageMap.TryAdd(displayName, locale);
-			}
-		}
-
-		private static string GetDisplayName(string locale)
-		{
-			if (string.IsNullOrEmpty(locale))
-				return "English (US)";
-
-			try
-			{
-				return CultureInfo.GetCultureInfo(locale).DisplayName;
-			}
-			catch (CultureNotFoundException)
-			{
-				return locale;
 			}
 		}
 	}

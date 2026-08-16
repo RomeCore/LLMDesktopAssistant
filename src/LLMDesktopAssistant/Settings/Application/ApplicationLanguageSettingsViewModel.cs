@@ -1,3 +1,4 @@
+using System.Globalization;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
@@ -10,16 +11,31 @@ namespace LLMDesktopAssistant.Settings.Application
 	public class LanguageItemViewModel
 	{
 		/// <summary>
-		/// Gets the language name as used by <see cref="LocalizationManager"/>. An empty value means the system language.
+		/// Gets the locale code of the language as used by <see cref="LocalizationManager"/>.
+		/// An empty value means the neutral (invariant) locale.
 		/// </summary>
 		public required string Name { get; init; }
 
 		/// <summary>
-		/// Gets the display name of the language. For the system language option, a localized name is shown.
+		/// Gets the display name of the language. For the neutral locale option, a localized name is shown.
 		/// </summary>
-		public string DisplayName => string.IsNullOrEmpty(Name)
-			? LocalizationManager.LocalizeStatic("settings.language.system")
-			: Name;
+		public string DisplayName
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(Name))
+					return LocalizationManager.LocalizeStatic("settings.language.system");
+
+				try
+				{
+					return CultureInfo.GetCultureInfo(Name).DisplayName;
+				}
+				catch (CultureNotFoundException)
+				{
+					return Name;
+				}
+			}
+		}
 	}
 
 	/// <summary>
@@ -56,7 +72,7 @@ namespace LLMDesktopAssistant.Settings.Application
 		{
 			_localizationManager = ServiceRegistry.Provider.GetRequiredService<LocalizationManager>();
 			AvailableLanguages = [.. _localizationManager.GetAvailableLanguages()
-				.Select(name => new LanguageItemViewModel { Name = name })];
+				.Select(code => new LanguageItemViewModel { Name = code })];
 			_currentLanguage = AvailableLanguages.FirstOrDefault(l => l.Name == _localizationManager.CurrentLanguage)
 				?? AvailableLanguages[0];
 		}

@@ -61,7 +61,8 @@ namespace LLMDesktopAssistant.Localization
 
 		private string _currentLanguage = string.Empty;
 		/// <summary>
-		/// Gets or sets the current language.
+		/// Gets or sets the current language as a locale code (for example <c>ru-RU</c>).
+		/// An empty string means the neutral (invariant) locale.
 		/// </summary>
 		public string CurrentLanguage
 		{
@@ -103,15 +104,17 @@ namespace LLMDesktopAssistant.Localization
 		}
 
 		/// <summary>
-		/// Gets a list of available languages. Languages are represented in human-readable format, for example "English (US)" or "Русский (Россия)".
+		/// Gets a list of available languages as locale codes (for example <c>ru-RU</c>).
+		/// The list contains an empty string for the neutral (invariant) locale.
 		/// </summary>
-		/// <returns>A list of available languages.</returns>
+		/// <returns>A list of available locale codes.</returns>
 		public abstract IEnumerable<string> GetAvailableLanguages();
 
 		/// <summary>
-		/// Tries to change the current language. Languages are represented in human-readable format, for example "English (US)" or "Русский (Россия)", they are listed in <see cref="GetAvailableLanguages()"/>.
+		/// Tries to change the current language. Languages are locale codes (for example <c>ru-RU</c>),
+		/// they are listed in <see cref="GetAvailableLanguages()"/>.
 		/// </summary>
-		/// <param name="language">The language to try and set.</param>
+		/// <param name="language">The locale code to try and set.</param>
 		/// <returns>true if the language was changed; otherwise, false.</returns>
 		protected abstract bool TryChangeLanguage(string language);
 	}

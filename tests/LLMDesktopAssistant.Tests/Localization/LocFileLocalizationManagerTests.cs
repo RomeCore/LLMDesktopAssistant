@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Reflection;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings.Application;
@@ -29,8 +28,6 @@ public class LocFileLocalizationManagerTests : IDisposable
 			resourceAssembly: Assembly.GetExecutingAssembly());
 	}
 
-	private static string RussianDisplayName => CultureInfo.GetCultureInfo("ru-RU").DisplayName;
-
 	private void WriteUserFile(string fileName, string content)
 	{
 		File.WriteAllText(Path.Combine(_userLocaleDirectory, fileName), content);
@@ -40,7 +37,7 @@ public class LocFileLocalizationManagerTests : IDisposable
 	public void LoadsEmbeddedLocaleFiles()
 	{
 		var manager = CreateManager();
-		manager.CurrentLanguage = RussianDisplayName;
+		manager.CurrentLanguage = "ru-RU";
 
 		Assert.Equal("Привет из embedded", manager.Localize("embedded.hello"));
 	}
@@ -56,7 +53,7 @@ public class LocFileLocalizationManagerTests : IDisposable
 			"""");
 
 		var manager = CreateManager();
-		manager.CurrentLanguage = RussianDisplayName;
+		manager.CurrentLanguage = "ru-RU";
 
 		Assert.Equal("Привет от пользователя", manager.Localize("embedded.hello"));
 	}
@@ -72,7 +69,7 @@ public class LocFileLocalizationManagerTests : IDisposable
 			"""");
 
 		var manager = CreateManager();
-		manager.CurrentLanguage = RussianDisplayName;
+		manager.CurrentLanguage = "ru-RU";
 
 		Assert.Equal("Привет, мир!", manager.Localize("custom.greeting"));
 	}
@@ -95,7 +92,7 @@ public class LocFileLocalizationManagerTests : IDisposable
 			"""");
 
 		var manager = CreateManager();
-		manager.CurrentLanguage = RussianDisplayName;
+		manager.CurrentLanguage = "ru-RU";
 
 		Assert.Equal("Добавить", manager.Localize("common.add"));
 		Assert.Equal("Save", manager.Localize("common.save"));
@@ -116,7 +113,7 @@ public class LocFileLocalizationManagerTests : IDisposable
 
 		var languages = manager.GetAvailableLanguages().ToArray();
 
-		Assert.Contains("русский (Россия)", languages);
+		Assert.Contains("ru-RU", languages);
 	}
 
 	[Fact]
@@ -138,10 +135,10 @@ public class LocFileLocalizationManagerTests : IDisposable
 
 		var manager = CreateManager();
 
-		manager.CurrentLanguage = RussianDisplayName;
+		manager.CurrentLanguage = "ru-RU";
 		Assert.Equal("Сохранить", manager.Localize("common.save"));
 
-		manager.CurrentLanguage = "English (US)";
+		manager.CurrentLanguage = string.Empty;
 		Assert.Equal("Save", manager.Localize("common.save"));
 	}
 
@@ -158,7 +155,7 @@ public class LocFileLocalizationManagerTests : IDisposable
 			"""");
 
 		var manager = CreateManager();
-		manager.CurrentLanguage = RussianDisplayName;
+		manager.CurrentLanguage = "ru-RU";
 
 		Assert.Equal("Сохранить", manager.Localize("common.save"));
 	}

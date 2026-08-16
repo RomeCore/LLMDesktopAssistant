@@ -16,9 +16,8 @@ namespace LLMDesktopAssistant.Settings.Application
 	{
 		private string _system = string.Empty;
 		/// <summary>
-		/// Gets or sets the system language of the application. The value is a human-readable language name
-		/// as returned by <see cref="LocalizationManager.GetAvailableLanguages()"/>,
-		/// for example "English (US)". An empty value means the system language is used.
+		/// Gets or sets the system language of the application. The value is a locale code
+		/// (for example <c>ru-RU</c>), or an empty string for the neutral locale.
 		/// </summary>
 		public string System
 		{
