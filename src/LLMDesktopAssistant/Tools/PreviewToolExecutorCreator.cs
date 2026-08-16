@@ -14,13 +14,13 @@ namespace LLMDesktopAssistant.Tools
 		/// <summary>
 		/// Creates a pre-executor function from the specified delegate.
 		/// </summary>
-		/// <param name="preExecutor">The delegate to create a pre-executor from. Can be null.</param>
+		/// <param name="preExecutor">The delegate to create a pre-executor from.</param>
 		/// <param name="parameterMetaInfos">The metadata for the parameters of the main executor delegate.</param>
 		/// <returns>A function that takes JSON arguments, context, and cancellation token, and returns a pre-execution result. Null if the input delegate is null.</returns>
-		public static Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>> Create(Delegate preExecutor, IDictionary<string, JsonMemberAccessor> parameterMetaInfos)
+		public static Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>> Create(
+			Delegate preExecutor, IDictionary<string, JsonMemberAccessor> parameterMetaInfos)
 		{
-			if (preExecutor == null)
-				throw new ArgumentNullException(nameof(preExecutor));
+			ArgumentNullException.ThrowIfNull(preExecutor);
 
 			return Create(preExecutor.Target, preExecutor.Method, parameterMetaInfos);
 		}
@@ -32,7 +32,8 @@ namespace LLMDesktopAssistant.Tools
 		/// <param name="method">The method to invoke.</param>
 		/// <param name="parameterMetaInfos">The metadata for the parameters of the main executor delegate.</param>
 		/// <returns>A function that takes JSON arguments, context, and cancellation token, and returns a pre-execution result.</returns>
-		public static Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>> Create(object? target, MethodInfo method, IDictionary<string, JsonMemberAccessor> parameterMetaInfos)
+		public static Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<PreviewToolExecutionResult>> Create(
+			object? target, MethodInfo method, IDictionary<string, JsonMemberAccessor> parameterMetaInfos)
 		{
 			if (method == null)
 				throw new ArgumentNullException(nameof(method));

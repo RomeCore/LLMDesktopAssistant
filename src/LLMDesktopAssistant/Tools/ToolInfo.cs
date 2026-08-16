@@ -156,7 +156,7 @@ namespace LLMDesktopAssistant.Tools
 
 			var (argSchema, _executor, parameters) = ToolExecutorCreator.Create(executor);
 			var _streamingAnalyzer = streamingAnalyzer != null ?
-				StreamingToolArgumentAnalyzerCreator.Create(streamingAnalyzer) : null;
+				StreamingToolArgumentAnalyzerCreator.Create(streamingAnalyzer, parameters) : null;
 			var _previewExecutor = previewExecutor != null ?
 				PreviewToolExecutorCreator.Create(previewExecutor, parameters) : null;
 

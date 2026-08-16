@@ -15,14 +15,15 @@ namespace LLMDesktopAssistant.Tools
 		/// <summary>
 		/// Creates a pre-executor function from the specified delegate.
 		/// </summary>
-		/// <param name="preExecutor">The delegate to create a pre-executor from. Can be null.</param>
+		/// <param name="streamingAnalyzer">The delegate to create a streaming analyzer from.</param>
+		/// <param name="parameterMetaInfos">The metadata for the parameters of the main executor delegate.</param>
 		/// <returns>A function that takes JSON arguments, context, and cancellation token, and returns a pre-execution result. Null if the input delegate is null.</returns>
-		public static Func<JsonNode?, ToolExecutionContext, StreamingToolArgumentsAnalysisResult> Create(Delegate preExecutor)
+		public static Func<JsonNode?, ToolExecutionContext, StreamingToolArgumentsAnalysisResult> Create(
+			Delegate streamingAnalyzer, IDictionary<string, JsonMemberAccessor> parameterMetaInfos)
 		{
-			if (preExecutor == null)
-				throw new ArgumentNullException(nameof(preExecutor));
+			ArgumentNullException.ThrowIfNull(streamingAnalyzer);
 
-			return Create(preExecutor.Target, preExecutor.Method);
+			return Create(streamingAnalyzer.Target, streamingAnalyzer.Method, parameterMetaInfos);
 		}
 
 		/// <summary>
@@ -31,7 +32,8 @@ namespace LLMDesktopAssistant.Tools
 		/// <param name="target">The target object on which the method is invoked. Null for static methods.</param>
 		/// <param name="method">The method to invoke.</param>
 		/// <returns>A function that takes JSON arguments, context, and cancellation token, and returns a pre-execution result.</returns>
-		public static Func<JsonNode?, ToolExecutionContext, StreamingToolArgumentsAnalysisResult> Create(object? target, MethodInfo method)
+		public static Func<JsonNode?, ToolExecutionContext, StreamingToolArgumentsAnalysisResult> Create(
+			object? target, MethodInfo method, IDictionary<string, JsonMemberAccessor> parameterMetaInfos)
 		{
 			if (method == null)
 				throw new ArgumentNullException(nameof(method));
@@ -81,7 +83,10 @@ namespace LLMDesktopAssistant.Tools
 				}
 				else
 				{
-					var parameterAccessor = new JsonMemberAccessor(parameter);
+					var parameterAccessor = parameterMetaInfos.TryGetValue(parameter.Name
+						?? throw new ArgumentException("Method contains parameter without a name.", nameof(method)), out var oea)
+						? oea : new JsonMemberAccessor(parameter);
+
 					if (!parameterAccessor.Include)
 						continue;
 
