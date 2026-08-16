@@ -20,18 +20,20 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(WriteFile, WriteFileStream, WriteFilePreview,
-				new ToolInitializationInfo
-				{
-					Name = "fs-write_file",
-					Description = "Writes text content to a file inside working directory.",
-					TitleKey = Locale.GetKey("tool.name.fs-write_file"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-write_file"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir,
-					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
-					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = WriteFile,
+				StreamingAnalyzer = WriteFileStream,
+				PreviewExecutor = WriteFilePreview,
+				Name = "fs-write_file",
+				Description = "Writes text content to a file inside working directory.",
+				TitleKey = Locale.GetKey("tool.name.fs-write_file"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-write_file"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir,
+				DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
+				SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
+			});
 		}
 
 		private StreamingToolArgumentsAnalysisResult? WriteFileStream(

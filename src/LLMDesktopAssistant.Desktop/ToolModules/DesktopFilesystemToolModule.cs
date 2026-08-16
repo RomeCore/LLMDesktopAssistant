@@ -20,30 +20,34 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			_fileAccess = fileAccess;
 			_explorerOpener = explorerOpener;
 
-			AddTool(OpenFile, OpenFileStreaming, OpenFilePreview,
-				new ToolInitializationInfo
-				{
-					Name = "fs-open_file",
-					Description = "Opens a file from the working directory with its default application.",
-					TitleKey = Locale.GetKey("tool.name.fs-open_file"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-open_file"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.FileRead |
-						ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = OpenFile,
+				StreamingAnalyzer = OpenFileStreaming,
+				PreviewExecutor = OpenFilePreview,
+				Name = "fs-open_file",
+				Description = "Opens a file from the working directory with its default application.",
+				TitleKey = Locale.GetKey("tool.name.fs-open_file"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-open_file"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.FileRead |
+					ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(OpenInExplorer, OpenInExplorerStreaming, OpenInExplorerPreview,
-				new ToolInitializationInfo
-				{
-					Name = "fs-open_in_explorer",
-					Description = "Opens a file or directory in the system file explorer. " +
-						"Files are revealed and selected, directories are opened, and non-existent paths " +
-						"fall back to opening their parent directory.",
-					TitleKey = Locale.GetKey("tool.name.fs-open_in_explorer"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-open_in_explorer"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = OpenInExplorer,
+				StreamingAnalyzer = OpenInExplorerStreaming,
+				PreviewExecutor = OpenInExplorerPreview,
+				Name = "fs-open_in_explorer",
+				Description = "Opens a file or directory in the system file explorer. " +
+					"Files are revealed and selected, directories are opened, and non-existent paths " +
+					"fall back to opening their parent directory.",
+				TitleKey = Locale.GetKey("tool.name.fs-open_in_explorer"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-open_in_explorer"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.AccessOutsideWorkdir
+			});
 		}
 
 		public StreamingToolArgumentsAnalysisResult OpenFileStreaming(

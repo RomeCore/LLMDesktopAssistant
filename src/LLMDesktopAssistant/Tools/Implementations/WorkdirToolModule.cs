@@ -16,27 +16,28 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			_chatSettings = chatSettings;
 
-			AddTool(ListWorkingDirectories,
-				new ToolInitializationInfo
-				{
-					Name = "wd-list",
-					Description = "Lists all working directories configured for the current chat session.",
-					TitleKey = Locale.GetKey("tool.name.wd-list"),
-					DescriptionKey = Locale.GetKey("tool.description.wd-list"),
-					CategoryKey = Locale.GetKey("tool.category.workdir")
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ListWorkingDirectories,
+				Name = "wd-list",
+				Description = "Lists all working directories configured for the current chat session.",
+				TitleKey = Locale.GetKey("tool.name.wd-list"),
+				DescriptionKey = Locale.GetKey("tool.description.wd-list"),
+				CategoryKey = Locale.GetKey("tool.category.workdir")
+			});
 
-			AddTool(SwitchWorkingDirectory, null, SwitchWorkingDirectoryPreview,
-				new ToolInitializationInfo
-				{
-					Name = "wd-switch",
-					Description = "Switches the working directory for the current chat session.",
-					TitleKey = Locale.GetKey("tool.name.wd-switch"),
-					DescriptionKey = Locale.GetKey("tool.description.wd-switch"),
-					CategoryKey = Locale.GetKey("tool.category.workdir"),
-					DefaultExpectedBehaviour = ToolBehaviour.WorkdirChange,
-					SynchronizationGroup = "wd-switch" // Prevent parallel execution of this tool
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = SwitchWorkingDirectory,
+				PreviewExecutor = SwitchWorkingDirectoryPreview,
+				Name = "wd-switch",
+				Description = "Switches the working directory for the current chat session.",
+				TitleKey = Locale.GetKey("tool.name.wd-switch"),
+				DescriptionKey = Locale.GetKey("tool.description.wd-switch"),
+				CategoryKey = Locale.GetKey("tool.category.workdir"),
+				DefaultExpectedBehaviour = ToolBehaviour.WorkdirChange,
+				SynchronizationGroup = "wd-switch" // Prevent parallel execution of this tool
+			});
 		}
 
 		private ReactiveToolResult ListWorkingDirectories()

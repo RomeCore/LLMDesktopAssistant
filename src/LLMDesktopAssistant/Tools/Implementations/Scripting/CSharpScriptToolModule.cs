@@ -26,70 +26,72 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 		{
 			_scriptService = scriptService;
 
-			AddTool(Execute, ExecuteStreaming, ExecutePreview,
-				new ToolInitializationInfo
-				{
-					Name = "csx-execute",
-					Description = """
-						# MAIN INFO
-						Executes C# (.csx) code compiled with Roslyn scripting and returns the script result.
-						Scripts are compiled on every execution (no state is shared between executions)
-						and have full access to .NET APIs and all loaded dASS assemblies.
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = Execute,
+				StreamingAnalyzer = ExecuteStreaming,
+				PreviewExecutor = ExecutePreview,
+				Name = "csx-execute",
+				Description = """
+					# MAIN INFO
+					Executes C# (.csx) code compiled with Roslyn scripting and returns the script result.
+					Scripts are compiled on every execution (no state is shared between executions)
+					and have full access to .NET APIs and all loaded dASS assemblies.
 
-						# GLOBALS
-						- `ToolArgs` — the arguments of this tool call as JsonNode (e.g. `(string?)ToolArgs?["code"]`)
-						- `Context` — the execution context of the current tool call
-						- `Result` — the streaming result API (write output, status, progress, structured result)
-						- `Workdir` — the working directory of the current context
+					# GLOBALS
+					- `ToolArgs` — the arguments of this tool call as JsonNode (e.g. `(string?)ToolArgs?["code"]`)
+					- `Context` — the execution context of the current tool call
+					- `Result` — the streaming result API (write output, status, progress, structured result)
+					- `Workdir` — the working directory of the current context
 
-						# SMART UX WITH STREAMING AND STATUS ICONS/TITLES
-						Use `Result` for streaming output, progress and status (icon names are from Material Icons):
+					# SMART UX WITH STREAMING AND STATUS ICONS/TITLES
+					Use `Result` for streaming output, progress and status (icon names are from Material Icons):
 
-						// 1. Basic streaming output with status icon
-						Result.SetStatus("Download", "Processing..."); // "Download" is the icon name, "Processing..." is the title
-						Result.Write("Step 1: Starting...");
-						Result.Write("Step 2: Working...");
-						Result.Write("Step 3: Done!");
+					// 1. Basic streaming output with status icon
+					Result.SetStatus("Download", "Processing..."); // "Download" is the icon name, "Processing..." is the title
+					Result.Write("Step 1: Starting...");
+					Result.Write("Step 2: Working...");
+					Result.Write("Step 3: Done!");
+					Result.CompleteWithSuccess();
+
+					// 2. Progress bar and Markdown output
+					Result.UseMarkdown = true;
+					Result.SetStatus("ChartTimeline", "Processing...");
+					Result.SetProgress(0, 0, 10); // current, min, max
+					for (int i = 1; i <= 10; i++)
+					{
+						Result.SetProgress(i);
+						Result.Write($"  - **Item {i}** completed");
+						await Task.Delay(100); // simulate work
+					}
+					Result.SetProgress(1.0);
+					Result.SetStatus("Check", "All done!");
+					Result.CompleteWithSuccess();
+
+					// 3. Structured result + error handling
+					try
+					{
+						var data = File.ReadAllText(Path.Combine(Workdir, "data.json"));
+						Result.SetStructured(JsonNode.Parse(data));
+						Result.SetStatus("FileCheck", "Loaded");
 						Result.CompleteWithSuccess();
+					}
+					catch (Exception ex)
+					{
+						Result.SetStatus("AlertCircle", "File not found");
+						Result.Write("Error: " + ex.Message);
+						Result.CompleteWithError();
+						return;
+					}
 
-						// 2. Progress bar and Markdown output
-						Result.UseMarkdown = true;
-						Result.SetStatus("ChartTimeline", "Processing...");
-						Result.SetProgress(0, 0, 10); // current, min, max
-						for (int i = 1; i <= 10; i++)
-						{
-							Result.SetProgress(i);
-							Result.Write($"  - **Item {i}** completed");
-							await Task.Delay(100); // simulate work
-						}
-						Result.SetProgress(1.0);
-						Result.SetStatus("Check", "All done!");
-						Result.CompleteWithSuccess();
-
-						// 3. Structured result + error handling
-						try
-						{
-							var data = File.ReadAllText(Path.Combine(Workdir, "data.json"));
-							Result.SetStructured(JsonNode.Parse(data));
-							Result.SetStatus("FileCheck", "Loaded");
-							Result.CompleteWithSuccess();
-						}
-						catch (Exception ex)
-						{
-							Result.SetStatus("AlertCircle", "File not found");
-							Result.Write("Error: " + ex.Message);
-							Result.CompleteWithError();
-							return;
-						}
-
-						// The return value is used as the structured result when `Result.SetStructured` was not called.
-						return "done";
-						""",
-					TitleKey = Locale.GetKey("tool.name.csx-execute"),
-					DescriptionKey = Locale.GetKey("tool.description.csx-execute"),
-					CategoryKey = Locale.GetConstKey("C#"),
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
-				});
+					// The return value is used as the structured result when `Result.SetStructured` was not called.
+					return "done";
+					""",
+				TitleKey = Locale.GetKey("tool.name.csx-execute"),
+				DescriptionKey = Locale.GetKey("tool.description.csx-execute"),
+				CategoryKey = Locale.GetConstKey("C#"),
+				DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
+			});
 		}
 
 		private StreamingToolArgumentsAnalysisResult ExecuteStreaming(string? csharp)

@@ -33,38 +33,42 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			_fileAccess = fileAccess;
 			_pythonHelperService = pythonHelperService;
 
-			AddTool(Execute, ExecuteStreaming, ExecutePreview,
-				new ToolInitializationInfo
-				{
-					Name = "execute-python",
-					Description = "Executes Python in isolated virtual environment (global variables are not accessible between scripts) from the working directory. It returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!'). Displays live output in a terminal.",
-					TitleKey = Locale.GetKey("tool.name.execute-python"),
-					DescriptionKey = Locale.GetKey("tool.description.execute-python"),
-					CategoryKey = Locale.GetConstKey("Python"),
-					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = Execute,
+				StreamingAnalyzer = ExecuteStreaming,
+				PreviewExecutor = ExecutePreview,
+				Name = "execute-python",
+				Description = "Executes Python in isolated virtual environment (global variables are not accessible between scripts) from the working directory. It returns STOUT of the executed code (e.g., print('Hello World!') should return 'Hello World!'). Displays live output in a terminal.",
+				TitleKey = Locale.GetKey("tool.name.execute-python"),
+				DescriptionKey = Locale.GetKey("tool.description.execute-python"),
+				CategoryKey = Locale.GetConstKey("Python"),
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
+			});
 
-			AddTool(ExecuteVenvShell, ExecuteVenvShellStreaming, ExecuteVenvShellPreview,
-				new ToolInitializationInfo
-				{
-					Name = "execute-python_venv_shell",
-					Description = "Executes shell script in a Python's virtual environment from the working directory. Useful for installing packages via 'pip'. Displays live output in a terminal.",
-					TitleKey = Locale.GetKey("tool.name.execute-python_venv_shell"),
-					DescriptionKey = Locale.GetKey("tool.description.execute-python_venv_shell"),
-					CategoryKey = Locale.GetConstKey("Python"),
-					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ExecuteVenvShell,
+				StreamingAnalyzer = ExecuteVenvShellStreaming,
+				PreviewExecutor = ExecuteVenvShellPreview,
+				Name = "execute-python_venv_shell",
+				Description = "Executes shell script in a Python's virtual environment from the working directory. Useful for installing packages via 'pip'. Displays live output in a terminal.",
+				TitleKey = Locale.GetKey("tool.name.execute-python_venv_shell"),
+				DescriptionKey = Locale.GetKey("tool.description.execute-python_venv_shell"),
+				CategoryKey = Locale.GetConstKey("Python"),
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
+			});
 
-			AddTool(GetInstalledPackagesList,
-				new ToolInitializationInfo
-				{
-					Name = "python-get_installed_packages_list",
-					Description = "Returns the list of installed packages in the current Python's virtual environment.",
-					TitleKey = Locale.GetKey("tool.name.python-get_installed_packages_list"),
-					DescriptionKey = Locale.GetKey("tool.description.python-get_installed_packages_list"),
-					CategoryKey = Locale.GetConstKey("Python"),
-					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = GetInstalledPackagesList,
+				Name = "python-get_installed_packages_list",
+				Description = "Returns the list of installed packages in the current Python's virtual environment.",
+				TitleKey = Locale.GetKey("tool.name.python-get_installed_packages_list"),
+				DescriptionKey = Locale.GetKey("tool.description.python-get_installed_packages_list"),
+				CategoryKey = Locale.GetConstKey("Python"),
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess
+			});
 		}
 
 		public StreamingToolArgumentsAnalysisResult ExecuteStreaming(string? python)

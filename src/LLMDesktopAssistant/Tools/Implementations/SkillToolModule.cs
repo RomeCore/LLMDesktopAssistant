@@ -22,8 +22,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			_agentManager = agentManager;
 			_skillsetBuilder = skillsetBuilder;
 
-			AddTool(LoadSkill, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = LoadSkill,
 				Name = "skill-load",
 				IsFixed = true,
 				Description = "Loads a skill (SKILL.md format) by its name.",

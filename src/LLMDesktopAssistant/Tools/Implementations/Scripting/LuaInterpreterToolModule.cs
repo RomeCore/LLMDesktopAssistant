@@ -15,75 +15,77 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 		{
 			_lua = lua;
 
-			AddTool(Execute, ExecuteStreaming, ExecutePreview,
-				new ToolInitializationInfo
-				{
-					Name = "lua-execute",
-					DescriptionGetter = () => $"""
-						# MAIN INFO
-						Lua is executing using AsyncLua 5.5+{typeof(LuaState).Assembly.GetName().Version?.ToString() ?? ""}.
-						Executes Lua and returns the script result along with messages printed by 'print' function
-						(the `dass.tool.result.write` works in a similar way).
-						Lua has the API to interact with the application (called dASS) with these namespaces:
-						{string.Join(", ", lua.Namespaces.Select(ns => ns != null ? $"**{ns}**" : "_G").Order())}
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = Execute,
+				StreamingAnalyzer = ExecuteStreaming,
+				PreviewExecutor = ExecutePreview,
+				Name = "lua-execute",
+				DescriptionGetter = () => $"""
+					# MAIN INFO
+					Lua is executing using AsyncLua 5.5+{typeof(LuaState).Assembly.GetName().Version?.ToString() ?? ""}.
+					Executes Lua and returns the script result along with messages printed by 'print' function
+					(the `dass.tool.result.write` works in a similar way).
+					Lua has the API to interact with the application (called dASS) with these namespaces:
+					{string.Join(", ", lua.Namespaces.Select(ns => ns != null ? $"**{ns}**" : "_G").Order())}
 
-						# AsyncLua changes
-						You can use `async/await` in your scripts, for example:
-						local async function doWork()
-							await delay(100)
-							return 'done'
-						end
-						print(await doWork())
-						For full AsyncLua manuals see `print(manuals(asynclua))`
+					# AsyncLua changes
+					You can use `async/await` in your scripts, for example:
+					local async function doWork()
+						await delay(100)
+						return 'done'
+					end
+					print(await doWork())
+					For full AsyncLua manuals see `print(manuals(asynclua))`
 
-						# SMART UX WITH STREAMING AND STATUS ICONS/TITLES
-						You can also use the `dass.tool.result` for streaming output, progress and status
-						(for meta-tools and long-running scripts):
-				
-						-- 1. Basic streaming output with status icon (from Material Icons)
-						dass.tool.result.set_status("Download", "Processing...") -- "Download" is the icon name, "Processing..." is the title
-						dass.tool.result.write("Step 1: Starting...")
-						time.sleep(100)
-						dass.tool.result.write("Step 2: Working...")
-						time.sleep(100)
-						dass.tool.result.write("Step 3: Done!")
-						dass.tool.result.complete_with_success()
+					# SMART UX WITH STREAMING AND STATUS ICONS/TITLES
+					You can also use the `dass.tool.result` for streaming output, progress and status
+					(for meta-tools and long-running scripts):
+			
+					-- 1. Basic streaming output with status icon (from Material Icons)
+					dass.tool.result.set_status("Download", "Processing...") -- "Download" is the icon name, "Processing..." is the title
+					dass.tool.result.write("Step 1: Starting...")
+					time.sleep(100)
+					dass.tool.result.write("Step 2: Working...")
+					time.sleep(100)
+					dass.tool.result.write("Step 3: Done!")
+					dass.tool.result.complete_with_success()
 
-						-- 2. Progress bar and Markdown output
-						dass.tool.result.use_markdown(true)
-						dass.tool.result.set_status("ChartTimeline", "Processing...")
-						dass.tool.result.set_progress(0, 0, 10) -- current, min, max
-						for i = 1, 10 do
-						  dass.tool.result.set_progress(i)
-						  dass.tool.result.write(string.format("  - **Item %d** completed", i))
-						  time.sleep(100) -- simulate work
-						end
-						dass.tool.result.set_progress(1.0)
-						dass.tool.result.set_status("Check", "All done!")
-						dass.tool.result.complete_with_success()
+					-- 2. Progress bar and Markdown output
+					dass.tool.result.use_markdown(true)
+					dass.tool.result.set_status("ChartTimeline", "Processing...")
+					dass.tool.result.set_progress(0, 0, 10) -- current, min, max
+					for i = 1, 10 do
+					  dass.tool.result.set_progress(i)
+					  dass.tool.result.write(string.format("  - **Item %d** completed", i))
+					  time.sleep(100) -- simulate work
+					end
+					dass.tool.result.set_progress(1.0)
+					dass.tool.result.set_status("Check", "All done!")
+					dass.tool.result.complete_with_success()
 
-						-- 3. Structured result + error handling
-						local ok, data = pcall(fs.read, "data.json")
-						if not ok then
-						  dass.tool.result.set_status("AlertCircle", "File not found")
-						  dass.tool.result.write("Error: " .. data)
-						  dass.tool.result.complete_with_error()
-						  return
-						end
-						local parsed = json.decode(data)
-						dass.tool.result.set_structured(parsed)
-						dass.tool.result.set_status("FileCheck", "Loaded")
-						dass.tool.result.complete_with_success()
-						
-						# SEE MANUALS BEFORE USING THE API
-						Use `manuals(...)` function to get the documentation for a specific namespace, `print(manuals(_G))`
-						or `print(manuals(dass.agents, dass.tool, dass.tool.result))` for example.
-						""",
-					TitleKey = Locale.GetKey("tool.name.lua-execute"),
-					DescriptionKey = Locale.GetKey("tool.description.lua-execute"),
-					CategoryKey = Locale.GetConstKey("Lua"),
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
-				});
+					-- 3. Structured result + error handling
+					local ok, data = pcall(fs.read, "data.json")
+					if not ok then
+					  dass.tool.result.set_status("AlertCircle", "File not found")
+					  dass.tool.result.write("Error: " .. data)
+					  dass.tool.result.complete_with_error()
+					  return
+					end
+					local parsed = json.decode(data)
+					dass.tool.result.set_structured(parsed)
+					dass.tool.result.set_status("FileCheck", "Loaded")
+					dass.tool.result.complete_with_success()
+					
+					# SEE MANUALS BEFORE USING THE API
+					Use `manuals(...)` function to get the documentation for a specific namespace, `print(manuals(_G))`
+					or `print(manuals(dass.agents, dass.tool, dass.tool.result))` for example.
+					""",
+				TitleKey = Locale.GetKey("tool.name.lua-execute"),
+				DescriptionKey = Locale.GetKey("tool.description.lua-execute"),
+				CategoryKey = Locale.GetConstKey("Lua"),
+				DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected
+			});
 		}
 
 		private StreamingToolArgumentsAnalysisResult ExecuteStreaming(string? lua)

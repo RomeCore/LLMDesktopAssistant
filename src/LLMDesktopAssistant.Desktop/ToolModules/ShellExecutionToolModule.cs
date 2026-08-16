@@ -19,38 +19,44 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		{
 			_wdAccess = wdAccess;
 
-			AddTool(ExecuteBash, ExecuteBashStreaming, ExecuteBashPreview,
-				new ToolInitializationInfo
-				{
-					Name = "shell-bash",
-					Description = $"Executes UNIX BASH command or script from the current working directory. Examples: `git status`, `python script.py`",
-					TitleKey = Locale.GetKey("tool.name.shell-bash"),
-					DescriptionKey = Locale.GetKey("tool.description.shell-bash"),
-					CategoryKey = Locale.GetKey("tool.category.scripting"),
-					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ExecuteBash,
+				StreamingAnalyzer = ExecuteBashStreaming,
+				PreviewExecutor = ExecuteBashPreview,
+				Name = "shell-bash",
+				Description = $"Executes UNIX BASH command or script from the current working directory. Examples: `git status`, `python script.py`",
+				TitleKey = Locale.GetKey("tool.name.shell-bash"),
+				DescriptionKey = Locale.GetKey("tool.description.shell-bash"),
+				CategoryKey = Locale.GetKey("tool.category.scripting"),
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
+			});
 
-			AddTool(ExecuteBatch, ExecuteBatchStreaming, ExecuteBatchPreview,
-				new ToolInitializationInfo
-				{
-					Name = "shell-batch",
-					Description = $"Executes WINDOWS BATCH command or script from the current working directory. Examples: `git status`, `python script.py`",
-					TitleKey = Locale.GetKey("tool.name.shell-batch"),
-					DescriptionKey = Locale.GetKey("tool.description.shell-batch"),
-					CategoryKey = Locale.GetKey("tool.category.scripting"),
-					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ExecuteBatch,
+				StreamingAnalyzer = ExecuteBatchStreaming,
+				PreviewExecutor = ExecuteBatchPreview,
+				Name = "shell-batch",
+				Description = $"Executes WINDOWS BATCH command or script from the current working directory. Examples: `git status`, `python script.py`",
+				TitleKey = Locale.GetKey("tool.name.shell-batch"),
+				DescriptionKey = Locale.GetKey("tool.description.shell-batch"),
+				CategoryKey = Locale.GetKey("tool.category.scripting"),
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
+			});
 
-			AddTool(ExecutePowerShell, ExecutePowerShellStreaming, ExecutePowerShellPreview,
-				new ToolInitializationInfo
-				{
-					Name = "shell-powershell",
-					Description = $"Executes WINDOWS POWERSHELL command or script from the current working directory. Examples: `git status`, `python script.py`",
-					TitleKey = Locale.GetKey("tool.name.shell-powershell"),
-					DescriptionKey = Locale.GetKey("tool.description.shell-powershell"),
-					CategoryKey = Locale.GetKey("tool.category.scripting"),
-					DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ExecutePowerShell,
+				StreamingAnalyzer = ExecutePowerShellStreaming,
+				PreviewExecutor = ExecutePowerShellPreview,
+				Name = "shell-powershell",
+				Description = $"Executes WINDOWS POWERSHELL command or script from the current working directory. Examples: `git status`, `python script.py`",
+				TitleKey = Locale.GetKey("tool.name.shell-powershell"),
+				DescriptionKey = Locale.GetKey("tool.description.shell-powershell"),
+				CategoryKey = Locale.GetKey("tool.category.scripting"),
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
+			});
 
 		}
 

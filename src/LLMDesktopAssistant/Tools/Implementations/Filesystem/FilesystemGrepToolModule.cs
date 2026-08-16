@@ -16,19 +16,21 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(Grep, GrepStreaming, GrepPreview,
-				new ToolInitializationInfo
-				{
-					Name = "fs-grep",
-					Description = """
-						Searches for pattern in files using regex.
-						Use this tool with care, as it can be slow and resource-intensive.
-						""",
-					TitleKey = Locale.GetKey("tool.name.fs-grep"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-grep"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.DirectoryRead | ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = Grep,
+				StreamingAnalyzer = GrepStreaming,
+				PreviewExecutor = GrepPreview,
+				Name = "fs-grep",
+				Description = """
+					Searches for pattern in files using regex.
+					Use this tool with care, as it can be slow and resource-intensive.
+					""",
+				TitleKey = Locale.GetKey("tool.name.fs-grep"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-grep"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.DirectoryRead | ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
+			});
 		}
 
 		private StreamingToolArgumentsAnalysisResult GrepStreaming(

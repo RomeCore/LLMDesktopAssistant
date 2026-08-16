@@ -27,8 +27,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 		{
 			_memoryFactStore = memoryFactStore;
 
-			AddTool(StoreAsync, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = StoreAsync,
 				Name = "memory-store_fact",
 				IsFixed = true,
 				Description = """
@@ -40,8 +41,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
 
-			AddTool(RetrieveAsync, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = RetrieveAsync,
 				Name = "memory-retrieve_fact",
 				IsFixed = true,
 				Description = """
@@ -54,8 +56,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
 
-			AddTool(ForgetAsync, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = ForgetAsync,
 				Name = "memory-forget_fact",
 				IsFixed = false,
 				Description = """

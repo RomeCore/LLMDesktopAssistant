@@ -25,71 +25,71 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			_metaToolManager = metaToolManager;
 			_engines = engines.ToArray();
 
-			AddTool(CreateOrUpdateMetaTool,
-				new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = CreateOrUpdateMetaTool,
+				Name = "metatools-create_or_update",
+				Description = BuildCreateOrUpdateDescription(),
+				TitleKey = Locale.GetKey("tool.name.metatools-create_or_update"),
+				DescriptionKey = Locale.GetKey("tool.description.metatools-create_or_update"),
+				CategoryKey = Locale.GetKey("tool.category.metatools"),
+				DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess,
+				ModifyArgumentSchema = schema =>
 				{
-					Name = "metatools-create_or_update",
-					Description = BuildCreateOrUpdateDescription(),
-					TitleKey = Locale.GetKey("tool.name.metatools-create_or_update"),
-					DescriptionKey = Locale.GetKey("tool.description.metatools-create_or_update"),
-					CategoryKey = Locale.GetKey("tool.category.metatools"),
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess,
-					ModifyArgumentSchema = schema =>
-					{
-						var properties = schema["properties"]!;
+					var properties = schema["properties"]!;
 
-						var approvalLevel = properties["approvalLevel"]!;
-						approvalLevel["enum"] = new JsonArray(MetaToolHumanizedEnumNames.ApprovalLevelNames.Values
-							.Select(v => JsonValue.Create(v)).ToArray());
+					var approvalLevel = properties["approvalLevel"]!;
+					approvalLevel["enum"] = new JsonArray(MetaToolHumanizedEnumNames.ApprovalLevelNames.Values
+						.Select(v => JsonValue.Create(v)).ToArray());
 
-						var behaviours = properties["behaviours"]!;
-						var items = behaviours["items"]!;
-						items["enum"] = new JsonArray(MetaToolHumanizedEnumNames.BehaviourNames.Values
-							.Select(v => JsonValue.Create(v)).ToArray());
-					}
-				});
+					var behaviours = properties["behaviours"]!;
+					var items = behaviours["items"]!;
+					items["enum"] = new JsonArray(MetaToolHumanizedEnumNames.BehaviourNames.Values
+						.Select(v => JsonValue.Create(v)).ToArray());
+				}
+			});
 
-			AddTool(ListMetaTools,
-				new ToolInitializationInfo
-				{
-					Name = "metatools-list",
-					Description = "Lists all existing meta tools. Use it for understanding what tools you can tweak or modify.",
-					TitleKey = Locale.GetKey("tool.name.metatools-list"),
-					DescriptionKey = Locale.GetKey("tool.description.metatools-list"),
-					CategoryKey = Locale.GetKey("tool.category.metatools")
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ListMetaTools,
+				Name = "metatools-list",
+				Description = "Lists all existing meta tools. Use it for understanding what tools you can tweak or modify.",
+				TitleKey = Locale.GetKey("tool.name.metatools-list"),
+				DescriptionKey = Locale.GetKey("tool.description.metatools-list"),
+				CategoryKey = Locale.GetKey("tool.category.metatools")
+			});
 
-			AddTool(GetToolInfo,
-				new ToolInitializationInfo
-				{
-					Name = "metatools-get_info",
-					Description = "Gets detailed information about a specific meta tool by its name. Use it for understanding the details of a particular tool.",
-					TitleKey = Locale.GetKey("tool.name.metatools-get_info"),
-					DescriptionKey = Locale.GetKey("tool.description.metatools-get_info"),
-					CategoryKey = Locale.GetKey("tool.category.metatools")
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = GetToolInfo,
+				Name = "metatools-get_info",
+				Description = "Gets detailed information about a specific meta tool by its name. Use it for understanding the details of a particular tool.",
+				TitleKey = Locale.GetKey("tool.name.metatools-get_info"),
+				DescriptionKey = Locale.GetKey("tool.description.metatools-get_info"),
+				CategoryKey = Locale.GetKey("tool.category.metatools")
+			});
 
-			AddTool(RenameMetaTool,
-				new ToolInitializationInfo
-				{
-					Name = "metatools-rename",
-					Description = "Renames an existing meta tool to a new name. The original tool must exist and the new name must not conflict with any other tools.",
-					TitleKey = Locale.GetKey("tool.name.metatools-rename"),
-					DescriptionKey = Locale.GetKey("tool.description.metatools-rename"),
-					CategoryKey = Locale.GetKey("tool.category.metatools"),
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = RenameMetaTool,
+				Name = "metatools-rename",
+				Description = "Renames an existing meta tool to a new name. The original tool must exist and the new name must not conflict with any other tools.",
+				TitleKey = Locale.GetKey("tool.name.metatools-rename"),
+				DescriptionKey = Locale.GetKey("tool.description.metatools-rename"),
+				CategoryKey = Locale.GetKey("tool.category.metatools"),
+				DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
+			});
 
-			AddTool(DeleteMetaTool,
-				new ToolInitializationInfo
-				{
-					Name = "metatools-delete",
-					Description = "Removes an existing meta tool. The tool must exist and cannot be a default tool.",
-					TitleKey = Locale.GetKey("tool.name.metatools-delete"),
-					DescriptionKey = Locale.GetKey("tool.description.metatools-delete"),
-					CategoryKey = Locale.GetKey("tool.category.metatools"),
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = DeleteMetaTool,
+				Name = "metatools-delete",
+				Description = "Removes an existing meta tool. The tool must exist and cannot be a default tool.",
+				TitleKey = Locale.GetKey("tool.name.metatools-delete"),
+				DescriptionKey = Locale.GetKey("tool.description.metatools-delete"),
+				CategoryKey = Locale.GetKey("tool.category.metatools"),
+				DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
+			});
 		}
 
 		private string BuildCreateOrUpdateDescription()

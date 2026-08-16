@@ -12,91 +12,91 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	{
 		public MathematicsToolModule()
 		{
-			AddTool(Calculate,
-				new ToolInitializationInfo
-				{
-					Name = "math-calculate",
-					Description = """
-						Evaluate a mathematical expression. Examples:
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = Calculate,
+				Name = "math-calculate",
+				Description = """
+					Evaluate a mathematical expression. Examples:
 
-						1 + 2 * -(3^2 / e)
-						sin(pi/2) + cos(pi/3)
-						integral(x^2 + 1, x, 0, 10)
-						derivative(x^2 + 1, x, 5)
-						sin(9+2i)
+					1 + 2 * -(3^2 / e)
+					sin(pi/2) + cos(pi/3)
+					integral(x^2 + 1, x, 0, 10)
+					derivative(x^2 + 1, x, 5)
+					sin(9+2i)
 
-						All supported constants:
+					All supported constants:
 
-						NaN, pi, inf, eps, phi, tau, g, e, c, gamma
+					NaN, pi, inf, eps, phi, tau, g, e, c, gamma
 
-						All supported functions:
+					All supported functions:
 
-						Normal:
+					Normal:
 
-						asinh, acosh, tan, atanh, atan2, cbrt, sign, floor, ceil, round, trunc, mod,
-						gamma, factorial, integral, derivative
+					asinh, acosh, tan, atanh, atan2, cbrt, sign, floor, ceil, round, trunc, mod,
+					gamma, factorial, integral, derivative
 
-						Complex:
+					Complex:
 
-						mag, conjugate, minmag, maxmag, compgamma
+					mag, conjugate, minmag, maxmag, compgamma
 
-						Normal and complex:
+					Normal and complex:
 
-						sin, sinh, asin, cos, cosh, acos, tanh, atan,
-						sind, cosd, tand, asind, acosd, atand,
-						ln, log, log2, log10, logb, exp, pow, sqrt,
-						abs, min, max
-						""",
-					TitleKey = Locale.GetKey("tool.name.math-calculate"),
-					DescriptionKey = Locale.GetKey("tool.description.math-calculate"),
-					CategoryKey = Locale.GetKey("tool.category.mathematics")
-				});
+					sin, sinh, asin, cos, cosh, acos, tanh, atan,
+					sind, cosd, tand, asind, acosd, atand,
+					ln, log, log2, log10, logb, exp, pow, sqrt,
+					abs, min, max
+					""",
+				TitleKey = Locale.GetKey("tool.name.math-calculate"),
+				DescriptionKey = Locale.GetKey("tool.description.math-calculate"),
+				CategoryKey = Locale.GetKey("tool.category.mathematics")
+			});
 
-			AddTool(Solve,
-				new ToolInitializationInfo
-				{
-					Name = "math-solve",
-					Description = """
-						Solve an equation numerically for a given variable using the bisection method.
-						Finds real roots of f(x) = 0 within a search range.
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = Solve,
+				Name = "math-solve",
+				Description = """
+					Solve an equation numerically for a given variable using the bisection method.
+					Finds real roots of f(x) = 0 within a search range.
 
-						Examples:
+					Examples:
 
-						solve(x^2 - 4 = 0, x)
-						solve(sin(x) - 0.5, x, -10, 10)
-						solve(x^3 - 2*x - 5 = 0, x)
+					solve(x^2 - 4 = 0, x)
+					solve(sin(x) - 0.5, x, -10, 10)
+					solve(x^3 - 2*x - 5 = 0, x)
 
-						The equation can be written as 'expression = 0' or just 'expression'.
-						If no range is specified, it scans from -100 to 100 by default.
+					The equation can be written as 'expression = 0' or just 'expression'.
+					If no range is specified, it scans from -100 to 100 by default.
 
-						For complex roots, use 'math-solve-complex'.
-						""",
-					TitleKey = Locale.GetKey("tool.name.math-solve"),
-					DescriptionKey = Locale.GetKey("tool.description.math-solve"),
-					CategoryKey = Locale.GetKey("tool.category.mathematics")
-				});
+					For complex roots, use 'math-solve-complex'.
+					""",
+				TitleKey = Locale.GetKey("tool.name.math-solve"),
+				DescriptionKey = Locale.GetKey("tool.description.math-solve"),
+				CategoryKey = Locale.GetKey("tool.category.mathematics")
+			});
 
-			AddTool(SolveComplex,
-				new ToolInitializationInfo
-				{
-					Name = "math-solve_complex",
-					Description = """
-						Solve an equation numerically for complex roots using Newton's method.
-						Scans a rectangular region of the complex plane and refines roots.
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = SolveComplex,
+				Name = "math-solve_complex",
+				Description = """
+					Solve an equation numerically for complex roots using Newton's method.
+					Scans a rectangular region of the complex plane and refines roots.
 
-						Examples:
+					Examples:
 
-						solve_complex(x^2 + 1 = 0, z)
-						solve_complex(x^3 - 1 = 0, x, -5, 5, -5, 5, 0.5)
-						solve_complex(x^2 + x + 1 = 0, x)
+					solve_complex(x^2 + 1 = 0, z)
+					solve_complex(x^3 - 1 = 0, x, -5, 5, -5, 5, 0.5)
+					solve_complex(x^2 + x + 1 = 0, x)
 
-						The equation can be written as 'expression = 0' or 'expression'.
-						Scans the region [-reRange, reRange] x [-imRange, imRange] with given grid step.
-						""",
-					TitleKey = Locale.GetKey("tool.name.math-solve_complex"),
-					DescriptionKey = Locale.GetKey("tool.description.math-solve_complex"),
-					CategoryKey = Locale.GetKey("tool.category.mathematics")
-				});
+					The equation can be written as 'expression = 0' or 'expression'.
+					Scans the region [-reRange, reRange] x [-imRange, imRange] with given grid step.
+					""",
+				TitleKey = Locale.GetKey("tool.name.math-solve_complex"),
+				DescriptionKey = Locale.GetKey("tool.description.math-solve_complex"),
+				CategoryKey = Locale.GetKey("tool.category.mathematics")
+			});
 		}
 
 		private ReactiveToolResult Calculate([Description("Expression to evaluate")] string expression)

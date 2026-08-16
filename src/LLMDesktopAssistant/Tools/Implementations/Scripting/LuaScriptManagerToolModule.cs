@@ -20,58 +20,58 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 		{
 			_scriptManager = scriptManager;
 
-			AddTool(RegisterOrUpdateLuaScript,
-				new ToolInitializationInfo
-				{
-					Name = "lua-register_or_update_script",
-					Description = BuildRegisterOrUpdateDescription(),
-					TitleKey = Locale.GetKey("tool.name.lua-register_or_update_script"),
-					DescriptionKey = Locale.GetKey("tool.description.lua-register_or_update_script"),
-					CategoryKey = Locale.GetConstKey("Lua"),
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = RegisterOrUpdateLuaScript,
+				Name = "lua-register_or_update_script",
+				Description = BuildRegisterOrUpdateDescription(),
+				TitleKey = Locale.GetKey("tool.name.lua-register_or_update_script"),
+				DescriptionKey = Locale.GetKey("tool.description.lua-register_or_update_script"),
+				CategoryKey = Locale.GetConstKey("Lua"),
+				DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
+			});
 
-			AddTool(RemoveLuaScript,
-				new ToolInitializationInfo
-				{
-					Name = "lua-remove_script",
-					Description = "Removes a registered Lua user script by its path. The path is relative to the Lua scripts directory.",
-					TitleKey = Locale.GetKey("tool.name.lua-remove_script"),
-					DescriptionKey = Locale.GetKey("tool.description.lua-remove_script"),
-					CategoryKey = Locale.GetConstKey("Lua"),
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = RemoveLuaScript,
+				Name = "lua-remove_script",
+				Description = "Removes a registered Lua user script by its path. The path is relative to the Lua scripts directory.",
+				TitleKey = Locale.GetKey("tool.name.lua-remove_script"),
+				DescriptionKey = Locale.GetKey("tool.description.lua-remove_script"),
+				CategoryKey = Locale.GetConstKey("Lua"),
+				DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
+			});
 
-			AddTool(MoveLuaScript,
-				new ToolInitializationInfo
-				{
-					Name = "lua-move_script",
-					Description = "Moves or renames a Lua user script from one path to another. Both paths are relative to the Lua scripts directory.",
-					TitleKey = Locale.GetKey("tool.name.lua-move_script"),
-					DescriptionKey = Locale.GetKey("tool.description.lua-move_script"),
-					CategoryKey = Locale.GetConstKey("Lua"),
-					DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = MoveLuaScript,
+				Name = "lua-move_script",
+				Description = "Moves or renames a Lua user script from one path to another. Both paths are relative to the Lua scripts directory.",
+				TitleKey = Locale.GetKey("tool.name.lua-move_script"),
+				DescriptionKey = Locale.GetKey("tool.description.lua-move_script"),
+				CategoryKey = Locale.GetConstKey("Lua"),
+				DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected | ToolBehaviour.ScriptAccess
+			});
 
-			AddTool(ListLuaScripts,
-				new ToolInitializationInfo
-				{
-					Name = "lua-list_scripts",
-					Description = "Lists all registered Lua user scripts with their namespace, path, and manuals.",
-					TitleKey = Locale.GetKey("tool.name.lua-list_scripts"),
-					DescriptionKey = Locale.GetKey("tool.description.lua-list_scripts"),
-					CategoryKey = Locale.GetConstKey("Lua")
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ListLuaScripts,
+				Name = "lua-list_scripts",
+				Description = "Lists all registered Lua user scripts with their namespace, path, and manuals.",
+				TitleKey = Locale.GetKey("tool.name.lua-list_scripts"),
+				DescriptionKey = Locale.GetKey("tool.description.lua-list_scripts"),
+				CategoryKey = Locale.GetConstKey("Lua")
+			});
 
-			AddTool(GetLuaScriptInfo,
-				new ToolInitializationInfo
-				{
-					Name = "lua-get_script_info",
-					Description = "Gets detailed information about a specific Lua user script including its full content.",
-					TitleKey = Locale.GetKey("tool.name.lua-get_script_info"),
-					DescriptionKey = Locale.GetKey("tool.description.lua-get_script_info"),
-					CategoryKey = Locale.GetConstKey("Lua")
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = GetLuaScriptInfo,
+				Name = "lua-get_script_info",
+				Description = "Gets detailed information about a specific Lua user script including its full content.",
+				TitleKey = Locale.GetKey("tool.name.lua-get_script_info"),
+				DescriptionKey = Locale.GetKey("tool.description.lua-get_script_info"),
+				CategoryKey = Locale.GetConstKey("Lua")
+			});
 		}
 
 		private string BuildRegisterOrUpdateDescription()

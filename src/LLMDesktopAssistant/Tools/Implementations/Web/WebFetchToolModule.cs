@@ -23,27 +23,29 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 
 			_fileAccess = fileAccess;
 
-			AddTool(Fetch, FetchStreaming, null,
-				new ToolInitializationInfo
-				{
-					Name = "web-fetch",
-					Description = "Fetch webcite content from a specified URL.",
-					TitleKey = Locale.GetKey("tool.name.web-fetch"),
-					DescriptionKey = Locale.GetKey("tool.description.web-fetch"),
-					CategoryKey = Locale.GetKey("tool.category.web"),
-					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = Fetch,
+				StreamingAnalyzer = FetchStreaming,
+				Name = "web-fetch",
+				Description = "Fetch webcite content from a specified URL.",
+				TitleKey = Locale.GetKey("tool.name.web-fetch"),
+				DescriptionKey = Locale.GetKey("tool.description.web-fetch"),
+				CategoryKey = Locale.GetKey("tool.category.web"),
+				DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
+			});
 
-			AddTool(ParseHtml, ParseHtmlStreaming, null,
-				new ToolInitializationInfo
-				{
-					Name = "web-parse",
-					Description = "Fetch HTML content and parse specific elements by tag or class.",
-					TitleKey = Locale.GetKey("tool.name.web-parse"),
-					DescriptionKey = Locale.GetKey("tool.description.web-parse"),
-					CategoryKey = Locale.GetKey("tool.category.web"),
-					DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ParseHtml,
+				StreamingAnalyzer = ParseHtmlStreaming,
+				Name = "web-parse",
+				Description = "Fetch HTML content and parse specific elements by tag or class.",
+				TitleKey = Locale.GetKey("tool.name.web-parse"),
+				DescriptionKey = Locale.GetKey("tool.description.web-parse"),
+				CategoryKey = Locale.GetKey("tool.category.web"),
+				DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
+			});
 		}
 
 		private StreamingToolArgumentsAnalysisResult FetchStreaming(

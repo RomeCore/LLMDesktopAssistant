@@ -27,13 +27,23 @@
 
 		private ToolApprovalLevel? _approvalLevel;
 		/// <summary>
-		/// Gets or sets a value indicating whether to ask for confirmation before executing a tool.
+		/// Gets or sets a value indicating the approval level of a tool.
 		/// Null indicates that the setting has not been changed yet.
 		/// </summary>
 		public ToolApprovalLevel? ApprovalLevel
 		{
 			get => _approvalLevel;
 			set => SetProperty(ref _approvalLevel, value);
+		}
+
+		private ToolIndividualPolicyMask? _policyMask;
+		/// <summary>
+		/// Gets or sets the individual policy mask for the tool.
+		/// </summary>
+		public ToolIndividualPolicyMask? PolicyMask
+		{
+			get => _policyMask;
+			set => SetProperty(ref _policyMask, value);
 		}
 	}
 }

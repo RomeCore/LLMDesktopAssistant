@@ -44,28 +44,30 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			_skillsetBuildingService = skillsetBuildingService;
 			_modelManager = modelManager;
 
-			AddTool(CallAgent,
-				new ToolInitializationInfo
-				{
-					Name = "agent-call",
-					Description = "Calls another LLM agent with provided system message and user message with set of allowed tools.",
-					TitleKey = Locale.GetKey("tool.name.agent-call"),
-					DescriptionKey = Locale.GetKey("tool.description.agent-call"),
-					CategoryKey = Locale.GetKey("tool.category.agents"),
-					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = CallAgent,
+				Name = "agent-call",
+				Description = "Calls another LLM agent with provided system message and user message with set of allowed tools.",
+				TitleKey = Locale.GetKey("tool.name.agent-call"),
+				DescriptionKey = Locale.GetKey("tool.description.agent-call"),
+				CategoryKey = Locale.GetKey("tool.category.agents"),
+				DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
+			});
 
-			AddTool(DescribeImage, DescribeImageStreaming, DescribeImagePreview,
-				new ToolInitializationInfo
-				{
-					Name = "agent-describe_image",
-					Description = "Describes an image using another LLM agent.",
-					TitleKey = Locale.GetKey("tool.name.agent-describe_image"),
-					DescriptionKey = Locale.GetKey("tool.description.agent-describe_image"),
-					CategoryKey = Locale.GetKey("tool.category.agents"),
-					DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask |
-						ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = DescribeImage,
+				StreamingAnalyzer = DescribeImageStreaming,
+				PreviewExecutor = DescribeImagePreview,
+				Name = "agent-describe_image",
+				Description = "Describes an image using another LLM agent.",
+				TitleKey = Locale.GetKey("tool.name.agent-describe_image"),
+				DescriptionKey = Locale.GetKey("tool.description.agent-describe_image"),
+				CategoryKey = Locale.GetKey("tool.category.agents"),
+				DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask |
+					ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
+			});
 		}
 
 		private async Task<ReactiveToolResult> CallAgent(

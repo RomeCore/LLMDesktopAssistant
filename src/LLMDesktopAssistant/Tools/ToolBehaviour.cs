@@ -162,7 +162,7 @@ public enum ToolBehaviour : ulong
 	/// </summary>
 	LongRunningTask = 1 << 20,
 
-	// ────────────────────────────── Execution ───────────────────────────────
+	// ────────────────────────────── Execution ──────────────────────────────
 
 	/// <summary>
 	/// The tool spawns or executes an external operating system process.
@@ -185,7 +185,7 @@ public enum ToolBehaviour : ulong
 	/// </summary>
 	RunTerminal = 1 << 23,
 
-	// ────────────────────────────── User Interaction ────────────────────────
+	// ────────────────────────────── User Interaction ───────────────────────
 
 	/// <summary>
 	/// The tool requires special user input, such as prompts for confirmation, various forms,
@@ -193,7 +193,7 @@ public enum ToolBehaviour : ulong
 	/// </summary>
 	UserInteraction = 1 << 24,
 
-	// ────────────────────────────── Agents ──────────────────────────────────
+	// ────────────────────────────── Agents ─────────────────────────────────
 
 	/// <summary>
 	/// The tool invokes, manages, or coordinates other AI agents.
@@ -203,7 +203,7 @@ public enum ToolBehaviour : ulong
 	/// </summary>
 	AgentExecution = 1 << 25,
 
-	// ────────────────────────────── Meta ────────────────────────────────────
+	// ────────────────────────────── Meta ───────────────────────────────────
 
 	/// <summary>
 	/// The tool creates, modifies, or deletes other tools and scripts at runtime.
@@ -213,6 +213,14 @@ public enum ToolBehaviour : ulong
 	/// Examples: <c>metatools-create_or_update</c>, <c>metatools-delete</c>, <c>lua-register_or_update_script</c>.
 	/// </summary>
 	ScriptAccess = 1 << 26,
+
+	// ────────────────────────────── Specifier Verdicts ─────────────────────
+
+	SpecifierApprove = (ulong)1 << 51,
+
+	SpecifierAsk = (ulong)1 << 52,
+
+	SpecifierDisallow = (ulong)1 << 53,
 
 	// ────────────────────────────── Source ─────────────────────────────────
 

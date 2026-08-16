@@ -9,26 +9,26 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	{
 		public TimeToolModule()
 		{
-			AddTool(TimeGet,
-				new ToolInitializationInfo
-				{
-					Name = "time-get",
-					Description = "Gets the current time in the specified timezone.",
-					TitleKey = Locale.GetKey("tool.name.time-get"),
-					DescriptionKey = Locale.GetKey("tool.description.time-get"),
-					CategoryKey = Locale.GetKey("tool.category.time")
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = TimeGet,
+				Name = "time-get",
+				Description = "Gets the current time in the specified timezone.",
+				TitleKey = Locale.GetKey("tool.name.time-get"),
+				DescriptionKey = Locale.GetKey("tool.description.time-get"),
+				CategoryKey = Locale.GetKey("tool.category.time")
+			});
 
-			AddTool(TimeWait,
-				new ToolInitializationInfo
-				{
-					Name = "time-wait",
-					Description = "Waits for a specified duration with real-time progress updates.",
-					TitleKey = Locale.GetKey("tool.name.time-wait"),
-					DescriptionKey = Locale.GetKey("tool.description.time-wait"),
-					CategoryKey = Locale.GetKey("tool.category.time"),
-					DefaultExpectedBehaviour = ToolBehaviour.LongRunningTask
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = TimeWait,
+				Name = "time-wait",
+				Description = "Waits for a specified duration with real-time progress updates.",
+				TitleKey = Locale.GetKey("tool.name.time-wait"),
+				DescriptionKey = Locale.GetKey("tool.description.time-wait"),
+				CategoryKey = Locale.GetKey("tool.category.time"),
+				DefaultExpectedBehaviour = ToolBehaviour.LongRunningTask
+			});
 		}
 
 		private ReactiveToolResult TimeGet(

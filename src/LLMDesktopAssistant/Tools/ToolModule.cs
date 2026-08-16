@@ -24,23 +24,10 @@
 		/// <summary>
 		/// Adds a tool to this module.
 		/// </summary>
-		/// <param name="executor">The delegate that will execute the tool.</param>
 		/// <param name="info">The initialization information for the tool.</param>
-		protected void AddTool(Delegate executor, ToolInitializationInfo info)
+		protected void AddTool(ToolInitializationInfo info)
 		{
-			_tools.Add(ToolInfo.Create(executor, null, null, info));
-		}
-
-		/// <summary>
-		/// Adds a tool to this module.
-		/// </summary>
-		/// <param name="executor">The delegate that will execute the tool.</param>
-		/// <param name="streamingAnalyzer">The delegate that will analyze the streaming arguments for the tool.</param>
-		/// <param name="preExecutor">The delegate that will be executed before the tool.</param>
-		/// <param name="info">The initialization information for the tool.</param>
-		protected void AddTool(Delegate executor, Delegate? streamingAnalyzer, Delegate? preExecutor, ToolInitializationInfo info)
-		{
-			_tools.Add(ToolInfo.Create(executor, streamingAnalyzer, preExecutor, info));
+			_tools.Add(ToolInfo.Create(info));
 		}
 
 		/// <summary>

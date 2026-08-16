@@ -40,51 +40,53 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(Edit, EditStreaming, EditPreview,
-				new ToolInitializationInfo
-				{
-					Name = "fs-edit",
-					Description = """
-						Edits a text file by finding a context and performing an operation on it.
-						Supports both plain text (with flexible whitespace matching) and regex patterns.
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = Edit,
+				StreamingAnalyzer = EditStreaming,
+				PreviewExecutor = EditPreview,
+				Name = "fs-edit",
+				Description = """
+					Edits a text file by finding a context and performing an operation on it.
+					Supports both plain text (with flexible whitespace matching) and regex patterns.
 
-						Available operations:
-						- `replace`       — replaces all occurrences of `match` with `text`
-						- `insert_before` — inserts `text` BEFORE every occurrence of `match`
-						- `insert_after`  — inserts `text` AFTER every occurrence of `match`
-						- `delete`        — deletes every occurrence of `match`
+					Available operations:
+					- `replace`       — replaces all occurrences of `match` with `text`
+					- `insert_before` — inserts `text` BEFORE every occurrence of `match`
+					- `insert_after`  — inserts `text` AFTER every occurrence of `match`
+					- `delete`        — deletes every occurrence of `match`
 
-						When `useRegex = false` (default — plain text mode):
-						- `match` is treated as a literal string (can be multi-line)
-						- Leading/trailing whitespace and line endings are ignored in matching
-						- Common indentation in multi-line `match` is automatically stripped (dedent)
-						- So `match: "public class Foo"` will match `"    public class Foo"` in the file
+					When `useRegex = false` (default — plain text mode):
+					- `match` is treated as a literal string (can be multi-line)
+					- Leading/trailing whitespace and line endings are ignored in matching
+					- Common indentation in multi-line `match` is automatically stripped (dedent)
+					- So `match: "public class Foo"` will match `"    public class Foo"` in the file
 
-						When `useRegex = true` (regex mode):
-						- `match` is interpreted as a .NET regular expression
-						- For `replace` operation: standard regex replacement with capture groups support
-						- For `insert_before`/`insert_after`/`delete`: lines containing the regex match are targeted
-						- `ignoreWhitespace` is not applied in regex mode
+					When `useRegex = true` (regex mode):
+					- `match` is interpreted as a .NET regular expression
+					- For `replace` operation: standard regex replacement with capture groups support
+					- For `insert_before`/`insert_after`/`delete`: lines containing the regex match are targeted
+					- `ignoreWhitespace` is not applied in regex mode
 
-						Examples:
-						- Replace text (plain, whitespace-insensitive):
-						  fs-edit(path: "file.cs", match: "public class Foo", operation: "replace", text: "public class Bar")
-						- Insert attribute before a method:
-						  fs-edit(path: "MyClass.cs", match: "void MyMethod()", operation: "insert_before", text: "[MyAttribute]")
-						- Add line after XML element:
-						  fs-edit(path: "config.xml", match: "<value key=\"x\"></value>", operation: "insert_after", text: "<data>new</data>")
-						- Regex replace (rename all classes):
-						  fs-edit(path: "file.cs", match: "class (\w+)", operation: "replace", text: "class Renamed_${{1}}", useRegex: true)
-						- Regex delete (remove debug lines):
-						  fs-edit(path: "file.cs", match: "Console\.WriteLine", operation: "delete", useRegex: true)
-						""",
-					TitleKey = Locale.GetKey("tool.name.fs-edit"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-edit"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,
-					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
-					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
-				});
+					Examples:
+					- Replace text (plain, whitespace-insensitive):
+						fs-edit(path: "file.cs", match: "public class Foo", operation: "replace", text: "public class Bar")
+					- Insert attribute before a method:
+						fs-edit(path: "MyClass.cs", match: "void MyMethod()", operation: "insert_before", text: "[MyAttribute]")
+					- Add line after XML element:
+						fs-edit(path: "config.xml", match: "<value key=\"x\"></value>", operation: "insert_after", text: "<data>new</data>")
+					- Regex replace (rename all classes):
+						fs-edit(path: "file.cs", match: "class (\w+)", operation: "replace", text: "class Renamed_${{1}}", useRegex: true)
+					- Regex delete (remove debug lines):
+						fs-edit(path: "file.cs", match: "Console\.WriteLine", operation: "delete", useRegex: true)
+					""",
+				TitleKey = Locale.GetKey("tool.name.fs-edit"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-edit"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,
+				DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
+				SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
+			});
 		}
 
 		private string? CheckArgs(string path, string? fullPath, string operation, bool useRegex, string match, string text)

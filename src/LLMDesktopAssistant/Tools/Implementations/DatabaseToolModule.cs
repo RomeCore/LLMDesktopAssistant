@@ -35,8 +35,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			_chatSettings = chatSettings;
 			_connectionManager = connectionManager;
 
-			AddTool(ListAsync, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = ListAsync,
 				Name = "db-list",
 				IsFixed = true,
 				Description = """
@@ -48,8 +49,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				CategoryKey = Locale.GetKey("tool.category.database")
 			});
 
-			AddTool(ConnectAsync, null, ConnectPreview, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = ConnectAsync,
+				PreviewExecutor = ConnectPreview,
 				Name = "db-switch",
 				IsFixed = true,
 				Description = """
@@ -69,8 +72,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}
 			});
 
-			AddTool(GetSchemaAsync, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = GetSchemaAsync,
 				Name = "db-schema",
 				IsFixed = true,
 				Description = """
@@ -83,8 +87,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				CategoryKey = Locale.GetKey("tool.category.database")
 			});
 
-			AddTool(ExecuteAsync, null, ExecutePreview, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = ExecuteAsync,
+				PreviewExecutor = ExecutePreview,
 				Name = "db-execute",
 				IsFixed = false,
 				Description = """

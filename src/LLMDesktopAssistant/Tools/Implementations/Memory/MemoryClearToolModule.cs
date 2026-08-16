@@ -29,8 +29,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			_memoryFactStore = memoryFactStore;
 			_memoryLogStore = memoryLogStore;
 
-			AddTool(ClearAsync, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = ClearAsync,
 				Name = "memory-clear",
 				IsFixed = false,
 				Description = """

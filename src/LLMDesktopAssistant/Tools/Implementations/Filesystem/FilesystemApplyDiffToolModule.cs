@@ -16,31 +16,33 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			_fileAccess = fileAccess;
 
-			AddTool(ApplyDiff, ApplyDiffStreaming, ApplyDiffPreview,
-				new ToolInitializationInfo
-				{
-					Name = "fs-apply_diff",
-					Description = """
-						Applies diff operations to a file.
-						Supports deleting a range of lines and/or inserting text at a specific line.
-						Inserting text at a specific line works next way:
-						1: first line
-						2: second line
-						3: third line
-						After inserting at 2 line:
-						1: first line
-						2: inserted line <- insterted here
-						3: second line
-						4: third line
-						Note: Works best if you know line numbers when looking file with fs-explore(showLineNumbers = true)
-						""",
-					TitleKey = Locale.GetKey("tool.name.fs-apply_diff"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-apply_diff"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,
-					DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
-					SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ApplyDiff,
+				StreamingAnalyzer = ApplyDiffStreaming,
+				PreviewExecutor = ApplyDiffPreview,
+				Name = "fs-apply_diff",
+				Description = """
+					Applies diff operations to a file.
+					Supports deleting a range of lines and/or inserting text at a specific line.
+					Inserting text at a specific line works next way:
+					1: first line
+					2: second line
+					3: third line
+					After inserting at 2 line:
+					1: first line
+					2: inserted line <- insterted here
+					3: second line
+					4: third line
+					Note: Works best if you know line numbers when looking file with fs-explore(showLineNumbers = true)
+					""",
+				TitleKey = Locale.GetKey("tool.name.fs-apply_diff"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-apply_diff"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,
+				DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
+				SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
+			});
 		}
 
 		private class FSApplyDiffSharedContext

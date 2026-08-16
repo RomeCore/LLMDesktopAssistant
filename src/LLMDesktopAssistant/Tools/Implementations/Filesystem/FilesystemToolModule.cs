@@ -20,126 +20,137 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			_fileAccess = fileAccess;
 			_documentReader = documentReader;
 
-			AddTool(GetFileInfo, null, PreviewGetFileInfo,
-				new ToolInitializationInfo
-				{
-					Name = "fs-get_file_info",
-					Description = "Returns file information including type classification.",
-					TitleKey = Locale.GetKey("tool.name.fs-get_file_info"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-get_file_info"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = GetFileInfo,
+				PreviewExecutor = PreviewGetFileInfo,
+				Name = "fs-get_file_info",
+				Description = "Returns file information including type classification.",
+				TitleKey = Locale.GetKey("tool.name.fs-get_file_info"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-get_file_info"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(ReadBinaryFile, null, PreviewReadBinaryFile,
-				new ToolInitializationInfo
-				{
-					Name = "fs-read_binary_file",
-					Description = "Reads binary file content as hex dump from the working directory.",
-					TitleKey = Locale.GetKey("tool.name.fs-read_binary_file"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-read_binary_file"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ReadBinaryFile,
+				PreviewExecutor = PreviewReadBinaryFile,
+				Name = "fs-read_binary_file",
+				Description = "Reads binary file content as hex dump from the working directory.",
+				TitleKey = Locale.GetKey("tool.name.fs-read_binary_file"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-read_binary_file"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(ReadDocumentFile, null, PreviewReadDocumentFile,
-				new ToolInitializationInfo
-				{
-					Name = "fs-read_document_file",
-					Description = "Reads complex documents (DOCX, PPTX, PDF) by pages from the working directory. Supported extensions: .pdf, .docx, .pptx. This is not suitable for general text or code files, such as .txt, .py, .md, .cs, .js, etc.",
-					TitleKey = Locale.GetKey("tool.name.fs-read_document_file"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-read_document_file"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ReadDocumentFile,
+				PreviewExecutor = PreviewReadDocumentFile,
+				Name = "fs-read_document_file",
+				Description = "Reads complex documents (DOCX, PPTX, PDF) by pages from the working directory. Supported extensions: .pdf, .docx, .pptx. This is not suitable for general text or code files, such as .txt, .py, .md, .cs, .js, etc.",
+				TitleKey = Locale.GetKey("tool.name.fs-read_document_file"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-read_document_file"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(WriteBinaryFile, null, PreviewWriteBinaryFile,
-				new ToolInitializationInfo
-				{
-					Name = "fs-write_binary_file",
-					Description = "Writes binary content to a file inside working directory.",
-					TitleKey = Locale.GetKey("tool.name.fs-write_binary_file"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-write_binary_file"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = WriteBinaryFile,
+				PreviewExecutor = PreviewWriteBinaryFile,
+				Name = "fs-write_binary_file",
+				Description = "Writes binary content to a file inside working directory.",
+				TitleKey = Locale.GetKey("tool.name.fs-write_binary_file"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-write_binary_file"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(CreateDirectory, null, PreviewCreateDirectory,
-				new ToolInitializationInfo
-				{
-					Name = "fs-create_directory",
-					Description = "Creates a new directory inside working directory path.",
-					TitleKey = Locale.GetKey("tool.name.fs-create_directory"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-create_directory"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = CreateDirectory,
+				PreviewExecutor = PreviewCreateDirectory,
+				Name = "fs-create_directory",
+				Description = "Creates a new directory inside working directory path.",
+				TitleKey = Locale.GetKey("tool.name.fs-create_directory"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-create_directory"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(DeleteFile, null, PreviewDeleteFile,
-				new ToolInitializationInfo
-				{
-					Name = "fs-delete_file",
-					Description = "Deletes a file inside working directory.",
-					TitleKey = Locale.GetKey("tool.name.fs-delete_file"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-delete_file"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = DeleteFile,
+				PreviewExecutor = PreviewDeleteFile,
+				Name = "fs-delete_file",
+				Description = "Deletes a file inside working directory.",
+				TitleKey = Locale.GetKey("tool.name.fs-delete_file"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-delete_file"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(DeleteDirectory, null, PreviewDeleteDirectory,
-				new ToolInitializationInfo
-				{
-					Name = "fs-delete_directory",
-					Description = "Deletes a directory (empty or with contents) from the working directory.",
-					TitleKey = Locale.GetKey("tool.name.fs-delete_directory"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-delete_directory"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = DeleteDirectory,
+				PreviewExecutor = PreviewDeleteDirectory,
+				Name = "fs-delete_directory",
+				Description = "Deletes a directory (empty or with contents) from the working directory.",
+				TitleKey = Locale.GetKey("tool.name.fs-delete_directory"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-delete_directory"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(CopyFile, null, PreviewCopyFile,
-				new ToolInitializationInfo
-				{
-					Name = "fs-copy_file",
-					Description = "Copies a file within the working directory.",
-					TitleKey = Locale.GetKey("tool.name.fs-copy_file"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-copy_file"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = CopyFile,
+				PreviewExecutor = PreviewCopyFile,
+				Name = "fs-copy_file",
+				Description = "Copies a file within the working directory.",
+				TitleKey = Locale.GetKey("tool.name.fs-copy_file"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-copy_file"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(CopyDirectory, null, PreviewCopyDirectory,
-				new ToolInitializationInfo
-				{
-					Name = "fs-copy_directory",
-					Description = "Copies a directory and all its contents to a new location within the working directory.",
-					TitleKey = Locale.GetKey("tool.name.fs-copy_directory"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-copy_directory"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = CopyDirectory,
+				PreviewExecutor = PreviewCopyDirectory,
+				Name = "fs-copy_directory",
+				Description = "Copies a directory and all its contents to a new location within the working directory.",
+				TitleKey = Locale.GetKey("tool.name.fs-copy_directory"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-copy_directory"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(RenameFile, null, PreviewRenameFile,
-				new ToolInitializationInfo
-				{
-					Name = "fs-rename_file",
-					Description = "Renames or moves a file within the working directory.",
-					TitleKey = Locale.GetKey("tool.name.fs-rename_file"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-rename_file"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = RenameFile,
+				PreviewExecutor = PreviewRenameFile,
+				Name = "fs-rename_file",
+				Description = "Renames or moves a file within the working directory.",
+				TitleKey = Locale.GetKey("tool.name.fs-rename_file"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-rename_file"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
+			});
 
-			AddTool(MoveDirectory, null, PreviewMoveDirectory,
-				new ToolInitializationInfo
-				{
-					Name = "fs-move_directory",
-					Description = "Moves a directory and all its contents to a new location within the working directory.",
-					TitleKey = Locale.GetKey("tool.name.fs-move_directory"),
-					DescriptionKey = Locale.GetKey("tool.description.fs-move_directory"),
-					CategoryKey = Locale.GetKey("tool.category.filesystem"),
-					DefaultExpectedBehaviour = ToolBehaviour.DirectoryEdit | ToolBehaviour.AccessOutsideWorkdir
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = MoveDirectory,
+				PreviewExecutor = PreviewMoveDirectory,
+				Name = "fs-move_directory",
+				Description = "Moves a directory and all its contents to a new location within the working directory.",
+				TitleKey = Locale.GetKey("tool.name.fs-move_directory"),
+				DescriptionKey = Locale.GetKey("tool.description.fs-move_directory"),
+				CategoryKey = Locale.GetKey("tool.category.filesystem"),
+				DefaultExpectedBehaviour = ToolBehaviour.DirectoryEdit | ToolBehaviour.AccessOutsideWorkdir
+			});
 		}
 
 		private PreviewToolExecutionResult PreviewGetFileInfo(string path, [SharedContext] out string fullPath)

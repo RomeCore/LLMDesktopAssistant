@@ -10,27 +10,27 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	{
 		public GeneralToolModule()
 		{
-			AddTool(ClipboardCopy,
-				new ToolInitializationInfo
-				{
-					Name = "clipboard-copy",
-					Description = "Copies a piece of text to the clipboard, use when neccessary.",
-					TitleKey = Locale.GetKey("tool.name.clipboard-copy"),
-					DescriptionKey = Locale.GetKey("tool.description.clipboard-copy"),
-					CategoryKey = Locale.GetKey("tool.category.general"),
-					DefaultExpectedBehaviour = ToolBehaviour.ClipboardWrite
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ClipboardCopy,
+				Name = "clipboard-copy",
+				Description = "Copies a piece of text to the clipboard, use when neccessary.",
+				TitleKey = Locale.GetKey("tool.name.clipboard-copy"),
+				DescriptionKey = Locale.GetKey("tool.description.clipboard-copy"),
+				CategoryKey = Locale.GetKey("tool.category.general"),
+				DefaultExpectedBehaviour = ToolBehaviour.ClipboardWrite
+			});
 
-			AddTool(ClipboardRead,
-				new ToolInitializationInfo
-				{
-					Name = "clipboard-read",
-					Description = "Reads the current content of the clipboard.",
-					TitleKey = Locale.GetKey("tool.name.clipboard-read"),
-					DescriptionKey = Locale.GetKey("tool.description.clipboard-read"),
-					CategoryKey = Locale.GetKey("tool.category.general"),
-					DefaultExpectedBehaviour = ToolBehaviour.ClipboardRead
-				});
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ClipboardRead,
+				Name = "clipboard-read",
+				Description = "Reads the current content of the clipboard.",
+				TitleKey = Locale.GetKey("tool.name.clipboard-read"),
+				DescriptionKey = Locale.GetKey("tool.description.clipboard-read"),
+				CategoryKey = Locale.GetKey("tool.category.general"),
+				DefaultExpectedBehaviour = ToolBehaviour.ClipboardRead
+			});
 		}
 
 		private ToolResult ClipboardCopy([Description("Text to copy")] string text)

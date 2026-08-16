@@ -31,8 +31,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 		{
 			_memoryLogStore = memoryLogStore;
 
-			AddTool(AppendAsync, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = AppendAsync,
 				Name = "memory-append_log",
 				IsFixed = true,
 				Description = """
@@ -45,8 +46,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
 
-			AddTool(SearchAsync, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = SearchAsync,
 				Name = "memory-search_log",
 				IsFixed = true,
 				Description = """
@@ -59,8 +61,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
 
-			AddTool(ViewLogsAsync, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = ViewLogsAsync,
 				Name = "memory-view_logs",
 				IsFixed = true,
 				Description = """
@@ -75,8 +78,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
 
-			AddTool(DeleteAsync, new ToolInitializationInfo
+			AddTool(new ToolInitializationInfo
 			{
+				Executor = DeleteAsync,
 				Name = "memory-delete_log",
 				IsFixed = false,
 				Description = """
