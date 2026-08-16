@@ -216,11 +216,11 @@ public enum ToolBehaviour : ulong
 
 	// ────────────────────────────── Specifier Verdicts ─────────────────────
 
-	SpecifierApprove = (ulong)1 << 51,
+	// SpecifierApprove = (ulong)1 << 51,
 
-	SpecifierAsk = (ulong)1 << 52,
+	// SpecifierAsk = (ulong)1 << 52,
 
-	SpecifierDisallow = (ulong)1 << 53,
+	// SpecifierDisallow = (ulong)1 << 53,
 
 	// ────────────────────────────── Source ─────────────────────────────────
 

@@ -206,7 +206,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						PolicyDecision = ToolPolicyDecision.None
 					};
 					var specifierResult = SpecifierEngine.Evaluate(toolInfo.Specifiers, toolInfo.SpecifierAnalyzer,
-						parsedArgs, specifierToolExecutionContext, toolInfo.SpecifierAggregationMode);
+						parsedArgs, specifierToolExecutionContext, toolInfo.SpecifierParameters, toolInfo.SpecifierAggregationMode);
 					specifierVerdict = specifierResult.Verdict;
 					specifierMessage = specifierResult.Message;
 					sharedContext = specifierToolExecutionContext.SharedContext;

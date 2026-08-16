@@ -39,7 +39,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				Executor = ListAsync,
 				Name = "db-list",
-				IsFixed = true,
 				Description = """
 					Lists the database connections configured in the chat settings (named connections and the custom one) and the currently active session connection.
 					""",
@@ -54,7 +53,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Executor = ConnectAsync,
 				PreviewExecutor = ConnectPreview,
 				Name = "db-switch",
-				IsFixed = true,
 				Description = """
 					Activates a database connection for the current chat session: a named connection from the chat settings (pass its name, see db-list) or a custom database by a raw connection string with the specified connector type. Only switches the active connection string; the real connection is opened lazily on the first use (db-schema or db-execute).
 					""",
@@ -76,7 +74,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				Executor = GetSchemaAsync,
 				Name = "db-schema",
-				IsFixed = true,
 				Description = """
 					Shows the schema of the active database: tables, views and their columns.
 					Call db-connect first if no connection is active.
@@ -92,7 +89,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Executor = ExecuteAsync,
 				PreviewExecutor = ExecutePreview,
 				Name = "db-execute",
-				IsFixed = false,
 				Description = """
 					Executes a SQL statement against the active database and returns the result.
 					SELECT-like statements return a markdown table of rows; modifying statements (INSERT, UPDATE, DELETE, DDL) return the number of affected rows.

@@ -39,6 +39,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			SpecifierUnionMode = chatToolInfo.SpecifierUnionMode;
 			SpecifierAggregationMode = chatToolInfo.SpecifierAggregationMode;
 			Specifiers = chatToolInfo.Specifiers;
+			SpecifierParameters = chatToolInfo.SpecifierParameters;
 		}
 
 		/// <inheritdoc/>

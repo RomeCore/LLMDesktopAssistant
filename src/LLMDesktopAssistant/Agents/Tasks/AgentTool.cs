@@ -59,6 +59,11 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public ImmutableList<ToolSpecifierRule> Specifiers { get; init; } = [];
 
 		/// <summary>
+		/// A list of all possible specifier parameters that can be used with the tool.
+		/// </summary>
+		public ImmutableList<string> SpecifierParameters { get; init; } = [];
+
+		/// <summary>
 		/// Preview-executes the tool with the provided arguments to determine it's behaviour or interrupt the execution.
 		/// </summary>
 		/// <param name="arguments">The arguments to pass to the tool. This can be null if the tool does not require any arguments.</param>

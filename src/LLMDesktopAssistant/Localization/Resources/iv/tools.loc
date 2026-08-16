@@ -272,6 +272,25 @@ fixed.hint: This tool is always enabled while its context is present and cannot 
 name_suffix.hint: {0} tools
 result: Tool result:
 settings: Tools settings
+
+// Specifiers
+specifiers: Specifiers
+specifier.parameters: Specifier parameters: {0}
+specifier.union_mode: Union mode
+specifier.aggregation_mode: Aggregation mode
+specifier.pattern: Pattern
+specifier.add: Add specifier
+specifier.remove: Remove specifier
+specifier.decision.allow: Allow
+specifier.decision.ask: Ask
+specifier.decision.deny: Deny
+specifier.union_mode.disabled: Disabled
+specifier.union_mode.combinehard: Combine (strict)
+specifier.union_mode.combinesoft: Combine (soft)
+specifier.union_mode.ignorenonspecifierbehaviours: Specifiers only
+specifier.aggregation_mode.sequential: Sequential (last match wins)
+specifier.aggregation_mode.prioritized: Prioritized (deny > ask > allow)
+
 source.mcp: MCP
 source.meta: Meta
 status.agent-describe_image.status: Describing... *{0} tokens*

@@ -24,6 +24,9 @@ public static class SpecifierEngine
 	/// <param name="analyzer">The specifier analyzer of the tool. Cannot be <see langword="null"/>.</param>
 	/// <param name="args">The tool arguments, or <see langword="null"/>.</param>
 	/// <param name="context">The tool execution context. Cannot be <see langword="null"/>.</param>
+	/// <param name="specifierParameters">The names of the tool parameters that can be referenced
+	/// in specifier patterns. Parameter references (<c>name:value</c>) in patterns are recognized
+	/// only when the name is listed here; otherwise they are treated as plain literals.</param>
 	/// <param name="mode">The aggregation mode.</param>
 	/// <returns>The aggregated verdict and the message describing the matched specifier.</returns>
 	public static SpecifierVerdictResult Evaluate(
@@ -31,6 +34,7 @@ public static class SpecifierEngine
 		Func<Specifier, JsonNode?, ToolExecutionContext, SpecifierMatchResult> analyzer,
 		JsonNode? args,
 		ToolExecutionContext context,
+		IEnumerable<string> specifierParameters,
 		SpecifierAggregationMode mode)
 	{
 		ArgumentNullException.ThrowIfNull(specifiers);
@@ -45,7 +49,7 @@ public static class SpecifierEngine
 			if (string.IsNullOrWhiteSpace(change.Pattern))
 				continue;
 
-			if (SpecifierParser.TryParse(change.Pattern) is not { } specifier)
+			if (SpecifierParser.TryParse(change.Pattern, specifierParameters) is not { } specifier)
 				continue;
 
 			SpecifierMatchResult match;

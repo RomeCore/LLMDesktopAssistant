@@ -526,7 +526,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					previewResult.SharedContext is ToolExecutionContext specifierContext)
 				{
 					var specifierResult = SpecifierEngine.Evaluate(tool.Specifiers, tool.AnalyzeSpecifier,
-						args, specifierContext, tool.SpecifierAggregationMode);
+						args, specifierContext, tool.SpecifierParameters, tool.SpecifierAggregationMode);
 					specifierVerdict = specifierResult.Verdict;
 					specifierMessage = specifierResult.Message;
 				}

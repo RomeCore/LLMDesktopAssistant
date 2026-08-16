@@ -272,6 +272,25 @@ fixed.hint: Этот инструмент всегда включён, пока 
 name_suffix.hint: {0} инструментов
 result: Результат:
 settings: Настройки инструментов
+
+// Specifiers
+specifiers: Спецификаторы
+specifier.parameters: Параметры спецификаторов: {0}
+specifier.union_mode: Режим объединения
+specifier.aggregation_mode: Режим агрегации
+specifier.pattern: Шаблон
+specifier.add: Добавить спецификатор
+specifier.remove: Удалить спецификатор
+specifier.decision.allow: Разрешить
+specifier.decision.ask: Спросить
+specifier.decision.deny: Запретить
+specifier.union_mode.disabled: Отключены
+specifier.union_mode.combinehard: Объединить (строго)
+specifier.union_mode.combinesoft: Объединить (мягко)
+specifier.union_mode.ignorenonspecifierbehaviours: Только спецификаторы
+specifier.aggregation_mode.sequential: Последовательно (последний побеждает)
+specifier.aggregation_mode.prioritized: По приоритету (запрет > спросить > разрешить)
+
 source.mcp: MCP
 source.meta: Мета
 status.agent-describe_image.status: Описываем... *{0} токенов*

@@ -11,6 +11,7 @@ using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Specifiers;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
@@ -36,16 +37,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public bool IsFixed => _toolInfo.IsFixed;
 		public ICommand ResetCommand { get; }
 
-		/// <summary>
-		/// Gets the list of behaviour flags with icons and colors for display.
-		/// </summary>
-		public IReadOnlyList<ToolBehaviourFlagInfo> BehaviourFlags { get; }
-
 		public ToolItemViewModel(ToolInfo tool, ToolsetConfiguration toolset)
 		{
 			_toolset = toolset;
 			_toolInfo = tool;
-			BehaviourFlags = ToolBehaviourFlagInfo.CreateForFlags(tool.DefaultExpectedBehaviour);
+			_change = _toolset.ToolChanges.FirstOrDefault(x => x.ToolName == tool.Name);
 
 			switch (tool.Source)
 			{
@@ -65,8 +61,14 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			Description = tool.DescriptionKey ?? Locale.GetConstKey(tool.DescriptionGetter());
 			Category = tool.CategoryKey ?? Locale.GetKey("tool.category.unknown");
 			ResetCommand = new RelayCommand(Reset);
+			AddSpecifierCommand = new RelayCommand(AddSpecifier);
 
-			_change = _toolset.ToolChanges.FirstOrDefault(x => x.ToolName == Name);
+			var mask = EffectivePolicyMask;
+			PolicyMaskItems = ToolBehaviourFlagInfo.CreateForFlags(tool.DefaultExpectedBehaviour)
+				.Select(i => new ToolBehaviourMaskItem(this, i, GetMaskState(mask, i.Flag)))
+				.ToImmutableList();
+
+			RebuildSpecifiers();
 		}
 
 		private void Reset()
@@ -77,6 +79,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				_change = null;
 				RaisePropertyChanged(nameof(Enabled));
 				RaisePropertyChanged(nameof(ApprovalLevel));
+				RaisePropertyChanged(nameof(SpecifierUnionMode));
+				RaisePropertyChanged(nameof(SpecifierAggregationMode));
+				RaisePropertyChanged(nameof(IsSpecifierSectionEnabled));
+				RaisePropertyChanged(nameof(IsSpecifierListEnabled));
+				RaisePropertyChanged(nameof(IsPolicyMaskEnabled));
+				RebuildSpecifiers();
+				RefreshPolicyMaskItems();
 			}
 		}
 
@@ -121,8 +130,199 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				{
 					EnsureChange().ApprovalLevel = value?.Value;
 					RaisePropertyChanged(nameof(ApprovalLevel));
+					RaisePropertyChanged(nameof(IsSpecifierSectionEnabled));
+					RaisePropertyChanged(nameof(IsSpecifierListEnabled));
+					RaisePropertyChanged(nameof(IsPolicyMaskEnabled));
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets the effective approval level of the tool (the change overrides the tool info).
+		/// </summary>
+		public ToolApprovalLevel EffectiveApprovalLevel => _change?.ApprovalLevel ?? _toolInfo.ApprovalLevel;
+
+		/// <summary>
+		/// Gets a value indicating whether the tool supports specifiers.
+		/// </summary>
+		public bool IsSpecifierSectionVisible => _toolInfo.SpecifierAnalyzer != null;
+
+		/// <summary>
+		/// Gets a value indicating whether specifiers are active for the tool.
+		/// Specifiers are evaluated only for policy-based approval levels.
+		/// </summary>
+		public bool IsSpecifierSectionEnabled => EffectiveApprovalLevel.IsPolicyBased();
+
+		/// <summary>
+		/// Gets a value indicating whether the specifier rules list is editable.
+		/// The list is disabled when specifiers are turned off by the union mode.
+		/// </summary>
+		public bool IsSpecifierListEnabled => IsSpecifierSectionEnabled && EffectiveUnionMode != SpecifierBehaviourUnionMode.Disabled;
+
+		/// <summary>
+		/// Gets a value indicating whether the policy mask is active for the tool.
+		/// The mask is applied only for policy-based approval levels.
+		/// </summary>
+		public bool IsPolicyMaskEnabled => EffectiveApprovalLevel.IsPolicyBased();
+
+		/// <summary>
+		/// Gets the per-behaviour policy mask toggles of the tool.
+		/// </summary>
+		public IReadOnlyList<ToolBehaviourMaskItem> PolicyMaskItems { get; }
+
+		/// <summary>
+		/// Gets all available specifier union modes with localized display names.
+		/// </summary>
+		public ImmutableList<SpecifierUnionModeItem> SpecifierUnionModes { get; } = SpecifierUnionModeItem.All;
+
+		/// <summary>
+		/// Gets all available specifier aggregation modes with localized display names.
+		/// </summary>
+		public ImmutableList<SpecifierAggregationModeItem> SpecifierAggregationModes { get; } = SpecifierAggregationModeItem.All;
+
+		/// <summary>
+		/// Gets or sets the specifier behaviour union mode of the tool.
+		/// </summary>
+		public SpecifierUnionModeItem? SpecifierUnionMode
+		{
+			get => SpecifierUnionModes.FirstOrDefault(i => i.Value == EffectiveUnionMode);
+			set
+			{
+				if (value != null && SpecifierUnionMode != value)
+				{
+					EnsureChange().SpecifierUnionMode = value.Value;
+					RaisePropertyChanged();
+					RaisePropertyChanged(nameof(IsSpecifierListEnabled));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the specifier aggregation mode of the tool.
+		/// </summary>
+		public SpecifierAggregationModeItem? SpecifierAggregationMode
+		{
+			get => SpecifierAggregationModes.FirstOrDefault(i => i.Value == EffectiveAggregationMode);
+			set
+			{
+				if (value != null && SpecifierAggregationMode != value)
+				{
+					EnsureChange().SpecifierAggregationMode = value.Value;
+					RaisePropertyChanged();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the localized hint with the names of the specifier parameters supported by the tool,
+		/// or <see langword="null"/> when the tool has no specifier parameters.
+		/// </summary>
+		public string? SpecifierParametersHint =>
+			_toolInfo.SpecifierParameters.Count > 0
+				? Locale.Format("tool.specifier.parameters", string.Join(", ", _toolInfo.SpecifierParameters))
+				: null;
+
+		/// <summary>
+		/// Gets the specifier rules of the tool.
+		/// </summary>
+		public RangeObservableCollection<ToolSpecifierRuleViewModel> Specifiers { get; } = [];
+
+		/// <summary>
+		/// Gets the command that adds a new specifier rule to the tool.
+		/// </summary>
+		public ICommand AddSpecifierCommand { get; }
+
+		private SpecifierBehaviourUnionMode EffectiveUnionMode =>
+			_change?.SpecifierUnionMode ?? _toolInfo.SpecifierUnionMode ?? SpecifierBehaviourUnionMode.CombineSoft;
+
+		private SpecifierAggregationMode EffectiveAggregationMode =>
+			_change?.SpecifierAggregationMode ?? _toolInfo.SpecifierAggregationMode;
+
+		private ToolIndividualPolicyMask EffectivePolicyMask => _change?.PolicyMask ?? _toolInfo.PolicyMask ?? default;
+
+		private static bool? GetMaskState(ToolIndividualPolicyMask mask, ToolBehaviour flag)
+		{
+			if (mask.AutoApproveBehaviours.HasFlag(flag))
+				return true;
+			if (mask.DisallowedBehaviours.HasFlag(flag))
+				return false;
+			return null;
+		}
+
+		/// <summary>
+		/// Sets the policy mask override for the specified behaviour flag of the tool.
+		/// </summary>
+		/// <param name="flag">The behaviour flag to override.</param>
+		/// <param name="state"><see langword="true"/> - auto-approve, <see langword="false"/> - disallowed, <see langword="null"/> - default.</param>
+		public void SetPolicyMaskFlag(ToolBehaviour flag, bool? state)
+		{
+			var mask = EffectivePolicyMask;
+			mask = state switch
+			{
+				true => new ToolIndividualPolicyMask
+				{
+					AutoApproveBehaviours = mask.AutoApproveBehaviours | flag,
+					DisallowedBehaviours = mask.DisallowedBehaviours & ~flag
+				},
+				false => new ToolIndividualPolicyMask
+				{
+					AutoApproveBehaviours = mask.AutoApproveBehaviours & ~flag,
+					DisallowedBehaviours = mask.DisallowedBehaviours | flag
+				},
+				_ => new ToolIndividualPolicyMask
+				{
+					AutoApproveBehaviours = mask.AutoApproveBehaviours & ~flag,
+					DisallowedBehaviours = mask.DisallowedBehaviours & ~flag
+				}
+			};
+			EnsureChange().PolicyMask = mask;
+		}
+
+		private void RefreshPolicyMaskItems()
+		{
+			var mask = EffectivePolicyMask;
+			foreach (var item in PolicyMaskItems)
+				item.Refresh(GetMaskState(mask, item.Flag));
+		}
+
+		/// <summary>
+		/// Persists the current specifier rules to the tool change.
+		/// </summary>
+		public void SyncSpecifiers()
+		{
+			EnsureChange().Specifiers.Reset(Specifiers.Select(r => new ToolSpecifierRule
+			{
+				Pattern = r.Pattern,
+				Decision = r.Decision?.Value ?? SpecifierDecision.Allow
+			}));
+		}
+
+		private void RebuildSpecifiers()
+		{
+			IEnumerable<ToolSpecifierRule> source = _change != null ? _change.Specifiers : _toolInfo.Specifiers;
+			Specifiers.Reset(source.Select(r => new ToolSpecifierRuleViewModel(this, r)));
+		}
+
+		private void AddSpecifier()
+		{
+			var rule = new ToolSpecifierRuleViewModel(this, new ToolSpecifierRule
+			{
+				Pattern = string.Empty,
+				Decision = SpecifierDecision.Allow
+			});
+			Specifiers.Add(rule);
+			SyncSpecifiers();
+		}
+
+		/// <summary>
+		/// Removes the specified specifier rule from the tool.
+		/// </summary>
+		/// <param name="rule">The rule view model to remove.</param>
+		public void RemoveSpecifier(ToolSpecifierRuleViewModel rule)
+		{
+			if (!Specifiers.Remove(rule))
+				return;
+			SyncSpecifiers();
 		}
 	}
 

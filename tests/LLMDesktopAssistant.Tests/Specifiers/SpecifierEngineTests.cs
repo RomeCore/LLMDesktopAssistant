@@ -28,12 +28,19 @@ public class SpecifierEngineTests
 		return (specifier, _, _) => SpecifierMatcher.Match(specifier, parts, []);
 	}
 
+	private static Func<Specifier, JsonNode?, ToolExecutionContext, SpecifierMatchResult> ParameterAnalyzer(
+		string[] parts, params (string Name, string Value)[] parameters)
+	{
+		return (specifier, _, _) => SpecifierMatcher.Match(specifier, parts,
+			parameters.Select(p => new KeyValuePair<string, string>(p.Name, p.Value)));
+	}
+
 	// ──────────────────────────── Evaluate: basics ────────────────────────────
 
 	[Fact]
 	public void Evaluate_NoSpecifiers_None()
 	{
-		var result = SpecifierEngine.Evaluate([], Analyzer("git status"), null, CreateContext(), SpecifierAggregationMode.Sequential);
+		var result = SpecifierEngine.Evaluate([], Analyzer("git status"), null, CreateContext(), [], SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.None, result.Verdict);
 	}
@@ -42,7 +49,7 @@ public class SpecifierEngineTests
 	public void Evaluate_NoMatch_None()
 	{
 		var result = SpecifierEngine.Evaluate([Change("git status:*", SpecifierDecision.Allow)],
-			Analyzer("npm install"), null, CreateContext(), SpecifierAggregationMode.Sequential);
+			Analyzer("npm install"), null, CreateContext(), [], SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.None, result.Verdict);
 	}
@@ -51,7 +58,7 @@ public class SpecifierEngineTests
 	public void Evaluate_AllowWithFullMatch_Allow()
 	{
 		var result = SpecifierEngine.Evaluate([Change("git status:*", SpecifierDecision.Allow)],
-			Analyzer("git status --short"), null, CreateContext(), SpecifierAggregationMode.Sequential);
+			Analyzer("git status --short"), null, CreateContext(), [], SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.Allow, result.Verdict);
 		Assert.Contains("git status:*", result.Message);
@@ -61,7 +68,7 @@ public class SpecifierEngineTests
 	public void Evaluate_AllowWithPartialMatch_None()
 	{
 		var result = SpecifierEngine.Evaluate([Change("git diff *", SpecifierDecision.Allow)],
-			Analyzer("git diff --stat", "git status"), null, CreateContext(), SpecifierAggregationMode.Sequential);
+			Analyzer("git diff --stat", "git status"), null, CreateContext(), [], SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.None, result.Verdict);
 	}
@@ -70,7 +77,7 @@ public class SpecifierEngineTests
 	public void Evaluate_AskWithPartialMatch_Ask()
 	{
 		var result = SpecifierEngine.Evaluate([Change("git diff *", SpecifierDecision.Ask)],
-			Analyzer("git diff --stat", "git status"), null, CreateContext(), SpecifierAggregationMode.Sequential);
+			Analyzer("git diff --stat", "git status"), null, CreateContext(), [], SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.Ask, result.Verdict);
 	}
@@ -79,7 +86,7 @@ public class SpecifierEngineTests
 	public void Evaluate_DenyWithPartialMatch_Deny()
 	{
 		var result = SpecifierEngine.Evaluate([Change("git diff *", SpecifierDecision.Deny)],
-			Analyzer("git diff --stat", "git status"), null, CreateContext(), SpecifierAggregationMode.Sequential);
+			Analyzer("git diff --stat", "git status"), null, CreateContext(), [], SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.Deny, result.Verdict);
 	}
@@ -88,7 +95,7 @@ public class SpecifierEngineTests
 	public void Evaluate_EmptyPattern_Skipped()
 	{
 		var result = SpecifierEngine.Evaluate([Change("", SpecifierDecision.Deny), Change("git status:*", SpecifierDecision.Allow)],
-			Analyzer("git status"), null, CreateContext(), SpecifierAggregationMode.Sequential);
+			Analyzer("git status"), null, CreateContext(), [], SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.Allow, result.Verdict);
 	}
@@ -97,7 +104,7 @@ public class SpecifierEngineTests
 	public void Evaluate_InvalidPattern_Skipped()
 	{
 		var result = SpecifierEngine.Evaluate([Change("git ||", SpecifierDecision.Deny), Change("git status:*", SpecifierDecision.Allow)],
-			Analyzer("git status"), null, CreateContext(), SpecifierAggregationMode.Sequential);
+			Analyzer("git status"), null, CreateContext(), [], SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.Allow, result.Verdict);
 	}
@@ -109,7 +116,7 @@ public class SpecifierEngineTests
 			(specifier, _, _) => specifier.Parts.Count == 1 && specifier.Parts[0] is SpecifierLiteralPart { Value: "git *" }
 				? throw new InvalidOperationException("boom")
 				: SpecifierMatcher.Match(specifier, ["npm install"], []),
-			null, CreateContext(), SpecifierAggregationMode.Sequential);
+			null, CreateContext(), [], SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.Allow, result.Verdict);
 	}
@@ -121,7 +128,7 @@ public class SpecifierEngineTests
 	{
 		var result = SpecifierEngine.Evaluate(
 			[Change("git status:*", SpecifierDecision.Allow), Change("git *", SpecifierDecision.Ask)],
-			Analyzer("git status --short"), null, CreateContext(),
+			Analyzer("git status --short"), null, CreateContext(), [],
 			SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.Ask, result.Verdict);
@@ -132,7 +139,7 @@ public class SpecifierEngineTests
 	{
 		var result = SpecifierEngine.Evaluate(
 			[Change("git status:*", SpecifierDecision.Allow), Change("npm *", SpecifierDecision.Deny), Change("git *", SpecifierDecision.Ask)],
-			Analyzer("git status --short"), null, CreateContext(),
+			Analyzer("git status --short"), null, CreateContext(), [],
 			SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.Ask, result.Verdict);
@@ -143,7 +150,7 @@ public class SpecifierEngineTests
 	{
 		var result = SpecifierEngine.Evaluate(
 			[Change("git *", SpecifierDecision.Allow), Change("git status:*", SpecifierDecision.Deny)],
-			Analyzer("git status --short"), null, CreateContext(),
+			Analyzer("git status --short"), null, CreateContext(), [],
 			SpecifierAggregationMode.Prioritized);
 
 		Assert.Equal(SpecifierVerdict.Deny, result.Verdict);
@@ -154,7 +161,7 @@ public class SpecifierEngineTests
 	{
 		var result = SpecifierEngine.Evaluate(
 			[Change("git status:*", SpecifierDecision.Ask), Change("git *", SpecifierDecision.Allow)],
-			Analyzer("git status --short"), null, CreateContext(),
+			Analyzer("git status --short"), null, CreateContext(), [],
 			SpecifierAggregationMode.Prioritized);
 
 		Assert.Equal(SpecifierVerdict.Ask, result.Verdict);
@@ -165,7 +172,7 @@ public class SpecifierEngineTests
 	{
 		var result = SpecifierEngine.Evaluate(
 			[Change("git status:*", SpecifierDecision.Allow), Change("npm *", SpecifierDecision.Ask)],
-			Analyzer("git status --short"), null, CreateContext(),
+			Analyzer("git status --short"), null, CreateContext(), [],
 			SpecifierAggregationMode.Prioritized);
 
 		Assert.Equal(SpecifierVerdict.Allow, result.Verdict);
@@ -177,10 +184,82 @@ public class SpecifierEngineTests
 		// A partially matched Allow produces no verdict, so the previous verdict stays.
 		var result = SpecifierEngine.Evaluate(
 			[Change("git diff *", SpecifierDecision.Ask), Change("git status:*", SpecifierDecision.Allow)],
-			Analyzer("git diff --stat", "git status"), null, CreateContext(),
+			Analyzer("git diff --stat", "git status"), null, CreateContext(), [],
 			SpecifierAggregationMode.Sequential);
 
 		Assert.Equal(SpecifierVerdict.Ask, result.Verdict);
+	}
+
+	// ──────────────────────────── Evaluate: specifier parameters ────────────────────────────
+
+	[Fact]
+	public void Evaluate_ParameterReference_MatchWhenParameterAllowed()
+	{
+		var result = SpecifierEngine.Evaluate(
+			[Change("git status * && runTerminal:true", SpecifierDecision.Allow)],
+			ParameterAnalyzer(["git status --short"], ("runTerminal", "true")),
+			null, CreateContext(), ["runTerminal"], SpecifierAggregationMode.Sequential);
+
+		Assert.Equal(SpecifierVerdict.Allow, result.Verdict);
+	}
+
+	[Fact]
+	public void Evaluate_ParameterReference_NotInAllowedList_TreatedAsLiteral()
+	{
+		// Without the allowed parameter names the reference is a plain literal,
+		// which does not match the main argument parts.
+		var result = SpecifierEngine.Evaluate(
+			[Change("git status * && runTerminal:true", SpecifierDecision.Allow)],
+			ParameterAnalyzer(["git status --short"], ("runTerminal", "true")),
+			null, CreateContext(), [], SpecifierAggregationMode.Sequential);
+
+		Assert.Equal(SpecifierVerdict.None, result.Verdict);
+	}
+
+	[Fact]
+	public void Evaluate_ParameterReference_ValueMismatch_NoVerdict()
+	{
+		var result = SpecifierEngine.Evaluate(
+			[Change("runTerminal:true", SpecifierDecision.Allow)],
+			ParameterAnalyzer(["git status"], ("runTerminal", "false")),
+			null, CreateContext(), ["runTerminal"], SpecifierAggregationMode.Sequential);
+
+		Assert.Equal(SpecifierVerdict.None, result.Verdict);
+	}
+
+	[Fact]
+	public void Evaluate_ParameterReference_MissingParameter_NoVerdict()
+	{
+		var result = SpecifierEngine.Evaluate(
+			[Change("runTerminal:true", SpecifierDecision.Allow)],
+			ParameterAnalyzer(["git status"]),
+			null, CreateContext(), ["runTerminal"], SpecifierAggregationMode.Sequential);
+
+		Assert.Equal(SpecifierVerdict.None, result.Verdict);
+	}
+
+	[Fact]
+	public void Evaluate_ParameterReference_AskWithPartialMatch_Ask()
+	{
+		// The main part matches partially while the parameter value does not match:
+		// Ask and Deny verdicts require only a partial match.
+		var result = SpecifierEngine.Evaluate(
+			[Change("git status:* || runTerminal:true", SpecifierDecision.Ask)],
+			ParameterAnalyzer(["git status --short", "npm install"], ("runTerminal", "false")),
+			null, CreateContext(), ["runTerminal"], SpecifierAggregationMode.Sequential);
+
+		Assert.Equal(SpecifierVerdict.Ask, result.Verdict);
+	}
+
+	[Fact]
+	public void Evaluate_ParameterReference_DenyWithPartialMatch_Deny()
+	{
+		var result = SpecifierEngine.Evaluate(
+			[Change("git status:* || runTerminal:true", SpecifierDecision.Deny)],
+			ParameterAnalyzer(["git status --short", "npm install"], ("runTerminal", "false")),
+			null, CreateContext(), ["runTerminal"], SpecifierAggregationMode.Sequential);
+
+		Assert.Equal(SpecifierVerdict.Deny, result.Verdict);
 	}
 
 	// ──────────────────────────── Combine: Disabled ────────────────────────────
