@@ -10,12 +10,18 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// <summary>
 		/// The <see cref="SkillInfo"/> descriptor that is being adapted.
 		/// </summary>
-		public required SkillInfo ChatSkillInfo { get; init; }
+		public SkillInfo ChatSkillInfo { get; }
 
 		public override string Name => ChatSkillInfo.Name;
 		public override string Description => ChatSkillInfo.Description;
 		public override string? Path => ChatSkillInfo.Path;
 		public override string? HomeDirectory => ChatSkillInfo.HomeDirectory;
+
+		public ChatAgentSkill(SkillInfo chatSkillInfo)
+		{
+			ChatSkillInfo = chatSkillInfo;
+		}
+
 		public override Task<string> GetBodyAsync(CancellationToken cancellationToken = default) => Task.FromResult(ChatSkillInfo.BodyGetter());
 	}
 }

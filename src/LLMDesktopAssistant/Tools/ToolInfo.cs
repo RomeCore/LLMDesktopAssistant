@@ -145,6 +145,30 @@ namespace LLMDesktopAssistant.Tools
 		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.PolicyBased;
 
 		/// <summary>
+		/// The individual policy mask that overrides the agent's policy for this tool.
+		/// <see cref="ToolIndividualPolicyMask.DisallowedBehaviours"/> always disallow the tool,
+		/// <see cref="ToolIndividualPolicyMask.AutoApproveBehaviours"/> always approve it.
+		/// Applied only for policy-based approval levels.
+		/// </summary>
+		public ToolIndividualPolicyMask? PolicyMask { get; init; }
+
+		/// <summary>
+		/// The specifier behaviour union mode of the tool.
+		/// Null indicates that the default mode (<see cref="SpecifierBehaviourUnionMode.CombineSoft"/>) is used.
+		/// </summary>
+		public SpecifierBehaviourUnionMode? SpecifierUnionMode { get; init; }
+
+		/// <summary>
+		/// The specifier aggregation mode of the tool.
+		/// </summary>
+		public SpecifierAggregationMode SpecifierAggregationMode { get; init; } = SpecifierAggregationMode.Sequential;
+
+		/// <summary>
+		/// The specifier rules of the tool.
+		/// </summary>
+		public ImmutableList<ToolSpecifierRule> Specifiers { get; init; } = [];
+
+		/// <summary>
 		/// List of tools that was overriden during deduplication by name.
 		/// </summary>
 		public ImmutableList<ToolInfo> Overrides { get; init; } = [];

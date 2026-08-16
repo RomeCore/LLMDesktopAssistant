@@ -66,6 +66,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						Enabled = last.Enabled,
 						IsFixed = last.IsFixed,
 						ApprovalLevel = last.ApprovalLevel,
+						PolicyMask = last.PolicyMask,
+						SpecifierUnionMode = last.SpecifierUnionMode,
+						SpecifierAggregationMode = last.SpecifierAggregationMode,
+						Specifiers = last.Specifiers,
 						Overrides = overridesBuilder.ToImmutable()
 					};
 				});
@@ -109,7 +113,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							Source = toolInfo.Source,
 							Enabled = true,
 							IsFixed = toolInfo.IsFixed,
-							ApprovalLevel = change.ApprovalLevel ?? toolInfo.ApprovalLevel
+							ApprovalLevel = change.ApprovalLevel ?? toolInfo.ApprovalLevel,
+							PolicyMask = change.PolicyMask ?? toolInfo.PolicyMask,
+							SpecifierUnionMode = change.SpecifierUnionMode ?? toolInfo.SpecifierUnionMode,
+							SpecifierAggregationMode = change.SpecifierAggregationMode ?? toolInfo.SpecifierAggregationMode,
+							Specifiers = [.. change.Specifiers]
 						});
 				}
 				else

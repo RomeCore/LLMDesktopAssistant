@@ -1,5 +1,6 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Specifiers;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {
@@ -26,9 +27,36 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public abstract JsonObject ArgumentSchema { get; }
 
 		/// <summary>
+		/// The default expected behaviour for this tool.
+		/// </summary>
+		public ToolBehaviour DefaultExpectedBehaviour { get; init; } = ToolBehaviour.None;
+
+		/// <summary>
 		/// The level of approval required for this tool to be executed.
 		/// </summary>
 		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.PolicyBased;
+
+		/// <summary>
+		/// The individual policy mask that overrides the agent's policy for this tool.
+		/// Applied only for policy-based approval levels.
+		/// </summary>
+		public ToolIndividualPolicyMask? PolicyMask { get; init; } = null;
+
+		/// <summary>
+		/// The specifier behaviour union mode of the tool.
+		/// Null indicates that the default mode is used.
+		/// </summary>
+		public SpecifierBehaviourUnionMode? SpecifierUnionMode { get; init; } = null;
+
+		/// <summary>
+		/// The specifier aggregation mode of the tool.
+		/// </summary>
+		public SpecifierAggregationMode SpecifierAggregationMode { get; init; } = SpecifierAggregationMode.Sequential;
+
+		/// <summary>
+		/// The specifier rules of the tool.
+		/// </summary>
+		public ImmutableList<ToolSpecifierRule> Specifiers { get; init; } = [];
 
 		/// <summary>
 		/// Preview-executes the tool with the provided arguments to determine it's behaviour or interrupt the execution.
@@ -36,7 +64,26 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// <param name="arguments">The arguments to pass to the tool. This can be null if the tool does not require any arguments.</param>
 		/// <param name="cancellationToken">A cancellation token to allow for graceful termination of the operation.</param>
 		/// <returns>A task that represents the asynchronous operation and returns a preview result.</returns>
-		public abstract Task<AgentToolCallPreResult> PreExecuteAsync(JsonNode? arguments, CancellationToken cancellationToken = default);
+		public virtual Task<AgentToolCallPreResult> PreExecuteAsync(JsonNode? arguments, CancellationToken cancellationToken = default)
+		{
+			return Task.FromResult(new AgentToolCallPreResult
+			{
+				ExpectedBehaviour = DefaultExpectedBehaviour
+			});
+		}
+
+		/// <summary>
+		/// Analyzes a specifier against the tool arguments and returns the match result.
+		/// The default implementation always returns <see cref="SpecifierMatchResult.NoMatch"/>.
+		/// </summary>
+		/// <param name="specifier">The parsed specifier to analyze. Cannot be <see langword="null"/>.</param>
+		/// <param name="args">The tool arguments, or <see langword="null"/>.</param>
+		/// <param name="context">The tool execution context. Cannot be <see langword="null"/>.</param>
+		/// <returns>The match result of the specifier against the arguments.</returns>
+		public virtual SpecifierMatchResult AnalyzeSpecifier(Specifier specifier, JsonNode? args, ToolExecutionContext context)
+		{
+			return SpecifierMatchResult.NoMatch;
+		}
 
 		/// <summary>
 		/// Executes the tool with the given parameters. The method should handle any necessary logic and return a result.

@@ -121,11 +121,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					if (toolMap.TryGetValue(allowedTool, out var toolInfo))
 					{
-						tools.Add(new ChatAgentTool
-						{
-							ChatToolInfo = toolInfo,
-							ApprovalLevel = toolInfo.ApprovalLevel
-						});
+						tools.Add(new ChatAgentTool(toolInfo, null));
 					}
 					else
 					{
@@ -148,10 +144,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					if (skillMap.TryGetValue(allowedSkill, out var skillInfo))
 					{
-						skills.Add(new ChatAgentSkill
-						{
-							ChatSkillInfo = skillInfo
-						});
+						skills.Add(new ChatAgentSkill(skillInfo));
 					}
 					else
 					{

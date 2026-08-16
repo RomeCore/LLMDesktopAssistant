@@ -1,4 +1,7 @@
-﻿namespace LLMDesktopAssistant.Tools
+using LLMDesktopAssistant.Tools.Specifiers;
+using LLMDesktopAssistant.Utils;
+
+namespace LLMDesktopAssistant.Tools
 {
 	/// <summary>
 	/// Represents a change to a tool, including enabled state and confirmation requirements.
@@ -45,5 +48,32 @@
 			get => _policyMask;
 			set => SetProperty(ref _policyMask, value);
 		}
+
+		private SpecifierAggregationMode? _specifierAggregationMode;
+		/// <summary>
+		/// The specifier aggregation mode of the tool.
+		/// </summary>
+		public SpecifierAggregationMode? SpecifierAggregationMode
+		{
+			get => _specifierAggregationMode;
+			set => SetProperty(ref _specifierAggregationMode, value);
+		}
+
+		private SpecifierBehaviourUnionMode? _specifierUnionMode;
+		/// <summary>
+		/// Gets or sets the specifier behaviour union mode for the tool.
+		/// Null indicates that the default mode (<see cref="SpecifierBehaviourUnionMode.CombineSoft"/>) is used.
+		/// </summary>
+		public SpecifierBehaviourUnionMode? SpecifierUnionMode
+		{
+			get => _specifierUnionMode;
+			set => SetProperty(ref _specifierUnionMode, value);
+		}
+
+		private readonly RangeObservableCollection<ToolSpecifierRule> _specifiers = [];
+		/// <summary>
+		/// Gets the list of specifier rules for the tool.
+		/// </summary>
+		public RangeObservableCollection<ToolSpecifierRule> Specifiers => _specifiers;
 	}
 }

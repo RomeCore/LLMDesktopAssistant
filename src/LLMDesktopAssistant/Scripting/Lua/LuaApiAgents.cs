@@ -534,7 +534,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						if (!_toolsetCache.AvailableTools.TryGetValue(toolValueString.Value, out var tool))
 							throw new Exception($"tool '{toolValueString.Value}' is not available.");
 
-						tools.Add(new ChatAgentTool { ChatToolInfo = tool, ApprovalLevel = tool.ApprovalLevel });
+						tools.Add(new ChatAgentTool(tool, null));
 					}
 					else if (toolValue is LuaTable toolValueTable)
 					{
@@ -574,7 +574,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 						if (!skillMap!.TryGetValue(skillValueString.Value, out var skill))
 							throw new Exception($"skill '{skillValueString.Value}' is not available.");
 
-						skills.Add(new ChatAgentSkill { ChatSkillInfo = skill });
+						skills.Add(new ChatAgentSkill(skill));
 					}
 					else if (skillValue is LuaTable skillValueTable)
 					{

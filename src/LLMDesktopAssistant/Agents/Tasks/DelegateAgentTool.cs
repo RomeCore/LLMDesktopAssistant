@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Json;
 using RCLargeLanguageModels.Json.Schema;
@@ -94,11 +92,6 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			DisplayName = displayName ?? name;
 			Description = description;
 			ArgumentSchema = argumentSchema;
-		}
-
-		public override Task<AgentToolCallPreResult> PreExecuteAsync(JsonNode? arguments, CancellationToken cancellationToken = default)
-		{
-			return Task.FromResult(new AgentToolCallPreResult { ExpectedBehaviour = ToolBehaviour.None });
 		}
 
 		public override async Task<AgentToolCallResult> ExecuteAsync(JsonNode? arguments, object? sharedContext, CancellationToken cancellationToken = default)

@@ -7,6 +7,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Specifiers;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Completions;
@@ -507,11 +508,40 @@ namespace LLMDesktopAssistant.Agents.Tasks
 						agentToolCall.Result.Content, agentToolCall.Result.Attachments.Select(ConvertAttachmentFromAgent)), toolCall.Id, toolCall.ToolName);
 				}
 
-				ToolBehaviour autoApproveBehaviours = task.LaunchParameters.AutoApproveBehaviours,
-					disallowedBehaviours = task.LaunchParameters.DisallowedBehaviours;
+				var autoApproveBehaviours = task.LaunchParameters.AutoApproveBehaviours;
+				var disallowedBehaviours = task.LaunchParameters.DisallowedBehaviours;
+
+				if (tool.PolicyMask is { } policyMask)
+				{
+					autoApproveBehaviours |= policyMask.AutoApproveBehaviours;
+					disallowedBehaviours |= policyMask.DisallowedBehaviours;
+					autoApproveBehaviours &= ~policyMask.DisallowedBehaviours;
+					disallowedBehaviours &= ~policyMask.AutoApproveBehaviours;
+				}
+
+				// Specifier layer: evaluated only for policy-based approval levels.
+				SpecifierVerdict specifierVerdict = SpecifierVerdict.None;
+				string? specifierMessage = null;
+				if (tool.ApprovalLevel.IsPolicyBased() && tool.Specifiers.Count > 0 &&
+					previewResult.SharedContext is ToolExecutionContext specifierContext)
+				{
+					var specifierResult = SpecifierEngine.Evaluate(tool.Specifiers, tool.AnalyzeSpecifier,
+						args, specifierContext, tool.SpecifierAggregationMode);
+					specifierVerdict = specifierResult.Verdict;
+					specifierMessage = specifierResult.Message;
+				}
 
 				var (decision, decisionMessage) = _toolApprovalService.ApproveTool(task.LaunchParameters.TriggeredChat,
 					tool.ApprovalLevel, previewResult.ExpectedBehaviour, autoApproveBehaviours, disallowedBehaviours);
+
+				// Combine the specifier verdict with the policy decision.
+				if (tool.ApprovalLevel.IsPolicyBased() && tool.Specifiers.Count > 0)
+				{
+					decision = SpecifierEngine.Combine(specifierVerdict, decision,
+						tool.SpecifierUnionMode ?? SpecifierBehaviourUnionMode.CombineSoft);
+					if (decision == ToolPolicyDecision.Disallow && specifierVerdict == SpecifierVerdict.Deny)
+						decisionMessage = specifierMessage ?? decisionMessage;
+				}
 
 				if (decision == ToolPolicyDecision.Disallow)
 				{

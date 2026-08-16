@@ -159,7 +159,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			if (!File.Exists(fullPath))
 			{
-				new PreviewToolExecutionResult
+				return new PreviewToolExecutionResult
 				{
 					StatusIcon = MaterialIconKind.FileQuestion,
 					StatusTitle = $"**{path}**",

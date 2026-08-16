@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Specifiers;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Tools;
@@ -172,13 +173,56 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 				var senderAgent = agentManager.GetAgentDescriptor(message.SenderAgentId);
 				var policy = senderAgent.Tools.GetEffectivePolicy(chatSettings.Settings);
+
 				var autoApproveBehaviours = policy.AutoApproveBehaviours;
 				var disallowedBehaviours = policy.DisallowedBehaviours;
 
+				if (toolInfo.PolicyMask is { } policyMask)
+				{
+					autoApproveBehaviours |= policyMask.AutoApproveBehaviours;
+					disallowedBehaviours |= policyMask.DisallowedBehaviours;
+					autoApproveBehaviours &= ~policyMask.DisallowedBehaviours;
+					disallowedBehaviours &= ~policyMask.AutoApproveBehaviours;
+				}
+
 				var approvalLevel = toolInfo.ApprovalLevel;
+
+				// Specifier layer: evaluated only for policy-based approval levels.
+				SpecifierVerdict specifierVerdict = SpecifierVerdict.None;
+				string? specifierMessage = null;
+				if (approvalLevel.IsPolicyBased() && toolInfo.SpecifierAnalyzer != null && toolInfo.Specifiers.Count > 0)
+				{
+					parsedArgs ??= TolerantJsonParser.Parse(toolCall.Arguments) ??
+						throw new InvalidOperationException("Invalid JSON format for tool arguments.");
+
+					var specifierToolExecutionContext = new ToolExecutionContext
+					{
+						Chat = chat,
+						Message = message,
+						Call = toolCall,
+						Info = toolInfo,
+						SharedContext = sharedContext,
+						RunningInUI = true,
+						PolicyDecision = ToolPolicyDecision.None
+					};
+					var specifierResult = SpecifierEngine.Evaluate(toolInfo.Specifiers, toolInfo.SpecifierAnalyzer,
+						parsedArgs, specifierToolExecutionContext, toolInfo.SpecifierAggregationMode);
+					specifierVerdict = specifierResult.Verdict;
+					specifierMessage = specifierResult.Message;
+					sharedContext = specifierToolExecutionContext.SharedContext;
+				}
 
 				var (decision, decisionMessage) = toolApprovalService.ApproveTool(chat, approvalLevel,
 					toolCall.ExpectedBehaviour.Value, autoApproveBehaviours, disallowedBehaviours);
+
+				// Combine the specifier verdict with the policy decision.
+				if (approvalLevel.IsPolicyBased() && toolInfo.SpecifierAnalyzer != null && toolInfo.Specifiers.Count > 0)
+				{
+					decision = SpecifierEngine.Combine(specifierVerdict, decision,
+						toolInfo.SpecifierUnionMode ?? SpecifierBehaviourUnionMode.CombineSoft);
+					if (decision == ToolPolicyDecision.Disallow && specifierVerdict == SpecifierVerdict.Deny)
+						decisionMessage = specifierMessage ?? decisionMessage;
+				}
 
 				if (decision == ToolPolicyDecision.Disallow && !toolHandledDecisions.HasFlag(ToolPolicyDecision.Disallow))
 				{

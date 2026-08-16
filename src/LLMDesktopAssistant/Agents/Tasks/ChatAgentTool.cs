@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Specifiers;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 
@@ -12,12 +13,12 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// <summary>
 		/// The tool information for the chat tool.
 		/// </summary>
-		public required ToolInfo ChatToolInfo { get; init; }
+		public ToolInfo ChatToolInfo { get; }
 
 		/// <summary>
 		/// The execution context for the tool. If null, the default (dummy) context will be created.
 		/// </summary>
-		public ToolExecutionContext? ExecutionContext { get; init; }
+		public ToolExecutionContext? ExecutionContext { get; }
 
 		public override string Name => ChatToolInfo.Name;
 
@@ -26,6 +27,25 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public override string Description => ChatToolInfo.DescriptionGetter();
 
 		public override JsonObject ArgumentSchema => ChatToolInfo.ArgumentSchema;
+
+		public ChatAgentTool(ToolInfo chatToolInfo, ToolExecutionContext? executionContext)
+		{
+			ChatToolInfo = chatToolInfo;
+			ExecutionContext = executionContext;
+
+			ApprovalLevel = chatToolInfo.ApprovalLevel;
+			DefaultExpectedBehaviour = chatToolInfo.DefaultExpectedBehaviour;
+			PolicyMask = chatToolInfo.PolicyMask;
+			SpecifierUnionMode = chatToolInfo.SpecifierUnionMode;
+			SpecifierAggregationMode = chatToolInfo.SpecifierAggregationMode;
+			Specifiers = chatToolInfo.Specifiers;
+		}
+
+		/// <inheritdoc/>
+		public override SpecifierMatchResult AnalyzeSpecifier(Specifier specifier, JsonNode? args, ToolExecutionContext context)
+		{
+			return ChatToolInfo.SpecifierAnalyzer?.Invoke(specifier, args, context) ?? SpecifierMatchResult.NoMatch;
+		}
 
 		private ToolExecutionContext CreateContext()
 		{
