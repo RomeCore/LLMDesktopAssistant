@@ -24,34 +24,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AvaloniaResource Include="Assets\Fonts\Inter.ttf" />
-		<AvaloniaResource Include="Assets\Fonts\JetBrains Mono.ttf" />
-		<AvaloniaResource Include="Assets\Fonts\Segoe Fluent Icons.ttf" />
+		<AvaloniaResource Include="Assets\Fonts\*.ttf" />
 		<AvaloniaResource Include="Assets\icon.ico" />
-		<EmbeddedResource Include="Prompting\Resources\foreign_assistant_prompt.llt" />
-		<EmbeddedResource Include="Prompting\Resources\image_describer.llt" />
-		<EmbeddedResource Include="Prompting\Resources\components.llt" />
-		<EmbeddedResource Include="Prompting\Resources\naming.llt" />
-		<EmbeddedResource Include="Prompting\Resources\router.llt" />
-		<EmbeddedResource Include="Prompting\Resources\ru-RU\components.llt" />
-		<EmbeddedResource Include="Prompting\Resources\ru-RU\sliders.llt" />
-		<EmbeddedResource Include="Prompting\Resources\sliders.llt" />
-		<EmbeddedResource Include="Prompting\Resources\summarizer.llt" />
-		<EmbeddedResource Include="Prompting\Resources\memory_recording.llt" />
-		<EmbeddedResource Include="Prompting\Resources\memory_retrieval.llt" />
-		<EmbeddedResource Include="Prompting\Resources\system_prompt.llt" />
-		<EmbeddedResource Include="Prompting\Resources\user_prompt.llt" />
+		<EmbeddedResource Include="Assets\TextMate\**\*.json" />
+		<EmbeddedResource Include="Prompting\Resources\**\*.llt" />
 		<EmbeddedResource Include="Localization\Resources\**\*.loc" />
-		<EmbeddedResource Include="..\..\docs\help\**\*.md" LogicalName="HelpDocs.%(RecursiveDir)%(Filename)%(Extension)" WithCulture="false" />
-		<EmbeddedResource Include="Assets\TextMate\llt\package.json" />
-		<EmbeddedResource Include="Assets\TextMate\llt\language-configuration.json" />
-		<EmbeddedResource Include="Assets\TextMate\llt\syntaxes\llt.json" />
+		<EmbeddedResource Include="..\..\docs\help\**\*.md" Visible="False" LogicalName="HelpDocs.%(RecursiveDir)%(Filename)%(Extension)" WithCulture="false" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\LLMDesktopAssistant.SourceGenerators\LLMDesktopAssistant.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
-
 
 	<ItemGroup>
 		<PackageReference Include="AsyncLua" Version="0.5.0" />
