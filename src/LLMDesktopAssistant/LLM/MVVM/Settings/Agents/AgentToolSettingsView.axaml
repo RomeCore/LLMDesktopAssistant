@@ -537,7 +537,7 @@
 										BorderThickness="1"
 										CornerRadius="4"
 										Padding="8"
-										Margin="28,0,0,8"
+										Margin="0,0,4,8"
 										IsVisible="{Binding IsSpecifierSectionVisible}"
 										IsEnabled="{Binding IsSpecifierSectionEnabled}">
 

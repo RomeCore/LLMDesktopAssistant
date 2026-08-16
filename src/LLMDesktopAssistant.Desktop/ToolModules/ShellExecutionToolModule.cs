@@ -4,6 +4,8 @@ using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Specifiers;
+
 using Material.Icons;
 using LLMDesktopAssistant.Localization;
 
@@ -24,12 +26,14 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				Executor = ExecuteBash,
 				StreamingAnalyzer = ExecuteBashStreaming,
 				PreviewExecutor = ExecuteBashPreview,
+				SpecifierAnalyzer = AnalyzeBashSpecifier,
 				Name = "shell-bash",
 				Description = $"Executes UNIX BASH command or script from the current working directory. Examples: `git status`, `python script.py`",
 				TitleKey = Locale.GetKey("tool.name.shell-bash"),
 				DescriptionKey = Locale.GetKey("tool.description.shell-bash"),
 				CategoryKey = Locale.GetKey("tool.category.scripting"),
-				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal,
+				SpecifierParameters = ["runTerminal", "wait"],
 			});
 
 			AddTool(new ToolInitializationInfo
@@ -37,12 +41,14 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				Executor = ExecuteBatch,
 				StreamingAnalyzer = ExecuteBatchStreaming,
 				PreviewExecutor = ExecuteBatchPreview,
+				SpecifierAnalyzer = AnalyzeBatchSpecifier,
 				Name = "shell-batch",
 				Description = $"Executes WINDOWS BATCH command or script from the current working directory. Examples: `git status`, `python script.py`",
 				TitleKey = Locale.GetKey("tool.name.shell-batch"),
 				DescriptionKey = Locale.GetKey("tool.description.shell-batch"),
 				CategoryKey = Locale.GetKey("tool.category.scripting"),
-				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal,
+				SpecifierParameters = ["runTerminal", "wait"],
 			});
 
 			AddTool(new ToolInitializationInfo
@@ -50,12 +56,14 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				Executor = ExecutePowerShell,
 				StreamingAnalyzer = ExecutePowerShellStreaming,
 				PreviewExecutor = ExecutePowerShellPreview,
+				SpecifierAnalyzer = AnalyzePowerShellSpecifier,
 				Name = "shell-powershell",
 				Description = $"Executes WINDOWS POWERSHELL command or script from the current working directory. Examples: `git status`, `python script.py`",
 				TitleKey = Locale.GetKey("tool.name.shell-powershell"),
 				DescriptionKey = Locale.GetKey("tool.description.shell-powershell"),
 				CategoryKey = Locale.GetKey("tool.category.scripting"),
-				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal
+				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.PossiblyUnexpected | ToolBehaviour.RunTerminal,
+				SpecifierParameters = ["runTerminal", "wait"],
 			});
 
 		}
@@ -194,6 +202,41 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 					WorkingDirectory = workDir
 				}
 			}, context, cancellationToken);
+		}
+
+		private SpecifierMatchResult AnalyzeBashSpecifier(
+			Specifier specifier,
+			string bash,
+			bool runTerminal = false,
+			bool wait = true)
+		{
+			return SpecifierMatcher.Match(specifier, ShellCommandSplitter.Split(bash), ShellParameters(runTerminal, wait));
+		}
+
+		private SpecifierMatchResult AnalyzeBatchSpecifier(
+			Specifier specifier,
+			string batch,
+			bool runTerminal = false,
+			bool wait = true)
+		{
+			return SpecifierMatcher.Match(specifier,
+				ShellCommandSplitter.Split(batch, singleAmpersandIsSeparator: true), ShellParameters(runTerminal, wait));
+		}
+
+		private SpecifierMatchResult AnalyzePowerShellSpecifier(
+			Specifier specifier,
+			string powershell,
+			bool runTerminal = false,
+			bool wait = true)
+		{
+			var result = SpecifierMatcher.Match(specifier, ShellCommandSplitter.Split(powershell), ShellParameters(runTerminal, wait));
+			return result;
+		}
+
+		private static IEnumerable<KeyValuePair<string, string>> ShellParameters(bool runTerminal, bool wait)
+		{
+			yield return new KeyValuePair<string, string>("runTerminal", runTerminal ? "true" : "false");
+			yield return new KeyValuePair<string, string>("wait", wait ? "true" : "false");
 		}
 	}
 }

@@ -56,6 +56,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						StreamingArgumentsAnalyser = last.StreamingArgumentsAnalyser,
 						PreviewExecutor = last.PreviewExecutor,
 						DefaultExpectedBehaviour = last.DefaultExpectedBehaviour,
+						SpecifierAnalyzer = last.SpecifierAnalyzer,
 						DefaultSelfHandledDecisions = last.DefaultSelfHandledDecisions,
 						Executor = last.Executor,
 						SynchronizationGroup = last.SynchronizationGroup,
@@ -69,6 +70,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						PolicyMask = last.PolicyMask,
 						SpecifierUnionMode = last.SpecifierUnionMode,
 						SpecifierAggregationMode = last.SpecifierAggregationMode,
+						SpecifierParameters = last.SpecifierParameters,
 						Specifiers = last.Specifiers,
 						Overrides = overridesBuilder.ToImmutable()
 					};
@@ -104,6 +106,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							StreamingArgumentsAnalyser = toolInfo.StreamingArgumentsAnalyser,
 							PreviewExecutor = toolInfo.PreviewExecutor,
 							DefaultExpectedBehaviour = toolInfo.DefaultExpectedBehaviour,
+							SpecifierAnalyzer = toolInfo.SpecifierAnalyzer,
 							DefaultSelfHandledDecisions = toolInfo.DefaultSelfHandledDecisions,
 							Executor = toolInfo.Executor,
 							SynchronizationGroup = toolInfo.SynchronizationGroup,
@@ -117,6 +120,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							PolicyMask = change.PolicyMask ?? toolInfo.PolicyMask,
 							SpecifierUnionMode = change.SpecifierUnionMode ?? toolInfo.SpecifierUnionMode,
 							SpecifierAggregationMode = change.SpecifierAggregationMode ?? toolInfo.SpecifierAggregationMode,
+							SpecifierParameters = toolInfo.SpecifierParameters,
 							Specifiers = [.. change.Specifiers]
 						});
 				}
