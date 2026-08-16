@@ -86,6 +86,88 @@ name.web-search: Web search
 name.web-search_get_engines: Get avaliable web-search engines
 name.web-status: Check web status
 
+// Tool descriptions
+description.agent-call: Runs another AI agent with a custom instruction, user message and a set of allowed tools and skills.
+description.agent-describe_image: Describes the content of an image using a separate vision-capable AI agent.
+description.clipboard-copy: Copies a piece of text to the system clipboard.
+description.clipboard-read: Reads the current text content of the system clipboard.
+description.csx-execute: Runs C# code with access to .NET APIs and returns the script result.
+description.db-execute: Executes a SQL statement against the active database and returns the result.
+description.db-list: Lists the database connections configured in the chat and highlights the currently active one.
+description.db-schema: Shows the schema of the active database: tables, views and their columns.
+description.db-switch: Activates a database connection for the current chat session by name or a custom connection string.
+description.execute-python: Runs Python code in an isolated virtual environment and shows live output in a terminal.
+description.execute-python_venv_shell: Runs a shell command inside the Python virtual environment, for example to install packages with pip.
+description.forms-choice: Lets the user pick one or more options from a list, optionally allowing a custom answer.
+description.forms-confirm: Asks the user to confirm an action with confirm and cancel buttons.
+description.forms-file_picker: Opens a file dialog so the user can select a file, folder or save location.
+description.forms-input: Requests structured data from the user through a form with one or more fields.
+description.fs-apply_diff: Edits a text file by deleting a range of lines and inserting new text at a specified line.
+description.fs-copy_directory: Copies a directory and all of its contents to a new location.
+description.fs-copy_file: Copies a file to a new location, replacing the destination file if needed.
+description.fs-create_directory: Creates a new directory at the specified path.
+description.fs-delete_directory: Deletes a directory together with all of its contents.
+description.fs-delete_file: Deletes a specified file from the working directory.
+description.fs-edit: Finds a text fragment or a regular expression in a file and replaces, inserts, or deletes the matched content.
+description.fs-get_file_info: Returns file metadata: name, type, size, creation and modification dates, and attributes.
+description.fs-glob: Finds files and directories that match a glob pattern in the specified folder.
+description.fs-grep: Searches files for lines matching a regular expression pattern.
+description.fs-move_directory: Moves a directory and all of its contents to a new location.
+description.fs-open_file: Opens a file with its default application on the system.
+description.fs-open_in_explorer: Opens a file or directory in the system file explorer, highlighting the file if it exists.
+description.fs-read_binary_file: Reads a binary file as a hex dump within the specified byte range.
+description.fs-read_document_file: Extracts text from documents (PDF, DOCX, PPTX) page by page.
+description.fs-read_entry: Reads a file line by line or lists the contents of a directory at the given path.
+description.fs-rename_file: Renames or moves a file, replacing the destination file if needed.
+description.fs-write_binary_file: Writes binary data provided as a hexadecimal string to a file, or appends it to an existing one.
+description.fs-write_file: Writes text content to a file, creating missing directories as needed.
+description.lua-execute: Runs a Lua script with access to the application's built-in API and returns the result along with printed messages.
+description.lua-get_script_info: Shows detailed information about a registered Lua script, including its full content.
+description.lua-list_scripts: Lists all registered Lua scripts with their namespaces, paths, and documentation.
+description.lua-move_script: Moves or renames a registered Lua script from one path to another.
+description.lua-register_or_update_script: Registers a new Lua script or updates an existing one, making it available in the Lua environment under a given namespace.
+description.lua-remove_script: Removes a registered Lua script by its relative path.
+description.math-calculate: Evaluates a mathematical expression, supporting constants, functions, integrals, derivatives, and complex numbers.
+description.math-solve: Finds real roots of an equation numerically within a specified search range.
+description.math-solve_complex: Finds complex roots of an equation numerically across a region of the complex plane.
+description.memory-append_log: Adds a new event entry to the event log of the specified memory block.
+description.memory-clear: Clears stored facts and/or event logs from a memory block while keeping the block itself intact.
+description.memory-delete_log: Permanently removes an event log entry from a memory block by its ID.
+description.memory-forget_fact: Deletes a fact from a memory block by its ID; by default keeps it restorable later.
+description.memory-retrieve_fact: Finds facts in memory blocks matching the query and returns them with their IDs.
+description.memory-search_log: Searches the event logs of memory blocks for entries matching a text query.
+description.memory-store_fact: Stores a fact in a memory block with a given importance rating.
+description.memory-view_logs: Shows event log entries from memory blocks, newest first, with optional time filtering.
+description.metatools-create_or_update: Creates a new custom tool or updates an existing one, defining its name, description, parameters, and execution script.
+description.metatools-delete: Deletes an existing custom tool.
+description.metatools-get_info: Returns full details about a custom tool: description, parameters, execution script, and other settings.
+description.metatools-list: Lists all existing custom tools with their names and titles.
+description.metatools-rename: Renames an existing custom tool to a new name.
+description.python-get_installed_packages_list: Lists the packages installed in the current Python virtual environment.
+description.random-GUID: Generates a new globally unique identifier (GUID) that can be used to label or identify objects.
+description.random-check_chance: Checks whether a given probability (as a percentage) comes true and returns success or failure.
+description.random-coin_flip: Simulates a coin toss and returns either 'Heads' or 'Tails'.
+description.random-dice_roll: Rolls one or more dice with a chosen number of sides and returns each result and the total.
+description.random-float: Generates a random fractional number between the specified minimum and maximum values.
+description.random-integer: Generates a random whole number between the specified minimum and maximum values, inclusive.
+description.random-items_from_list: Picks the requested number of random items from a given list.
+description.random-shuffle_list: Returns the items of a given list rearranged in a random order.
+description.shell-bash: Runs a Bash command or script from the current working directory, with optional live terminal output.
+description.shell-batch: Runs a Windows batch command or script from the current working directory, with optional live terminal output.
+description.shell-powershell: Runs a PowerShell command or script from the current working directory, with optional live terminal output.
+description.skill-load: Loads a skill by its name and returns its contents.
+description.time-get: Returns the current time, either in the user's timezone or in a specified timezone.
+description.time-wait: Pauses for a given duration (hours, minutes, seconds) and shows live progress while waiting.
+description.wd-list: Lists all working directories configured for the current chat session.
+description.wd-switch: Switches the active working directory for the current chat session.
+description.web-download: Downloads a file from a URL and saves it to the working directory.
+description.web-fetch: Loads a web page by URL and returns its content as markdown, HTML, or sanitized text.
+description.web-parse: Fetches an HTML page, selects elements by a CSS selector, and returns their text content.
+description.web-request: Sends an HTTP request (GET, POST, PUT, or DELETE) to a URL and returns the response status, headers, and body content.
+description.web-search: Searches the web through multiple search engines and returns results with titles, links, descriptions, and extra metadata.
+description.web-search_get_engines: Lists available search engines with their supported categories and capabilities.
+description.web-status: Checks whether a website is reachable and reports its HTTP status code, response time, and server details.
+
 // Tool categories
 category.agents: Agents
 category.database: Database
