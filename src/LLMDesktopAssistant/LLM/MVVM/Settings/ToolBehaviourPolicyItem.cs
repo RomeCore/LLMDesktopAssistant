@@ -88,12 +88,12 @@ public class ToolBehaviourPolicyItem : NotifyPropertyChanged
 	/// <summary>
 	/// Localized display name of the behaviour.
 	/// </summary>
-	public string DisplayName { get; }
+	public LocaleKeyBase DisplayName { get; }
 
 	/// <summary>
 	/// Localized description of the behaviour.
 	/// </summary>
-	public string Description { get; }
+	public LocaleKeyBase Description { get; }
 
 	/// <summary>
 	/// Available policy modes for the ComboBox.
@@ -146,8 +146,8 @@ public class ToolBehaviourPolicyItem : NotifyPropertyChanged
 		Func<ToolBehaviour> getDisallowed,
 		Action<ToolBehaviour> setDisallowed,
 		ToolBehaviour flag,
-		string displayName,
-		string description)
+		LocaleKeyBase displayName,
+		LocaleKeyBase description)
 	{
 		_getAutoApprove = getAutoApprove;
 		_setAutoApprove = setAutoApprove;

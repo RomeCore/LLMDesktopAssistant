@@ -79,7 +79,8 @@ namespace LLMDesktopAssistant.Localization
 		{
 			_isValueCached = false;
 			_cachedValue = null;
-			PropertyChanged?.Invoke(this, _cachedPropertyChangedArgs);
+			PropertyChanged?.Invoke(this, _cachedValuePropertyChangedArgs);
+			PropertyChanged?.Invoke(this, _cachedRawValuePropertyChangedArgs);
 		}
 	}
 }

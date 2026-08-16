@@ -187,69 +187,69 @@ category.workdir: Working directories
 // Tool statuses, behaviours, call actions, sources, fixed flags.
 arguments: Tool arguments:
 behaviour.accessoutsideworkdir: Access outside working directory
-behaviour.accessoutsideworkdir_hint: The tool accesses locations outside the configured working directory.
+behaviour.accessoutsideworkdir.hint: The tool accesses locations outside the configured working directory.
 behaviour.adhoc: Ad-hoc (special tools)
-behaviour.adhoc_hint: Special tools created for disposable execution (scripted tools, for example)
+behaviour.adhoc.hint: Special tools created for disposable execution (scripted tools, for example)
 behaviour.agentexecution: Agent execution
-behaviour.agentexecution_hint: The tool invokes, manages, or coordinates other AI agents.
+behaviour.agentexecution.hint: The tool invokes, manages, or coordinates other AI agents.
 behaviour.clipboardaccess: Clipboard access
-behaviour.clipboardaccess_hint: The tool accesses the clipboard for reading or writing text data.
+behaviour.clipboardaccess.hint: The tool accesses the clipboard for reading or writing text data.
 behaviour.clipboardread: Clipboard read
-behaviour.clipboardread_hint: The tool reads text data from the clipboard.
+behaviour.clipboardread.hint: The tool reads text data from the clipboard.
 behaviour.clipboardwrite: Clipboard write
-behaviour.clipboardwrite_hint: The tool writes text data to the clipboard.
+behaviour.clipboardwrite.hint: The tool writes text data to the clipboard.
 behaviour.databasechange: Database change
-behaviour.databasechange_hint: The tool changes data or schema in a connected database.
+behaviour.databasechange.hint: The tool changes data or schema in a connected database.
 behaviour.databasecustomconnect: Custom database connection
-behaviour.databasecustomconnect_hint: The tool connects to a database using a custom connection string.
+behaviour.databasecustomconnect.hint: The tool connects to a database using a custom connection string.
 behaviour.databaseread: Database read
-behaviour.databaseread_hint: The tool reads data from a connected database.
+behaviour.databaseread.hint: The tool reads data from a connected database.
 behaviour.directorydelete: Delete directories
-behaviour.directorydelete_hint: The tool removes entire directory trees including their contents.
+behaviour.directorydelete.hint: The tool removes entire directory trees including their contents.
 behaviour.directoryedit: Edit directories (move, rename, copy)
-behaviour.directoryedit_hint: The tool modifies the directory structure (move, rename, copy).
+behaviour.directoryedit.hint: The tool modifies the directory structure (move, rename, copy).
 behaviour.directoryread: Read directories
-behaviour.directoryread_hint: The tool enumerates or lists the contents of directories.
+behaviour.directoryread.hint: The tool enumerates or lists the contents of directories.
 behaviour.executeexternalprocess: Execute external process
-behaviour.executeexternalprocess_hint: The tool spawns or executes an external operating system process.
+behaviour.executeexternalprocess.hint: The tool spawns or executes an external operating system process.
 behaviour.filedelete: Delete files
-behaviour.filedelete_hint: The tool permanently removes files from the filesystem.
+behaviour.filedelete.hint: The tool permanently removes files from the filesystem.
 behaviour.filedirectorycreate: Create files and directories
-behaviour.filedirectorycreate_hint: The tool creates new files or directories on the filesystem.
+behaviour.filedirectorycreate.hint: The tool creates new files or directories on the filesystem.
 behaviour.fileedit: Edit files
-behaviour.fileedit_hint: The tool modifies existing file content or metadata without deleting it.
+behaviour.fileedit.hint: The tool modifies existing file content or metadata without deleting it.
 behaviour.fileread: Read files
-behaviour.fileread_hint: The tool reads the contents of files.
+behaviour.fileread.hint: The tool reads the contents of files.
 behaviour.internetaccess: Internet access
-behaviour.internetaccess_hint: The tool performs network requests to external services or APIs.
+behaviour.internetaccess.hint: The tool performs network requests to external services or APIs.
 behaviour.longrunningtask: Long-running task
-behaviour.longrunningtask_hint: The tool may run for an extended period due to heavy computation or network latency.
+behaviour.longrunningtask.hint: The tool may run for an extended period due to heavy computation or network latency.
 behaviour.mcp: MCP (external server)
-behaviour.mcp_hint: The tool originates from an external MCP server and may have unpredictable behaviour.
+behaviour.mcp.hint: The tool originates from an external MCP server and may have unpredictable behaviour.
 behaviour.meta: Meta-tool (LLM-created)
-behaviour.meta_hint: The tool is a meta-tool created at runtime by the LLM via Lua/Python scripting.
+behaviour.meta.hint: The tool is a meta-tool created at runtime by the LLM via Lua/Python scripting.
 behaviour.none: Safe (no specific behaviour)
-behaviour.none_hint: Purely computational or informational tasks (math, random, time).
+behaviour.none.hint: Purely computational or informational tasks (math, random, time).
 behaviour.possiblyunexpected: Potentially unexpected actions
-behaviour.possiblyunexpected_hint: The tool may perform unexpected or uncontrollable actions.
+behaviour.possiblyunexpected.hint: The tool may perform unexpected or uncontrollable actions.
 behaviour.readsecrets: Read secrets and sensitive data
-behaviour.readsecrets_hint: The tool may expose sensitive information such as passwords, API keys or tokens.
+behaviour.readsecrets.hint: The tool may expose sensitive information such as passwords, API keys or tokens.
 behaviour.runterminal: Run in terminal
-behaviour.runterminal_hint: The tool runs commands in an embedded terminal emulator with interactive I/O.
+behaviour.runterminal.hint: The tool runs commands in an embedded terminal emulator with interactive I/O.
 behaviour.scriptaccess: Tool and script access
-behaviour.scriptaccess_hint: The tool creates, modifies, or deletes other tools and user scripts at runtime.
+behaviour.scriptaccess.hint: The tool creates, modifies, or deletes other tools and user scripts at runtime.
 behaviour.semanticmemoryclear: Semantic memory clear
-behaviour.semanticmemoryclear_hint: The tool clears semantic memory blocks and may cause data loss.
+behaviour.semanticmemoryclear.hint: The tool clears semantic memory blocks and may cause data loss.
 behaviour.semanticmemorydelete: Semantic memory delete entry
-behaviour.semanticmemorydelete_hint: Tool removes facts and logs from semantic memory.
+behaviour.semanticmemorydelete.hint: Tool removes facts and logs from semantic memory.
 behaviour.semanticmemoryread: Semantic memory read
-behaviour.semanticmemoryread_hint: Tool can read facts and logs from semantic memory.
+behaviour.semanticmemoryread.hint: Tool can read facts and logs from semantic memory.
 behaviour.semanticmemorywrite: Semantic memory write
-behaviour.semanticmemorywrite_hint: Tool can write facts and logs to semantic memory.
+behaviour.semanticmemorywrite.hint: Tool can write facts and logs to semantic memory.
 behaviour.userinteraction: User interaction (forms, confirmations)
-behaviour.userinteraction_hint: The tool requires user input via forms, confirmations, file pickers, etc.
+behaviour.userinteraction.hint: The tool requires user input via forms, confirmations, file pickers, etc.
 behaviour.workdirchange: Change working directory
-behaviour.workdirchange_hint: The tool switches the active working directory, affecting the base for all relative file operations.
+behaviour.workdirchange.hint: The tool switches the active working directory, affecting the base for all relative file operations.
 call.action.approve_with_notes: Approve with notes
 call.action.approve_with_wait.hint: Approve and ask agent to wait
 call.action.cancel: Cancel tool

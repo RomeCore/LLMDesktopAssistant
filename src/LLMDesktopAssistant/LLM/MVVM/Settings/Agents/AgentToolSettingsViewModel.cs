@@ -433,14 +433,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			foreach (var flag in GetBehaviourFlags())
 			{
 				var key = $"tool.behaviour.{flag.ToString().ToLower()}";
-				var displayName = LocalizationManager.LocalizeStatic(key);
-				var description = LocalizationManager.LocalizeStatic($"{key}_hint");
-
-				// Fallback to CamelCase split if localization is missing
-				if (displayName == key || string.IsNullOrEmpty(displayName))
-					displayName = SplitCamelCase(flag.ToString());
-				if (description == $"{key}_hint" || string.IsNullOrEmpty(description))
-					description = string.Empty;
+				var displayName = Locale.GetKey(key);
+				var description = Locale.GetKey($"{key}.hint");
 
 				PolicyBehaviourItems.Add(new ToolBehaviourPolicyItem(
 					() => EffectivePolicy.AutoApproveBehaviours,
@@ -457,24 +451,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		{
 			return Enum.GetValues<ToolBehaviour>()
 				.Where(v => v != ToolBehaviour.None && v != ToolBehaviour.All);
-		}
-
-		private static string SplitCamelCase(string input)
-		{
-			if (string.IsNullOrEmpty(input))
-				return input;
-
-			var result = new StringBuilder();
-			for (int i = 0; i < input.Length; i++)
-			{
-				if (i > 0 && char.IsUpper(input[i]))
-				{
-					if (!char.IsUpper(input[i - 1]) || (i + 1 < input.Length && char.IsLower(input[i + 1])))
-						result.Append(' ');
-				}
-				result.Append(input[i]);
-			}
-			return result.ToString();
 		}
 
 		/// <summary>

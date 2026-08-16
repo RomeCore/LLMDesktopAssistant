@@ -91,7 +91,7 @@
 												  Margin="0,0,8,0"/>
 
 								<TextBlock Grid.Column="1"
-										   Text="{Binding DisplayName}"
+										   Text="{Binding DisplayName.Value}"
 										   FontWeight="Medium"
 										   TextTrimming="CharacterEllipsis"
 										   VerticalAlignment="Center"/>
@@ -111,12 +111,12 @@
 
 							<!-- Row 1: Description -->
 							<TextBlock Grid.Row="1"
-									   Text="{Binding Description}"
+									   Text="{Binding Description.RawValue}"
 									   Opacity="0.6"
 									   FontSize="12"
 									   TextWrapping="Wrap"
 									   Margin="28,4,0,0"
-									   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+									   IsVisible="{Binding Description.RawValue, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 
 						</Grid>
 					</Border>

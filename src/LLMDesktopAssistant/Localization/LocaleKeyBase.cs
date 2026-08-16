@@ -19,7 +19,8 @@ namespace LLMDesktopAssistant.Localization
 		/// </summary>
 		public abstract string? RawValue { get; }
 
-		protected static readonly PropertyChangedEventArgs _cachedPropertyChangedArgs = new(nameof(Value));
+		protected static readonly PropertyChangedEventArgs _cachedValuePropertyChangedArgs = new(nameof(Value));
+		protected static readonly PropertyChangedEventArgs _cachedRawValuePropertyChangedArgs = new(nameof(RawValue));
 
 		public abstract event PropertyChangedEventHandler? PropertyChanged;
 
