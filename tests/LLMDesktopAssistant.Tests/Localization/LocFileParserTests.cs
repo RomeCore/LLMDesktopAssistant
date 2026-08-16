@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.Localization;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Localization;
 
 public class LocFileParserTests
 {

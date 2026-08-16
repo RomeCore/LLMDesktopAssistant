@@ -2,7 +2,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using RCLargeLanguageModels.Tasks;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Messages;
 
 /// <summary>
 /// Tests for the <see cref="MessagesInterface"/> message grouping logic.

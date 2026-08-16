@@ -1,7 +1,7 @@
 using LLMDesktopAssistant.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Utils;
 
 public class ServiceCollectionExtensionsTests
 {

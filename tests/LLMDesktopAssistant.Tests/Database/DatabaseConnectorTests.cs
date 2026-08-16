@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.Data.Connectors;
 
-namespace LLMDesktopAssistant.Tests
+namespace LLMDesktopAssistant.Tests.Database
 {
 	public class DatabaseConnectorTests
 	{

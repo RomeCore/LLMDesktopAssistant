@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Settings;
 
 public class DirectSettingsAccessAnalyzerTests
 {

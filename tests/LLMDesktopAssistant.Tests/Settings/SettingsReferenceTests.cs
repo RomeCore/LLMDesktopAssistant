@@ -1,7 +1,7 @@
 using System.Text.Json;
 using LLMDesktopAssistant.Settings;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Settings;
 
 public class SettingsReferenceTests
 {

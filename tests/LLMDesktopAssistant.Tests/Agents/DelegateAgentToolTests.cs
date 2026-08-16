@@ -4,7 +4,7 @@ using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.Tools;
 using RCLargeLanguageModels.Json.Schema;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Agents;
 
 /// <summary>
 /// Tests for the <see cref="DelegateAgentTool"/> class.

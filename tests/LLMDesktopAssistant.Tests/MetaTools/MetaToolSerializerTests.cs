@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.MetaTools;
 
 public class MetaToolSerializerTests
 {

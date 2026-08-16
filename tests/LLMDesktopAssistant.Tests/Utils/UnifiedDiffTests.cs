@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.Utils.Files;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Utils;
 
 public class UnifiedDiffTests
 {

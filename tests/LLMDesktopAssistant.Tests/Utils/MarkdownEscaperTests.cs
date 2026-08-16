@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.Markdown;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Utils;
 
 public class MarkdownEscaperTests
 {

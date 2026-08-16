@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.Utils.Web;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Utils;
 
 public class HtmlSanitizerTests
 {

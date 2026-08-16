@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.Prompting.Skills;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Skills;
 
 public class SkillParserTests
 {

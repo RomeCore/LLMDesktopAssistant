@@ -3,7 +3,7 @@ using System.Reflection;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings.Application;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Localization;
 
 public class LocFileLocalizationManagerTests : IDisposable
 {

@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using LLMDesktopAssistant.SourceGenerators;
 
-namespace LLMDesktopAssistant.Tests;
+namespace LLMDesktopAssistant.Tests.Settings;
 
 public class InheritedSettingsGeneratorTests
 {
