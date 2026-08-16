@@ -74,6 +74,10 @@ namespace LLMDesktopAssistant.Tools
 		/// <summary>
 		/// Gets the list of specifier rules for the tool.
 		/// </summary>
-		public RangeObservableCollection<ToolSpecifierRule> Specifiers => _specifiers;
+		public RangeObservableCollection<ToolSpecifierRule> Specifiers
+		{
+			get => _specifiers;
+			set => _specifiers.Reset(value);
+		}
 	}
 }
