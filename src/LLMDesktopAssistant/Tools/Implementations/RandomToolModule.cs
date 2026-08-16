@@ -139,7 +139,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				ResultContent = value,
 				StatusIcon = MaterialIconKind.Coins,
-				StatusTitle = result ? LocalizationManager.LocalizeStatic("coin_heads") : LocalizationManager.LocalizeStatic("coin_tails")
+				StatusTitle = result ? LocalizationManager.LocalizeStatic("tool.status.random-coin_flip.heads") : LocalizationManager.LocalizeStatic("tool.status.random-coin_flip.tails")
 			}.CompleteWithSuccess();
 		}
 
@@ -154,7 +154,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				ResultContent = value,
 				StatusIcon = result ? MaterialIconKind.Check : MaterialIconKind.Close,
-				StatusTitle = $"{chance}%: " + (result ? LocalizationManager.LocalizeStatic("check_success") : LocalizationManager.LocalizeStatic("check_failure"))
+				StatusTitle = $"{chance}%: " + (result ? LocalizationManager.LocalizeStatic("tool.status.random-check_chance.success") : LocalizationManager.LocalizeStatic("tool.status.random-check_chance.failure"))
 			}.CompleteWithSuccess();
 		}
 
@@ -184,7 +184,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					20 => MaterialIconKind.DiceD20,
 					_ => MaterialIconKind.DiceMultiple
 				},
-				StatusTitle = $"{LocalizationManager.LocalizeStatic("dice_rolled")} {numberOfDice}d{sides}: {string.Join(", ", rolls)}"
+				StatusTitle = $"{LocalizationManager.LocalizeStatic("tool.status.random-dice_roll.rolled")} {numberOfDice}d{sides}: {string.Join(", ", rolls)}"
 			}.CompleteWithSuccess();
 		}
 
@@ -213,7 +213,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			{
 				ResultContent = value,
 				StatusIcon = MaterialIconKind.Shuffle,
-				StatusTitle = string.Format(LocalizationManager.LocalizeStatic("list_shuffled"), items.Length)
+				StatusTitle = string.Format(LocalizationManager.LocalizeStatic("tool.status.random-shuffle_list.shuffled"), items.Length)
 			}.CompleteWithSuccess();
 		}
 	}

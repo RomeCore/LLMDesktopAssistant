@@ -257,7 +257,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			var result = await App.MainTopLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
 			{
-				Title = LocalizationManager.LocalizeStatic("select_working_directory"),
+				Title = LocalizationManager.LocalizeStatic("env.select_working_directory"),
 				AllowMultiple = false
 			});
 
@@ -311,7 +311,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			var result = await App.MainTopLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
 			{
-				Title = LocalizationManager.LocalizeStatic("select_working_directory"),
+				Title = LocalizationManager.LocalizeStatic("env.select_working_directory"),
 				AllowMultiple = false
 			});
 

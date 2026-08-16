@@ -83,9 +83,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 				if (TestResult is null)
 					return null;
 				if (TestResult == true)
-					return LocalizationManager.LocalizeStatic("db_test_ok");
+					return LocalizationManager.LocalizeStatic("db.test.success");
 				return string.IsNullOrWhiteSpace(_testResultMessage)
-					? LocalizationManager.LocalizeStatic("db_test_failed")
+					? LocalizationManager.LocalizeStatic("db.test.error")
 					: _testResultMessage;
 			}
 		}
@@ -127,11 +127,11 @@ namespace LLMDesktopAssistant.LLM.Settings
 			try
 			{
 				if (string.IsNullOrWhiteSpace(Setting.Name))
-					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_name"));
+					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db.test.empty_name"));
 
 				var connectionString = Setting.GetConnectionString(_apiKeyManager);
 				if (string.IsNullOrWhiteSpace(connectionString))
-					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_connection_string"));
+					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db.test.empty_connection_string"));
 
 				_connectionManager.Activate(Setting.Name);
 				await _connectionManager.GetCurrentAsync(cancellationToken);
@@ -162,7 +162,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			{
 				var connectionString = Setting.GetConnectionString(_apiKeyManager);
 				if (string.IsNullOrWhiteSpace(connectionString))
-					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_connection_string"));
+					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db.test.empty_connection_string"));
 
 				await _cache.TestAsync(Setting.ConnectorType, connectionString, cancellationToken);
 				TestResult = true;

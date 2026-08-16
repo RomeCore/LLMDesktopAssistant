@@ -1,0 +1,13 @@
+// Attachments manager.
+
+%locale: ru-RU
+%namespace: attachment
+
+add_url.hint: Добавить URL
+apply: Вложить
+apply_native: Приложить как native-вложение LLM
+attach_files.hint: Вложить файлы
+copy_to_working_directory: Копировать в рабочую директорию
+drop_files_here: Сбросьте файлы здесь
+manager.title: Вложить
+url.hint: URL вложения

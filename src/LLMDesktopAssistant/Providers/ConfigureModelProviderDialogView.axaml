@@ -18,7 +18,7 @@
 				<ico:MaterialIcon Kind="Settings" Width="20" Height="20"
 									VerticalAlignment="Center"
 									Foreground="{DynamicResource PrimaryAccentBrush}"/>
-				<TextBlock Text="{loc:Loc settings_providers_add_title}"
+				<TextBlock Text="{loc:Loc settings.provider.add.title}"
 							 FontSize="{DynamicResource FontSizeL}"
 							 FontWeight="Bold"
 							 VerticalAlignment="Center"/>
@@ -26,17 +26,17 @@
 
 			<!-- Name -->
 			<StackPanel Orientation="Vertical" Spacing="4">
-				<TextBlock Text="{loc:Loc settings_providers_name}"/>
+				<TextBlock Text="{loc:Loc settings.provider.name.label}"/>
 				<TextBox Text="{Binding EditingProvider.Name, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc settings_providers_name_placeholder}"/>
+						 PlaceholderText="{loc:Loc settings.provider.name.placeholder}"/>
 			</StackPanel>
 
 			<!-- Provider Type -->
 			<StackPanel Orientation="Vertical" Spacing="4">
-				<TextBlock Text="{loc:Loc settings_providers_type}"/>
+				<TextBlock Text="{loc:Loc settings.provider.type.label}"/>
 				<ComboBox ItemsSource="{Binding ProviderTypes}"
 							SelectedItem="{Binding SelectedProviderType, Mode=TwoWay}"
-							PlaceholderText="{loc:Loc settings_providers_type}">
+							PlaceholderText="{loc:Loc settings.provider.type.label}">
 					<ComboBox.ItemTemplate>
 						<DataTemplate x:DataType="local:ProviderTypeItem">
 							<TextBlock Text="{Binding DisplayName}"/>
@@ -47,14 +47,14 @@
 
 			<!-- Endpoint URI -->
 			<StackPanel Orientation="Vertical" Spacing="4">
-				<TextBlock Text="{loc:Loc settings_providers_endpoint}"/>
+				<TextBlock Text="{loc:Loc settings.provider.endpoint.label}"/>
 				<TextBox Text="{Binding EditingProvider.EndpointUri, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc settings_providers_endpoint_placeholder}"/>
+						 PlaceholderText="{loc:Loc settings.provider.endpoint.placeholder}"/>
 			</StackPanel>
 
 			<!-- API Key -->
 			<StackPanel Orientation="Vertical" Spacing="4">
-				<TextBlock Text="{loc:Loc settings_providers_apikey}"/>
+				<TextBlock Text="{loc:Loc settings.provider.apikey.label}"/>
 				<ctrl:ApiKeySelectorControl ApiKeyId="{Binding EditingProvider.ApiKeyId, Mode=TwoWay}"/>
 			</StackPanel>
 
@@ -64,14 +64,14 @@
 						Classes="Primary">
 					<StackPanel Orientation="Horizontal" Spacing="4">
 						<ico:MaterialIcon Kind="Link" Width="16" Height="16"/>
-						<TextBlock Text="{loc:Loc settings_providers_test_connection}"/>
+						<TextBlock Text="{loc:Loc settings.provider.test_connection}"/>
 					</StackPanel>
 				</Button>
 
 				<Button Command="{Binding LoadModelsCommand}">
 					<StackPanel Orientation="Horizontal" Spacing="4">
 						<ico:MaterialIcon Kind="Refresh" Width="16" Height="16"/>
-						<TextBlock Text="{loc:Loc model_selector_refresh}"/>
+						<TextBlock Text="{loc:Loc model.selector.refresh}"/>
 					</StackPanel>
 				</Button>
 
@@ -87,20 +87,20 @@
 				<Separator Margin="0,4"/>
 			
 				<StackPanel Orientation="Horizontal" Spacing="8">
-					<TextBlock Text="{loc:Loc model_selector_available_models}"
+					<TextBlock Text="{loc:Loc model.selector.available_models}"
 								 FontWeight="Bold"
 								 FontSize="{DynamicResource FontSizeL}"
 								 VerticalAlignment="Center"/>
 				
 					<Button Command="{Binding SelectAllCommand}"
 							Classes="IconButton"
-							ToolTip.Tip="{loc:Loc model_selector_select_all}">
+							ToolTip.Tip="{loc:Loc model.selector.select_all}">
 						<ico:MaterialIcon Kind="SelectAll" Width="14" Height="14"/>
 					</Button>
 
 					<Button Command="{Binding DeselectAllCommand}"
 							Classes="IconButton"
-							ToolTip.Tip="{loc:Loc model_selector_deselect_all}">
+							ToolTip.Tip="{loc:Loc model.selector.deselect_all}">
 						<ico:MaterialIcon Kind="SelectOff" Width="14" Height="14"/>
 					</Button>
 				</StackPanel>
@@ -151,7 +151,7 @@
 											<!-- Input Modalities icons -->
 											<StackPanel Grid.Column="2" Orientation="Vertical"
 																	VerticalAlignment="Center">
-												<TextBlock Text="{loc:Loc model_modality_in}"
+												<TextBlock Text="{loc:Loc model.modality.in}"
 															 FontSize="10"
 															 Opacity="0.4"
 															 HorizontalAlignment="Center"/>
@@ -177,7 +177,7 @@
 											<!-- Output Modalities icons -->
 											<StackPanel Grid.Column="3" Orientation="Vertical"
 																	VerticalAlignment="Center">
-												<TextBlock Text="{loc:Loc model_modality_out}"
+												<TextBlock Text="{loc:Loc model.modality.out}"
 															 FontSize="10"
 															 Opacity="0.4"
 															 HorizontalAlignment="Center"/>
@@ -203,7 +203,7 @@
 											<!-- Capabilities icons -->
 											<StackPanel Grid.Column="4" Orientation="Vertical"
 																	VerticalAlignment="Center">
-												<TextBlock Text="{loc:Loc model_capability_label}"
+												<TextBlock Text="{loc:Loc model.capability.label}"
 															 FontSize="10"
 															 Opacity="0.4"
 															 HorizontalAlignment="Center"/>
@@ -241,7 +241,7 @@
 									Spacing="8"
 									Margin="0,16,0,0">
 
-				<Button Content="{loc:Loc close}"
+				<Button Content="{loc:Loc common.close}"
 								Command="{Binding CloseCommand}"
 								Classes="Primary"/>
 

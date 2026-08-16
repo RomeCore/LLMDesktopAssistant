@@ -15,13 +15,14 @@ using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Users;
 using LLMDesktopAssistant.Utils;
 using Serilog;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.LLM.MVVM
 {
 	public class UserMessageVisibilityItemModel
 	{
 		public required MessageVisibility Visibility { get; init; }
-		public required string Title { get; init; }
+		public required LocaleKeyBase Title { get; init; }
 		public required MaterialIconKind Icon { get; init; }
 	}
 
@@ -352,10 +353,10 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		private IDisposable? _generationCtsSubscription;
 
 		public ImmutableList<UserMessageVisibilityItemModel> Visibilities { get; } = [
-			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.Always, Title = "message_visibility_always", Icon = MaterialIconKind.Eye },
-			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.RevealAfterSend, Title = "message_visibility_reveal_after_send", Icon = MaterialIconKind.Clock },
-			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.OnlyUsers, Title = "message_visibility_only_users", Icon = MaterialIconKind.Account },
-			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.OnlyAgents, Title = "message_visibility_only_agents", Icon = MaterialIconKind.Robot }
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.Always, Title = Locale.GetKey("message.visibility.always"), Icon = MaterialIconKind.Eye },
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.RevealAfterSend, Title = Locale.GetKey("message.visibility.reveal_after_send"), Icon = MaterialIconKind.Clock },
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.OnlyUsers, Title = Locale.GetKey("message.visibility.only_users"), Icon = MaterialIconKind.Account },
+			new UserMessageVisibilityItemModel { Visibility = MessageVisibility.OnlyAgents, Title = Locale.GetKey("message.visibility.only_agents"), Icon = MaterialIconKind.Robot }
 		];
 
 		private UserMessageVisibilityItemModel _selectedVisibility;

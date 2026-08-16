@@ -104,7 +104,7 @@
 												Classes="IconButton"
 												Command="{Binding CopyArgumentsCommand}"
 												IsVisible="{Binding Arguments, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-												ToolTip.Tip="{loc:Loc copy-arguments}"
+												ToolTip.Tip="{loc:Loc tool.copy_arguments}"
 												Margin="3,0,0,0">
 
 									<ico:MaterialIcon Kind="CodeBraces"/>
@@ -116,7 +116,7 @@
 												Classes="IconButton"
 												Command="{Binding CopyResultCommand}"
 												IsVisible="{Binding Result, Converter={StaticResource StringNonEmptyToBooleanConverter}}"
-												ToolTip.Tip="{loc:Loc copy-result}"
+												ToolTip.Tip="{loc:Loc tool.copy_result}"
 												Margin="3,0,0,0">
 
 									<ico:MaterialIcon Kind="ContentCopy"/>
@@ -152,7 +152,7 @@
 													BorderBrush="{DynamicResource DefaultForeground}"
 													BorderThickness="0,0,0,1"
 													Padding="8,6">
-										<TextBlock Text="{loc:Loc tool-arguments}"
+										<TextBlock Text="{loc:Loc tool.arguments}"
 																FontSize="18"
 																FontWeight="Bold"/>
 									</Border>
@@ -171,7 +171,7 @@
 													BorderBrush="{DynamicResource DefaultForeground}"
 													BorderThickness="0,0,0,1"
 													Padding="8,6">
-										<TextBlock Text="{loc:Loc tool-result}"
+										<TextBlock Text="{loc:Loc tool.result}"
 																FontSize="18"
 																FontWeight="Bold"/>
 									</Border>
@@ -364,37 +364,37 @@
 
 				<Button Classes="MidIconButton"
 								Command="{Binding ApproveCommand}"
-								ToolTip.Tip="{loc:Loc approve}">
+								ToolTip.Tip="{loc:Loc common.approve}">
 					<ico:MaterialIcon Kind="Check"/>
 				</Button>
 				
 				<Button Classes="MidIconButton"
 								Command="{Binding ApproveWithWaitHintCommand}"
-								ToolTip.Tip="{loc:Loc tool-approve-with-wait-hint}">
+								ToolTip.Tip="{loc:Loc tool.call.action.approve_with_wait.hint}">
 					<ico:MaterialIcon Kind="ClockCheckOutline"/>
 				</Button>
 
 				<Button Classes="MidIconButton"
 								Command="{Binding ApproveWithNotesCommand}"
-								ToolTip.Tip="{loc:Loc tool-approve-with-notes}">
+								ToolTip.Tip="{loc:Loc tool.call.action.approve_with_notes}">
 					<ico:MaterialIcon Kind="TextBoxCheckOutline"/>
 				</Button>
 
 				<Button Classes="MidIconButton"
 								Command="{Binding CancelCommand}"
-								ToolTip.Tip="{loc:Loc cancel-tool}">
+								ToolTip.Tip="{loc:Loc tool.call.action.cancel}">
 					<ico:MaterialIcon Kind="Close"/>
 				</Button>
 
 				<Button Classes="MidIconButton"
 								Command="{Binding CancelWithWaitHintCommand}"
-								ToolTip.Tip="{loc:Loc tool-cancel-with-wait-hint}">
+								ToolTip.Tip="{loc:Loc tool.call.action.cancel_with_wait.hint}">
 					<ico:MaterialIcon Kind="ClockRemoveOutline"/>
 				</Button>
 
 				<Button Classes="MidIconButton"
 								Command="{Binding CancelWithReasonCommand}"
-								ToolTip.Tip="{loc:Loc tool-cancel-with-reason}">
+								ToolTip.Tip="{loc:Loc tool.call.action.cancel_with_reason}">
 					<ico:MaterialIcon Kind="TextBoxRemoveOutline"/>
 				</Button>
 
@@ -409,18 +409,18 @@
 
 				<TextBox x:Name="NotesTextBox2"
 								 KeyDown="NotesTextBox_KeyDown"
-								 PlaceholderText="{loc:Loc tool-notes-placeholder}"/>
+								 PlaceholderText="{loc:Loc tool.call.notes.placeholder}"/>
 
 				<Button Classes="MidIconButton"
 								Command="{Binding CommitNotesCommand}"
 								CommandParameter="{Binding #NotesTextBox2.Text}"
-								ToolTip.Tip="{loc:Loc tool-commit-notes}">
+								ToolTip.Tip="{loc:Loc tool.call.action.commit_notes}">
 					<ico:MaterialIcon Kind="Check"/>
 				</Button>
 
 				<Button Classes="MidIconButton"
 								Command="{Binding CancelNotesCommand}"
-								ToolTip.Tip="{loc:Loc cancel}">
+								ToolTip.Tip="{loc:Loc common.cancel}">
 					<ico:MaterialIcon Kind="Close"/>
 				</Button>
 

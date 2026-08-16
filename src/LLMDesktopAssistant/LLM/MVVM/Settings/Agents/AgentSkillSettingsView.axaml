@@ -15,7 +15,7 @@
 
 		<!-- Enable skills checkbox -->
 		<CheckBox IsChecked="{Binding SkillSettings.EnableSkills}"
-						  Content="{loc:Loc settings-skills_enable}"/>
+						  Content="{loc:Loc settings.skills.enable}"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
@@ -25,7 +25,7 @@
 		
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-							   Text="{loc:Loc settings-skills_skill_list}"
+							   Text="{loc:Loc settings.agent.skills.skill_list}"
 							   FontSize="{DynamicResource FontSizeL}"
 							   FontWeight="Bold"
 							   VerticalAlignment="Center"/>
@@ -45,30 +45,30 @@
 			</ComboBox>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc settings-skills_skill_list_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.skills.skill_list.hint}"
 						   Opacity="0.6"
 						   TextWrapping="Wrap"/>
 
 		<!-- Column headers -->
 		<Grid ColumnDefinitions="Auto,*,Auto,50">
 			<TextBlock Grid.Column="0"
-							   Text="{loc:Loc enable}"
+							   Text="{loc:Loc common.enable}"
 							   FontWeight="Bold"
 							   Margin="5,0,0,0"
 							   MinWidth="60"/>
 
 			<TextBlock Grid.Column="1"
-							   Text="{loc:Loc name}"
+							   Text="{loc:Loc common.name}"
 							   FontWeight="Bold"
 							   Margin="5,0,0,0"/>
 
 			<TextBlock Grid.Column="2"
-							   Text="{loc:Loc settings-skills_injection_mode}"
+							   Text="{loc:Loc settings.agent.skills.injection_mode}"
 							   FontWeight="Bold"
 							   Margin="5,0,5,0"/>
 
 			<TextBlock Grid.Column="3"
-							   Text="{loc:Loc reset}"
+							   Text="{loc:Loc common.reset}"
 							   FontWeight="Bold"
 							   Margin="5,0"/>
 		</Grid>
@@ -119,7 +119,7 @@
 												Command="{Binding ResetCommand}"
 												HorizontalAlignment="Center"
 												Classes="IconButton"
-												ToolTip.Tip="{loc:Loc reset}">
+												ToolTip.Tip="{loc:Loc common.reset}">
 									<ico:MaterialIcon Kind="Refresh"/>
 								</Button>
 							</Grid>

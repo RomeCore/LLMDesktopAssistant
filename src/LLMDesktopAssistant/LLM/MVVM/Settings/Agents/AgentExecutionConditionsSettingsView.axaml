@@ -18,7 +18,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-						  Text="{loc:Loc settings_mentions}"
+						  Text="{loc:Loc settings.agent.mentions}"
 						  FontWeight="Bold"
 						  FontSize="{DynamicResource FontSizeL}"
 						  VerticalAlignment="Center"/>
@@ -42,9 +42,9 @@
 
 		<!-- Can be mentioned -->
 		<CheckBox IsChecked="{Binding EffectiveMention.CanBeMentioned, Mode=TwoWay}"
-					Content="{loc:Loc settings_can_be_mentioned}"/>
+					Content="{loc:Loc settings.agent.mentions.can_be_mentioned}"/>
 
-		<TextBlock Text="{loc:Loc settings_can_be_mentioned_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.mentions.can_be_mentioned.hint}"
 					  Opacity="0.6"
 					  TextWrapping="Wrap"/>
 
@@ -56,9 +56,9 @@
 
 		<!-- Can mention others -->
 		<CheckBox IsChecked="{Binding EffectiveMention.CanMentionOthers, Mode=TwoWay}"
-					Content="{loc:Loc settings_can_mention_others}"/>
+					Content="{loc:Loc settings.agent.mentions.can_mention_others}"/>
 
-		<TextBlock Text="{loc:Loc settings_can_mention_others_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.mentions.can_mention_others.hint}"
 					  Opacity="0.6"
 					  TextWrapping="Wrap"/>
 

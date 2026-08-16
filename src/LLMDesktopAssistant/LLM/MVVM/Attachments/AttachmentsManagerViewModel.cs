@@ -142,7 +142,7 @@ namespace LLMDesktopAssistant.LLM.Attachments
 		{
 			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = Locale.Get("select_working_directory"),
+				Title = Locale.Get("env.select_working_directory"),
 				FileTypeFilter = [
 					new FilePickerFileType("All files (*.*)")
 				],

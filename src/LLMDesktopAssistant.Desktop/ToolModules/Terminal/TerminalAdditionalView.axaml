@@ -47,7 +47,7 @@
 
 				<StackPanel Orientation="Horizontal" Spacing="8">
 
-					<Button Content="{loc:Loc cancel}"
+					<Button Content="{loc:Loc common.cancel}"
 									Command="{Binding CancelCommand}"
 									IsVisible="{Binding IsRunning}"
 									Classes="Secondary"

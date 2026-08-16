@@ -170,9 +170,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 				if (CustomTestResult is null)
 					return null;
 				if (CustomTestResult == true)
-					return LocalizationManager.LocalizeStatic("db_test_ok");
+					return LocalizationManager.LocalizeStatic("db.test.success");
 				return string.IsNullOrWhiteSpace(_customTestResultMessage)
-					? LocalizationManager.LocalizeStatic("db_test_failed")
+					? LocalizationManager.LocalizeStatic("db.test.error")
 					: _customTestResultMessage;
 			}
 		}
@@ -296,8 +296,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 				anonymousCounts.TryGetValue(key, out var count);
 				anonymousCounts[key] = count + 1;
 				var displayName = count == 0
-					? $"{LocalizationManager.LocalizeStatic("db_custom_connection")}"
-					: $"{LocalizationManager.LocalizeStatic("db_custom_connection")} #{count + 1}";
+					? $"{LocalizationManager.LocalizeStatic("db.custom_connection")}"
+					: $"{LocalizationManager.LocalizeStatic("db.custom_connection")} #{count + 1}";
 				ManagerItems.Add(new DatabaseConnectionManagerItem(displayName, type, connectionString, isAnonymous: true));
 			}
 
@@ -381,7 +381,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			var items = EffectiveDatabaseConnection.Items;
 			var setting = new DatabaseConnectionSetting
 			{
-				Name = LocalizationManager.LocalizeStatic("db_new_connection"),
+				Name = LocalizationManager.LocalizeStatic("db.new_connection"),
 				ConnectorType = DatabaseConnectorType.SQLite,
 				IsEnabled = true,
 				IsActive = !items.Any(i => i.IsActive && i.IsEnabled)
@@ -423,7 +423,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = LocalizationManager.LocalizeStatic("db_select_sqlite_file"),
+				Title = LocalizationManager.LocalizeStatic("db.select_sqlite_file"),
 				AllowMultiple = false,
 				FileTypeFilter = [new FilePickerFileType("SQLite") { Patterns = ["*.db", "*.sqlite", "*.sqlite3"] }]
 			});
@@ -441,7 +441,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			{
 				var connection = EffectiveDatabaseConnection;
 				if (string.IsNullOrWhiteSpace(connection.CustomConnectionString))
-					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_connection_string"));
+					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db.test.empty_connection_string"));
 
 				_connectionManager.Activate(connection.CustomConnectionString, connection.CustomConnectorType);
 				await _connectionManager.GetCurrentAsync(cancellationToken);
@@ -472,7 +472,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			{
 				var connection = EffectiveDatabaseConnection;
 				if (string.IsNullOrWhiteSpace(connection.CustomConnectionString))
-					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db_test_empty_connection_string"));
+					throw new InvalidOperationException(LocalizationManager.LocalizeStatic("db.test.empty_connection_string"));
 
 				await _cache.TestAsync(connection.CustomConnectorType, connection.CustomConnectionString, cancellationToken);
 				CustomTestResult = true;

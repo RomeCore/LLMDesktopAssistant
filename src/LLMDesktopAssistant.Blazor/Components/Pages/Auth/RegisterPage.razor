@@ -14,8 +14,8 @@
 			<div class="auth-icon">
 				<MaterialIconComponent Kind="@MaterialIconKind.AccountPlus" Size="48" Color="#0078d4" />
 			</div>
-			<h1 class="auth-title">@LocalizationManager.LocalizeStatic("webui_register_title")</h1>
-			<p class="auth-subtitle">@LocalizationManager.LocalizeStatic("webui_register_subtitle")</p>
+			<h1 class="auth-title">@LocalizationManager.LocalizeStatic("webui.register.title")</h1>
+			<p class="auth-subtitle">@LocalizationManager.LocalizeStatic("webui.register.subtitle")</p>
 		</div>
 
 		@if (_errorMessage != null)
@@ -36,46 +36,46 @@
 
 		<div class="auth-form">
 			<div class="auth-field">
-				<label for="reg-login">@LocalizationManager.LocalizeStatic("webui_login_label")</label>
+				<label for="reg-login">@LocalizationManager.LocalizeStatic("webui.login.label")</label>
 				<input id="reg-login"
 					   type="text"
 					   @bind="_login"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="@LocalizationManager.LocalizeStatic("webui_register_placeholder_login")"
+					   placeholder="@LocalizationManager.LocalizeStatic("webui.register.login.placeholder")"
 					   disabled="@_isLoading" />
 			</div>
 
 			<div class="auth-field">
-				<label for="reg-name">@LocalizationManager.LocalizeStatic("webui_profile_name")</label>
+				<label for="reg-name">@LocalizationManager.LocalizeStatic("webui.profile.name")</label>
 				<input id="reg-name"
 					   type="text"
 					   @bind="_name"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="@LocalizationManager.LocalizeStatic("webui_register_placeholder_name")"
+					   placeholder="@LocalizationManager.LocalizeStatic("webui.register.name.placeholder")"
 					   disabled="@_isLoading" />
 			</div>
 
 			<div class="auth-field">
-				<label for="reg-password">@LocalizationManager.LocalizeStatic("webui_password_label")</label>
+				<label for="reg-password">@LocalizationManager.LocalizeStatic("webui.login.password.label")</label>
 				<input id="reg-password"
 					   type="password"
 					   @bind="_password"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="@LocalizationManager.LocalizeStatic("webui_register_placeholder_password")"
+					   placeholder="@LocalizationManager.LocalizeStatic("webui.register.password.placeholder")"
 					   disabled="@_isLoading" />
 			</div>
 
 			<div class="auth-field">
-				<label for="reg-password-confirm">@LocalizationManager.LocalizeStatic("webui_register_placeholder_confirm")</label>
+				<label for="reg-password-confirm">@LocalizationManager.LocalizeStatic("webui.register.confirm.placeholder")</label>
 				<input id="reg-password-confirm"
 					   type="password"
 					   @bind="_passwordConfirm"
 					   @bind:event="oninput"
 					   class="auth-input"
-					   placeholder="@LocalizationManager.LocalizeStatic("webui_register_placeholder_confirm")"
+					   placeholder="@LocalizationManager.LocalizeStatic("webui.register.confirm.placeholder")"
 					   disabled="@_isLoading" />
 			</div>
 
@@ -84,18 +84,18 @@
 				@if (_isLoading)
 				{
 					<span class="auth-spinner"></span>
-					<span>@LocalizationManager.LocalizeStatic("webui_register_loading")</span>
+					<span>@LocalizationManager.LocalizeStatic("webui.register.loading")</span>
 				}
 				else
 				{
 					<MaterialIconComponent Kind="@MaterialIconKind.AccountPlus" Size="18" Color="white" />
-					<span>@LocalizationManager.LocalizeStatic("webui_register_btn")</span>
+					<span>@LocalizationManager.LocalizeStatic("webui.register.button")</span>
 				}
 			</button>
 
 			<div class="auth-footer">
-				<span>@LocalizationManager.LocalizeStatic("webui_register_have_account")</span>
-				<a href="/login" class="auth-link">@LocalizationManager.LocalizeStatic("webui_register_login_link")</a>
+				<span>@LocalizationManager.LocalizeStatic("webui.register.have_account")</span>
+				<a href="/login" class="auth-link">@LocalizationManager.LocalizeStatic("webui.register.login.link")</a>
 			</div>
 		</div>
 	</div>
@@ -116,13 +116,13 @@
 
 		if (_password != _passwordConfirm)
 		{
-			_errorMessage = LocalizationManager.LocalizeStatic("webui_register_error_password_mismatch");
+			_errorMessage = LocalizationManager.LocalizeStatic("webui.register.error.password_mismatch");
 			return;
 		}
 
 		if (_password.Length < 4)
 		{
-			_errorMessage = LocalizationManager.LocalizeStatic("webui_register_error_password_short");
+			_errorMessage = LocalizationManager.LocalizeStatic("webui.register.error.password_short");
 			return;
 		}
 
@@ -142,14 +142,14 @@
 
 			if (registeredUser != null)
 			{
-				_successMessage = LocalizationManager.LocalizeStatic("webui_register_success");
+				_successMessage = LocalizationManager.LocalizeStatic("webui.register.success");
 				_login = string.Empty;
 				_password = string.Empty;
 				_passwordConfirm = string.Empty;
 			}
 			else
 			{
-				_errorMessage = LocalizationManager.LocalizeStatic("webui_register_error_exists");
+				_errorMessage = LocalizationManager.LocalizeStatic("webui.register.error.exists");
 			}
 		}
 		catch (Exception ex)

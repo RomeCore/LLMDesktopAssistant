@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -75,7 +75,7 @@
 								<ico:MaterialIcon Kind="TimerSandComplete"
 																	Width="18" Height="18"
 																	VerticalAlignment="Center"/>
-								<TextBlock Text="{loc:Loc agent_tasks}"
+								<TextBlock Text="{loc:Loc task.title}"
 													 FontSize="15" FontWeight="Bold"
 													 VerticalAlignment="Center"/>
 							</StackPanel>

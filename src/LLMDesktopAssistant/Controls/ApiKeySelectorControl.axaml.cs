@@ -138,7 +138,7 @@ namespace LLMDesktopAssistant.Controls
 			var prevSelected = ApiKeyId;
 
 			ApiKeyWrapperItemModel.Empty.Item.Name =
-				LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("settings_apikey_none");
+				LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("settings.api.none");
 
 			KeyComboBox.Items.Clear();
 			KeyComboBox.Items.Add(ApiKeyWrapperItemModel.Empty);

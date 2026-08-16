@@ -50,12 +50,12 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			switch (tool.Source)
 			{
 				case ToolSource.MCP:
-					TitlePrefix = Locale.GetKey("tool_source_mcp");
+					TitlePrefix = Locale.GetKey("tool.source.mcp");
 					TitlePrefixForeground = Brushes.LightGreen;
 					break;
 
 				case ToolSource.Meta:
-					TitlePrefix = Locale.GetKey("tool_source_meta");
+					TitlePrefix = Locale.GetKey("tool.source.meta");
 					TitlePrefixForeground = Brushes.Magenta;
 					break;
 			}
@@ -153,19 +153,19 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			ResetCommand = new RelayCommand(ResetAllTools);
 
 			Title = title;
-			TitleSuffix = string.Format(Locale.Get("tool_name_suffix_hint"), ToolCount);
+			TitleSuffix = string.Format(Locale.Get("tool.name_suffix.hint"), ToolCount);
 
 			if (Tools.Select(t => t.Info.Source).GetAllEqualOrDefault() is ToolSource equalSource)
 			{
 				switch (equalSource)
 				{
 					case ToolSource.MCP:
-						TitlePrefix = Locale.Get("tool_source_mcp");
+						TitlePrefix = Locale.Get("tool.source.mcp");
 						TitlePrefixForeground = Brushes.LightGreen;
 						break;
 
 					case ToolSource.Meta:
-						TitlePrefix = Locale.Get("tool_source_meta");
+						TitlePrefix = Locale.Get("tool.source.meta");
 						TitlePrefixForeground = Brushes.Magenta;
 						break;
 				}
@@ -432,7 +432,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			foreach (var flag in GetBehaviourFlags())
 			{
-				var key = $"tool_behaviour_{flag.ToString().ToLower()}";
+				var key = $"tool.behaviour.{flag.ToString().ToLower()}";
 				var displayName = LocalizationManager.LocalizeStatic(key);
 				var description = LocalizationManager.LocalizeStatic($"{key}_hint");
 

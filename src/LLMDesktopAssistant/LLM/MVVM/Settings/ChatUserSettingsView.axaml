@@ -19,7 +19,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-					   Text="{loc:Loc chat_settings_users}"
+					   Text="{loc:Loc settings.chat.users}"
 					   FontSize="{DynamicResource FontSizeL}"
 					   FontWeight="Bold"
 					   VerticalAlignment="Center"/>
@@ -29,13 +29,13 @@
 					Classes="Primary">
 				<StackPanel Orientation="Horizontal" Spacing="4">
 					<ico:MaterialIcon Kind="AddCircle" Width="14" Height="14"/>
-					<TextBlock Text="{loc:Loc add}"/>
+					<TextBlock Text="{loc:Loc common.add}"/>
 				</StackPanel>
 			</Button>
 
 		</Grid>
 
-		<TextBlock Text="{loc:Loc chat_settings_users_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.users.hint}"
 				   Opacity="0.6"
 				   TextWrapping="Wrap"/>
 
@@ -79,7 +79,7 @@
 									CommandParameter="{Binding}"
 									Classes="IconButton"
 									VerticalAlignment="Center"
-									ToolTip.Tip="{loc:Loc edit}">
+									ToolTip.Tip="{loc:Loc common.edit}">
 								<ico:MaterialIcon Kind="Edit"/>
 							</Button>
 
@@ -88,7 +88,7 @@
 									CommandParameter="{Binding}"
 									Classes="IconButton"
 									VerticalAlignment="Center"
-									ToolTip.Tip="{loc:Loc delete}">
+									ToolTip.Tip="{loc:Loc common.delete}">
 								<ico:MaterialIcon Kind="Delete"/>
 							</Button>
 

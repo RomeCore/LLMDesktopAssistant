@@ -38,7 +38,7 @@
 			<!-- Selection hint -->
 			<TextBlock FontSize="11" Opacity="0.5"
 					   IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}">
-				<Run Text="{loc:Loc forms_make_selection}"/>
+				<Run Text="{loc:Loc forms.choice.selection.title}"/>
 			</TextBlock>
 
 			<ItemsControl ItemsSource="{Binding Options}"
@@ -62,11 +62,11 @@
 
 			<Panel IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}">
 				<TextBox Text="{Binding CustomInput}"
-						 PlaceholderText="{loc:Loc forms_custom_option}"
+						 PlaceholderText="{loc:Loc forms.choice.custom_option}"
 						 IsVisible="{Binding AllowCustom}"/>
 			</Panel>
 
-			<Button Content="{loc:Loc ok}"
+			<Button Content="{loc:Loc common.ok}"
 					Command="{Binding SubmitCommand}"
 					HorizontalAlignment="Right"
 					MinWidth="80"
@@ -77,7 +77,7 @@
 				<ico:MaterialIcon Kind="CheckCircle"
 								  Width="20" Height="20"
 								  Foreground="{DynamicResource SuccessColor}"/>
-				<TextBlock Text="{loc:Loc forms_selection_confirmed}" FontSize="13" Opacity="0.7"/>
+				<TextBlock Text="{loc:Loc forms.choice.selection.confirmed}" FontSize="13" Opacity="0.7"/>
 			</StackPanel>
 
 		</StackPanel>

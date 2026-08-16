@@ -27,43 +27,43 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional.Context
 		/// Localized label: "Model".
 		/// </summary>
 		[BsonIgnore]
-		public string ModelLabel => LocalizationManager.LocalizeStatic("message_token_cost_model");
+		public string ModelLabel => LocalizationManager.LocalizeStatic("message.token_cost.model");
 
 		/// <summary>
 		/// Localized label: "Input tokens".
 		/// </summary>
 		[BsonIgnore]
-		public string InputTokensLabel => LocalizationManager.LocalizeStatic("message_token_cost_input");
+		public string InputTokensLabel => LocalizationManager.LocalizeStatic("message.token_cost.input");
 
 		/// <summary>
 		/// Localized label: "Cache hit".
 		/// </summary>
 		[BsonIgnore]
-		public string CacheHitLabel => LocalizationManager.LocalizeStatic("message_token_cost_cache_hit");
+		public string CacheHitLabel => LocalizationManager.LocalizeStatic("message.token_cost.cache_hit");
 
 		/// <summary>
 		/// Localized label: "Cache miss".
 		/// </summary>
 		[BsonIgnore]
-		public string CacheMissLabel => LocalizationManager.LocalizeStatic("message_token_cost_cache_miss");
+		public string CacheMissLabel => LocalizationManager.LocalizeStatic("message.token_cost.cache_miss");
 
 		/// <summary>
 		/// Localized label: "Output tokens".
 		/// </summary>
 		[BsonIgnore]
-		public string OutputTokensLabel => LocalizationManager.LocalizeStatic("message_token_cost_output");
+		public string OutputTokensLabel => LocalizationManager.LocalizeStatic("message.token_cost.output");
 
 		/// <summary>
 		/// Localized label: "TTFT" (Time to First Token).
 		/// </summary>
 		[BsonIgnore]
-		public string TTFTLabel => LocalizationManager.LocalizeStatic("message_token_cost_ttft");
+		public string TTFTLabel => LocalizationManager.LocalizeStatic("message.token_cost.ttft");
 
 		/// <summary>
 		/// Localized label: "Generation time".
 		/// </summary>
 		[BsonIgnore]
-		public string GenerationTimeLabel => LocalizationManager.LocalizeStatic("message_token_cost_generation_time");
+		public string GenerationTimeLabel => LocalizationManager.LocalizeStatic("message.token_cost.generation_time");
 
 		/// <summary>
 		/// Formatted input tokens with thousands separator.

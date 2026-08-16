@@ -19,11 +19,11 @@
 						Padding="8,6">
 			<StackPanel Orientation="Horizontal" Spacing="4">
 				<Button Command="{Binding AddAgentCommand}" Classes="IconButton"
-						ToolTip.Tip="{loc:Loc settings_add_agent}">
+						ToolTip.Tip="{loc:Loc settings.agent.add}">
 					<ico:MaterialIcon Kind="Plus"/>
 				</Button>
 				<Button Command="{Binding RemoveAgentCommand}" Classes="IconButton"
-						ToolTip.Tip="{loc:Loc settings_remove_agent}">
+						ToolTip.Tip="{loc:Loc settings.agent.remove}">
 					<ico:MaterialIcon Kind="Close"/>
 				</Button>
 			</StackPanel>
@@ -48,7 +48,7 @@
 										CornerRadius="4"
 										Padding="4,3"
 										VerticalAlignment="Center">
-									<TextBlock Text="{loc:Loc settings_agent_global}" FontSize="14"/>
+									<TextBlock Text="{loc:Loc settings.agent.global}" FontSize="14"/>
 								</Border>
 							</StackPanel>
 
@@ -59,7 +59,7 @@
 									IsVisible="{Binding IsGlobal, Converter={StaticResource InverseBooleanConverter}}"
 									Classes="IconButton"
 									Margin="2,0"
-									ToolTip.Tip="{loc:Loc settings_promote_to_global}">
+									ToolTip.Tip="{loc:Loc settings.agent.promote_global}">
 								<ico:MaterialIcon Kind="CloudUpload"/>
 							</Button>
 
@@ -70,7 +70,7 @@
 									IsVisible="{Binding IsGlobal}"
 									Classes="IconButton"
 									Margin="2,0"
-									ToolTip.Tip="{loc:Loc settings_copy_to_local}">
+									ToolTip.Tip="{loc:Loc settings.agent.copy_to_local}">
 								<ico:MaterialIcon Kind="CloudDownload"/>
 							</Button>
 

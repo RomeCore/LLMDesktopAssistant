@@ -50,9 +50,9 @@ public class ToolBehaviourFlagInfo
 	/// </summary>
 	public static ToolBehaviourFlagInfo Create(ToolBehaviour flag)
 	{
-		var key = $"tool_behaviour_{flag.ToString().ToLower()}";
+		var key = $"tool.behaviour.{flag.ToString().ToLower()}";
 		var displayName = LocalizationManager.LocalizeStatic(key);
-		var description = LocalizationManager.LocalizeStatic($"{key}_hint");
+		var description = LocalizationManager.LocalizeStatic($"{key}.hint");
 
 		// Fallback to name if localization missing
 		if (displayName == key || string.IsNullOrEmpty(displayName))

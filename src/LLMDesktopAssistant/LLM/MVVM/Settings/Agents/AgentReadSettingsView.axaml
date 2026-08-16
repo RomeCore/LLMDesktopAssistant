@@ -16,7 +16,7 @@
 		<!-- ===================== Read Permissions ===================== -->
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc settings_read_permissions}"
+								 Text="{loc:Loc settings.agent.read_permissions}"
 								 FontWeight="Bold"
 								 FontSize="{DynamicResource FontSizeL}"
 								 VerticalAlignment="Center"
@@ -38,7 +38,7 @@
 			</ComboBox>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc settings_read_permissions_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.read_permissions.hint}"
 							 Opacity="0.6"
 							 TextWrapping="Wrap"/>
 
@@ -67,7 +67,7 @@
 		<!-- ===================== Exposure Mode ===================== -->
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc settings_exposure_mode}"
+								 Text="{loc:Loc settings.agent.exposure_mode}"
 								 FontWeight="Bold"
 								 FontSize="{DynamicResource FontSizeL}"
 								 VerticalAlignment="Center"
@@ -89,7 +89,7 @@
 			</ComboBox>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc settings_exposure_mode_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.exposure_mode.hint}"
 							 Opacity="0.6"
 							 TextWrapping="Wrap"/>
 
@@ -118,7 +118,7 @@
 		<!-- ===================== Context ===================== -->
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc settings_context}"
+								 Text="{loc:Loc settings.agent.context}"
 								 FontWeight="Bold"
 								 FontSize="{DynamicResource FontSizeL}"
 								 VerticalAlignment="Center"
@@ -147,7 +147,7 @@
 			</Grid.ColumnDefinitions>
 
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc settings_max_visible_rounds}"
+								 Text="{loc:Loc settings.agent.max_visible_rounds}"
 								 VerticalAlignment="Center"
 								 Margin="0,0,8,0"/>
 
@@ -159,24 +159,24 @@
 										 HorizontalAlignment="Left"/>
 		</Grid>
 			
-		<TextBlock Text="{loc:Loc settings_max_visible_rounds_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.max_visible_rounds.hint}"
 							 Opacity="0.5"
 							 FontSize="11"
 							 Margin="24,0,0,4"/>
 
 		<CheckBox IsChecked="{Binding EffectiveContext.AllowContextShields, Mode=TwoWay}"
-							Content="{loc:Loc settings_allow_context_shields}"
+							Content="{loc:Loc settings.agent.allow_context_shields}"
 							Margin="0,2"/>
-		<TextBlock Text="{loc:Loc settings_allow_context_shields_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.allow_context_shields.hint}"
 							 Opacity="0.5"
 							 FontSize="11"
 							 Margin="24,0,0,4"
 							 TextWrapping="Wrap"/>
 
 		<CheckBox IsChecked="{Binding EffectiveContext.AllowSummaries, Mode=TwoWay}"
-							Content="{loc:Loc settings_allow_summaries}"
+							Content="{loc:Loc settings.agent.allow_summaries}"
 							Margin="0,2"/>
-		<TextBlock Text="{loc:Loc settings_allow_summaries_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.allow_summaries.hint}"
 							 Opacity="0.5"
 							 FontSize="11"
 							 Margin="24,0,0,4"
@@ -189,12 +189,12 @@
 							 Margin="0,10"/>
 
 		<!-- ===================== Agent Filter ===================== -->
-		<TextBlock Text="{loc:Loc settings_agent_read_filter}"
+		<TextBlock Text="{loc:Loc settings.agent.read_filter}"
 							 FontWeight="Bold"
 							 FontSize="{DynamicResource FontSizeL}"
 							 Margin="0,5,0,0"/>
 
-		<TextBlock Text="{loc:Loc settings_agent_read_filter_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.read_filter.hint}"
 							 Opacity="0.6"
 							 TextWrapping="Wrap"/>
 
@@ -208,7 +208,7 @@
 				</Grid.ColumnDefinitions>
 
 				<TextBlock Grid.Column="0"
-									 Text="{loc:Loc settings_filter_mode}"
+									 Text="{loc:Loc settings.agent.filter.mode}"
 									 VerticalAlignment="Center"
 									 Margin="0,0,8,0"/>
 
@@ -217,8 +217,8 @@
 									Width="160"
 									HorizontalAlignment="Left">
 					<ComboBox.Items>
-						<ComboBoxItem Content="{loc:Loc settings_filter_whitelist}"/>
-						<ComboBoxItem Content="{loc:Loc settings_filter_blacklist}"/>
+						<ComboBoxItem Content="{loc:Loc settings.agent.filter.whitelist}"/>
+						<ComboBoxItem Content="{loc:Loc settings.agent.filter.blacklist}"/>
 					</ComboBox.Items>
 				</ComboBox>
 			</Grid>
@@ -227,12 +227,12 @@
 			<StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Left" DockPanel.Dock="Left">
 				<Button Command="{Binding SelectAllAgentsCommand}"
 								Classes="IconButton"
-								ToolTip.Tip="{loc:Loc settings_select_all}">
+								ToolTip.Tip="{loc:Loc settings.agent.filter.select_all}">
 					<ico:MaterialIcon Kind="CheckAll"/>
 				</Button>
 				<Button Command="{Binding DeselectAllAgentsCommand}"
 								Classes="IconButton"
-								ToolTip.Tip="{loc:Loc settings_deselect_all}">
+								ToolTip.Tip="{loc:Loc settings.agent.filter.deselect_all}">
 					<ico:MaterialIcon Kind="CloseBoxMultiple"/>
 				</Button>
 			</StackPanel>
@@ -260,7 +260,7 @@
 										CornerRadius="4"
 										Padding="4,1"
 										VerticalAlignment="Center">
-									<TextBlock Text="{loc:Loc settings_agent_global}" FontSize="10"/>
+									<TextBlock Text="{loc:Loc settings.agent.global}" FontSize="10"/>
 								</Border>
 							</StackPanel>
 						</DataTemplate>

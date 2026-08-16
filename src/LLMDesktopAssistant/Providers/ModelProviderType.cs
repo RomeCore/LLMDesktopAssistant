@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.Providers
 		/// Gets the display name of this provider type, localized via key "model_provider_{Id}".
 		/// Falls back to <see cref="Id"/> if localization is not found.
 		/// </summary>
-		public string DisplayName => LocalizationManager.LocalizeStatic("model_provider_" + Id);
+		public string DisplayName => LocalizationManager.LocalizeStatic("model.provider." + Id);
 
 		/// <summary>
 		/// Gets the default endpoint URL for this model provider type.

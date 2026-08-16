@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -17,23 +17,23 @@
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <ico:MaterialIcon Kind="TimerSandComplete" Width="22" Height="22"
                                   VerticalAlignment="Center"/>
-                <TextBlock Text="{loc:Loc agent_tasks}"
+                <TextBlock Text="{loc:Loc task.title}"
                            FontSize="18" FontWeight="Bold"
                            VerticalAlignment="Center"/>
             </StackPanel>
 
             <TextBox Text="{Binding SearchText, Mode=TwoWay}"
-                     PlaceholderText="{loc:Loc search}"
+                     PlaceholderText="{loc:Loc common.search}"
                      Classes="SearchTextBox"/>
 
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <CheckBox IsChecked="{Binding ShowOnlyRunning, Mode=TwoWay}"
-                          Content="{loc:Loc only_running}"
+                          Content="{loc:Loc task.filter.only_running}"
                           VerticalAlignment="Center"/>
 
                 <Button Command="{Binding ClearCompletedCommand}"
                         Classes="SmallButton"
-                        Content="{loc:Loc clear_completed}"
+                        Content="{loc:Loc task.clear_completed}"
                         HorizontalAlignment="Right"/>
             </StackPanel>
 

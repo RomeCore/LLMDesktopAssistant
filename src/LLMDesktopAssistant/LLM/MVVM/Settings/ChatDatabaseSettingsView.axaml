@@ -18,7 +18,7 @@
 		<!-- ============================================================ -->
 		<Grid ColumnDefinitions="*,Auto,Auto">
 			<TextBlock Grid.Column="0"
-					   Text="{loc:Loc chat_settings_databases}"
+					   Text="{loc:Loc settings.chat.databases}"
 					   FontSize="{DynamicResource FontSizeL}"
 					   FontWeight="Bold"
 					   VerticalAlignment="Center"/>
@@ -39,12 +39,12 @@
 			<Button Grid.Column="2"
 					Command="{Binding AddDatabaseConnectionCommand}"
 					Classes="IconButton"
-					ToolTip.Tip="{loc:Loc db_add_connection}">
+					ToolTip.Tip="{loc:Loc db.add_connection}">
 				<ico:MaterialIcon Kind="Plus"/>
 			</Button>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc db_hint}"
+		<TextBlock Text="{loc:Loc db.hint}"
 				   Opacity="0.6"
 				   TextWrapping="Wrap"
 				   Margin="0,0,0,8"/>
@@ -59,19 +59,19 @@
 			<StackPanel Spacing="6">
 				<Grid ColumnDefinitions="*,Auto">
 					<TextBlock Grid.Column="0"
-							   Text="{loc:Loc db_active_connections}"
+							   Text="{loc:Loc db.active_connections}"
 							   FontWeight="Bold"
 							   VerticalAlignment="Center"/>
 
 					<Button Grid.Column="1"
 							Command="{Binding DisconnectAllCommand}"
 							Classes="IconButton"
-							ToolTip.Tip="{loc:Loc db_disconnect_all}">
+							ToolTip.Tip="{loc:Loc db.disconnect_all}">
 						<ico:MaterialIcon Kind="LanDisconnect"/>
 					</Button>
 				</Grid>
 
-				<TextBlock Text="{loc:Loc db_no_connections}"
+				<TextBlock Text="{loc:Loc db.no_connections}"
 						   Opacity="0.6"
 						   IsVisible="{Binding IsManagerEmpty}"/>
 
@@ -107,7 +107,7 @@
 										Command="{Binding #VMRoot.DataContext.DisconnectManagerItemCommand}"
 										CommandParameter="{Binding}"
 										Classes="IconButton"
-										ToolTip.Tip="{loc:Loc db_disconnect}">
+										ToolTip.Tip="{loc:Loc db.disconnect}">
 									<ico:MaterialIcon Kind="LanDisconnect"/>
 								</Button>
 							</Grid>
@@ -131,10 +131,10 @@
 								 Command="{Binding SetCustomActiveCommand}"
 								 VerticalAlignment="Center"
 								 Margin="0,0,6,0"
-								 ToolTip.Tip="{loc:Loc env_active}"/>
+								 ToolTip.Tip="{loc:Loc env.active}"/>
 
 					<TextBlock Grid.Column="1"
-							   Text="{loc:Loc db_custom_connection}"
+							   Text="{loc:Loc db.custom_connection}"
 							   FontWeight="Bold"
 							   VerticalAlignment="Center"/>
 				</Grid>
@@ -156,7 +156,7 @@
 							Command="{Binding ConnectCustomCommand}"
 							Classes="IconButton"
 							IsEnabled="{Binding IsCustomTesting, Converter={StaticResource InverseBooleanConverter}}"
-							ToolTip.Tip="{loc:Loc db_connect}">
+							ToolTip.Tip="{loc:Loc db.connect}">
 						<ico:MaterialIcon Kind="Play"/>
 					</Button>
 
@@ -164,13 +164,13 @@
 							Command="{Binding TestCustomConnectionCommand}"
 							Classes="IconButton"
 							IsEnabled="{Binding IsCustomTesting, Converter={StaticResource InverseBooleanConverter}}"
-							ToolTip.Tip="{loc:Loc db_test_connection}">
+							ToolTip.Tip="{loc:Loc db.test_connection}">
 						<ico:MaterialIcon Kind="LanConnect"/>
 					</Button>
 				</Grid>
 
 				<TextBox Text="{Binding EffectiveDatabaseConnection.CustomConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-						 PlaceholderText="{loc:Loc db_connection_string_placeholder}"
+						 PlaceholderText="{loc:Loc db.connection_string.placeholder}"
 						 UseFloatingPlaceholder="True"
 						 VerticalContentAlignment="Center"/>
 
@@ -210,11 +210,11 @@
 											 CommandParameter="{Binding}"
 											 VerticalAlignment="Center"
 											 Margin="0,0,6,0"
-											 ToolTip.Tip="{loc:Loc env_active}"/>
+											 ToolTip.Tip="{loc:Loc env.active}"/>
 
 								<TextBox Grid.Column="1"
 										 Text="{Binding Setting.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-										 PlaceholderText="{loc:Loc env_name}"
+										 PlaceholderText="{loc:Loc env.name}"
 										 UseFloatingPlaceholder="True"
 										 VerticalContentAlignment="Center"
 										 MinWidth="120"
@@ -222,14 +222,14 @@
 
 								<CheckBox Grid.Column="2"
 										  IsChecked="{Binding Setting.IsEnabled}"
-										  Content="{loc:Loc env_enabled}"/>
+										  Content="{loc:Loc env.enabled}"/>
 
 								<Button Grid.Column="4"
 										Command="{Binding #VMRoot.DataContext.MoveDatabaseConnectionUpCommand}"
 										CommandParameter="{Binding}"
 										Classes="IconButton"
 										Margin="2,0"
-										ToolTip.Tip="{loc:Loc env_move_up}">
+										ToolTip.Tip="{loc:Loc env.move_up}">
 									<ico:MaterialIcon Kind="ChevronUp"/>
 								</Button>
 
@@ -238,7 +238,7 @@
 										CommandParameter="{Binding}"
 										Classes="IconButton"
 										Margin="2,0"
-										ToolTip.Tip="{loc:Loc env_move_down}">
+										ToolTip.Tip="{loc:Loc env.move_down}">
 									<ico:MaterialIcon Kind="ChevronDown"/>
 								</Button>
 
@@ -247,7 +247,7 @@
 										CommandParameter="{Binding}"
 										Classes="IconButton"
 										Margin="2,0"
-										ToolTip.Tip="{loc:Loc env_remove}">
+										ToolTip.Tip="{loc:Loc env.remove}">
 									<ico:MaterialIcon Kind="Delete"/>
 								</Button>
 							</Grid>
@@ -270,7 +270,7 @@
 										Command="{Binding #VMRoot.DataContext.BrowseSqliteFileCommand}"
 										CommandParameter="{Binding}"
 										Classes="IconButton"
-										ToolTip.Tip="{loc:Loc db_browse_sqlite_file}">
+										ToolTip.Tip="{loc:Loc db.browse_sqlite_file}">
 									<ico:MaterialIcon Kind="FolderOpen"/>
 								</Button>
 							</Grid>
@@ -283,13 +283,13 @@
 											  Classes="IconButton"
 											  Margin="0,0,6,0"
 											  VerticalAlignment="Center"
-											  ToolTip.Tip="{loc:Loc db_use_encrypted_connection_string}">
+											  ToolTip.Tip="{loc:Loc db.use_encrypted_connection_string}">
 									<ico:MaterialIcon Kind="Lock"/>
 								</ToggleButton>
 
 								<TextBox Grid.Column="1"
 										 Text="{Binding Setting.RawConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-										 PlaceholderText="{loc:Loc db_connection_string_placeholder}"
+										 PlaceholderText="{loc:Loc db.connection_string.placeholder}"
 										 UseFloatingPlaceholder="True"
 										 VerticalContentAlignment="Center"
 										 Margin="0,0,6,0"
@@ -303,7 +303,7 @@
 										Command="{Binding ConnectCommand}"
 										Classes="IconButton"
 										IsEnabled="{Binding IsTesting, Converter={StaticResource InverseBooleanConverter}}"
-										ToolTip.Tip="{loc:Loc db_connect}"
+										ToolTip.Tip="{loc:Loc db.connect}"
 										Margin="0,0,4,0">
 									<ico:MaterialIcon Kind="Play"/>
 								</Button>
@@ -312,7 +312,7 @@
 										Command="{Binding TestCommand}"
 										Classes="IconButton"
 										IsEnabled="{Binding IsTesting, Converter={StaticResource InverseBooleanConverter}}"
-										ToolTip.Tip="{loc:Loc db_test_connection}">
+										ToolTip.Tip="{loc:Loc db.test_connection}">
 									<ico:MaterialIcon Kind="LanConnect"/>
 								</Button>
 							</Grid>

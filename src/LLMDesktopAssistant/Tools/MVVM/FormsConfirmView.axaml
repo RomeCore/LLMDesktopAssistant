@@ -74,7 +74,7 @@
 											Width="20" Height="20"
 											Foreground="{DynamicResource SuccessColor}"/>
 
-						<TextBlock Text="{loc:Loc forms_confirmed}" FontSize="13" Opacity="0.7"/>
+						<TextBlock Text="{loc:Loc forms.confirm.confirmed}" FontSize="13" Opacity="0.7"/>
 
 					</StackPanel>
 					
@@ -85,7 +85,7 @@
 											Width="20" Height="20"
 											Foreground="{DynamicResource CancelColor}"/>
 
-						<TextBlock Text="{loc:Loc forms_canceled}" FontSize="13" Opacity="0.7"/>
+						<TextBlock Text="{loc:Loc forms.confirm.canceled}" FontSize="13" Opacity="0.7"/>
 
 					</StackPanel>
 					

@@ -15,7 +15,7 @@
 					HorizontalAlignment="Stretch"
 					Padding="12,0">
 
-		<TextBlock Text="{loc:Loc message_context_shield}"
+		<TextBlock Text="{loc:Loc message.context_shield}"
 							 Foreground="White"
 							 FontSize="12"
 							 VerticalAlignment="Center"

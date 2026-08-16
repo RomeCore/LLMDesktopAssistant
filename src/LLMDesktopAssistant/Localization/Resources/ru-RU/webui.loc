@@ -1,0 +1,76 @@
+// Blazor web UI.
+
+%locale: ru-RU
+%namespace: webui
+
+anonymous: Анонимус
+assistant: Ассистент
+branch.next: Следующая ветка
+branch.previous: Предыдущая ветка
+chat.input.placeholder: Введите сообщение...
+chat.title: dASS WebUI
+delete: Удалить
+edit: Редактировать
+generation.stop: Остановить генерацию
+host.copy_url: Скопировать адрес
+host.open_browser: Открыть в браузере
+host.password: Пароль
+host.password.placeholder: Оставьте пустым, если пароль не нужен
+host.port: Адрес
+host.settings: Настройки
+host.start: Запустить
+host.status.running: Запущен
+host.status.stopped: Остановлен
+host.stop: Остановить
+host.title: Blazor WebUI
+login.button: Войти
+login.create: Создать
+login.error: Некорректный логин или пароль. Попробуйте снова.
+login.label: Логин
+login.loading: Вход в систему...
+login.master_password.label: Пароль для входа в чат
+login.master_password.placeholder: Введите мастер-пароль...
+login.no_account: Нет аккаунта?
+login.password.label: Пароль
+login.password.placeholder: Введите пароль...
+login.placeholder: Введите логин...
+login.title: Войдите в аккаунт
+profile.avatar.delete.title: Удалить аватарку
+profile.avatar.deleted: Аватарка удалена
+profile.avatar.error: Не удалось загрузить изображение
+profile.avatar.timeout: Время выбора изображения истекло. Попробуйте снова.
+profile.avatar.updated: Аватарка обновлена!
+profile.button: Профиль
+profile.cancel: Отмена
+profile.close: Закрыть
+profile.description: Описание
+profile.description.placeholder: Описание для агентов...
+profile.logout: Выйти
+profile.name: Имя
+profile.save: Сохранить
+profile.save.success: Сохранено!
+profile.saving: Сохранение...
+profile.title: Настройки профиля
+readiness.always_ready: Всегда готов
+readiness.auto.title: Автоматически готовиться
+readiness.count.title: Готовых / Онлайн
+readiness.ready: Готов
+readiness.ready.title: Ты готов?
+reasoning: Рассуждения
+regenerate: Перегенерировать
+register.button: Зарегистрироваться
+register.confirm.placeholder: Повтори пароль...
+register.error.exists: Пользователь с таким логином уже существует
+register.error.password_mismatch: Пароли не совпадают!
+register.error.password_short: Пароль слишком короткий! Минимум 4 символа.
+register.have_account: Уже есть аккаунт?
+register.loading: Идет регистрация...
+register.login.link: Войти
+register.login.placeholder: Придумай логин...
+register.name.placeholder: Твоё имя
+register.password.placeholder: Придумай пароль...
+register.subtitle: Создай аккаунт
+register.success: Аккаунт создан! Теперь можно войти
+register.title: Регистрация
+resend: Отправить заново
+result: Результат

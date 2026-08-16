@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
 						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -55,7 +55,7 @@
 										Grid.Column="1">
 
 					<!-- Task name -->
-					<TextBlock Text="{Binding TaskName, TargetNullValue={loc:Loc unnamed_task}}"
+					<TextBlock Text="{Binding TaskName, TargetNullValue={loc:Loc task.unnamed}}"
 										 FontSize="13" FontWeight="Medium"
 										 TextTrimming="CharacterEllipsis"
 										 MaxLines="1"/>
@@ -74,7 +74,7 @@
 										CornerRadius="3"
 										Padding="4,1"
 										Margin="0,2,0,0">
-							<TextBlock Text="{loc:Loc confirmation_needed}"
+							<TextBlock Text="{loc:Loc task.confirmation_needed}"
 												 FontSize="10"
 												 Foreground="White"
 												 FontWeight="Bold"/>
@@ -126,14 +126,14 @@
 					<Button Classes="SmallIconButton"
 									Command="{Binding CancelCommand}"
 									IsVisible="{Binding IsRunning}"
-									ToolTip.Tip="{loc:Loc cancel_task}">
+									ToolTip.Tip="{loc:Loc task.cancel}">
 						<ico:MaterialIcon Kind="Stop" Width="14" Height="14"/>
 					</Button>
 
 					<ToggleButton IsChecked="{Binding IsExpanded, Mode=TwoWay}"
 												IsVisible="{Binding SubTaskViewModels.Any}"
 												Classes="SmallIconButton"
-												ToolTip.Tip="{loc:Loc toggle_subtasks}">
+												ToolTip.Tip="{loc:Loc task.toggle_subtasks}">
 						<ico:MaterialIcon Kind="ChevronDown" Width="14" Height="14"/>
 					</ToggleButton>
 

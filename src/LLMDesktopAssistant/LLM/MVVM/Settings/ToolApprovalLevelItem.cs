@@ -21,7 +21,7 @@ public class ToolApprovalLevelItem
 	public ToolApprovalLevelItem(ToolApprovalLevel value)
 	{
 		Value = value;
-		var key = $"approval_level_{value.ToString().ToLower()}";
+		var key = $"settings.tool.approval_level.{value.ToString().ToLower()}";
 		DisplayName = LocalizationManager.LocalizeStatic(key);
 
 		// Fallback to enum name if localization missing

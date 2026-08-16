@@ -107,7 +107,7 @@ public class FormsFilePickerViewModel : AdditionalMessageViewModel
 				{
 					AllowMultiple = AllowMultiple,
 					Title = Title,
-					FileTypeFilter = [new FilePickerFileType(LocalizationManager.LocalizeStatic("forms_selected_files"))
+					FileTypeFilter = [new FilePickerFileType(LocalizationManager.LocalizeStatic("forms.file_picker.selected_files"))
 					{
 						Patterns = Filter?.Split(';')
 					}]
@@ -123,7 +123,7 @@ public class FormsFilePickerViewModel : AdditionalMessageViewModel
 				var saveParams = new FilePickerSaveOptions
 				{
 					Title = Title,
-					FileTypeChoices = [new FilePickerFileType(LocalizationManager.LocalizeStatic("forms_selected_files"))
+					FileTypeChoices = [new FilePickerFileType(LocalizationManager.LocalizeStatic("forms.file_picker.selected_files"))
 					{
 						Patterns = Filter?.Split(';')
 					}]

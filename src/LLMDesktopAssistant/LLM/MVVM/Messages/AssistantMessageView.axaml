@@ -63,27 +63,27 @@
 
 			<Button Command="{Binding RegenerateCommand}"
 							Classes="IconButton"
-							ToolTip.Tip="{loc:Loc regenerate}">
+							ToolTip.Tip="{loc:Loc message.regenerate}">
 				<ico:MaterialIcon Kind="Refresh"/>
 			</Button>
 
 			<Button Command="{Binding ResendCommand}"
 							Classes="IconButton"
 							IsVisible="{Binding ContainsToolCalls}"
-							ToolTip.Tip="{loc:Loc resend}">
+							ToolTip.Tip="{loc:Loc message.resend}">
 				<ico:MaterialIcon Kind="ArrowUDownLeft"/>
 			</Button>
 
 			<Button Command="{Binding ResendCommand}"
 							Classes="IconButton"
 							IsVisible="{Binding ContainsToolCalls, Converter={StaticResource InverseBooleanConverter}}"
-							ToolTip.Tip="{loc:Loc resend}">
+							ToolTip.Tip="{loc:Loc message.resend}">
 				<ico:MaterialIcon Kind="ChevronDoubleDown"/>
 			</Button>
 			
 			<Button Command="{Binding DeleteCommand}"
 							Classes="IconButton"
-							ToolTip.Tip="{loc:Loc delete}">
+							ToolTip.Tip="{loc:Loc message.delete}">
 
 				<ico:MaterialIcon Kind="Delete"/>
 			</Button>
@@ -95,7 +95,7 @@
 				<Button Command="{Binding SwitchBranchCommand}"
 								Classes="IconButton"
 								CommandParameter="{Binding PreviousBranchIndex}"
-								ToolTip.Tip="{loc:Loc previous_branch}">
+								ToolTip.Tip="{loc:Loc message.previous_branch}">
 					<ico:MaterialIcon Kind="ChevronLeft"/>
 				</Button>
 
@@ -105,7 +105,7 @@
 				<Button Command="{Binding SwitchBranchCommand}"
 								Classes="IconButton"
 								CommandParameter="{Binding NextBranchIndex}"
-								ToolTip.Tip="{loc:Loc next_branch}">
+								ToolTip.Tip="{loc:Loc message.next_branch}">
 					<ico:MaterialIcon Kind="ChevronRight"/>
 				</Button>
 

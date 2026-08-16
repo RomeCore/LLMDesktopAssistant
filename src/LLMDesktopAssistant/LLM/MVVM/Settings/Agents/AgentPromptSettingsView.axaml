@@ -18,7 +18,7 @@
 					Margin="0,0,0,4">
 
 			<ToggleButton Command="{Binding TogglePreviewCommand}"
-										ToolTip.Tip="{loc:Loc prompt_preview_toggle}"
+										ToolTip.Tip="{loc:Loc prompt.preview.toggle}"
 										IsChecked="{Binding IsPreviewVisible, Mode=OneWay}">
 
 				<StackPanel Orientation="Horizontal" Spacing="8">
@@ -26,7 +26,7 @@
 					<ico:MaterialIcon Kind="Eye"
 														Width="18" Height="18"/>
 					
-					<TextBlock Text="{loc:Loc prompt_preview_header}"
+					<TextBlock Text="{loc:Loc prompt.preview.header}"
 										 FontWeight="Bold"
 										 VerticalAlignment="Center"/>
 
@@ -60,7 +60,7 @@
 		<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
 
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc prompt_system_prompt}"
+								 Text="{loc:Loc prompt.system_prompt}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -82,7 +82,7 @@
 
 		</Grid>
 
-		<TextBlock Text="{loc:Loc prompt_system_prompt_hint}"
+		<TextBlock Text="{loc:Loc prompt.system_prompt.hint}"
 					  Opacity="0.6"
 					  TextWrapping="Wrap"/>
 
@@ -92,7 +92,7 @@
 					MinHeight="80"
 					MaxHeight="200"
 					ScrollViewer.VerticalScrollBarVisibility="Auto"
-					PlaceholderText="{loc:Loc prompt_system_prompt_placeholder}"/>
+					PlaceholderText="{loc:Loc prompt.system_prompt.placeholder}"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
@@ -106,7 +106,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc prompt_components}"
+								 Text="{loc:Loc prompt.components}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -128,7 +128,7 @@
 
 		</Grid>
 
-		<TextBlock Text="{loc:Loc prompt_components_hint}"
+		<TextBlock Text="{loc:Loc prompt.components.hint}"
 					  Opacity="0.6"
 					  TextWrapping="Wrap"/>
 
@@ -170,7 +170,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc prompt_persona}"
+								 Text="{loc:Loc prompt.persona}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -193,23 +193,23 @@
 		</Grid>
 
 		<!-- Nickname -->
-		<TextBlock Text="{loc:Loc prompt_assistant_nickname_hint}"
+		<TextBlock Text="{loc:Loc prompt.assistant_nickname.hint}"
 								Opacity="0.6"/>
 
 		<TextBox Text="{Binding EffectivePersona.Nickname, Mode=TwoWay}"
 							TextWrapping="NoWrap"
-							PlaceholderText="{loc:Loc prompt_user_nickname_placeholder}"/>
+							PlaceholderText="{loc:Loc prompt.user_nickname.placeholder}"/>
 
 		<!-- Custom persona checkbox -->
 		<CheckBox IsChecked="{Binding EffectivePersona.UseCustomPersona, Mode=TwoWay}"
-					Content="{loc:Loc prompt_use_custom_persona}"/>
+					Content="{loc:Loc prompt.use_custom_persona}"/>
 
 		<!-- Custom Persona -->
 		<StackPanel IsVisible="{Binding EffectivePersona.UseCustomPersona}"
 					Spacing="4"
 					Margin="20,0,0,0">
 
-			<TextBlock Text="{loc:Loc prompt_custom_persona_hint}"
+			<TextBlock Text="{loc:Loc prompt.custom_persona.hint}"
 						  Opacity="0.6"
 						  TextWrapping="Wrap"/>
 
@@ -219,7 +219,7 @@
 						MinHeight="100"
 						MaxHeight="200"
 						ScrollViewer.VerticalScrollBarVisibility="Auto"
-						PlaceholderText="{loc:Loc prompt_custom_persona_placeholder}"/>
+						PlaceholderText="{loc:Loc prompt.custom_persona.placeholder}"/>
 
 		</StackPanel>
 
@@ -233,7 +233,7 @@
 
 				<ComboBox SelectedItem="{Binding SelectedPersona, Mode=TwoWay}"
 							ItemsSource="{Binding AvailablePersonas}"
-							PlaceholderText="{loc:Loc prompt_select_persona}"
+							PlaceholderText="{loc:Loc prompt.select_persona}"
 							MinWidth="200">
 
 					<ComboBox.ItemTemplate>
@@ -246,7 +246,7 @@
 
 				<Button Classes="IconButton"
 						Command="{Binding ClearPersonaCommand}"
-						ToolTip.Tip="{loc:Loc persona_clear}">
+						ToolTip.Tip="{loc:Loc prompt.persona.clear}">
 
 					<ico:MaterialIcon Kind="Remove"/>
 
@@ -254,7 +254,7 @@
 
 			</StackPanel>
 
-			<TextBlock Text="{loc:Loc prompt_selected_persona_hint}"
+			<TextBlock Text="{loc:Loc prompt.selected_persona.hint}"
 						  Opacity="0.6"
 						  FontSize="12"/>
 
@@ -272,7 +272,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc prompt_specialization}"
+								 Text="{loc:Loc prompt.specialization}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -294,19 +294,19 @@
 
 		</Grid>
 
-		<TextBlock Text="{loc:Loc prompt_specialization_hint}"
+		<TextBlock Text="{loc:Loc prompt.specialization.hint}"
 					  Opacity="0.6"
 					  TextWrapping="Wrap"/>
 
 		<CheckBox IsChecked="{Binding EffectiveSpecialization.UseCustomSpecialization, Mode=TwoWay}"
-					Content="{loc:Loc prompt_use_custom_specialization}"/>
+					Content="{loc:Loc prompt.use_custom_specialization}"/>
 
 		<!-- Custom Specialization -->
 		<StackPanel IsVisible="{Binding EffectiveSpecialization.UseCustomSpecialization}"
 					Spacing="4"
 					Margin="20,0,0,0">
 
-			<TextBlock Text="{loc:Loc prompt_custom_specialization_hint}"
+			<TextBlock Text="{loc:Loc prompt.custom_specialization.hint}"
 						  Opacity="0.6"
 						  TextWrapping="Wrap"/>
 
@@ -316,7 +316,7 @@
 						MinHeight="100"
 						MaxHeight="200"
 						ScrollViewer.VerticalScrollBarVisibility="Auto"
-						PlaceholderText="{loc:Loc prompt_custom_specialization_placeholder}"/>
+						PlaceholderText="{loc:Loc prompt.custom_specialization.placeholder}"/>
 
 		</StackPanel>
 
@@ -330,7 +330,7 @@
 
 				<ComboBox SelectedItem="{Binding SelectedSpecialization, Mode=TwoWay}"
 							ItemsSource="{Binding AvailableSpecializations}"
-							PlaceholderText="{loc:Loc prompt_select_specialization}"
+							PlaceholderText="{loc:Loc prompt.select_specialization}"
 							MinWidth="200">
 
 					<ComboBox.ItemTemplate>
@@ -343,7 +343,7 @@
 
 				<Button Classes="IconButton"
 						Command="{Binding ClearSpecializationCommand}"
-						ToolTip.Tip="{loc:Loc specialization_clear}">
+						ToolTip.Tip="{loc:Loc prompt.specialization.clear}">
 
 					<ico:MaterialIcon Kind="Remove"/>
 
@@ -351,7 +351,7 @@
 
 			</StackPanel>
 
-			<TextBlock Text="{loc:Loc prompt_selected_specialization_hint}"
+			<TextBlock Text="{loc:Loc prompt.selected_specialization.hint}"
 						  Opacity="0.6"
 						  FontSize="12"/>
 
@@ -369,7 +369,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc prompt_behavior_sliders}"
+								 Text="{loc:Loc prompt.behavior_sliders}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -391,7 +391,7 @@
 
 		</Grid>
 
-		<TextBlock Text="{loc:Loc prompt_behavior_sliders_hint}"
+		<TextBlock Text="{loc:Loc prompt.behavior_sliders.hint}"
 					  Opacity="0.6"
 					  TextWrapping="Wrap"/>
 

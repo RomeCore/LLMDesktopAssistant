@@ -17,7 +17,7 @@
 		<!-- ============================================================ -->
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-					   Text="{loc:Loc settings-memory_options}"
+					   Text="{loc:Loc settings.chat.memory.options}"
 					   FontSize="{DynamicResource FontSizeL}"
 					   FontWeight="Bold"
 					   VerticalAlignment="Center"/>
@@ -37,19 +37,19 @@
 			</ComboBox>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc settings-memory_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.memory.hint}"
 				   Opacity="0.6"
 				   TextWrapping="Wrap"
 				   Margin="0,0,0,8"/>
 
-		<CheckBox Content="{loc:Loc settings-memory_enable_memory}"
+		<CheckBox Content="{loc:Loc settings.chat.memory.enable_memory}"
 						  IsChecked="{Binding EffectiveMemoryOptions.EnableMemory, Mode=TwoWay}"/>
 
 		<!-- Manual control (via tools) -->
-		<CheckBox Content="{loc:Loc settings-memory_manual_control}"
+		<CheckBox Content="{loc:Loc settings.chat.memory.manual_control}"
 				  IsChecked="{Binding EffectiveMemoryOptions.ManualControlEnabled, Mode=TwoWay}"
 				  IsEnabled="{Binding EffectiveMemoryOptions.EnableMemory}"
-				  ToolTip.Tip="{loc:Loc settings-memory_manual_control_hint}"/>
+				  ToolTip.Tip="{loc:Loc settings.chat.memory.manual_control.hint}"/>
 
 
 		<!-- Automatic retrieval -->
@@ -57,7 +57,7 @@
 			  IsEnabled="{Binding EffectiveMemoryOptions.EnableMemory}">
 
 			<CheckBox Grid.Column="0"
-					  Content="{loc:Loc settings-memory_auto_retrieval}"
+					  Content="{loc:Loc settings.chat.memory.auto_retrieval}"
 					  IsChecked="{Binding EffectiveMemoryOptions.AutomaticRetrievalEnabled, Mode=TwoWay}"
 					  VerticalAlignment="Center"/>
 
@@ -73,7 +73,7 @@
 			  IsEnabled="{Binding EffectiveMemoryOptions.EnableMemory}">
 
 			<CheckBox Grid.Column="0"
-					  Content="{loc:Loc settings-memory_auto_recording}"
+					  Content="{loc:Loc settings.chat.memory.auto_recording}"
 					  IsChecked="{Binding EffectiveMemoryOptions.AutomaticRecordingEnabled, Mode=TwoWay}"
 					  VerticalAlignment="Center"/>
 
@@ -95,7 +95,7 @@
 		<!-- ============================================================ -->
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-					   Text="{loc:Loc settings-summarization}"
+					   Text="{loc:Loc settings.chat.summarization}"
 					   FontSize="{DynamicResource FontSizeL}"
 					   FontWeight="Bold"
 					   VerticalAlignment="Center"/>
@@ -115,12 +115,12 @@
 			</ComboBox>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc settings-summarization_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.summarization.hint}"
 				   Opacity="0.6"
 				   TextWrapping="Wrap"
 				   Margin="0,0,0,8"/>
 
-		<CheckBox Content="{loc:Loc settings-summarization_enabled}"
+		<CheckBox Content="{loc:Loc settings.chat.summarization.enabled}"
 						  IsChecked="{Binding EffectiveSummarization.AutoSummarizationEnabled, Mode=TwoWay}"/>
 
 		<!-- Separator -->
@@ -129,7 +129,7 @@
 				   Opacity="0.2"
 				   Margin="0,10"/>
 
-		<TextBlock Text="{loc:Loc settings-summarization_trigger_tokens_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.summarization.trigger_tokens.hint}"
 				   Margin="0,2"/>
 		<NumericUpDown Value="{Binding EffectiveSummarization.SummarizationTriggerTokens, Mode=TwoWay}"
 					   Minimum="1024"
@@ -138,7 +138,7 @@
 					   FormatString="N0"
 					   HorizontalAlignment="Stretch"/>
 
-		<TextBlock Text="{loc:Loc settings-summarization_ignore_last_rounds_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.summarization.ignore_last_rounds.hint}"
 				   Margin="0,2"/>
 		<NumericUpDown Value="{Binding EffectiveSummarization.IgnoreLastRounds, Mode=TwoWay}"
 					   Minimum="0"
@@ -147,7 +147,7 @@
 					   FormatString="N0"
 					   HorizontalAlignment="Stretch"/>
 
-		<TextBlock Text="{loc:Loc settings-summarizer_model_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.summarization.summarizer_model.hint}"
 				   Margin="0,2"/>
 		<ctrl:ModelSelectorControl SelectedModel="{Binding EffectiveSummarization.SummarizerModel, Mode=TwoWay}"/>
 

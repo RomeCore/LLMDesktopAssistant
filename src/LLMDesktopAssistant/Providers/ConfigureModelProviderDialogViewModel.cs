@@ -192,16 +192,16 @@ namespace LLMDesktopAssistant.Providers
 				{
 					await _modelManager.RefreshModelsAsync(EditingProvider);
 					RefreshModelList();
-					ConnectionTestResult = LocalizationManager.LocalizeStatic("settings_providers_connection_success");
+					ConnectionTestResult = LocalizationManager.LocalizeStatic("settings.provider.connection.success");
 				}
 				else
 				{
-					ConnectionTestResult = LocalizationManager.LocalizeStatic("settings_providers_connection_failed");
+					ConnectionTestResult = LocalizationManager.LocalizeStatic("settings.provider.connection.failure");
 				}
 			}
 			catch (Exception ex)
 			{
-				ConnectionTestResult = LocalizationManager.LocalizeStaticFormat("settings_providers_connection_error", ex.Message);
+				ConnectionTestResult = LocalizationManager.LocalizeStaticFormat("settings.provider.connection.error", ex.Message);
 			}
 			finally
 			{
@@ -220,12 +220,12 @@ namespace LLMDesktopAssistant.Providers
 			{
 				var result = await _modelManager.CheckConnectionAsync(EditingProvider);
 				ConnectionTestResult = result
-					? LocalizationManager.LocalizeStatic("settings_providers_connection_success")
-					: LocalizationManager.LocalizeStatic("settings_providers_connection_failed");
+					? LocalizationManager.LocalizeStatic("settings.provider.connection.success")
+					: LocalizationManager.LocalizeStatic("settings.provider.connection.failure");
 			}
 			catch (Exception ex)
 			{
-				ConnectionTestResult = LocalizationManager.LocalizeStaticFormat("settings_providers_connection_error", ex.Message);
+				ConnectionTestResult = LocalizationManager.LocalizeStaticFormat("settings.provider.connection.error", ex.Message);
 			}
 			finally
 			{

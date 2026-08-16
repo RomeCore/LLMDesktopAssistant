@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.Settings.Application
 		/// Gets the display name of the language. For the system language option, a localized name is shown.
 		/// </summary>
 		public string DisplayName => string.IsNullOrEmpty(Name)
-			? LocalizationManager.LocalizeStatic("settings_language_system")
+			? LocalizationManager.LocalizeStatic("settings.language.system")
 			: Name;
 	}
 

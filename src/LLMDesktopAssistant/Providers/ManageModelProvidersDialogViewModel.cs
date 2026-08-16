@@ -123,7 +123,7 @@ namespace LLMDesktopAssistant.Providers
 		public string Name => Source.Name;
 		public string Type => Source.Type;
 		public string? EndpointUri => Source.EndpointUri;
-		public string ModelCount => LocalizationManager.LocalizeStaticFormat("settings_providers_models_count", Source.Models.Count, Source.SelectedModelNames.Count, Source.CustomModels.Count);
+		public string ModelCount => LocalizationManager.LocalizeStaticFormat("settings.provider.models.count", Source.Models.Count, Source.SelectedModelNames.Count, Source.CustomModels.Count);
 
 		private string? _connectionStatus;
 		public string? ConnectionStatus

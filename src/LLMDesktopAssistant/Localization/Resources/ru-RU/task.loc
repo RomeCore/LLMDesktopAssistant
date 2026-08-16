@@ -1,0 +1,37 @@
+// Agent tasks: details, statuses, tool calls.
+
+%locale: ru-RU
+%namespace: task
+
+cancel: Отменить задачу
+clear_completed: Очистить завершённые
+confirmation_needed: ⚠ ТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ
+detail.behaviour: Режим выполнения
+detail.configuration: Конфигурация
+detail.error: Ошибка
+detail.id: ID задачи
+detail.inference_time: инференс
+detail.input_cache_hit_tokens: вход кеш
+detail.input_tokens: вход
+detail.max_parallel_tools: Макс. параллельных тулов
+detail.messages: Сообщения
+detail.output_tokens: выход
+detail.parent: Родительская задача
+detail.reasoning: Размышления
+detail.time_to_first_token: первый токен
+detail.timeout: Таймаут
+detail.tool_calls: Вызовы инструментов
+detail.tools_count: Доступно инструментов
+filter.only_running: Только активные
+role.assistant: Ассистент
+role.system: Система
+role.user: Пользователь
+status.cancelled: Отменено
+status.executing: Выполнение
+status.failed: Ошибка
+status.pending: Ожидание
+status.success: Успешно
+status.unknown: Неизвестно
+title: Задачи агентов
+toggle_subtasks: Показать/скрыть подзадачи
+unnamed: (безымянная задача)

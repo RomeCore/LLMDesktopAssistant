@@ -16,7 +16,7 @@
 			<ico:MaterialIcon Kind="Cloud" Width="20" Height="20"
 							  VerticalAlignment="Center"
 							  Foreground="{DynamicResource PrimaryAccentBrush}"/>
-			<TextBlock Text="{loc:Loc settings_providers_manage_title}"
+			<TextBlock Text="{loc:Loc settings.provider.manage.title}"
 					   FontSize="{DynamicResource FontSizeL}"
 					   FontWeight="Bold"
 					   VerticalAlignment="Center"/>
@@ -29,7 +29,7 @@
 					Classes="Primary">
 				<StackPanel Orientation="Horizontal" Spacing="4">
 					<ico:MaterialIcon Kind="AddCircle" Width="14" Height="14"/>
-					<TextBlock Text="{loc:Loc settings_providers_add}"/>
+					<TextBlock Text="{loc:Loc settings.provider.add}"/>
 				</StackPanel>
 			</Button>
 
@@ -37,7 +37,7 @@
 					IsEnabled="{Binding IsProviderSelected}">
 				<StackPanel Orientation="Horizontal" Spacing="4">
 					<ico:MaterialIcon Kind="Edit" Width="14" Height="14"/>
-					<TextBlock Text="{loc:Loc settings_providers_edit}"/>
+					<TextBlock Text="{loc:Loc settings.provider.edit}"/>
 				</StackPanel>
 			</Button>
 
@@ -46,7 +46,7 @@
 					Classes="Danger">
 				<StackPanel Orientation="Horizontal" Spacing="4">
 					<ico:MaterialIcon Kind="Delete" Width="14" Height="14"/>
-					<TextBlock Text="{loc:Loc settings_providers_delete}"/>
+					<TextBlock Text="{loc:Loc settings.provider.delete}"/>
 				</StackPanel>
 			</Button>
 		</StackPanel>
@@ -84,7 +84,7 @@
 
 		<!-- Close button -->
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-			<Button Content="{loc:Loc settings_providers_close}"
+			<Button Content="{loc:Loc common.close}"
 					Command="{Binding CloseCommand}"/>
 		</StackPanel>
 

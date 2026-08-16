@@ -1,0 +1,309 @@
+// Settings UI (chat settings, api keys, providers, stages, agents, memory, skills, tools).
+
+%locale: 
+%namespace: settings
+
+agent.add: Add new agent
+agent.allow_context_shields: Allow context shields
+agent.allow_context_shields.hint: If enabled, the agent will respect context shields and will not see messages placed after them.
+agent.allow_summaries: Allow summaries
+agent.allow_summaries.hint: If enabled, the agent will be able to see summaries of the earlier chat history and stop reading at summarized segments.
+agent.context: Context
+agent.copy_to_local: Copy to chat agents
+agent.exposure_mode: Exposure mode
+agent.exposure_mode.hint: Controls what parts of this agent's messages are visible to other agents.
+agent.filter.blacklist: Blacklist
+agent.filter.deselect_all: Deselect all
+agent.filter.mode: Filter mode:
+agent.filter.select_all: Select all
+agent.filter.whitelist: Whitelist
+agent.generation.additional_parameters: Additional parameters
+agent.generation.additional_parameters.hint: Custom parameters sent directly to the LLM API in JSON format. Parameter names must match the API specification.
+agent.generation.custom_model: Custom model
+agent.generation.enable_custom_model: Enable custom model
+agent.generation.enable_max_tokens: Enable max tokens override
+agent.generation.enable_reasoning: Enable reasoning settings override
+agent.generation.enable_temperature: Enable temperature override
+agent.generation.max_tokens: Max tokens
+agent.generation.max_tokens_value: Max output tokens
+agent.generation.param.name: Name
+agent.generation.param.value: Value (JSON)
+agent.generation.reasoning: Reasoning
+agent.generation.reasoning.default: Default
+agent.generation.reasoning.disabled: Disabled
+agent.generation.reasoning.high: High
+agent.generation.reasoning.low: Low
+agent.generation.reasoning.maximum: Maximum
+agent.generation.reasoning.medium: Medium
+agent.generation.reasoning.minimal: Minimal
+agent.generation.reasoning.none: None
+agent.generation.reasoning.xhigh: X-High
+agent.generation.reasoning_level: Reasoning level
+agent.generation.temperature: Temperature
+agent.generation.temperature_value: Temperature value
+agent.global: (global)
+agent.max_visible_rounds: Max visible rounds:
+agent.max_visible_rounds.hint: Limits how many recent conversation rounds (user message + assistant response) are visible to each agent. 0 means unlimited. Helps manage context window usage.
+agent.memory.add_block: New block
+agent.memory.attach: Attach
+agent.memory.attach.placeholder: Existing block...
+agent.memory.block_warning_no_content: Facts and logs are disabled for this block. The agent cannot read or write any memory to it.
+agent.memory.blocks: Memory blocks
+agent.memory.blocks.hint: Attach shared memory blocks to this agent. A block stores semantic facts, episodic logs and persistent state. Select a block in the list to edit its contents below.
+agent.memory.default_block_name: New memory block
+agent.memory.edit: Edit block
+agent.memory.enable: Enable agent memory
+agent.memory.missing_block: Missing block ({0})
+agent.memory.remove: Detach
+agent.mentions: Mentions
+agent.mentions.can_be_mentioned: Can be mentioned
+agent.mentions.can_be_mentioned.hint: Whether the agent can be mentioned by other agents and users, causing it to execute.
+agent.mentions.can_mention_others: Can mention others
+agent.mentions.can_mention_others.hint: Whether the agent can mention and trigger other agents.
+agent.promote_global: Promote to global
+agent.read_filter: Agent filter
+agent.read_filter.hint: Restricts which agents this agent can see based on whitelist or blacklist.
+agent.read_permissions: Read permissions
+agent.read_permissions.hint: Controls what types of messages and content this agent can read in the chat.
+agent.remove: Remove agent
+agent.skills.injection_mode: Injection
+agent.skills.skill_list: Skill Overrides
+agent.skills.skill_list.hint: Override skill settings for this agent. Disabled skills are excluded from the prompt. Toggle injection mode to include full skill body in the system prompt.
+agent.tools.behaviour_policy: Behaviour policy
+agents: Agents
+api.add: Add API Key
+api.add.title: Add API Key
+api.edit.title: Edit API Key
+api.manage.title: Manage API Keys
+api.name.label: Key Name
+api.name.placeholder: e.g. OpenAI Production, DeepSeek Personal
+api.name.required.error: Key name is required.
+api.none: None
+api.scheme.encrypted: Encrypted (AES-256)
+api.scheme.env: Environment Variable
+api.scheme.label: Storage Scheme
+api.scheme.raw: Raw (Plain Text)
+api.value.label: API Key Value
+api.value.placeholder: Enter your API key
+api.value.required.error: API key value is required.
+chat.databases: Databases
+chat.environment: Environment
+chat.execution: Execution
+chat.llm_properties: LLM Properties
+chat.mcp: MCP
+chat.memory: Memory
+chat.memory.auto_recording: Automatic recording
+chat.memory.auto_retrieval: Automatic retrieval
+chat.memory.enable_memory: Enable conversation memory
+chat.memory.hint: Configure how this chat records and retrieves conversation memory.
+chat.memory.manual_control: Manual control (via tools)
+chat.memory.manual_control.hint: Allow the agent to control memory manually using memory tools.
+chat.memory.options: Memory options
+chat.model.chat.hint: Chat model
+chat.model.router.hint: Agentic routing model
+chat.model.tools.hint: Agentic tools model
+chat.model.vision.hint: Vision model
+chat.models: Models
+chat.models.hint: Select the language models used for the chat, agentic routing, agentic tools and vision tasks.
+chat.prompts: Prompts
+chat.read: Read permissions
+chat.skills: Skills
+chat.summarization: Auto-summarization
+chat.summarization.enabled: Enable chat auto-summarization
+chat.summarization.hint: When enabled, the conversation is automatically summarized and compacted once it grows beyond the trigger threshold.
+chat.summarization.ignore_last_rounds.hint: Ignore last rounds
+chat.summarization.summarizer_model.hint: Summarizer model
+chat.summarization.trigger_tokens.hint: Trigger tokens
+chat.tools: Tools
+chat.users: Users
+chat.users.hint: Users that participate in this chat. The agent can address each user by name.
+default_id: Default
+execution_stages: Execution Stages
+language.system: System
+language.title: Language
+mcp.enable: Enable MCP
+mcp.servers: MCP servers
+mcp.servers.hint: Select the MCP servers whose tools will be available to agents in this chat.
+mcp.servers.toggle.hint: Enable or disable this MCP server
+memory.block.description.label: Description
+memory.block.editor.title: Block editor
+memory.block.embedding_model.label: Embedding model
+memory.block.facts.label: Store semantic facts
+memory.block.id.label: Block ID
+memory.block.logs.label: Store episodic logs
+memory.block.maintainer_model.label: Maintainer model
+memory.block.name.label: Name
+memory.block.storage.label: Block storage
+memory.clear.action: Clear memory
+memory.clear.confirm: All facts and logs stored in this block will be permanently deleted. This action cannot be undone.
+memory.clear.error: Failed to clear memory
+memory.clear.result: Removed facts: {0}, removed logs: {1}.
+memory.clear.success: Memory cleared
+memory.clear.title: Clear memory?
+memory.copy_suffix: copy
+memory.delete.action: Delete block
+memory.delete.confirm: The block and all its contents (facts, logs, state) will be permanently deleted. This action cannot be undone.
+memory.delete.error: Failed to delete block
+memory.delete.success: Block deleted
+memory.delete.title: Delete block?
+memory.duplicate.action: Duplicate
+memory.fact.add.error: Failed to store fact
+memory.fact.add.placeholder: Enter the fact text...
+memory.fact.add.success: Fact stored. ID: {0}
+memory.fact.add.title: Add fact
+memory.fact.delete.action: Delete
+memory.fact.delete.confirm: Fact [id: {0}] will be soft-deleted and hidden from search. It can be restored later.
+memory.fact.delete.error: Failed to delete fact
+memory.fact.delete.success: Fact deleted
+memory.fact.delete.title: Delete fact?
+memory.fact.supersede.description: Enter the replacement text for fact [id: {0}]. The old fact will be marked as superseded.
+memory.fact.supersede.error: Failed to supersede fact
+memory.fact.supersede.label: Replacement text
+memory.fact.supersede.success: Fact superseded. New ID: {0}
+memory.fact.supersede.title: Supersede fact
+memory.fact.supersede.tooltip: Supersede
+memory.facts.add.action: Add
+memory.facts.clear.action: Delete all facts
+memory.facts.clear.confirm: All facts stored in this block will be permanently deleted. This action cannot be undone.
+memory.facts.clear.error: Failed to delete facts
+memory.facts.clear.result: Deleted facts: {0}.
+memory.facts.clear.success: All facts deleted
+memory.facts.clear.title: Delete all facts?
+memory.facts.empty: No results
+memory.facts.hint: The fact is stored with an importance score and becomes searchable.
+memory.facts.importance.label: Importance
+memory.facts.min_importance.tooltip: Min importance
+memory.facts.search.action: Search
+memory.facts.search.error: Fact search failed
+memory.facts.search.placeholder: Search facts...
+memory.log.add.error: Failed to append log
+memory.log.add.placeholder: Enter the log text...
+memory.log.add.success: Log appended. ID: {0}
+memory.log.add.title: Add log
+memory.log.begin.label: Begin
+memory.log.delete.action: Delete
+memory.log.delete.confirm: Log [id: {0}] will be permanently deleted and cannot be restored.
+memory.log.delete.error: Failed to delete log
+memory.log.delete.success: Log deleted
+memory.log.delete.title: Delete log?
+memory.log.details.label: Details
+memory.log.end.label: End
+memory.log.ordinal.label: Ordinal
+memory.log.timeline.label: Timeline
+memory.logs.add.action: Add
+memory.logs.clear.action: Delete all logs
+memory.logs.clear.confirm: All logs stored in this block will be permanently deleted. This action cannot be undone.
+memory.logs.clear.error: Failed to delete logs
+memory.logs.clear.result: Deleted logs: {0}.
+memory.logs.clear.success: All logs deleted
+memory.logs.clear.title: Delete all logs?
+memory.logs.empty: No results
+memory.logs.from.label: From
+memory.logs.hint: Logs are immutable: the text cannot be changed after appending.
+memory.logs.importance.label: Importance
+memory.logs.min_importance.tooltip: Min importance
+memory.logs.ordinal.from.label: Ordinal from
+memory.logs.ordinal.to.label: Ordinal to
+memory.logs.search.action: Search
+memory.logs.search.by_time.label: By time
+memory.logs.search.error: Log search failed
+memory.logs.search.placeholder: Search logs...
+memory.logs.time_search.error: Time search failed
+memory.logs.to.label: To
+memory.rename.action: Rename
+memory.rename.confirm.tooltip: Confirm rename
+memory.section.facts.title: Facts
+memory.section.info.title: Information
+memory.section.logs.title: Logs
+profile.label: Profile:
+provider.add: Add
+provider.add.title: Add Model Provider
+provider.apikey.label: API Key
+provider.connection.error: Error: {0}
+provider.connection.failure: ✗ Connection failed
+provider.connection.success: ✓ Connection successful
+provider.delete: Delete
+provider.edit: Edit
+provider.endpoint.label: Endpoint URI
+provider.endpoint.placeholder: https://api.openai.com/v1
+provider.manage.title: Model Providers
+provider.models.count: {0} loaded, {1} selected, {2} custom models
+provider.name.label: Provider Name
+provider.name.placeholder: e.g. My OpenAI Provider
+provider.test_connection: Test Connection
+provider.type.label: Provider Type
+scope.agent: Agent profile
+scope.application: Application
+scope.profile: Chat profile
+skills.additional_dirs: Additional Skill Directories
+skills.additional_dirs.hint: Additional directories to search for skills. Subdirectories containing SKILL.md or SKILL.mdx files will be loaded.
+skills.additional_files: Additional Skill Files
+skills.additional_files.hint: Additional individual SKILL.md or SKILL.mdx files to load.
+skills.available: Available Skills
+skills.available.hint: Skills discovered in skill directories. Only enabled skills are injected into agent prompts.
+skills.dir.placeholder: Directory path...
+skills.enable: Enable skills
+skills.fetch_all: Fetch from all working directories
+skills.file.placeholder: File path...
+skills.refresh: Refresh skills list
+skills.select_directory: Select skill directory
+skills.select_file: Select skill file
+skills.sources: Skill sources
+stage.adaptive.additional_router_prompt: Additional agentic router prompt
+stage.adaptive.agents: Agent pool
+stage.adaptive.enforce_router_selection: Enforce selection
+stage.adaptive.max_visible_rounds: Max visible rounds for router agent
+stage.add: Add execution stage
+stage.add_agent: Add agent to stage
+stage.can_agents_be_skipped: Can agents be skipped (by weight)
+stage.can_agents_execute_again: Can agents execute again
+stage.clone: Clone stage
+stage.enable_mentions: Enable @mentions
+stage.max_cycles: Max cycles
+stage.max_iterations: Max iterations
+stage.mentionable_agents: Mentionable agents
+stage.min_cycles: Min cycles
+stage.min_iterations: Min iterations
+stage.move_agent_down: Move agent down in stage
+stage.move_agent_up: Move agent up in stage
+stage.move_down: Move stage down
+stage.move_up: Move stage up
+stage.remove: Remove stage
+stage.remove_agent: Remove agent from stage
+stage.stop_chance: Stop chance
+stage.type.adaptive: Adaptive
+stage.type.mention_only: Mention only
+stage.type.random: Random
+stage.type.round_robin: Round Robin
+stage.type.sequential: Sequential
+stage.weight.tooltip: Probability of being selected (0 = always skipped, 1 = never skipped)
+stage.weighted_agents: Weighted agents
+tool.approval_level: Approval Level
+tool.approval_level.alwaysapprove: Auto-approve
+tool.approval_level.alwaysask: Always ask
+tool.approval_level.alwaysdisallow: Always disallow
+tool.approval_level.policyapproveorask: Policy: never disallow
+tool.approval_level.policyaskordisallow: Policy: never auto-approve
+tool.approval_level.policyautoapproveunlessdisallowed: Policy: auto-approve unless disallowed
+tool.approval_level.policyautodisallowunlessapproved: Policy: auto-disallow unless approved
+tool.approval_level.policybased: Policy-based
+tool.behaviour_policy.auto_approve: Auto-approve
+tool.behaviour_policy.default: Default
+tool.behaviour_policy.disallowed: Disallowed
+tools.enable: Enable tools
+tools.fetch_all: Fetch from all working directories
+tools.fetch_all.hint: Search for meta tools in all working directories, not only in the active one.
+user.add.title: Add user
+user.clear_image: Clear
+user.description: Description
+user.description.hint: Additional information about the user that agents can use to personalize responses
+user.edit.title: Edit user
+user.login: Login
+user.login.hint: A unique identifier for the user account
+user.login_required.error: Login is required.
+user.name: Name
+user.name.hint: The display name shown in conversations and for agents
+user.profile_image: Profile Image
+user.profile_image.hint: Upload a profile image for the user. PNG and JPG supported, will be resized to 128x128.
+user.select_image: Choose Image...
+user.select_image.title: Select user profile image

@@ -1,0 +1,47 @@
+// Agents: info, read permissions, exposure modes, selection.
+
+%locale: ru-RU
+%namespace: agent
+
+exposure.attachments: Вложения
+exposure.attachments.hint: Показывать вложения из сообщений этого агента другим агентам.
+exposure.content: Содержимое
+exposure.content.hint: Показывать основной текст сообщений этого агента другим агентам.
+exposure.identify_self_as_user: Идентифицировать себя как пользователя
+exposure.identify_self_as_user.hint: При включении этот агент представляется другим агентам как пользователь. Вызовы инструментов и рассуждения становятся недоступны независимо от других флагов.
+exposure.messages_with_tool_calls: Сообщения с вызовами инструментов
+exposure.messages_with_tool_calls.hint: Показывать сообщения, содержащие вызовы инструментов. Если отключено, такие сообщения могут быть полностью скрыты от других агентов.
+exposure.reasoning: Рассуждения
+exposure.reasoning.hint: Показывать рассуждения и мысли этого агента другим агентам.
+exposure.tool_calls: Вызовы инструментов
+exposure.tool_calls.hint: Показывать вызовы инструментов и их результаты от этого агента другим агентам.
+info.clear_image: Удалить аватарку
+info.description: Описание
+info.description.hint: Кратко опишите роль и назначение агента. Это помогает другим агентам понимать, когда делегировать задачи.
+info.description.placeholder: Введите описание агента...
+info.name.hint: Задайте имя агента. Оно используется в списке агентов и в чате.
+info.name.placeholder: Введите имя агента...
+info.profile_image: Изображение профиля
+info.profile_image.hint: Выберите изображение для профиля агента. Будет автоматически обрезано до 128x128.
+info.select_image: Выбрать изображение
+perm.identify_agents_as_users: Идентифицировать агентов как пользователей
+perm.identify_agents_as_users.hint: Другие агенты будут идентифицироваться как пользователи для этого агента.
+perm.messages_with_tool_calls: Сообщения с вызовами инструментов
+perm.messages_with_tool_calls.hint: Агент может читать сообщения, содержащие вызовы инструментов от других агентов. Если отключено, такие сообщения фильтруются.
+perm.other_agent_attachments: Вложения других агентов
+perm.other_agent_attachments.hint: Агент может читать вложения от других агентов.
+perm.other_agent_content: Основной контент других агентов
+perm.other_agent_content.hint: Агент может читать основной контент сообщений от других агентов.
+perm.other_agent_messages: Сообщения других агентов
+perm.other_agent_messages.hint: Агент может читать сообщения от других агентов.
+perm.other_agent_reasoning: Рассуждения других агентов
+perm.other_agent_reasoning.hint: Агент может читать рассуждения и мысли других агентов.
+perm.other_agent_tool_calls: Вызовы инструментов других агентов
+perm.other_agent_tool_calls.hint: Агент может читать вызовы инструментов и результаты других агентов.
+perm.own_messages: Свои сообщения
+perm.own_messages.hint: Агент может читать свои собственные предыдущие сообщения.
+perm.user_attachments: Вложения пользователя
+perm.user_attachments.hint: Агент может читать файлы, прикреплённые пользователем.
+perm.user_messages: Сообщения пользователя
+perm.user_messages.hint: Агент может читать сообщения, отправленные пользователем.
+selection.task: Выбор агента

@@ -32,7 +32,7 @@
 				 Margin="0,4"
 				 FontSize="16"
 				 VerticalAlignment="Center"
-				 PlaceholderText="{loc:Loc chat-input_hint}"
+				 PlaceholderText="{loc:Loc chat.input.hint}"
 				 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
 		<DockPanel Grid.Row="2" Margin="0,6,0,0" LastChildFill="True">
@@ -53,7 +53,7 @@
 				<!-- Settings -->
 				<Button Classes="IconButton"
 								Command="{Binding OpenSettingsCommand}"
-								ToolTip.Tip="{loc:Loc settings}">
+								ToolTip.Tip="{loc:Loc common.settings}">
 
 					<ico:MaterialIcon Kind="Cog"/>
 				</Button>
@@ -64,7 +64,7 @@
 				<!-- Attach -->
 				<Button Classes="IconButton"
 								Command="{Binding OpenAttachmentsManagerCommand}"
-								ToolTip.Tip="{loc:Loc chat-attach_file_hint}">
+								ToolTip.Tip="{loc:Loc chat.input.attach_file.hint}">
 
 					<ico:MaterialIcon Kind="Paperclip"/>
 				</Button>
@@ -72,7 +72,7 @@
 				<!-- Blazor Web UI Host -->
 				<Button Classes="IconButton"
 								Command="{Binding OpenBlazorWebUICommand}"
-								ToolTip.Tip="{loc:Loc blazor_host_title}">
+								ToolTip.Tip="{loc:Loc webui.host.title}">
 
 					<ico:MaterialIcon Kind="Web"/>
 				</Button>
@@ -92,7 +92,7 @@
 								  MaxWidth="250"
 								  VerticalAlignment="Center"
 								  IsVisible="{Binding HasMultipleUsers}"
-								  ToolTip.Tip="{loc:Loc user_active_hint}">
+								  ToolTip.Tip="{loc:Loc chat.user.active.hint}">
 
 					<ComboBox.ItemTemplate>
 						<DataTemplate>
@@ -116,7 +116,7 @@
 						  SelectedItem="{Binding SelectedVisibility}"
 						  MinWidth="120"
 						  Margin="4,0"
-						  ToolTip.Tip="{loc:Loc chat-visibility_hint}">
+						  ToolTip.Tip="{loc:Loc chat.visibility.hint}">
 
 					<ComboBox.ItemTemplate>
 						<DataTemplate>
@@ -135,7 +135,7 @@
 				<!-- Cancel edit -->
 				<Button Classes="IconButton"
 						Command="{Binding CancelEditCommand}"
-						ToolTip.Tip="{loc:Loc chat-cancel_edit_hint}">
+						ToolTip.Tip="{loc:Loc chat.input.cancel_edit.hint}">
 
 					<ico:MaterialIcon Kind="EditOff"/>
 				</Button>
@@ -143,7 +143,7 @@
 				<!-- Send -->
 				<Button Classes="IconButton"
 						Command="{Binding SendMessageCommand}"
-						ToolTip.Tip="{loc:Loc chat-send_button_hint}">
+						ToolTip.Tip="{loc:Loc chat.input.send_button.hint}">
 
 					<ico:MaterialIcon Kind="SendClock"/>
 				</Button>
@@ -152,7 +152,7 @@
 				<Button Classes="IconButton"
 						Command="{Binding SendGenerateMessageCommand}"
 						IsVisible="{Binding IsGenerating, Converter={StaticResource InverseBooleanConverter}}"
-						ToolTip.Tip="{loc:Loc chat-send_button_hint}">
+						ToolTip.Tip="{loc:Loc chat.input.send_button.hint}">
 
 					<ico:MaterialIcon Kind="Send"/>
 				</Button>
@@ -161,7 +161,7 @@
 				<Button Classes="IconButton"
 						Command="{Binding CancelGenerationCommand}"
 						IsVisible="{Binding IsGenerating}"
-						ToolTip.Tip="{loc:Loc chat-stop_button_hint}">
+						ToolTip.Tip="{loc:Loc chat.input.stop_button.hint}">
 
 					<ico:MaterialIcon Kind="Stop"/>
 				</Button>
@@ -179,7 +179,7 @@
 				IsVisible="False"
 				IsHitTestVisible="False">
 			
-			<TextBlock Text="{loc:Loc attachment-drop_files_here}"
+			<TextBlock Text="{loc:Loc attachment.drop_files_here}"
 					   HorizontalAlignment="Center"
 					   VerticalAlignment="Center"
 					   FontSize="18"

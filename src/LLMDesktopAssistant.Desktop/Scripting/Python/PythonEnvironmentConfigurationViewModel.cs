@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Localization;
@@ -33,7 +33,7 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 		{
 			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = LocalizationManager.LocalizeStatic("select_python_venv_activate_script"),
+				Title = LocalizationManager.LocalizeStatic("env.python.select_venv_script"),
 				FileTypeFilter = [
 					new FilePickerFileType("Batch files") { Patterns = ["*.bat"] },
 					new FilePickerFileType("All files") { Patterns = ["*"] }
@@ -60,7 +60,7 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 		{
 			var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = LocalizationManager.LocalizeStatic("select_python_meta_venv_activate_script"),
+				Title = LocalizationManager.LocalizeStatic("env.python.select_meta_venv_script"),
 				FileTypeFilter = [
 					new FilePickerFileType("Batch files") { Patterns = ["*.bat"] },
 					new FilePickerFileType("All files") { Patterns = ["*"] }

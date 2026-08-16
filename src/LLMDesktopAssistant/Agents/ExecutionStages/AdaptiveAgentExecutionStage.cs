@@ -95,7 +95,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 
 			var task = await agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 			{
-				TaskName = LocalizationManager.LocalizeStatic("agent_selection_task"),
+				TaskName = LocalizationManager.LocalizeStatic("agent.selection.task"),
 				InitialMessages = [..messages],
 				Model = llm,
 			}, cancellationToken);

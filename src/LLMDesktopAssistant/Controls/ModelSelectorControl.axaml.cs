@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.Controls
 	/// </summary>
 	public class ComboBoxEmptyItem
 	{
-		public string Title { get; init; } = LocalizationManager.LocalizeStatic("model_selector_no_models");
+		public string Title { get; init; } = LocalizationManager.LocalizeStatic("model.selector.no_models");
 	}
 
 	/// <summary>
@@ -138,7 +138,7 @@ namespace LLMDesktopAssistant.Controls
 			Selector.Items.Add(new ModelItemWrapper
 			{
 				FullName = string.Empty,
-				DisplayText = LocalizationManager.LocalizeStatic("model_selector_none")
+				DisplayText = LocalizationManager.LocalizeStatic("model.selector.none")
 			});
 
 			try
@@ -193,7 +193,7 @@ namespace LLMDesktopAssistant.Controls
 				Log.Warning(ex, "Failed to load models for ModelSelectorControl");
 				Selector.Items.Add(new ComboBoxEmptyItem
 				{
-					Title = LocalizationManager.LocalizeStatic("model_selector_failed")
+					Title = LocalizationManager.LocalizeStatic("model.selector.load.error")
 				});
 			}
 

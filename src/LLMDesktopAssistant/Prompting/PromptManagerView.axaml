@@ -15,7 +15,7 @@
 		
 		<TextBlock Grid.Column="0"
 				   Margin="10"
-				   Text="{loc:Loc prompt_manager_header}"
+				   Text="{loc:Loc prompt.manager.header}"
 				   FontSize="{DynamicResource FontSizeL}"
 				   FontWeight="Bold"
 				   VerticalAlignment="Center"/>
@@ -28,24 +28,24 @@
 			</Grid.ColumnDefinitions>
 
 			<TabControl Grid.Column="0">
-				<TabItem Header="{loc:Loc prompt_components}">
+				<TabItem Header="{loc:Loc prompt.components}">
 					<StackPanel>
 						<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
 							<Button Command="{Binding AddComponentCommand}"
 									Classes="IconButton"
-									ToolTip.Tip="{loc:Loc add}">
+									ToolTip.Tip="{loc:Loc common.add}">
 								<ico:MaterialIcon Kind="Plus"/>
 							</Button>
 							<Button Command="{Binding RemoveComponentCommand}"
 									Classes="IconButton"
 									Margin="5,0,0,0"
-									ToolTip.Tip="{loc:Loc remove}">
+									ToolTip.Tip="{loc:Loc common.remove}">
 								<ico:MaterialIcon Kind="Delete"/>
 							</Button>
 							<Button Command="{Binding ImportComponentCommand}"
 									Classes="IconButton"
 									Margin="5,0,0,0"
-									ToolTip.Tip="{loc:Loc prompt_import}">
+									ToolTip.Tip="{loc:Loc prompt.import}">
 								<ico:MaterialIcon Kind="Import"/>
 							</Button>
 						</StackPanel>
@@ -68,24 +68,24 @@
 					</StackPanel>
 				</TabItem>
 
-				<TabItem Header="{loc:Loc prompt_specializations}">
+				<TabItem Header="{loc:Loc prompt.specializations}">
 					<StackPanel>
 						<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
 							<Button Command="{Binding AddSpecializationCommand}"
 									Classes="IconButton"
-									ToolTip.Tip="{loc:Loc add}">
+									ToolTip.Tip="{loc:Loc common.add}">
 								<ico:MaterialIcon Kind="Plus"/>
 							</Button>
 							<Button Command="{Binding RemoveSpecializationCommand}"
 									Classes="IconButton"
 									Margin="5,0,0,0"
-									ToolTip.Tip="{loc:Loc remove}">
+									ToolTip.Tip="{loc:Loc common.remove}">
 								<ico:MaterialIcon Kind="Delete"/>
 							</Button>
 							<Button Command="{Binding ImportSpecializationCommand}"
 									Classes="IconButton"
 									Margin="5,0,0,0"
-									ToolTip.Tip="{loc:Loc prompt_import}">
+									ToolTip.Tip="{loc:Loc prompt.import}">
 								<ico:MaterialIcon Kind="Import"/>
 							</Button>
 						</StackPanel>
@@ -105,24 +105,24 @@
 					</StackPanel>
 				</TabItem>
 
-				<TabItem Header="{loc:Loc prompt_personas}">
+				<TabItem Header="{loc:Loc prompt.personas}">
 					<StackPanel>
 						<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
 							<Button Command="{Binding AddPersonaCommand}"
 									Classes="IconButton"
-									ToolTip.Tip="{loc:Loc add}">
+									ToolTip.Tip="{loc:Loc common.add}">
 								<ico:MaterialIcon Kind="Plus"/>
 							</Button>
 							<Button Command="{Binding RemovePersonaCommand}"
 									Classes="IconButton"
 									Margin="5,0,0,0"
-									ToolTip.Tip="{loc:Loc remove}">
+									ToolTip.Tip="{loc:Loc common.remove}">
 								<ico:MaterialIcon Kind="Delete"/>
 							</Button>
 							<Button Command="{Binding ImportPersonaCommand}"
 									Classes="IconButton"
 									Margin="5,0,0,0"
-									ToolTip.Tip="{loc:Loc prompt_import}">
+									ToolTip.Tip="{loc:Loc prompt.import}">
 								<ico:MaterialIcon Kind="Import"/>
 							</Button>
 						</StackPanel>
@@ -144,16 +144,16 @@
 			<StackPanel Grid.Column="2"
 						DataContext="{Binding SelectedComponent}"
 						IsVisible="{Binding Converter={StaticResource NotnullToBooleanConverter}}">
-				<TextBlock Text="{loc:Loc prompt_edit_component}"
+				<TextBlock Text="{loc:Loc prompt.edit_component}"
 						   FontSize="18"
 						   Margin="0,0,0,15"/>
 			
 				<TextBox Text="{Binding Component.Name, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc prompt_name}"
+						 PlaceholderText="{loc:Loc prompt.name}"
 						 Margin="0,0,0,10"/>
 			
 				<TextBox Text="{Binding Component.Category, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc prompt_category}"
+						 PlaceholderText="{loc:Loc prompt.category}"
 						 Margin="0,0,0,10"/>
 			
 				<TextBox Text="{Binding Text, Mode=TwoWay}"
@@ -161,23 +161,23 @@
 						 TextWrapping="Wrap"
 						 Height="300"
 						 ScrollViewer.VerticalScrollBarVisibility="Auto"
-						 PlaceholderText="{loc:Loc prompt_text}"
+						 PlaceholderText="{loc:Loc prompt.text}"
 						 Margin="0,0,0,10"/>
 			</StackPanel>
 			
 			<StackPanel Grid.Column="2"
 						DataContext="{Binding SelectedSpecialization}"
 						IsVisible="{Binding Converter={StaticResource NotnullToBooleanConverter}}">
-				<TextBlock Text="{loc:Loc prompt_edit_specialization}"
+				<TextBlock Text="{loc:Loc prompt.edit_specialization}"
 						   FontSize="18"
 						   Margin="0,0,0,15"/>
 			
 				<TextBox Text="{Binding Specialization.Name, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc prompt_name}"
+						 PlaceholderText="{loc:Loc prompt.name}"
 						 Margin="0,0,0,10"/>
 			
 				<TextBox Text="{Binding Specialization.Category, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc prompt_category}"
+						 PlaceholderText="{loc:Loc prompt.category}"
 						 Margin="0,0,0,10"/>
 			
 				<TextBox Text="{Binding Text, Mode=TwoWay}"
@@ -185,19 +185,19 @@
 						 TextWrapping="Wrap"
 						 Height="300"
 						 ScrollViewer.VerticalScrollBarVisibility="Auto"
-						 PlaceholderText="{loc:Loc prompt_text}"
+						 PlaceholderText="{loc:Loc prompt.text}"
 						 Margin="0,0,0,10"/>
 			</StackPanel>
 
 			<StackPanel Grid.Column="2"
 						DataContext="{Binding SelectedPersona}"
 						IsVisible="{Binding Converter={StaticResource NotnullToBooleanConverter}}">
-				<TextBlock Text="{loc:Loc prompt_edit_persona}"
+				<TextBlock Text="{loc:Loc prompt.edit_persona}"
 						   FontSize="18"
 						   Margin="0,0,0,15"/>
 			
 				<TextBox Text="{Binding Persona.Name, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc prompt_name}"
+						 PlaceholderText="{loc:Loc prompt.name}"
 						 Margin="0,0,0,10"/>
 			
 				<TextBox Text="{Binding Text, Mode=TwoWay}"
@@ -205,7 +205,7 @@
 						 TextWrapping="Wrap"
 						 Height="300"
 						 ScrollViewer.VerticalScrollBarVisibility="Auto"
-						 PlaceholderText="{loc:Loc prompt_text}"
+						 PlaceholderText="{loc:Loc prompt.text}"
 						 Margin="0,0,0,10"/>
 			</StackPanel>
 

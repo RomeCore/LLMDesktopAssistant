@@ -1,0 +1,76 @@
+// Blazor web UI.
+
+%locale: 
+%namespace: webui
+
+anonymous: Anonymous
+assistant: Assistant
+branch.next: Next branch
+branch.previous: Previous branch
+chat.input.placeholder: Enter message...
+chat.title: dASS WebUI
+delete: Delete
+edit: Edit
+generation.stop: Stop generation
+host.copy_url: Copy URL to clipboard
+host.open_browser: Open in browser
+host.password: Password
+host.password.placeholder: Leave empty for no password
+host.port: Endpoint URL
+host.settings: Settings
+host.start: Start
+host.status.running: Running
+host.status.stopped: Stopped
+host.stop: Stop
+host.title: Blazor WebUI
+login.button: Sign in
+login.create: Create
+login.error: Invalid login or password. Please try again.
+login.label: Login
+login.loading: Signing in...
+login.master_password.label: Chat master password
+login.master_password.placeholder: Enter master password...
+login.no_account: Don't have an account?
+login.password.label: Password
+login.password.placeholder: Enter password...
+login.placeholder: Enter login...
+login.title: Sign in
+profile.avatar.delete.title: Delete avatar
+profile.avatar.deleted: Avatar removed
+profile.avatar.error: Failed to load image
+profile.avatar.timeout: Image selection timed out. Please try again.
+profile.avatar.updated: Avatar updated!
+profile.button: Profile
+profile.cancel: Cancel
+profile.close: Close
+profile.description: Description
+profile.description.placeholder: Description for agents...
+profile.logout: Logout
+profile.name: Name
+profile.save: Save
+profile.save.success: Saved!
+profile.saving: Saving...
+profile.title: Profile settings
+readiness.always_ready: Always ready
+readiness.auto.title: Auto-ready
+readiness.count.title: Ready / Online
+readiness.ready: Ready
+readiness.ready.title: Are you ready?
+reasoning: Reasoning
+regenerate: Regenerate
+register.button: Register
+register.confirm.placeholder: Repeat password...
+register.error.exists: A user with this login already exists.
+register.error.password_mismatch: Passwords do not match!
+register.error.password_short: Password is too short! Minimum 4 characters.
+register.have_account: Already have an account?
+register.loading: Registering...
+register.login.link: Sign in
+register.login.placeholder: Choose a login...
+register.name.placeholder: Your name
+register.password.placeholder: Choose a password...
+register.subtitle: Create an account
+register.success: Account created! You can now sign in.
+register.title: Register
+resend: Resend
+result: Result

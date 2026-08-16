@@ -484,7 +484,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			allComponents.AddRange(PromptRegistry.BuiltinComponents.Values);
 
 			var grouped = allComponents.GroupBy(c => string.IsNullOrEmpty(c.Category)
-				? LocalizationManager.LocalizeStatic("prompt_category_uncategorized")
+				? LocalizationManager.LocalizeStatic("prompt.category.uncategorized")
 				: c.Category);
 
 			ComponentCategories.Clear();

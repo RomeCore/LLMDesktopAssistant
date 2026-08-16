@@ -19,7 +19,7 @@
 
 		<!-- Enable tools checkbox -->
 		<CheckBox IsChecked="{Binding ToolSettings.EnableTools}"
-							Content="{loc:Loc settings-use_tools}"/>
+							Content="{loc:Loc settings.tools.enable}"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
@@ -32,7 +32,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc tool_behaviour_policy}"
+								 Text="{loc:Loc settings.agent.tools.behaviour_policy}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -59,12 +59,12 @@
 					IsEnabled="{Binding ToolSettings.EnableTools}">
 
 			<TextBlock Grid.Column="0"
-						   Text="{loc:Loc name}"
+						   Text="{loc:Loc common.name}"
 						   FontWeight="Bold"
 						   Margin="5,0,0,0"/>
 
 			<TextBlock Grid.Column="1"
-						   Text="{loc:Loc policy}"
+						   Text="{loc:Loc common.policy}"
 						   FontWeight="Bold"
 						   Margin="8,0,8,0"/>
 		</Grid>
@@ -135,7 +135,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc tool_settings}"
+								 Text="{loc:Loc tool.settings}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -158,10 +158,10 @@
 		</Grid>
 
 		<CheckBox IsChecked="{Binding UseCustomToolset}"
-							Content="{loc:Loc toolset_use_custom}"
+							Content="{loc:Loc toolset.use_custom}"
 							IsEnabled="{Binding ToolSettings.EnableTools}"/>
 
-		<TextBlock Text="{loc:Loc toolset_use_custom_hint}"
+		<TextBlock Text="{loc:Loc toolset.use_custom.hint}"
 							Opacity="0.6"
 							TextWrapping="Wrap"
 							IsEnabled="{Binding ToolSettings.EnableTools}"/>
@@ -172,7 +172,7 @@
 								IsVisible="{Binding UseCustomToolset, Converter={StaticResource InverseBooleanConverter}}"
 								IsEnabled="{Binding ToolSettings.EnableTools}">
 
-			<TextBlock Text="{loc:Loc toolset_shared}"
+			<TextBlock Text="{loc:Loc toolset.shared}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"
 								 Margin="0,0,4,0"/>
@@ -196,21 +196,21 @@
 
 				<Button Command="{Binding CreateNewIdCommand}"
 								Classes="IconButton"
-								ToolTip.Tip="{loc:Loc toolset_create}">
+								ToolTip.Tip="{loc:Loc toolset.create}">
 
 					<ico:MaterialIcon Kind="Plus"/>
 				</Button>
 
 				<Button Command="{Binding RenameIdCommand}"
 								Classes="IconButton"
-								ToolTip.Tip="{loc:Loc toolset_rename}">
+								ToolTip.Tip="{loc:Loc toolset.rename}">
 
 					<ico:MaterialIcon Kind="Edit"/>
 				</Button>
 
 				<Button Command="{Binding RemoveIdCommand}"
 								Classes="IconButton"
-								ToolTip.Tip="{loc:Loc toolset_remove}">
+								ToolTip.Tip="{loc:Loc toolset.remove}">
 
 					<ico:MaterialIcon Kind="Remove"/>
 				</Button>
@@ -260,7 +260,7 @@
 			</Grid.ColumnDefinitions>
 
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc name}"
+								 Text="{loc:Loc common.name}"
 								 Margin="5"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"
 								 TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
@@ -270,7 +270,7 @@
 									  ResizeDirection="Columns"/>
 
 			<TextBlock Grid.Column="2"
-								 Text="{loc:Loc enable}"
+								 Text="{loc:Loc common.enable}"
 								 Margin="5"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"
 								 TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
@@ -280,7 +280,7 @@
 									  ResizeDirection="Columns"/>
 
 			<TextBlock Grid.Column="4"
-								 Text="{loc:Loc approval_level}"
+								 Text="{loc:Loc settings.tool.approval_level}"
 								 Margin="5"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"
 								 TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
@@ -290,7 +290,7 @@
 									  ResizeDirection="Columns"/>
 
 			<TextBlock Grid.Column="6"
-								 Text="{loc:Loc reset}"
+								 Text="{loc:Loc common.reset}"
 								 Margin="5"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"
 								 TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
@@ -412,10 +412,10 @@
 																	IsVisible="{Binding IsFixed}">
 									<ToolTip.Tip>
 										<StackPanel Orientation="Vertical" Spacing="4">
-											<TextBlock Text="{loc:Loc tool_fixed}"
+											<TextBlock Text="{loc:Loc tool.fixed}"
 																 FontSize="{DynamicResource FontSizeM}"
 																 FontWeight="SemiBold"/>
-											<TextBlock Text="{loc:Loc tool_fixed_hint}"/>
+											<TextBlock Text="{loc:Loc tool.fixed.hint}"/>
 										</StackPanel>
 									</ToolTip.Tip>
 								</ico:MaterialIcon>

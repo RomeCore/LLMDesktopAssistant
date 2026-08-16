@@ -83,7 +83,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				return;
 
 			statusService.Icon = MaterialIconKind.Database;
-			statusService.Text = LocalizationManager.LocalizeStatic("chat_memory_retrieval_status");
+			statusService.Text = LocalizationManager.LocalizeStatic("memory.status.retrieval");
 
 			var template = templates.GetMessagesTemplate("memory_retrieval_prompt");
 			var messages = template.RenderToAgent(new
@@ -105,7 +105,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 
 			var task = agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 			{
-				TaskName = LocalizationManager.LocalizeStatic("memory_retrieval_task"),
+				TaskName = LocalizationManager.LocalizeStatic("memory.retrieval.task"),
 				TriggeredChat = chat,
 				Model = model,
 				InitialMessages = [.. messages],

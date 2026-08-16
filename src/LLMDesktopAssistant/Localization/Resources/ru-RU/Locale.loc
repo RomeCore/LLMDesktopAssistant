@@ -4,6 +4,21 @@
 %locale: ru-RU
 %namespace: common
 
-default: По умолчанию
-save: Сохранить
 add: Добавить
+approve: Подтвердить
+cancel: Отмена
+close: Закрыть
+connect: Подключиться
+default: По умолчанию
+delete: Удалить
+disconnect: Отключиться
+edit: Редактировать
+enable: Включить
+name: Имя
+ok: Ок
+policy: Политика
+remove: Удалить
+reset: Сбросить
+save: Сохранить
+search: Поиск
+settings: Настройки

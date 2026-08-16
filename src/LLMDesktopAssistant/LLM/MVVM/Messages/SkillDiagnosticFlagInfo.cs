@@ -51,13 +51,13 @@ public class SkillDiagnosticFlagInfo
 	/// </summary>
 	public static SkillDiagnosticFlagInfo Create(SkillDiagnosticCode flag)
 	{
-		var key = $"skill_diagnostic_{flag.ToString().ToLower()}";
+		var key = $"skill.diagnostic.{flag.ToString().ToLower()}";
 		var displayName = LocalizationManager.LocalizeStatic(key);
-		var description = LocalizationManager.LocalizeStatic($"{key}_hint");
+		var description = LocalizationManager.LocalizeStatic($"{key}.hint");
 
 		if (displayName == key || string.IsNullOrEmpty(displayName))
 			displayName = flag.ToString();
-		if (description == $"{key}_hint" || string.IsNullOrEmpty(description))
+		if (description == $"{key}.hint" || string.IsNullOrEmpty(description))
 			description = string.Empty;
 
 		return new SkillDiagnosticFlagInfo(flag, displayName, description, GetIcon(flag), GetColor(flag));

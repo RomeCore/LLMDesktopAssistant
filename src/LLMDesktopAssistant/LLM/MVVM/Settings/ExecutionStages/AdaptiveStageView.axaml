@@ -17,21 +17,21 @@
 			  Margin="0,0,0,8">
 			
 			<TextBlock Grid.Row="0" Grid.Column="0"
-					   Text="{loc:Loc settings_stage_enable_mentions}"
+					   Text="{loc:Loc settings.stage.enable_mentions}"
 					   VerticalAlignment="Center" Margin="0,0,8,0"/>
 			<CheckBox Grid.Row="0" Grid.Column="1"
 					  IsChecked="{Binding AdaptiveStage.EnableMentions}"
 					  VerticalAlignment="Center"/>
 
 			<TextBlock Grid.Row="1" Grid.Column="0"
-					   Text="{loc:Loc settings_stage_can_agents_execute_again}"
+					   Text="{loc:Loc settings.stage.can_agents_execute_again}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
 			<CheckBox Grid.Row="1" Grid.Column="1"
 					  IsChecked="{Binding AdaptiveStage.CanAgentsExecuteAgain}"
 					  VerticalAlignment="Center" Margin="0,0,0,4"/>
 
 			<TextBlock Grid.Row="2" Grid.Column="0"
-					   Text="{loc:Loc settings_stage_min_iterations}"
+					   Text="{loc:Loc settings.stage.min_iterations}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
 			<NumericUpDown Grid.Row="2" Grid.Column="1"
 						   Value="{Binding AdaptiveStage.MinIterations}"
@@ -39,7 +39,7 @@
 						   Margin="0,0,0,4"/>
 
 			<TextBlock Grid.Row="3" Grid.Column="0"
-					   Text="{loc:Loc settings_stage_max_iterations}"
+					   Text="{loc:Loc settings.stage.max_iterations}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
 			<NumericUpDown Grid.Row="3" Grid.Column="1"
 						   Value="{Binding AdaptiveStage.MaxIterations}"
@@ -47,7 +47,7 @@
 						   Margin="0,0,0,4"/>
 			
 			<TextBlock Grid.Row="4" Grid.Column="0"
-					   Text="{loc:Loc settings_stage_adaptive_max_visible_rounds}"
+					   Text="{loc:Loc settings.stage.adaptive.max_visible_rounds}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
 			<NumericUpDown Grid.Row="4" Grid.Column="1"
 						   Value="{Binding AdaptiveStage.MaxVisibleRounds}"
@@ -55,7 +55,7 @@
 						   Margin="0,0,0,4"/>
 			
 			<TextBlock Grid.Row="5" Grid.ColumnSpan="2"
-					   Text="{loc:Loc settings_stage_adaptive_additional_router_prompt}"
+					   Text="{loc:Loc settings.stage.adaptive.additional_router_prompt}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
 			<TextBox Grid.Row="6" Grid.ColumnSpan="2"
 						   Text="{Binding AdaptiveStage.AdditionalRouterPrompt}"
@@ -64,7 +64,7 @@
 						   Margin="0,0,0,4"/>
 			
 			<TextBlock Grid.Row="7" Grid.Column="0"
-					   Text="{loc:Loc settings_stage_adaptive_enforce_router_selection}"
+					   Text="{loc:Loc settings.stage.adaptive.enforce_router_selection}"
 					   VerticalAlignment="Center" Margin="0,0,8,4"/>
 			<CheckBox Grid.Row="7" Grid.Column="1"
 					  IsChecked="{Binding AdaptiveStage.EnforceRouterSelection}"
@@ -78,7 +78,7 @@
 				Opacity="0.3"
 				Margin="0,0,0,6"/>
 
-		<TextBlock Text="{loc:Loc settings_stage_adaptive_agents}"
+		<TextBlock Text="{loc:Loc settings.stage.adaptive.agents}"
 				   FontWeight="Bold"
 				   Margin="0,0,0,4"/>
 
@@ -116,7 +116,7 @@
 									Command="{Binding RemoveCommand}"
 									Classes="IconButton"
 									Margin="2,0"
-									ToolTip.Tip="{loc:Loc settings_stage_remove_agent}">
+									ToolTip.Tip="{loc:Loc settings.stage.remove_agent}">
 								<ico:MaterialIcon Kind="Close"/>
 							</Button>
 						</Grid>
@@ -129,10 +129,10 @@
 		<Button Command="{Binding AddAgentCommand}"
 				Margin="0,4"
 				HorizontalAlignment="Left"
-				ToolTip.Tip="{loc:Loc settings_stage_add_agent}">
+				ToolTip.Tip="{loc:Loc settings.stage.add_agent}">
 			<StackPanel Orientation="Horizontal" Spacing="4">
 				<ico:MaterialIcon Kind="Plus"/>
-				<TextBlock Text="{loc:Loc settings_stage_add_agent}"/>
+				<TextBlock Text="{loc:Loc settings.stage.add_agent}"/>
 			</StackPanel>
 		</Button>
 	</StackPanel>

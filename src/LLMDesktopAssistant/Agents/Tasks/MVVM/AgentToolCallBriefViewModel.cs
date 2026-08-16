@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
@@ -257,21 +257,21 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			(StatusIcon, StatusText) = status switch
 			{
 				AgentToolCallStatus.Pending => (MaterialIconKind.ClockOutline,
-					LocalizationManager.LocalizeStatic("tool_call_status_pending")),
+					LocalizationManager.LocalizeStatic("tool.call.status.pending")),
 				AgentToolCallStatus.PreExecuting => (MaterialIconKind.WrenchClock,
-					LocalizationManager.LocalizeStatic("tool_call_status_pre_executing")),
+					LocalizationManager.LocalizeStatic("tool.call.status.pre_executing")),
 				AgentToolCallStatus.Confirming => (MaterialIconKind.QuestionMarkCircle,
-					LocalizationManager.LocalizeStatic("tool_call_status_confirming")),
+					LocalizationManager.LocalizeStatic("tool.call.status.confirming")),
 				AgentToolCallStatus.Executing => (MaterialIconKind.WrenchClock,
-					LocalizationManager.LocalizeStatic("tool_call_status_executing")),
+					LocalizationManager.LocalizeStatic("tool.call.status.executing")),
 				AgentToolCallStatus.Success => (MaterialIconKind.CheckCircle,
-					LocalizationManager.LocalizeStatic("tool_call_status_success")),
+					LocalizationManager.LocalizeStatic("tool.call.status.success")),
 				AgentToolCallStatus.Failed => (MaterialIconKind.AlertCircle,
-					LocalizationManager.LocalizeStatic("tool_call_status_failed")),
+					LocalizationManager.LocalizeStatic("tool.call.status.failed")),
 				AgentToolCallStatus.Cancelled => (MaterialIconKind.Cancel,
-					LocalizationManager.LocalizeStatic("tool_call_status_cancelled")),
+					LocalizationManager.LocalizeStatic("tool.call.status.cancelled")),
 				_ => (MaterialIconKind.HelpCircle,
-					LocalizationManager.LocalizeStatic("tool_call_status_unknown"))
+					LocalizationManager.LocalizeStatic("tool.call.status.unknown"))
 			};
 
 			RaisePropertyChanged(nameof(ShowConfirmButtons));

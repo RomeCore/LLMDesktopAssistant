@@ -32,12 +32,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// <summary>
 		/// Gets the localized dialog title.
 		/// </summary>
-		public string TitleText => LocalizationManager.LocalizeStatic(IsEditMode ? "user_edit_title" : "user_add_title");
+		public string TitleText => LocalizationManager.LocalizeStatic(IsEditMode ? "settings.user.edit.title" : "settings.user.add.title");
 
 		/// <summary>
 		/// Gets the localized confirm button text.
 		/// </summary>
-		public string ConfirmButtonText => LocalizationManager.LocalizeStatic(IsEditMode ? "save" : "add");
+		public string ConfirmButtonText => LocalizationManager.LocalizeStatic(IsEditMode ? "common.save" : "common.add");
 
 		private string _login = string.Empty;
 		/// <summary>
@@ -146,7 +146,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 
 			if (string.IsNullOrWhiteSpace(Login))
 			{
-				ErrorMessage = LocalizationManager.LocalizeStatic("user_error_login_required");
+				ErrorMessage = LocalizationManager.LocalizeStatic("settings.user.login_required.error");
 				return;
 			}
 
@@ -201,7 +201,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		{
 			var files = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = LocalizationManager.LocalizeStatic("user_select_image_title"),
+				Title = LocalizationManager.LocalizeStatic("settings.user.select_image.title"),
 				FileTypeFilter =
 				[
 					new("Image files")

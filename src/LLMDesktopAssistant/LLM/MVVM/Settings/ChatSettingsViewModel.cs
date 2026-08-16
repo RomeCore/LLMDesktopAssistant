@@ -136,33 +136,33 @@ namespace LLMDesktopAssistant.LLM.Settings
 		private void InitializeTree()
 		{
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_users"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.users"),
 				MaterialIconKind.AccountCircle,
 				() => new ChatUserSettingsViewModel(Settings.Users.Users)));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("agents"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.agents"),
 				MaterialIconKind.Robot,
 				() => new ChatAgentsSettingsViewModel(Settings.Agents, _agentManager)));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings_execution_stages"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.execution_stages"),
 				MaterialIconKind.RobotConfused,
 				() => new ChatExecutionStagesSettingsViewModel(Settings.Agents, _agentManager)));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_models"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.models"),
 				MaterialIconKind.Brain,
 				() => new ChatModelSettingsViewModel(Settings.Models)));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_environment"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.environment"),
 				MaterialIconKind.FolderSettings,
 				() => new ChatEnvironmentSettingsViewModel(Settings.Environment,
 					Chat.Services.GetServices<IScriptEngineEnvConfigurationProvider>(), Chat.Services.GetService<IExplorerOpener>())));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_databases"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.databases"),
 				MaterialIconKind.DatabaseSearch,
 				() => new ChatDatabaseSettingsViewModel(Settings.Databases,
 					Chat.Services.GetRequiredService<IApiKeyManagerService>(),
@@ -170,23 +170,23 @@ namespace LLMDesktopAssistant.LLM.Settings
 					Chat.Services.GetRequiredService<IDatabaseConnectionManager>())));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_mcp"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.mcp"),
 				MaterialIconKind.Connection,
 				() => new ChatMCPSettingsViewModel(Settings.Mcp, Chat.Services.GetRequiredService<IMCPManagementService>())));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_tools"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.tools"),
 				MaterialIconKind.Wrench,
 				() => new ChatToolsSettingsViewModel(Settings.Tools)));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_skills"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),
 				MaterialIconKind.Cards,
 				() => new ChatSkillsSettingsViewModel(Settings.Skills,
 					Chat.Services.GetRequiredService<ISkillsetBuildingService>())));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_memory"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.memory"),
 				MaterialIconKind.Database,
 				() => new ChatMemorySettingsViewModel(Settings.Memory)));
 
@@ -225,20 +225,20 @@ namespace LLMDesktopAssistant.LLM.Settings
 			{
 				var agentChildren = new List<SettingsTreeNode>
 				{
-					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_execution"),
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.execution"),
 						MaterialIconKind.Play,
 						() => new AgentExecutionConditionsSettingsViewModel(descriptor.ExecutionConditions, Settings)),
 
-					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_llm_properties"),
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.llm_properties"),
 						MaterialIconKind.Tune,
 						() => new AgentGenerationSettingsViewModel(descriptor.Generation, Settings)),
 
-					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_read"),
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.read"),
 						MaterialIconKind.Eye,
 						() => new AgentReadSettingsViewModel(
 							descriptor.Read, Settings.Agents.ChatAgents, descriptor.Id, Settings)),
 
-					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_prompts"),
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.prompts"),
 						MaterialIconKind.Text,
 						() => new AgentPromptSettingsViewModel(
 							descriptor.Prompts,
@@ -247,21 +247,21 @@ namespace LLMDesktopAssistant.LLM.Settings
 							Chat.Services.GetRequiredService<IChatPromptBuilder>(),
 							descriptor)),
 
-					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_tools"),
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.tools"),
 						MaterialIconKind.Wrench,
 						() => new AgentToolSettingsViewModel(
 							descriptor.Tools,
 							Chat.Services.GetRequiredService<IToolsetBuildingService>(),
 							Settings)),
 
-					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_skills"),
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),
 						MaterialIconKind.Cards,
 						() => new AgentSkillSettingsViewModel(
 							descriptor.Skills,
 							Chat.Services.GetRequiredService<ISkillsetBuildingService>(),
 							Settings)),
 
-					new SettingsLeafNode(LocalizationManager.LocalizeStatic("chat_settings_memory"),
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.memory"),
 						MaterialIconKind.Database,
 						() => new AgentMemorySettingsViewModel(
 							descriptor.Memory,

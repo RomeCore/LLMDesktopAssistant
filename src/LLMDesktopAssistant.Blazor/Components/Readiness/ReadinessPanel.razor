@@ -8,21 +8,21 @@
 <div class="readiness-panel">
 	@if (_state != null)
 	{
-		<label class="readiness-checkbox" title='@LocalizationManager.LocalizeStatic("webui_readiness_title_ready")'>
+		<label class="readiness-checkbox" title='@LocalizationManager.LocalizeStatic("webui.readiness.ready.title")'>
 			<input type="checkbox"
 				   @bind="@_state.IsReady"
 				   disabled="@_state.IsAlwaysReady" />
-			<span class="readiness-checkbox-label">@LocalizationManager.LocalizeStatic("webui_readiness_ready")</span>
+			<span class="readiness-checkbox-label">@LocalizationManager.LocalizeStatic("webui.readiness.ready")</span>
 		</label>
 
-		<label class="readiness-checkbox" title='@LocalizationManager.LocalizeStatic("webui_readiness_title_auto")'>
+		<label class="readiness-checkbox" title='@LocalizationManager.LocalizeStatic("webui.readiness.auto.title")'>
 			<input type="checkbox"
 				   @bind="@_state.IsAlwaysReady" />
-			<span class="readiness-checkbox-label">@LocalizationManager.LocalizeStatic("webui_readiness_always_ready")</span>
+			<span class="readiness-checkbox-label">@LocalizationManager.LocalizeStatic("webui.readiness.always_ready")</span>
 		</label>
 	}
 
-	<span class="readiness-count" title="@LocalizationManager.LocalizeStatic("webui_readiness_count_title")">
+	<span class="readiness-count" title="@LocalizationManager.LocalizeStatic("webui.readiness.count.title")">
 		@ReadinessService.ReadyCount / @ReadinessService.TotalCount
 	</span>
 </div>

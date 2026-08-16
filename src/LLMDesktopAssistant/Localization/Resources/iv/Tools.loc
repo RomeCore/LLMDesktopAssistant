@@ -101,3 +101,127 @@ category.skills: Skills
 category.time: Time
 category.web: Web
 category.workdir: Working directories
+
+// Tool statuses, behaviours, call actions, sources, fixed flags.
+arguments: Tool arguments:
+behaviour.accessoutsideworkdir: Access outside working directory
+behaviour.accessoutsideworkdir_hint: The tool accesses locations outside the configured working directory.
+behaviour.adhoc: Ad-hoc (special tools)
+behaviour.adhoc_hint: Special tools created for disposable execution (scripted tools, for example)
+behaviour.agentexecution: Agent execution
+behaviour.agentexecution_hint: The tool invokes, manages, or coordinates other AI agents.
+behaviour.clipboardaccess: Clipboard access
+behaviour.clipboardaccess_hint: The tool accesses the clipboard for reading or writing text data.
+behaviour.clipboardread: Clipboard read
+behaviour.clipboardread_hint: The tool reads text data from the clipboard.
+behaviour.clipboardwrite: Clipboard write
+behaviour.clipboardwrite_hint: The tool writes text data to the clipboard.
+behaviour.databasechange: Database change
+behaviour.databasechange_hint: The tool changes data or schema in a connected database.
+behaviour.databasecustomconnect: Custom database connection
+behaviour.databasecustomconnect_hint: The tool connects to a database using a custom connection string.
+behaviour.databaseread: Database read
+behaviour.databaseread_hint: The tool reads data from a connected database.
+behaviour.directorydelete: Delete directories
+behaviour.directorydelete_hint: The tool removes entire directory trees including their contents.
+behaviour.directoryedit: Edit directories (move, rename, copy)
+behaviour.directoryedit_hint: The tool modifies the directory structure (move, rename, copy).
+behaviour.directoryread: Read directories
+behaviour.directoryread_hint: The tool enumerates or lists the contents of directories.
+behaviour.executeexternalprocess: Execute external process
+behaviour.executeexternalprocess_hint: The tool spawns or executes an external operating system process.
+behaviour.filedelete: Delete files
+behaviour.filedelete_hint: The tool permanently removes files from the filesystem.
+behaviour.filedirectorycreate: Create files and directories
+behaviour.filedirectorycreate_hint: The tool creates new files or directories on the filesystem.
+behaviour.fileedit: Edit files
+behaviour.fileedit_hint: The tool modifies existing file content or metadata without deleting it.
+behaviour.fileread: Read files
+behaviour.fileread_hint: The tool reads the contents of files.
+behaviour.internetaccess: Internet access
+behaviour.internetaccess_hint: The tool performs network requests to external services or APIs.
+behaviour.longrunningtask: Long-running task
+behaviour.longrunningtask_hint: The tool may run for an extended period due to heavy computation or network latency.
+behaviour.mcp: MCP (external server)
+behaviour.mcp_hint: The tool originates from an external MCP server and may have unpredictable behaviour.
+behaviour.meta: Meta-tool (LLM-created)
+behaviour.meta_hint: The tool is a meta-tool created at runtime by the LLM via Lua/Python scripting.
+behaviour.none: Safe (no specific behaviour)
+behaviour.none_hint: Purely computational or informational tasks (math, random, time).
+behaviour.possiblyunexpected: Potentially unexpected actions
+behaviour.possiblyunexpected_hint: The tool may perform unexpected or uncontrollable actions.
+behaviour.readsecrets: Read secrets and sensitive data
+behaviour.readsecrets_hint: The tool may expose sensitive information such as passwords, API keys or tokens.
+behaviour.runterminal: Run in terminal
+behaviour.runterminal_hint: The tool runs commands in an embedded terminal emulator with interactive I/O.
+behaviour.scriptaccess: Tool and script access
+behaviour.scriptaccess_hint: The tool creates, modifies, or deletes other tools and user scripts at runtime.
+behaviour.semanticmemoryclear: Semantic memory clear
+behaviour.semanticmemoryclear_hint: The tool clears semantic memory blocks and may cause data loss.
+behaviour.semanticmemorydelete: Semantic memory delete entry
+behaviour.semanticmemorydelete_hint: Tool removes facts and logs from semantic memory.
+behaviour.semanticmemoryread: Semantic memory read
+behaviour.semanticmemoryread_hint: Tool can read facts and logs from semantic memory.
+behaviour.semanticmemorywrite: Semantic memory write
+behaviour.semanticmemorywrite_hint: Tool can write facts and logs to semantic memory.
+behaviour.userinteraction: User interaction (forms, confirmations)
+behaviour.userinteraction_hint: The tool requires user input via forms, confirmations, file pickers, etc.
+behaviour.workdirchange: Change working directory
+behaviour.workdirchange_hint: The tool switches the active working directory, affecting the base for all relative file operations.
+call.action.approve_with_notes: Approve with notes
+call.action.approve_with_wait.hint: Approve and ask agent to wait
+call.action.cancel: Cancel tool
+call.action.cancel_with_reason: Cancel with reason
+call.action.cancel_with_wait.hint: Cancel and ask agent to wait
+call.action.commit_notes: Submit
+call.notes.placeholder: Enter note/reason...
+call.status.cancelled: Cancelled
+call.status.confirming: Confirmation needed
+call.status.executing: Executing...
+call.status.failed: Failed
+call.status.pending: Pending
+call.status.pre_executing: Analyzing...
+call.status.success: Success
+call.status.unknown: Unknown
+copy_arguments: Copy arguments
+copy_result: Copy result
+fixed: Fixed tool
+fixed.hint: This tool is always enabled while its context is present and cannot be disabled.
+name_suffix.hint: {0} tools
+result: Tool result:
+settings: Tools settings
+source.mcp: MCP
+source.meta: Meta
+status.agent-describe_image.status: Describing... *{0} tokens*
+status.fs-apply_diff.changes_none: no changes
+status.fs-diff.accepted: Accepted
+status.fs-diff.confirm: Confirm
+status.fs-diff.decline: Decline
+status.fs-diff.declined: Declined
+status.fs-diff.disable_all: Disable All
+status.fs-diff.enable_all: Enable All
+status.fs-diff.toggle_chunk: Toggle this change chunk
+status.fs-edit.changes_none: {0} *(no changes)*
+status.fs-glob.found_count: Found {0} item(s)...
+status.fs-glob.results: {0} result(s)
+status.fs-grep.collecting_files: Collecting files...
+status.fs-grep.collecting_files_count: Collecting files... ({0} found)
+status.fs-grep.completed: Found {0} matching files
+status.fs-grep.scanning_files: Scanning files...
+status.fs-read_entry.secrets: {0} (contains secrets)
+status.fs-write_file.streaming_status: {0} ({1} lines...)
+status.math-solve.no_roots: {0} *(no roots)*
+status.math-solve.status: {0} *({1} roots)*
+status.memory-view_logs.latest: Latest **{0}**
+status.memory-view_logs.time_window: Time window
+status.random-check_chance.failure: failure
+status.random-check_chance.success: success
+status.random-coin_flip.heads: Heads
+status.random-coin_flip.tails: Tails
+status.random-dice_roll.rolled: Rolled
+status.random-shuffle_list.shuffled: Shuffled list of {0} items
+status.script.lines: {0} lines
+status.time-wait.completed: Completed ({0})
+status.time-wait.status: Waiting... {0} remaining
+status.web-search.results: {0} *({1} results)*
+category.unknown: Unknown

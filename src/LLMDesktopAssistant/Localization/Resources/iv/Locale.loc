@@ -9,6 +9,21 @@
 %locale:
 %namespace: common
 
-default: Default
-save: Save
 add: Add
+approve: Approve
+cancel: Cancel
+close: Close
+connect: Connect
+default: Default
+delete: Delete
+disconnect: Disconnect
+edit: Edit
+enable: Enable
+name: Name
+ok: Ok
+policy: Policy
+remove: Remove
+reset: Reset
+save: Save
+search: Search
+settings: Settings

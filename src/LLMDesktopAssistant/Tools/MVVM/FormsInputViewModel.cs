@@ -123,7 +123,7 @@ public class FormsInputViewModel : AdditionalMessageViewModel
 			inputField.Error = null;
 			if (inputField.IsRequired && string.IsNullOrWhiteSpace(inputField.Value))
 			{
-				inputField.Error = string.Format(LocalizationManager.LocalizeStatic("forms_field_required"), inputField.Label);
+				inputField.Error = string.Format(LocalizationManager.LocalizeStatic("forms.input.field_required"), inputField.Label);
 			}
 		}
 

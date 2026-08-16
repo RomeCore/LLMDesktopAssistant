@@ -174,7 +174,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 			}
 			catch (Exception ex)
 			{
-				ShowError(LocalizationManager.LocalizeStatic("settings-memory_logs_search_error"), ex.Message);
+				ShowError(LocalizationManager.LocalizeStatic("settings.memory.logs.search.error"), ex.Message);
 			}
 		}
 
@@ -196,7 +196,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 			}
 			catch (Exception ex)
 			{
-				ShowError(LocalizationManager.LocalizeStatic("settings-memory_logs_time_search_error"), ex.Message);
+				ShowError(LocalizationManager.LocalizeStatic("settings.memory.logs.time_search.error"), ex.Message);
 			}
 		}
 
@@ -204,16 +204,16 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		{
 			var vm = new AddLogDialogViewModel
 			{
-				Title = LocalizationManager.LocalizeStatic("settings-memory_log_add_title"),
-				Placeholder = LocalizationManager.LocalizeStatic("settings-memory_log_add_placeholder"),
-				ImportanceLabel = LocalizationManager.LocalizeStatic("settings-memory_logs_importance"),
-				BeginLabel = LocalizationManager.LocalizeStatic("settings-memory_log_begin"),
-				EndLabel = LocalizationManager.LocalizeStatic("settings-memory_log_end"),
-				TimelineLabel = LocalizationManager.LocalizeStatic("settings-memory_log_timeline"),
-				OrdinalLabel = LocalizationManager.LocalizeStatic("settings-memory_log_ordinal"),
-				DetailsLabel = LocalizationManager.LocalizeStatic("settings-memory_log_details"),
-				SubmitText = LocalizationManager.LocalizeStatic("settings-memory_logs_add"),
-				CancelText = LocalizationManager.LocalizeStatic("cancel")
+				Title = LocalizationManager.LocalizeStatic("settings.memory.log.add.title"),
+				Placeholder = LocalizationManager.LocalizeStatic("settings.memory.log.add.placeholder"),
+				ImportanceLabel = LocalizationManager.LocalizeStatic("settings.memory.logs.importance.label"),
+				BeginLabel = LocalizationManager.LocalizeStatic("settings.memory.log.begin.label"),
+				EndLabel = LocalizationManager.LocalizeStatic("settings.memory.log.end.label"),
+				TimelineLabel = LocalizationManager.LocalizeStatic("settings.memory.log.timeline.label"),
+				OrdinalLabel = LocalizationManager.LocalizeStatic("settings.memory.log.ordinal.label"),
+				DetailsLabel = LocalizationManager.LocalizeStatic("settings.memory.log.details.label"),
+				SubmitText = LocalizationManager.LocalizeStatic("settings.memory.logs.add.action"),
+				CancelText = LocalizationManager.LocalizeStatic("common.cancel")
 			};
 
 			_ = DialogManager.ShowDialogAsync(vm);
@@ -234,11 +234,11 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 					timeLineOrdinalEnd: result.TimeLineOrdinalEnd,
 					timeLineDetailsEnd: result.TimeLineDetailsEnd);
 
-				ShowSuccess(LocalizationManager.LocalizeStaticFormat("settings-memory_log_add_done", appended.Id));
+				ShowSuccess(LocalizationManager.LocalizeStaticFormat("settings.memory.log.add.success", appended.Id));
 			}
 			catch (Exception ex)
 			{
-				ShowError(LocalizationManager.LocalizeStatic("settings-memory_log_add_error"), ex.Message);
+				ShowError(LocalizationManager.LocalizeStatic("settings.memory.log.add.error"), ex.Message);
 			}
 		}
 
@@ -246,10 +246,10 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		{
 			var confirm = new ConfirmDialogViewModel
 			{
-				Title = LocalizationManager.LocalizeStatic("settings-memory_logs_clear_title"),
-				Description = LocalizationManager.LocalizeStatic("settings-memory_logs_clear_confirm"),
-				ConfirmText = LocalizationManager.LocalizeStatic("settings-memory_logs_clear"),
-				CancelText = LocalizationManager.LocalizeStatic("cancel"),
+				Title = LocalizationManager.LocalizeStatic("settings.memory.logs.clear.title"),
+				Description = LocalizationManager.LocalizeStatic("settings.memory.logs.clear.confirm"),
+				ConfirmText = LocalizationManager.LocalizeStatic("settings.memory.logs.clear.action"),
+				CancelText = LocalizationManager.LocalizeStatic("common.cancel"),
 				IsDanger = true
 			};
 
@@ -264,12 +264,12 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				RaisePropertyChanged(nameof(HasResults));
 
 				ServiceRegistry.Provider.GetRequiredService<IToastService>().ShowSuccess(
-					LocalizationManager.LocalizeStatic("settings-memory_logs_clear_done"),
-					LocalizationManager.LocalizeStaticFormat("settings-memory_logs_clear_result", count));
+					LocalizationManager.LocalizeStatic("settings.memory.logs.clear.success"),
+					LocalizationManager.LocalizeStaticFormat("settings.memory.logs.clear.result", count));
 			}
 			catch (Exception ex)
 			{
-				ShowError(LocalizationManager.LocalizeStatic("settings-memory_logs_clear_error"), ex.Message);
+				ShowError(LocalizationManager.LocalizeStatic("settings.memory.logs.clear.error"), ex.Message);
 			}
 		}
 
@@ -377,10 +377,10 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		{
 			var confirm = new ConfirmDialogViewModel
 			{
-				Title = LocalizationManager.LocalizeStatic("settings-memory_log_delete_title"),
-				Description = LocalizationManager.LocalizeStaticFormat("settings-memory_log_delete_confirm", Id),
-				ConfirmText = LocalizationManager.LocalizeStatic("settings-memory_log_delete"),
-				CancelText = LocalizationManager.LocalizeStatic("cancel"),
+				Title = LocalizationManager.LocalizeStatic("settings.memory.log.delete.title"),
+				Description = LocalizationManager.LocalizeStaticFormat("settings.memory.log.delete.confirm", Id),
+				ConfirmText = LocalizationManager.LocalizeStatic("settings.memory.log.delete.action"),
+				CancelText = LocalizationManager.LocalizeStatic("common.cancel"),
 				IsDanger = true
 			};
 
@@ -392,11 +392,11 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 			{
 				await _logStore.HardDeleteAsync(_block, Id);
 				_removed(this);
-				ShowSuccess(LocalizationManager.LocalizeStatic("settings-memory_log_delete_done"));
+				ShowSuccess(LocalizationManager.LocalizeStatic("settings.memory.log.delete.success"));
 			}
 			catch (Exception ex)
 			{
-				ShowError(LocalizationManager.LocalizeStatic("settings-memory_log_delete_error"), ex.Message);
+				ShowError(LocalizationManager.LocalizeStatic("settings.memory.log.delete.error"), ex.Message);
 			}
 		}
 

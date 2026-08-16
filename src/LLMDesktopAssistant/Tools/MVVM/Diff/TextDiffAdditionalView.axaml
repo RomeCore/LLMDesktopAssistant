@@ -109,7 +109,7 @@
 													  IsEnabled="{Binding #DiffRoot.DataContext.AreCheckboxesInteractive}"
 													  VerticalAlignment="Center"
 													  Margin="4,0,4,0"
-													  ToolTip.Tip="{loc:Loc 'fs-diff_toggle_chunk'}"/>
+													  ToolTip.Tip="{loc:Loc 'tool.status.fs-diff.toggle_chunk'}"/>
 
 											<!-- Chunk header text -->
 											<TextBlock Grid.Column="1"
@@ -210,11 +210,11 @@
 							FontSize="12"
 							Padding="8,2"
 							IsVisible="{Binding IsPending}"
-							ToolTip.Tip="{loc:Loc 'fs-diff_enable_all'}">
+							ToolTip.Tip="{loc:Loc 'tool.status.fs-diff.enable_all'}">
 						<StackPanel Orientation="Horizontal" Spacing="4">
 							<material:MaterialIcon Kind="CheckboxMarked"
 												   Width="14" Height="14"/>
-							<TextBlock Text="{loc:Loc 'fs-diff_enable_all'}"/>
+							<TextBlock Text="{loc:Loc 'tool.status.fs-diff.enable_all'}"/>
 						</StackPanel>
 					</Button>
 
@@ -224,11 +224,11 @@
 							FontSize="12"
 							Padding="8,2"
 							IsVisible="{Binding IsPending}"
-							ToolTip.Tip="{loc:Loc 'fs-diff_disable_all'}">
+							ToolTip.Tip="{loc:Loc 'tool.status.fs-diff.disable_all'}">
 						<StackPanel Orientation="Horizontal" Spacing="4">
 							<material:MaterialIcon Kind="CheckboxBlankOutline"
 												   Width="14" Height="14"/>
-							<TextBlock Text="{loc:Loc 'fs-diff_disable_all'}"/>
+							<TextBlock Text="{loc:Loc 'tool.status.fs-diff.disable_all'}"/>
 						</StackPanel>
 					</Button>
 
@@ -246,7 +246,7 @@
 						<StackPanel Orientation="Horizontal" Spacing="4">
 							<material:MaterialIcon Kind="Close"
 												   Width="14" Height="14"/>
-							<TextBlock Text="{loc:Loc 'fs-diff_decline'}"/>
+							<TextBlock Text="{loc:Loc 'tool.status.fs-diff.decline'}"/>
 						</StackPanel>
 					</Button>
 
@@ -259,7 +259,7 @@
 						<StackPanel Orientation="Horizontal" Spacing="4">
 							<material:MaterialIcon Kind="Check"
 												   Width="14" Height="14"/>
-							<TextBlock Text="{loc:Loc 'fs-diff_confirm'}"/>
+							<TextBlock Text="{loc:Loc 'tool.status.fs-diff.confirm'}"/>
 						</StackPanel>
 					</Button>
 
@@ -270,7 +270,7 @@
 							<material:MaterialIcon Kind="CheckCircle"
 												   Width="14" Height="14"
 												   Foreground="#4CAF50"/>
-							<TextBlock Text="{loc:Loc 'fs-diff_accepted'}"
+							<TextBlock Text="{loc:Loc 'tool.status.fs-diff.accepted'}"
 									   FontSize="12"
 									   FontWeight="SemiBold"
 									   Foreground="#4CAF50"/>
@@ -284,7 +284,7 @@
 							<material:MaterialIcon Kind="CloseCircle"
 												   Width="14" Height="14"
 												   Foreground="#F44336"/>
-							<TextBlock Text="{loc:Loc 'fs-diff_declined'}"
+							<TextBlock Text="{loc:Loc 'tool.status.fs-diff.declined'}"
 									   FontSize="12"
 									   FontWeight="SemiBold"
 									   Foreground="#F44336"/>

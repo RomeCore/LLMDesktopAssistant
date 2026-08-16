@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
 						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -66,7 +66,7 @@
 
 			<!-- Task name + status -->
 			<StackPanel Grid.Column="1" VerticalAlignment="Center">
-				<TextBlock Text="{Binding TaskViewModel.TaskName, TargetNullValue={loc:Loc unnamed_task}}"
+				<TextBlock Text="{Binding TaskViewModel.TaskName, TargetNullValue={loc:Loc task.unnamed}}"
 									 FontSize="18" FontWeight="SemiBold"
 									 TextTrimming="CharacterEllipsis"/>
 				<TextBlock Text="{Binding TaskViewModel.StatusText}"
@@ -80,7 +80,7 @@
 											IsVisible="{Binding TaskViewModel.IsRunning}"
 											Classes="SmallIconButton"
 											Margin="0,0,8,0"
-											ToolTip.Tip="{loc:Loc cancel_task}">
+											ToolTip.Tip="{loc:Loc task.cancel}">
 				<ico:MaterialIcon Kind="Stop" Width="20" Height="20"/>
 			</Button>
 
@@ -88,7 +88,7 @@
 			<Button Grid.Column="3"
 							Command="{Binding CloseCommand}"
 							Classes="SmallIconButton"
-							ToolTip.Tip="{loc:Loc close}">
+							ToolTip.Tip="{loc:Loc common.close}">
 				<ico:MaterialIcon Kind="Close" Width="20" Height="20"/>
 			</Button>
 
@@ -110,7 +110,7 @@
 					<TextBlock Classes="ValueText">
 						<Run Text="{Binding Task.UsageStatistics.InputTokens}"/>
 						<Run Text=" "/>
-						<Run Text="{loc:Loc task_detail_input_tokens}"/>
+						<Run Text="{loc:Loc task.detail.input_tokens}"/>
 					</TextBlock>
 				</StackPanel>
 			</Border>
@@ -120,7 +120,7 @@
 					<TextBlock Classes="ValueText">
 						<Run Text="{Binding Task.UsageStatistics.InputCacheHitTokens}"/>
 						<Run Text=" "/>
-						<Run Text="{loc:Loc task_detail_input_cache_hit_tokens}"/>
+						<Run Text="{loc:Loc task.detail.input_cache_hit_tokens}"/>
 					</TextBlock>
 				</StackPanel>
 			</Border>
@@ -130,7 +130,7 @@
 					<TextBlock Classes="ValueText">
 						<Run Text="{Binding Task.UsageStatistics.OutputTokens}"/>
 						<Run Text=" "/>
-						<Run Text="{loc:Loc task_detail_output_tokens}"/>
+						<Run Text="{loc:Loc task.detail.output_tokens}"/>
 					</TextBlock>
 				</StackPanel>
 			</Border>
@@ -138,7 +138,7 @@
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<ico:MaterialIcon Kind="Timer" Width="14" Height="14" Opacity="0.5"/>
 					<TextBlock Classes="ValueText">
-						<Run Text="{loc:Loc task_detail_time_to_first_token}"/>
+						<Run Text="{loc:Loc task.detail.time_to_first_token}"/>
 						<Run Text=" "/>
 						<Run Text="{Binding TtftFormatted}"/>
 					</TextBlock>
@@ -148,7 +148,7 @@
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<ico:MaterialIcon Kind="LightningBolt" Width="14" Height="14" Opacity="0.5"/>
 					<TextBlock Classes="ValueText">
-						<Run Text="{loc:Loc task_detail_inference_time}"/>
+						<Run Text="{loc:Loc task.detail.inference_time}"/>
 						<Run Text=" "/>
 						<Run Text="{Binding InferenceTimeFormatted}"/>
 					</TextBlock>
@@ -158,20 +158,20 @@
 
 		<!-- ===== CONFIGURATION SECTION ===== -->
 		<TextBlock Grid.Row="2"
-							 Classes="SectionTitle" Text="{loc:Loc task_detail_configuration}"/>
+							 Classes="SectionTitle" Text="{loc:Loc task.detail.configuration}"/>
 
 		<Grid Grid.Row="3"
 					ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
 					ColumnSpacing="16" RowSpacing="4">
 
 			<TextBlock Classes="LabelText" Grid.Row="0" Grid.Column="0"
-								 Text="{loc:Loc task_detail_id}"/>
+								 Text="{loc:Loc task.detail.id}"/>
 			<TextBlock Classes="ValueText" Grid.Row="0" Grid.Column="1"
 								 Text="{Binding Task.Id, StringFormat=\{0:B\}}"
 								 FontFamily="JetBrains Mono" FontSize="11"/>
 
 			<TextBlock Classes="LabelText" Grid.Row="1" Grid.Column="0"
-								 Text="{loc:Loc task_detail_parent}"
+								 Text="{loc:Loc task.detail.parent}"
 								 IsVisible="{Binding Task.Parent.Id, Converter={StaticResource NotnullToBooleanConverter}}"/>
 			<TextBlock Classes="ValueText" Grid.Row="1" Grid.Column="1"
 								 Text="{Binding Task.Parent.Id, StringFormat=\{0:B\}}"
@@ -179,23 +179,23 @@
 								 IsVisible="{Binding Task.Parent.Id, Converter={StaticResource NotnullToBooleanConverter}}"/>
 
 			<TextBlock Classes="LabelText" Grid.Row="2" Grid.Column="0"
-								 Text="{loc:Loc task_detail_behaviour}"/>
+								 Text="{loc:Loc task.detail.behaviour}"/>
 			<TextBlock Classes="ValueText" Grid.Row="2" Grid.Column="1"
 								 Text="{Binding Task.LaunchParameters.Behaviour}"/>
 
 			<TextBlock Classes="LabelText" Grid.Row="3" Grid.Column="0"
-								 Text="{loc:Loc task_detail_max_parallel_tools}"/>
+								 Text="{loc:Loc task.detail.max_parallel_tools}"/>
 			<TextBlock Classes="ValueText" Grid.Row="3" Grid.Column="1"
 								 Text="{Binding Task.LaunchParameters.MaxParallelToolCalls}"/>
 
 			<TextBlock Classes="LabelText" Grid.Row="4" Grid.Column="0"
-								 Text="{loc:Loc task_detail_timeout}"/>
+								 Text="{loc:Loc task.detail.timeout}"/>
 			<TextBlock Classes="ValueText" Grid.Row="4" Grid.Column="1"
 								 Text="{Binding TimeOut}"
 								 IsVisible="{Binding TimeOut, Converter={StaticResource NotnullToBooleanConverter}}"/>
 
 			<TextBlock Classes="LabelText" Grid.Row="5" Grid.Column="0"
-								 Text="{loc:Loc task_detail_tools_count}"/>
+								 Text="{loc:Loc task.detail.tools_count}"/>
 			<TextBlock Classes="ValueText" Grid.Row="5" Grid.Column="1"
 								 Text="{Binding Task.LaunchParameters.Tools.Count}"/>
 
@@ -208,7 +208,7 @@
 				<StackPanel Orientation="Horizontal" Spacing="8">
 					<ico:MaterialIcon Kind="AlertCircle" Width="20" Height="20"
 														Foreground="#F44336"/>
-					<TextBlock Text="{loc:Loc task_detail_error}"
+					<TextBlock Text="{loc:Loc task.detail.error}"
 										 FontSize="14" FontWeight="SemiBold"
 										 Foreground="#F44336"/>
 				</StackPanel>
@@ -228,7 +228,7 @@
 
 		<!-- ===== MESSAGES SECTION ===== -->
 		<TextBlock Grid.Row="5"
-							 Classes="SectionTitle" Text="{loc:Loc task_detail_messages}"/>
+							 Classes="SectionTitle" Text="{loc:Loc task.detail.messages}"/>
 
 		<ScrollViewer Grid.Row="6"
 									VerticalScrollBarVisibility="Auto"
@@ -254,7 +254,7 @@
 													Margin="0,0,0,6">
 								<ico:MaterialIcon Kind="Cog"
 																	Width="22" Height="22"/>
-								<TextBlock Text="{loc:Loc system_role}"
+								<TextBlock Text="{loc:Loc task.role.system}"
 													 FontSize="16" FontWeight="SemiBold"/>
 							</StackPanel>
 
@@ -276,7 +276,7 @@
 													Margin="0,0,0,6">
 								<ico:MaterialIcon Kind="Account"
 																	Width="22" Height="22"/>
-								<TextBlock Text="{loc:Loc user_role}"
+								<TextBlock Text="{loc:Loc task.role.user}"
 													 FontSize="16" FontWeight="SemiBold"/>
 							</StackPanel>
 
@@ -317,7 +317,7 @@
 													Margin="0,0,0,8">
 								<ico:MaterialIcon Kind="Robot"
 																	Width="22" Height="22"/>
-								<TextBlock Text="{loc:Loc assistant_role}"
+								<TextBlock Text="{loc:Loc task.role.assistant}"
 													 FontSize="18" FontWeight="SemiBold"/>
 
 								<!-- Per-message token stats -->
@@ -326,13 +326,13 @@
 													 FontSize="11" Opacity="0.4"
 													 Margin="8,0,0,0">
 									<Run Text="{Binding UsageStatistics.InputTokens}"/>
-									<Run Text="{loc:Loc task_detail_input_tokens}"/>
+									<Run Text="{loc:Loc task.detail.input_tokens}"/>
 									<Run Text=" "/>
 									<Run Text="{Binding UsageStatistics.InputCacheHitTokens}"/>
-									<Run Text="{loc:Loc task_detail_input_cache_hit_tokens}"/>
+									<Run Text="{loc:Loc task.detail.input_cache_hit_tokens}"/>
 									<Run Text=" "/>
 									<Run Text="{Binding UsageStatistics.OutputTokens}"/>
-									<Run Text="{loc:Loc task_detail_output_tokens}"/>
+									<Run Text="{loc:Loc task.detail.output_tokens}"/>
 									<Run Text=" "/>
 									<Run Text="{Binding UsageStatistics.ExecutionTime.TotalSeconds, StringFormat={}{0:F1}s}"/>
 								</TextBlock>
@@ -340,7 +340,7 @@
 
 							<!-- Reasoning block (collapsible-like) -->
 							<StackPanel IsVisible="{Binding ReasoningContent, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
-								<TextBlock Text="{loc:Loc task_detail_reasoning}"
+								<TextBlock Text="{loc:Loc task.detail.reasoning}"
 														FontSize="11" FontWeight="SemiBold"
 														Opacity="0.5"
 														Margin="0,0,0,4"/>
@@ -379,7 +379,7 @@
 							<!-- Tool calls (compact list) -->
 							<StackPanel IsVisible="{Binding ToolCalls.Any}"
 													Margin="0,6,0,0">
-								<TextBlock Text="{loc:Loc task_detail_tool_calls}"
+								<TextBlock Text="{loc:Loc task.detail.tool_calls}"
 													 FontSize="11" FontWeight="SemiBold"
 													 Opacity="0.6"
 													 Margin="0,0,0,4"/>
@@ -437,7 +437,7 @@
 						HorizontalAlignment="Right"
 						Margin="0,16,0,0"
 						Padding="20,8">
-			<TextBlock Text="{loc:Loc close}"/>
+			<TextBlock Text="{loc:Loc common.close}"/>
 		</Button>
 
 	</Grid>

@@ -46,7 +46,7 @@
 						Classes="IconButton"
 						VerticalAlignment="Center"
 						Click="SettingsButton_Click"
-						ToolTip.Tip="{loc:Loc model_selector_manage_tooltip}">
+						ToolTip.Tip="{loc:Loc model.selector.manage.tooltip}">
 			<ico:MaterialIcon Kind="RobotExcited"/>
 		</Button>
 

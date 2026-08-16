@@ -1,0 +1,11 @@
+// Memory blocks, facts, logs, attachment modes.
+
+%locale: ru-RU
+%namespace: memory
+
+attachment_mode.readonly: Только чтение
+attachment_mode.standard: Чтение и запись
+attachment_mode.writeonly: Только запись
+recording.task: Запись памяти
+retrieval.task: Извлечение памяти
+status.retrieval: Достаём память

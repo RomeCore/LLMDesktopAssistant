@@ -4,8 +4,8 @@
 <div class="user-profile-overlay @(_isVisible ? "visible" : "")" @onclick="HandleOverlayClick">
 	<div class="user-profile-panel" @onclick:stopPropagation>
 		<div class="user-profile-header">
-			<h3>@LocalizationManager.LocalizeStatic("webui_profile_title")</h3>
-			<button class="user-profile-close-btn" @onclick="Close" title="@LocalizationManager.LocalizeStatic("webui_profile_close")">
+			<h3>@LocalizationManager.LocalizeStatic("webui.profile.title")</h3>
+			<button class="user-profile-close-btn" @onclick="Close" title="@LocalizationManager.LocalizeStatic("webui.profile.close")">
 				<MaterialIconComponent Kind="@MaterialIconKind.Close" Size="20" Color="#666" />
 			</button>
 		</div>
@@ -37,7 +37,7 @@
 						<button class="user-profile-avatar-btn user-profile-avatar-delete-btn"
 								@onclick="DeleteAvatar"
 								disabled="@_isUploading"
-								title="@LocalizationManager.LocalizeStatic("webui_avatar_delete_title")">
+								title="@LocalizationManager.LocalizeStatic("webui.profile.avatar.delete.title")">
 							<MaterialIconComponent Kind="@MaterialIconKind.Delete" Size="16" Color="#d32f2f" />
 						</button>
 					}
@@ -46,18 +46,18 @@
 
 			@* Fields *@
 			<div class="user-profile-field">
-				<label class="user-profile-label">@LocalizationManager.LocalizeStatic("webui_login_label")</label>
+				<label class="user-profile-label">@LocalizationManager.LocalizeStatic("webui.login.label")</label>
 				<input class="user-profile-input" @bind="_editLogin" placeholder="user_login" disabled="@_isDisabled" />
 			</div>
 
 			<div class="user-profile-field">
-				<label class="user-profile-label">@LocalizationManager.LocalizeStatic("webui_profile_name")</label>
+				<label class="user-profile-label">@LocalizationManager.LocalizeStatic("webui.profile.name")</label>
 				<input class="user-profile-input" @bind="_editName" placeholder="User" />
 			</div>
 
 			<div class="user-profile-field">
-				<label class="user-profile-label">@LocalizationManager.LocalizeStatic("webui_profile_description")</label>
-				<textarea class="user-profile-textarea" @bind="_editDescription" placeholder="@LocalizationManager.LocalizeStatic("webui_profile_description_placeholder")" rows="4"></textarea>
+				<label class="user-profile-label">@LocalizationManager.LocalizeStatic("webui.profile.description")</label>
+				<textarea class="user-profile-textarea" @bind="_editDescription" placeholder="@LocalizationManager.LocalizeStatic("webui.profile.description.placeholder")" rows="4"></textarea>
 			</div>
 
 			@if (!string.IsNullOrEmpty(_statusMessage))
@@ -72,19 +72,19 @@
 			<div class="user-profile-footer-left">
 				<button class="user-profile-logout-btn" @onclick="Logout">
 					<MaterialIconComponent Kind="@MaterialIconKind.Logout" Size="16" Color="#d32f2f" />
-					<span>@LocalizationManager.LocalizeStatic("webui_profile_logout")</span>
+					<span>@LocalizationManager.LocalizeStatic("webui.profile.logout")</span>
 				</button>
 			</div>
 			<div class="user-profile-footer-right">
-				<button class="user-profile-cancel-btn" @onclick="Close">@LocalizationManager.LocalizeStatic("webui_profile_cancel")</button>
+				<button class="user-profile-cancel-btn" @onclick="Close">@LocalizationManager.LocalizeStatic("webui.profile.cancel")</button>
 				<button class="user-profile-save-btn" @onclick="Save" disabled="@_isSaving">
 					@if (_isSaving)
 					{
-						<span>@LocalizationManager.LocalizeStatic("webui_profile_saving")</span>
+						<span>@LocalizationManager.LocalizeStatic("webui.profile.saving")</span>
 					}
 					else
 					{
-						<span>@LocalizationManager.LocalizeStatic("webui_profile_save")</span>
+						<span>@LocalizationManager.LocalizeStatic("webui.profile.save")</span>
 					}
 				</button>
 			</div>
@@ -149,7 +149,7 @@
 			_user.Name = _editName;
 			_user.Description = _editDescription;
 
-			_statusMessage = LocalizationManager.LocalizeStatic("webui_profile_saved");
+			_statusMessage = LocalizationManager.LocalizeStatic("webui.profile.save.success");
 			_statusIsError = false;
 		}
 		catch (Exception ex)
@@ -188,7 +188,7 @@
 			if (!string.IsNullOrEmpty(base64))
 			{
 				_user.Base64ProfileImage = base64;
-				_statusMessage = LocalizationManager.LocalizeStatic("webui_profile_avatar_updated");
+				_statusMessage = LocalizationManager.LocalizeStatic("webui.profile.avatar.updated");
 				_statusIsError = false;
 			}
 			else
@@ -199,12 +199,12 @@
 		catch (OperationCanceledException)
 		{
 			// JS interop timed out — user likely walked away with the dialog open
-			_statusMessage = LocalizationManager.LocalizeStatic("webui_avatar_timeout");
+			_statusMessage = LocalizationManager.LocalizeStatic("webui.profile.avatar.timeout");
 			_statusIsError = true;
 		}
 		catch (Exception ex)
 		{
-			_statusMessage = $"{LocalizationManager.LocalizeStatic("webui_avatar_error")}: {ex.Message}";
+			_statusMessage = $"{LocalizationManager.LocalizeStatic("webui.profile.avatar.error")}: {ex.Message}";
 			_statusIsError = true;
 		}
 		finally
@@ -222,7 +222,7 @@
 			return;
 
 		_user.Base64ProfileImage = string.Empty;
-		_statusMessage = LocalizationManager.LocalizeStatic("webui_avatar_deleted");
+		_statusMessage = LocalizationManager.LocalizeStatic("webui.profile.avatar.deleted");
 		_statusIsError = false;
 	}
 

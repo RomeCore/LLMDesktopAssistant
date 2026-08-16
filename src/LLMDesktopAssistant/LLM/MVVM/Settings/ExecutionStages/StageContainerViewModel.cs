@@ -16,27 +16,27 @@ public sealed class StageTypeOption
 
 	public static StageTypeOption Sequential { get; } = new StageTypeOption
 	{
-		Name = "stage_type_sequential",
+		Name = "settings.stage.type.sequential",
 		StageType = typeof(SequentialAgentExecutionStage)
 	};
 	public static StageTypeOption Random { get; } = new StageTypeOption
 	{
-		Name = "stage_type_random",
+		Name = "settings.stage.type.random",
 		StageType = typeof(RandomAgentExecutionStage)
 	};
 	public static StageTypeOption MentionOnly { get; } = new StageTypeOption
 	{
-		Name = "stage_type_mention_only",
+		Name = "settings.stage.type.mention_only",
 		StageType = typeof(MentionOnlyAgentExecutionStage)
 	};
 	public static StageTypeOption Adaptive { get; } = new StageTypeOption
 	{
-		Name = "stage_type_adaptive",
+		Name = "settings.stage.type.adaptive",
 		StageType = typeof(AdaptiveAgentExecutionStage)
 	};
 	public static StageTypeOption RoundRobin { get; } = new StageTypeOption
 	{
-		Name = "stage_type_round_robin",
+		Name = "settings.stage.type.round_robin",
 		StageType = typeof(RoundRobinAgentExecutionStage)
 	};
 

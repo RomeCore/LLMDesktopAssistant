@@ -21,7 +21,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-						  Text="{loc:Loc settings-llm_custom_model}"
+						  Text="{loc:Loc settings.agent.generation.custom_model}"
 						  FontWeight="Bold"
 						  FontSize="{DynamicResource FontSizeL}"
 						  VerticalAlignment="Center"/>
@@ -43,7 +43,7 @@
 
 		</Grid>
 
-		<CheckBox Content="{loc:Loc settings-llm_enable_custom_model}"
+		<CheckBox Content="{loc:Loc settings.agent.generation.enable_custom_model}"
 					IsChecked="{Binding EffectiveCustomModel.EnableCustomModel, Mode=TwoWay}"/>
 
 		<StackPanel Orientation="Vertical"
@@ -67,7 +67,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-						  Text="{loc:Loc settings-llm_reasoning}"
+						  Text="{loc:Loc settings.agent.generation.reasoning}"
 						  FontWeight="Bold"
 						  FontSize="{DynamicResource FontSizeL}"
 						  VerticalAlignment="Center"/>
@@ -89,7 +89,7 @@
 
 		</Grid>
 
-		<CheckBox Content="{loc:Loc settings-llm_enable_reasoning}"
+		<CheckBox Content="{loc:Loc settings.agent.generation.enable_reasoning}"
 					IsChecked="{Binding EffectiveReasoning.EnableReasoningSettings, Mode=TwoWay}"/>
 
 		<StackPanel Orientation="Horizontal"
@@ -97,7 +97,7 @@
 					Margin="20,0,0,0"
 					IsEnabled="{Binding EffectiveReasoning.EnableReasoningSettings}">
 
-			<TextBlock Text="{loc:Loc settings-llm_reasoning_level}"
+			<TextBlock Text="{loc:Loc settings.agent.generation.reasoning_level}"
 						  VerticalAlignment="Center"/>
 
 			<ComboBox MinWidth="160"
@@ -127,7 +127,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-						  Text="{loc:Loc settings-llm_temperature}"
+						  Text="{loc:Loc settings.agent.generation.temperature}"
 						  FontWeight="Bold"
 						  FontSize="{DynamicResource FontSizeL}"
 						  VerticalAlignment="Center"/>
@@ -149,7 +149,7 @@
 
 		</Grid>
 
-		<CheckBox Content="{loc:Loc settings-llm_enable_temperature}"
+		<CheckBox Content="{loc:Loc settings.agent.generation.enable_temperature}"
 					IsChecked="{Binding EffectiveTemperature.EnableTemperature, Mode=TwoWay}"/>
 
 		<StackPanel Orientation="Vertical"
@@ -160,7 +160,7 @@
 			<Grid ColumnDefinitions="Auto,*,50"
 					ColumnSpacing="8">
 
-				<TextBlock Text="{loc:Loc settings-llm_temperature_value}"
+				<TextBlock Text="{loc:Loc settings.agent.generation.temperature_value}"
 							  VerticalAlignment="Center"/>
 
 				<Slider Grid.Column="1"
@@ -193,7 +193,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-						  Text="{loc:Loc settings-llm_max_tokens}"
+						  Text="{loc:Loc settings.agent.generation.max_tokens}"
 						  FontWeight="Bold"
 						  FontSize="{DynamicResource FontSizeL}"
 						  VerticalAlignment="Center"/>
@@ -215,7 +215,7 @@
 
 		</Grid>
 
-		<CheckBox Content="{loc:Loc settings-llm_enable_max_tokens}"
+		<CheckBox Content="{loc:Loc settings.agent.generation.enable_max_tokens}"
 					IsChecked="{Binding EffectiveMaxTokens.EnableMaxTokens, Mode=TwoWay}"/>
 
 		<StackPanel Orientation="Horizontal"
@@ -223,7 +223,7 @@
 					Margin="20,0,0,0"
 					IsEnabled="{Binding EffectiveMaxTokens.EnableMaxTokens}">
 
-			<TextBlock Text="{loc:Loc settings-llm_max_tokens_value}"
+			<TextBlock Text="{loc:Loc settings.agent.generation.max_tokens_value}"
 						  VerticalAlignment="Center"/>
 
 			<NumericUpDown MinWidth="120"
@@ -249,7 +249,7 @@
 				Margin="0,5,0,0">
 
 			<TextBlock Grid.Column="0"
-						  Text="{loc:Loc settings-llm_additional_parameters}"
+						  Text="{loc:Loc settings.agent.generation.additional_parameters}"
 						  FontWeight="Bold"
 						  FontSize="{DynamicResource FontSizeL}"
 						  VerticalAlignment="Center"/>
@@ -272,7 +272,7 @@
 			<Button Grid.Column="2"
 					Command="{Binding AddParameterCommand}"
 					Classes="IconButton"
-					ToolTip.Tip="{loc:Loc add}">
+					ToolTip.Tip="{loc:Loc common.add}">
 
 				<ico:MaterialIcon Kind="Plus"/>
 
@@ -280,7 +280,7 @@
 
 		</Grid>
 
-		<TextBlock Text="{loc:Loc settings-llm_additional_parameters_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.generation.additional_parameters.hint}"
 					  Opacity="0.6"
 					  TextWrapping="Wrap"
 					  Margin="0,0,0,5"/>
@@ -305,7 +305,7 @@
 										VerticalAlignment="Center"/>
 
 							<TextBox Grid.Column="1"
-										PlaceholderText="{loc:Loc settings-llm_param_name}"
+										PlaceholderText="{loc:Loc settings.agent.generation.param.name}"
 										Text="{Binding ParameterName, Mode=TwoWay}"
 										MinWidth="100"/>
 
@@ -315,7 +315,7 @@
 											FontWeight="Bold"/>
 
 							<TextBox Grid.Column="3"
-										PlaceholderText="{loc:Loc settings-llm_param_value}"
+										PlaceholderText="{loc:Loc settings.agent.generation.param.value}"
 										Text="{Binding ParameterValue, Mode=TwoWay}"
 										MinWidth="100"/>
 
@@ -324,7 +324,7 @@
 									Command="{Binding #ThisControl.DataContext.RemoveParameterCommand}"
 									CommandParameter="{Binding}"
 									Classes="IconButton"
-									ToolTip.Tip="{loc:Loc remove}">
+									ToolTip.Tip="{loc:Loc common.remove}">
 
 								<ico:MaterialIcon Kind="Close"/>
 

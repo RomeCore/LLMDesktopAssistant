@@ -78,7 +78,7 @@ public class QuickActionUiNode : InlineNode<QuickAction>
 	{
 		_button.Content = quickAction.ButtonText;
 		SetQuickAction(_button, quickAction);
-		ToolTip.SetTip(_button, LocalizationManager.LocalizeStaticFormat("send_quick_action", quickAction.Prompt));
+		ToolTip.SetTip(_button, LocalizationManager.LocalizeStaticFormat("message.quick_action.send", quickAction.Prompt));
 		return true;
 	}
 }

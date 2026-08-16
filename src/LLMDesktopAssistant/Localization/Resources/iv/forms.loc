@@ -1,0 +1,15 @@
+// HITL forms: choice, confirm, input, file picker.
+
+%locale: 
+%namespace: forms
+
+choice.custom_option: Custom option...
+choice.selection.confirmed: Selection confirmed
+choice.selection.title: Make your selection
+confirm.canceled: Cancelled
+confirm.confirmed: Confirmed
+file_picker.file_selected: File selected
+file_picker.select_file: Select file...
+file_picker.selected_files: Selected files
+input.field_required: Field "{0}" is required.
+input.submitted: Form submitted

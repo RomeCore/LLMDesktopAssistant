@@ -1,0 +1,34 @@
+// Chat: statuses, toasts, chat list, naming, summarization, input hints.
+
+%locale: 
+%namespace: chat
+
+input.attach_file.hint: Attach file...
+input.cancel_edit.hint: Cancel editing
+input.hint: Enter your message...
+input.send_button.hint: Send message
+input.stop_button.hint: Stop generation
+list.title: Chats
+manager.no_messages_to_rename.description: Chat has no messages
+manager.no_messages_to_rename.title: Cannot rename chat
+naming.task: Chat naming
+new: New chat
+new_temporary: New temporary chat
+no_topic: no topic
+open_in_new_tab: Open in new tab
+rename.cancel: Cancel
+rename.save: Save
+rename_with_ai: Rename with AI
+status.selecting_agent: Selecting agent
+status.waiting_for_first_response: Waiting for first token
+status.waiting_for_mcp_connections: Connecting to MCP
+summarization.task: Chat summarization
+temporary: temporary
+toast.agent_selection_failed.description: Failed to select an agent for response generation.
+toast.agent_selection_failed.title: Agent selection failed
+toast.generation_failed.description: An error occurred while generating the response: {0}
+toast.generation_failed.title: Generation failed
+toast.llm_not_configured.description: Chat LLM is not configured. Please configure it in the chat settings.
+toast.llm_not_configured.title: LLM not configured
+user.active.hint: User sending the next message
+visibility.hint: Message visibility

@@ -140,7 +140,7 @@ public class SkillInjectionModeItem
 	public SkillInjectionModeItem(SkillInjectionMode value)
 	{
 		Value = value;
-		var key = $"skill_injection_mode_{value.ToString().ToLower()}";
+		var key = $"skill.injection_mode.{value.ToString().ToLower()}";
 		DisplayName = LocalizationManager.LocalizeStatic(key);
 
 		// Fallback to enum name if localization missing

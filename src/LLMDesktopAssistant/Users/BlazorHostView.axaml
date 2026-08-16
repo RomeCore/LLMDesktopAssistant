@@ -17,7 +17,7 @@
 
 			<ico:MaterialIcon Kind="Web" FontSize="28"/>
 
-			<TextBlock Text="{loc:Loc blazor_host_title}"
+			<TextBlock Text="{loc:Loc webui.host.title}"
 								 Margin="8,0,0,0"
 								 FontWeight="Bold"
 								 FontSize="20"
@@ -45,10 +45,10 @@
 
 				<Panel>
 					
-					<TextBlock Text="{loc:Loc blazor_host_status_stopped}"
+					<TextBlock Text="{loc:Loc webui.host.status.stopped}"
 										 IsVisible="{Binding !IsRunning}"/>
 
-					<TextBlock Text="{loc:Loc blazor_host_status_running}"
+					<TextBlock Text="{loc:Loc webui.host.status.running}"
 										 IsVisible="{Binding IsRunning}"/>
 					
 				</Panel>
@@ -59,14 +59,14 @@
 			<Rectangle Height="1" Fill="{DynamicResource DefaultForeground}" Opacity="0.2"/>
 
 			<!-- Settings -->
-			<TextBlock Text="{loc:Loc blazor_host_settings}"
+			<TextBlock Text="{loc:Loc webui.host.settings}"
 					   FontWeight="Bold"
 					   FontSize="16"/>
 
 			<Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
 
 				<TextBlock Grid.Row="0" Grid.Column="0"
-						   Text="{loc:Loc blazor_host_port}"
+						   Text="{loc:Loc webui.host.port}"
 						   VerticalAlignment="Center"
 						   Margin="0,0,8,0"/>
 
@@ -77,13 +77,13 @@
 
 						<Button Classes="IconButton"
 								Command="{Binding CopyUrlCommand}"
-								ToolTip.Tip="{loc:Loc blazor_host_copy_url}">
+								ToolTip.Tip="{loc:Loc webui.host.copy_url}">
 							<ico:MaterialIcon Kind="ContentCopy"/>
 						</Button>
 
 						<Button Classes="IconButton"
 								Command="{Binding OpenInBrowserCommand}"
-								ToolTip.Tip="{loc:Loc blazor_host_open_browser}">
+								ToolTip.Tip="{loc:Loc webui.host.open_browser}">
 							<ico:MaterialIcon Kind="OpenInNew"/>
 						</Button>
 
@@ -99,13 +99,13 @@
 				</DockPanel>
 
 				<TextBlock Grid.Row="1" Grid.Column="0"
-						   Text="{loc:Loc blazor_host_password}"
+						   Text="{loc:Loc webui.host.password}"
 						   VerticalAlignment="Center"
 						   Margin="0,8,8,0"/>
 				
 				<TextBox Grid.Row="1" Grid.Column="1"
 						 Text="{Binding Settings.Password, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc blazor_host_password_placeholder}"
+						 PlaceholderText="{loc:Loc webui.host.password.placeholder}"
 						 IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBooleanConverter}}"
 						 PasswordChar="•"
 						 Margin="0,8,0,0"/>
@@ -117,12 +117,12 @@
 		<!-- Buttons -->
 		<Panel Grid.Row="2" Margin="0,16,0,0">
 
-			<Button Content="{loc:Loc blazor_host_start}"
+			<Button Content="{loc:Loc webui.host.start}"
 					Command="{Binding StartCommand}"
 					IsVisible="{Binding IsRunning, Converter={StaticResource InverseBooleanConverter}}"
 					Classes="Primary"/>
 
-			<Button Content="{loc:Loc blazor_host_stop}"
+			<Button Content="{loc:Loc webui.host.stop}"
 					Command="{Binding StopCommand}"
 					IsVisible="{Binding IsRunning}"
 					Classes="Danger"/>

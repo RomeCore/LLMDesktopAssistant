@@ -74,7 +74,7 @@
 			</ItemsControl>
 
 			<!-- Submit button -->
-			<Button Content="{loc:Loc ok}"
+			<Button Content="{loc:Loc common.ok}"
 					Command="{Binding SubmitCommand}"
 					HorizontalAlignment="Right"
 					MinWidth="80"
@@ -86,7 +86,7 @@
 				<ico:MaterialIcon Kind="CheckCircle"
 								  Width="20" Height="20"
 								  Foreground="{DynamicResource SuccessColor}"/>
-				<TextBlock Text="{loc:Loc forms_form_submitted}" FontSize="13" Opacity="0.7"/>
+				<TextBlock Text="{loc:Loc forms.input.submitted}" FontSize="13" Opacity="0.7"/>
 			</StackPanel>
 
 		</StackPanel>

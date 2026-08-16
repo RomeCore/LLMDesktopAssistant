@@ -10,7 +10,7 @@
 
 	<StackPanel Margin="10" Spacing="8">
 
-		<TextBlock Text="{loc:Loc settings_language}"
+		<TextBlock Text="{loc:Loc settings.language.title}"
 				   FontWeight="Bold"
 				   FontSize="{DynamicResource FontSizeL}"/>
 

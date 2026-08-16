@@ -1,0 +1,8 @@
+// MCP servers.
+
+%locale: ru-RU
+%namespace: mcp
+
+connection_type: Способ подключения
+endpoint: Команда/URL
+manager.header: Менеджер MCP

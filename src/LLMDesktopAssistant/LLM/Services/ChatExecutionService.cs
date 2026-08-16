@@ -67,7 +67,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					if (nextAgentId == null || agentStageId == null)
 					{
 						statusService.Icon = MaterialIconKind.RobotConfused;
-						statusService.Text = LocalizationManager.LocalizeStatic("chat_status_selecting_agent");
+						statusService.Text = LocalizationManager.LocalizeStatic("chat.status.selecting_agent");
 
 						var agentTuple = await agentOrderer.GetNextAgentAsync(cancellationToken);
 						nextAgentId = agentTuple?.Item1;
@@ -77,8 +77,8 @@ namespace LLMDesktopAssistant.LLM.Services
 					if (nextAgentId == null || agentStageId == null)
 					{
 						if (cycles == 0)
-							toastService.ShowWarning(LocalizationManager.LocalizeStatic("chat_toast_agent_selection_failed"),
-								LocalizationManager.LocalizeStatic("chat_toast_agent_selection_failed_desc"));
+							toastService.ShowWarning(LocalizationManager.LocalizeStatic("chat.toast.agent_selection_failed.title"),
+								LocalizationManager.LocalizeStatic("chat.toast.agent_selection_failed.description"));
 						else
 							await RunExecutionFinishedHooksAsync(cancellationToken);
 						return;
@@ -101,8 +101,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			catch (Exception ex)
 			{
 				Log.Error(ex, "An error occurred while generating the response using default agent: {ErrorMessage}", ex.Message);
-				toastService.ShowError(LocalizationManager.LocalizeStatic("chat_toast_generation_failed"),
-					LocalizationManager.LocalizeStaticFormat("chat_toast_generation_failed_desc", ex.Message));
+				toastService.ShowError(LocalizationManager.LocalizeStatic("chat.toast.generation_failed.title"),
+					LocalizationManager.LocalizeStaticFormat("chat.toast.generation_failed.description", ex.Message));
 				throw;
 			}
 			finally
@@ -136,8 +136,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				}
 				catch
 				{
-					var toastTitle = LocalizationManager.LocalizeStatic("chat_toast_llm_not_configured");
-					var toastDesc = LocalizationManager.LocalizeStatic("chat_toast_llm_not_configured_desc");
+					var toastTitle = LocalizationManager.LocalizeStatic("chat.toast.llm_not_configured.title");
+					var toastDesc = LocalizationManager.LocalizeStatic("chat.toast.llm_not_configured.description");
 					toastService.ShowError(toastTitle, toastDesc);
 					throw new ToastedException(toastTitle, toastDesc);
 				}
@@ -146,7 +146,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				if (mcpManager.HasMCPConnections())
 				{
 					statusService.Icon = MaterialIconKind.Connection;
-					statusService.Text = LocalizationManager.LocalizeStatic("chat_status_waiting_for_mcp_connections");
+					statusService.Text = LocalizationManager.LocalizeStatic("chat.status.waiting_for_mcp_connections");
 
 					await mcpManager.EnsureCurrentMCPConnectionsAsync(cancellationToken);
 				}
@@ -192,7 +192,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				}, cancellationToken);
 
 				statusService.Icon = MaterialIconKind.ChatProcessing;
-				statusService.Text = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
+				statusService.Text = LocalizationManager.LocalizeStatic("chat.status.waiting_for_first_response");
 
 				var inputMessages = promptBuilder.Build(agent);
 				toolsetCache.Invalidate(agent);
@@ -442,7 +442,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					}, cancellationToken);
 
 					statusService.Icon = MaterialIconKind.ChatProcessing;
-					statusService.Text = LocalizationManager.LocalizeStatic("chat_status_waiting_for_first_response");
+					statusService.Text = LocalizationManager.LocalizeStatic("chat.status.waiting_for_first_response");
 
 					inputMessages = promptBuilder.Build(agent);
 					toolsetCache.Invalidate(agent);

@@ -1,0 +1,23 @@
+// Database connections.
+
+%locale: ru-RU
+%namespace: db
+
+active_connections: Активные подключения
+add_connection: Добавить подключение
+browse_sqlite_file: Выбрать SQLite файл
+connect: Подключить
+connection_string.placeholder: Строка подключения
+custom_connection: Кастомное подключение
+disconnect: Отключить
+disconnect_all: Отключить все
+hint: Настройте именованные подключения к базам данных и кастомную строку подключения для агента.
+new_connection: Новое подключение
+no_connections: Нет активных подключений.
+select_sqlite_file: Выберите файл базы данных SQLite
+test.empty_connection_string: Строка подключения пуста.
+test.empty_name: Имя подключения пустое.
+test.error: Ошибка подключения.
+test.success: Подключение успешно.
+test_connection: Проверить подключение
+use_encrypted_connection_string: Хранить строку подключения в зашифрованном виде

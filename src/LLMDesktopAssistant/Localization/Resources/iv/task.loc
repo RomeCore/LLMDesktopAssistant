@@ -1,0 +1,37 @@
+// Agent tasks: details, statuses, tool calls.
+
+%locale: 
+%namespace: task
+
+cancel: Cancel task
+clear_completed: Clear completed
+confirmation_needed: ⚠ CONFIRMATION NEEDED
+detail.behaviour: Execution behaviour
+detail.configuration: Configuration
+detail.error: Error
+detail.id: Task ID
+detail.inference_time: inference
+detail.input_cache_hit_tokens: in cache
+detail.input_tokens: in
+detail.max_parallel_tools: Max parallel tools
+detail.messages: Messages
+detail.output_tokens: out
+detail.parent: Parent task
+detail.reasoning: Reasoning
+detail.time_to_first_token: first token
+detail.timeout: Timeout
+detail.tool_calls: Tool calls
+detail.tools_count: Available tools
+filter.only_running: Only running
+role.assistant: Assistant
+role.system: System
+role.user: User
+status.cancelled: Cancelled
+status.executing: Executing
+status.failed: Failed
+status.pending: Pending
+status.success: Success
+status.unknown: Unknown
+title: Agent Tasks
+toggle_subtasks: Toggle sub-tasks
+unnamed: (unnamed task)

@@ -101,3 +101,127 @@ category.skills: Навыки
 category.time: Время
 category.web: Веб
 category.workdir: Рабочие директории
+
+// Tool statuses, behaviours, call actions, sources, fixed flags.
+arguments: Аргументы:
+behaviour.accessoutsideworkdir: Доступ за пределы рабочей директории
+behaviour.accessoutsideworkdir_hint: Инструмент обращается к путям вне настроенной рабочей директории.
+behaviour.adhoc: Специальные/одноразовые инструменты
+behaviour.adhoc_hint: Специальные инструменты, созданные для одноразового запуска (например, внутри скриптов)
+behaviour.agentexecution: Выполнение агентов
+behaviour.agentexecution_hint: Инструмент вызывает, управляет или координирует других AI-агентов.
+behaviour.clipboardaccess: Доступ к буферу обмена
+behaviour.clipboardaccess_hint: Инструмент читает или записывает данные в буфер обмена.
+behaviour.clipboardread: Чтение буфера обмена
+behaviour.clipboardread_hint: Инструмент читает текстовые данные из буфера обмена.
+behaviour.clipboardwrite: Запись в буфер обмена
+behaviour.clipboardwrite_hint: Инструмент записывает текстовые данные в буфер обмена.
+behaviour.databasechange: Изменение базы данных
+behaviour.databasechange_hint: Инструмент изменяет данные или схему в подключённой базе данных.
+behaviour.databasecustomconnect: Кастомное подключение к базе данных
+behaviour.databasecustomconnect_hint: Инструмент подключается к базе данных по произвольной строке подключения.
+behaviour.databaseread: Чтение базы данных
+behaviour.databaseread_hint: Инструмент читает данные из подключённой базы данных.
+behaviour.directorydelete: Удаление директорий
+behaviour.directorydelete_hint: Инструмент удаляет целые деревья директорий вместе с содержимым.
+behaviour.directoryedit: Редактирование директорий
+behaviour.directoryedit_hint: Инструмент изменяет структуру директорий (перемещение, переименование, копирование).
+behaviour.directoryread: Чтение директорий
+behaviour.directoryread_hint: Инструмент перечисляет содержимое директорий.
+behaviour.executeexternalprocess: Запуск внешнего процесса
+behaviour.executeexternalprocess_hint: Инструмент запускает внешний процесс операционной системы.
+behaviour.filedelete: Удаление файлов
+behaviour.filedelete_hint: Инструмент навсегда удаляет файлы из файловой системы.
+behaviour.filedirectorycreate: Создание файлов и директорий
+behaviour.filedirectorycreate_hint: Инструмент создаёт новые файлы или директории в файловой системе.
+behaviour.fileedit: Редактирование файлов
+behaviour.fileedit_hint: Инструмент изменяет содержимое или метаданные файлов без удаления.
+behaviour.fileread: Чтение файлов
+behaviour.fileread_hint: Инструмент читает содержимое файлов.
+behaviour.internetaccess: Доступ в интернет
+behaviour.internetaccess_hint: Инструмент выполняет сетевые запросы к внешним сервисам или API.
+behaviour.longrunningtask: Длительное выполнение
+behaviour.longrunningtask_hint: Инструмент может выполняться долго из-за сложных вычислений или сетевых задержек.
+behaviour.mcp: MCP (внешний сервер)
+behaviour.mcp_hint: Инструмент получен с внешнего MCP-сервера и может иметь непредсказуемое поведение.
+behaviour.meta: Мета-инструмент (создан LLM)
+behaviour.meta_hint: Инструмент создан во время выполнения LLM через Lua/Python скриптинг.
+behaviour.none: Безопасно (нет специфического поведения)
+behaviour.none_hint: Вычислительные или информационные задачи (математика, случайные числа, время).
+behaviour.possiblyunexpected: Потенциально неожиданные действия
+behaviour.possiblyunexpected_hint: Инструмент может выполнять неожиданные или неконтролируемые действия.
+behaviour.readsecrets: Чтение секретов и конфиденциальных данных
+behaviour.readsecrets_hint: Инструмент может раскрыть пароли, API-ключи или токены.
+behaviour.runterminal: Запуск в терминале
+behaviour.runterminal_hint: Инструмент запускает команды во встроенном терминале с интерактивным вводом/выводом.
+behaviour.scriptaccess: Доступ к инструментам и скриптам
+behaviour.scriptaccess_hint: Инструмент создаёт, изменяет или удаляет другие инструменты и пользовательские скрипты во время выполнения.
+behaviour.semanticmemoryclear: Очистка семантической памяти
+behaviour.semanticmemoryclear_hint: Инструмент очищает блоки семантической памяти и может привести к потере данных.
+behaviour.semanticmemorydelete: Удаление вхождений семантической памяти
+behaviour.semanticmemorydelete_hint: Инструмент удаляет факты и логи из семантической памяти.
+behaviour.semanticmemoryread: Чтение семантической памяти
+behaviour.semanticmemoryread_hint: Инструмент может читать факты и логи из семантической памяти.
+behaviour.semanticmemorywrite: Запись в семантическую память
+behaviour.semanticmemorywrite_hint: Инструмент может записывать факты и логи в семантическую память.
+behaviour.userinteraction: Взаимодействие с пользователем
+behaviour.userinteraction_hint: Инструмент требует ввода от пользователя через формы, подтверждения, выбор файлов и т.д.
+behaviour.workdirchange: Смена рабочей директории
+behaviour.workdirchange_hint: Инструмент переключает активную рабочую директорию, изменяя базу для всех относительных файловых операций.
+call.action.approve_with_notes: Подтвердить с примечанием
+call.action.approve_with_wait.hint: Подтвердить и попросить подождать
+call.action.cancel: Отменить инструмент
+call.action.cancel_with_reason: Отменить с пояснением
+call.action.cancel_with_wait.hint: Отменить и попросить подождать
+call.action.commit_notes: Отправить
+call.notes.placeholder: Введите причину/пояснение...
+call.status.cancelled: Отменено
+call.status.confirming: Требуется подтверждение
+call.status.executing: Выполнение...
+call.status.failed: Ошибка
+call.status.pending: Ожидание
+call.status.pre_executing: Анализ...
+call.status.success: Успешно
+call.status.unknown: Неизвестно
+copy_arguments: Скопировать аргументы
+copy_result: Скопировать результат
+fixed: Фиксированный инструмент
+fixed.hint: Этот инструмент всегда включён, пока присутствует его контекст, и не может быть отключён.
+name_suffix.hint: {0} инструментов
+result: Результат:
+settings: Настройки инструментов
+source.mcp: MCP
+source.meta: Мета
+status.agent-describe_image.status: Описываем... *{0} токенов*
+status.fs-apply_diff.changes_none: без изменений
+status.fs-diff.accepted: Принято
+status.fs-diff.confirm: Применить
+status.fs-diff.decline: Отклонить
+status.fs-diff.declined: Отклонено
+status.fs-diff.disable_all: Отключить все
+status.fs-diff.enable_all: Включить все
+status.fs-diff.toggle_chunk: Включить/выключить этот блок изменений
+status.fs-edit.changes_none: {0} (без изменений)
+status.fs-glob.found_count: Найдено {0}...
+status.fs-glob.results: {0} результат(ов)
+status.fs-grep.collecting_files: Собираем файлы...
+status.fs-grep.collecting_files_count: Собираем файлы... ({0} найдено)
+status.fs-grep.completed: Найдено {0} совпадающих файлов
+status.fs-grep.scanning_files: Сканируем файлы...
+status.fs-read_entry.secrets: {0} (содержит секреты/ключи)
+status.fs-write_file.streaming_status: {0} ({1} строк...)
+status.math-solve.no_roots: {0} *(без корней)*
+status.math-solve.status: {0} *({1} корней)*
+status.memory-view_logs.latest: Последние **{0}**
+status.memory-view_logs.time_window: Временное окно
+status.random-check_chance.failure: неудача
+status.random-check_chance.success: успех
+status.random-coin_flip.heads: Орёл
+status.random-coin_flip.tails: Решка
+status.random-dice_roll.rolled: Прокрутили
+status.random-shuffle_list.shuffled: Перемешан список из {0} элементов
+status.script.lines: {0} строк
+status.time-wait.completed: Завершено ({0})
+status.time-wait.status: Ждём... {0} осталось
+status.web-search.results: {0} *({1} результатов)*
+category.unknown: Неизвестно

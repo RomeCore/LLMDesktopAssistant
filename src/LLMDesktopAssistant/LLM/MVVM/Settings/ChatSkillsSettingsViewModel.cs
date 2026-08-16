@@ -181,7 +181,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	{
 		var result = await App.MainTopLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
 		{
-			Title = LocalizationManager.LocalizeStatic("settings-skills_select_directory"),
+			Title = LocalizationManager.LocalizeStatic("settings.skills.select_directory"),
 			AllowMultiple = false
 		});
 
@@ -197,7 +197,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	{
 		var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 		{
-			Title = LocalizationManager.LocalizeStatic("settings-skills_select_file"),
+			Title = LocalizationManager.LocalizeStatic("settings.skills.select_file"),
 			AllowMultiple = false,
 			FileTypeFilter =
 			[

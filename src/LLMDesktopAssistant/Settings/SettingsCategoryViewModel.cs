@@ -8,7 +8,7 @@ namespace LLMDesktopAssistant.Settings
 	public class SettingsIdItemViewModel
 	{
 		public required string Id { get; init; }
-		public string DisplayId => Id == SettingsObject.DefaultId ? LocalizationManager.LocalizeStatic("settings_default_id") : Id;
+		public string DisplayId => Id == SettingsObject.DefaultId ? LocalizationManager.LocalizeStatic("settings.default_id") : Id;
 	
 		public static SettingsIdItemViewModel Default { get; } = new SettingsIdItemViewModel { Id = SettingsObject.DefaultId };
 

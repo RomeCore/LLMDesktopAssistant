@@ -117,7 +117,7 @@
 													HorizontalAlignment="Center"
 													VerticalAlignment="Center"/>
 
-				<TextBlock Text="{loc:Loc reasoning}"
+				<TextBlock Text="{loc:Loc message.reasoning}"
 									 VerticalAlignment="Center"
 									 FontSize="16"
 									 FontWeight="SemiBold"/>

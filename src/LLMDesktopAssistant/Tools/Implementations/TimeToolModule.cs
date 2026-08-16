@@ -130,7 +130,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					{
 						ResultContent = "Wait completed instantly (duration <= 0).",
 						StatusIcon = Material.Icons.MaterialIconKind.TimerCheck,
-						StatusTitle = string.Format(LocalizationManager.LocalizeStatic("time_wait_completed"), "0:00")
+						StatusTitle = string.Format(LocalizationManager.LocalizeStatic("tool.status.time-wait.completed"), "0:00")
 					}.CompleteWithSuccess();
 				}
 
@@ -145,7 +145,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						var updateInterval = TimeSpan.FromMilliseconds(100); // Update every 100ms for smooth progress
 
 						result.StatusIcon = MaterialIconKind.TimerSand;
-						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("time_wait_status"), FormatTimeSpan(duration));
+						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("tool.status.time-wait.status"), FormatTimeSpan(duration));
 						result.Progress = 0;
 						result.MaxProgress = (int)totalMilliseconds;
 
@@ -157,7 +157,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 							var remaining = duration - elapsed;
 
 							result.Progress = (int)Math.Min(elapsed.TotalMilliseconds, totalMilliseconds);
-							result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("time_wait_status"), FormatTimeSpan(remaining));
+							result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("tool.status.time-wait.status"), FormatTimeSpan(remaining));
 							result.StatusIcon = MaterialIconKind.TimerSand;
 
 							// Calculate the next update delay, but don't wait longer than remaining time
@@ -173,7 +173,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 						result.ResultContent = $"Wait completed: {FormatTimeSpan(stopwatch.Elapsed)} elapsed";
 						result.Progress = (int)totalMilliseconds;
 						result.StatusIcon = MaterialIconKind.TimerCheck;
-						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("time_wait_completed"), FormatTimeSpan(stopwatch.Elapsed));
+						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("tool.status.time-wait.completed"), FormatTimeSpan(stopwatch.Elapsed));
 						result.Complete(true);
 					}
 					catch (OperationCanceledException)

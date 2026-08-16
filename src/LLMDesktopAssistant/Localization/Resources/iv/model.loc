@@ -1,0 +1,35 @@
+// Models and providers: modalities, capabilities, selector, provider names.
+
+%locale: 
+%namespace: model
+
+capability.chat: Chat Completions
+capability.completion: Completions
+capability.embeddings: Embeddings
+capability.label: Cap
+capability.reasoning: Reasoning
+capability.reranking: Reranking
+capability.streaming: Streaming
+capability.tools: Tool Calling
+capability.unknown: Unknown
+modality.audio: Audio
+modality.image: Image
+modality.in: In
+modality.out: Out
+modality.text: Text
+modality.unknown: Unknown
+modality.video: Video
+provider.deepseek: DeepSeek
+provider.novita: Novita
+provider.ollama: Ollama
+provider.openai: OpenAI
+provider.openai-compat: OpenAI Compatible
+provider.openrouter: OpenRouter
+selector.available_models: Available Models
+selector.deselect_all: Deselect all
+selector.load.error: Failed to load models
+selector.manage.tooltip: Manage providers & models
+selector.no_models: No models available
+selector.none: — None —
+selector.refresh: Refresh Models
+selector.select_all: Select all

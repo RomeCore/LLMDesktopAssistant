@@ -22,7 +22,7 @@
 
 			<ico:MaterialIcon Kind="Paperclip" FontSize="28"/>
 
-			<TextBlock Text="{loc:Loc attachments_manager_title}"
+			<TextBlock Text="{loc:Loc attachment.manager.title}"
 								 Margin="8,0,0,0"
 								 FontWeight="Bold"
 								 FontSize="20"
@@ -48,7 +48,7 @@
 			<TextBox x:Name="UrlInputBox"
 							 Grid.Column="0"
 							 Text="{Binding InputUrl, UpdateSourceTrigger=PropertyChanged}"
-							 PlaceholderText="{loc:Loc attachment-url_hint}"
+							 PlaceholderText="{loc:Loc attachment.url.hint}"
 							 UseFloatingPlaceholder="True"
 							 VerticalContentAlignment="Center"
 							 KeyDown="OnUrlInputKeyDown"/>
@@ -57,7 +57,7 @@
 							Margin="8,0,0,0"
 							Command="{Binding AddUrlCommand}"
 							Classes="BigIconButton"
-							ToolTip.Tip="{loc:Loc attachment-add_url_hint}">
+							ToolTip.Tip="{loc:Loc attachment.add_url.hint}">
 
 				<ico:MaterialIcon Kind="Link" />
 			</Button>
@@ -66,7 +66,7 @@
 							Margin="8,0,0,0"
 							Command="{Binding AttachFilesCommand}"
 							Classes="BigIconButton"
-							ToolTip.Tip="{loc:Loc attachment-attach_files_hint}">
+							ToolTip.Tip="{loc:Loc attachment.attach_files.hint}">
 
 				<ico:MaterialIcon Kind="FolderOpen" />
 			</Button>
@@ -93,14 +93,14 @@
 												 TextTrimming="CharacterEllipsis"/>
 
 							<CheckBox IsChecked="{Binding CopyToWorkingDirectory}"
-												Content="{loc:Loc attachment-copy_to_working_directory}"
+												Content="{loc:Loc attachment.copy_to_working_directory}"
 												Margin="0,5,0,0"/>
 
 							<CheckBox IsChecked="{Binding ApplyNative}"
-												Content="{loc:Loc attachment-apply_native}"
+												Content="{loc:Loc attachment.apply_native}"
 												Margin="0,3,0,0"/>
 
-							<Button Content="{loc:Loc application-applicate_hint}"
+							<Button Content="{loc:Loc attachment.apply}"
 											Command="{Binding ApplyCommand}"
 											HorizontalAlignment="Right"
 											Margin="0,10,0,0"/>
@@ -124,7 +124,7 @@
 						IsVisible="False"
 						IsHitTestVisible="False">
 			
-			<TextBlock Text="{loc:Loc attachment-drop_files_here}"
+			<TextBlock Text="{loc:Loc attachment.drop_files_here}"
 								 HorizontalAlignment="Center"
 								 VerticalAlignment="Center"
 								 FontSize="18"

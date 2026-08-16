@@ -159,7 +159,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 									matchingFiles.Add($"[FILE] {displayPath} ({FileUtils.BytesToDisplaySize(metrics.Size)}, {lines}, {metrics.Modified:yyyy-MM-dd HH:mm})");
 
-									result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("fs-glob_found_count", matchingFiles.Count + matchingDirectories.Count)}";
+									result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("tool.status.fs-glob.found_count", matchingFiles.Count + matchingDirectories.Count)}";
 
 									if (limit > 0 && matchingFiles.Count + matchingDirectories.Count >= limit)
 										break;
@@ -215,7 +215,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 									matchingDirectories.Add($"[DIR] {displayPath} ({items} items, {dirInfo.LastWriteTime:yyyy-MM-dd HH:mm})");
 
-									result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("fs-glob_found_count", matchingFiles.Count + matchingDirectories.Count)}";
+									result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("tool.status.fs-glob.found_count", matchingFiles.Count + matchingDirectories.Count)}";
 
 									if (limit > 0 && matchingFiles.Count + matchingDirectories.Count >= limit)
 										break;
@@ -251,12 +251,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						{
 							sb.AppendLine("No matches found.");
 							result.StatusIcon = MaterialIconKind.FolderOpen;
-							result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("fs-glob_results", total)}";
+							result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("tool.status.fs-glob.results", total)}";
 						}
 						else
 						{
 							result.StatusIcon = MaterialIconKind.FolderMultiple;
-							result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("fs-glob_results", total)}";
+							result.StatusTitle = $"**{path}** → **{pattern.MarkdownEscape()}** {LocalizationManager.LocalizeStaticFormat("tool.status.fs-glob.results", total)}";
 						}
 
 						result.ResultContent = sb.ToString();

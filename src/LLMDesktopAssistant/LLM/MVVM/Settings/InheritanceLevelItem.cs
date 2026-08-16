@@ -26,12 +26,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 		static InheritanceLevelItem()
 		{
 			AllProfile = [
-				new() { Value = ChatSettingsInheritanceLevel.Profile, DisplayName = LocalizationManager.LocalizeStatic("settings_scope_profile") },
-				new() { Value = ChatSettingsInheritanceLevel.Application, DisplayName = LocalizationManager.LocalizeStatic("settings_scope_application") },
+				new() { Value = ChatSettingsInheritanceLevel.Profile, DisplayName = LocalizationManager.LocalizeStatic("settings.scope.profile") },
+				new() { Value = ChatSettingsInheritanceLevel.Application, DisplayName = LocalizationManager.LocalizeStatic("settings.scope.application") },
 			];
 
 			AllAgent = [
-				new() { Value = ChatSettingsInheritanceLevel.Agent, DisplayName = LocalizationManager.LocalizeStatic("settings_scope_agent") },
+				new() { Value = ChatSettingsInheritanceLevel.Agent, DisplayName = LocalizationManager.LocalizeStatic("settings.scope.agent") },
 				.. AllProfile,
 			];
 		}

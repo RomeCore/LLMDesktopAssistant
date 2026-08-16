@@ -19,7 +19,7 @@
 		<!-- ============================================================ -->
 		<Grid ColumnDefinitions="*,Auto,Auto">
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc workdir}"
+								 Text="{loc:Loc env.workdir.title}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -42,12 +42,12 @@
 			<Button Grid.Column="2"
 							Command="{Binding AddWorkingDirectoryCommand}"
 							Classes="IconButton"
-							ToolTip.Tip="{loc:Loc env_add_working_directory}">
+							ToolTip.Tip="{loc:Loc env.add_working_directory}">
 				<ico:MaterialIcon Kind="Plus"/>
 			</Button>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc env_workdir_hint}"
+		<TextBlock Text="{loc:Loc env.workdir.hint}"
 							 Opacity="0.6"
 							 TextWrapping="Wrap"
 							 Margin="0,0,0,8"/>
@@ -66,14 +66,14 @@
 											 Command="{Binding SetDefaultWorkingDirectoryActiveCommand}"
 											 VerticalAlignment="Center"
 											 Margin="0,0,6,0"
-											 ToolTip.Tip="{loc:Loc env_active}"/>
+											 ToolTip.Tip="{loc:Loc env.active}"/>
 
 					<!-- Name -->
 					<TextBox Grid.Column="1"
 									 Text="{x:Static util:Directories.DefaultWorkingDirectoryName}"
 									 IsReadOnly="True"
 									 IsEnabled="False"
-									 PlaceholderText="{loc:Loc env_name}"
+									 PlaceholderText="{loc:Loc env.name}"
 									 UseFloatingPlaceholder="True"
 									 VerticalContentAlignment="Center"
 									 MinWidth="120"
@@ -82,7 +82,7 @@
 					<!-- Enabled checkbox -->
 					<CheckBox Grid.Column="2"
 										IsChecked="{Binding EffectiveWorkingDirectories.IsDefaultWorkingDirectoryEnabled}"
-										Content="{loc:Loc env_enabled}"/>
+										Content="{loc:Loc env.enabled}"/>
 
 				</Grid>
 
@@ -90,7 +90,7 @@
 				<Grid ColumnDefinitions="*,Auto">
 					<TextBox Grid.Column="0"
 									 Text="{x:Static util:Directories.DefaultWorkingDirectory}"
-									 PlaceholderText="{loc:Loc env_path}"
+									 PlaceholderText="{loc:Loc env.path}"
 									 UseFloatingPlaceholder="True"
 									 VerticalContentAlignment="Center"
 									 IsReadOnly="True"
@@ -101,7 +101,7 @@
 									Command="{Binding #VMRoot.DataContext.OpenDirectoryCommand}"
 									CommandParameter="{x:Static util:Directories.DefaultWorkingDirectory}"
 									Classes="IconButton"
-									ToolTip.Tip="{loc:Loc env_open_in_explorer}">
+									ToolTip.Tip="{loc:Loc env.open_in_explorer}">
 						<ico:MaterialIcon Kind="OpenInNew"/>
 					</Button>
 
@@ -132,12 +132,12 @@
 														 CommandParameter="{Binding}"
 														 VerticalAlignment="Center"
 														 Margin="0,0,6,0"
-														 ToolTip.Tip="{loc:Loc env_active}"/>
+														 ToolTip.Tip="{loc:Loc env.active}"/>
 
 								<!-- Name -->
 								<TextBox Grid.Column="1"
 												 Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-												 PlaceholderText="{loc:Loc env_name}"
+												 PlaceholderText="{loc:Loc env.name}"
 												 UseFloatingPlaceholder="True"
 												 VerticalContentAlignment="Center"
 												 MinWidth="120"
@@ -146,7 +146,7 @@
 								<!-- Enabled checkbox -->
 								<CheckBox Grid.Column="2"
 													IsChecked="{Binding IsEnabled}"
-													Content="{loc:Loc env_enabled}"/>
+													Content="{loc:Loc env.enabled}"/>
 
 								<!-- Move up -->
 								<Button Grid.Column="4"
@@ -154,7 +154,7 @@
 												CommandParameter="{Binding}"
 												Classes="IconButton"
 												Margin="2,0"
-												ToolTip.Tip="{loc:Loc env_move_up}">
+												ToolTip.Tip="{loc:Loc env.move_up}">
 									<ico:MaterialIcon Kind="ChevronUp"/>
 								</Button>
 
@@ -164,7 +164,7 @@
 												CommandParameter="{Binding}"
 												Classes="IconButton"
 												Margin="2,0"
-												ToolTip.Tip="{loc:Loc env_move_down}">
+												ToolTip.Tip="{loc:Loc env.move_down}">
 									<ico:MaterialIcon Kind="ChevronDown"/>
 								</Button>
 
@@ -174,7 +174,7 @@
 												CommandParameter="{Binding}"
 												Classes="IconButton"
 												Margin="2,0"
-												ToolTip.Tip="{loc:Loc env_remove}">
+												ToolTip.Tip="{loc:Loc env.remove}">
 									<ico:MaterialIcon Kind="Delete"/>
 								</Button>
 							</Grid>
@@ -183,7 +183,7 @@
 							<Grid ColumnDefinitions="*,Auto,Auto" IsEnabled="{Binding IsEnabled}">
 								<TextBox Grid.Column="0"
 												 Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-												 PlaceholderText="{loc:Loc env_path}"
+												 PlaceholderText="{loc:Loc env.path}"
 												 UseFloatingPlaceholder="True"
 												 VerticalContentAlignment="Center"/>
 
@@ -192,7 +192,7 @@
 												Command="{Binding #VMRoot.DataContext.BrowseWorkingDirectoryPathCommand}"
 												CommandParameter="{Binding}"
 												Classes="IconButton"
-												ToolTip.Tip="{loc:Loc env_browse}">
+												ToolTip.Tip="{loc:Loc env.browse}">
 									<ico:MaterialIcon Kind="FolderOpen"/>
 								</Button>
 									
@@ -201,7 +201,7 @@
 												CommandParameter="{Binding Path}"
 												Classes="IconButton"
 												Margin="2,0"
-												ToolTip.Tip="{loc:Loc env_open_in_explorer}">
+												ToolTip.Tip="{loc:Loc env.open_in_explorer}">
 									<ico:MaterialIcon Kind="OpenInNew"/>
 								</Button>
 
@@ -222,7 +222,7 @@
 		<!-- ============================================================ -->
 		<Grid ColumnDefinitions="*,Auto,Auto">
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc env_directory_access_rules}"
+								 Text="{loc:Loc env.directory_access_rules}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -245,12 +245,12 @@
 			<Button Grid.Column="2"
 							Command="{Binding AddDirectoryAccessRuleCommand}"
 							Classes="IconButton"
-							ToolTip.Tip="{loc:Loc env_add_access_rule}">
+							ToolTip.Tip="{loc:Loc env.add_access_rule}">
 				<ico:MaterialIcon Kind="Plus"/>
 			</Button>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc env_access_rules_hint}"
+		<TextBlock Text="{loc:Loc env.access_rules.hint}"
 						Opacity="0.6"
 						TextWrapping="Wrap"
 						Margin="0,0,0,8"/>
@@ -270,7 +270,7 @@
 								<!-- Enabled checkbox -->
 								<CheckBox Grid.Column="0"
 													IsChecked="{Binding IsEnabled}"
-													Content="{loc:Loc env_enabled}"/>
+													Content="{loc:Loc env.enabled}"/>
 
 								<!-- Move up -->
 								<Button Grid.Column="2"
@@ -278,7 +278,7 @@
 												CommandParameter="{Binding}"
 												Classes="IconButton"
 												Margin="2,0"
-												ToolTip.Tip="{loc:Loc env_move_up}">
+												ToolTip.Tip="{loc:Loc env.move_up}">
 									<ico:MaterialIcon Kind="ChevronUp"/>
 								</Button>
 
@@ -288,7 +288,7 @@
 												CommandParameter="{Binding}"
 												Classes="IconButton"
 												Margin="2,0"
-												ToolTip.Tip="{loc:Loc env_move_down}">
+												ToolTip.Tip="{loc:Loc env.move_down}">
 									<ico:MaterialIcon Kind="ChevronDown"/>
 								</Button>
 
@@ -298,7 +298,7 @@
 												CommandParameter="{Binding}"
 												Classes="IconButton"
 												Margin="2,0"
-												ToolTip.Tip="{loc:Loc env_remove}">
+												ToolTip.Tip="{loc:Loc env.remove}">
 									<ico:MaterialIcon Kind="Delete"/>
 								</Button>
 							</Grid>
@@ -307,7 +307,7 @@
 							<Grid ColumnDefinitions="*,Auto,Auto">
 								<TextBox Grid.Column="0"
 												 Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-												 PlaceholderText="{loc:Loc env_path}"
+												 PlaceholderText="{loc:Loc env.path}"
 												 UseFloatingPlaceholder="True"
 												 VerticalContentAlignment="Center"/>
 
@@ -317,7 +317,7 @@
 												CommandParameter="{Binding}"
 												Classes="IconButton"
 												VerticalAlignment="Center"
-												ToolTip.Tip="{loc:Loc env_browse}">
+												ToolTip.Tip="{loc:Loc env.browse}">
 									<ico:MaterialIcon Kind="FolderOpen"/>
 								</Button>
 
@@ -327,7 +327,7 @@
 												CommandParameter="{Binding Path}"
 												Classes="IconButton"
 												VerticalAlignment="Center"
-												ToolTip.Tip="{loc:Loc env_open_in_explorer}">
+												ToolTip.Tip="{loc:Loc env.open_in_explorer}">
 									<ico:MaterialIcon Kind="OpenInNew"/>
 								</Button>
 							</Grid>
@@ -335,14 +335,14 @@
 							<!-- Access mode checkboxes -->
 							<StackPanel Orientation="Horizontal" Spacing="12" IsEnabled="{Binding IsEnabled}">
 								<CheckBox IsChecked="{Binding IsRead}"
-													Content="{loc:Loc env_read}"/>
+													Content="{loc:Loc env.read}"/>
 								<CheckBox IsChecked="{Binding IsWrite}"
-													Content="{loc:Loc env_write}"/>
+													Content="{loc:Loc env.write}"/>
 								<CheckBox IsChecked="{Binding IsExecute}"
-													Content="{loc:Loc env_execute}"/>
+													Content="{loc:Loc env.execute}"/>
 
 								<!-- Access denied hint -->
-								<TextBlock Text="{loc:Loc env_access_denied}"
+								<TextBlock Text="{loc:Loc env.access_denied}"
 													 IsEnabled="{Binding IsEnabled}"
 													 IsVisible="{Binding IsAccessDenied}"
 													 FontStyle="Italic"
@@ -363,7 +363,7 @@
 		<!-- ============================================================ -->
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc env_additional_settings}"
+								 Text="{loc:Loc env.additional_settings}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -413,7 +413,7 @@
 									<ico:MaterialIcon Kind="CheckDecagram"
 																		Width="16"
 																		Height="16"/>
-									<TextBlock Text="{loc:Loc env_check_configuration}"
+									<TextBlock Text="{loc:Loc env.check_configuration}"
 														 VerticalAlignment="Center"/>
 								</StackPanel>
 							</Button>

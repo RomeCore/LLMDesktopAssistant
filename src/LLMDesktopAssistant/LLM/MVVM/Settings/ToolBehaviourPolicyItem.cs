@@ -52,9 +52,9 @@ public class PolicyModeItem
 	/// Gets all available policy modes with localized names.
 	/// </summary>
 	public static ImmutableList<PolicyModeItem> All { get; } = [
-		new(BehaviourPolicyMode.Default, LocalizationManager.LocalizeStatic("tool_behaviour_policy_default")),
-		new(BehaviourPolicyMode.AutoApprove, LocalizationManager.LocalizeStatic("tool_behaviour_policy_auto_approve")),
-		new(BehaviourPolicyMode.Disallowed, LocalizationManager.LocalizeStatic("tool_behaviour_policy_disallowed")),
+		new(BehaviourPolicyMode.Default, LocalizationManager.LocalizeStatic("settings.tool.behaviour_policy.default")),
+		new(BehaviourPolicyMode.AutoApprove, LocalizationManager.LocalizeStatic("settings.tool.behaviour_policy.auto_approve")),
+		new(BehaviourPolicyMode.Disallowed, LocalizationManager.LocalizeStatic("settings.tool.behaviour_policy.disallowed")),
 	];
 }
 

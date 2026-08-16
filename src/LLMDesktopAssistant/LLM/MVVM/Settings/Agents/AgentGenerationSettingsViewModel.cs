@@ -58,15 +58,15 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		public List<ReasoningLevelItem> ReasoningLevels { get; } =
 		[
-			new() { Value = ReasoningSettings.Default,   DisplayName = LocalizationManager.LocalizeStatic("reasoning_default") },
-			new() { Value = ReasoningSettings.Disabled,  DisplayName = LocalizationManager.LocalizeStatic("reasoning_disabled") },
-			new() { Value = ReasoningSettings.None,      DisplayName = LocalizationManager.LocalizeStatic("reasoning_none") },
-			new() { Value = ReasoningSettings.Minimal,   DisplayName = LocalizationManager.LocalizeStatic("reasoning_minimal") },
-			new() { Value = ReasoningSettings.Low,       DisplayName = LocalizationManager.LocalizeStatic("reasoning_low") },
-			new() { Value = ReasoningSettings.Medium,    DisplayName = LocalizationManager.LocalizeStatic("reasoning_medium") },
-			new() { Value = ReasoningSettings.High,      DisplayName = LocalizationManager.LocalizeStatic("reasoning_high") },
-			new() { Value = ReasoningSettings.XHigh,     DisplayName = LocalizationManager.LocalizeStatic("reasoning_xhigh") },
-			new() { Value = ReasoningSettings.Maximum,   DisplayName = LocalizationManager.LocalizeStatic("reasoning_maximum") },
+			new() { Value = ReasoningSettings.Default,   DisplayName = LocalizationManager.LocalizeStatic("settings.agent.generation.reasoning.default") },
+			new() { Value = ReasoningSettings.Disabled,  DisplayName = LocalizationManager.LocalizeStatic("settings.agent.generation.reasoning.disabled") },
+			new() { Value = ReasoningSettings.None,      DisplayName = LocalizationManager.LocalizeStatic("settings.agent.generation.reasoning.none") },
+			new() { Value = ReasoningSettings.Minimal,   DisplayName = LocalizationManager.LocalizeStatic("settings.agent.generation.reasoning.minimal") },
+			new() { Value = ReasoningSettings.Low,       DisplayName = LocalizationManager.LocalizeStatic("settings.agent.generation.reasoning.low") },
+			new() { Value = ReasoningSettings.Medium,    DisplayName = LocalizationManager.LocalizeStatic("settings.agent.generation.reasoning.medium") },
+			new() { Value = ReasoningSettings.High,      DisplayName = LocalizationManager.LocalizeStatic("settings.agent.generation.reasoning.high") },
+			new() { Value = ReasoningSettings.XHigh,     DisplayName = LocalizationManager.LocalizeStatic("settings.agent.generation.reasoning.xhigh") },
+			new() { Value = ReasoningSettings.Maximum,   DisplayName = LocalizationManager.LocalizeStatic("settings.agent.generation.reasoning.maximum") },
 		];
 
 		private ReasoningLevelItem? _selectedReasoningLevel;

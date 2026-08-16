@@ -1,0 +1,309 @@
+// Settings UI (chat settings, api keys, providers, stages, agents, memory, skills, tools).
+
+%locale: ru-RU
+%namespace: settings
+
+agent.add: Добавить агента
+agent.allow_context_shields: Учитывать щиты контекста
+agent.allow_context_shields.hint: Если включено, агент будет уважать щиты контекста и не будет видеть сообщения, размещённые после них.
+agent.allow_summaries: Учитывать суммаризацию
+agent.allow_summaries.hint: Если включено, агент сможет видеть суммаризацию ранних сообщений чата и останавливаться на суммаризированных сегментах.
+agent.context: Контекст
+agent.copy_to_local: Скопировать в чат
+agent.exposure_mode: Режим видимости
+agent.exposure_mode.hint: Определяет, какие части сообщений этого агента видны другим агентам.
+agent.filter.blacklist: Чёрный список
+agent.filter.deselect_all: Снять выбор со всех
+agent.filter.mode: Режим фильтра:
+agent.filter.select_all: Выбрать всех
+agent.filter.whitelist: Белый список
+agent.generation.additional_parameters: Дополнительные параметры
+agent.generation.additional_parameters.hint: Пользовательские параметры, отправляемые напрямую в API LLM в формате JSON. Имена параметров должны соответствовать спецификации API.
+agent.generation.custom_model: Кастомная модель
+agent.generation.enable_custom_model: Включить кастомную модель
+agent.generation.enable_max_tokens: Включить переопределение макс. токенов
+agent.generation.enable_reasoning: Включить переопределение параметров рассуждений
+agent.generation.enable_temperature: Включить переопределение температуры
+agent.generation.max_tokens: Макс. токенов
+agent.generation.max_tokens_value: Максимум выходных токенов
+agent.generation.param.name: Имя
+agent.generation.param.value: Значение (JSON)
+agent.generation.reasoning: Рассуждения
+agent.generation.reasoning.default: По умолчанию
+agent.generation.reasoning.disabled: Отключено
+agent.generation.reasoning.high: Высокий
+agent.generation.reasoning.low: Низкий
+agent.generation.reasoning.maximum: Максимальный
+agent.generation.reasoning.medium: Средний
+agent.generation.reasoning.minimal: Минимальный
+agent.generation.reasoning.none: Отсутствует
+agent.generation.reasoning.xhigh: Очень высокий
+agent.generation.reasoning_level: Уровень рассуждений
+agent.generation.temperature: Температура
+agent.generation.temperature_value: Значение температуры
+agent.global: (глобальный)
+agent.max_visible_rounds: Макс. видимых раундов:
+agent.max_visible_rounds.hint: Ограничивает количество последних раундов (сообщение пользователя + ответ ассистента), видимых каждому агенту. 0 — без лимита. Помогает экономить контекстное окно.
+agent.memory.add_block: Новый блок
+agent.memory.attach: Прикрепить
+agent.memory.attach.placeholder: Существующий блок...
+agent.memory.block_warning_no_content: Факты и логи отключены для этого блока. Агент не сможет читать или записывать в него данные.
+agent.memory.blocks: Блоки памяти
+agent.memory.blocks.hint: Прикрепите общие блоки памяти к этому агенту. Блок хранит семантические факты, эпизодические логи и постоянное состояние. Выберите блок в списке, чтобы отредактировать его содержимое ниже.
+agent.memory.default_block_name: Новый блок памяти
+agent.memory.edit: Редактировать блок
+agent.memory.enable: Включить память агента
+agent.memory.missing_block: Блок отсутствует ({0})
+agent.memory.remove: Открепить
+agent.mentions: Упоминания
+agent.mentions.can_be_mentioned: Можно упомянуть
+agent.mentions.can_be_mentioned.hint: Может ли агент быть упомянут другими агентами или пользователями, вызывая его выполнение.
+agent.mentions.can_mention_others: Может упоминать других
+agent.mentions.can_mention_others.hint: Может ли агент упоминать и вызывать других агентов.
+agent.promote_global: Сделать глобальным
+agent.read_filter: Фильтр агентов
+agent.read_filter.hint: Ограничивает, каких агентов этот агент может видеть, на основе белого или чёрного списка.
+agent.read_permissions: Права на чтение
+agent.read_permissions.hint: Определяет, какие типы сообщений и контента этот агент может читать.
+agent.remove: Удалить агента
+agent.skills.injection_mode: Инжекция
+agent.skills.skill_list: Переопределение навыков
+agent.skills.skill_list.hint: Переопределите настройки навыков для этого агента. Отключённые навыки исключаются из промпта. Переключите режим инжекции, чтобы включить полное тело навыка в системный промпт.
+agent.tools.behaviour_policy: Политика поведения
+agents: Агенты
+api.add: Добавить API-ключ
+api.add.title: Добавить API-ключ
+api.edit.title: Изменить API-ключ
+api.manage.title: Управление API-ключами
+api.name.label: Название ключа
+api.name.placeholder: Например: OpenAI Production, DeepSeek Personal
+api.name.required.error: Название ключа обязательно.
+api.none: Нет
+api.scheme.encrypted: Зашифровано (AES-256)
+api.scheme.env: Переменная окружения
+api.scheme.label: Способ хранения
+api.scheme.raw: Открытый текст
+api.value.label: Значение API-ключа
+api.value.placeholder: Введите ваш API-ключ
+api.value.required.error: Значение API-ключа обязательно.
+chat.databases: Базы данных
+chat.environment: Окружение
+chat.execution: Выполнение
+chat.llm_properties: Параметры LLM
+chat.mcp: MCP
+chat.memory: Память
+chat.memory.auto_recording: Автоматическая запись
+chat.memory.auto_retrieval: Автоматический поиск
+chat.memory.enable_memory: Включить память разговора
+chat.memory.hint: Настройте запись и поиск памяти этого разговора.
+chat.memory.manual_control: Ручное управление (через инструменты)
+chat.memory.manual_control.hint: Разрешить агенту управлять памятью вручную с помощью инструментов памяти.
+chat.memory.options: Параметры памяти
+chat.model.chat.hint: Модель чата
+chat.model.router.hint: Модель для роутера агентов
+chat.model.tools.hint: Модель для агентных инструментов
+chat.model.vision.hint: Зрительная модель
+chat.models: Модели
+chat.models.hint: Выберите языковые модели, используемые для чата, агентного роутинга, агентных инструментов и зрительных задач.
+chat.prompts: Промпты
+chat.read: Права чтения
+chat.skills: Навыки
+chat.summarization: Авто-суммаризация
+chat.summarization.enabled: Включить авто-суммаризацию чата
+chat.summarization.hint: При включении диалог автоматически суммаризируется и сжимается после превышения порога токенов.
+chat.summarization.ignore_last_rounds.hint: Игнорировать последние раунды
+chat.summarization.summarizer_model.hint: Модель суммаризации
+chat.summarization.trigger_tokens.hint: Порог токенов
+chat.tools: Инструменты
+chat.users: Пользователи
+chat.users.hint: Пользователи, участвующие в этом чате. Агент может обращаться к каждому пользователю по имени.
+default_id: По умолчанию
+execution_stages: Этапы выполнения
+language.system: Системный
+language.title: Язык
+mcp.enable: Включить MCP
+mcp.servers: MCP серверы
+mcp.servers.hint: Выберите MCP-серверы, инструменты которых будут доступны агентам в этом чате.
+mcp.servers.toggle.hint: Включить или отключить этот MCP-сервер
+memory.block.description.label: Описание
+memory.block.editor.title: Редактор блока
+memory.block.embedding_model.label: Модель эмбеддингов
+memory.block.facts.label: Хранить семантические факты
+memory.block.id.label: ID блока
+memory.block.logs.label: Хранить эпизодические логи
+memory.block.maintainer_model.label: Модель обслуживания
+memory.block.name.label: Название
+memory.block.storage.label: Хранилище блока
+memory.clear.action: Очистить память
+memory.clear.confirm: Все факты и логи, хранящиеся в этом блоке, будут безвозвратно удалены. Это действие нельзя отменить.
+memory.clear.error: Не удалось очистить память
+memory.clear.result: Удалено фактов: {0}, логов: {1}.
+memory.clear.success: Память очищена
+memory.clear.title: Очистить память?
+memory.copy_suffix: копия
+memory.delete.action: Удалить блок
+memory.delete.confirm: Блок и всё его содержимое (факты, логи, состояние) будут безвозвратно удалены. Это действие нельзя отменить.
+memory.delete.error: Не удалось удалить блок
+memory.delete.success: Блок удалён
+memory.delete.title: Удалить блок?
+memory.duplicate.action: Дублировать
+memory.fact.add.error: Не удалось сохранить факт
+memory.fact.add.placeholder: Введите текст факта...
+memory.fact.add.success: Факт сохранён. ID: {0}
+memory.fact.add.title: Добавить факт
+memory.fact.delete.action: Удалить
+memory.fact.delete.confirm: Факт [id: {0}] будет помечен как удалённый и скрыт из поиска. Его можно будет восстановить.
+memory.fact.delete.error: Не удалось удалить факт
+memory.fact.delete.success: Факт удалён
+memory.fact.delete.title: Удалить факт?
+memory.fact.supersede.description: Введите текст замены для факта [id: {0}]. Старый факт будет помечен как заменённый.
+memory.fact.supersede.error: Не удалось заменить факт
+memory.fact.supersede.label: Текст замены
+memory.fact.supersede.success: Факт заменён. Новый ID: {0}
+memory.fact.supersede.title: Замена факта
+memory.fact.supersede.tooltip: Заменить
+memory.facts.add.action: Добавить
+memory.facts.clear.action: Удалить все факты
+memory.facts.clear.confirm: Все факты, хранящиеся в этом блоке, будут безвозвратно удалены. Это действие нельзя отменить.
+memory.facts.clear.error: Не удалось удалить факты
+memory.facts.clear.result: Удалено фактов: {0}.
+memory.facts.clear.success: Все факты удалены
+memory.facts.clear.title: Удалить все факты?
+memory.facts.empty: Ничего не найдено
+memory.facts.hint: Факт сохраняется с оценкой важности и становится доступным для поиска.
+memory.facts.importance.label: Важность
+memory.facts.min_importance.tooltip: Мин. важность
+memory.facts.search.action: Найти
+memory.facts.search.error: Ошибка поиска фактов
+memory.facts.search.placeholder: Поиск фактов...
+memory.log.add.error: Не удалось добавить лог
+memory.log.add.placeholder: Введите текст лога...
+memory.log.add.success: Лог добавлен. ID: {0}
+memory.log.add.title: Добавить лог
+memory.log.begin.label: Начало
+memory.log.delete.action: Удалить
+memory.log.delete.confirm: Лог [id: {0}] будет удалён безвозвратно и не может быть восстановлен.
+memory.log.delete.error: Не удалось удалить лог
+memory.log.delete.success: Лог удалён
+memory.log.delete.title: Удалить лог?
+memory.log.details.label: Детали
+memory.log.end.label: Конец
+memory.log.ordinal.label: Ординал
+memory.log.timeline.label: Таймлайн
+memory.logs.add.action: Добавить
+memory.logs.clear.action: Удалить все логи
+memory.logs.clear.confirm: Все логи, хранящиеся в этом блоке, будут безвозвратно удалены. Это действие нельзя отменить.
+memory.logs.clear.error: Не удалось удалить логи
+memory.logs.clear.result: Удалено логов: {0}.
+memory.logs.clear.success: Все логи удалены
+memory.logs.clear.title: Удалить все логи?
+memory.logs.empty: Ничего не найдено
+memory.logs.from.label: От
+memory.logs.hint: Логи неизменяемы: текст нельзя изменить после добавления.
+memory.logs.importance.label: Важность
+memory.logs.min_importance.tooltip: Мин. важность
+memory.logs.ordinal.from.label: Ординал от
+memory.logs.ordinal.to.label: Ординал до
+memory.logs.search.action: Найти
+memory.logs.search.by_time.label: По времени
+memory.logs.search.error: Ошибка поиска логов
+memory.logs.search.placeholder: Поиск логов...
+memory.logs.time_search.error: Ошибка поиска по времени
+memory.logs.to.label: До
+memory.rename.action: Переименовать
+memory.rename.confirm.tooltip: Подтвердить переименование
+memory.section.facts.title: Факты
+memory.section.info.title: Информация
+memory.section.logs.title: Логи
+profile.label: Профиль:
+provider.add: Добавить
+provider.add.title: Добавить провайдера
+provider.apikey.label: API-ключ
+provider.connection.error: Ошибка: {0}
+provider.connection.failure: ✗ Соединение не удалось
+provider.connection.success: ✓ Соединение успешно
+provider.delete: Удалить
+provider.edit: Редактировать
+provider.endpoint.label: Endpoint URI
+provider.endpoint.placeholder: https://api.openai.com/v1
+provider.manage.title: Провайдеры моделей
+provider.models.count: {0} загруженных, {1} выбранных, {2} кастомных моделей
+provider.name.label: Имя провайдера
+provider.name.placeholder: например, Мой OpenAI провайдер
+provider.test_connection: Проверить соединение
+provider.type.label: Тип провайдера
+scope.agent: Профиль агента
+scope.application: Приложение
+scope.profile: Профиль чата
+skills.additional_dirs: Дополнительные директории навыков
+skills.additional_dirs.hint: Дополнительные директории для поиска навыков. Поддиректории с SKILL.md или SKILL.mdx будут загружены.
+skills.additional_files: Дополнительные файлы навыков
+skills.additional_files.hint: Дополнительные отдельные файлы SKILL.md или SKILL.mdx для загрузки.
+skills.available: Доступные навыки
+skills.available.hint: Навыки, найденные в директориях. Только включённые навыки внедряются в промпт агента.
+skills.dir.placeholder: Путь к директории...
+skills.enable: Включить навыки
+skills.fetch_all: Искать во всех рабочих директориях
+skills.file.placeholder: Путь к файлу...
+skills.refresh: Обновить список навыков
+skills.select_directory: Выберите директорию навыка
+skills.select_file: Выберите файл навыка
+skills.sources: Источники навыков
+stage.adaptive.additional_router_prompt: Дополнительный промпт для агента-роутера
+stage.adaptive.agents: Пул агентов
+stage.adaptive.enforce_router_selection: Обеспечить выбор
+stage.adaptive.max_visible_rounds: Макс. количество видимых раундов для агента-роутера
+stage.add: Добавить этап выполнения
+stage.add_agent: Добавить агента в этап
+stage.can_agents_be_skipped: Пропускать агентов (по весу)
+stage.can_agents_execute_again: Агенты могут выполняться повторно
+stage.clone: Клонировать этап
+stage.enable_mentions: Включить @упоминания
+stage.max_cycles: Макс. циклов
+stage.max_iterations: Макс. итераций
+stage.mentionable_agents: Упоминаемые агенты
+stage.min_cycles: Мин. циклов
+stage.min_iterations: Мин. итераций
+stage.move_agent_down: Переместить агента вниз
+stage.move_agent_up: Переместить агента вверх
+stage.move_down: Переместить этап вниз
+stage.move_up: Переместить этап вверх
+stage.remove: Удалить этап
+stage.remove_agent: Удалить агента из этапа
+stage.stop_chance: Шанс остановки
+stage.type.adaptive: Адаптивный
+stage.type.mention_only: Только по упоминанию
+stage.type.random: Случайный
+stage.type.round_robin: По кругу
+stage.type.sequential: Последовательный
+stage.weight.tooltip: Вероятность выбора агента (0 = всегда пропускать, 1 = никогда не пропускать)
+stage.weighted_agents: Взвешенные агенты
+tool.approval_level: Уровень подтверждения
+tool.approval_level.alwaysapprove: Авто-одобрение
+tool.approval_level.alwaysask: Всегда спрашивать
+tool.approval_level.alwaysdisallow: Всегда запрещать
+tool.approval_level.policyapproveorask: Политика: никогда не запрещать
+tool.approval_level.policyaskordisallow: Политика: никогда не одобрять автоматически
+tool.approval_level.policyautoapproveunlessdisallowed: Политика: одобрять если не запрещено
+tool.approval_level.policyautodisallowunlessapproved: Политика: запрещать если не одобрено
+tool.approval_level.policybased: По политике
+tool.behaviour_policy.auto_approve: Авто-одобрение
+tool.behaviour_policy.default: По умолчанию
+tool.behaviour_policy.disallowed: Запрещено
+tools.enable: Включить инструменты
+tools.fetch_all: Искать во всех рабочих директориях
+tools.fetch_all.hint: Искать мета-инструменты во всех рабочих директориях, а не только в активной.
+user.add.title: Добавить пользователя
+user.clear_image: Очистить
+user.description: Описание
+user.description.hint: Дополнительная информация о пользователе, которую агенты могут использовать для персонализации ответов
+user.edit.title: Редактировать пользователя
+user.login: Логин
+user.login.hint: Уникальный идентификатор пользователя
+user.login_required.error: Логин обязателен.
+user.name: Имя
+user.name.hint: Отображаемое имя в разговорах и для агентов
+user.profile_image: Изображение профиля
+user.profile_image.hint: Выберите изображение для профиля пользователя. Будет автоматически обрезано до 128x128.
+user.select_image: Выбрать изображение...
+user.select_image.title: Выберите изображение профиля пользователя

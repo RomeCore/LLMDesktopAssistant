@@ -18,7 +18,7 @@
 				Padding="8,6">
 			<StackPanel Orientation="Horizontal" Spacing="4">
 				<Button Command="{Binding AddStageCommand}" Classes="IconButton"
-						ToolTip.Tip="{loc:Loc settings_add_stage}">
+						ToolTip.Tip="{loc:Loc settings.stage.add}">
 					<ico:MaterialIcon Kind="Plus"/>
 				</Button>
 			</StackPanel>
@@ -64,7 +64,7 @@
 													Command="{Binding MoveUpCommand}"
 													Classes="IconButton"
 													Margin="2,0"
-													ToolTip.Tip="{loc:Loc settings_move_stage_up}">
+													ToolTip.Tip="{loc:Loc settings.stage.move_up}">
 										<ico:MaterialIcon Kind="ChevronUp"/>
 									</Button>
 
@@ -73,7 +73,7 @@
 													Command="{Binding MoveDownCommand}"
 													Classes="IconButton"
 													Margin="2,0"
-													ToolTip.Tip="{loc:Loc settings_move_stage_down}">
+													ToolTip.Tip="{loc:Loc settings.stage.move_down}">
 										<ico:MaterialIcon Kind="ChevronDown"/>
 									</Button>
 
@@ -82,7 +82,7 @@
 													Command="{Binding CloneCommand}"
 													Classes="IconButton"
 													Margin="2,0"
-													ToolTip.Tip="{loc:Loc settings_clone_stage}">
+													ToolTip.Tip="{loc:Loc settings.stage.clone}">
 										<ico:MaterialIcon Kind="ContentCopy"/>
 									</Button>
 
@@ -91,7 +91,7 @@
 													Command="{Binding DeleteCommand}"
 													Classes="IconButton"
 													Margin="2,0"
-													ToolTip.Tip="{loc:Loc settings_remove_stage}">
+													ToolTip.Tip="{loc:Loc settings.stage.remove}">
 										<ico:MaterialIcon Kind="Delete"/>
 									</Button>
 								</Grid>

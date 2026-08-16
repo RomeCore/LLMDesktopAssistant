@@ -153,15 +153,15 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 
 			Sections =
 			[
-				new EditMemoryBlockSection(LocalizationManager.LocalizeStatic("settings-memory_section_info"),
+				new EditMemoryBlockSection(LocalizationManager.LocalizeStatic("settings.memory.section.info.title"),
 					MaterialIconKind.InfoCircle,
 					() => this),
 
-				new EditMemoryBlockSection(LocalizationManager.LocalizeStatic("settings-memory_section_facts"),
+				new EditMemoryBlockSection(LocalizationManager.LocalizeStatic("settings.memory.section.facts.title"),
 					MaterialIconKind.FormatListBulleted,
 					() => new MemoryBlockFactsViewModel(Block, factStore)),
 
-				new EditMemoryBlockSection(LocalizationManager.LocalizeStatic("settings-memory_section_logs"),
+				new EditMemoryBlockSection(LocalizationManager.LocalizeStatic("settings.memory.section.logs.title"),
 					MaterialIconKind.History,
 					() => new MemoryBlockLogsViewModel(Block, logStore))
 			];
@@ -190,7 +190,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				return;
 
 			var copy = BlocksCategory.Get(id);
-			copy.Name = Block.Name + " (" + LocalizationManager.LocalizeStatic("settings-memory_copy_suffix") + ")";
+			copy.Name = Block.Name + " (" + LocalizationManager.LocalizeStatic("settings.memory.copy_suffix") + ")";
 
 			await _databaseManager.CopyAsync(Block.Id, id);
 
@@ -229,10 +229,10 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		{
 			var confirm = new ConfirmDialogViewModel
 			{
-				Title = LocalizationManager.LocalizeStatic("settings-memory_delete_title"),
-				Description = LocalizationManager.LocalizeStatic("settings-memory_delete_confirm"),
-				ConfirmText = LocalizationManager.LocalizeStatic("settings-memory_delete"),
-				CancelText = LocalizationManager.LocalizeStatic("cancel"),
+				Title = LocalizationManager.LocalizeStatic("settings.memory.delete.title"),
+				Description = LocalizationManager.LocalizeStatic("settings.memory.delete.confirm"),
+				ConfirmText = LocalizationManager.LocalizeStatic("settings.memory.delete.action"),
+				CancelText = LocalizationManager.LocalizeStatic("common.cancel"),
 				IsDanger = true
 			};
 
@@ -253,12 +253,12 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				DialogManager.CloseDialog(true);
 
 				var toast = ServiceRegistry.Provider.GetRequiredService<IToastService>();
-				toast.ShowSuccess(LocalizationManager.LocalizeStatic("settings-memory_delete_done"));
+				toast.ShowSuccess(LocalizationManager.LocalizeStatic("settings.memory.delete.success"));
 			}
 			catch (Exception ex)
 			{
 				var toast = ServiceRegistry.Provider.GetRequiredService<IToastService>();
-				toast.ShowError(LocalizationManager.LocalizeStatic("settings-memory_delete_error"), ex.Message);
+				toast.ShowError(LocalizationManager.LocalizeStatic("settings.memory.delete.error"), ex.Message);
 			}
 		}
 
@@ -266,10 +266,10 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		{
 			var confirm = new ConfirmDialogViewModel
 			{
-				Title = LocalizationManager.LocalizeStatic("settings-memory_clear_title"),
-				Description = LocalizationManager.LocalizeStatic("settings-memory_clear_confirm"),
-				ConfirmText = LocalizationManager.LocalizeStatic("settings-memory_clear"),
-				CancelText = LocalizationManager.LocalizeStatic("cancel"),
+				Title = LocalizationManager.LocalizeStatic("settings.memory.clear.title"),
+				Description = LocalizationManager.LocalizeStatic("settings.memory.clear.confirm"),
+				ConfirmText = LocalizationManager.LocalizeStatic("settings.memory.clear.action"),
+				CancelText = LocalizationManager.LocalizeStatic("common.cancel"),
 				IsDanger = true
 			};
 
@@ -286,13 +286,13 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 
 				var toast = ServiceRegistry.Provider.GetRequiredService<IToastService>();
 				toast.ShowSuccess(
-					LocalizationManager.LocalizeStatic("settings-memory_clear_done"),
-					LocalizationManager.LocalizeStaticFormat("settings-memory_clear_result", facts, logs));
+					LocalizationManager.LocalizeStatic("settings.memory.clear.success"),
+					LocalizationManager.LocalizeStaticFormat("settings.memory.clear.result", facts, logs));
 			}
 			catch (Exception ex)
 			{
 				var toast = ServiceRegistry.Provider.GetRequiredService<IToastService>();
-				toast.ShowError(LocalizationManager.LocalizeStatic("settings-memory_clear_error"), ex.Message);
+				toast.ShowError(LocalizationManager.LocalizeStatic("settings.memory.clear.error"), ex.Message);
 			}
 		}
 

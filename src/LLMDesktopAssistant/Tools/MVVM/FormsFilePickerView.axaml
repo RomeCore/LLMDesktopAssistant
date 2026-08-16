@@ -39,7 +39,7 @@
 					IsVisible="{Binding IsResultSet, Converter={StaticResource InverseBooleanConverter}}">
 				<StackPanel Orientation="Horizontal" Spacing="8">
 					<ico:MaterialIcon Kind="File"/>
-					<TextBlock Text="{loc:Loc forms_select_file}"/>
+					<TextBlock Text="{loc:Loc forms.file_picker.select_file}"/>
 				</StackPanel>
 			</Button>
 
@@ -64,7 +64,7 @@
 			</ItemsControl>
 
 			<!-- Submit button -->
-			<Button Content="{loc:Loc ok}"
+			<Button Content="{loc:Loc common.ok}"
 							Command="{Binding SubmitCommand}"
 							HorizontalAlignment="Left"
 							MinWidth="80"
@@ -79,7 +79,7 @@
 													Width="20" Height="20"
 													Foreground="{DynamicResource SuccessColor}"/>
 
-				<TextBlock Text="{loc:Loc forms_file_selected}" FontSize="13" Opacity="0.7"/>
+				<TextBlock Text="{loc:Loc forms.file_picker.file_selected}" FontSize="13" Opacity="0.7"/>
 
 			</StackPanel>
 

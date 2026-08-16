@@ -1,0 +1,28 @@
+// Messages: actions, branches, visibility, token cost, context shield, summary.
+
+%locale: 
+%namespace: message
+
+context_shield: Context shield is active, the upper messages not visible to agents
+delete: Delete
+next_branch: Next branch
+previous_branch: Previous branch
+quick_action.send: Send "{0}"
+summary: Summary
+token_cost.cache_hit: Cache hit
+token_cost.cache_miss: Cache miss
+token_cost.generation_time: Gen. time
+token_cost.input: Input
+token_cost.model: Model
+token_cost.output: Output
+token_cost.ttft: TTFT
+visibility.always: Always
+visibility.hidden: Message hidden
+visibility.hint: Visibility:
+visibility.only_agents: Only to agents
+visibility.only_users: Only to users
+visibility.reveal_after_send: After send
+edit: Edit
+reasoning: Reasoning process
+regenerate: Regenerate
+resend: Resend

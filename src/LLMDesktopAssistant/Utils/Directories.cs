@@ -83,7 +83,7 @@ namespace LLMDesktopAssistant.Utils
 		/// <summary>
 		/// The localized name of the default working directory. Typically used for tools and UI.
 		/// </summary>
-		public static string DefaultWorkingDirectoryName => LocalizationManager.LocalizeStatic("default");
+		public static string DefaultWorkingDirectoryName => LocalizationManager.LocalizeStatic("common.default");
 
 		/// <summary>
 		/// The path where to store log files.

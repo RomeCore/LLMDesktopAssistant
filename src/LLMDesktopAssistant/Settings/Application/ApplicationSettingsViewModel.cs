@@ -48,7 +48,7 @@ namespace LLMDesktopAssistant.Settings.Application
 		private void InitializeTree()
 		{
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings_language"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.language.title"),
 				MaterialIconKind.Translate,
 				() => new ApplicationLanguageSettingsViewModel()));
 		}

@@ -364,7 +364,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					tokenCounter++;
 
 					if (tokenCounter > 1)
-						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("image_describer_status"), tokenCounter);
+						result.StatusTitle = string.Format(LocalizationManager.LocalizeStatic("tool.status.agent-describe_image.status"), tokenCounter);
 				}
 				agentTask.PropertyChanged += LastResponseChanged;
 

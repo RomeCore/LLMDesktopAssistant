@@ -92,7 +92,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 			}
 			catch (Exception ex)
 			{
-				ShowError(LocalizationManager.LocalizeStatic("settings-memory_facts_search_error"), ex.Message);
+				ShowError(LocalizationManager.LocalizeStatic("settings.memory.facts.search.error"), ex.Message);
 			}
 		}
 
@@ -100,11 +100,11 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		{
 			var vm = new AddFactDialogViewModel
 			{
-				Title = LocalizationManager.LocalizeStatic("settings-memory_fact_add_title"),
-				Placeholder = LocalizationManager.LocalizeStatic("settings-memory_fact_add_placeholder"),
-				ImportanceLabel = LocalizationManager.LocalizeStatic("settings-memory_facts_importance"),
-				SubmitText = LocalizationManager.LocalizeStatic("settings-memory_facts_add"),
-				CancelText = LocalizationManager.LocalizeStatic("cancel")
+				Title = LocalizationManager.LocalizeStatic("settings.memory.fact.add.title"),
+				Placeholder = LocalizationManager.LocalizeStatic("settings.memory.fact.add.placeholder"),
+				ImportanceLabel = LocalizationManager.LocalizeStatic("settings.memory.facts.importance.label"),
+				SubmitText = LocalizationManager.LocalizeStatic("settings.memory.facts.add.action"),
+				CancelText = LocalizationManager.LocalizeStatic("common.cancel")
 			};
 
 			_ = DialogManager.ShowDialogAsync(vm);
@@ -115,11 +115,11 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 			try
 			{
 				var stored = await _factStore.StoreAsync(_block, result.Text, importance: result.Importance);
-				ShowSuccess(LocalizationManager.LocalizeStaticFormat("settings-memory_fact_add_done", stored.Id));
+				ShowSuccess(LocalizationManager.LocalizeStaticFormat("settings.memory.fact.add.success", stored.Id));
 			}
 			catch (Exception ex)
 			{
-				ShowError(LocalizationManager.LocalizeStatic("settings-memory_fact_add_error"), ex.Message);
+				ShowError(LocalizationManager.LocalizeStatic("settings.memory.fact.add.error"), ex.Message);
 			}
 		}
 
@@ -127,10 +127,10 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		{
 			var confirm = new ConfirmDialogViewModel
 			{
-				Title = LocalizationManager.LocalizeStatic("settings-memory_facts_clear_title"),
-				Description = LocalizationManager.LocalizeStatic("settings-memory_facts_clear_confirm"),
-				ConfirmText = LocalizationManager.LocalizeStatic("settings-memory_facts_clear"),
-				CancelText = LocalizationManager.LocalizeStatic("cancel"),
+				Title = LocalizationManager.LocalizeStatic("settings.memory.facts.clear.title"),
+				Description = LocalizationManager.LocalizeStatic("settings.memory.facts.clear.confirm"),
+				ConfirmText = LocalizationManager.LocalizeStatic("settings.memory.facts.clear.action"),
+				CancelText = LocalizationManager.LocalizeStatic("common.cancel"),
 				IsDanger = true
 			};
 
@@ -145,12 +145,12 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				RaisePropertyChanged(nameof(HasResults));
 
 				ServiceRegistry.Provider.GetRequiredService<IToastService>().ShowSuccess(
-					LocalizationManager.LocalizeStatic("settings-memory_facts_clear_done"),
-					LocalizationManager.LocalizeStaticFormat("settings-memory_facts_clear_result", count));
+					LocalizationManager.LocalizeStatic("settings.memory.facts.clear.success"),
+					LocalizationManager.LocalizeStaticFormat("settings.memory.facts.clear.result", count));
 			}
 			catch (Exception ex)
 			{
-				ShowError(LocalizationManager.LocalizeStatic("settings-memory_facts_clear_error"), ex.Message);
+				ShowError(LocalizationManager.LocalizeStatic("settings.memory.facts.clear.error"), ex.Message);
 			}
 		}
 
@@ -236,10 +236,10 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		{
 			var confirm = new ConfirmDialogViewModel
 			{
-				Title = LocalizationManager.LocalizeStatic("settings-memory_fact_delete_title"),
-				Description = LocalizationManager.LocalizeStaticFormat("settings-memory_fact_delete_confirm", Id),
-				ConfirmText = LocalizationManager.LocalizeStatic("settings-memory_fact_delete"),
-				CancelText = LocalizationManager.LocalizeStatic("cancel"),
+				Title = LocalizationManager.LocalizeStatic("settings.memory.fact.delete.title"),
+				Description = LocalizationManager.LocalizeStaticFormat("settings.memory.fact.delete.confirm", Id),
+				ConfirmText = LocalizationManager.LocalizeStatic("settings.memory.fact.delete.action"),
+				CancelText = LocalizationManager.LocalizeStatic("common.cancel"),
 				IsDanger = true
 			};
 
@@ -251,11 +251,11 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 			{
 				await _factStore.SoftDeleteAsync(_block, Id);
 				_removed(this);
-				ShowSuccess(LocalizationManager.LocalizeStatic("settings-memory_fact_delete_done"));
+				ShowSuccess(LocalizationManager.LocalizeStatic("settings.memory.fact.delete.success"));
 			}
 			catch (Exception ex)
 			{
-				ShowError(LocalizationManager.LocalizeStatic("settings-memory_fact_delete_error"), ex.Message);
+				ShowError(LocalizationManager.LocalizeStatic("settings.memory.fact.delete.error"), ex.Message);
 			}
 		}
 
@@ -263,9 +263,9 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 		{
 			var vm = new TextInputDialogViewModel
 			{
-				Title = LocalizationManager.LocalizeStatic("settings-memory_fact_supersede_title"),
-				Description = LocalizationManager.LocalizeStaticFormat("settings-memory_fact_supersede_desc", Id),
-				Label = LocalizationManager.LocalizeStatic("settings-memory_fact_supersede_label"),
+				Title = LocalizationManager.LocalizeStatic("settings.memory.fact.supersede.title"),
+				Description = LocalizationManager.LocalizeStaticFormat("settings.memory.fact.supersede.description", Id),
+				Label = LocalizationManager.LocalizeStatic("settings.memory.fact.supersede.label"),
 				Value = Text,
 				IsMultiline = true,
 				IsRequired = true
@@ -280,11 +280,11 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 			{
 				var stored = await _factStore.SupersedeAsync(_block, Id, replacement, importance: Importance);
 				_removed(this);
-				ShowSuccess(LocalizationManager.LocalizeStaticFormat("settings-memory_fact_supersede_done", stored.Id));
+				ShowSuccess(LocalizationManager.LocalizeStaticFormat("settings.memory.fact.supersede.success", stored.Id));
 			}
 			catch (Exception ex)
 			{
-				ShowError(LocalizationManager.LocalizeStatic("settings-memory_fact_supersede_error"), ex.Message);
+				ShowError(LocalizationManager.LocalizeStatic("settings.memory.fact.supersede.error"), ex.Message);
 			}
 		}
 

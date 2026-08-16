@@ -75,7 +75,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				var namingTask = agentTaskExecutor.Execute(new AgentTaskLaunchParameters
 				{
-					TaskName = LocalizationManager.LocalizeStatic("chat_naming_task"),
+					TaskName = LocalizationManager.LocalizeStatic("chat.naming.task"),
 					TriggeredChat = chat,
 					Model = namingLLM,
 					InitialMessages = [
@@ -166,11 +166,11 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (string.IsNullOrWhiteSpace(title))
 				return true;
 
-			var defaultTitle = LocalizationManager.LocalizeStatic("new_chat");
+			var defaultTitle = LocalizationManager.LocalizeStatic("chat.new");
 			if (string.Equals(title, defaultTitle, StringComparison.OrdinalIgnoreCase))
 				return true;
 
-			var defaultTemporaryTitle = LocalizationManager.LocalizeStatic("new_temporary_chat");
+			var defaultTemporaryTitle = LocalizationManager.LocalizeStatic("chat.new_temporary");
 			if (string.Equals(title, defaultTemporaryTitle, StringComparison.OrdinalIgnoreCase))
 				return true;
 

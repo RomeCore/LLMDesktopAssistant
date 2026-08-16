@@ -1,0 +1,31 @@
+// Skills: diagnostics, injection modes.
+
+%locale: 
+%namespace: skill
+
+diagnostic.fileaccesserror: File Access Error
+diagnostic.fileaccesserror.hint: Unable to read the SKILL.md file. Check file permissions.
+diagnostic.generalparsingerror: Parse Error
+diagnostic.generalparsingerror.hint: An unexpected error occurred while parsing the skill file.
+diagnostic.missingdescription: Missing Description
+diagnostic.missingdescription.hint: The skill has no description. Add a description in YAML frontmatter or as the first paragraph.
+diagnostic.missingfile: File Missing
+diagnostic.missingfile.hint: The SKILL.md file could not be found at the expected location.
+diagnostic.missingname: Missing Name
+diagnostic.missingname.hint: The skill has no name defined in YAML frontmatter, header, or folder name.
+diagnostic.missingyaml: Missing YAML
+diagnostic.missingyaml.hint: The SKILL.md file does not have a YAML frontmatter block (--- ... ---).
+diagnostic.missingyamldescription: Missing YAML Description
+diagnostic.missingyamldescription.hint: The 'description' field is missing from the YAML frontmatter. A fallback was used.
+diagnostic.missingyamlname: Missing YAML Name
+diagnostic.missingyamlname.hint: The 'name' field is missing from the YAML frontmatter. A fallback name was used.
+diagnostic.namedirectorymismatch: Name/Directory Mismatch
+diagnostic.namedirectorymismatch.hint: The skill name does not match the name of the directory containing SKILL.md.
+diagnostic.nameformaterror: Invalid Name Format
+diagnostic.nameformaterror.hint: The skill name contains invalid characters. Skills must use lowercase letters, digits and hyphens.
+diagnostic.yamldecodingerror: YAML Decode Error
+diagnostic.yamldecodingerror.hint: Failed to deserialize the YAML frontmatter into the expected structure.
+diagnostic.yamlparsingerror: YAML Syntax Error
+diagnostic.yamlparsingerror.hint: The YAML frontmatter contains invalid syntax.
+injection_mode.default: Name + Description
+injection_mode.full: Full Body

@@ -1,0 +1,48 @@
+// Prompt manager and prompt settings.
+
+%locale: ru-RU
+%namespace: prompt
+
+assistant_nickname.hint: Имя ассистента
+behavior_sliders: Слайдеры поведения
+behavior_sliders.hint: Настройте слайдеры, чтобы управлять тоном, стилем и личностью ассистента
+category: Категория
+category.uncategorized: Без категории
+components: Дополнительные компоненты
+components.hint: Выберите дополнительные компоненты промпта, которые будут добавлены к системному сообщению
+custom_persona.hint: Введите кастомную персону...
+custom_persona.placeholder: Опишите персону в деталях...
+custom_specialization.hint: Введите описание специализации...
+custom_specialization.placeholder: Опишите профессиональную роль, которую должен выполнять ассистент...
+edit_component: Редактировать компонент
+edit_persona: Редактировать персону
+edit_specialization: Редактировать специализацию
+import: Импорт
+import_component: Импорт компонента
+import_persona: Импорт персоны
+import_specialization: Импорт специализации
+manager.header: Менеджер промптов
+name: Название
+new_component: Новый компонент
+new_persona: Новая персона
+new_specialization: Новая специализация
+persona: Персона
+persona.clear: Очистить персону
+personas: Персоны
+preview.header: Предпросмотр системного промпта
+preview.toggle: Показать/скрыть предпросмотр системного промпта
+select_persona: Выберите персону...
+select_specialization: Выберите специализацию...
+selected_persona.hint: Выберите персону для применения к чату
+selected_specialization.hint: Выберите специализацию для определения профессиональной роли ассистента
+specialization: Специализация
+specialization.clear: Очистить специализацию
+specialization.hint: Выберите профессиональную специализацию ассистента. Определяет, что ассистент знает и умеет.
+specializations: Специализации
+system_prompt: Системный промпт
+system_prompt.hint: Введите системный промпт...
+system_prompt.placeholder: например, You are a helpful assistant
+text: Текст
+use_custom_persona: Использовать кастомную персону
+use_custom_specialization: Использовать свою специализацию
+user_nickname.placeholder: например, Иван

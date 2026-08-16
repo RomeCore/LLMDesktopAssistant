@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.Prompting
 		}
 
 		public string DisplayCategory => string.IsNullOrEmpty(Component.Category)
-			? LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_category_uncategorized")
+			? LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt.category.uncategorized")
 			: Component.Category;
 	}
 
@@ -172,7 +172,7 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			var component = new PromptComponent
 			{
-				Name = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_new_component"),
+				Name = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt.new_component"),
 				Category = string.Empty,
 				Template = SerializableTextTemplate.Empty
 			};
@@ -207,7 +207,7 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			var files = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_import_component"),
+				Title = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt.import_component"),
 				FileTypeFilter = new[]
 				{
 					new FilePickerFileType("Text files") { Patterns = new[] { "*.txt", "*.md" } },
@@ -242,7 +242,7 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			var persona = new Persona
 			{
-				Name = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_new_persona"),
+				Name = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt.new_persona"),
 				Template = SerializableTextTemplate.Empty
 			};
 
@@ -266,7 +266,7 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			var files = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_import_persona"),
+				Title = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt.import_persona"),
 				FileTypeFilter = new[]
 				{
 					new FilePickerFileType("Text files") { Patterns = new[] { "*.txt", "*.md" } },
@@ -300,7 +300,7 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			var specialization = new Specialization
 			{
-				Name = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_new_specialization"),
+				Name = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt.new_specialization"),
 				Category = string.Empty,
 				Template = SerializableTextTemplate.Empty
 			};
@@ -325,7 +325,7 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			var files = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
 			{
-				Title = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt_import_specialization"),
+				Title = LLMDesktopAssistant.Localization.LocalizationManager.LocalizeStatic("prompt.import_specialization"),
 				FileTypeFilter = new[]
 				{
 					new FilePickerFileType("Text files") { Patterns = new[] { "*.txt", "*.md" } },

@@ -269,53 +269,53 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			var perms = EffectiveReadPermissions;
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.UserMessages,
-				LocalizationManager.LocalizeStatic("perm_user_messages"),
-				LocalizationManager.LocalizeStatic("perm_user_messages_hint"),
+				LocalizationManager.LocalizeStatic("agent.perm.user_messages"),
+				LocalizationManager.LocalizeStatic("agent.perm.user_messages.hint"),
 				perms.HasFlag(AgentReadPermissions.UserMessages)));
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.UserAttachments,
-				LocalizationManager.LocalizeStatic("perm_user_attachments"),
-				LocalizationManager.LocalizeStatic("perm_user_attachments_hint"),
+				LocalizationManager.LocalizeStatic("agent.perm.user_attachments"),
+				LocalizationManager.LocalizeStatic("agent.perm.user_attachments.hint"),
 				perms.HasFlag(AgentReadPermissions.UserAttachments)));
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.OwnMessages,
-				LocalizationManager.LocalizeStatic("perm_own_messages"),
-				LocalizationManager.LocalizeStatic("perm_own_messages_hint"),
+				LocalizationManager.LocalizeStatic("agent.perm.own_messages"),
+				LocalizationManager.LocalizeStatic("agent.perm.own_messages.hint"),
 				perms.HasFlag(AgentReadPermissions.OwnMessages)));
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.OtherAgentMessages,
-				LocalizationManager.LocalizeStatic("perm_other_agent_messages"),
-				LocalizationManager.LocalizeStatic("perm_other_agent_messages_hint"),
+				LocalizationManager.LocalizeStatic("agent.perm.other_agent_messages"),
+				LocalizationManager.LocalizeStatic("agent.perm.other_agent_messages.hint"),
 				perms.HasFlag(AgentReadPermissions.OtherAgentMessages)));
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.OtherAgentContent,
-				LocalizationManager.LocalizeStatic("perm_other_agent_content"),
-				LocalizationManager.LocalizeStatic("perm_other_agent_content_hint"),
+				LocalizationManager.LocalizeStatic("agent.perm.other_agent_content"),
+				LocalizationManager.LocalizeStatic("agent.perm.other_agent_content.hint"),
 				perms.HasFlag(AgentReadPermissions.OtherAgentContent)));
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.OtherAgentReasoning,
-				LocalizationManager.LocalizeStatic("perm_other_agent_reasoning"),
-				LocalizationManager.LocalizeStatic("perm_other_agent_reasoning_hint"),
+				LocalizationManager.LocalizeStatic("agent.perm.other_agent_reasoning"),
+				LocalizationManager.LocalizeStatic("agent.perm.other_agent_reasoning.hint"),
 				perms.HasFlag(AgentReadPermissions.OtherAgentReasoning)));
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.OtherAgentToolCalls,
-				LocalizationManager.LocalizeStatic("perm_other_agent_tool_calls"),
-				LocalizationManager.LocalizeStatic("perm_other_agent_tool_calls_hint"),
+				LocalizationManager.LocalizeStatic("agent.perm.other_agent_tool_calls"),
+				LocalizationManager.LocalizeStatic("agent.perm.other_agent_tool_calls.hint"),
 				perms.HasFlag(AgentReadPermissions.OtherAgentToolCalls)));
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.OtherAgentAttachments,
-				LocalizationManager.LocalizeStatic("perm_other_agent_attachments"),
-				LocalizationManager.LocalizeStatic("perm_other_agent_attachments_hint"),
+				LocalizationManager.LocalizeStatic("agent.perm.other_agent_attachments"),
+				LocalizationManager.LocalizeStatic("agent.perm.other_agent_attachments.hint"),
 				perms.HasFlag(AgentReadPermissions.OtherAgentAttachments)));
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.MessagesWithToolCalls,
-				LocalizationManager.LocalizeStatic("perm_messages_with_tool_calls"),
-				LocalizationManager.LocalizeStatic("perm_messages_with_tool_calls_hint"),
+				LocalizationManager.LocalizeStatic("agent.perm.messages_with_tool_calls"),
+				LocalizationManager.LocalizeStatic("agent.perm.messages_with_tool_calls.hint"),
 				perms.HasFlag(AgentReadPermissions.MessagesWithToolCalls)));
 
 			ReadPermissionItems.Add(new ReadPermissionItem(this, AgentReadPermissions.IdentifyAgentsAsUsers,
-				LocalizationManager.LocalizeStatic("perm_identify_agents_as_users"),
-				LocalizationManager.LocalizeStatic("perm_identify_agents_as_users_hint"),
+				LocalizationManager.LocalizeStatic("agent.perm.identify_agents_as_users"),
+				LocalizationManager.LocalizeStatic("agent.perm.identify_agents_as_users.hint"),
 				perms.HasFlag(AgentReadPermissions.IdentifyAgentsAsUsers)));
 		}
 
@@ -326,33 +326,33 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			var mode = EffectiveExposureMode;
 
 			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.Content,
-				LocalizationManager.LocalizeStatic("exposure_content"),
-				LocalizationManager.LocalizeStatic("exposure_content_hint"),
+				LocalizationManager.LocalizeStatic("agent.exposure.content"),
+				LocalizationManager.LocalizeStatic("agent.exposure.content.hint"),
 				mode.HasFlag(AgentExposureMode.Content)));
 
 			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.Reasoning,
-				LocalizationManager.LocalizeStatic("exposure_reasoning"),
-				LocalizationManager.LocalizeStatic("exposure_reasoning_hint"),
+				LocalizationManager.LocalizeStatic("agent.exposure.reasoning"),
+				LocalizationManager.LocalizeStatic("agent.exposure.reasoning.hint"),
 				mode.HasFlag(AgentExposureMode.Reasoning)));
 
 			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.ToolCalls,
-				LocalizationManager.LocalizeStatic("exposure_tool_calls"),
-				LocalizationManager.LocalizeStatic("exposure_tool_calls_hint"),
+				LocalizationManager.LocalizeStatic("agent.exposure.tool_calls"),
+				LocalizationManager.LocalizeStatic("agent.exposure.tool_calls.hint"),
 				mode.HasFlag(AgentExposureMode.ToolCalls)));
 
 			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.Attachments,
-				LocalizationManager.LocalizeStatic("exposure_attachments"),
-				LocalizationManager.LocalizeStatic("exposure_attachments_hint"),
+				LocalizationManager.LocalizeStatic("agent.exposure.attachments"),
+				LocalizationManager.LocalizeStatic("agent.exposure.attachments.hint"),
 				mode.HasFlag(AgentExposureMode.Attachments)));
 
 			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.MessagesWithToolCalls,
-				LocalizationManager.LocalizeStatic("exposure_messages_with_tool_calls"),
-				LocalizationManager.LocalizeStatic("exposure_messages_with_tool_calls_hint"),
+				LocalizationManager.LocalizeStatic("agent.exposure.messages_with_tool_calls"),
+				LocalizationManager.LocalizeStatic("agent.exposure.messages_with_tool_calls.hint"),
 				mode.HasFlag(AgentExposureMode.MessagesWithToolCalls)));
 
 			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.IdentifySelfAsUser,
-				LocalizationManager.LocalizeStatic("exposure_identify_self_as_user"),
-				LocalizationManager.LocalizeStatic("exposure_identify_self_as_user_hint"),
+				LocalizationManager.LocalizeStatic("agent.exposure.identify_self_as_user"),
+				LocalizationManager.LocalizeStatic("agent.exposure.identify_self_as_user.hint"),
 				mode.HasFlag(AgentExposureMode.IdentifySelfAsUser)));
 		}
 

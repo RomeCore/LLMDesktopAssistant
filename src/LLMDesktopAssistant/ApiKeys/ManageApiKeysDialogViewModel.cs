@@ -119,9 +119,9 @@ namespace LLMDesktopAssistant.ApiKeys
 		public ApiKeyStorageScheme StorageScheme => Source.StorageScheme;
 		public string SchemeText => StorageScheme switch
 		{
-			ApiKeyStorageScheme.Encrypted => LocalizationManager.LocalizeStatic("settings_apikey_scheme_encrypted"),
-			ApiKeyStorageScheme.Raw => LocalizationManager.LocalizeStatic("settings_apikey_scheme_raw"),
-			ApiKeyStorageScheme.EnvironmentVariable => LocalizationManager.LocalizeStatic("settings_apikey_scheme_env"),
+			ApiKeyStorageScheme.Encrypted => LocalizationManager.LocalizeStatic("settings.api.scheme.encrypted"),
+			ApiKeyStorageScheme.Raw => LocalizationManager.LocalizeStatic("settings.api.scheme.raw"),
+			ApiKeyStorageScheme.EnvironmentVariable => LocalizationManager.LocalizeStatic("settings.api.scheme.env"),
 			_ => StorageScheme.ToString()
 		};
 

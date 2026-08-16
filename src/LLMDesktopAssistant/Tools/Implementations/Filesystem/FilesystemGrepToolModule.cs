@@ -139,7 +139,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					{
 						result.StatusIcon = MaterialIconKind.FileMultiple;
 						result.StatusTitle = $"**{path}** → `{pattern}` " +
-							LocalizationManager.LocalizeStatic("fs-grep_collecting_files");
+							LocalizationManager.LocalizeStatic("tool.status.fs-grep.collecting_files");
 
 						if (fileExists)
 						{
@@ -160,14 +160,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 								filesToSearch.Add(file);
 								result.StatusTitle = $"**{path}** → `{pattern}` " + string.Format(
-									LocalizationManager.LocalizeStatic("fs-grep_collecting_files_count"),
+									LocalizationManager.LocalizeStatic("tool.status.fs-grep.collecting_files_count"),
 									filesToSearch.Count);
 							}
 						}
 
 						result.StatusIcon = MaterialIconKind.FileSearch;
 						result.StatusTitle = $"**{path}** → `{pattern}` " +
-							LocalizationManager.LocalizeStatic("fs-grep_scanning_files");
+							LocalizationManager.LocalizeStatic("tool.status.fs-grep.scanning_files");
 						result.Progress = 0;
 						result.MaxProgress = filesToSearch.Count;
 
@@ -202,7 +202,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 						result.StatusIcon = MaterialIconKind.FileCheck;
 						result.StatusTitle = $"**{path}** → `{pattern}` " +
-							string.Format(LocalizationManager.LocalizeStatic("fs-grep_completed"), totalFilesMatched);
+							string.Format(LocalizationManager.LocalizeStatic("tool.status.fs-grep.completed"), totalFilesMatched);
 						result.CompleteWithSuccess();
 					}
 					catch (Exception ex)

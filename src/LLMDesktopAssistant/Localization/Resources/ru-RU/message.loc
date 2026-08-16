@@ -1,0 +1,28 @@
+// Messages: actions, branches, visibility, token cost, context shield, summary.
+
+%locale: ru-RU
+%namespace: message
+
+context_shield: Контекстный щит активирован, сообщения выше не видны агентам
+delete: Удалить
+next_branch: Следующая ветка
+previous_branch: Предыдущая ветка
+quick_action.send: Отправить "{0}"
+summary: Сводка
+token_cost.cache_hit: Попадание в кеш
+token_cost.cache_miss: Промах кеша
+token_cost.generation_time: Время генерации
+token_cost.input: Вход
+token_cost.model: Модель
+token_cost.output: Выход
+token_cost.ttft: Первый токен
+visibility.always: Всегда
+visibility.hidden: Сообщение скрыто
+visibility.hint: Видимость:
+visibility.only_agents: Только агентам
+visibility.only_users: Только другим пользователям
+visibility.reveal_after_send: После отправки
+edit: Редактировать
+reasoning: Мышление
+regenerate: Сгенерировать заново
+resend: Отправить заново

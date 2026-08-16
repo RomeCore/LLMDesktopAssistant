@@ -1,0 +1,15 @@
+// HITL forms: choice, confirm, input, file picker.
+
+%locale: ru-RU
+%namespace: forms
+
+choice.custom_option: Свой вариант...
+choice.selection.confirmed: Выбор подтверждён
+choice.selection.title: Сделайте выбор
+confirm.canceled: Отменено
+confirm.confirmed: Подтверждено
+file_picker.file_selected: Файл выбран
+file_picker.select_file: Выбрать файл...
+file_picker.selected_files: Выбранные файлы
+input.field_required: Поле "{0}" обязательно для заполнения.
+input.submitted: Форма отправлена

@@ -161,7 +161,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					return new ReactiveToolResult
 					{
 						StatusIcon = Material.Icons.MaterialIconKind.Abacus,
-						StatusTitle = LocalizationManager.LocalizeStaticFormat("math_solve_status_no_roots", $"`{equation}`"),
+						StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.math-solve.no_roots", $"`{equation}`"),
 						ResultContent = "No real roots found in the specified range. Try 'math-solve-complex' for complex roots."
 					}.CompleteWithSuccess();
 				}
@@ -170,7 +170,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				return new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.Abacus,
-					StatusTitle = LocalizationManager.LocalizeStaticFormat("math_solve_status", $"`{equation}`", roots.Length),
+					StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.math-solve.status", $"`{equation}`", roots.Length),
 					ResultContent = $"Roots found for '{variable}': {formatted}"
 				}.CompleteWithSuccess();
 			}
@@ -229,7 +229,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				return new ReactiveToolResult
 				{
 					StatusIcon = Material.Icons.MaterialIconKind.Abacus,
-					StatusTitle = LocalizationManager.LocalizeStaticFormat("math_solve_status", $"`{equation}`", roots.Length),
+					StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.math-solve.status", $"`{equation}`", roots.Length),
 					ResultContent = $"Complex roots found for '{variable}': {formatted}"
 				}.CompleteWithSuccess();
 			}

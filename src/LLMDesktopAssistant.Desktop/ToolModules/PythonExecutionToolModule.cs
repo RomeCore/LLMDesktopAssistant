@@ -77,7 +77,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 			return new StreamingToolArgumentsAnalysisResult
 			{
 				StatusIcon = MaterialIconKind.LanguagePython,
-				StatusTitle = LocalizationManager.LocalizeStaticFormat("lines_count", lines)
+				StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.script.lines", lines)
 			};
 		}
 

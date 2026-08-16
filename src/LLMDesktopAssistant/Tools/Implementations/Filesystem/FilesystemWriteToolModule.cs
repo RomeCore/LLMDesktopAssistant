@@ -48,7 +48,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			return new StreamingToolArgumentsAnalysisResult
 			{
-				StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-write_file_streaming_status",
+				StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.fs-write_file.streaming_status",
 					path != null ? $"**{path}**" : string.Empty,
 					lines)
 			};
@@ -75,7 +75,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 							return new PreviewToolExecutionResult
 							{
 								StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
-								StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
+								StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.fs-edit.changes_none", $"**{path}**"),
 								ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
 								InterruptingSuccess = true,
 								InterruptingContent = $"File **{path}** already contains the same content."

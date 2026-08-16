@@ -96,7 +96,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 			return new StreamingToolArgumentsAnalysisResult
 			{
 				StatusIcon = MaterialIconKind.LanguageLua,
-				StatusTitle = LocalizationManager.LocalizeStaticFormat("lines_count", lines)
+				StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.script.lines", lines)
 			};
 		}
 

@@ -16,7 +16,7 @@
 			<ico:MaterialIcon Kind="KeyVariant" Width="20" Height="20" 
 							  VerticalAlignment="Center"
 							  Foreground="{DynamicResource PrimaryAccentBrush}"/>
-			<TextBlock Text="{loc:Loc settings_apikey_manage_title}"
+			<TextBlock Text="{loc:Loc settings.api.manage.title}"
 					   FontSize="{DynamicResource FontSizeL}"
 					   FontWeight="Bold"
 					   VerticalAlignment="Center"/>
@@ -29,7 +29,7 @@
 				<Button.Content>
 					<StackPanel Orientation="Horizontal" Spacing="4">
 						<ico:MaterialIcon Kind="AddCircle" Width="14" Height="14"/>
-						<TextBlock Text="{loc:Loc settings_apikey_add}"/>
+						<TextBlock Text="{loc:Loc settings.api.add}"/>
 					</StackPanel>
 				</Button.Content>
 			</Button>
@@ -39,7 +39,7 @@
 				<Button.Content>
 					<StackPanel Orientation="Horizontal" Spacing="4">
 						<ico:MaterialIcon Kind="Edit" Width="14" Height="14"/>
-						<TextBlock Text="{loc:Loc edit}"/>
+						<TextBlock Text="{loc:Loc common.edit}"/>
 					</StackPanel>
 				</Button.Content>
 			</Button>
@@ -50,7 +50,7 @@
 				<Button.Content>
 					<StackPanel Orientation="Horizontal" Spacing="4">
 						<ico:MaterialIcon Kind="Delete" Width="14" Height="14"/>
-						<TextBlock Text="{loc:Loc delete}"/>
+						<TextBlock Text="{loc:Loc common.delete}"/>
 					</StackPanel>
 				</Button.Content>
 			</Button>
@@ -81,7 +81,7 @@
 
 		<!-- Close button -->
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-			<Button Content="{loc:Loc close}"
+			<Button Content="{loc:Loc common.close}"
 					Command="{Binding CloseCommand}"/>
 		</StackPanel>
 

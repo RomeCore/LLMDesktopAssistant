@@ -16,7 +16,7 @@
 		
 		<TextBlock Grid.Column="0"
 				   Margin="10"
-				   Text="{loc:Loc mcp_manager_header}"
+				   Text="{loc:Loc mcp.manager.header}"
 				   FontSize="{DynamicResource FontSizeL}"
 				   FontWeight="Bold"
 				   VerticalAlignment="Center"/>
@@ -34,7 +34,7 @@
 				
 					<Button Command="{Binding AddCommand}"
 							Classes="IconButton"
-							ToolTip.Tip="{loc:Loc add}">
+							ToolTip.Tip="{loc:Loc common.add}">
 				
 						<ico:MaterialIcon Kind="Plus"/>
 					</Button>
@@ -42,7 +42,7 @@
 					<Button Command="{Binding RemoveCommand}"
 							Classes="IconButton"
 							Margin="5,0,0,0"
-							ToolTip.Tip="{loc:Loc remove}">
+							ToolTip.Tip="{loc:Loc common.remove}">
 				
 						<ico:MaterialIcon Kind="Delete"/>
 					</Button>
@@ -76,26 +76,26 @@
 						IsVisible="{Binding Converter={StaticResource NotnullToBooleanConverter}}">
 
 				<TextBox Text="{Binding Info.Name, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc name}"
+						 PlaceholderText="{loc:Loc common.name}"
 						 Margin="0,0,0,15"/>
 
 				<ComboBox SelectedItem="{Binding Info.ConnectionType, Mode=TwoWay}"
 						  ItemsSource="{Binding ConnectionTypes}"
-						  PlaceholderText="{loc:Loc mcp-connection_type}"
+						  PlaceholderText="{loc:Loc mcp.connection_type}"
 						  Margin="0,0,0,15"/>
 
 				<TextBox Text="{Binding Info.Endpoint, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc mcp-endpoint}"
+						 PlaceholderText="{loc:Loc mcp.endpoint}"
 						 UseFloatingPlaceholder="True"
 						 Margin="0,0,0,15"/>
 
 				<Grid HorizontalAlignment="Left">
 
-					<Button Content="{loc:Loc connect}"
+					<Button Content="{loc:Loc common.connect}"
 							Command="{Binding ConnectCommand}"
 							IsVisible="{Binding IsConnected, Converter={StaticResource InverseBooleanConverter}}"/>
 
-					<Button Content="{loc:Loc disconnect}"
+					<Button Content="{loc:Loc common.disconnect}"
 							Command="{Binding DisconnectCommand}"
 							IsVisible="{Binding IsConnected}"/>
 

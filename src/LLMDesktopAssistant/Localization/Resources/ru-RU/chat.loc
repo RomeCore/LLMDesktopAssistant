@@ -1,0 +1,34 @@
+// Chat: statuses, toasts, chat list, naming, summarization, input hints.
+
+%locale: ru-RU
+%namespace: chat
+
+input.attach_file.hint: Прикрепить файл...
+input.cancel_edit.hint: Отменить редактирование
+input.hint: Введите сообщение...
+input.send_button.hint: Отправить сообщение
+input.stop_button.hint: Остановить генерацию
+list.title: Чаты
+manager.no_messages_to_rename.description: В чате отсутствуют сообщения
+manager.no_messages_to_rename.title: Невозможно переименовать чат
+naming.task: Именование чата
+new: Новый чат
+new_temporary: Новый временный чат
+no_topic: без темы
+open_in_new_tab: Открыть в новой вкладке
+rename.cancel: Отмена
+rename.save: Сохранить
+rename_with_ai: Переименовать через ИИ
+status.selecting_agent: Подбираем агента
+status.waiting_for_first_response: Ждём первый токен
+status.waiting_for_mcp_connections: Подключаем MCP
+summarization.task: Суммаризация чата
+temporary: временный
+toast.agent_selection_failed.description: Не удалось выбрать агента для генерации ответа.
+toast.agent_selection_failed.title: Не удалось выбрать агента
+toast.generation_failed.description: Произошла ошибка при генерации ответа: {0}
+toast.generation_failed.title: Ошибка генерации
+toast.llm_not_configured.description: LLM для чата не настроена. Пожалуйста, настройте её в настройках чата.
+toast.llm_not_configured.title: LLM не настроена
+user.active.hint: Пользователь, от которого будет отправлено следующее сообщение
+visibility.hint: Видимость сообщения

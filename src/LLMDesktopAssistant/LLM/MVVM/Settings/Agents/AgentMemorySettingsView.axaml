@@ -15,7 +15,7 @@
 
 		<!-- Enable memory checkbox -->
 		<CheckBox IsChecked="{Binding MemorySettings.EnableMemory}"
-							Content="{loc:Loc settings-memory_enable}"/>
+							Content="{loc:Loc settings.agent.memory.enable}"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
@@ -28,7 +28,7 @@
 		<Grid ColumnDefinitions="*,Auto">
 
 			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc settings-memory_blocks}"
+								 Text="{loc:Loc settings.agent.memory.blocks}"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
 								 VerticalAlignment="Center"/>
@@ -50,7 +50,7 @@
 
 		</Grid>
 
-		<TextBlock Text="{loc:Loc settings-memory_blocks_hint}"
+		<TextBlock Text="{loc:Loc settings.agent.memory.blocks.hint}"
 							Opacity="0.6"
 							TextWrapping="Wrap"/>
 
@@ -60,14 +60,14 @@
 
 			<Button Grid.Column="0"
 							Command="{Binding AddBlockCommand}"
-							Content="{loc:Loc settings-memory_add_block}"/>
+							Content="{loc:Loc settings.agent.memory.add_block}"/>
 
 			<ComboBox Grid.Column="1"
 								Margin="8,0"
 								MinWidth="150"
 								VerticalAlignment="Center"
 								HorizontalAlignment="Right"
-								PlaceholderText="{loc:Loc settings-memory_attach_placeholder}"
+								PlaceholderText="{loc:Loc settings.agent.memory.attach.placeholder}"
 								ItemsSource="{Binding AvailableBlockIds}"
 								SelectedItem="{Binding SelectedAvailableBlockId}">
 
@@ -87,7 +87,7 @@
 
 			<Button Grid.Column="2"
 							Command="{Binding AttachBlockCommand}"
-							Content="{loc:Loc settings-memory_attach}"/>
+							Content="{loc:Loc settings.agent.memory.attach}"/>
 
 		</Grid>
 
@@ -143,7 +143,7 @@
 											CommandParameter="{Binding}"
 											Classes="IconButton"
 											VerticalAlignment="Center"
-											ToolTip.Tip="{loc:Loc settings-memory_edit}">
+											ToolTip.Tip="{loc:Loc settings.agent.memory.edit}">
 
 								<ico:MaterialIcon Kind="Edit"/>
 							</Button>
@@ -152,7 +152,7 @@
 											Command="{Binding RemoveCommand}"
 											Classes="IconButton"
 											VerticalAlignment="Center"
-											ToolTip.Tip="{loc:Loc settings-memory_remove}">
+											ToolTip.Tip="{loc:Loc settings.agent.memory.remove}">
 
 								<ico:MaterialIcon Kind="Delete"/>
 							</Button>

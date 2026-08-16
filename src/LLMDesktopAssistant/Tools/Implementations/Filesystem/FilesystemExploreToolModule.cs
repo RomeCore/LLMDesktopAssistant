@@ -95,7 +95,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						return new PreviewToolExecutionResult
 						{
 							StatusIcon = directoryExists ? MaterialIconKind.FileEye : MaterialIconKind.FileCode,
-							StatusTitle = LocalizationManager.LocalizeStaticFormat("file_contains_secrets", $"**{path}**"),
+							StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.fs-read_entry.secrets", $"**{path}**"),
 							ExpectedBehaviour = ToolBehaviour.ReadSecrets | ToolBehaviour.FileRead |
 								(directoryExists ? ToolBehaviour.DirectoryRead : 0) |
 								(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)

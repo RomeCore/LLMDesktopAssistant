@@ -1,0 +1,11 @@
+// Memory blocks, facts, logs, attachment modes.
+
+%locale: 
+%namespace: memory
+
+attachment_mode.readonly: Read only
+attachment_mode.standard: Read & Write
+attachment_mode.writeonly: Write only
+recording.task: Memory recording
+retrieval.task: Memory retrieval
+status.retrieval: Retrieving memory

@@ -17,7 +17,7 @@
 		<!-- ============================================================ -->
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-					   Text="{loc:Loc settings-models}"
+					   Text="{loc:Loc settings.chat.models}"
 					   FontSize="{DynamicResource FontSizeL}"
 					   FontWeight="Bold"
 					   VerticalAlignment="Center"/>
@@ -37,24 +37,24 @@
 			</ComboBox>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc settings-models_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.models.hint}"
 				   Opacity="0.6"
 				   TextWrapping="Wrap"
 				   Margin="0,0,0,8"/>
 
-		<TextBlock Text="{loc:Loc settings-chat_model_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.model.chat.hint}"
 				   Margin="0,2"/>
 		<ctrl:ModelSelectorControl SelectedModel="{Binding EffectiveSelection.ChatModel, Mode=TwoWay}"/>
 
-		<TextBlock Text="{loc:Loc settings-agentic_router_model_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.model.router.hint}"
 				   Margin="0,2"/>
 		<ctrl:ModelSelectorControl SelectedModel="{Binding EffectiveSelection.AgenticRouterModel, Mode=TwoWay}"/>
 
-		<TextBlock Text="{loc:Loc settings-agentic_tools_model_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.model.tools.hint}"
 				   Margin="0,2"/>
 		<ctrl:ModelSelectorControl SelectedModel="{Binding EffectiveSelection.AgenticToolsModel, Mode=TwoWay}"/>
 
-		<TextBlock Text="{loc:Loc settings-vision_model_hint}"
+		<TextBlock Text="{loc:Loc settings.chat.model.vision.hint}"
 				   Margin="0,2"/>
 		<ctrl:ModelSelectorControl SelectedModel="{Binding EffectiveSelection.VisionModel, Mode=TwoWay}"/>
 

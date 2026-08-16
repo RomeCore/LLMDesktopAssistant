@@ -33,7 +33,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public MemoryBlockAttachmentModeItem(MemoryBlockAttachmentMode value)
 		{
 			Value = value;
-			var key = $"memory_attachment_mode_{value.ToString().ToLower()}";
+			var key = $"memory.attachment_mode.{value.ToString().ToLower()}";
 			DisplayName = LocalizationManager.LocalizeStatic(key);
 
 			// Fallback to enum name if localization missing
@@ -74,7 +74,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// <summary>
 		/// Gets the display name of the attached block.
 		/// </summary>
-		public string Name => Block?.Name ?? string.Format(LocalizationManager.LocalizeStatic("settings-memory_missing_block"), BlockId);
+		public string Name => Block?.Name ?? string.Format(LocalizationManager.LocalizeStatic("settings.agent.memory.missing_block"), BlockId);
 
 		/// <summary>
 		/// Gets the description of the attached block.
@@ -91,7 +91,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// Gets the warning message shown when the attached block has both facts and logs disabled.
 		/// </summary>
 		public string? InvalidSettingsMessage => HasInvalidSettings
-			? LocalizationManager.LocalizeStatic("settings-memory_block_warning_no_content")
+			? LocalizationManager.LocalizeStatic("settings.agent.memory.block_warning_no_content")
 			: null;
 
 		/// <summary>
@@ -407,7 +407,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		{
 			var id = GenerateBlockId();
 			var block = BlocksCategory.Get(id);
-			block.Name = LocalizationManager.LocalizeStatic("settings-memory_default_block_name");
+			block.Name = LocalizationManager.LocalizeStatic("settings.agent.memory.default_block_name");
 
 			Attach(id);
 		}

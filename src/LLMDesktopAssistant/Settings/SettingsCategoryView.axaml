@@ -18,7 +18,7 @@
 							 Margin="10"
 							 HorizontalAlignment="Stretch">
 			
-			<TextBlock Text="{loc:Loc settings}"
+			<TextBlock Text="{loc:Loc common.settings}"
 								 DockPanel.Dock="Left"
 								 FontSize="{DynamicResource FontSizeL}"
 								 FontWeight="Bold"
@@ -46,7 +46,7 @@
 
 			<TextBlock Grid.Column="0"
 						Margin="5,0"
-						Text="{loc:Loc settings_profile}"
+						Text="{loc:Loc settings.profile.label}"
 						FontWeight="Bold"
 						VerticalAlignment="Center"/>
 

@@ -1,4 +1,4 @@
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Controls.Dialogs;
@@ -331,21 +331,21 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			(StatusIcon, StatusText, StatusBackground) = _task.Status switch
 			{
 				AgentTaskStatus.Pending => (MaterialIconKind.ClockOutline,
-					LocalizationManager.LocalizeStatic("task_status_pending"), (IBrush?)null),
+					LocalizationManager.LocalizeStatic("task.status.pending"), (IBrush?)null),
 				AgentTaskStatus.Executing => (MaterialIconKind.TimerSandComplete,
-					LocalizationManager.LocalizeStatic("task_status_executing"),
+					LocalizationManager.LocalizeStatic("task.status.executing"),
 					new SolidColorBrush(Color.FromArgb(0x1A, 0x4C, 0xAF, 0x50))),
 				AgentTaskStatus.Success => (MaterialIconKind.CheckCircle,
-					LocalizationManager.LocalizeStatic("task_status_success"),
+					LocalizationManager.LocalizeStatic("task.status.success"),
 					new SolidColorBrush(Color.FromArgb(0x0A, 0x4C, 0xAF, 0x50))),
 				AgentTaskStatus.Failed => (MaterialIconKind.AlertCircle,
-					LocalizationManager.LocalizeStatic("task_status_failed"),
+					LocalizationManager.LocalizeStatic("task.status.failed"),
 					new SolidColorBrush(Color.FromArgb(0x1A, 0xF4, 0x43, 0x36))),
 				AgentTaskStatus.Cancelled => (MaterialIconKind.Cancel,
-					LocalizationManager.LocalizeStatic("task_status_cancelled"),
+					LocalizationManager.LocalizeStatic("task.status.cancelled"),
 					new SolidColorBrush(Color.FromArgb(0x1A, 0xFF, 0x98, 0x00))),
 				_ => (MaterialIconKind.Help,
-					LocalizationManager.LocalizeStatic("task_status_unknown"), (IBrush?)null)
+					LocalizationManager.LocalizeStatic("task.status.unknown"), (IBrush?)null)
 			};
 		}
 

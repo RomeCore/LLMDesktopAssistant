@@ -31,7 +31,7 @@
 										Margin="8"
 										DockPanel.Dock="Top">
 
-					<TextBlock Text="{loc:Loc chats}"
+					<TextBlock Text="{loc:Loc chat.list.title}"
 										 Foreground="{DynamicResource DefaultForeground}"
 										 FontSize="18"
 										 VerticalAlignment="Center"
@@ -64,14 +64,14 @@
 										<Button Command="{Binding OpenInNewTabCommand}"
 														IsEnabled="{Binding !IsTemporary}"
 														Classes="SmallIconButton"
-														ToolTip.Tip="{loc:Loc open_in_new_tab}">
+														ToolTip.Tip="{loc:Loc chat.open_in_new_tab}">
 											<ico:MaterialIcon Kind="TabPlus"/>
 										</Button>
 										
 										<Button Command="{Binding DeleteCommand}"
 														IsEnabled="{Binding !IsTemporary}"
 														Classes="SmallIconButton"
-														ToolTip.Tip="{loc:Loc delete}">
+														ToolTip.Tip="{loc:Loc common.delete}">
 											<ico:MaterialIcon Kind="Delete"/>
 										</Button>
 										
@@ -103,7 +103,7 @@
 															TextWrapping="NoWrap"
 															TextTrimming="CharacterEllipsis"/>
 								
-									<TextBlock Text="{loc:Loc no_topic}"
+									<TextBlock Text="{loc:Loc chat.no_topic}"
 															IsVisible="{Binding Topic, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"
 															Foreground="{Binding TopicColorHex}"
 															FontSize="11"
@@ -141,13 +141,13 @@
 					
 					<Button Command="{Binding CreateChatCommand}"
 									Classes="IconButton"
-									ToolTip.Tip="{loc:Loc new_chat}">
+									ToolTip.Tip="{loc:Loc chat.new}">
 						<ico:MaterialIcon Kind="MessagePlus"/>
 					</Button>
 					
 					<Button Command="{Binding CreateTemporaryChatCommand}"
 									Classes="IconButton"
-									ToolTip.Tip="{loc:Loc new_temporary_chat}">
+									ToolTip.Tip="{loc:Loc chat.new_temporary}">
 						<ico:MaterialIcon Kind="MessageFlash"/>
 					</Button>
 					
@@ -220,7 +220,7 @@
 																	 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
 																	 Cursor="Hand"/>
 											
-												<TextBlock Text="{loc:Loc no_topic}"
+												<TextBlock Text="{loc:Loc chat.no_topic}"
 																	 IsVisible="{Binding SelectedAvailable.Topic, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"
 																	 Foreground="{Binding SelectedAvailable.TopicColorHex}"
 																	 FontSize="11"
@@ -228,7 +228,7 @@
 																	 IsHitTestVisible="{Binding $parent[ListBoxItem].IsSelected}"
 																	 Cursor="Hand"/>
 											
-												<TextBlock Text="{loc:Loc temporary_chat}"
+												<TextBlock Text="{loc:Loc chat.temporary}"
 																	 IsVisible="{Binding SelectedAvailable.IsTemporary}"
 																	 FontStyle="Italic"
 																	 Foreground="#AA888888"
@@ -240,13 +240,13 @@
 
 										<Button Command="{Binding RenameWithAICommand}"
 														Classes="SmallIconButton"
-														ToolTip.Tip="{loc:Loc rename_with_ai}">
+														ToolTip.Tip="{loc:Loc chat.rename_with_ai}">
 											<ico:MaterialIcon Kind="AutoFix"/>
 										</Button>
 										
 										<Button Command="{Binding CloseChatCommand}"
 														Classes="SmallIconButton"
-														ToolTip.Tip="{loc:Loc close}">
+														ToolTip.Tip="{loc:Loc common.close}">
 											<ico:MaterialIcon Kind="Close"/>
 										</Button>
 
@@ -265,13 +265,13 @@
 										
 										<Button Command="{Binding CommitEditTitleCommand}"
 														Classes="SmallIconButton"
-														ToolTip.Tip="{loc:Loc rename_chat_save}">
+														ToolTip.Tip="{loc:Loc chat.rename.save}">
 											<ico:MaterialIcon Kind="Check"/>
 										</Button>
 										
 										<Button Command="{Binding CancelEditTitleCommand}"
 														Classes="SmallIconButton"
-														ToolTip.Tip="{loc:Loc rename_chat_cancel}">
+														ToolTip.Tip="{loc:Loc chat.rename.cancel}">
 											<ico:MaterialIcon Kind="Close"/>
 										</Button>
 									</StackPanel>
@@ -289,13 +289,13 @@
 										
 										<Button Command="{Binding CommitEditTopicCommand}"
 														Classes="SmallIconButton"
-														ToolTip.Tip="{loc:Loc rename_chat_save}">
+														ToolTip.Tip="{loc:Loc chat.rename.save}">
 											<ico:MaterialIcon Kind="Check"/>
 										</Button>
 										
 										<Button Command="{Binding CancelEditTopicCommand}"
 														Classes="SmallIconButton"
-														ToolTip.Tip="{loc:Loc rename_chat_cancel}">
+														ToolTip.Tip="{loc:Loc chat.rename.cancel}">
 											<ico:MaterialIcon Kind="Close"/>
 										</Button>
 									</StackPanel>

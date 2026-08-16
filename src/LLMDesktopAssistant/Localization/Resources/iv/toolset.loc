@@ -1,0 +1,11 @@
+// Toolset management.
+
+%locale: 
+%namespace: toolset
+
+create: Create toolset
+remove: Remove toolset
+rename: Rename toolset
+shared: Shared toolset:
+use_custom: Use custom toolset
+use_custom.hint: Edits apply only to this agent. When disabled, a shared toolset configuration is used.

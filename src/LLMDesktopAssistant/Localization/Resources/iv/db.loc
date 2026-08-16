@@ -1,0 +1,23 @@
+// Database connections.
+
+%locale: 
+%namespace: db
+
+active_connections: Active connections
+add_connection: Add connection
+browse_sqlite_file: Browse SQLite file
+connect: Connect
+connection_string.placeholder: Connection string
+custom_connection: Custom connection
+disconnect: Disconnect
+disconnect_all: Disconnect all
+hint: Configure named database connections and a custom connection string for the agent.
+new_connection: New connection
+no_connections: No active connections.
+select_sqlite_file: Select SQLite database file
+test.empty_connection_string: Connection string is empty.
+test.empty_name: Connection name is empty.
+test.error: Connection failed.
+test.success: Connection successful.
+test_connection: Test connection
+use_encrypted_connection_string: Store connection string encrypted

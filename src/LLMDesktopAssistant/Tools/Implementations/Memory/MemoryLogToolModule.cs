@@ -229,8 +229,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 		{
 			result.StatusIcon = MaterialIconKind.DatabaseSearch;
 			result.StatusTitle = from.HasValue || to.HasValue || timeLineFrom.HasValue || timeLineTo.HasValue
-				? LocalizationManager.LocalizeStatic("memory-view_logs_status_time_window")
-				: LocalizationManager.LocalizeStaticFormat("memory-view_logs_status_latest", maxCount);
+				? LocalizationManager.LocalizeStatic("tool.status.memory-view_logs.time_window")
+				: LocalizationManager.LocalizeStaticFormat("tool.status.memory-view_logs.latest", maxCount);
 
 			var resolution = GetBlocks(ctx, blocks, requireReading: true, requireWriting: false, requireLogs: true);
 

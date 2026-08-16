@@ -322,7 +322,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 						sb.AppendLine("*Note: fewer results than expected. Consider change the category (some categories have few number of engines and low quality for results, especially 'news' or 'it'), using more engines (at least 7-8), or using 'auto' language if needed.*");
 					}
 
-					result.StatusTitle = LocalizationManager.LocalizeStaticFormat("web_search_results", $"{query}", resultList.TotalResults ?? 0);
+					result.StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.web-search.results", $"{query}", resultList.TotalResults ?? 0);
 					result.ResultContent = sb.ToString().Trim();
 					result.CompleteWithSuccess();
 					return;

@@ -1,0 +1,48 @@
+// Prompt manager and prompt settings.
+
+%locale: 
+%namespace: prompt
+
+assistant_nickname.hint: The assistant nickname
+behavior_sliders: Behavior sliders
+behavior_sliders.hint: Adjust behavior sliders to control the assistant's tone, style, and personality
+category: Category
+category.uncategorized: Uncategorized
+components: Additional components
+components.hint: Select additional prompt components to append to the system message
+custom_persona.hint: Enter custom persona...
+custom_persona.placeholder: Describe the persona in detail...
+custom_specialization.hint: Enter custom specialization description...
+custom_specialization.placeholder: Describe the professional role you want the assistant to have...
+edit_component: Edit Component
+edit_persona: Edit Persona
+edit_specialization: Edit Specialization
+import: Import
+import_component: Import component
+import_persona: Import persona
+import_specialization: Import specialization
+manager.header: Prompt manager
+name: Name
+new_component: New component
+new_persona: New persona
+new_specialization: New specialization
+persona: Persona
+persona.clear: Clear persona
+personas: Personas
+preview.header: System Prompt Preview
+preview.toggle: Toggle system prompt preview
+select_persona: Select persona...
+select_specialization: Select specialization...
+selected_persona.hint: Select a persona to apply to the chat
+selected_specialization.hint: Select a specialization to define the assistant's professional role
+specialization: Specialization
+specialization.clear: Clear specialization
+specialization.hint: Choose a professional specialization for the assistant. This defines what the assistant knows and can do.
+specializations: Specializations
+system_prompt: System prompt
+system_prompt.hint: Enter system prompt...
+system_prompt.placeholder: for example, You are a helpful assistant
+text: Text
+use_custom_persona: Use custom persona
+use_custom_specialization: Use custom specialization
+user_nickname.placeholder: e.g. John

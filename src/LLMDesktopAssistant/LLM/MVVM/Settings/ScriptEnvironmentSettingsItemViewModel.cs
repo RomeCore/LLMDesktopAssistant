@@ -64,9 +64,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 				if (CheckResult is null)
 					return null;
 				if (CheckResult.Success)
-					return LocalizationManager.LocalizeStatic("env_check_ok");
+					return LocalizationManager.LocalizeStatic("env.check.success");
 				return string.IsNullOrWhiteSpace(CheckResult.Message)
-					? LocalizationManager.LocalizeStatic("env_check_failed")
+					? LocalizationManager.LocalizeStatic("env.check.error")
 					: CheckResult.Message;
 			}
 		}

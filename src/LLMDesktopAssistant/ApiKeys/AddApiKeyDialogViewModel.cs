@@ -55,15 +55,15 @@ namespace LLMDesktopAssistant.ApiKeys
 		/// The title text for the dialog.
 		/// </summary>
 		public string TitleText => IsEditMode
-			? LocalizationManager.LocalizeStatic("settings_apikey_edit_title")
-			: LocalizationManager.LocalizeStatic("settings_apikey_add_title");
+			? LocalizationManager.LocalizeStatic("settings.api.edit.title")
+			: LocalizationManager.LocalizeStatic("settings.api.add.title");
 
 		/// <summary>
 		/// The confirm button text.
 		/// </summary>
 		public string ConfirmButtonText => IsEditMode
-			? LocalizationManager.LocalizeStatic("save")
-			: LocalizationManager.LocalizeStatic("add");
+			? LocalizationManager.LocalizeStatic("common.save")
+			: LocalizationManager.LocalizeStatic("common.add");
 
 		/// <summary>
 		/// The ID of the created/updated key, set after successful operation.
@@ -87,13 +87,13 @@ namespace LLMDesktopAssistant.ApiKeys
 
 			if (string.IsNullOrWhiteSpace(Name))
 			{
-				ErrorMessage = LocalizationManager.LocalizeStatic("settings_apikey_error_name_required");
+				ErrorMessage = LocalizationManager.LocalizeStatic("settings.api.name.required.error");
 				return;
 			}
 
 			if (string.IsNullOrEmpty(Value))
 			{
-				ErrorMessage = LocalizationManager.LocalizeStatic("settings_apikey_error_value_required");
+				ErrorMessage = LocalizationManager.LocalizeStatic("settings.api.value.required.error");
 				return;
 			}
 

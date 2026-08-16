@@ -14,7 +14,7 @@
 		<!-- Search -->
 		<Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6" Margin="0,0,0,6">
 			<TextBox Text="{Binding SearchQuery, Mode=TwoWay}"
-					 PlaceholderText="{loc:Loc settings-memory_facts_search_placeholder}"/>
+					 PlaceholderText="{loc:Loc settings.memory.facts.search.placeholder}"/>
 			<NumericUpDown Grid.Column="1"
 						   Value="{Binding MinImportance, Mode=TwoWay}"
 						   Minimum="0"
@@ -23,10 +23,10 @@
 						   FormatString="0.00"
 						   Width="90"
 						   VerticalAlignment="Center"
-						   ToolTip.Tip="{loc:Loc settings-memory_facts_min_importance}"/>
+						   ToolTip.Tip="{loc:Loc settings.memory.facts.min_importance.tooltip}"/>
 			<Button Grid.Column="2"
 					Command="{Binding SearchCommand}"
-					Content="{loc:Loc settings-memory_facts_search}"/>
+					Content="{loc:Loc settings.memory.facts.search.action}"/>
 		</Grid>
 
 		<!-- Add / Clear -->
@@ -34,10 +34,10 @@
 
 			<Button Command="{Binding AddFactCommand}"
 					Classes="AccentButton"
-					Content="{loc:Loc settings-memory_facts_add}"/>
+					Content="{loc:Loc settings.memory.facts.add.action}"/>
 
 			<TextBlock Grid.Column="1"
-					   Text="{loc:Loc settings-memory_facts_hint}"
+					   Text="{loc:Loc settings.memory.facts.hint}"
 					   Opacity="0.5"
 					   FontSize="12"
 					   VerticalAlignment="Center"
@@ -45,7 +45,7 @@
 
 			<Button Grid.Column="2"
 					Command="{Binding ClearFactsCommand}"
-					Content="{loc:Loc settings-memory_facts_clear}"
+					Content="{loc:Loc settings.memory.facts.clear.action}"
 					Foreground="{DynamicResource DangerBrush}"
 					VerticalAlignment="Center"/>
 
@@ -55,7 +55,7 @@
 		<ScrollViewer VerticalScrollBarVisibility="Auto">
 			<StackPanel Spacing="2">
 
-				<TextBlock Text="{loc:Loc settings-memory_facts_no_results}"
+				<TextBlock Text="{loc:Loc settings.memory.facts.empty}"
 						   Opacity="0.5"
 						   IsVisible="{Binding HasResults, Converter={StaticResource InverseBooleanConverter}}"/>
 
@@ -84,7 +84,7 @@
 											Command="{Binding SupersedeCommand}"
 											Classes="IconButton"
 											VerticalAlignment="Center"
-											ToolTip.Tip="{loc:Loc settings-memory_fact_supersede}">
+											ToolTip.Tip="{loc:Loc settings.memory.fact.supersede.tooltip}">
 										<ico:MaterialIcon Kind="SwapHorizontal"/>
 									</Button>
 
@@ -92,7 +92,7 @@
 											Command="{Binding DeleteCommand}"
 											Classes="IconButton"
 											VerticalAlignment="Center"
-											ToolTip.Tip="{loc:Loc settings-memory_fact_delete}">
+											ToolTip.Tip="{loc:Loc settings.memory.fact.delete.action}">
 										<ico:MaterialIcon Kind="Delete"/>
 									</Button>
 

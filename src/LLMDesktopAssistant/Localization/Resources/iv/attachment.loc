@@ -1,0 +1,13 @@
+// Attachments manager.
+
+%locale: 
+%namespace: attachment
+
+add_url.hint: Add URL
+apply: Applicate
+apply_native: Apply as native LLM attachment
+attach_files.hint: Attach files
+copy_to_working_directory: Copy to working directory
+drop_files_here: Drop files here
+manager.title: Attach
+url.hint: Attachment URL

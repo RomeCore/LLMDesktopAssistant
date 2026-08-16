@@ -21,7 +21,7 @@
 				<ico:MaterialIcon Kind="Database" Width="20" Height="20"
 								  VerticalAlignment="Center"
 								  Foreground="{DynamicResource PrimaryAccentBrush}"/>
-				<TextBlock Text="{loc:Loc settings-memory_block_editor}"
+				<TextBlock Text="{loc:Loc settings.memory.block.editor.title}"
 						   FontSize="{DynamicResource FontSizeL}"
 						   FontWeight="Bold"
 						   VerticalAlignment="Center"/>
@@ -30,7 +30,7 @@
 			<Button Grid.Column="1"
 					Command="{Binding CloseCommand}"
 					Classes="IconButton"
-					ToolTip.Tip="{loc:Loc close}">
+					ToolTip.Tip="{loc:Loc common.close}">
 				<ico:MaterialIcon Kind="Close"/>
 			</Button>
 
@@ -89,7 +89,7 @@
 
 											<StackPanel Orientation="Horizontal" Spacing="8">
 
-												<TextBlock Text="{loc:Loc settings-memory_block_id}"
+												<TextBlock Text="{loc:Loc settings.memory.block.id.label}"
 														   FontWeight="Medium"
 														   VerticalAlignment="Center"/>
 
@@ -104,14 +104,14 @@
 
 											<WrapPanel Orientation="Horizontal" ItemSpacing="4" LineSpacing="4">
 												<Button Command="{Binding RenameCommand}"
-														Content="{loc:Loc settings-memory_rename}"/>
+														Content="{loc:Loc settings.memory.rename.action}"/>
 												<Button Command="{Binding DuplicateCommand}"
-														Content="{loc:Loc settings-memory_duplicate}"/>
+														Content="{loc:Loc settings.memory.duplicate.action}"/>
 												<Button Command="{Binding ClearCommand}"
-														Content="{loc:Loc settings-memory_clear}"
+														Content="{loc:Loc settings.memory.clear.action}"
 														Foreground="{DynamicResource DangerBrush}"/>
 												<Button Command="{Binding DeleteCommand}"
-														Content="{loc:Loc settings-memory_delete}"
+														Content="{loc:Loc settings.memory.delete.action}"
 														Foreground="{DynamicResource DangerBrush}"/>
 											</WrapPanel>
 
@@ -126,13 +126,13 @@
 
 												<Button Command="{Binding ConfirmRenameCommand}"
 														Classes="IconButton"
-														ToolTip.Tip="{loc:Loc settings-memory_rename_confirm}">
+														ToolTip.Tip="{loc:Loc settings.memory.rename.confirm.tooltip}">
 													<ico:MaterialIcon Kind="Check"/>
 												</Button>
 
 												<Button Command="{Binding CancelRenameCommand}"
 														Classes="IconButton"
-														ToolTip.Tip="{loc:Loc cancel}">
+														ToolTip.Tip="{loc:Loc common.cancel}">
 													<ico:MaterialIcon Kind="Cancel"/>
 												</Button>
 
@@ -143,14 +143,14 @@
 
 									<!-- Name -->
 									<StackPanel Orientation="Vertical" Spacing="4">
-										<TextBlock Text="{loc:Loc settings-memory_block_name}"
+										<TextBlock Text="{loc:Loc settings.memory.block.name.label}"
 												   FontWeight="Medium"/>
 										<TextBox Text="{Binding Block.Name, Mode=TwoWay}"/>
 									</StackPanel>
 
 									<!-- Description -->
 									<StackPanel Orientation="Vertical" Spacing="4">
-										<TextBlock Text="{loc:Loc settings-memory_block_description}"
+										<TextBlock Text="{loc:Loc settings.memory.block.description.label}"
 												   FontWeight="Medium"/>
 										<TextBox Text="{Binding Block.Description, Mode=TwoWay}"
 												 AcceptsReturn="True"
@@ -160,23 +160,23 @@
 
 									<!-- Storage -->
 									<StackPanel Orientation="Vertical" Spacing="4">
-										<TextBlock Text="{loc:Loc settings-memory_block_storage}"
+										<TextBlock Text="{loc:Loc settings.memory.block.storage.label}"
 												   FontWeight="Medium"/>
-										<CheckBox Content="{loc:Loc settings-memory_block_facts}"
+										<CheckBox Content="{loc:Loc settings.memory.block.facts.label}"
 												  IsChecked="{Binding Block.FactsEnabled, Mode=TwoWay}"/>
-										<CheckBox Content="{loc:Loc settings-memory_block_logs}"
+										<CheckBox Content="{loc:Loc settings.memory.block.logs.label}"
 												  IsChecked="{Binding Block.LogsEnabled, Mode=TwoWay}"/>
 									</StackPanel>
 
 									<!-- Models -->
 									<StackPanel Orientation="Vertical" Spacing="4">
-										<TextBlock Text="{loc:Loc settings-memory_block_embedding_model}"
+										<TextBlock Text="{loc:Loc settings.memory.block.embedding_model.label}"
 												   FontWeight="Medium"/>
 										<ctrl:ModelSelectorControl SelectedModel="{Binding Block.EmbeddingModel, Mode=TwoWay}"/>
 									</StackPanel>
 
 									<StackPanel Orientation="Vertical" Spacing="4">
-										<TextBlock Text="{loc:Loc settings-memory_block_maintainer_model}"
+										<TextBlock Text="{loc:Loc settings.memory.block.maintainer_model.label}"
 												   FontWeight="Medium"/>
 										<ctrl:ModelSelectorControl SelectedModel="{Binding Block.MaintainerModel, Mode=TwoWay}"/>
 									</StackPanel>

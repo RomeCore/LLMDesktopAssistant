@@ -16,7 +16,7 @@
 
 		<!-- Enable MCP checkbox -->
 		<CheckBox IsChecked="{Binding McpSettings.EnableMcp}"
-				  Content="{loc:Loc settings-use_mcp}"/>
+				  Content="{loc:Loc settings.mcp.enable}"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
@@ -29,7 +29,7 @@
 		<!-- ============================================================ -->
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-					   Text="{loc:Loc settings-mcp_servers}"
+					   Text="{loc:Loc settings.mcp.servers}"
 					   FontSize="{DynamicResource FontSizeL}"
 					   FontWeight="Bold"
 					   VerticalAlignment="Center"/>
@@ -49,7 +49,7 @@
 			</ComboBox>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc settings-mcp_servers_hint}"
+		<TextBlock Text="{loc:Loc settings.mcp.servers.hint}"
 				   Opacity="0.6"
 				   TextWrapping="Wrap"
 				   Margin="0,0,0,8"/>
@@ -87,7 +87,7 @@
 								<CheckBox Grid.Column="2"
 										  IsChecked="{Binding IsEnabled, Mode=TwoWay}"
 										  VerticalAlignment="Center"
-										  ToolTip.Tip="{loc:Loc settings-mcp_servers_toggle_hint}"/>
+										  ToolTip.Tip="{loc:Loc settings.mcp.servers.toggle.hint}"/>
 							</Grid>
 
 							<!-- Row 1: Endpoint -->

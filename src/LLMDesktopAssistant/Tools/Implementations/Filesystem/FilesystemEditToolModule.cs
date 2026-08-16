@@ -168,7 +168,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					InterruptingSuccess = true,
 					InterruptingContent = errorMessage ?? "No changes were made to the file. The specified match was not found.",
 					StatusIcon = MaterialIconKind.FileQuestion,
-					StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**"),
+					StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.fs-edit.changes_none", $"**{path}**"),
 					ExpectedBehaviour = ToolBehaviour.None |
 						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
 				};
@@ -244,7 +244,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				if (newContent == null || newContent == originalContent)
 				{
 					result.StatusIcon = MaterialIconKind.FileQuestion;
-					result.StatusTitle = LocalizationManager.LocalizeStaticFormat("fs-edit_changes_applied_none", $"**{path}**");
+					result.StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.fs-edit.changes_none", $"**{path}**");
 					result.ResultContent = errorMessage ?? "No changes were made to the file. The specified match was not found.";
 					result.CompleteWithSuccess();
 					return;

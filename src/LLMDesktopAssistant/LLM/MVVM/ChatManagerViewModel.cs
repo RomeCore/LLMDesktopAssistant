@@ -240,8 +240,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 						{
 							var toastService = CurrentChat.Chat.Services.GetService<IToastService>();
 							if (toastService != null)
-								toastService.ShowWarning(LocalizationManager.LocalizeStatic("chat_manager_no_messages_to_rename"),
-									LocalizationManager.LocalizeStatic("chat_manager_no_messages_to_rename_desc"));
+								toastService.ShowWarning(LocalizationManager.LocalizeStatic("chat.manager.no_messages_to_rename.title"),
+									LocalizationManager.LocalizeStatic("chat.manager.no_messages_to_rename.description"));
 							return;
 						}
 
@@ -477,7 +477,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		private void CreateChat()
 		{
-			var newChat = ChatManager.CreateChat(LocalizationManager.LocalizeStatic("new_chat"));
+			var newChat = ChatManager.CreateChat(LocalizationManager.LocalizeStatic("chat.new"));
 			var newAvailableChat = CreateAvailableChatViewModel(newChat);
 			AvailableChats.Insert(0, newAvailableChat);
 			OpenChat(newAvailableChat);
@@ -485,7 +485,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		private void CreateTemporaryChat()
 		{
-			var chatScope = ChatManager.OpenMemoryChat(LocalizationManager.LocalizeStatic("new_temporary_chat"));
+			var chatScope = ChatManager.OpenMemoryChat(LocalizationManager.LocalizeStatic("chat.new_temporary"));
 			var chat = chatScope.ServiceProvider.GetRequiredService<Chat>();
 			var newAvailableChat = new AvailableChatViewModel
 			{

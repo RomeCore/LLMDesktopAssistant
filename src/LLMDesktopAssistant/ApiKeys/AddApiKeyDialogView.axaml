@@ -33,35 +33,35 @@
 
 		<!-- Name -->
 		<StackPanel Orientation="Vertical" Spacing="4">
-			<TextBlock Text="{loc:Loc settings_apikey_name}"
+			<TextBlock Text="{loc:Loc settings.api.name.label}"
 					   FontWeight="Medium"/>
 			<TextBox Text="{Binding Name, Mode=TwoWay}"
-					 PlaceholderText="{loc:Loc settings_apikey_name_placeholder}"/>
+					 PlaceholderText="{loc:Loc settings.api.name.placeholder}"/>
 		</StackPanel>
 
 		<!-- Value -->
 		<StackPanel Orientation="Vertical" Spacing="4">
-			<TextBlock Text="{loc:Loc settings_apikey_value}"
+			<TextBlock Text="{loc:Loc settings.api.value.label}"
 					   FontWeight="Medium"/>
 			<TextBox Text="{Binding Value, Mode=TwoWay}"
-					 PlaceholderText="{loc:Loc settings_apikey_value_placeholder}"
+					 PlaceholderText="{loc:Loc settings.api.value.placeholder}"
 					 PasswordChar="•"/>
 		</StackPanel>
 
 		<!-- Storage scheme -->
 		<StackPanel Orientation="Vertical" Spacing="4">
-			<TextBlock Text="{loc:Loc settings_apikey_scheme}"
+			<TextBlock Text="{loc:Loc settings.api.scheme.label}"
 					   FontWeight="Medium"/>
 			<ComboBox SelectedIndex="{Binding Scheme, Mode=TwoWay}">
-				<ComboBoxItem Content="{loc:Loc settings_apikey_scheme_raw}"/>
-				<ComboBoxItem Content="{loc:Loc settings_apikey_scheme_encrypted}"/>
-				<ComboBoxItem Content="{loc:Loc settings_apikey_scheme_env}"/>
+				<ComboBoxItem Content="{loc:Loc settings.api.scheme.raw}"/>
+				<ComboBoxItem Content="{loc:Loc settings.api.scheme.encrypted}"/>
+				<ComboBoxItem Content="{loc:Loc settings.api.scheme.env}"/>
 			</ComboBox>
 		</StackPanel>
 
 		<!-- Buttons -->
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
-			<Button Content="{loc:Loc cancel}"
+			<Button Content="{loc:Loc common.cancel}"
 					Command="{Binding CancelCommand}"
 					Classes="Secondary"/>
 			<Button Content="{Binding ConfirmButtonText}"

@@ -1,0 +1,8 @@
+// MCP servers.
+
+%locale: 
+%namespace: mcp
+
+connection_type: Connection type
+endpoint: Endpoint
+manager.header: MCP manager

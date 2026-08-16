@@ -9,7 +9,7 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Additional.Context.SummaryView"
 			 x:DataType="local:SummaryViewModel">
 	
-	<Expander Header="{loc:Loc message_summary}"
+	<Expander Header="{loc:Loc message.summary}"
 						Margin="20,0,20,8"
 						IsExpanded="False">
 
