@@ -16,6 +16,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			public required HunkGroups RejectedDiff { get; init; }
 
 			public required string NewContent { get; init; }
+
+			public required string? UserNotes { get; init; }
 		}
 
 		protected async Task<DiffPostProcessResult> PostProcessDiffAsync(string filename, string oldContent, string newContent,
@@ -29,7 +31,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Diff = diff,
 					AppliedDiff = diff,
 					RejectedDiff = new HunkGroups { Groups = [] },
-					NewContent = newContent
+					NewContent = newContent,
+					UserNotes = null
 				};
 
 			if (ctx.PolicyDecision == ToolPolicyDecision.Ask)
@@ -37,25 +40,27 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var diffVM = new TextDiffAdditionalViewModel
 				{
 					Title = filename,
-					IsReadOnly = false
+					IsReadOnly = false,
+					ConsentContext = ctx.ConsentContext
 				};
 				diffVM.LoadFromHunkGroups(diff);
 				ctx.Message.AdditionalViewModels.Add(diffVM);
 
 				using var reg = cancellationToken.Register(() =>
 				{
-					diffVM.Decline();
+					diffVM.Decline(null);
 				});
 
-				var accepted = await diffVM.ConfirmationTask;
-				if (accepted)
+				var decision = await diffVM.ConfirmationTask;
+				if (decision.Approved)
 				{
 					return new DiffPostProcessResult
 					{
 						Diff = diff,
 						AppliedDiff = diffVM.BuildEnabledHunkGroups(),
 						RejectedDiff = diffVM.BuildDisabledHunkGroups(),
-						NewContent = diffVM.ApplyToText(oldContent)
+						NewContent = diffVM.ApplyToText(oldContent),
+						UserNotes = decision.Notes
 					};
 				}
 
@@ -64,7 +69,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Diff = diff,
 					AppliedDiff = new HunkGroups { Groups = [] },
 					RejectedDiff = diff,
-					NewContent = diffVM.ApplyToText(oldContent)
+					NewContent = diffVM.ApplyToText(oldContent),
+					UserNotes = decision.Notes
 				};
 			}
 			else
@@ -80,7 +86,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Diff = diff,
 					AppliedDiff = diff,
 					RejectedDiff = new HunkGroups { Groups = [] },
-					NewContent = newContent
+					NewContent = newContent,
+					UserNotes = null
 				};
 			}
 		}

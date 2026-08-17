@@ -12,6 +12,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Tools.Consents;
 using LLMDesktopAssistant.Users;
 using LLMDesktopAssistant.Utils;
 using Serilog;
@@ -271,6 +272,11 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		public ICommand OpenSettingsCommand { get; }
 
 		/// <summary>
+		/// Command to open the consent memorization manager dialog.
+		/// </summary>
+		public ICommand OpenConsentMemorizationCommand { get; }
+
+		/// <summary>
 		/// Command to open attachments manager.
 		/// </summary>
 		public ICommand OpenAttachmentsManagerCommand { get; }
@@ -426,6 +432,12 @@ namespace LLMDesktopAssistant.LLM.MVVM
 				{
 					viewModel.Dispose();
 				}
+			});
+
+			OpenConsentMemorizationCommand = new AsyncRelayCommand(async () =>
+			{
+				var viewModel = new ConsentMemorizationViewModel(Chat);
+				await DialogManager.ShowDialogAsync(viewModel);
 			});
 
 			OpenAttachmentsManagerCommand = new AsyncRelayCommand(async () =>

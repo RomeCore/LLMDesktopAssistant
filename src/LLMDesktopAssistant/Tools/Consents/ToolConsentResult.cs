@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Tools
+namespace LLMDesktopAssistant.Tools.Consents
 {
 	/// <summary>
 	/// Represents the result of a user's consent to use a tool.
@@ -14,11 +14,6 @@
 		/// Gets or sets the memorization setting for the tool approval.
 		/// </summary>
 		public required ToolApprovalMemorization Memorization { get; init; }
-
-		/// <summary>
-		/// Gets or sets whether the agent should be hinted to wait for explanations when tool is rejected.
-		/// </summary>
-		public bool HintAgentForWaiting { get; init; }
 
 		/// <summary>
 		/// Gets or sets additional notes related to the consent decision.

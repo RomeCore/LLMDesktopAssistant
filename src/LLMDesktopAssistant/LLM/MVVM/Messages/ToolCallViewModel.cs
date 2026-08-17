@@ -6,6 +6,7 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Consents;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
@@ -191,106 +192,17 @@ namespace LLMDesktopAssistant.LLM.Messages
 			{
 				ToolStatus.WaitingForApproval => true,
 				_ => false
-			} && !WritingNotes;
+			};
 
-		private bool _writingNotes = false;
-		public bool WritingNotes
+		/// <summary>
+		/// Gets the command that resolves the tool confirmation with a <see cref="ToolConsentResult"/>.
+		/// Executed by the <see cref="ToolConsentPanel"/>.
+		/// </summary>
+		public ICommand ConsentCommand { get; }
+		public void ResolveConsent(ToolConsentResult? consentResult)
 		{
-			get => _writingNotes;
-			set
-			{
-				if (SetProperty(ref _writingNotes, value))
-				{
-					RaisePropertyChanged(nameof(UserAsked));
-				}
-			}
-		}
-
-		private bool _isAccepting = false;
-		public bool IsApproving
-		{
-			get => _isAccepting;
-			set => SetProperty(ref _isAccepting, value);
-		}
-
-
-
-		public ICommand ApproveCommand { get; }
-		public void Approve()
-		{
-			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
-			{
-				IsApproved = true,
-				Memorization = ToolApprovalMemorization.Once,
-				Notes = null
-			});
-		}
-
-		public ICommand ApproveWithWaitHintCommand { get; }
-		public void ApproveWithWaitHint()
-		{
-			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
-			{
-				IsApproved = true,
-				Memorization = ToolApprovalMemorization.Once,
-				HintAgentForWaiting = true,
-				Notes = null
-			});
-		}
-
-		public ICommand ApproveWithNotesCommand { get; }
-		public void ApproveWithNotes()
-		{
-			WritingNotes = true;
-			IsApproving = true;
-		}
-
-		public ICommand CancelCommand { get; }
-		public void Cancel()
-		{
-			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
-			{
-				IsApproved = false,
-				Memorization = ToolApprovalMemorization.Once,
-				Notes = null
-			});
-		}
-
-		public ICommand CancelWithWaitHintCommand { get; }
-		public void CancelWithWaitHint()
-		{
-			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
-			{
-				IsApproved = false,
-				Memorization = ToolApprovalMemorization.Once,
-				HintAgentForWaiting = true,
-				Notes = null
-			});
-		}
-
-		public ICommand CancelWithReasonCommand { get; }
-		public void CancelWithReason()
-		{
-			WritingNotes = true;
-			IsApproving = false;
-		}
-
-		public ICommand CommitNotesCommand { get; }
-		public void CommitNotes(string? reason)
-		{
-			WritingNotes = false;
-			toolCall.UserConfirmationSource?.TrySetResult(new ToolConsentResult
-			{
-				IsApproved = IsApproving,
-				Memorization = ToolApprovalMemorization.Once,
-				Notes = reason
-			});
-		}
-
-		public ICommand CancelNotesCommand { get; }
-		public void CancelNotes()
-		{
-			WritingNotes = false;
+			if (consentResult != null)
+				toolCall.UserConfirmationSource?.TrySetResult(consentResult);
 		}
 
 		public ICommand CopyArgumentsCommand { get; }
@@ -342,14 +254,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 			Result = toolCall.ResultContent;
 			UseMarkdown = toolCall.UseMarkdown;
 
-			ApproveCommand = new RelayCommand(Approve);
-			ApproveWithWaitHintCommand = new RelayCommand(ApproveWithWaitHint);
-			ApproveWithNotesCommand = new RelayCommand(ApproveWithNotes);
-			CancelCommand = new RelayCommand(Cancel);
-			CancelWithWaitHintCommand = new RelayCommand(CancelWithWaitHint);
-			CancelWithReasonCommand = new RelayCommand(CancelWithReason);
-			CommitNotesCommand = new RelayCommand<string?>(CommitNotes);
-			CancelNotesCommand = new RelayCommand(CancelNotes);
+			ConsentCommand = new RelayCommand<ToolConsentResult>(ResolveConsent);
 			CopyArgumentsCommand = new RelayCommand(CopyArguments);
 			CopyResultCommand = new RelayCommand(CopyResult);
 

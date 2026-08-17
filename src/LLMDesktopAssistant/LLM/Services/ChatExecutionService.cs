@@ -8,6 +8,7 @@ using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.Tools.Consents;
 using Material.Icons;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Messages;
@@ -31,6 +32,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IChatPromptBuilder promptBuilder,
 		IModelManager modelManager,
 		IToolExecutionService toolExecutor,
+		IToolMemorizationService toolMemorizer,
 		ILLMPropertiesBuilder propertiesBuilder,
 		IEnumerable<IChatExecutionHook> executionHooks,
 		IToolsetCacheService toolsetCache,
@@ -124,6 +126,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				cancellationToken = _cts.Token;
 
 				var agent = agentManager.GetAgentDescriptor(agentId);
+				toolMemorizer.PushTaskAsyncScope();
 
 				LLModel llm;
 				try

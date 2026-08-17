@@ -1,13 +1,11 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Services;
 
-namespace LLMDesktopAssistant.Tools
+namespace LLMDesktopAssistant.Tools.Consents
 {
 	[Service(typeof(IToolApprovalService))]
 	public class ToolApprovalService : IToolApprovalService
 	{
 		public (ToolPolicyDecision Decision, string Message) ApproveTool(
-			Chat? chat,
 			ToolApprovalLevel toolApprovalLevel,
 			ToolBehaviour toolExpectedBehaviour,
 			ToolBehaviour autoApproveBehaviours,
@@ -63,11 +61,6 @@ namespace LLMDesktopAssistant.Tools
 				default:
 					throw new InvalidOperationException($"Invalid approval level for a tool: {toolApprovalLevel}");
 			}
-		}
-
-		public void MemorizeConsent(Chat? chat, ToolConsentResult consentResult)
-		{
-			
 		}
 	}
 }

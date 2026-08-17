@@ -146,11 +146,20 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				if (fileExisted)
 				{
 					var postProcessResult = await PostProcessDiffAsync(fullPath, oldContent, content, ctx, cancellationToken);
+					string userNotesPostfix = string.IsNullOrWhiteSpace(postProcessResult.UserNotes)
+						? string.Empty
+						: $"""
+							User has provided notes:
+							{postProcessResult.UserNotes}
+							""";
 					if (!postProcessResult.AppliedDiff.HasGroups)
 					{
 						result.StatusIcon = Material.Icons.MaterialIconKind.FileDiscard;
 						result.StatusTitle = $"**{path}**";
-						result.ResultContent = "User has rejected the changes, none has applied.";
+						result.ResultContent = $"""
+							User has rejected the changes, none has applied.
+							{userNotesPostfix}
+							""";
 						result.CompleteWithSuccess();
 						return;
 					}
@@ -185,6 +194,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					if (!postProcessResult.Diff.HasGroups)
 					{
 						output.AppendLine("No changes has been applied.");
+					}
+					if (!string.IsNullOrWhiteSpace(postProcessResult.UserNotes))
+					{
+						output.AppendLine(userNotesPostfix);
 					}
 
 					result.StatusIcon = append ? Material.Icons.MaterialIconKind.FileEdit : Material.Icons.MaterialIconKind.FileCheck;

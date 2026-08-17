@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Consents;
 
 namespace LLMDesktopAssistant.Agents.Tasks
 {

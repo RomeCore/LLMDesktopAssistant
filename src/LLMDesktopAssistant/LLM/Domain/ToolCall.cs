@@ -1,6 +1,7 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Consents;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using RCLargeLanguageModels.Tasks;

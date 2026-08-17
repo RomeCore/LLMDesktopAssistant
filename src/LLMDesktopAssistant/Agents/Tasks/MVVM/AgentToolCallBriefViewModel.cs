@@ -1,7 +1,8 @@
-﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Consents;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
@@ -129,64 +130,16 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 		public ImmutableList<ToolBehaviourFlagInfo> BehaviourFlags =>
 			ToolBehaviourFlagInfo.CreateForFlags(_toolCall.ExpectedBehaviour);
 
-		private bool _writingNotes;
 		/// <summary>
-		/// Whether the user is currently writing confirmation notes.
+		/// Whether to show the standard confirmation controls.
 		/// </summary>
-		public bool WritingNotes
-		{
-			get => _writingNotes;
-			set
-			{
-				if (SetProperty(ref _writingNotes, value))
-					RaisePropertyChanged(nameof(ShowConfirmButtons));
-			}
-		}
-
-		private bool _isApproving;
-		/// <summary>
-		/// Whether the pending notes are for approval (<see langword="true"/>) or denial (<see langword="false"/>).
-		/// </summary>
-		public bool IsApproving
-		{
-			get => _isApproving;
-			set => SetProperty(ref _isApproving, value);
-		}
+		public bool ShowConfirmButtons => IsConfirming;
 
 		/// <summary>
-		/// Whether to show the standard confirmation buttons (hidden when writing notes).
+		/// Gets the command that resolves the tool confirmation with a <see cref="ToolConsentResult"/>.
+		/// Executed by the <see cref="ToolConsentPanel"/>.
 		/// </summary>
-		public bool ShowConfirmButtons => IsConfirming && !WritingNotes;
-
-		/// <summary>
-		/// Command to approve the tool call immediately.
-		/// </summary>
-		public ICommand ApproveCommand { get; }
-
-		/// <summary>
-		/// Command to approve with additional notes.
-		/// </summary>
-		public ICommand ApproveWithNotesCommand { get; }
-
-		/// <summary>
-		/// Command to deny the tool call immediately.
-		/// </summary>
-		public ICommand DenyCommand { get; }
-
-		/// <summary>
-		/// Command to deny with a reason.
-		/// </summary>
-		public ICommand DenyWithReasonCommand { get; }
-
-		/// <summary>
-		/// Command to commit the written notes and resolve the confirmation.
-		/// </summary>
-		public ICommand CommitNotesCommand { get; }
-
-		/// <summary>
-		/// Command to cancel writing notes and return to confirmation buttons.
-		/// </summary>
-		public ICommand CancelNotesCommand { get; }
+		public ICommand ConsentCommand { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AgentToolCallBriefViewModel"/> class.
@@ -199,12 +152,7 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			_toolCall = toolCall;
 			_parentTask = parentTask;
 
-			ApproveCommand = new RelayCommand(() => ResolveConfirmation(approved: true, waitHint: false, notes: null));
-			ApproveWithNotesCommand = new RelayCommand(() => { WritingNotes = true; IsApproving = true; });
-			DenyCommand = new RelayCommand(() => ResolveConfirmation(approved: false, waitHint: false, notes: null));
-			DenyWithReasonCommand = new RelayCommand(() => { WritingNotes = true; IsApproving = false; });
-			CommitNotesCommand = new RelayCommand<string?>(CommitNotes);
-			CancelNotesCommand = new RelayCommand(() => { WritingNotes = false; });
+			ConsentCommand = new RelayCommand<ToolConsentResult>(ResolveConsent);
 
 			SyncArguments();
 			SyncResult();
@@ -299,22 +247,10 @@ namespace LLMDesktopAssistant.Agents.Tasks.MVVM
 			HasResult = !string.IsNullOrEmpty(Result);
 		}
 
-		private void ResolveConfirmation(bool approved, bool waitHint, string? notes)
+		private void ResolveConsent(ToolConsentResult? consentResult)
 		{
-			var request = FindConfirmationRequest();
-			request?.UserConfirmationSource.TrySetResult(new ToolConsentResult
-			{
-				IsApproved = approved,
-				Memorization = ToolApprovalMemorization.Once,
-				HintAgentForWaiting = waitHint,
-				Notes = notes
-			});
-		}
-
-		private void CommitNotes(string? notes)
-		{
-			WritingNotes = false;
-			ResolveConfirmation(IsApproving, waitHint: false, notes: notes);
+			if (consentResult != null)
+				FindConfirmationRequest()?.UserConfirmationSource.TrySetResult(consentResult);
 		}
 
 		private AgentToolCallConfirmationRequest? FindConfirmationRequest()

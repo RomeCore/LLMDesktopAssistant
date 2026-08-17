@@ -1,4 +1,4 @@
-namespace LLMDesktopAssistant.Tools;
+namespace LLMDesktopAssistant.Tools.Consents;
 
 /// <summary>
 /// Enumerates the options for memorizing tool approval.
@@ -16,7 +16,7 @@ public enum ToolApprovalMemorization
 	Session,
 
 	/// <summary>
-	/// Memorize the approval for the current agentic task.
+	/// Memorize the approval for the current agentic task or chat agent cycle.
 	/// </summary>
 	Task,
 

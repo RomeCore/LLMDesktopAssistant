@@ -8,15 +8,10 @@ namespace LLMDesktopAssistant.Tools
 	/// </summary>
 	public class ToolChange : NotifyPropertyChanged
 	{
-		private string _toolName = string.Empty;
 		/// <summary>
 		/// The name of the tool being changed.
 		/// </summary>
-		public string ToolName
-		{
-			get => _toolName;
-			set => SetProperty(ref _toolName, value);
-		}
+		public required string ToolName { get; init; }
 
 		private bool? _enabled;
 		/// <summary>

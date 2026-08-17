@@ -250,13 +250,25 @@ behaviour.userinteraction: User interaction (forms, confirmations)
 behaviour.userinteraction.hint: The tool requires user input via forms, confirmations, file pickers, etc.
 behaviour.workdirchange: Change working directory
 behaviour.workdirchange.hint: The tool switches the active working directory, affecting the base for all relative file operations.
-call.action.approve_with_notes: Approve with notes
-call.action.approve_with_wait.hint: Approve and ask agent to wait
-call.action.cancel: Cancel tool
-call.action.cancel_with_reason: Cancel with reason
-call.action.cancel_with_wait.hint: Cancel and ask agent to wait
-call.action.commit_notes: Submit
-call.notes.placeholder: Enter note/reason...
+call.action.approve: Approve
+call.action.reject: Reject
+call.note.placeholder: Note or option...
+call.note.wait: Wait
+call.note.try_another_tool: Try another tool
+call.remember.tooltip: Remember this decision
+call.remember.option.once: Don't remember
+call.remember.option.session: For this session
+call.remember.option.task: For this task
+call.remember.option.always: Always
+call.remember.manager.hint: Memorized tool decisions
+call.remember.manager.title: Memorized decisions
+call.remember.manager.session: Session (this chat)
+call.remember.manager.always: Always (persisted in agent toolsets)
+call.remember.manager.empty: No memorized decisions
+call.remember.manager.forget: Forget
+call.remember.manager.forget_all: Forget all
+call.remember.manager.approved: Approved
+call.remember.manager.denied: Denied
 call.status.cancelled: Cancelled
 call.status.confirming: Confirmation needed
 call.status.executing: Executing...

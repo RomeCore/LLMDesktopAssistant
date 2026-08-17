@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Tools.Consents;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 
@@ -57,6 +58,12 @@ namespace LLMDesktopAssistant.Tools
 		/// The shared context that can be used to pass data between streaming, preview and main execution calls.
 		/// </summary>
 		public object? SharedContext { get; set; }
+
+		/// <summary>
+		/// The consent memorization context for self-handled confirmations, or <see langword="null"/>.
+		/// Lets tools persist user consent decisions ("remember") for subsequent executions.
+		/// </summary>
+		public ToolConsentMemorizationContext? ConsentContext { get; init; }
 
 		/// <summary>
 		/// Creates a dummy tool execution context. Useful when the original execution context is not available.

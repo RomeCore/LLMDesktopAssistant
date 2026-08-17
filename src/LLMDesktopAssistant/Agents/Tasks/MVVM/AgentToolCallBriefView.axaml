@@ -1,8 +1,9 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
 						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 						 xmlns:local="using:LLMDesktopAssistant.Agents.Tasks.MVVM"
+						 xmlns:consents="using:LLMDesktopAssistant.Tools.Consents"
 						 xmlns:ico="using:Material.Icons.Avalonia"
 						 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
 						 xmlns:loc="using:LLMDesktopAssistant.Localization"
@@ -124,60 +125,9 @@
 			
 			</DockPanel>
 
-			<!-- Confirmation buttons -->
-			<StackPanel Orientation="Horizontal"
-								Spacing="4"
-								IsVisible="{Binding ShowConfirmButtons}">
-
-				<Button Classes="SmallIconButton"
-								Command="{Binding ApproveCommand}"
-								ToolTip.Tip="{loc:Loc common.approve}">
-					<ico:MaterialIcon Kind="Check"/>
-				</Button>
-
-				<Button Classes="SmallIconButton"
-								Command="{Binding ApproveWithNotesCommand}"
-								ToolTip.Tip="{loc:Loc tool.call.action.approve_with_notes}">
-					<ico:MaterialIcon Kind="TextBoxCheckOutline"/>
-				</Button>
-
-				<Button Classes="SmallIconButton"
-								Command="{Binding DenyCommand}"
-								ToolTip.Tip="{loc:Loc tool.call.action.cancel}">
-					<ico:MaterialIcon Kind="Close"/>
-				</Button>
-
-				<Button Classes="SmallIconButton"
-								Command="{Binding DenyWithReasonCommand}"
-								ToolTip.Tip="{loc:Loc tool.call.action.cancel_with_reason}">
-					<ico:MaterialIcon Kind="TextBoxRemoveOutline"/>
-				</Button>
-
-			</StackPanel>
-
-			<!-- Notes input (when writing notes) -->
-			<StackPanel Orientation="Horizontal"
-									Spacing="4"
-									IsVisible="{Binding WritingNotes}">
-
-				<TextBox x:Name="NotesTextBox"
-								 PlaceholderText="{loc:Loc tool.call.notes.placeholder}"
-								 MinWidth="200"/>
-
-				<Button Classes="SmallIconButton"
-								Command="{Binding CommitNotesCommand}"
-								CommandParameter="{Binding #NotesTextBox.Text}"
-								ToolTip.Tip="{loc:Loc tool.call.action.commit_notes}">
-					<ico:MaterialIcon Kind="Check"/>
-				</Button>
-
-				<Button Classes="SmallIconButton"
-								Command="{Binding CancelNotesCommand}"
-								ToolTip.Tip="{loc:Loc common.cancel}">
-					<ico:MaterialIcon Kind="Close"/>
-				</Button>
-
-			</StackPanel>
+			<!-- Confirmation controls: reject/approve + note + remember -->
+			<consents:ToolConsentPanel IsVisible="{Binding ShowConfirmButtons}"
+																 ResolveConsentCommand="{Binding ConsentCommand}"/>
 
 		</StackPanel>
 

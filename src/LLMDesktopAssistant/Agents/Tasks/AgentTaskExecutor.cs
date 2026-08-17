@@ -4,9 +4,11 @@ using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Consents;
 using LLMDesktopAssistant.Tools.Specifiers;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
@@ -24,6 +26,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		private readonly AsyncLocal<AgentTask?> _currentTask = new();
 		private readonly IModelManager _modelManager;
 		private readonly IToolApprovalService _toolApprovalService;
+		private readonly IToolMemorizationService _toolMemorizationService;
 		private readonly IUsageStatsCollector _usageStatsCollector;
 		private readonly IAgentTaskDispatcher _dispatcher;
 		private readonly IMemoryFactStore _memoryFactStore;
@@ -32,11 +35,12 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public AgentTask? Current => _currentTask.Value;
 
 		public AgentTaskExecutor(IModelManager modelManager, IToolApprovalService toolApprovalService,
-			IUsageStatsCollector usageStatsCollector, IAgentTaskDispatcher dispatcher,
+			IToolMemorizationService toolMemorizationService, IUsageStatsCollector usageStatsCollector, IAgentTaskDispatcher dispatcher,
 			IMemoryFactStore memoryFactStore, IMemoryLogStore memoryLogStore)
 		{
 			_modelManager = modelManager;
 			_toolApprovalService = toolApprovalService;
+			_toolMemorizationService = toolMemorizationService;
 			_usageStatsCollector = usageStatsCollector;
 			_dispatcher = dispatcher;
 			_memoryFactStore = memoryFactStore;
@@ -48,7 +52,6 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			var chat = task.LaunchParameters.TriggeredChat;
 			return chat?.Services.GetService<IChatExecutionStatusService>();
 		}
-
 
 		public AgentTask Execute(AgentTaskLaunchParameters parameters, CancellationToken cancellationToken = default)
 		{
@@ -182,6 +185,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			{
 				task.Status = AgentTaskStatus.Executing;
 				_currentTask.Value = task;
+				_toolMemorizationService.PushTaskAsyncScope();
 				_dispatcher.OnBeginTask(task);
 
 				using var execution = GetExecutionStatusService(task)?.WithExecution();
@@ -531,7 +535,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					specifierMessage = specifierResult.Message;
 				}
 
-				var (decision, decisionMessage) = _toolApprovalService.ApproveTool(task.LaunchParameters.TriggeredChat,
+				var (decision, decisionMessage) = _toolApprovalService.ApproveTool(
 					tool.ApprovalLevel, previewResult.ExpectedBehaviour, autoApproveBehaviours, disallowedBehaviours);
 
 				// Combine the specifier verdict with the policy decision.
@@ -541,6 +545,17 @@ namespace LLMDesktopAssistant.Agents.Tasks
 						tool.SpecifierUnionMode ?? SpecifierBehaviourUnionMode.CombineSoft);
 					if (decision == ToolPolicyDecision.Disallow && specifierVerdict == SpecifierVerdict.Deny)
 						decisionMessage = specifierMessage ?? decisionMessage;
+				}
+
+				// Apply the memorized user decision (if any), unless the policy already disallowed the tool.
+				var triggeredChat = task.LaunchParameters.TriggeredChat;
+				if (tool.ApprovalLevel.IsPolicyBased() &&
+					_toolMemorizationService.TryGetMemorizedDecision(triggeredChat, agentToolCall.ToolName, out var memorizedDecision, out var memorizedMessage) &&
+					decision != ToolPolicyDecision.Disallow)
+				{
+					decision = memorizedDecision;
+					if (memorizedDecision == ToolPolicyDecision.Disallow)
+						decisionMessage = memorizedMessage ?? "The tool execution was denied by the user.";
 				}
 
 				if (decision == ToolPolicyDecision.Disallow)
@@ -572,7 +587,9 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					{
 						agentToolCall.Status = AgentToolCallStatus.Confirming;
 						var consentResult = await request.UserConfirmationSource.Task.WaitAsync(cancellationToken);
-						_toolApprovalService.MemorizeConsent(task.LaunchParameters.TriggeredChat, consentResult);
+						_toolMemorizationService.MemorizeConsent(triggeredChat, agentToolCall.ToolName, consentResult);
+						if (consentResult.Memorization == ToolApprovalMemorization.Always && triggeredChat != null)
+							MemorizeAlwaysInToolset(task, agentToolCall.ToolName, consentResult.IsApproved);
 
 						if (!consentResult.IsApproved)
 						{
@@ -644,6 +661,22 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				return new ToolMessage(new ToolResult(ToolResultStatus.Error, agentToolCall.Result.Content),
 					toolCall.Id, toolCall.ToolName);
 			}
+		}
+
+		private static void MemorizeAlwaysInToolset(AgentTask task, string toolName, bool approved)
+		{
+			var chat = task.LaunchParameters.TriggeredChat;
+			var senderAgentId = task.LaunchParameters.TriggeredMessage?.SenderAgentId;
+			if (chat == null || senderAgentId == null)
+				return;
+
+			var agentManager = chat.Services.GetService<IAgentManagementService>();
+			var chatSettings = chat.Services.GetService<IChatSettingsService>();
+			if (agentManager == null || chatSettings == null)
+				return;
+
+			var agent = agentManager.GetAgentDescriptor(senderAgentId.Value);
+			ToolConsentPersister.MemorizeAlways(agent, chatSettings, toolName, approved);
 		}
 
 		private static IEnumerable<IMessage> ConvertMessageFromAgent(AgentChatMessage agentMessage, ref string? additionalSysPrompt)

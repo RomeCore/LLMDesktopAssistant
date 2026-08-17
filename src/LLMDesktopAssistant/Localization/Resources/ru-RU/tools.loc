@@ -250,13 +250,25 @@ behaviour.userinteraction: Взаимодействие с пользовате�
 behaviour.userinteraction.hint: Инструмент требует ввода от пользователя через формы, подтверждения, выбор файлов и т.д.
 behaviour.workdirchange: Смена рабочей директории
 behaviour.workdirchange.hint: Инструмент переключает активную рабочую директорию, изменяя базу для всех относительных файловых операций.
-call.action.approve_with_notes: Подтвердить с примечанием
-call.action.approve_with_wait.hint: Подтвердить и попросить подождать
-call.action.cancel: Отменить инструмент
-call.action.cancel_with_reason: Отменить с пояснением
-call.action.cancel_with_wait.hint: Отменить и попросить подождать
-call.action.commit_notes: Отправить
-call.notes.placeholder: Введите причину/пояснение...
+call.action.approve: Подтвердить
+call.action.reject: Отклонить
+call.note.placeholder: Пояснение или вариант...
+call.note.wait: Подожди
+call.note.try_another_tool: Попробуй другой инструмент
+call.remember.tooltip: Запомнить это решение
+call.remember.option.once: Не запоминать
+call.remember.option.session: На сессию
+call.remember.option.task: На задачу
+call.remember.option.always: Навсегда
+call.remember.manager.hint: Запомненные решения по инструментам
+call.remember.manager.title: Запомненные решения
+call.remember.manager.session: Сессия (этот чат)
+call.remember.manager.always: Навсегда (в тулсетах агентов)
+call.remember.manager.empty: Нет запомненных решений
+call.remember.manager.forget: Забыть
+call.remember.manager.forget_all: Забыть всё
+call.remember.manager.approved: Подтверждено
+call.remember.manager.denied: Отклонено
 call.status.cancelled: Отменено
 call.status.confirming: Требуется подтверждение
 call.status.executing: Выполнение...

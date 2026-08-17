@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using LiteDB;
 using LLMDesktopAssistant.LLM.MVVM.Additional;
+using LLMDesktopAssistant.Tools.Consents;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Files;
 
@@ -81,6 +82,13 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 					RaisePropertyChanged(nameof(AreCheckboxesInteractive));
 				}
 			}
+		}
+
+		private string? _notes;
+		public string? Notes
+		{
+			get => _notes;
+			set => SetProperty(ref _notes, value);
 		}
 
 		/// <summary>
@@ -172,40 +180,42 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 			}
 		}
 
-		private TaskCompletionSource<bool>? _confirmationTcs;
+		private TaskCompletionSource<MemorizedDecision>? _confirmationTcs;
 		/// <summary>
 		/// Gets the confirmation task that completes when the user accepts or declines the changes.
 		/// Returns <see langword="true"/> if accepted, <see langword="false"/> if declined.
 		/// </summary>
 		[BsonIgnore]
 		[ChangeTracker.Untracked]
-		public Task<bool> ConfirmationTask
+		public Task<MemorizedDecision> ConfirmationTask
 		{
 			get
 			{
 				if (_confirmationTcs == null)
 				{
-					_confirmationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+					_confirmationTcs = new TaskCompletionSource<MemorizedDecision>(TaskCreationOptions.RunContinuationsAsynchronously);
 					if (_isConfirmed != null)
-						_confirmationTcs.TrySetResult(_isConfirmed.Value);
+						_confirmationTcs.TrySetResult(new MemorizedDecision(_isConfirmed.Value, _notes));
 				}
 				return _confirmationTcs.Task;
 			}
 		}
 
 		/// <summary>
-		/// Command to accept all changes (confirmation mode).
+		/// Gets the command that resolves the confirmation with a <see cref="ToolConsentResult"/>.
+		/// Executed by the <see cref="ToolConsentPanel"/>.
 		/// </summary>
 		[BsonIgnore]
 		[ChangeTracker.Untracked]
-		public IRelayCommand ConfirmCommand { get; private set; }
+		public IRelayCommand ConsentCommand { get; private set; }
 
 		/// <summary>
-		/// Command to decline all changes (confirmation mode).
+		/// Gets or sets the consent memorization context used to persist the user's "remember" decision,
+		/// or <see langword="null"/> when memorization is unavailable.
 		/// </summary>
 		[BsonIgnore]
 		[ChangeTracker.Untracked]
-		public IRelayCommand DeclineCommand { get; private set; }
+		public ToolConsentMemorizationContext? ConsentContext { get; set; }
 
 		/// <summary>
 		/// Command to enable all chunks (confirmation mode).
@@ -223,28 +233,46 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 
 		public TextDiffAdditionalViewModel()
 		{
-			ConfirmCommand = new RelayCommand(Confirm);
-			DeclineCommand = new RelayCommand(Decline);
+			ConsentCommand = new RelayCommand<ToolConsentResult?>(ResolveConsent);
 			EnableAllCommand = new RelayCommand(EnableAll, () => ChunkViewModels.Any(vm => !vm.IsEnabled));
 			DisableAllCommand = new RelayCommand(DisableAll, () => ChunkViewModels.Any(vm => vm.IsEnabled));
 		}
 
 		/// <summary>
+		/// Resolves the confirmation from a <see cref="ToolConsentResult"/> produced by the
+		/// <see cref="ToolConsentPanel"/>: accepts the changes when approved, declines otherwise.
+		/// The consent decision is memorized via <see cref="ConsentContext"/> when available.
+		/// </summary>
+		/// <param name="consentResult">The consent result, or <see langword="null"/>.</param>
+		public void ResolveConsent(ToolConsentResult? consentResult)
+		{
+			if (consentResult == null)
+				return;
+
+			ConsentContext?.Memorize(consentResult);
+
+			if (consentResult.IsApproved)
+				Confirm(consentResult.Notes);
+			else
+				Decline(consentResult.Notes);
+		}
+
+		/// <summary>
 		/// Accepts all changes and marks the confirmation as complete.
 		/// </summary>
-		public void Confirm()
+		public void Confirm(string? notes)
 		{
 			IsConfirmed = true;
-			_confirmationTcs?.TrySetResult(true);
+			_confirmationTcs?.TrySetResult(new MemorizedDecision(true, notes));
 		}
 
 		/// <summary>
 		/// Declines all changes and marks the confirmation as complete.
 		/// </summary>
-		public void Decline()
+		public void Decline(string? notes)
 		{
 			IsConfirmed = false;
-			_confirmationTcs?.TrySetResult(false);
+			_confirmationTcs?.TrySetResult(new MemorizedDecision(false, notes));
 		}
 
 		/// <summary>

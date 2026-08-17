@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.Messages"
+			 xmlns:consents="using:LLMDesktopAssistant.Tools.Consents"
 			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
@@ -358,73 +359,8 @@
 			<GridSplitter Width="2" MinWidth="2" ResizeDirection="Columns" IsEnabled="False"
 										IsVisible="{Binding UserAsked}"/>
 			
-			<StackPanel IsVisible="{Binding UserAsked}"
-									Orientation="Horizontal"
-									Spacing="4">
-
-				<Button Classes="MidIconButton"
-								Command="{Binding ApproveCommand}"
-								ToolTip.Tip="{loc:Loc common.approve}">
-					<ico:MaterialIcon Kind="Check"/>
-				</Button>
-				
-				<Button Classes="MidIconButton"
-								Command="{Binding ApproveWithWaitHintCommand}"
-								ToolTip.Tip="{loc:Loc tool.call.action.approve_with_wait.hint}">
-					<ico:MaterialIcon Kind="ClockCheckOutline"/>
-				</Button>
-
-				<Button Classes="MidIconButton"
-								Command="{Binding ApproveWithNotesCommand}"
-								ToolTip.Tip="{loc:Loc tool.call.action.approve_with_notes}">
-					<ico:MaterialIcon Kind="TextBoxCheckOutline"/>
-				</Button>
-
-				<Button Classes="MidIconButton"
-								Command="{Binding CancelCommand}"
-								ToolTip.Tip="{loc:Loc tool.call.action.cancel}">
-					<ico:MaterialIcon Kind="Close"/>
-				</Button>
-
-				<Button Classes="MidIconButton"
-								Command="{Binding CancelWithWaitHintCommand}"
-								ToolTip.Tip="{loc:Loc tool.call.action.cancel_with_wait.hint}">
-					<ico:MaterialIcon Kind="ClockRemoveOutline"/>
-				</Button>
-
-				<Button Classes="MidIconButton"
-								Command="{Binding CancelWithReasonCommand}"
-								ToolTip.Tip="{loc:Loc tool.call.action.cancel_with_reason}">
-					<ico:MaterialIcon Kind="TextBoxRemoveOutline"/>
-				</Button>
-
-			</StackPanel>
-				
-			<GridSplitter Width="2" MinWidth="2" ResizeDirection="Columns" IsEnabled="False"
-										IsVisible="{Binding WritingNotes}"/>
-				
-			<StackPanel IsVisible="{Binding WritingNotes}"
-									Orientation="Horizontal"
-									Spacing="4">
-
-				<TextBox x:Name="NotesTextBox2"
-								 KeyDown="NotesTextBox_KeyDown"
-								 PlaceholderText="{loc:Loc tool.call.notes.placeholder}"/>
-
-				<Button Classes="MidIconButton"
-								Command="{Binding CommitNotesCommand}"
-								CommandParameter="{Binding #NotesTextBox2.Text}"
-								ToolTip.Tip="{loc:Loc tool.call.action.commit_notes}">
-					<ico:MaterialIcon Kind="Check"/>
-				</Button>
-
-				<Button Classes="MidIconButton"
-								Command="{Binding CancelNotesCommand}"
-								ToolTip.Tip="{loc:Loc common.cancel}">
-					<ico:MaterialIcon Kind="Close"/>
-				</Button>
-
-			</StackPanel>
+			<consents:ToolConsentPanel IsVisible="{Binding UserAsked}"
+																 ResolveConsentCommand="{Binding ConsentCommand}"/>
 				
 		</WrapPanel>
 

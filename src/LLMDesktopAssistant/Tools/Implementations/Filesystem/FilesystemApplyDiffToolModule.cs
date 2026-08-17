@@ -181,6 +181,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				}
 
 				var postProcessResult = await PostProcessDiffAsync(fullPath, originalContent, newContent, ctx, cancellationToken);
+				string userNotesPostfix = string.IsNullOrWhiteSpace(postProcessResult.UserNotes)
+					? string.Empty
+					: $"""
+							
+							User has provided notes:
+							{postProcessResult.UserNotes}
+							""";
 				if (!postProcessResult.AppliedDiff.HasGroups)
 				{
 					result.StatusIcon = MaterialIconKind.FileDiscard;
@@ -189,9 +196,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						$"""
 						User has rejected the changes, none has applied.
 						[REJECTED CHANGES BY THE USER, THESE ARE NOT APPLIED]:
-						{postProcessResult.RejectedDiff}
+						{postProcessResult.RejectedDiff}{userNotesPostfix}
 						""" :
-						"User has rejected the changes, none has applied.";
+						$"User has rejected the changes, none has applied.{userNotesPostfix}";
 					result.CompleteWithSuccess();
 					return;
 				}
@@ -209,12 +216,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					[APPLIED CHANGES]:
 					{diff}
 					[REJECTED CHANGES BY THE USER, THESE ARE NOT APPLIED]:
-					{postProcessResult.RejectedDiff}
+					{postProcessResult.RejectedDiff}{userNotesPostfix}
 					""" :
 					$"""
 					File edited successfully. *(-{removed} +{added})*
 					[APPLIED CHANGES]:
-					{diff}
+					{diff}{userNotesPostfix}
 					""";
 				result.CompleteWithSuccess();
 			}

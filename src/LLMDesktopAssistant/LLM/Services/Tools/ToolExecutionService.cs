@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Consents;
 using LLMDesktopAssistant.Tools.Specifiers;
 using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels;
@@ -18,6 +19,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		IChatSettingsService chatSettings,
 		IAgentManagementService agentManager,
 		IToolApprovalService toolApprovalService,
+		IToolMemorizationService toolMemorizationService,
 		IChatExecutionStatusService executionStatusService
 	) : IToolExecutionService
 	{
@@ -212,8 +214,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					sharedContext = specifierToolExecutionContext.SharedContext;
 				}
 
-				var (decision, decisionMessage) = toolApprovalService.ApproveTool(chat, approvalLevel,
-					toolCall.ExpectedBehaviour.Value, autoApproveBehaviours, disallowedBehaviours);
+				var (decision, decisionMessage) = toolApprovalService.ApproveTool(
+					approvalLevel, toolCall.ExpectedBehaviour.Value, autoApproveBehaviours, disallowedBehaviours);
 
 				// Combine the specifier verdict with the policy decision.
 				if (approvalLevel.IsPolicyBased() && toolInfo.SpecifierAnalyzer != null && toolInfo.Specifiers.Count > 0)
@@ -224,6 +226,16 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						decisionMessage = specifierMessage ?? decisionMessage;
 				}
 
+				// Apply the memorized user decision (if any), unless the policy already disallowed the tool.
+				if (approvalLevel.IsPolicyBased() &&
+					toolMemorizationService.TryGetMemorizedDecision(chat, toolCall.ToolName, out var memorizedDecision, out var memorizedMessage) &&
+					decision != ToolPolicyDecision.Disallow)
+				{
+					decision = memorizedDecision;
+					if (memorizedDecision == ToolPolicyDecision.Disallow)
+						decisionMessage = memorizedMessage ?? "The tool execution was denied by the user.";
+				}
+
 				if (decision == ToolPolicyDecision.Disallow && !toolHandledDecisions.HasFlag(ToolPolicyDecision.Disallow))
 				{
 					toolCall.Status = ToolStatus.Error;
@@ -232,7 +244,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				}
 				
 				string? additionalNotes = null;
-				bool hintAgentForWait = false;
 
 				if (decision == ToolPolicyDecision.Ask && !toolHandledDecisions.HasFlag(ToolPolicyDecision.Ask))
 				{
@@ -243,8 +254,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					toolCall.Status = ToolStatus.WaitingForApproval;
 
 					var consentResult = await tcs.Task.WaitAsync(cancellationToken);
-					toolApprovalService.MemorizeConsent(chat, consentResult);
-					hintAgentForWait = consentResult.HintAgentForWaiting;
+					toolMemorizationService.MemorizeConsent(chat, toolCall.ToolName, consentResult);
+					if (consentResult.Memorization == ToolApprovalMemorization.Always)
+						ToolConsentPersister.MemorizeAlways(senderAgent, chatSettings, toolCall.ToolName, consentResult.IsApproved);
 					if (consentResult.IsApproved)
 					{
 						additionalNotes = consentResult.Notes;
@@ -254,11 +266,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						toolCall.Status = ToolStatus.Cancelled;
 						if (string.IsNullOrWhiteSpace(consentResult.Notes))
 							toolCall.ResultContent = "User has cancelled the tool execution without a reason. " +
-								"Maybe it can be dangerous or unwanted to proceed." +
-								(hintAgentForWait ? " Please wait for user message for explanations." : "");
+								"Maybe it can be dangerous or unwanted to proceed.";
 						else
-							toolCall.ResultContent = $"User has cancelled the tool execution with a reason: {consentResult.Notes}." +
-								(hintAgentForWait ? " Please wait for user message." : "");
+							toolCall.ResultContent = $"User has cancelled the tool execution with a reason: {consentResult.Notes}.";
 						return;
 					}
 				}
@@ -287,7 +297,9 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					Info = toolInfo,
 					SharedContext = sharedContext,
 					RunningInUI = true,
-					PolicyDecision = decision
+					PolicyDecision = decision,
+					ConsentContext = new ToolConsentMemorizationContext(toolMemorizationService, chat, toolCall.ToolName,
+						approved => ToolConsentPersister.MemorizeAlways(senderAgent, chatSettings, toolCall.ToolName, approved))
 				};
 				var reactiveResult = await toolInfo.Executor.Invoke(parsedArgs, toolExecutionContext, cancellationToken);
 
@@ -359,9 +371,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						}
 					}
 
-					toolCall.ResultContent = reactiveResult.ResultContent +
-						(additionalNotes != null ? $"\n\nAdditional notes from user: {additionalNotes}" : "") +
-						(hintAgentForWait ? "\n\nPlease wait for user message." : "");
+					if (additionalNotes != null)
+						toolCall.ResultContent = $"{reactiveResult.ResultContent}\n\nAdditional notes from user: {additionalNotes}";
 					toolCall.UseMarkdown = reactiveResult.UseMarkdown;
 					toolCall.StructuredResult = reactiveResult.StructuredResult;
 

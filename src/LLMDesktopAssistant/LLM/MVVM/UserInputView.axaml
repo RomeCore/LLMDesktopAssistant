@@ -61,6 +61,13 @@
 				<!-- Model selector -->
 				<ctrl:ModelSelectorControl SelectedModel="{Binding ChatModel, Mode=TwoWay}"/>
 
+				<!-- Memorized tool decisions -->
+				<Button Classes="IconButton"
+						Command="{Binding OpenConsentMemorizationCommand}"
+						ToolTip.Tip="{loc:Loc tool.call.remember.manager.hint}">
+					<ico:MaterialIcon Kind="BookmarkMultipleOutline"/>
+				</Button>
+
 				<!-- Attach -->
 				<Button Classes="IconButton"
 								Command="{Binding OpenAttachmentsManagerCommand}"
