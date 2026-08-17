@@ -1,6 +1,6 @@
 ﻿namespace LLMDesktopAssistant.Tools
 {
-	public readonly struct ToolIndividualPolicyMask
+	public readonly struct ToolPolicyMask
 	{
 		public required ToolBehaviour AutoApproveBehaviours { get; init; }
 

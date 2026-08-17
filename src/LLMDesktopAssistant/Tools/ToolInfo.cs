@@ -146,11 +146,11 @@ namespace LLMDesktopAssistant.Tools
 
 		/// <summary>
 		/// The individual policy mask that overrides the agent's policy for this tool.
-		/// <see cref="ToolIndividualPolicyMask.DisallowedBehaviours"/> always disallow the tool,
-		/// <see cref="ToolIndividualPolicyMask.AutoApproveBehaviours"/> always approve it.
+		/// <see cref="ToolPolicyMask.DisallowedBehaviours"/> always disallow the tool,
+		/// <see cref="ToolPolicyMask.AutoApproveBehaviours"/> always approve it.
 		/// Applied only for policy-based approval levels.
 		/// </summary>
-		public ToolIndividualPolicyMask? PolicyMask { get; init; }
+		public ToolPolicyMask? PolicyMask { get; init; }
 
 		/// <summary>
 		/// The specifier behaviour union mode of the tool.

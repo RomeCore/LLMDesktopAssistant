@@ -21,13 +21,13 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _enableTools, value);
 		}
 
-		private ToolPolicySettings _policy = new();
+		private ToolPolicyMask _policy;
 		/// <summary>
 		/// Gets or sets the tool behaviour policy for this agent.
 		/// Inherits the chat profile policy by default.
 		/// </summary>
 		[InheritedChatAgentSetting(DefaultLevel = ChatSettingsInheritanceLevel.Profile)]
-		public ToolPolicySettings Policy
+		public ToolPolicyMask Policy
 		{
 			get => _policy;
 			set => SetProperty(ref _policy, value);

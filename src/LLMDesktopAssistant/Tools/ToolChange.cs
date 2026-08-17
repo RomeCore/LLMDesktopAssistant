@@ -39,11 +39,11 @@ namespace LLMDesktopAssistant.Tools
 			set => SetProperty(ref _approvalLevel, value);
 		}
 
-		private ToolIndividualPolicyMask? _policyMask;
+		private ToolPolicyMask? _policyMask;
 		/// <summary>
 		/// Gets or sets the individual policy mask for the tool.
 		/// </summary>
-		public ToolIndividualPolicyMask? PolicyMask
+		public ToolPolicyMask? PolicyMask
 		{
 			get => _policyMask;
 			set => SetProperty(ref _policyMask, value);

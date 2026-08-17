@@ -238,9 +238,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		private SpecifierAggregationMode EffectiveAggregationMode =>
 			_change?.SpecifierAggregationMode ?? _toolInfo.SpecifierAggregationMode;
 
-		private ToolIndividualPolicyMask EffectivePolicyMask => _change?.PolicyMask ?? _toolInfo.PolicyMask ?? default;
+		private ToolPolicyMask EffectivePolicyMask => _change?.PolicyMask ?? _toolInfo.PolicyMask ?? default;
 
-		private static bool? GetMaskState(ToolIndividualPolicyMask mask, ToolBehaviour flag)
+		private static bool? GetMaskState(ToolPolicyMask mask, ToolBehaviour flag)
 		{
 			if (mask.AutoApproveBehaviours.HasFlag(flag))
 				return true;
@@ -259,17 +259,17 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			var mask = EffectivePolicyMask;
 			mask = state switch
 			{
-				true => new ToolIndividualPolicyMask
+				true => new ToolPolicyMask
 				{
 					AutoApproveBehaviours = mask.AutoApproveBehaviours | flag,
 					DisallowedBehaviours = mask.DisallowedBehaviours & ~flag
 				},
-				false => new ToolIndividualPolicyMask
+				false => new ToolPolicyMask
 				{
 					AutoApproveBehaviours = mask.AutoApproveBehaviours & ~flag,
 					DisallowedBehaviours = mask.DisallowedBehaviours | flag
 				},
-				_ => new ToolIndividualPolicyMask
+				_ => new ToolPolicyMask
 				{
 					AutoApproveBehaviours = mask.AutoApproveBehaviours & ~flag,
 					DisallowedBehaviours = mask.DisallowedBehaviours & ~flag
@@ -440,7 +440,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// <summary>
 		/// Gets the effective tool behaviour policy resolved by the current inheritance level.
 		/// </summary>
-		public ToolPolicySettings EffectivePolicy => ToolSettings.GetEffectivePolicy(_chatSettings);
+		public ToolPolicyMask EffectivePolicy => ToolSettings.GetEffectivePolicy(_chatSettings);
 
 		/// <summary>
 		/// Gets the effective toolset settings resolved by the current inheritance level.
@@ -638,9 +638,23 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 				PolicyBehaviourItems.Add(new ToolBehaviourPolicyItem(
 					() => EffectivePolicy.AutoApproveBehaviours,
-					v => EffectivePolicy.AutoApproveBehaviours = v,
+					v =>
+					{
+						ToolSettings.SetEffectivePolicy(_chatSettings, new ToolPolicyMask
+						{
+							AutoApproveBehaviours = v,
+							DisallowedBehaviours = EffectivePolicy.DisallowedBehaviours
+						});
+					},
 					() => EffectivePolicy.DisallowedBehaviours,
-					v => EffectivePolicy.DisallowedBehaviours = v,
+					v =>
+					{
+						ToolSettings.SetEffectivePolicy(_chatSettings, new ToolPolicyMask
+						{
+							AutoApproveBehaviours = EffectivePolicy.AutoApproveBehaviours,
+							DisallowedBehaviours = v,
+						});
+					},
 					flag,
 					displayName,
 					description));

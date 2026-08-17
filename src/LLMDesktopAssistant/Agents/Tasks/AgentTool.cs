@@ -40,7 +40,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// The individual policy mask that overrides the agent's policy for this tool.
 		/// Applied only for policy-based approval levels.
 		/// </summary>
-		public ToolIndividualPolicyMask? PolicyMask { get; init; } = null;
+		public ToolPolicyMask? PolicyMask { get; init; } = null;
 
 		/// <summary>
 		/// The specifier behaviour union mode of the tool.
