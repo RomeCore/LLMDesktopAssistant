@@ -73,6 +73,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						startLine = 1;
 					if (endLine < startLine)
 						endLine = startLine + DefaultLinesToDisplay - 1;
+					if (maxLineLength <= 0)
+						maxLineLength = DefaultCharactersPerLineToDisplay;
 
 					var (lines, totalLines) = FileUtils.ReadLinesChunk(
 						fullPath,

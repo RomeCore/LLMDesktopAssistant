@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Tools.MVVM;
 using RCLargeLanguageModels.Json.Schema;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.LLM.Services;
 
 namespace LLMDesktopAssistant.Tools.Implementations;
 
@@ -12,8 +13,12 @@ namespace LLMDesktopAssistant.Tools.Implementations;
 [ToolModule]
 public class FormsToolModule : ToolModule
 {
-	public FormsToolModule()
+	private readonly IChatExecutionStatusService _chatExecutionStatusService;
+
+	public FormsToolModule(IChatExecutionStatusService chatExecutionStatusService)
 	{
+		_chatExecutionStatusService = chatExecutionStatusService;
+
 		AddTool(new ToolInitializationInfo
 		{
 			Executor = FormsConfirm,
@@ -94,6 +99,7 @@ public class FormsToolModule : ToolModule
 		bool confirmed;
 		try
 		{
+			using var confirmation = _chatExecutionStatusService.WithConfirmation();
 			confirmed = await viewModel.Result.WaitAsync(cancellationToken);
 		}
 		catch (OperationCanceledException)
@@ -150,6 +156,7 @@ public class FormsToolModule : ToolModule
 		ChoiceResult result;
 		try
 		{
+			using var confirmation = _chatExecutionStatusService.WithConfirmation();
 			result = await viewModel.Result.WaitAsync(cancellationToken);
 		}
 		catch (OperationCanceledException)
@@ -214,6 +221,7 @@ public class FormsToolModule : ToolModule
 		InputResult result;
 		try
 		{
+			using var confirmation = _chatExecutionStatusService.WithConfirmation();
 			result = await viewModel.Result.WaitAsync(cancellationToken);
 		}
 		catch (OperationCanceledException)
@@ -256,11 +264,20 @@ public class FormsToolModule : ToolModule
 
 		message.AdditionalViewModels.Add(viewModel);
 
-		var result = await viewModel.Result.WaitAsync(cancellationToken);
-		if (result.Paths.Length == 0)
-			return ReactiveToolResult.CreateError("User did not select any files.");
+		try
+		{
+			using var confirmation = _chatExecutionStatusService.WithConfirmation();
+			var result = await viewModel.Result.WaitAsync(cancellationToken);
+			if (result.Paths.Length == 0)
+				return ReactiveToolResult.CreateError("User did not select any files.");
 
-		var pathsStr = string.Join(", ", result.Paths);
-		return ReactiveToolResult.CreateSuccess($"User selected files: {pathsStr}.");
+			var pathsStr = string.Join(", ", result.Paths);
+			return ReactiveToolResult.CreateSuccess($"User selected files: {pathsStr}.");
+		}
+		catch (OperationCanceledException)
+		{
+			message.AdditionalViewModels.Remove(viewModel);
+			return ReactiveToolResult.CreateError("User cancelled file selection.");
+		}
 	}
 }

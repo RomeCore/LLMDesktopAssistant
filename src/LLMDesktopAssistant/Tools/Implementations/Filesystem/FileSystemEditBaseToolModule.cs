@@ -1,3 +1,5 @@
+using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Tools.Consents;
 using LLMDesktopAssistant.Tools.MVVM.Diff;
 using LLMDesktopAssistant.Utils.Files;
 
@@ -51,7 +53,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					diffVM.Decline(null);
 				});
 
-				var decision = await diffVM.ConfirmationTask;
+				var chatStatusService = ctx.Chat.Services.GetService<IChatExecutionStatusService>();
+
+				MemorizedDecision decision;
+				using (var askStatus = chatStatusService?.WithConfirmation())
+					decision = await diffVM.ConfirmationTask;
+				
 				if (decision.Approved)
 				{
 					return new DiffPostProcessResult

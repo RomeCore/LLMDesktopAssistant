@@ -8,6 +8,8 @@ namespace LLMDesktopAssistant.Tools.Consents
 
 		void MemorizeConsent(Chat? chat, string toolName, ToolConsentResult consentResult);
 
+		bool TryGetMemorizedDecision(Chat? chat, string toolName, out ToolPolicyDecision decision, out string? message);
+
 		/// <summary>
 		/// Gets the session-memorized consent decisions for the given chat.
 		/// </summary>
@@ -28,6 +30,5 @@ namespace LLMDesktopAssistant.Tools.Consents
 		/// </summary>
 		/// <param name="chat">The chat to clear the decisions for, or <see langword="null"/>.</param>
 		void ClearConsents(Chat? chat);
-		bool TryGetMemorizedDecision(Chat? chat, string toolName, out ToolPolicyDecision decision, out string? message);
 	}
 }
