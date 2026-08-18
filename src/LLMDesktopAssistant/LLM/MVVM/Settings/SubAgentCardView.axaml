@@ -1,0 +1,467 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.SubAgentCardView"
+			 x:DataType="local:SubAgentCardViewModel">
+
+	<UserControl.Styles>
+
+		<Style Selector="Border.chip">
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="6,2"/>
+			<Setter Property="Margin" Value="0,0,4,2"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource SecondaryAccentBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="TextBlock.chipText">
+			<Setter Property="FontSize" Value="11"/>
+			<Setter Property="Opacity" Value="0.8"/>
+		</Style>
+
+		<Style Selector="Button.chipButton">
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="6,2"/>
+			<Setter Property="Margin" Value="0,0,4,2"/>
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource SecondaryAccentBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="FontSize" Value="11"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="Button.chipButton:pointerover">
+			<Setter Property="Opacity" Value="0.7"/>
+		</Style>
+
+	</UserControl.Styles>
+
+	<UserControl.Resources>
+
+		<DataTemplate x:Key="StringChipTemplate" x:DataType="x:String">
+			<Border Classes="chip">
+				<TextBlock Classes="chipText" Text="{Binding}"/>
+			</Border>
+		</DataTemplate>
+
+		<DataTemplate x:Key="TagChipTemplate" x:DataType="x:String">
+			<Button Classes="chipButton"
+					Command="{Binding #TagsItemsControl.DataContext.FilterByTagCommand}"
+					CommandParameter="{Binding}"
+					ToolTip.Tip="{loc:Loc settings.sub_agents.search.placeholder}">
+				<StackPanel Orientation="Horizontal" Spacing="2">
+					<ico:MaterialIcon Kind="TagOutline" Width="10" Height="10" VerticalAlignment="Center"/>
+					<TextBlock Text="{Binding}"/>
+				</StackPanel>
+			</Button>
+		</DataTemplate>
+
+		<DataTemplate x:Key="MemoryBlockChipTemplate" x:DataType="local:SubAgentMemoryBlockItem">
+			<Border Classes="chip">
+				<StackPanel Orientation="Horizontal" Spacing="2">
+					<TextBlock Classes="chipText" Text="{Binding Name}"/>
+					<TextBlock Classes="chipText" Text="{Binding ModeDisplayName}" Opacity="0.6"/>
+				</StackPanel>
+			</Border>
+		</DataTemplate>
+
+	</UserControl.Resources>
+
+	<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+			BorderThickness="1"
+			CornerRadius="4"
+			Padding="8"
+			Margin="0,0,0,8">
+
+		<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+			<!-- ============================================================ -->
+			<!-- Row 0: Toggle | Name | Model | Reset                         -->
+			<!-- ============================================================ -->
+			<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" VerticalAlignment="Center">
+
+				<!-- Enabled toggle (agent settings) -->
+				<CheckBox Grid.Column="0"
+						  IsChecked="{Binding Enabled}"
+						  HorizontalAlignment="Center"
+						  VerticalAlignment="Center"
+						  IsVisible="{Binding CanToggle}"/>
+
+				<!-- Enabled indicator (chat settings) -->
+				<Panel Grid.Column="0" IsVisible="{Binding CanToggle, Converter={StaticResource InverseBooleanConverter}}">
+					<ico:MaterialIcon Kind="Check"
+									  Width="16" Height="16"
+									  Foreground="{DynamicResource PrimaryAccentBrush}"
+									  VerticalAlignment="Center"
+									  IsVisible="{Binding Enabled}"/>
+					<ico:MaterialIcon Kind="Close"
+									  Width="16" Height="16"
+									  Opacity="0.5"
+									  VerticalAlignment="Center"
+									  IsVisible="{Binding Enabled, Converter={StaticResource InverseBooleanConverter}}"/>
+				</Panel>
+
+				<!-- Name -->
+				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" Margin="8,0,8,0" VerticalAlignment="Center">
+					<ico:MaterialIcon Kind="RobotHappy"
+									  Foreground="{DynamicResource PrimaryAccentBrush}"
+									  Width="20" Height="20"
+									  VerticalAlignment="Center"/>
+					<TextBlock Text="{Binding Name}"
+							   FontWeight="Bold"
+							   VerticalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"/>
+				</StackPanel>
+
+				<!-- Model selector (agent settings) -->
+				<ctrl:ModelSelectorControl Grid.Column="2"
+											SelectedModel="{Binding SelectedModel, Mode=TwoWay}"
+											VerticalAlignment="Center"
+											IsVisible="{Binding CanToggle}"/>
+
+				<!-- Reset (agent settings) -->
+				<Button Grid.Column="3"
+						Command="{Binding ResetCommand}"
+						HorizontalAlignment="Center"
+						Classes="IconButton"
+						Margin="4,0,0,0"
+						ToolTip.Tip="{loc:Loc common.reset}"
+						IsVisible="{Binding CanToggle}">
+					<ico:MaterialIcon Kind="Refresh"/>
+				</Button>
+			</Grid>
+
+			<!-- ============================================================ -->
+			<!-- Row 1: Description                                           -->
+			<!-- ============================================================ -->
+			<TextBlock Grid.Row="1"
+					   Text="{Binding Description}"
+					   Opacity="0.7"
+					   FontSize="12"
+					   TextWrapping="Wrap"
+					   Margin="28,4,0,0"
+					   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
+			<!-- ============================================================ -->
+			<!-- Row 2: Badges | Tags | Source | Definition model             -->
+			<!-- ============================================================ -->
+			<StackPanel Grid.Row="2" Orientation="Horizontal" Margin="28,4,0,0" Spacing="4">
+
+				<Border Classes="chip" IsVisible="{Binding ToolsBadge, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+					<StackPanel Orientation="Horizontal" Spacing="2">
+						<ico:MaterialIcon Kind="Wrench" Width="11" Height="11" VerticalAlignment="Center" Opacity="0.7"/>
+						<TextBlock Classes="chipText" Text="{Binding ToolsBadge}"/>
+					</StackPanel>
+				</Border>
+
+				<Border Classes="chip" IsVisible="{Binding SkillsBadge, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+					<StackPanel Orientation="Horizontal" Spacing="2">
+						<ico:MaterialIcon Kind="PuzzleOutline" Width="11" Height="11" VerticalAlignment="Center" Opacity="0.7"/>
+						<TextBlock Classes="chipText" Text="{Binding SkillsBadge}"/>
+					</StackPanel>
+				</Border>
+
+				<Border Classes="chip" IsVisible="{Binding SubAgentsBadge, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+					<StackPanel Orientation="Horizontal" Spacing="2">
+						<ico:MaterialIcon Kind="SourceBranch" Width="11" Height="11" VerticalAlignment="Center" Opacity="0.7"/>
+						<TextBlock Classes="chipText" Text="{Binding SubAgentsBadge}"/>
+					</StackPanel>
+				</Border>
+
+				<Border Classes="chip" IsVisible="{Binding MemoryBadge, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+					<StackPanel Orientation="Horizontal" Spacing="2">
+						<ico:MaterialIcon Kind="Chip" Width="11" Height="11" VerticalAlignment="Center" Opacity="0.7"/>
+						<TextBlock Classes="chipText" Text="{Binding MemoryBadge}"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Definition model (chat settings) -->
+				<Border Classes="chip" IsVisible="{Binding CanToggle, Converter={StaticResource InverseBooleanConverter}}">
+					<StackPanel Orientation="Horizontal" Spacing="2">
+						<ico:MaterialIcon Kind="Brain" Width="11" Height="11" VerticalAlignment="Center" Opacity="0.7"/>
+						<TextBlock Classes="chipText" Text="{Binding DefinitionModel}"/>
+					</StackPanel>
+				</Border>
+
+				<!-- Source indicator -->
+				<StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" Margin="4,0,0,0">
+					<ico:MaterialIcon Kind="{Binding SourceIcon}" Width="12" Height="12" Opacity="0.5" VerticalAlignment="Center"/>
+					<TextBlock Text="{Binding SourceDisplayName}" Opacity="0.5" FontSize="11" VerticalAlignment="Center"/>
+				</StackPanel>
+
+				<!-- Tags -->
+				<ItemsControl x:Name="TagsItemsControl"
+							  ItemsSource="{Binding Tags}"
+							  IsVisible="{Binding Tags.Count}"
+							  VerticalAlignment="Center">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" Spacing="0"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<StaticResource ResourceKey="TagChipTemplate"/>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+
+			<!-- ============================================================ -->
+			<!-- Row 3: Diagnostics + link issues                             -->
+			<!-- ============================================================ -->
+			<StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="4" Margin="28,4,0,0">
+
+				<!-- Diagnostic flags -->
+				<ItemsControl ItemsSource="{Binding DiagnosticFlags}"
+							  IsVisible="{Binding DiagnosticFlags.Count}"
+							  VerticalAlignment="Center">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Spacing="2" Orientation="Horizontal"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="messages:SubAgentDiagnosticFlagInfo">
+							<Panel ToolTip.Tip="{Binding Description}">
+								<ico:MaterialIcon Kind="{Binding Icon}"
+												  Foreground="{Binding Color}"
+												  Background="Transparent"
+												  Width="14" Height="14"/>
+							</Panel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+				<!-- Link issues -->
+				<ItemsControl ItemsSource="{Binding LinkIssueItems}"
+							  IsVisible="{Binding LinkIssueItems.Count}"
+							  VerticalAlignment="Center">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Spacing="4" Orientation="Horizontal"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="local:SubAgentLinkIssueItem">
+							<StackPanel Orientation="Horizontal" Spacing="2" ToolTip.Tip="{Binding Text}">
+								<ico:MaterialIcon Kind="LinkOff"
+												  Foreground="Orange"
+												  Width="14" Height="14"
+												  VerticalAlignment="Center"/>
+								<TextBlock Text="{Binding Text}"
+										   Foreground="Orange"
+										   FontSize="11"
+										   VerticalAlignment="Center"/>
+							</StackPanel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+
+			<!-- ============================================================ -->
+			<!-- Row 4: Path + file actions                                   -->
+			<!-- ============================================================ -->
+			<Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="28,4,0,0"
+				  IsVisible="{Binding IsFileBased}">
+
+				<TextBlock Grid.Column="0"
+						   Text="{Binding Path}"
+						   Opacity="0.4"
+						   FontSize="11"
+						   TextTrimming="CharacterEllipsis"
+						   VerticalAlignment="Center"
+						   IsVisible="{Binding Path, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
+				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+					<Button Command="{Binding OpenFileCommand}"
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc settings.sub_agents.open}">
+						<ico:MaterialIcon Kind="OpenInNew" Width="14" Height="14"/>
+					</Button>
+					<Button Command="{Binding ShowInExplorerCommand}"
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc settings.sub_agents.show_in_explorer}">
+						<ico:MaterialIcon Kind="FolderOpen" Width="14" Height="14"/>
+					</Button>
+					<Button Command="{Binding DeleteFileCommand}"
+							Classes="IconButton"
+							ToolTip.Tip="{loc:Loc settings.sub_agents.delete}">
+						<ico:MaterialIcon Kind="Delete" Width="14" Height="14"/>
+					</Button>
+				</StackPanel>
+			</Grid>
+
+			<!-- ============================================================ -->
+			<!-- Row 5: Details toggle                                        -->
+			<!-- ============================================================ -->
+			<ToggleButton Grid.Row="5"
+						  Margin="24,4,0,0"
+						  Command="{Binding ToggleDetailsCommand}"
+						  IsChecked="{Binding IsDetailsVisible, Mode=OneWay}">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<ico:MaterialIcon Kind="CardAccountDetailsOutline" Width="16" Height="16" VerticalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc settings.sub_agents.details}" VerticalAlignment="Center"/>
+				</StackPanel>
+			</ToggleButton>
+
+			<!-- ============================================================ -->
+			<!-- Row 6: Details content                                       -->
+			<!-- ============================================================ -->
+			<StackPanel Grid.Row="6"
+						Spacing="8"
+						Margin="24,8,0,0"
+						IsVisible="{Binding IsDetailsVisible}">
+
+				<TextBlock Text="{loc:Loc settings.sub_agents.details.none}"
+						   Opacity="0.5"
+						   IsVisible="{Binding HasDetails, Converter={StaticResource InverseBooleanConverter}}"/>
+
+				<!-- System prompt -->
+				<StackPanel Spacing="2" IsVisible="{Binding SystemPrompt, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+					<TextBlock Text="{loc:Loc settings.sub_agents.details.system_prompt}"
+							   FontWeight="SemiBold"
+							   Opacity="0.8"
+							   FontSize="12"/>
+					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+							BorderThickness="1"
+							CornerRadius="4"
+							Padding="8">
+						<ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto">
+							<TextBlock Text="{Binding SystemPrompt}"
+									   FontFamily="Cascadia Mono,Consolas,monospace"
+									   FontSize="11"
+									   Opacity="0.8"
+									   TextWrapping="Wrap"/>
+						</ScrollViewer>
+					</Border>
+				</StackPanel>
+
+				<!-- Tools -->
+				<StackPanel Spacing="2" IsVisible="{Binding AllowedTools.Count}">
+					<TextBlock Text="{loc:Loc settings.sub_agents.details.allowed_tools}"
+							   FontWeight="SemiBold" Opacity="0.8" FontSize="12"/>
+					<ItemsControl ItemsSource="{Binding AllowedTools}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<StaticResource ResourceKey="StringChipTemplate"/>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+
+				<StackPanel Spacing="2" IsVisible="{Binding AvailableTools.Count}">
+					<TextBlock Text="{loc:Loc settings.sub_agents.details.available_tools}"
+							   FontWeight="SemiBold" Opacity="0.8" FontSize="12"/>
+					<ItemsControl ItemsSource="{Binding AvailableTools}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<StaticResource ResourceKey="StringChipTemplate"/>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+
+				<StackPanel Spacing="2" IsVisible="{Binding DisallowedTools.Count}">
+					<TextBlock Text="{loc:Loc settings.sub_agents.details.disallowed_tools}"
+							   FontWeight="SemiBold" Opacity="0.8" FontSize="12"/>
+					<ItemsControl ItemsSource="{Binding DisallowedTools}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<StaticResource ResourceKey="StringChipTemplate"/>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+
+				<!-- Skills -->
+				<StackPanel Spacing="2" IsVisible="{Binding Skills.Count}">
+					<TextBlock Text="{loc:Loc settings.sub_agents.details.skills}"
+							   FontWeight="SemiBold" Opacity="0.8" FontSize="12"/>
+					<ItemsControl ItemsSource="{Binding Skills}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<StaticResource ResourceKey="StringChipTemplate"/>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+
+				<!-- Nested sub-agents -->
+				<StackPanel Spacing="2" IsVisible="{Binding SubAgentNames.Count}">
+					<TextBlock Text="{loc:Loc settings.sub_agents.details.sub_agents}"
+							   FontWeight="SemiBold" Opacity="0.8" FontSize="12"/>
+					<ItemsControl ItemsSource="{Binding SubAgentNames}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<StaticResource ResourceKey="StringChipTemplate"/>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+
+				<!-- Memory blocks -->
+				<StackPanel Spacing="2" IsVisible="{Binding MemoryBlocks.Count}">
+					<TextBlock Text="{loc:Loc settings.sub_agents.details.memory_blocks}"
+							   FontWeight="SemiBold" Opacity="0.8" FontSize="12"/>
+					<ItemsControl ItemsSource="{Binding MemoryBlocks}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<StaticResource ResourceKey="MemoryBlockChipTemplate"/>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+
+				<!-- Metadata -->
+				<StackPanel Spacing="2" IsVisible="{Binding MetadataItems.Count}">
+					<TextBlock Text="{loc:Loc settings.sub_agents.details.metadata}"
+							   FontWeight="SemiBold" Opacity="0.8" FontSize="12"/>
+					<ItemsControl ItemsSource="{Binding MetadataItems}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="local:SubAgentMetadataItem">
+								<Grid ColumnDefinitions="Auto,*" Margin="0,1">
+									<TextBlock Grid.Column="0"
+											   Text="{Binding Key}"
+											   FontWeight="SemiBold"
+											   Opacity="0.8"
+											   Margin="0,0,8,0"/>
+									<TextBlock Grid.Column="1"
+											   Text="{Binding Value}"
+											   Opacity="0.7"
+											   TextWrapping="Wrap"/>
+								</Grid>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+
+			</StackPanel>
+
+		</Grid>
+	</Border>
+</UserControl>

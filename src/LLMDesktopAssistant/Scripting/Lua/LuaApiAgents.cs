@@ -127,6 +127,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 			        { "project_notes", "user_preferences" }
 
+			    - sub_agents: table (optional) — Array of registered sub-agent names (strings)
+			      to make available to the agent. The agent can then delegate sub-tasks
+			      to them via the agent-callsub tool. The sub-agents are resolved from
+			      the available sub-agent set (chat and profile sources). If omitted,
+			      no sub-agents are available to the agent.
+
+			        { "code-reviewer", "docs-writer" }
+
 			  RETURNS:
 			    - If a single property table is passed: table — array of response messages
 			      (same format as input messages, excluding the input messages themselves).
@@ -301,6 +309,17 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  })
 			  print(table.last(r).content)
 
+			  -- With sub-agents
+			  local r = await dass.agents.execute({
+			    task_title = "Code review",
+			    messages = {
+			      { role = "system", content = "You can delegate sub-tasks to sub-agents." },
+			      { role = "user", content = "Review the code and write documentation for it." }
+			    },
+			    sub_agents = { "code-reviewer", "docs-writer" }
+			  })
+			  print(table.last(r).content)
+
 			  -- Batch execution: run multiple agents concurrently
 			  local results = await dass.agents.execute(
 			    {
@@ -353,6 +372,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    "home_directory" are optional; home_directory defaults to the directory
 			    of "path". A function body is invoked on demand to produce the skill body
 			    and can be async.
+			  - SUB-AGENTS: pass string entries (registered sub-agent names) in the
+			    "sub_agents" array. Sub-agents are resolved from the available sub-agent
+			    set built from the chat and profile sources; unknown names cause an error.
 			  - Image attachments: use `image.load(path)` or `image.create(width, height)`
 			    to create attachment objects.
 			  - Returns the full conversation history produced by the agent AFTER the input
@@ -374,17 +396,20 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private readonly IModelManager _modelManager;
 		private readonly IAgentManagementService _agentManager;
 		private readonly ISkillsetBuildingService _skillsetBuilder;
+		private readonly ISubAgentSetBuildingService _subAgentSetBuilder;
 		private readonly IToolsetCacheService _toolsetCache;
 		private LuaService _luaService = null!;
 
 		public LuaApiAgents(IChatSettingsService chatSettings, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
-			IAgentManagementService agentManager, ISkillsetBuildingService skillsetBuilder, IToolsetCacheService toolsetCache)
+			IAgentManagementService agentManager, ISkillsetBuildingService skillsetBuilder,
+			ISubAgentSetBuildingService subAgentSetBuilder, IToolsetCacheService toolsetCache)
 		{
 			_chatSettings = chatSettings;
 			_agentTaskExecutor = agentTaskExecutor;
 			_modelManager = modelManager;
 			_agentManager = agentManager;
 			_skillsetBuilder = skillsetBuilder;
+			_subAgentSetBuilder = subAgentSetBuilder;
 			_toolsetCache = toolsetCache;
 		}
 
@@ -610,8 +635,33 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				}
 			}
 
+			// Resolve sub-agents: explicit array of registered sub-agent names requested by the script.
+			var subAgents = new List<TaskSubAgentDescriptor>();
+			var subAgentsOption = parameters.Get("sub_agents");
+			if (subAgentsOption is LuaTable subAgentsOptionTable)
+			{
+				var subAgentMap = subAgentsOptionTable.Values.Any(v => v is LuaString) ?
+					_subAgentSetBuilder.GetAvailableSubAgents().ToImmutableDictionary(s => s.Name) :
+					null;
+
+				foreach (var subAgentValue in subAgentsOptionTable.Values)
+				{
+					if (subAgentValue is not LuaString subAgentName)
+						throw new Exception("sub_agents must be an array of sub-agent name strings.");
+
+					if (!subAgentMap!.TryGetValue(subAgentName.Value, out var subAgentInfo))
+						throw new Exception($"sub-agent '{subAgentName.Value}' is not available.");
+
+					subAgents.Add(new TaskSubAgentDescriptor
+					{
+						Name = subAgentInfo.Name,
+						Description = subAgentInfo.Description
+					});
+				}
+			}
+
 			// Resolve memory blocks: explicit array of block names requested by the script.
-			ImmutableList<TaskMemoryBlock>? memoryBlocks = null;
+			var memoryBlocks = new List<TaskMemoryBlock>();
 			var memoryBlocksOption = parameters.Get("memory_blocks");
 			if (memoryBlocksOption is LuaTable memoryBlocksOptionTable)
 			{
@@ -622,7 +672,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					: [];
 				var availableMap = available.ToImmutableDictionary(b => b.Block.Name);
 
-				var resolvedBlocks = ImmutableList.CreateBuilder<TaskMemoryBlock>();
 				foreach (var blockValue in memoryBlocksOptionTable.Values)
 				{
 					var blockName = (blockValue as LuaString)?.Value;
@@ -632,11 +681,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					if (!availableMap.TryGetValue(blockName, out var block))
 						throw new Exception($"memory block '{blockName}' is not available.");
 
-					resolvedBlocks.Add(block);
+					memoryBlocks.Add(block);
 				}
-
-				if (resolvedBlocks.Count > 0)
-					memoryBlocks = resolvedBlocks.ToImmutable();
 			}
 
 			var taskTitle = parameters.Get("task_title") is LuaString taskTitleStr ? taskTitleStr.Value : null;
@@ -660,7 +706,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					InitialMessages = [.. messages],
 					Tools = [.. tools],
 					Skills = [.. skills],
-					MemoryBlocks = memoryBlocks,
+					SubAgents = [.. subAgents],
+					MemoryBlocks = [.. memoryBlocks],
 					AutoApproveBehaviours = autoApproveBehaviours,
 					DisallowedBehaviours = disallowedBehaviours
 				}, ctx.CancellationToken);

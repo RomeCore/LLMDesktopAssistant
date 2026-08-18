@@ -31,13 +31,13 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly IToolsetBuildingService _toolsetBuildingService;
 		private readonly ISkillsetBuildingService _skillsetBuildingService;
 		private readonly ISubAgentSetBuildingService _subAgentSetBuildingService;
-		private readonly ISubAgentToolResolver _subAgentToolResolver;
+		private readonly ISubAgentTaskParamsResolver _subAgentParamsResolver;
 
 		public AgenticToolModule(Chat chat, IChatSettingsService chatSettings, TemplateLibraryAccessor templates,
 			WorkingDirectoryAccessService fileAccess,
 			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
 			IToolsetBuildingService toolsetBuildingService, ISkillsetBuildingService skillsetBuildingService,
-			ISubAgentSetBuildingService subAgentSetBuildingService, ISubAgentToolResolver subAgentToolResolver)
+			ISubAgentSetBuildingService subAgentSetBuildingService, ISubAgentTaskParamsResolver subAgentParamsResolver)
 		{
 			_chat = chat;
 			_chatSettings = chatSettings;
@@ -49,7 +49,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			_toolsetBuildingService = toolsetBuildingService;
 			_skillsetBuildingService = skillsetBuildingService;
 			_subAgentSetBuildingService = subAgentSetBuildingService;
-			_subAgentToolResolver = subAgentToolResolver;
+			_subAgentParamsResolver = subAgentParamsResolver;
 
 			AddTool(new ToolInitializationInfo
 			{
@@ -324,12 +324,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			ToolBehaviour autoApproveBehaviours = policy.AutoApproveBehaviours,
 				disallowedBehaviours = policy.DisallowedBehaviours;
 
-			var resolver = ctx.Chat.Services.GetRequiredService<ISubAgentTaskParamsResolver>();
-
 			AgentTaskLaunchParameters parameters;
 			try
 			{
-				parameters = resolver.Resolve(new AgentTaskLaunchParameters
+				parameters = _subAgentParamsResolver.Resolve(new AgentTaskLaunchParameters
 				{
 					TaskName = subAgent.Name,
 					TriggeredChat = ctx.Chat,

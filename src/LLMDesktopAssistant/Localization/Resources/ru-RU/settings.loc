@@ -307,3 +307,55 @@ user.profile_image: Изображение профиля
 user.profile_image.hint: Выберите изображение для профиля пользователя. Будет автоматически обрезано до 128x128.
 user.select_image: Выбрать изображение...
 user.select_image.title: Выберите изображение профиля пользователя
+chat.sub_agents: Суб-агенты
+agent.sub_agents.sub_agent_list: Переопределение суб-агентов
+agent.sub_agents.sub_agent_list.hint: Переопределите настройки суб-агентов для этого агента. Отключённые суб-агенты недоступны для вызова. Модель можно переопределить для каждого суб-агента.
+sub_agents.enable: Включить суб-агентов
+sub_agents.available: Доступные суб-агенты
+sub_agents.available.hint: Суб-агенты загружаются из профиля пользователя, рабочих директорий и дополнительных источников. Раскройте карточку, чтобы увидеть детали.
+sub_agents.search.placeholder: Поиск по имени, описанию или тегам...
+sub_agents.create: Создать
+sub_agents.create.title: Новый суб-агент
+sub_agents.create.description: Имя будет использовано как имя файла и идентификатор суб-агента.
+sub_agents.create.name.label: Имя суб-агента
+sub_agents.create.name.placeholder: my-agent
+sub_agents.create.error.invalid_name: Недопустимое имя. Разрешены строчные латинские буквы, цифры и дефисы без повторов и ведущих/замыкающих дефисов.
+sub_agents.create.error.exists: Суб-агент с таким именем уже существует.
+sub_agents.create.success: Суб-агент создан. Файл открыт для редактирования.
+sub_agents.sources: Источники суб-агентов
+sub_agents.fetch_all: Искать во всех рабочих директориях
+sub_agents.fetch_all.hint: Искать суб-агентов во всех рабочих директориях, а не только в активной.
+sub_agents.additional_dirs: Дополнительные директории суб-агентов
+sub_agents.additional_dirs.hint: Пути, аналогичные директориям agents/. Пример: C:/MyProject/.claude/agents/
+sub_agents.dir.placeholder: C:/MyProject/.claude/agents
+sub_agents.additional_files: Дополнительные файлы суб-агентов
+sub_agents.additional_files.hint: Пути к отдельным файлам суб-агентов.
+sub_agents.file.placeholder: C:/MyProject/.claude/agents/my-agent.md
+sub_agents.select_directory: Выберите директорию суб-агентов
+sub_agents.select_file: Выберите файл суб-агента
+sub_agents.empty: Суб-агенты не найдены. Проверьте источники или создайте нового суб-агента.
+sub_agents.details: Подробности
+sub_agents.details.system_prompt: Системный промпт
+sub_agents.details.allowed_tools: Без подтверждения
+sub_agents.details.available_tools: Доступные
+sub_agents.details.disallowed_tools: Запрещённые
+sub_agents.details.skills: Навыки
+sub_agents.details.sub_agents: Вложенные суб-агенты
+sub_agents.details.memory_blocks: Блоки памяти
+sub_agents.details.metadata: Метаданные
+sub_agents.details.none: Не указано
+sub_agents.badge.tools: {0} инструментов
+sub_agents.badge.skills: {0} навыков
+sub_agents.badge.sub_agents: {0} вложенных
+sub_agents.badge.memory: {0} блоков памяти
+sub_agents.model.default: По умолчанию
+sub_agents.model.label: Модель
+sub_agents.open: Открыть в редакторе
+sub_agents.show_in_explorer: Показать в проводнике
+sub_agents.delete: Удалить файл
+sub_agents.delete.title: Удалить суб-агента?
+sub_agents.delete.confirm: Файл {0} будет безвозвратно удалён. Это действие нельзя отменить.
+sub_agents.links.skill_not_found: Навык «{0}» не найден
+sub_agents.links.sub_agent_not_found: Суб-агент «{0}» не найден
+sub_agents.links.memory_block_not_found: Блок памяти «{0}» не найден
+

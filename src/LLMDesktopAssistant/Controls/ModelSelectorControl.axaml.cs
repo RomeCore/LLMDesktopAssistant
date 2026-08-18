@@ -107,12 +107,12 @@ namespace LLMDesktopAssistant.Controls
 			}
 
 			// If not found, add it temporarily
-			Selector.Items.Insert(1, new ModelItemWrapper
+			Selector.Items.Insert(0, new ModelItemWrapper
 			{
 				FullName = newValue,
 				DisplayText = newValue
 			});
-			Selector.SelectedIndex = 1;
+			Selector.SelectedIndex = 0;
 		}
 
 		private void Selector_SelectionChanged(object? sender, SelectionChangedEventArgs e)

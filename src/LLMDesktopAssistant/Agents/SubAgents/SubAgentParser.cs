@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using RCParsing;
@@ -136,7 +137,11 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 							var allowedToolsBuilder = ImmutableList.CreateBuilder<ToolNameWithSpecifier>();
 							var availableToolsBuilder = ImmutableList.CreateBuilder<ToolNameWithSpecifier>();
 							var disallowedToolsBuilder = ImmutableList.CreateBuilder<ToolNameWithSpecifier>();
+							var skillsBuilder = ImmutableList.CreateBuilder<string>();
+							var subAgentsBuilder = ImmutableList.CreateBuilder<string>();
+							var memoryBlocksBuilder = ImmutableDictionary.CreateBuilder<string, MemoryBlockAttachmentMode>();
 							var tagsBuilder = ImmutableList.CreateBuilder<string>();
+
 							var additionalPropertiesBuilder = ImmutableDictionary.CreateBuilder<string, YamlNode>();
 
 							if (!string.IsNullOrEmpty(frontmatter.Compatibility))
@@ -197,6 +202,71 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 								ParseToolList(disallowedTools, ref disallowedToolsBuilder);
 							}
 
+							static void ParseStringList(YamlNode rootNode, ref ImmutableList<string>.Builder builder)
+							{
+								if (rootNode is YamlScalarNode scalarNode)
+								{
+									if (!string.IsNullOrWhiteSpace(scalarNode.Value))
+										builder.Add(scalarNode.Value.Trim());
+								}
+								else if (rootNode is YamlSequenceNode seqNode)
+								{
+									foreach (var node in seqNode)
+									{
+										if (node is YamlScalarNode s && !string.IsNullOrWhiteSpace(s.Value))
+											builder.Add(s.Value.Trim());
+									}
+								}
+							}
+
+							static void ParseMemoryBlocks(YamlNode rootNode, ref ImmutableDictionary<string, MemoryBlockAttachmentMode>.Builder builder)
+							{
+								if (rootNode is YamlMappingNode mappingNode)
+								{
+									foreach (var (key, value) in mappingNode.Children)
+									{
+										var blockName = key.ToString().Trim();
+										if (blockName.Length == 0)
+											continue;
+
+										var mode = MemoryBlockAttachmentMode.Standard;
+										if (value is YamlScalarNode modeNode &&
+											Enum.TryParse<MemoryBlockAttachmentMode>(modeNode.Value, ignoreCase: true, out var parsed))
+										{
+											mode = parsed;
+										}
+										builder[blockName] = mode;
+									}
+								}
+								else if (rootNode is YamlSequenceNode seqNode)
+								{
+									foreach (var node in seqNode)
+									{
+										if (node is YamlScalarNode s && !string.IsNullOrWhiteSpace(s.Value))
+											builder[s.Value.Trim()] = MemoryBlockAttachmentMode.Standard;
+									}
+								}
+								else if (rootNode is YamlScalarNode scalarNode && !string.IsNullOrWhiteSpace(scalarNode.Value))
+								{
+									builder[scalarNode.Value.Trim()] = MemoryBlockAttachmentMode.Standard;
+								}
+							}
+
+							if (frontmatterMap!.Children.TryGetValue("skills", out var skillsNode))
+							{
+								ParseStringList(skillsNode, ref skillsBuilder);
+							}
+
+							if (frontmatterMap!.Children.TryGetValue("sub-agents", out var subAgentsNode))
+							{
+								ParseStringList(subAgentsNode, ref subAgentsBuilder);
+							}
+
+							if (frontmatterMap!.Children.TryGetValue("memory-blocks", out var memoryBlocksNode))
+							{
+								ParseMemoryBlocks(memoryBlocksNode, ref memoryBlocksBuilder);
+							}
+
 							if (frontmatter.Tags is not null)
 							{
 								foreach (var tag in frontmatter.Tags)
@@ -220,8 +290,11 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 										case "allowed-tools":
 										case "available-tools":
 										case "disallowed-tools":
-										case "tags":
 										case "metadata":
+										case "skills":
+										case "sub-agents":
+										case "memory-blocks":
+										case "tags":
 											continue;
 
 										default:
@@ -243,6 +316,9 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 								AllowedTools = allowedToolsBuilder.ToImmutableList(),
 								AvailableTools = availableToolsBuilder.ToImmutableList(),
 								DisallowedTools = disallowedToolsBuilder.ToImmutableList(),
+								Skills = skillsBuilder.ToImmutableList(),
+								SubAgents = subAgentsBuilder.ToImmutableList(),
+								MemoryBlocks = memoryBlocksBuilder.ToImmutableDictionary(),
 								Tags = tagsBuilder.ToImmutableList(),
 								AdditionalProperties = additionalPropertiesBuilder.ToImmutableDictionary(),
 								Model = frontmatter.Model,

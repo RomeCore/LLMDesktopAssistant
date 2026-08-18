@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+			 xmlns:card="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:settings="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentSubAgentSettingsView"
+			 x:DataType="local:AgentSubAgentSettingsViewModel">
+
+	<StackPanel Margin="8" Spacing="8">
+
+		<!-- Enable sub-agents checkbox -->
+		<CheckBox IsChecked="{Binding SubAgentSettings.EnableSubAgents}"
+				  Content="{loc:Loc settings.sub_agents.enable}"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,10"/>
+
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc settings.agent.sub_agents.sub_agent_list}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+					  ItemsSource="{x:Static settings:InheritanceLevelItem.AllAgent}"
+					  SelectedItem="{Binding SelectedSubAgentChangesInheritance}"
+					  VerticalAlignment="Center"
+					  MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="settings:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
+
+		<TextBlock Text="{loc:Loc settings.agent.sub_agents.sub_agent_list.hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"/>
+
+		<!-- Search -->
+		<TextBox Text="{Binding SearchText, Mode=TwoWay}"
+				 PlaceholderText="{loc:Loc settings.sub_agents.search.placeholder}"
+				 IsEnabled="{Binding SubAgentSettings.EnableSubAgents}">
+			<TextBox.InnerLeftContent>
+				<ico:MaterialIcon Kind="TextBoxSearch" Width="16" Height="16" Margin="6,0" VerticalAlignment="Center" Opacity="0.5"/>
+			</TextBox.InnerLeftContent>
+		</TextBox>
+
+		<!-- Empty state -->
+		<TextBlock Text="{loc:Loc settings.sub_agents.empty}"
+				   Opacity="0.5"
+				   TextWrapping="Wrap"
+				   IsVisible="{Binding SubAgentItems.Count, Converter={StaticResource InverseBooleanConverter}}"/>
+
+		<ItemsControl ItemsSource="{Binding SubAgentItems}"
+					  IsEnabled="{Binding SubAgentSettings.EnableSubAgents}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="card:SubAgentCardViewModel">
+					<card:SubAgentCardView/>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+	</StackPanel>
+
+</UserControl>

@@ -1,0 +1,38 @@
+// Sub-agents: diagnostics, sources, metadata.
+
+%locale: ru-RU
+%namespace: subagent
+
+diagnostic.fileaccesserror: Ошибка доступа к файлу
+diagnostic.fileaccesserror.hint: Не удалось прочитать файл суб-агента. Проверьте права доступа.
+diagnostic.generalparsingerror: Ошибка парсинга
+diagnostic.generalparsingerror.hint: Непредвиденная ошибка при разборе файла суб-агента.
+diagnostic.missingdescription: Отсутствует описание
+diagnostic.missingdescription.hint: У суб-агента нет описания. Добавьте описание в YAML frontmatter или как первый абзац.
+diagnostic.missingfile: Файл отсутствует
+diagnostic.missingfile.hint: Файл суб-агента не найден по ожидаемому пути.
+diagnostic.missingname: Отсутствует имя
+diagnostic.missingname.hint: У суб-агента нет имени ни в YAML frontmatter, ни в заголовке, ни в имени файла.
+diagnostic.missingyaml: Отсутствует YAML
+diagnostic.missingyaml.hint: В файле суб-агента нет блока YAML frontmatter (--- ... ---).
+diagnostic.missingyamldescription: Отсутствует описание в YAML
+diagnostic.missingyamldescription.hint: Поле 'description' отсутствует в YAML frontmatter. Использовано резервное описание.
+diagnostic.missingyamlname: Отсутствует имя в YAML
+diagnostic.missingyamlname.hint: Поле 'name' отсутствует в YAML frontmatter. Использовано резервное имя.
+diagnostic.namefilemismatch: Несовпадение имени и файла
+diagnostic.namefilemismatch.hint: Имя суб-агента не совпадает с именем файла, содержащего его.
+diagnostic.nameformaterror: Недопустимый формат имени
+diagnostic.nameformaterror.hint: Имя суб-агента содержит недопустимые символы. Разрешены строчные латинские буквы, цифры и дефисы.
+diagnostic.yamldecodingerror: Ошибка декодирования YAML
+diagnostic.yamldecodingerror.hint: Не удалось десериализовать YAML frontmatter в ожидаемую структуру.
+diagnostic.yamlparsingerror: Ошибка синтаксиса YAML
+diagnostic.yamlparsingerror.hint: YAML frontmatter содержит недопустимый синтаксис.
+metadata.author: Автор
+metadata.compatibility: Совместимость
+metadata.license: Лицензия
+metadata.version: Версия
+source.custom: Пользовательский
+source.template: Шаблон
+source.unknown: Неизвестно
+source.userprofile: Профиль пользователя
+source.workingdirectory: Рабочая директория

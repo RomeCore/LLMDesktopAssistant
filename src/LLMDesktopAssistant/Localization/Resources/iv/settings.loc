@@ -307,3 +307,55 @@ user.profile_image: Profile Image
 user.profile_image.hint: Upload a profile image for the user. PNG and JPG supported, will be resized to 128x128.
 user.select_image: Choose Image...
 user.select_image.title: Select user profile image
+chat.sub_agents: Sub-Agents
+agent.sub_agents.sub_agent_list: Sub-Agent Overrides
+agent.sub_agents.sub_agent_list.hint: Override sub-agent settings for this agent. Disabled sub-agents cannot be called. The model can be overridden per sub-agent.
+sub_agents.enable: Enable sub-agents
+sub_agents.available: Available Sub-Agents
+sub_agents.available.hint: Sub-agents are loaded from the user profile, working directories and additional sources. Expand a card to see details.
+sub_agents.search.placeholder: Search by name, description or tags...
+sub_agents.create: Create
+sub_agents.create.title: New Sub-Agent
+sub_agents.create.description: The name will be used as the file name and sub-agent identifier.
+sub_agents.create.name.label: Sub-agent name
+sub_agents.create.name.placeholder: my-agent
+sub_agents.create.error.invalid_name: Invalid name. Only lowercase letters, digits and hyphens are allowed (no repeats and no leading/trailing hyphens).
+sub_agents.create.error.exists: A sub-agent with this name already exists.
+sub_agents.create.success: Sub-agent created. The file is open for editing.
+sub_agents.sources: Sub-Agent Sources
+sub_agents.fetch_all: Search in all working directories
+sub_agents.fetch_all.hint: Search for sub-agents in all working directories instead of only the active one.
+sub_agents.additional_dirs: Additional Sub-Agent Directories
+sub_agents.additional_dirs.hint: Paths similar to agents/ directories. Example: C:/MyProject/.claude/agents/
+sub_agents.dir.placeholder: C:/MyProject/.claude/agents
+sub_agents.additional_files: Additional Sub-Agent Files
+sub_agents.additional_files.hint: Paths to individual sub-agent files.
+sub_agents.file.placeholder: C:/MyProject/.claude/agents/my-agent.md
+sub_agents.select_directory: Select sub-agent directory
+sub_agents.select_file: Select sub-agent file
+sub_agents.empty: No sub-agents found. Check the sources or create a new sub-agent.
+sub_agents.details: Details
+sub_agents.details.system_prompt: System Prompt
+sub_agents.details.allowed_tools: Without Approval
+sub_agents.details.available_tools: Available
+sub_agents.details.disallowed_tools: Disallowed
+sub_agents.details.skills: Skills
+sub_agents.details.sub_agents: Nested Sub-Agents
+sub_agents.details.memory_blocks: Memory Blocks
+sub_agents.details.metadata: Metadata
+sub_agents.details.none: Not specified
+sub_agents.badge.tools: {0} tools
+sub_agents.badge.skills: {0} skills
+sub_agents.badge.sub_agents: {0} nested
+sub_agents.badge.memory: {0} memory blocks
+sub_agents.model.default: Default
+sub_agents.model.label: Model
+sub_agents.open: Open in editor
+sub_agents.show_in_explorer: Show in explorer
+sub_agents.delete: Delete file
+sub_agents.delete.title: Delete sub-agent?
+sub_agents.delete.confirm: The file {0} will be permanently deleted. This action cannot be undone.
+sub_agents.links.skill_not_found: Skill '{0}' not found
+sub_agents.links.sub_agent_not_found: Sub-agent '{0}' not found
+sub_agents.links.memory_block_not_found: Memory block '{0}' not found
+

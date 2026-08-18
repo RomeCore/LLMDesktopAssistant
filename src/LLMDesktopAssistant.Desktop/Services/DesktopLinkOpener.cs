@@ -15,7 +15,8 @@ namespace LLMDesktopAssistant.Desktop.Services
 				Process.Start(new ProcessStartInfo
 				{
 					FileName = uri.AbsoluteUri,
-					UseShellExecute = true
+					UseShellExecute = true,
+					CreateNewProcessGroup = true
 				});
 			}
 			catch (Exception ex)
