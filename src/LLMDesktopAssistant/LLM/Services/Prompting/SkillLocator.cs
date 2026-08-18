@@ -1,6 +1,3 @@
-using AvaloniaEdit.Utils;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Utils;
 
@@ -15,6 +12,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		{
 			// 1. Skill directories
 			List<SkillFileInfo> potentialSkillDirectories = [];
+
+			potentialSkillDirectories.Add(new SkillFileInfo(Directories.Skills, SkillSource.UserProfile));
 
 			var skillSources = chatSettings.Settings.Skills.GetEffectiveSources();
 			potentialSkillDirectories.AddRange(skillSources.AdditionalSkillDirectories.Select(d => new SkillFileInfo(d, SkillSource.Custom)));

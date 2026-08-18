@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 		/// <summary>
 		/// The sub-agent file content getter, excluding the YAML frontmatter.
 		/// </summary>
-		public required Func<string> BodyGetter { get; init; }
+		public required Func<string> SystemPromptGetter { get; init; }
 
 		/// <summary>
 		/// The source of the sub-agent.
@@ -29,11 +29,6 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 		/// The absolute path to the sub-agent file, if applicable. Null otherwise.
 		/// </summary>
 		public string? Path { get; init; } = null;
-
-		/// <summary>
-		/// The home directory for this sub-agent. Null if the sub-agent does not have a home directory.
-		/// </summary>
-		public string? HomeDirectory { get; init; } = null;
 
 		/// <summary>
 		/// The metadata associated with the sub-agent.
@@ -65,6 +60,21 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 		/// Examples: 'Read', 'Bash(git:*)'.
 		/// </summary>
 		public ImmutableList<ToolNameWithSpecifier> DisallowedTools { get; init; } = [];
+
+		/// <summary>
+		/// The list of skill names that the sub-agent can use.
+		/// </summary>
+		public ImmutableList<string> Skills { get; init; } = [];
+
+		/// <summary>
+		/// The list of inner sub-agent names that the sub-agent can use.
+		/// </summary>
+		public ImmutableList<string> SubAgents { get; init; } = [];
+
+		/// <summary>
+		/// The list of memory blocks that the sub-agent can use.
+		/// </summary>
+		public ImmutableDictionary<string, MemoryBlockAttachmentMode> MemoryBlocks { get; init; } = [];
 
 		/// <summary>
 		/// The tags associated with the sub-agent. Used for UI display and search.

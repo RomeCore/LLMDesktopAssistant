@@ -1,8 +1,10 @@
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Agents.Tasks;
+using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Specifiers;
 
-namespace LLMDesktopAssistant.LLM.Services.Tools
+namespace LLMDesktopAssistant.LLM.Services.Agents
 {
 	/// <summary>
 	/// The default implementation of the <see cref="ISubAgentToolResolver"/> interface.
@@ -13,8 +15,10 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	) : ISubAgentToolResolver
 	{
 		/// <inheritdoc/>
-		public IEnumerable<AgentTool> ResolveSubAgentTools(SubAgentInfo agentInfo)
+		public IEnumerable<AgentTool> ResolveSubAgentTools(SubAgentInfo agentInfo, out List<string> errors)
 		{
+			errors = [];
+
 			// Tools are looked up in the aliased tool dictionary so that both primary names
 			// and aliases (e.g. Claude Code compatible names) can be used in sub-agent definitions.
 			var toolLookup = toolsetCache.AliasedTools;
@@ -48,7 +52,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		{
 			return new ChatAgentTool(toolInfo, executionContext: null)
 			{
-				ApprovalLevel = approvalLevel
+				ApprovalLevel = approvalLevel,
+				SpecifierAggregationMode = SpecifierAggregationMode.Prioritized
 			};
 		}
 	}

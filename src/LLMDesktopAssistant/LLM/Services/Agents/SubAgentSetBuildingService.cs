@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{
 						Name = s.Name,
 						Description = s.Description ?? string.Empty,
-						BodyGetter = new(() => s.Template.Template.Render(context, templateFunctions)),
+						SystemPromptGetter = new(() => s.Template.Template.Render(context, templateFunctions)),
 						Source = SubAgentSource.Template
 					};
 				}));
@@ -66,10 +66,9 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{
 						Name = last!.Name,
 						Description = last.Description,
-						BodyGetter = last.BodyGetter,
+						SystemPromptGetter = last.SystemPromptGetter,
 						Source = last.Source,
 						Path = last.Path,
-						HomeDirectory = last.HomeDirectory,
 						Metadata = last.Metadata,
 						AdditionalMetadata = last.AdditionalMetadata,
 						AllowedTools = last.AllowedTools,
@@ -112,9 +111,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 							Name = subAgentInfo.Name,
 							Source = subAgentInfo.Source,
 							Description = subAgentInfo.Description,
-							BodyGetter = subAgentInfo.BodyGetter,
+							SystemPromptGetter = subAgentInfo.SystemPromptGetter,
 							Path = subAgentInfo.Path,
-							HomeDirectory = subAgentInfo.HomeDirectory,
 							Metadata = subAgentInfo.Metadata,
 							AdditionalMetadata = subAgentInfo.AdditionalMetadata,
 							AllowedTools = subAgentInfo.AllowedTools,

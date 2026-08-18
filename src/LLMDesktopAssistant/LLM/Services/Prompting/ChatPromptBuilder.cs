@@ -31,6 +31,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		IAgentManagementService agentManager,
 		IUserManagementService userManager,
 		ISkillsetBuildingService skillsetBuilder,
+		ISubAgentSetBuildingService subAgentSetBuilder,
 		IEnumerable<IPromptBuildingHook> promptBuildingHooks,
 		IEnumerable<IPromptSystemContextExpander> promptSystemContextExpanders,
 		IEnumerable<IPromptMessageContextExpander> promptMessageContextExpanders,
@@ -107,6 +108,11 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				description = s.Description,
 				path = s.Path,
 				body = s.InjectionMode is SkillInjectionMode.Full ? s.BodyGetter() : null
+			});
+			generalContext["sub_agents"] = subAgentSetBuilder.GetSubAgentsForAgent(agent).Select(s => new
+			{
+				name = s.Name,
+				description = s.Description
 			});
 			generalContext["memory_blocks"] = effectiveChatMemoryOptions.EnableMemory && effectiveChatMemoryOptions.ManualControlEnabled && agent.Memory.EnableMemory
 				? agent.Memory.GetEnabledBlocks(chatSettings.Settings)

@@ -21,7 +21,7 @@ public class SubAgentParserTests
 
 		Assert.Equal("test-agent", subAgent.Name);
 		Assert.Equal("A test sub-agent for unit testing.", subAgent.Description);
-		Assert.Empty(subAgent.BodyGetter());
+		Assert.Empty(subAgent.SystemPromptGetter());
 	}
 
 	[Fact]
@@ -109,9 +109,9 @@ public class SubAgentParserTests
 			Some notes here.
 			""");
 
-		Assert.Contains("Step 1: Do something.", subAgent.BodyGetter());
-		Assert.Contains("Step 2: Do another thing.", subAgent.BodyGetter());
-		Assert.Contains("## Notes", subAgent.BodyGetter());
+		Assert.Contains("Step 1: Do something.", subAgent.SystemPromptGetter());
+		Assert.Contains("Step 2: Do another thing.", subAgent.SystemPromptGetter());
+		Assert.Contains("## Notes", subAgent.SystemPromptGetter());
 	}
 
 	[Fact]
@@ -131,7 +131,7 @@ public class SubAgentParserTests
 			This sub-agent does something useful.
 			Use this sub-agent when you need to do X.
 			""", subAgent.Description);
-		Assert.Contains("Detailed instructions go here.", subAgent.BodyGetter());
+		Assert.Contains("Detailed instructions go here.", subAgent.SystemPromptGetter());
 	}
 
 	[Fact]
@@ -141,7 +141,7 @@ public class SubAgentParserTests
 
 		Assert.Equal("fallback-name", subAgent.Name);
 		Assert.Equal("Just some plain text content.", subAgent.Description);
-		Assert.Equal("Just some plain text content.", subAgent.BodyGetter());
+		Assert.Equal("Just some plain text content.", subAgent.SystemPromptGetter());
 	}
 
 	[Fact]
@@ -238,7 +238,7 @@ public class SubAgentParserTests
 	}
 
 	[Fact]
-	public void PathAndHomeDirectory_AreSet()
+	public void Path_IsSet()
 	{
 		var path = "C:\\my-project\\.claude\\agents\\my-agent.md";
 		var subAgent = Parse("""
@@ -249,6 +249,5 @@ public class SubAgentParserTests
 			""", path);
 
 		Assert.Equal(path, subAgent.Path);
-		Assert.Equal("C:\\my-project\\.claude\\agents", subAgent.HomeDirectory);
 	}
 }

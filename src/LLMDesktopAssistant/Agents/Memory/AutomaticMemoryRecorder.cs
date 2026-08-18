@@ -88,7 +88,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				input
 			});
 
-			var tools = new AutomaticMemoryTools(memoryFactStore, memoryLogStore, chat.ChatId, factBlocks, logBlocks,
+			var tools = new AgentMemoryTools(memoryFactStore, memoryLogStore, chat.ChatId, factBlocks, logBlocks,
 					FindSourceMessageId(chat, context.Responses))
 				.CreateRecorderTools();
 

@@ -16,6 +16,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			// 1. Sub-agent directories
 			List<SubAgentFileInfo> potentialSubAgentDirectories = [];
 
+			potentialSubAgentDirectories.Add(new SubAgentFileInfo(Directories.Agents, SubAgentSource.UserProfile));
+
 			var subAgentSources = chatSettings.Settings.SubAgents.GetEffectiveSources();
 			potentialSubAgentDirectories.AddRange(subAgentSources.AdditionalSubAgentDirectories.Select(d => new SubAgentFileInfo(d, SubAgentSource.Custom)));
 

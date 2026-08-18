@@ -61,6 +61,20 @@
 			}
 		</available_skills>
 	}
+	@if sub_agents
+	{
+		<sub_agents>
+			The following sub-agents are available to assist with specific tasks.
+			If a task matches a sub-agent's description, call the `agent-callsub` tool
+			@foreach sub_agent in sub_agents
+			{
+				<sub_agent>
+					<name>@sub_agent.name</name>
+					<description>@sub_agent.description</description>
+				</sub_agent>
+			}
+		</sub_agents>
+	}
 	@if memory_blocks
 	{
 		<memory_blocks>

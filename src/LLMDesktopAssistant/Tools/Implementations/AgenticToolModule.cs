@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics.Tracing;
 using System.Text;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.Tasks;
@@ -26,13 +27,17 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly WorkingDirectoryAccessService _fileAccess;
 		private readonly IAgentManagementService _agentManager;
 		private readonly IAgentTaskExecutor _agentTaskExecutor;
+		private readonly IModelManager _modelManager;
 		private readonly IToolsetBuildingService _toolsetBuildingService;
 		private readonly ISkillsetBuildingService _skillsetBuildingService;
-		private readonly IModelManager _modelManager;
+		private readonly ISubAgentSetBuildingService _subAgentSetBuildingService;
+		private readonly ISubAgentToolResolver _subAgentToolResolver;
 
-		public AgenticToolModule(Chat chat, IChatSettingsService chatSettings, TemplateLibraryAccessor templates, WorkingDirectoryAccessService fileAccess,
-			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor,
-			IToolsetBuildingService toolsetBuildingService, ISkillsetBuildingService skillsetBuildingService, IModelManager modelManager)
+		public AgenticToolModule(Chat chat, IChatSettingsService chatSettings, TemplateLibraryAccessor templates,
+			WorkingDirectoryAccessService fileAccess,
+			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
+			IToolsetBuildingService toolsetBuildingService, ISkillsetBuildingService skillsetBuildingService,
+			ISubAgentSetBuildingService subAgentSetBuildingService, ISubAgentToolResolver subAgentToolResolver)
 		{
 			_chat = chat;
 			_chatSettings = chatSettings;
@@ -40,17 +45,30 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			_fileAccess = fileAccess;
 			_agentManager = agentManager;
 			_agentTaskExecutor = agentTaskExecutor;
+			_modelManager = modelManager;
 			_toolsetBuildingService = toolsetBuildingService;
 			_skillsetBuildingService = skillsetBuildingService;
-			_modelManager = modelManager;
+			_subAgentSetBuildingService = subAgentSetBuildingService;
+			_subAgentToolResolver = subAgentToolResolver;
 
 			AddTool(new ToolInitializationInfo
 			{
 				Executor = CallAgent,
 				Name = "agent-call",
-				Description = "Calls another LLM agent with provided system message and user message with set of allowed tools.",
+				Description = "Calls another AI agent with provided system message and user message with set of allowed tools.",
 				TitleKey = Locale.GetKey("tool.name.agent-call"),
 				DescriptionKey = Locale.GetKey("tool.description.agent-call"),
+				CategoryKey = Locale.GetKey("tool.category.agents"),
+				DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
+			});
+
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = CallSubAgent,
+				Name = "agent-callsub",
+				Description = "Calls another predefined AI agent with provided input.",
+				TitleKey = Locale.GetKey("tool.name.agent-callsub"),
+				DescriptionKey = Locale.GetKey("tool.description.agent-callsub"),
 				CategoryKey = Locale.GetKey("tool.category.agents"),
 				DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
 			});
@@ -70,17 +88,26 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			});
 		}
 
-		private async Task<ReactiveToolResult> CallAgent(
+		public override IEnumerable<ToolInfo> GetTools()
+		{
+			if (!_chatSettings.Settings.SubAgents.EnableSubAgents)
+				return base.GetTools().Where(t => t.Name != "agent-callsub");
+			return base.GetTools();
+		}
+
+		private async Task CallAgent(
 			[Description("The title of the agent call to be visible in UI")] string? callTitle,
 			[Description("The system prompt to use in the agent's context")] string systemPrompt,
 			[Description("The user message to send to the agent")] string userMessage,
 			[Description("A list of tool names that can be used by agent.")] string[] allowedTools,
 			[Description("A list of skill names that can be used by agent.")] string[] allowedSkills,
-			ToolExecutionContext ctx,
+			[Description("A list of sub-agent names that can be used by agent.")] string[] allowedSubAgents,
 			[Description("""
 				A list of memory block names to make accessible to the agent via memory tools.
 				Memory must be enabled for the chat and the calling agent.
-				""")] string[]? memoryBlocks = null,
+				""")] string[] allowedMemoryBlocks,
+			ToolExecutionContext ctx,
+			ReactiveToolResult result,
 			[Description("""
 				If true - waits for end of execution and returns the contents of last message.
 				If false - returns agent task ID immediately, the agent will continue to run in the background.
@@ -89,10 +116,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			var modelName = _chatSettings.Settings.Models.GetEffectiveSelection().AgenticToolsModel;
 			if (string.IsNullOrEmpty(modelName))
-				return new ReactiveToolResult
-				{
-					ResultContent = "No agentic model selected. Say user to select an agentic model first."
-				}.CompleteWithError();
+			{
+				result.StatusIcon = MaterialIconKind.RobotDead;
+				result.ResultContent = "No agentic model selected. Say user to select an agentic model first.";
+				result.CompleteWithError();
+				return;
+			}
 
 			LLModel llm;
 			try
@@ -101,10 +130,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}
 			catch (Exception ex)
 			{
-				return new ReactiveToolResult
-				{
-					ResultContent = $"Agentic model '{modelName}' is not available: {ex.Message}"
-				}.CompleteWithError();
+				result.StatusIcon = MaterialIconKind.RobotDead;
+				result.ResultContent = $"Agentic model '{modelName}' is not available: {ex.Message}";
+				result.CompleteWithError();
+				return;
 			}
 
 			var agentDescriptor = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
@@ -157,19 +186,45 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					errorSb.Append("Valid skill names: " + string.Join(", ", skillMap.Keys));
 			}
 
-			ImmutableList<TaskMemoryBlock>? resolvedMemoryBlocks = null;
-			if (memoryBlocks is { Length: > 0 })
+			var subAgents = ImmutableList.CreateBuilder<TaskSubAgentDescriptor>();
+			if (allowedSubAgents.Length > 0)
 			{
-				var available = TaskMemoryBlock.ResolveBlocks(_chat, agentDescriptor);
-				var availableMap = available.ToImmutableDictionary(b => b.Block.Name);
-				var resolved = ImmutableList.CreateBuilder<TaskMemoryBlock>();
+				var subAgentMap = _subAgentSetBuildingService.GetSubAgentsForAgent(agentDescriptor).ToDictionary(s => s.Name);
 
 				int notFound = 0;
-				foreach (var blockName in memoryBlocks.Distinct())
+				foreach (var allowedSubAgent in allowedSubAgents.Distinct())
+				{
+					if (subAgentMap.TryGetValue(allowedSubAgent, out var subAgentInfo))
+					{
+						subAgents.Add(new TaskSubAgentDescriptor
+						{
+							Name = subAgentInfo.Name,
+							Description = subAgentInfo.Description
+						});
+					}
+					else
+					{
+						notFound++;
+						errorSb.AppendLine("Sub-agent was not found: " + allowedSubAgent);
+					}
+				}
+
+				if (notFound > 0)
+					errorSb.AppendLine("Valid sub-agent names: " + string.Join(", ", subAgentMap.Keys));
+			}
+
+			var memoryBlocks = ImmutableList.CreateBuilder<TaskMemoryBlock>();
+			if (allowedMemoryBlocks.Length > 0)
+			{
+				var available = TaskMemoryBlock.ResolveBlocks(_chat, agentDescriptor);
+				var availableMap = available.ToDictionary(b => b.Block.Name);
+
+				int notFound = 0;
+				foreach (var blockName in allowedMemoryBlocks.Distinct())
 				{
 					if (availableMap.TryGetValue(blockName, out var block))
 					{
-						resolved.Add(block);
+						memoryBlocks.Add(block);
 					}
 					else
 					{
@@ -180,21 +235,21 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 				if (notFound > 0)
 					errorSb.Append("Valid memory block names: " + string.Join(", ", availableMap.Keys));
-
-				resolvedMemoryBlocks = resolved.ToImmutable();
 			}
 
 			if (errorSb.Length > 0)
 			{
-				return new ReactiveToolResult
-				{
-					ResultContent = errorSb.ToString()
-				}.CompleteWithError();
+				result.StatusIcon = MaterialIconKind.RobotDead;
+				result.ResultContent = errorSb.ToString();
+				result.CompleteWithError();
+				return;
 			}
 
 			var policy = agentDescriptor.Tools.GetEffectivePolicy(_chatSettings.Settings);
 			ToolBehaviour autoApproveBehaviours = policy.AutoApproveBehaviours,
 				disallowedBehaviours = policy.DisallowedBehaviours;
+
+			result.StatusIcon = MaterialIconKind.Robot;
 
 			try
 			{
@@ -208,7 +263,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Model = llm,
 					Tools = tools.ToImmutableList(),
 					Skills = skills.ToImmutableList(),
-					MemoryBlocks = resolvedMemoryBlocks is { Count: > 0 } ? resolvedMemoryBlocks : null,
+					SubAgents = subAgents.ToImmutableList(),
+					MemoryBlocks = memoryBlocks.ToImmutableList(),
 					InitialMessages = [
 						new AgentSystemMessage { Content = systemPrompt },
 						new AgentUserMessage { Content = userMessage }
@@ -221,27 +277,115 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				{
 					await agentTask;
 
-					return new ReactiveToolResult
-					{
-						ResultContent = string.IsNullOrWhiteSpace(agentTask.LastGeneratedContent) ?
-							"Agent did not generate any content." : agentTask.LastGeneratedContent,
-						UseMarkdown = true
-					}.CompleteWithSuccess();
+					result.ResultContent = string.IsNullOrWhiteSpace(agentTask.LastGeneratedContent) ?
+							"Agent did not generate any content." : agentTask.LastGeneratedContent;
+					result.CompleteWithSuccess();
+					return;
 				}
 				else
 				{
-					return new ReactiveToolResult
-					{
-						ResultContent = $"Agent launched with task ID {agentTask.Id}."
-					}.CompleteWithSuccess();
+					result.ResultContent = $"Agent launched with task ID {agentTask.Id}.";
+					result.CompleteWithSuccess();
+					return;
 				}
 			}
 			catch (Exception ex)
 			{
-				return new ReactiveToolResult
+				result.StatusIcon = MaterialIconKind.RobotDead;
+				result.ResultContent = "An error occurred while calling the agent: " + ex.Message;
+				result.CompleteWithError();
+				return;
+			}
+		}
+
+		private async Task CallSubAgent(
+			[Description("The name of predefined sub-agent")] string agentName,
+			[Description("The user message to send to the agent")] string input,
+			ToolExecutionContext ctx,
+			ReactiveToolResult result,
+			[Description("""
+				If true - waits for end of execution and returns the contents of last message.
+				If false - returns agent task ID immediately, the agent will continue to run in the background.
+				""")] bool wait = true,
+			CancellationToken cancellationToken = default)
+		{
+			var agentDescriptor = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
+
+			var subAgent = _subAgentSetBuildingService.GetSubAgentsForAgent(agentDescriptor).FirstOrDefault(a => a.Name == agentName);
+			if (subAgent is null)
+			{
+				result.StatusIcon = MaterialIconKind.RobotDead;
+				result.ResultContent = $"Sub-agent '{agentName}' not found.";
+				result.CompleteWithError();
+				return;
+			}
+
+			var policy = agentDescriptor.Tools.GetEffectivePolicy(_chatSettings.Settings);
+			ToolBehaviour autoApproveBehaviours = policy.AutoApproveBehaviours,
+				disallowedBehaviours = policy.DisallowedBehaviours;
+
+			var resolver = ctx.Chat.Services.GetRequiredService<ISubAgentTaskParamsResolver>();
+
+			AgentTaskLaunchParameters parameters;
+			try
+			{
+				parameters = resolver.Resolve(new AgentTaskLaunchParameters
 				{
-					ResultContent = "An error occurred while calling the agent: " + ex.Message
-				}.CompleteWithError();
+					TaskName = subAgent.Name,
+					TriggeredChat = ctx.Chat,
+					TriggeredMessage = ctx.Message,
+					InitialMessages = [],
+					AutoApproveBehaviours = autoApproveBehaviours,
+					DisallowedBehaviours = disallowedBehaviours
+				}, new TaskSubAgentDescriptor
+				{
+					Name = subAgent.Name,
+					Description = subAgent.Description
+				}, [new AgentUserMessage { Content = input }], out var errors);
+
+				if (errors.Count > 0)
+				{
+					result.StatusIcon = MaterialIconKind.RobotDead;
+					result.ResultContent = string.Join(Environment.NewLine, errors);
+					result.CompleteWithError();
+					return;
+				}
+			}
+			catch (Exception ex)
+			{
+				result.StatusIcon = MaterialIconKind.RobotDead;
+				result.ResultContent = "An error occurred while resolving the sub-agent: " + ex.Message;
+				result.CompleteWithError();
+				return;
+			}
+
+			result.StatusIcon = MaterialIconKind.Robot;
+
+			try
+			{
+				var ct = wait ? cancellationToken : CancellationToken.None;
+
+				var agentTask = _agentTaskExecutor.Execute(parameters, ct);
+
+				if (wait)
+				{
+					await agentTask;
+
+					result.ResultContent = string.IsNullOrWhiteSpace(agentTask.LastGeneratedContent) ?
+							"Sub-agent did not generate any content." : agentTask.LastGeneratedContent;
+					result.UseMarkdown = true;
+					result.CompleteWithSuccess();
+					return;
+				}
+
+				result.ResultContent = $"Sub-agent launched with task ID {agentTask.Id}.";
+				result.CompleteWithSuccess();
+			}
+			catch (Exception ex)
+			{
+				result.StatusIcon = MaterialIconKind.RobotDead;
+				result.ResultContent = "An error occurred while calling the sub-agent: " + ex.Message;
+				result.CompleteWithError();
 			}
 		}
 
@@ -263,7 +407,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 			if (!File.Exists(fullPath))
 			{
-				new PreviewToolExecutionResult
+				return new PreviewToolExecutionResult
 				{
 					StatusIcon = MaterialIconKind.Image,
 					StatusTitle = $"**{path}**",

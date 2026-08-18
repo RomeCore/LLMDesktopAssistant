@@ -1,4 +1,3 @@
-using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Scripting.Lua;
@@ -72,16 +71,19 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		public ImmutableList<AgentTool> Tools { get; init; } = [];
 
 		/// <summary>
-		/// The memory blocks available to the task. When <see langword="null"/> or empty, the task
-		/// does not receive memory tools. Otherwise the task gets the manual memory toolset
-		/// operating on these blocks.
-		/// </summary>
-		public ImmutableList<TaskMemoryBlock>? MemoryBlocks { get; init; }
-
-		/// <summary>
 		/// The list of skills available to the agent during the task.
 		/// </summary>
 		public ImmutableList<AgentSkill> Skills { get; init; } = [];
+
+		/// <summary>
+		/// The memory blocks available to the task.
+		/// </summary>
+		public ImmutableList<TaskMemoryBlock> MemoryBlocks { get; init; } = [];
+
+		/// <summary>
+		/// The list of sub-agents available to the task.
+		/// </summary>
+		public ImmutableList<TaskSubAgentDescriptor> SubAgents { get; init; } = [];
 
 		/// <summary>
 		/// The behaviour of tools that are automatically approved.

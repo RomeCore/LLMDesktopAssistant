@@ -97,7 +97,7 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 
 					string? name = frontmatter?.Name ?? fallbackName ?? fileName;
 					string? description = frontmatter?.Description ?? fallbackDesc;
-					string body = v.Text[v["yaml"].EndIndex..];
+					string prompt = v.Text[v["yaml"].EndIndex..];
 
 					if (string.IsNullOrEmpty(name))
 					{
@@ -235,10 +235,9 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 							{
 								Name = name.Trim(),
 								Description = description.Trim(),
-								BodyGetter = new(() => body),
+								SystemPromptGetter = new(() => prompt),
 								Source = source,
 								Path = fullpath,
-								HomeDirectory = homeDir,
 								Metadata = metadataBuilder.ToImmutableDictionary(),
 								AdditionalMetadata = additionalMetadataBuilder.ToImmutableDictionary(),
 								AllowedTools = allowedToolsBuilder.ToImmutableList(),
@@ -261,10 +260,9 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 							{
 								Name = name.Trim(),
 								Description = description.Trim(),
-								BodyGetter = new(() => body),
+								SystemPromptGetter = new(() => prompt),
 								Source = source,
 								Path = fullpath,
-								HomeDirectory = homeDir,
 								Diagnostic = new SubAgentDiagnostic
 								{
 									IsFatal = false,
@@ -279,10 +277,9 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 					{
 						Name = name.Trim(),
 						Description = description.Trim(),
-						BodyGetter = new(() => body),
+						SystemPromptGetter = new(() => prompt),
 						Source = source,
 						Path = fullpath,
-						HomeDirectory = homeDir,
 						Diagnostic = new SubAgentDiagnostic
 						{
 							IsFatal = false,

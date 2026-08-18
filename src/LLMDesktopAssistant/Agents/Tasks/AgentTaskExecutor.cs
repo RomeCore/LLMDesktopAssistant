@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
@@ -85,12 +86,12 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 			var model = parameters.Model ?? _modelManager.GetModel(parameters.ModelName!);
 
-			var agentTools = parameters.Tools;
+			var agentTools = parameters.Tools.ToList();
 			string? additionalPrompt = null;
 			var additionalPromptParts = new StringBuilder();
 			if (parameters.Skills.Count > 0)
 			{
-				agentTools = agentTools.Add(new SkillLoadTool
+				agentTools.Add(new SkillLoadTool
 				{
 					Skills = parameters.Skills.ToImmutableDictionary(s => s.Name),
 					ApprovalLevel = ToolApprovalLevel.AlwaysApprove
@@ -119,18 +120,18 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				additionalPromptParts.AppendLine(skillPrompt);
 			}
 
-			if (parameters.MemoryBlocks is { Count: > 0 } memoryBlocks)
+			if (parameters.MemoryBlocks.Count > 0)
 			{
-				var readableFactBlocks = memoryBlocks.Where(b => b.CanRead && b.Block.FactsEnabled).Select(b => b.Block).ToList();
-				var writableFactBlocks = memoryBlocks.Where(b => b.CanWrite && b.Block.FactsEnabled).Select(b => b.Block).ToList();
-				var readableLogBlocks = memoryBlocks.Where(b => b.CanRead && b.Block.LogsEnabled).Select(b => b.Block).ToList();
-				var writableLogBlocks = memoryBlocks.Where(b => b.CanWrite && b.Block.LogsEnabled).Select(b => b.Block).ToList();
+				var readableFactBlocks = parameters.MemoryBlocks.Where(b => b.CanRead && b.Block.FactsEnabled).Select(b => b.Block).ToList();
+				var writableFactBlocks = parameters.MemoryBlocks.Where(b => b.CanWrite && b.Block.FactsEnabled).Select(b => b.Block).ToList();
+				var readableLogBlocks = parameters.MemoryBlocks.Where(b => b.CanRead && b.Block.LogsEnabled).Select(b => b.Block).ToList();
+				var writableLogBlocks = parameters.MemoryBlocks.Where(b => b.CanWrite && b.Block.LogsEnabled).Select(b => b.Block).ToList();
 
-				agentTools = agentTools.AddRange(new AutomaticMemoryTools(_memoryFactStore, _memoryLogStore, 0,
+				agentTools.AddRange(new AgentMemoryTools(_memoryFactStore, _memoryLogStore, 0,
 					readableFactBlocks, writableFactBlocks, readableLogBlocks, writableLogBlocks, 0).CreateManualTools());
 
 				var sb = new StringBuilder();
-				foreach (var block in memoryBlocks)
+				foreach (var block in parameters.MemoryBlocks)
 				{
 					sb.AppendLine("\t<memory_block>");
 					sb.AppendLine($"\t\t<name>{block.Block.Name}</name>");
@@ -165,10 +166,38 @@ namespace LLMDesktopAssistant.Agents.Tasks
 					""");
 			}
 
+			if (parameters.SubAgents.Count > 0)
+			{
+				if (parameters.TriggeredChat is null)
+					throw new ArgumentException("Sub-agents can only be used when called from a chat.", nameof(parameters.TriggeredChat));
+
+				var resolver = parameters.TriggeredChat.Services.GetRequiredService<ISubAgentTaskParamsResolver>();
+
+				agentTools.AddRange(new AgentSubAgentTools(this, resolver, parameters, parameters.SubAgents)
+					.CreateSubAgentCallTools());
+
+				var sb = new StringBuilder();
+				foreach (var subAgent in parameters.SubAgents)
+				{
+					sb.AppendLine("\t<sub_agent>");
+					sb.AppendLine($"\t\t<name>{subAgent.Name}</name>");
+					sb.AppendLine($"\t\t<description>{subAgent.Description}</description>");
+					sb.AppendLine("\t</sub_agent>");
+				}
+
+				additionalPromptParts.AppendLine($"""
+					<sub_agents>
+						The following sub-agents are available to assist with specific tasks.
+						If a task matches a sub-agent's description, call the `agent-callsub` tool
+					{sb}
+					</sub_agents>
+					""");
+			}
+
 			if (additionalPromptParts.Length > 0)
 				additionalPrompt = additionalPromptParts.ToString();
 
-			agentTools = agentTools.GroupBy(t => t.Name).Select(t => t.Last()).ToImmutableList();
+			agentTools = agentTools.GroupBy(t => t.Name).Select(t => t.Last()).ToList();
 			var tools = agentTools.ToImmutableDictionary(k => k.Name);
 
 			model = model.WithTools(agentTools.Select(t => new FunctionTool(t.Name, t.Description, t.ArgumentSchema,
@@ -216,7 +245,6 @@ namespace LLMDesktopAssistant.Agents.Tasks
 				{
 					task.Completed = true;
 					_dispatcher.OnEndTask(task);
-
 				}
 			}, CancellationToken.None);
 
@@ -327,6 +355,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 					ttft ??= TimeSpan.Zero;
 					inferenceTime = inferenceTimer.Elapsed;
+					inferenceTimer.Restart();
 					totalTtft += ttft.Value;
 					totalInferenceTime += inferenceTime;
 

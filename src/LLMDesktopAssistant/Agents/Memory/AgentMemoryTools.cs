@@ -9,7 +9,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 	/// and by agent tasks. The tools operate on the pre-resolved memory blocks
 	/// and do not require user confirmation.
 	/// </summary>
-	public sealed class AutomaticMemoryTools
+	public sealed class AgentMemoryTools
 	{
 		private readonly IMemoryFactStore _factStore;
 		private readonly IMemoryLogStore _logStore;
@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 		/// Initializes a new instance with a single block list used for both reading and writing.
 		/// Intended for the automatic memory hooks that pre-filter blocks by access mode.
 		/// </summary>
-		public AutomaticMemoryTools(IMemoryFactStore factStore, IMemoryLogStore logStore, int sourceChatId,
+		public AgentMemoryTools(IMemoryFactStore factStore, IMemoryLogStore logStore, int sourceChatId,
 			IReadOnlyList<MemoryBlock> factBlocks, IReadOnlyList<MemoryBlock> logBlocks, int sourceMessageId)
 			: this(factStore, logStore, sourceChatId, factBlocks, factBlocks, logBlocks, logBlocks, sourceMessageId)
 		{
@@ -34,7 +34,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 		/// Initializes a new instance with separate readable and writable block lists,
 		/// used to build the manual task toolset with per-block access enforcement.
 		/// </summary>
-		public AutomaticMemoryTools(IMemoryFactStore factStore, IMemoryLogStore logStore, int sourceChatId,
+		public AgentMemoryTools(IMemoryFactStore factStore, IMemoryLogStore logStore, int sourceChatId,
 			IReadOnlyList<MemoryBlock> readableFactBlocks, IReadOnlyList<MemoryBlock> writableFactBlocks,
 			IReadOnlyList<MemoryBlock> readableLogBlocks, IReadOnlyList<MemoryBlock> writableLogBlocks,
 			int sourceMessageId)

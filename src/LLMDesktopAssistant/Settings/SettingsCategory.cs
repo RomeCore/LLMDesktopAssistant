@@ -151,6 +151,14 @@ namespace LLMDesktopAssistant.Settings
 			return false;
 		}
 
+		/// <summary>
+		/// Gets all settings instances in this category.
+		/// </summary>
+		/// <returns>An enumerable collection of all settings instances.</returns>
+		public IEnumerable<KeyValuePair<string, TSettings>> GetAll()
+		{
+			return _objects.Select(kvp => KeyValuePair.Create(kvp.Key, kvp.Value.Item1));
+		}
 
 		/// <summary>
 		/// Removes a settings instance by ID and disposes it.

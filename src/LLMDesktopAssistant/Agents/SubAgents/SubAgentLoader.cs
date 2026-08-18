@@ -147,10 +147,9 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 				Name = name,
 				Description = string.Empty,
 				Source = SubAgentSource.Unknown,
-				BodyGetter = new(() => string.Empty),
+				SystemPromptGetter = new(() => string.Empty),
 				Diagnostic = diagnostic,
-				Path = file,
-				HomeDirectory = Path.GetDirectoryName(file)
+				Path = file
 			};
 		}
 	}

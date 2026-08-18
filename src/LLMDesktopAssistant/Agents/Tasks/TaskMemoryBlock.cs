@@ -1,7 +1,8 @@
+using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 
-namespace LLMDesktopAssistant.Agents.Memory
+namespace LLMDesktopAssistant.Agents.Tasks
 {
 	/// <summary>
 	/// An immutable snapshot of a <see cref="MemoryBlockAttachment"/> resolved for an agent task.

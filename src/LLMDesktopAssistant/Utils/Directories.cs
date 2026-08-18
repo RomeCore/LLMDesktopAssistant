@@ -51,6 +51,11 @@ namespace LLMDesktopAssistant.Utils
 		public static string Skills { get; }
 
 		/// <summary>
+		/// The path where to store the sub-agents usable for agentic tasks.
+		/// </summary>
+		public static string Agents { get; }
+
+		/// <summary>
 		/// The path where to store the agentic memory data. This directory contains subdirectories, where each subdirectory represents a data associated with <see cref="MemoryBlock"/>.
 		/// </summary>
 		public static string Memory { get; }
@@ -100,6 +105,7 @@ namespace LLMDesktopAssistant.Utils
 			Templates = Path.Combine(LocalAppData, "templates");
 			Metatools = Path.Combine(LocalAppData, "metatools");
 			Skills = Path.Combine(LocalAppData, "skills");
+			Agents = Path.Combine(LocalAppData, "agents");
 			Memory = Path.Combine(LocalAppData, "memory");
 			LocaleFiles = Path.Combine(LocalAppData, "locale");
 			Settings = Path.Combine(LocalAppData, "settings");
@@ -119,6 +125,7 @@ namespace LLMDesktopAssistant.Utils
 			Directory.CreateDirectory(Templates);
 			Directory.CreateDirectory(Metatools);
 			Directory.CreateDirectory(Skills);
+			Directory.CreateDirectory(Agents);
 			Directory.CreateDirectory(Memory);
 			Directory.CreateDirectory(LocaleFiles);
 			Directory.CreateDirectory(Settings);
