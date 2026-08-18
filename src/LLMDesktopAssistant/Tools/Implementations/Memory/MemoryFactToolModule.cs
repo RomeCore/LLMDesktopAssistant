@@ -31,7 +31,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			{
 				Executor = StoreAsync,
 				Name = "memory-store_fact",
-				IsFixed = true,
 				Description = """
 					Stores a fact in the specified memory block with the given importance.
 					""",
@@ -45,7 +44,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			{
 				Executor = RetrieveAsync,
 				Name = "memory-retrieve_fact",
-				IsFixed = true,
 				Description = """
 					Retrieves facts with their IDs from the specified memory blocks (or all enabled blocks) by the given query.
 					HyDE query is used to improve semantic matching and may be provided additionally.
@@ -60,7 +58,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			{
 				Executor = ForgetAsync,
 				Name = "memory-forget_fact",
-				IsFixed = false,
 				Description = """
 					Forgets (deletes) a fact from the specified memory block by its ID.
 					By default performs a soft delete: the fact is marked as Deleted and can be restored later.

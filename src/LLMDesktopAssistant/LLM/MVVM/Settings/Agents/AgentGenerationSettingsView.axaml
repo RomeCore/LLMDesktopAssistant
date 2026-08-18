@@ -294,7 +294,7 @@
 			<ItemsControl ItemsSource="{Binding EffectiveAdditionalParameters}">
 
 				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="agt:AdditionalParameter">
+					<DataTemplate x:DataType="agt:AdditionalGenerationParameter">
 						<Grid ColumnDefinitions="Auto,*,Auto,*,Auto,Auto"
 								RowDefinitions="Auto"
 								ColumnSpacing="6"

@@ -2,6 +2,6 @@
 {
 	public interface ISkillParser
 	{
-		SkillInfo Parse(string fullpath, string contents);
+		SkillInfo Parse(string fullpath, string contents, SkillSource source = SkillSource.Unknown);
 	}
 }

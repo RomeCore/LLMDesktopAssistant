@@ -56,7 +56,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!isAccessed)
 				foreach (var skillPath in skillLocator.LocateSkillFiles())
 				{
-					var skillDir = Path.GetDirectoryName(skillPath);
+					var skillDir = Path.GetDirectoryName(skillPath.FileName);
 					if (!string.IsNullOrEmpty(skillDir) && IsSubdirectoryOf(skillDir, fullPath))
 					{
 						isAccessed = true;

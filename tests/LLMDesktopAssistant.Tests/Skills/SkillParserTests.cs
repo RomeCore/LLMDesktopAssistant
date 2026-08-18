@@ -50,7 +50,7 @@ public class SkillParserTests
 		Assert.Equal("Requires Python 3.14+", skill.Metadata[SkillMetadataType.Compatibility]);
 		Assert.Equal("example-org", skill.Metadata[SkillMetadataType.Author]);
 		Assert.Equal("2.1", skill.Metadata[SkillMetadataType.Version]);
-		Assert.Equal(["Bash(python:*)", "Read", "Write"], skill.AllowedTools);
+		Assert.Equal([new("Bash", "python:*"), new("Read"), new("Write")], skill.AllowedTools);
 		Assert.Equal(["pdf", "document", "extraction"], skill.Tags);
 	}
 
@@ -69,7 +69,7 @@ public class SkillParserTests
 			---
 			""");
 
-		Assert.Equal(["Bash(git:*)", "Read", "Write", "Bash(docker:*)"], skill.AllowedTools);
+		Assert.Equal([new("Bash", "git:*"), new("Read"), new("Write"), new("Bash", "docker:*")], skill.AllowedTools);
 	}
 
 	[Fact]
@@ -80,10 +80,12 @@ public class SkillParserTests
 			name: string-tools
 			description: Skill with space-separated tools.
 			allowed-tools: Bash(git:*) Read Write
+			disallowed-tools: Bash(docker:*) Python
 			---
 			""");
 
-		Assert.Equal(["Bash(git:*)", "Read", "Write"], skill.AllowedTools);
+		Assert.Equal([new("Bash", "git:*"), new("Read"), new("Write")], skill.AllowedTools);
+		Assert.Equal([new("Bash", "docker:*"), new("Python")], skill.DisallowedTools);
 	}
 
 	[Fact]

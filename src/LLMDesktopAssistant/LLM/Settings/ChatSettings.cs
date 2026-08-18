@@ -110,5 +110,15 @@ namespace LLMDesktopAssistant.LLM.Settings
 			get => _skillSettings;
 			set => SetProperty(ref _skillSettings, value);
 		}
+
+		private ChatSubAgentSettings _subAgentSettings = new();
+		/// <summary>
+		/// Settings related to sub-agents.
+		/// </summary>
+		public ChatSubAgentSettings SubAgents
+		{
+			get => _subAgentSettings;
+			set => SetProperty(ref _subAgentSettings, value);
+		}
 	}
 }

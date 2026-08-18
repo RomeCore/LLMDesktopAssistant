@@ -1,4 +1,4 @@
-﻿using LLTSharp;
+using LLTSharp;
 
 namespace LLMDesktopAssistant.Prompting
 {
@@ -11,5 +11,6 @@ namespace LLMDesktopAssistant.Prompting
 		BehaviourSlider? GetSlider(Guid id);
 		Specialization? GetSpecialization(Guid id);
 		IEnumerable<SkillPrompt> GetSkills();
+		IEnumerable<SubAgentPrompt> GetSubAgents();
 	}
 }

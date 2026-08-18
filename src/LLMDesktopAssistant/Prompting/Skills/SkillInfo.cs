@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LLMDesktopAssistant.Tools;
 using YamlDotNet.RepresentationModel;
 
 namespace LLMDesktopAssistant.Prompting.Skills
 {
+	/// <summary>
+	/// Represents information about a skill, including its name, description, and source.
+	/// </summary>
 	public class SkillInfo
 	{
 		/// <summary>
@@ -21,6 +25,11 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		/// The SKILL.md content getter, excluding the YAML frontmatter.
 		/// </summary>
 		public required Func<string> BodyGetter { get; init; }
+
+		/// <summary>
+		/// The source of the skill.
+		/// </summary>
+		public required SkillSource Source { get; init; }
 
 		/// <summary>
 		/// The absolute path to the SKILL.md file, if applicable. Null otherwise.
@@ -45,11 +54,28 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		public ImmutableDictionary<string, string> AdditionalMetadata { get; init; } = [];
 
 		/// <summary>
-		/// The fuzzy list of tools that would be used in this skill.
+		/// The list of tools that would be used in this skill without approval.
 		/// Used for UI display for helping user understand behaviour of the skill.
-		/// Examples: 'Read', 'Bash(git:*)'
+		/// Examples: 'Read', 'Bash(git:*)'.
+		/// TODO (optional): Add support for dynamic tool loading when skill activates.
 		/// </summary>
-		public ImmutableList<string> AllowedTools { get; init; } = [];
+		public ImmutableList<ToolNameWithSpecifier> AllowedTools { get; init; } = [];
+
+		/// <summary>
+		/// The list of tools that would be loaded when skill activates.
+		/// Used for UI display for helping user understand behaviour of the skill.
+		/// Examples: 'Read', 'Bash(git:*)'.
+		/// TODO (optional): Add support for dynamic tool loading when skill activates.
+		/// </summary>
+		public ImmutableList<ToolNameWithSpecifier> AvailableTools { get; init; } = [];
+
+		/// <summary>
+		/// The list of tools that would be disallowed when skill activates.
+		/// Used for UI display for helping user understand behaviour of the skill.
+		/// Examples: 'Read', 'Bash(git:*)'.
+		/// TODO (optional): Add support for dynamic tool loading when skill activates.
+		/// </summary>
+		public ImmutableList<ToolNameWithSpecifier> DisallowedTools { get; init; } = [];
 
 		/// <summary>
 		/// The tags associated with the skill. Used for UI display and search.

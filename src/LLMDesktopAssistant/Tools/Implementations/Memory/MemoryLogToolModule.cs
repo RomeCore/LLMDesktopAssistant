@@ -35,7 +35,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			{
 				Executor = AppendAsync,
 				Name = "memory-append_log",
-				IsFixed = true,
 				Description = """
 					Appends a new episodic log entry to the specified memory block.
 					Logs are immutable: they cannot be edited, only deleted. The log text is added to the keyword search index.
@@ -50,7 +49,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			{
 				Executor = SearchAsync,
 				Name = "memory-search_log",
-				IsFixed = true,
 				Description = """
 					Searches active episodic logs in the specified memory blocks (or all enabled blocks) using BM25 keyword search.
 					Transient, consolidated and ignored logs are excluded from search results.
@@ -65,7 +63,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			{
 				Executor = ViewLogsAsync,
 				Name = "memory-view_logs",
-				IsFixed = true,
 				Description = """
 					Views episodic logs of the specified memory blocks (or all enabled blocks).
 					These logs are used to store events (such as such as game, DnD or development history).
@@ -82,7 +79,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			{
 				Executor = DeleteAsync,
 				Name = "memory-delete_log",
-				IsFixed = false,
 				Description = """
 					Permanently deletes an episodic log from the specified memory block by its ID.
 					The log is removed from the database and the keyword index and cannot be restored.

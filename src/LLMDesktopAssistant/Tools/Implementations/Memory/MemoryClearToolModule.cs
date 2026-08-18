@@ -33,7 +33,6 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 			{
 				Executor = ClearAsync,
 				Name = "memory-clear",
-				IsFixed = false,
 				Description = """
 					Clears the stored facts and/or episodic logs from the specified memory block.
 					The block itself and its configuration are preserved.

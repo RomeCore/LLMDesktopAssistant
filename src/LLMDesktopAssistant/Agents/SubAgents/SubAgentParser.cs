@@ -1,14 +1,14 @@
-﻿using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using RCParsing;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace LLMDesktopAssistant.Prompting.Skills
+namespace LLMDesktopAssistant.Agents.SubAgents
 {
-	[Service(typeof(ISkillParser))]
-	public class SkillParser : ISkillParser
+	[Service(typeof(ISubAgentParser))]
+	public class SubAgentParser : ISubAgentParser
 	{
 		private readonly Parser _parser;
 
@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		private class ParserParameter
 		{
 			public required string FullPath { get; init; }
-			public required SkillSource Source { get; init; }
+			public required SubAgentSource Source { get; init; }
 		}
 
 		private class FrontmatterDto
@@ -29,11 +29,12 @@ namespace LLMDesktopAssistant.Prompting.Skills
 			public string? Description { get; set; }
 			public string? Compatibility { get; set; }
 			public string? License { get; set; }
+			public string? Model { get; set; }
 			public List<string>? Tags { get; set; }
 			public Dictionary<string, string>? Metadata { get; set; }
 		}
 
-		public SkillParser()
+		public SubAgentParser()
 		{
 			var builder = new ParserBuilder();
 
@@ -58,10 +59,10 @@ namespace LLMDesktopAssistant.Prompting.Skills
 				).Label("desc")
 
 				.AllText()
-				
+
 				.Transform(v =>
 				{
-					var diagnosticCodes = SkillDiagnosticCode.None;
+					var diagnosticCodes = SubAgentDiagnosticCode.None;
 					Exception? exception = null;
 
 					var parameter = v.GetParsingParameter<ParserParameter>();
@@ -71,7 +72,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 					var fallbackName = v.TryGetValue<string>("name");
 					var fallbackDesc = v.TryGetValue<string>("desc");
 					var homeDir = Path.GetDirectoryName(fullpath);
-					var dirName = Path.GetFileName(homeDir);
+					var fileName = Path.GetFileNameWithoutExtension(fullpath);
 
 					FrontmatterDto? frontmatter = null;
 					YamlMappingNode? frontmatterMap = null;
@@ -85,52 +86,52 @@ namespace LLMDesktopAssistant.Prompting.Skills
 						}
 						catch (Exception ex)
 						{
-							diagnosticCodes |= SkillDiagnosticCode.YamlParsingError;
+							diagnosticCodes |= SubAgentDiagnosticCode.YamlParsingError;
 							exception = ex;
 						}
 					}
 					else
 					{
-						diagnosticCodes |= SkillDiagnosticCode.MissingYaml;
+						diagnosticCodes |= SubAgentDiagnosticCode.MissingYaml;
 					}
 
-					string? name = frontmatter?.Name ?? fallbackName ?? dirName;
+					string? name = frontmatter?.Name ?? fallbackName ?? fileName;
 					string? description = frontmatter?.Description ?? fallbackDesc;
 					string body = v.Text[v["yaml"].EndIndex..];
 
 					if (string.IsNullOrEmpty(name))
 					{
-						diagnosticCodes |= SkillDiagnosticCode.MissingName;
+						diagnosticCodes |= SubAgentDiagnosticCode.MissingName;
 						name = "unknown";
 					}
 					if (string.IsNullOrEmpty(frontmatter?.Name))
 					{
-						diagnosticCodes |= SkillDiagnosticCode.MissingYamlName;
+						diagnosticCodes |= SubAgentDiagnosticCode.MissingYamlName;
 					}
-					if (!SkillName.IsValidSkillName(name))
+					if (!SubAgentName.IsValidSubAgentName(name))
 					{
-						name = SkillName.ToValidSkillName(name);
-						diagnosticCodes |= SkillDiagnosticCode.NameFormatError;
+						name = SubAgentName.ToValidSubAgentName(name);
+						diagnosticCodes |= SubAgentDiagnosticCode.NameFormatError;
 					}
-					if (name != dirName)
+					if (name != fileName)
 					{
-						diagnosticCodes |= SkillDiagnosticCode.NameDirectoryMismatch;
+						diagnosticCodes |= SubAgentDiagnosticCode.NameFileMismatch;
 					}
 					if (string.IsNullOrEmpty(description))
 					{
-						diagnosticCodes |= SkillDiagnosticCode.MissingDescription;
+						diagnosticCodes |= SubAgentDiagnosticCode.MissingDescription;
 						description = string.Empty;
 					}
 					if (string.IsNullOrEmpty(frontmatter?.Description))
 					{
-						diagnosticCodes |= SkillDiagnosticCode.MissingYamlDescription;
+						diagnosticCodes |= SubAgentDiagnosticCode.MissingYamlDescription;
 					}
 
 					if (frontmatter != null)
 					{
 						try
 						{
-							var metadataBuilder = ImmutableDictionary.CreateBuilder<SkillMetadataType, string>();
+							var metadataBuilder = ImmutableDictionary.CreateBuilder<SubAgentMetadataType, string>();
 							var additionalMetadataBuilder = ImmutableDictionary.CreateBuilder<string, string>();
 							var allowedToolsBuilder = ImmutableList.CreateBuilder<ToolNameWithSpecifier>();
 							var availableToolsBuilder = ImmutableList.CreateBuilder<ToolNameWithSpecifier>();
@@ -139,19 +140,19 @@ namespace LLMDesktopAssistant.Prompting.Skills
 							var additionalPropertiesBuilder = ImmutableDictionary.CreateBuilder<string, YamlNode>();
 
 							if (!string.IsNullOrEmpty(frontmatter.Compatibility))
-								metadataBuilder.Add(SkillMetadataType.Compatibility, frontmatter.Compatibility);
+								metadataBuilder.Add(SubAgentMetadataType.Compatibility, frontmatter.Compatibility);
 							if (!string.IsNullOrEmpty(frontmatter.License))
-								metadataBuilder.Add(SkillMetadataType.License, frontmatter.License);
+								metadataBuilder.Add(SubAgentMetadataType.License, frontmatter.License);
 
 							foreach (var (key, value) in frontmatter.Metadata ?? [])
 							{
 								switch (key)
 								{
 									case "author":
-										metadataBuilder.Add(SkillMetadataType.Author, value);
+										metadataBuilder.Add(SubAgentMetadataType.Author, value);
 										break;
 									case "version":
-										metadataBuilder.Add(SkillMetadataType.Version, value);
+										metadataBuilder.Add(SubAgentMetadataType.Version, value);
 										break;
 									default:
 										additionalMetadataBuilder.Add(key, value);
@@ -215,6 +216,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 										case "description":
 										case "compatibility":
 										case "license":
+										case "model":
 										case "allowed-tools":
 										case "available-tools":
 										case "disallowed-tools":
@@ -229,7 +231,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 								}
 							}
 
-							return new SkillInfo
+							return new SubAgentInfo
 							{
 								Name = name.Trim(),
 								Description = description.Trim(),
@@ -244,7 +246,8 @@ namespace LLMDesktopAssistant.Prompting.Skills
 								DisallowedTools = disallowedToolsBuilder.ToImmutableList(),
 								Tags = tagsBuilder.ToImmutableList(),
 								AdditionalProperties = additionalPropertiesBuilder.ToImmutableDictionary(),
-								Diagnostic = diagnosticCodes != SkillDiagnosticCode.None ? new SkillDiagnostic
+								Model = frontmatter.Model,
+								Diagnostic = diagnosticCodes != SubAgentDiagnosticCode.None ? new SubAgentDiagnostic
 								{
 									IsFatal = false,
 									Codes = diagnosticCodes,
@@ -254,7 +257,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 						}
 						catch (Exception ex)
 						{
-							return new SkillInfo
+							return new SubAgentInfo
 							{
 								Name = name.Trim(),
 								Description = description.Trim(),
@@ -262,17 +265,17 @@ namespace LLMDesktopAssistant.Prompting.Skills
 								Source = source,
 								Path = fullpath,
 								HomeDirectory = homeDir,
-								Diagnostic = new SkillDiagnostic
+								Diagnostic = new SubAgentDiagnostic
 								{
 									IsFatal = false,
-									Codes = diagnosticCodes | SkillDiagnosticCode.YamlDecodingError,
+									Codes = diagnosticCodes | SubAgentDiagnosticCode.YamlDecodingError,
 									Exception = ex
 								}
 							};
 						}
 					}
 
-					return new SkillInfo
+					return new SubAgentInfo
 					{
 						Name = name.Trim(),
 						Description = description.Trim(),
@@ -280,7 +283,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 						Source = source,
 						Path = fullpath,
 						HomeDirectory = homeDir,
-						Diagnostic = new SkillDiagnostic
+						Diagnostic = new SubAgentDiagnostic
 						{
 							IsFatal = false,
 							Codes = diagnosticCodes,
@@ -292,9 +295,9 @@ namespace LLMDesktopAssistant.Prompting.Skills
 			_parser = builder.Build();
 		}
 
-		public SkillInfo Parse(string fullpath, string contents, SkillSource source = SkillSource.Unknown)
+		public SubAgentInfo Parse(string fullpath, string contents, SubAgentSource source = SubAgentSource.Unknown)
 		{
-			return _parser.Parse<SkillInfo>(contents, parameter: new ParserParameter
+			return _parser.Parse<SubAgentInfo>(contents, parameter: new ParserParameter
 			{
 				FullPath = fullpath,
 				Source = source

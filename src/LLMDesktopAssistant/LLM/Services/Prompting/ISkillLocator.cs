@@ -1,4 +1,6 @@
-﻿namespace LLMDesktopAssistant.LLM.Services.Prompting
+﻿using LLMDesktopAssistant.Prompting.Skills;
+
+namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
 	public interface ISkillLocator
 	{
@@ -6,6 +8,6 @@
 		/// Locates all skill files based on current configuration.
 		/// </summary>
 		/// <returns>A list of skill file (SKILL.md) paths.</returns>
-		IEnumerable<string> LocateSkillFiles();
+		IEnumerable<SkillFileInfo> LocateSkillFiles();
 	}
 }

@@ -95,6 +95,16 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _skillSettings, value);
 		}
 
+		private AgentSubAgentSettings _subAgentSettings = new();
+		/// <summary>
+		/// The sub-agent settings for this agent.
+		/// </summary>
+		public AgentSubAgentSettings SubAgents
+		{
+			get => _subAgentSettings;
+			set => SetProperty(ref _subAgentSettings, value);
+		}
+
 		private AgentMemorySettings _memorySettings = new();
 		/// <summary>
 		/// Settings related to memory management.

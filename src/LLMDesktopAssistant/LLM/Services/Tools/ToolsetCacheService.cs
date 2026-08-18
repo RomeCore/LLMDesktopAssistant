@@ -10,9 +10,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	public class ToolsetCacheService : IToolsetCacheService
 	{
 		private readonly IToolsetBuildingService _builder;
-		private ImmutableDictionary<string, ToolInfo> _availableTools = [], _validTools = [], _validAliasedTools = [];
+		private ImmutableDictionary<string, ToolInfo> _availableTools = [], _aliasedTools = [], _validTools = [], _validAliasedTools = [];
 
 		public ImmutableDictionary<string, ToolInfo> AvailableTools => _availableTools;
+
+		public ImmutableDictionary<string, ToolInfo> AliasedTools => _aliasedTools;
 
 		public ImmutableDictionary<string, ToolInfo> ValidTools => _validTools;
 
@@ -27,6 +29,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		{
 			_availableTools = _builder.GetAvailableTools().ToImmutableDictionary(t => t.Name);
 			_validTools = _builder.GetToolsForAgent(agent).ToImmutableDictionary(t => t.Name);
+			_aliasedTools = BuildDictionaryWithAliases(_availableTools.Values);
 			_validAliasedTools = BuildDictionaryWithAliases(_validTools.Values);
 		}
 

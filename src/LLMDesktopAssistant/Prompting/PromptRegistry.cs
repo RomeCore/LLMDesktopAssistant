@@ -41,6 +41,11 @@ namespace LLMDesktopAssistant.Prompting
 		public ImmutableDictionary<(string, LanguageCode), SkillPrompt> AllBuiltinSkills { get; }
 
 		/// <summary>
+		/// Gets all built-in sub-agents.
+		/// </summary>
+		public ImmutableDictionary<(string, LanguageCode), SubAgentPrompt> AllBuiltinSubAgents { get; }
+
+		/// <summary>
 		/// Gets target built-in prompt components mapped by their unique identifier.
 		/// </summary>
 		public ImmutableDictionary<Guid, PromptComponent> BuiltinComponents { get; private set; } = null!;
@@ -64,6 +69,11 @@ namespace LLMDesktopAssistant.Prompting
 		/// Gets target built-in skills mapped by their unique identifier.
 		/// </summary>
 		public ImmutableDictionary<string, SkillPrompt> BuiltinSkills { get; private set; } = null!;
+
+		/// <summary>
+		/// Gets target built-in sub-agents mapped by their name.
+		/// </summary>
+		public ImmutableDictionary<string, SubAgentPrompt> BuiltinSubAgents { get; private set; } = null!;
 
 		public PromptRegistry()
 		{
@@ -91,6 +101,7 @@ namespace LLMDesktopAssistant.Prompting
 			var allSpecializationsBuilder = ImmutableDictionary.CreateBuilder<(Guid, LanguageCode), Specialization>();
 			var allSlidersBuilder = ImmutableDictionary.CreateBuilder<(Guid, LanguageCode), BehaviourSlider>();
 			var allSkillsBuilder = ImmutableDictionary.CreateBuilder<(string, LanguageCode), SkillPrompt>();
+			var allSubAgentsBuilder = ImmutableDictionary.CreateBuilder<(string, LanguageCode), SubAgentPrompt>();
 
 			foreach (var template in SharedLibrary)
 			{
@@ -99,7 +110,7 @@ namespace LLMDesktopAssistant.Prompting
 
 				// Log.Debug("Loading template: {Id}", id);
 
-				if (type == "component" || type == "persona" || type == "specialization" || type == "slider" || type == "skill")
+				if (type == "component" || type == "persona" || type == "specialization" || type == "slider" || type == "skill" || type == "sub-agent")
 				{
 					if (template is not ITextTemplate textTemplate)
 						throw new InvalidDataException($"Invalid template: {id} is not a text template.");
@@ -217,6 +228,20 @@ namespace LLMDesktopAssistant.Prompting
 								Template = new SerializableTextTemplate(textTemplate)
 							};
 							break;
+
+						case "sub-agent":
+							if (allSubAgentsBuilder.ContainsKey((title ?? id, lang.LanguageCode)))
+								Log.Warning("PromptRegistry: Duplicate sub-agent found: {Id}, {Lang}", guid, lang.LanguageCode);
+							allSubAgentsBuilder[(title ?? id, lang.LanguageCode)] = new SubAgentPrompt
+							{
+								Id = guid,
+								Name = title ?? id,
+								Description = description,
+								Category = category,
+								LocalizedFor = localizedFor,
+								Template = new SerializableTextTemplate(textTemplate)
+							};
+							break;
 					}
 				}
 			}
@@ -290,11 +315,25 @@ namespace LLMDesktopAssistant.Prompting
 				skill.Template = skillToExtend.Template;
 			}
 
+			foreach (var ((guid, lang), subAgent) in allSubAgentsBuilder)
+			{
+				if (!subAgent.LocalizedFor.HasValue) continue;
+
+				if (!allSubAgentsBuilder.TryGetValue((guid, subAgent.LocalizedFor.Value), out var subAgentToExtend))
+				{
+					Log.Error("PromptRegistry: Cannot find sub-agent to extend: {Id}, {Lang}", guid, subAgent.LocalizedFor.Value);
+					continue;
+				}
+
+				subAgent.Template = subAgentToExtend.Template;
+			}
+
 			AllBuiltinComponents = allComponentsBuilder.ToImmutable();
 			AllBuiltinPersonas = allPersonasBuilder.ToImmutable();
 			AllBuiltinSpecializations = allSpecializationsBuilder.ToImmutable();
 			AllBuiltinSliders = allSlidersBuilder.ToImmutable();
 			AllBuiltinSkills = allSkillsBuilder.ToImmutable();
+			AllBuiltinSubAgents = allSubAgentsBuilder.ToImmutable();
 
 			RefreshTargetBuiltinPrompts();
 		}
@@ -306,6 +345,7 @@ namespace LLMDesktopAssistant.Prompting
 			var specializationsBuilder = ImmutableDictionary.CreateBuilder<Guid, Specialization>();
 			var slidersBuilder = ImmutableDictionary.CreateBuilder<Guid, BehaviourSlider>();
 			var skillsBuilder = ImmutableDictionary.CreateBuilder<string, SkillPrompt>();
+			var subAgentsBuilder = ImmutableDictionary.CreateBuilder<string, SubAgentPrompt>();
 
 			foreach (var ((guid, lang), component) in AllBuiltinComponents)
 				if (ShouldAdd(componentsBuilder, guid, lang))
@@ -327,11 +367,16 @@ namespace LLMDesktopAssistant.Prompting
 				if (ShouldAdd(skillsBuilder, guid, lang))
 					skillsBuilder[guid] = skill;
 
+			foreach (var ((guid, lang), subAgent) in AllBuiltinSubAgents)
+				if (ShouldAdd(subAgentsBuilder, guid, lang))
+					subAgentsBuilder[guid] = subAgent;
+
 			BuiltinComponents = componentsBuilder.ToImmutable();
 			BuiltinPersonas = personasBuilder.ToImmutable();
 			BuiltinSpecializations = specializationsBuilder.ToImmutable();
 			BuiltinSliders = slidersBuilder.ToImmutable();
 			BuiltinSkills = skillsBuilder.ToImmutable();
+			BuiltinSubAgents = subAgentsBuilder.ToImmutable();
 		}
 
 		private bool ShouldAdd<T, K>(ImmutableDictionary<K, T>.Builder builder,
@@ -397,6 +442,12 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			var skillsConfig = SettingsManager.Get<SkillsConfiguration>();
 			return skillsConfig.Skills.Concat(BuiltinSkills.Values);
+		}
+
+		public IEnumerable<SubAgentPrompt> GetSubAgents()
+		{
+			var subAgentsConfig = SettingsManager.Get<SubAgentsConfiguration>();
+			return subAgentsConfig.SubAgents.Concat(BuiltinSubAgents.Values);
 		}
 	}
 }

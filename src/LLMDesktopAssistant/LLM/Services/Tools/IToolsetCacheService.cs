@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
@@ -12,6 +12,11 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		/// Gets the current tools that are available in the chat session.
 		/// </summary>
 		ImmutableDictionary<string, ToolInfo> AvailableTools { get; }
+
+		/// <summary>
+		/// Gets the current tools that are available in the chat session. Used for tool lookup.
+		/// </summary>
+		ImmutableDictionary<string, ToolInfo> AliasedTools { get; }
 
 		/// <summary>
 		/// Gets the current tools that are available to the LLM inference.

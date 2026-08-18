@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Bibliography;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Prompting;
@@ -38,7 +39,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{
 						Name = s.Name,
 						Description = s.Description ?? string.Empty,
-						BodyGetter = new(() => s.Template.Template.Render(context, templateFunctions))
+						BodyGetter = new(() => s.Template.Template.Render(context, templateFunctions)),
+						Source = SkillSource.Template
 					};
 				}));
 			}
@@ -66,6 +68,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						Name = last!.Name,
 						Description = last.Description,
 						BodyGetter = last.BodyGetter,
+						Source = last.Source,
 						Path = last.Path,
 						HomeDirectory = last.HomeDirectory,
 						Metadata = last.Metadata,
@@ -106,6 +109,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 							Enabled = true,
 							InjectionMode = change.InjectionMode ?? skillInfo.InjectionMode,
 							Name = skillInfo.Name,
+							Source = skillInfo.Source,
 							Description = skillInfo.Description,
 							BodyGetter = skillInfo.BodyGetter,
 							Path = skillInfo.Path,

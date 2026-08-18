@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using LLMDesktopAssistant.Services;
-using RCLargeLanguageModels;
 
 namespace LLMDesktopAssistant.Prompting.Skills
 {
@@ -17,20 +16,20 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 		private readonly ConcurrentDictionary<string, SkillCacheEntry> _cache = [];
 
-		public IEnumerable<SkillInfo> Load(IEnumerable<string> files)
+		public IEnumerable<SkillInfo> Load(IEnumerable<SkillFileInfo> files)
 		{
 			foreach (var file in files)
 			{
-				var fallbackSkillName = Path.GetFileName(Path.GetDirectoryName(file));
+				var fallbackSkillName = Path.GetFileName(Path.GetDirectoryName(file.FileName));
 				var nameUnknownCode = string.IsNullOrEmpty(fallbackSkillName)
 					? SkillDiagnosticCode.MissingName
 					: SkillDiagnosticCode.None;
 				fallbackSkillName = string.IsNullOrEmpty(fallbackSkillName) ? "unknown" : fallbackSkillName;
 
-				if (!File.Exists(file))
+				if (!File.Exists(file.FileName))
 				{
-					_cache.TryRemove(file, out _);
-					yield return CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+					_cache.TryRemove(file.FileName, out _);
+					yield return CreateDiagnosticSkill(fallbackSkillName, file.FileName, new SkillDiagnostic
 					{
 						IsFatal = true,
 						Codes = SkillDiagnosticCode.MissingFile | nameUnknownCode,
@@ -39,16 +38,16 @@ namespace LLMDesktopAssistant.Prompting.Skills
 					continue;
 				}
 
-				SkillCacheEntry CreateCacheEntry(FileInfo fileInfo, string file)
+				SkillCacheEntry CreateCacheEntry(FileInfo fileInfo, SkillFileInfo file)
 				{
 					string contents;
 					try
 					{
-						contents = File.ReadAllText(file);
+						contents = File.ReadAllText(file.FileName);
 					}
 					catch (Exception ex)
 					{
-						var skill = CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+						var skill = CreateDiagnosticSkill(fallbackSkillName, file.FileName, new SkillDiagnostic
 						{
 							IsFatal = true,
 							Codes = SkillDiagnosticCode.FileAccessError | nameUnknownCode,
@@ -63,7 +62,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 					try
 					{
-						var skill = parser.Parse(file, contents!);
+						var skill = parser.Parse(file.FileName, contents!, file.Source);
 						return new SkillCacheEntry
 						{
 							LastWriteTime = fileInfo.LastWriteTime,
@@ -72,7 +71,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 					}
 					catch (Exception ex)
 					{
-						var skill = CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+						var skill = CreateDiagnosticSkill(fallbackSkillName, file.FileName, new SkillDiagnostic
 						{
 							IsFatal = true,
 							Codes = SkillDiagnosticCode.GeneralParsingError | nameUnknownCode,
@@ -86,17 +85,17 @@ namespace LLMDesktopAssistant.Prompting.Skills
 					}
 				}
 
-				yield return _cache.AddOrUpdate(file,
-					file =>
+				yield return _cache.AddOrUpdate(file.FileName,
+					_ =>
 					{
 						FileInfo fileInfo;
 						try
 						{
-							fileInfo = new FileInfo(file);
+							fileInfo = new FileInfo(file.FileName);
 						}
 						catch (Exception ex)
 						{
-							var skill = CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+							var skill = CreateDiagnosticSkill(fallbackSkillName, file.FileName, new SkillDiagnostic
 							{
 								IsFatal = true,
 								Codes = SkillDiagnosticCode.FileAccessError | nameUnknownCode,
@@ -110,16 +109,16 @@ namespace LLMDesktopAssistant.Prompting.Skills
 						}
 						return CreateCacheEntry(fileInfo, file);
 					},
-					(file, existingEntry) =>
+					(_, existingEntry) =>
 					{
 						FileInfo fileInfo;
 						try
 						{
-							fileInfo = new FileInfo(file);
+							fileInfo = new FileInfo(file.FileName);
 						}
 						catch (Exception ex)
 						{
-							var skill = CreateDiagnosticSkill(fallbackSkillName, file, new SkillDiagnostic
+							var skill = CreateDiagnosticSkill(fallbackSkillName, file.FileName, new SkillDiagnostic
 							{
 								IsFatal = true,
 								Codes = SkillDiagnosticCode.FileAccessError | nameUnknownCode,
@@ -147,6 +146,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 			{
 				Name = name,
 				Description = string.Empty,
+				Source = SkillSource.Unknown,
 				BodyGetter = new(() => string.Empty),
 				Diagnostic = diagnostic,
 				Path = file,

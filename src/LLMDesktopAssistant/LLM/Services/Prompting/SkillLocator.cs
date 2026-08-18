@@ -1,5 +1,7 @@
+using AvaloniaEdit.Utils;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
@@ -9,13 +11,13 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		IChatSettingsService chatSettings
 	) : ISkillLocator
 	{
-		public IEnumerable<string> LocateSkillFiles()
+		public IEnumerable<SkillFileInfo> LocateSkillFiles()
 		{
 			// 1. Skill directories
-			List<string> potentialSkillDirectories = [];
+			List<SkillFileInfo> potentialSkillDirectories = [];
 
 			var skillSources = chatSettings.Settings.Skills.GetEffectiveSources();
-			potentialSkillDirectories.AddRange(skillSources.AdditionalSkillDirectories);
+			potentialSkillDirectories.AddRange(skillSources.AdditionalSkillDirectories.Select(d => new SkillFileInfo(d, SkillSource.Custom)));
 
 			string[] projectPaths;
 			if (skillSources.FetchFromAllWorkingDirectories)
@@ -23,54 +25,55 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			else
 				projectPaths = [chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory()];
 
-			List<string> sharedCheckPaths = [
-				$"{Directories.WorkingHome}/skills", // .llmassist/skills
-				".agents/skills",
-				".claude/skills",
-				".github/skills",
-				".codex/skills",
-				".cursor/skills"
+			List<string[]> sharedCheckPaths = [
+				[Directories.WorkingHome, "skills"], // .llmassist/skills
+				[".agents", "skills"],
+				[".claude", "skills"],
+				[".github", "skills"],
+				[".codex", "skills"],
+				[".gemini", "skills"],
+				[".cursor", "skills"]
 			];
 
 			var sharedRootFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-			foreach (string sharedCheckPath in sharedCheckPaths)
+			foreach (var sharedCheckPath in sharedCheckPaths)
 			{
-				var potentialSkillDirectory = Path.Combine(sharedRootFolder, sharedCheckPath);
-				potentialSkillDirectories.Add(potentialSkillDirectory);
+				var potentialSkillDirectory = Path.Combine([sharedRootFolder, ..sharedCheckPath]);
+				potentialSkillDirectories.Add(new SkillFileInfo(potentialSkillDirectory, SkillSource.UserProfile));
 			}
 
-			List<string> projectCheckPaths = [];
+			List<string[]> projectCheckPaths = [];
 			projectCheckPaths.AddRange(sharedCheckPaths);
 			foreach (string projectPath in projectPaths)
 			{
-				foreach (string checkPath in projectCheckPaths)
+				foreach (var checkPath in projectCheckPaths)
 				{
-					var potentialSkillDirectory = Path.Combine(projectPath, checkPath);
-					potentialSkillDirectories.Add(potentialSkillDirectory);
+					var potentialSkillDirectory = Path.Combine([projectPath, ..checkPath]);
+					potentialSkillDirectories.Add(new SkillFileInfo(potentialSkillDirectory, SkillSource.WorkingDirectory));
 				}
 			}
 
 			// 2. Skill files
 
-			List<string> skillFiles = [];
+			List<SkillFileInfo> skillFiles = [];
 
-			skillFiles.AddRange(skillSources.AdditionalSkillFiles);
+			skillFiles.AddRange(skillSources.AdditionalSkillFiles.Select(f => new SkillFileInfo(f, SkillSource.Custom)));
 
-			foreach (string potentialSkillDirectory in potentialSkillDirectories)
+			foreach (var potentialSkillDirectory in potentialSkillDirectories)
 			{
-				if (!Directory.Exists(potentialSkillDirectory))
+				if (!Directory.Exists(potentialSkillDirectory.FileName))
 					continue;
 
-				var subdirectories = Directory.GetDirectories(potentialSkillDirectory);
+				var subdirectories = Directory.GetDirectories(potentialSkillDirectory.FileName);
 				foreach (string subdirectory in subdirectories)
 				{
-					skillFiles.Add(Path.Combine(subdirectory, "SKILL.md"));
-					skillFiles.Add(Path.Combine(subdirectory, "SKILL.mdx"));
+					skillFiles.Add(new SkillFileInfo(Path.Combine(subdirectory, "SKILL.md"), potentialSkillDirectory.Source));
+					skillFiles.Add(new SkillFileInfo(Path.Combine(subdirectory, "SKILL.mdx"), potentialSkillDirectory.Source));
 				}
 			}
 
 			var comparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
-			return skillFiles.Distinct(comparer).Where(File.Exists);
+			return skillFiles.DistinctBy(s => s.FileName, comparer).Where(s => File.Exists(s.FileName));
 		}
 	}
 }
