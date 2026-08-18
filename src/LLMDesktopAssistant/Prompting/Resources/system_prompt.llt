@@ -36,7 +36,7 @@
 	@if assistant_nickname
 	{
 		Your alternate name is:
-		@assistantNickname
+		@assistant_nickname
 	}
 	@if skills
 	{
