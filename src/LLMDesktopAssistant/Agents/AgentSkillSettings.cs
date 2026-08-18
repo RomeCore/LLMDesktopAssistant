@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _enableSkills, value);
 		}
 
-		private RangeObservableCollection<SkillChange> _skillChanges = [];
+		private readonly RangeObservableCollection<SkillChange> _skillChanges = [];
 		/// <summary>
 		/// Gets or sets the skill changes compared to all available skills.
 		/// </summary>

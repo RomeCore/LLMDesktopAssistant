@@ -55,12 +55,12 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _maxTokens, value);
 		}
 
-		private RangeObservableCollection<AdditionalParameter> _additionalParameters = [];
+		private RangeObservableCollection<AdditionalGenerationParameter> _additionalParameters = [];
 		/// <summary>
 		/// The additional parameters to use for the agent. These are represented in a key-value format and passed to API.
 		/// </summary>
 		[InheritedChatAgentSetting]
-		public RangeObservableCollection<AdditionalParameter> AdditionalParameters
+		public RangeObservableCollection<AdditionalGenerationParameter> AdditionalParameters
 		{
 			get => _additionalParameters;
 			set => _additionalParameters.Reset(value);

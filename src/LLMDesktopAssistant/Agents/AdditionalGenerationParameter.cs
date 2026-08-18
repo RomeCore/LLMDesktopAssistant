@@ -1,6 +1,6 @@
 ﻿namespace LLMDesktopAssistant.Agents
 {
-	public class AdditionalParameter : NotifyPropertyChanged
+	public class AdditionalGenerationParameter : NotifyPropertyChanged
 	{
 		private bool _enabled = true;
 		public bool Enabled

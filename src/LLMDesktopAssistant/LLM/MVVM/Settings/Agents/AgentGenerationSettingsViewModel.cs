@@ -54,7 +54,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// <summary>
 		/// Gets the effective additional parameters resolved by the current inheritance level.
 		/// </summary>
-		public RangeObservableCollection<AdditionalParameter> EffectiveAdditionalParameters => GenerationSettings.GetEffectiveAdditionalParameters(_chatSettings);
+		public RangeObservableCollection<AdditionalGenerationParameter> EffectiveAdditionalParameters => GenerationSettings.GetEffectiveAdditionalParameters(_chatSettings);
 
 		public List<ReasoningLevelItem> ReasoningLevels { get; } =
 		[
@@ -189,7 +189,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			AddParameterCommand = new RelayCommand(() =>
 			{
-				EffectiveAdditionalParameters.Add(new AdditionalParameter
+				EffectiveAdditionalParameters.Add(new AdditionalGenerationParameter
 				{
 					Enabled = true,
 					ParameterName = "new_parameter",
@@ -197,7 +197,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				});
 			});
 
-			RemoveParameterCommand = new RelayCommand<AdditionalParameter?>(param =>
+			RemoveParameterCommand = new RelayCommand<AdditionalGenerationParameter?>(param =>
 			{
 				if (param != null)
 					EffectiveAdditionalParameters.Remove(param);
