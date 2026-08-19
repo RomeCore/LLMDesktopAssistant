@@ -1,0 +1,256 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:edit="using:AvaloniaEdit"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.MetaToolEditorDialogView"
+			 x:DataType="local:MetaToolEditorDialogViewModel">
+
+	<UserControl.Styles>
+
+		<Style Selector="Border.chip">
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="6,2"/>
+			<Setter Property="Margin" Value="0,0,4,2"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource SecondaryAccentBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="TextBlock.chipText">
+			<Setter Property="FontSize" Value="11"/>
+			<Setter Property="Opacity" Value="0.8"/>
+		</Style>
+
+		<Style Selector="TextBlock.fieldLabel">
+			<Setter Property="FontSize" Value="12"/>
+			<Setter Property="Opacity" Value="0.7"/>
+			<Setter Property="Margin" Value="0,8,0,2"/>
+		</Style>
+
+	</UserControl.Styles>
+
+	<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+			BorderThickness="1"
+			CornerRadius="8"
+			Padding="12"
+			MinWidth="700"
+			MinHeight="480">
+
+		<Grid RowDefinitions="Auto,Auto,*,Auto">
+
+			<!-- ============================================================ -->
+			<!-- Row 0: Header: name + language + mode toggle                  -->
+			<!-- ============================================================ -->
+			<Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+
+				<StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+					<ico:MaterialIcon Kind="{Binding LanguageIcon}"
+									  Width="20" Height="20"
+									  Foreground="{DynamicResource PrimaryAccentBrush}"
+									  VerticalAlignment="Center"/>
+					<TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="15" VerticalAlignment="Center"/>
+					<Border Classes="chip">
+						<TextBlock Classes="chipText" Text="{Binding LanguageName}"/>
+					</Border>
+					<TextBlock Text="{Binding FilePath}"
+							   FontSize="11"
+							   Opacity="0.5"
+							   VerticalAlignment="Center"
+							   TextTrimming="CharacterEllipsis"
+							   MaxWidth="300"/>
+				</StackPanel>
+
+				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+					<Button Command="{Binding ToggleModeCommand}"
+							Padding="8,3"
+							FontSize="12"
+							IsEnabled="{Binding IsCodeMode, Converter={StaticResource InverseBooleanConverter}}">
+						<TextBlock Text="{loc:Loc settings.tools.meta_tools.editor.form}"/>
+					</Button>
+					<Button Command="{Binding ToggleModeCommand}"
+							Padding="8,3"
+							FontSize="12"
+							IsEnabled="{Binding IsFormMode, Converter={StaticResource InverseBooleanConverter}}">
+						<TextBlock Text="{loc:Loc settings.tools.meta_tools.editor.code}"/>
+					</Button>
+				</StackPanel>
+
+			</Grid>
+
+			<!-- ============================================================ -->
+			<!-- Row 1: Code mode: editor + live preview                       -->
+			<!-- ============================================================ -->
+			<Grid Grid.Row="1" ColumnDefinitions="3*,2*" IsVisible="{Binding IsCodeMode}">
+
+				<Border Grid.Column="0" BorderBrush="{DynamicResource SecondaryAccentBrush}" BorderThickness="1" CornerRadius="4">
+					<edit:TextEditor x:Name="CodeEditor"
+									 FontFamily="Consolas,Monospace"
+									 FontSize="12"
+									 ShowLineNumbers="True"
+									 HorizontalScrollBarVisibility="Auto"
+									 VerticalScrollBarVisibility="Auto"/>
+				</Border>
+
+				<Border Grid.Column="1" Margin="8,0,0,0" BorderBrush="{DynamicResource SecondaryAccentBrush}" BorderThickness="1" CornerRadius="4" Padding="8">
+
+					<StackPanel>
+
+						<StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding HasPreviewError}">
+							<ico:MaterialIcon Kind="AlertCircle" Width="14" Height="14" Foreground="#FF5252" VerticalAlignment="Center"/>
+							<TextBlock Text="{loc:Loc settings.tools.meta_tools.editor.preview.invalid}"
+									   FontSize="12"
+									   Foreground="#FF5252"
+									   TextWrapping="Wrap"/>
+						</StackPanel>
+
+						<TextBlock Text="{Binding PreviewError}"
+								   FontSize="11"
+								   Foreground="#FF5252"
+								   TextWrapping="Wrap"
+								   Margin="0,2,0,6"
+								   IsVisible="{Binding HasPreviewError}"/>
+
+						<StackPanel IsVisible="{Binding HasPreviewError, Converter={StaticResource InverseBooleanConverter}}">
+
+							<TextBlock Text="{loc:Loc settings.tools.meta_tools.editor.preview}"
+									   FontWeight="Bold"
+									   FontSize="12"
+									   Margin="0,0,0,6"/>
+
+							<TextBlock Text="{Binding PreviewTitle}" FontWeight="Bold" TextWrapping="Wrap"/>
+							<TextBlock Text="{Binding PreviewDescription}" FontSize="11" Opacity="0.8" TextWrapping="Wrap" Margin="0,2,0,6"/>
+
+							<WrapPanel Margin="0,0,0,6">
+								<Border Classes="chip">
+									<TextBlock Classes="chipText" Text="{Binding PreviewCategory}"/>
+								</Border>
+								<Border Classes="chip">
+									<TextBlock Classes="chipText" Text="{Binding PreviewApprovalLevel}"/>
+								</Border>
+								<ItemsControl ItemsSource="{Binding PreviewBehaviours}">
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<WrapPanel/>
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+									<ItemsControl.ItemTemplate>
+										<DataTemplate x:DataType="messages:ToolBehaviourFlagInfo">
+											<Border Classes="chip" ToolTip.Tip="{Binding DisplayName}">
+												<StackPanel Orientation="Horizontal" Spacing="3">
+													<ico:MaterialIcon Kind="{Binding Icon}" Width="11" Height="11" Foreground="{Binding Color}" VerticalAlignment="Center"/>
+													<TextBlock Classes="chipText" Foreground="{Binding Color}" Text="{Binding DisplayName}"/>
+												</StackPanel>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</WrapPanel>
+
+							<TextBlock Text="{loc:Loc settings.tools.meta_tools.editor.preview.schema}"
+									   FontSize="11"
+									   Opacity="0.7"
+									   Margin="0,4,0,2"/>
+							<Border Background="#11000000" CornerRadius="4" Padding="6">
+								<TextBlock Text="{Binding PreviewSchema}"
+										   FontFamily="Consolas,Monospace"
+										   FontSize="11"
+										   TextWrapping="Wrap"/>
+							</Border>
+
+						</StackPanel>
+
+					</StackPanel>
+
+				</Border>
+
+			</Grid>
+
+			<!-- ============================================================ -->
+			<!-- Row 1: Form mode: structured fields                           -->
+			<!-- ============================================================ -->
+			<ScrollViewer Grid.Row="1" IsVisible="{Binding IsFormMode}" VerticalScrollBarVisibility="Auto">
+
+				<StackPanel Margin="0,0,8,0">
+
+					<TextBlock Classes="fieldLabel" Text="{loc:Loc settings.tools.meta_tools.editor.form.title}"/>
+					<TextBox Text="{Binding FormTitle, Mode=TwoWay}"/>
+
+					<TextBlock Classes="fieldLabel" Text="{loc:Loc settings.tools.meta_tools.editor.form.description}"/>
+					<TextBox Text="{Binding FormDescription, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"/>
+
+					<Grid ColumnDefinitions="*,*" Margin="0,8,0,0">
+						<StackPanel Grid.Column="0" Margin="0,0,8,0">
+							<TextBlock Classes="fieldLabel" Text="{loc:Loc settings.tools.meta_tools.editor.form.category}" Margin="0,0,0,2"/>
+							<TextBox Text="{Binding FormCategory, Mode=TwoWay}"/>
+						</StackPanel>
+						<StackPanel Grid.Column="1">
+							<TextBlock Classes="fieldLabel" Text="{loc:Loc settings.tools.meta_tools.editor.form.approval}" Margin="0,0,0,2"/>
+							<ComboBox ItemsSource="{Binding ApprovalLevelItems}"
+									  SelectedItem="{Binding SelectedApprovalLevel, Mode=TwoWay}"
+									  DisplayMemberBinding="{Binding DisplayName}"/>
+						</StackPanel>
+					</Grid>
+
+					<TextBlock Classes="fieldLabel" Text="{loc:Loc settings.tools.meta_tools.editor.form.behaviours}"/>
+					<ItemsControl ItemsSource="{Binding BehaviourToggles}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="local:MetaToolBehaviourToggle">
+								<CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" Content="{Binding DisplayName}" Margin="0,0,8,2"/>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+
+					<TextBlock Classes="fieldLabel" Text="{loc:Loc settings.tools.meta_tools.editor.form.schema}"/>
+					<TextBox Text="{Binding FormSchema, Mode=TwoWay}"
+							 FontFamily="Consolas,Monospace"
+							 FontSize="12"
+							 AcceptsReturn="True"
+							 TextWrapping="NoWrap"
+							 MinHeight="80"/>
+
+					<TextBlock Classes="fieldLabel" Text="{loc:Loc settings.tools.meta_tools.editor.form.code}"/>
+					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}" BorderThickness="1" CornerRadius="4" MinHeight="120">
+						<edit:TextEditor x:Name="FormCodeEditor"
+										 FontFamily="Consolas,Monospace"
+										 FontSize="12"
+										 ShowLineNumbers="True"
+										 HorizontalScrollBarVisibility="Auto"
+										 VerticalScrollBarVisibility="Auto"/>
+					</Border>
+
+				</StackPanel>
+
+			</ScrollViewer>
+
+			<!-- ============================================================ -->
+			<!-- Row 2: Footer: Save / Cancel                                  -->
+			<!-- ============================================================ -->
+			<Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
+
+				<TextBlock Grid.Column="0" VerticalAlignment="Center"/>
+
+				<Button Grid.Column="1" Command="{Binding CancelCommand}" Padding="16,4" Margin="0,0,8,0">
+					<TextBlock Text="{loc:Loc common.cancel}"/>
+				</Button>
+				<Button Grid.Column="2" Command="{Binding SaveCommand}" Padding="16,4"
+						Classes="accent">
+					<TextBlock Text="{loc:Loc common.save}"/>
+				</Button>
+
+			</Grid>
+
+		</Grid>
+
+	</Border>
+</UserControl>

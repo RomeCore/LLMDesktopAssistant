@@ -18,6 +18,8 @@ name: Имя
 ok: Ок
 policy: Политика
 remove: Удалить
+rename: Переименовать
+duplicate: Дублировать
 reset: Сбросить
 save: Сохранить
 search: Поиск

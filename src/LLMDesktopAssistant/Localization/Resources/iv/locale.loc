@@ -23,6 +23,8 @@ name: Name
 ok: Ok
 policy: Policy
 remove: Remove
+rename: Rename
+duplicate: Duplicate
 reset: Reset
 save: Save
 search: Search

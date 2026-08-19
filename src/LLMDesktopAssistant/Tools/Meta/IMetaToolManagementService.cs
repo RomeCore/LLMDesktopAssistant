@@ -27,10 +27,18 @@ namespace LLMDesktopAssistant.Tools.Meta
 			ToolApprovalLevel? approvalLevel, ToolBehaviour? behaviours, JsonObject? argumentSchema, ScriptLanguageType? language, string? executionCode);
 
 		/// <summary>
-		/// Lists all tools that have been created by LLM.
+		/// Lists all meta tools found by the locator together with their diagnostics.
+		/// Broken tools are included with a fatal diagnostic.
 		/// </summary>
-		/// <returns>An array of tools.</returns>
-		MetaTool[] ListTools();
+		/// <returns>An array of meta tool infos.</returns>
+		MetaToolInfo[] ListTools();
+
+		/// <summary>
+		/// Saves the raw file contents of a meta tool with the given name.
+		/// </summary>
+		/// <param name="name">The name of the tool to save.</param>
+		/// <param name="content">The raw file contents to write.</param>
+		void SaveToolFile(string name, string content);
 
 		/// <summary>
 		/// Renames an existing tool from oldName to newName.

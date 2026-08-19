@@ -48,5 +48,34 @@ namespace LLMDesktopAssistant.Scripting.CSX
 			Result.CompleteWithSuccess();
 			return json;
 			""";
+
+		public string Template => """
+			/*
+			title: My Tool
+			description: Describe what this tool does and when to use it.
+			category: general
+			approval_level: policy-based
+			behaviours:
+			  - file_read
+			argument_schema: |
+			  {
+			    "type": "object",
+			    "properties": {
+			      "input": {
+			        "type": "string",
+			        "description": "The input to process"
+			      }
+			    },
+			    "additionalProperties": false
+			  }
+			*/
+
+			// Arguments come as JsonNode, guard optional ones
+			var input = (string?)ToolArgs?["input"];
+
+			// Return the result to the LLM
+			Result.Write("Processed: " + input);
+			return input;
+			""";
 	}
 }

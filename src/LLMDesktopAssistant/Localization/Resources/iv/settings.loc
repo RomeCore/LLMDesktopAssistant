@@ -316,6 +316,75 @@ tool.behaviour_policy.disallowed: Disallowed
 tools.enable: Enable tools
 tools.fetch_all: Fetch from all working directories
 tools.fetch_all.hint: Search for meta tools in all working directories, not only in the active one.
+tools.meta_tools.title: Meta Tools
+tools.meta_tools.hint: Meta tools are scripts (Lua, Python, C#) that the LLM can call like regular tools. Create, edit and manage them here.
+tools.meta_tools.create: Create
+tools.meta_tools.refresh: Re-read files
+tools.meta_tools.open_folder: Open meta tools folder
+tools.meta_tools.search.placeholder: Search by name, description or category...
+tools.meta_tools.empty: No meta tools found. Create a new one or check the sources.
+tools.meta_tools.broken: Broken
+tools.meta_tools.edit: Edit
+tools.meta_tools.open_file: Open file
+tools.meta_tools.show_in_explorer: Show in explorer
+tools.meta_tools.details: Argument schema
+tools.meta_tools.approval: Approval level
+tools.meta_tools.scope: Scope
+tools.meta_tools.scope.all: All scopes
+tools.meta_tools.scope.userprofile: App
+tools.meta_tools.scope.workingdirectory: Working directory
+tools.meta_tools.scope.custom: Custom
+tools.meta_tools.language.all: All languages
+tools.meta_tools.language.lua: Lua
+tools.meta_tools.language.python: Python
+tools.meta_tools.language.csharpscript: C# Script
+tools.meta_tools.rename.title: Rename meta tool
+tools.meta_tools.rename.description: Enter a new name. It will be used as the file name and tool identifier.
+tools.meta_tools.rename.label: New name
+tools.meta_tools.rename.placeholder: my-tool
+tools.meta_tools.rename.error.invalid: Invalid tool name. Use alphanumeric characters, underscores and dashes.
+tools.meta_tools.rename.error.exists: A tool with this name already exists.
+tools.meta_tools.duplicate.title: Duplicate meta tool
+tools.meta_tools.duplicate.description: Enter a name for the tool copy.
+tools.meta_tools.duplicate.label: Copy name
+tools.meta_tools.duplicate.placeholder: my-tool_copy
+tools.meta_tools.delete.title: Delete meta tool?
+tools.meta_tools.delete.confirm: The file {0} will be permanently deleted. This action cannot be undone.
+tools.meta_tools.create.error.invalid_name: Invalid name. Use alphanumeric characters, underscores and dashes.
+tools.meta_tools.create.error.no_engine: No engine for language '{0}'.
+tools.meta_tools.create.error.exists: A meta tool with this name already exists.
+tools.meta_tools.editor.code: Code
+tools.meta_tools.editor.form: Form
+tools.meta_tools.editor.preview: Metadata preview
+tools.meta_tools.editor.preview.invalid: Failed to parse the frontmatter
+tools.meta_tools.editor.preview.schema: Argument schema
+tools.meta_tools.editor.form.title: Title
+tools.meta_tools.editor.form.description: Description
+tools.meta_tools.editor.form.category: Category
+tools.meta_tools.editor.form.approval: Approval level
+tools.meta_tools.editor.form.behaviours: Behaviours
+tools.meta_tools.editor.form.schema: Argument schema (JSON)
+tools.meta_tools.editor.form.code: Code
+tools.meta_tools.editor.error.invalid_schema: Invalid argument schema
+tools.meta_tools.diagnostic.missingfrontmatter: Missing frontmatter
+tools.meta_tools.diagnostic.frontmatterparsingerror: Frontmatter parsing error
+tools.meta_tools.diagnostic.frontmatterdecodingerror: Frontmatter decoding error
+tools.meta_tools.diagnostic.nameformaterror: Invalid file name
+tools.meta_tools.diagnostic.invalidapprovallevel: Invalid approval level
+tools.meta_tools.diagnostic.invalidbehaviours: Invalid behaviours
+tools.meta_tools.diagnostic.invalidargumentschema: Invalid argument schema
+tools.meta_tools.diagnostic.missingfile: File not found
+tools.meta_tools.diagnostic.fileaccesserror: File access error
+tools.meta_tools.diagnostic.generalparsingerror: Parsing error
+tools.meta_tools.sources: Meta Tool Sources
+tools.meta_tools.additional_dirs: Additional Meta Tool Directories
+tools.meta_tools.additional_dirs.hint: Paths to directories containing meta tool files (e.g. metatools/). Example: C:/MyProject/.llmassist/metatools
+tools.meta_tools.additional_files: Additional Meta Tool Files
+tools.meta_tools.additional_files.hint: Paths to individual meta tool files.
+tools.meta_tools.dir.placeholder: C:/MyProject/.llmassist/metatools
+tools.meta_tools.file.placeholder: C:/MyProject/.llmassist/metatools/my-tool.lua
+tools.meta_tools.select_directory: Select meta tools directory
+tools.meta_tools.select_file: Select meta tool file
 user.add.title: Add user
 user.clear_image: Clear
 user.description: Description

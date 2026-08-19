@@ -34,7 +34,7 @@ namespace LLMDesktopAssistant.Scripting.CSX
 		}
 
 		/// <inheritdoc/>
-		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool)
+		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaToolInfo tool)
 		{
 			return (JsonNode? args, ToolExecutionContext context, CancellationToken cancellationToken) =>
 			{

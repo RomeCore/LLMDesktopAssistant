@@ -1,9 +1,12 @@
+using LLMDesktopAssistant.SourceGenerators;
+
 namespace LLMDesktopAssistant.LLM.Settings
 {
 	/// <summary>
 	/// The settings that related to tools implementations in the chat application.
 	/// </summary>
-	public class ChatToolSettings : ChatSettingsCategoryBase
+	[SettingsRoute(nameof(ChatSettings.Tools))]
+	public partial class ChatToolSettings : ChatSettingsCategoryBase
 	{
 		private bool _enableTools = true;
 		/// <summary>
@@ -15,15 +18,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => SetProperty(ref _enableTools, value);
 		}
 
-		private bool _fetchFromAllWorkingDirectories = false;
+		private MetaToolSourcesSettings _sources = new();
 		/// <summary>
-		/// Gets or sets a value indicating whether meta tools should be fetched from all
-		/// working directories (see <see cref="ChatEnvironmentSettings.WorkingDirectories"/>).
+		/// Gets or sets the meta tool sources group: the working directories search flag and the
+		/// additional meta tool directories and files.
 		/// </summary>
-		public bool FetchFromAllWorkingDirectories
+		[InheritedChatSetting]
+		public MetaToolSourcesSettings Sources
 		{
-			get => _fetchFromAllWorkingDirectories;
-			set => SetProperty(ref _fetchFromAllWorkingDirectories, value);
+			get => _sources;
+			set => SetProperty(ref _sources, value);
 		}
 	}
 }

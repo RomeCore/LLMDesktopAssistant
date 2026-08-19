@@ -15,6 +15,7 @@ using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.Tools.Meta;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Settings;
 
@@ -178,7 +179,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 			SettingsTree.Add(
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.tools"),
 				MaterialIconKind.Wrench,
-				() => new ChatToolsSettingsViewModel(Settings.Tools)));
+				() => new ChatToolsSettingsViewModel(Settings.Tools,
+					Chat.Services.GetRequiredService<IMetaToolManagementService>(),
+					Chat.Services.GetServices<IMetaToolEngine>())));
 
 			SettingsTree.Add(
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),

@@ -27,9 +27,37 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 			    async with python_weather.Client() as client:
 			        location = tool_args["location"]
 			        weather = await client.get(location)
-			        print(f"Current temperature: {weather.temperature}°C")
+			        print(f"Current temperature: {weather.temperature}ï¿½C")
 			
 			asyncio.run(getweather())
 			""";
+
+		public string Template => """"
+			"""
+			title: My Tool
+			description: Describe what this tool does and when to use it.
+			category: general
+			approval_level: policy-based
+			behaviours:
+			  - file_read
+			argument_schema: |
+			  {
+			    "type": "object",
+			    "properties": {
+			      "input": {
+			        "type": "string",
+			        "description": "The input to process"
+			      }
+			    },
+			    "additionalProperties": false
+			  }
+			"""
+
+			# Arguments come as a dict: tool_args["input"]
+			input_value = tool_args.get("input")
+
+			# Print the result to return it to the LLM
+			print("Processed: " + str(input_value))
+			"""";
 	}
 }

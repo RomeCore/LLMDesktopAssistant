@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Scripting;
 
 namespace LLMDesktopAssistant.Tools.Meta
 {
@@ -15,5 +15,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 		string FrontmatterEnd { get; }
 
 		string Examples { get; }
+
+		string Template { get; }
 	}
 }

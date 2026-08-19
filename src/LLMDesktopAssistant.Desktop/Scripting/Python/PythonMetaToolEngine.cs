@@ -35,7 +35,7 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 			_pythonHelperService = pythonHelperService;
 		}
 
-		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaTool tool)
+		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaToolInfo tool)
 		{
 			return async (JsonNode? args, ToolExecutionContext context, CancellationToken cancellationToken) =>
 			{

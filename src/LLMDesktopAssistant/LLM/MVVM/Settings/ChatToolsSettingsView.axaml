@@ -4,7 +4,10 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:settings="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 x:Name="VMRoot"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ChatToolsSettingsView"
 			 x:DataType="local:ChatToolsSettingsViewModel">
 
@@ -12,26 +15,264 @@
 
 		<!-- Enable tools checkbox -->
 		<CheckBox IsChecked="{Binding ToolSettings.EnableTools}"
-							Content="{loc:Loc settings.tools.enable}"/>
+				  Content="{loc:Loc settings.tools.enable}"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
-							 Fill="{DynamicResource DefaultForeground}"
-							 Opacity="0.2"
-							 Margin="0,10"/>
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,10"/>
 
 		<!-- ============================================================ -->
-		<!-- FETCH FROM ALL WORKING DIRECTORIES -->
+		<!-- META TOOLS                                                    -->
 		<!-- ============================================================ -->
-		<CheckBox IsChecked="{Binding ToolSettings.FetchFromAllWorkingDirectories}"
-							Content="{loc:Loc settings.tools.fetch_all}"
-							IsEnabled="{Binding ToolSettings.EnableTools}"/>
+		<Grid ColumnDefinitions="*,Auto,Auto,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc settings.tools.meta_tools.title}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
 
-		<TextBlock Text="{loc:Loc settings.tools.fetch_all.hint}"
-							Opacity="0.6"
-							TextWrapping="Wrap"
-							IsEnabled="{Binding ToolSettings.EnableTools}"/>
+			<Button Grid.Column="1"
+					Command="{Binding CreateMetaToolCommand}"
+					Classes="IconButton"
+					Margin="0,0,4,0"
+					ToolTip.Tip="{loc:Loc settings.tools.meta_tools.create}">
+				<ico:MaterialIcon Kind="FilePlusOutline"/>
+			</Button>
+
+			<Button Grid.Column="2"
+					Command="{Binding RefreshMetaToolsCommand}"
+					Classes="IconButton"
+					Margin="0,0,4,0"
+					ToolTip.Tip="{loc:Loc settings.tools.meta_tools.refresh}">
+				<ico:MaterialIcon Kind="Refresh"/>
+			</Button>
+
+			<Button Grid.Column="3"
+					Command="{Binding OpenMetaToolsFolderCommand}"
+					Classes="IconButton"
+					ToolTip.Tip="{loc:Loc settings.tools.meta_tools.open_folder}">
+				<ico:MaterialIcon Kind="FolderOpen"/>
+			</Button>
+		</Grid>
+
+		<TextBlock Text="{loc:Loc settings.tools.meta_tools.hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"/>
+
+		<!-- Search + filters -->
+		<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+			<TextBox Grid.Column="0"
+					 Text="{Binding SearchText, Mode=TwoWay}"
+					 PlaceholderText="{loc:Loc settings.tools.meta_tools.search.placeholder}">
+				<TextBox.InnerLeftContent>
+					<ico:MaterialIcon Kind="TextBoxSearch" Width="16" Height="16" Margin="6,0" VerticalAlignment="Center" Opacity="0.5"/>
+				</TextBox.InnerLeftContent>
+			</TextBox>
+
+			<ComboBox Grid.Column="1"
+					  ItemsSource="{Binding LanguageFilters}"
+					  SelectedItem="{Binding SelectedLanguageFilter, Mode=TwoWay}"
+					  DisplayMemberBinding="{Binding DisplayName}"
+					  MinWidth="110"/>
+
+			<ComboBox Grid.Column="2"
+					  ItemsSource="{Binding ScopeFilters}"
+					  SelectedItem="{Binding SelectedScopeFilter, Mode=TwoWay}"
+					  DisplayMemberBinding="{Binding DisplayName}"
+					  MinWidth="130"/>
+		</Grid>
+
+		<!-- Empty state -->
+		<TextBlock Text="{loc:Loc settings.tools.meta_tools.empty}"
+				   Opacity="0.5"
+				   TextWrapping="Wrap"
+				   IsVisible="{Binding MetaTools.Count, Converter={StaticResource InverseBooleanConverter}}"/>
+
+		<!-- Meta tools list -->
+		<ItemsControl ItemsSource="{Binding MetaTools}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="local:MetaToolCardViewModel">
+					<local:MetaToolCardView/>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,10"/>
+
+		<!-- ============================================================ -->
+		<!-- META TOOL SOURCES                                             -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc settings.tools.meta_tools.sources}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
+
+			<ComboBox Grid.Column="1"
+					  ItemsSource="{x:Static settings:InheritanceLevelItem.AllProfile}"
+					  SelectedItem="{Binding SelectedSourcesInheritance}"
+					  VerticalAlignment="Center"
+					  MinWidth="120">
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="settings:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+		</Grid>
+
+		<CheckBox IsChecked="{Binding EffectiveSources.FetchFromAllWorkingDirectories}"
+				  Content="{loc:Loc settings.tools.fetch_all}"
+				  IsEnabled="{Binding ToolSettings.EnableTools}"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,10"/>
+
+		<!-- ============================================================ -->
+		<!-- ADDITIONAL META TOOL DIRECTORIES                              -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc settings.tools.meta_tools.additional_dirs}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"
+					   IsEnabled="{Binding ToolSettings.EnableTools}"/>
+
+			<Button Grid.Column="1"
+					Command="{Binding AddDirectoryCommand}"
+					Classes="IconButton"
+					ToolTip.Tip="{loc:Loc common.add}"
+					IsEnabled="{Binding ToolSettings.EnableTools}">
+				<ico:MaterialIcon Kind="Plus"/>
+			</Button>
+		</Grid>
+
+		<TextBlock Text="{loc:Loc settings.tools.meta_tools.additional_dirs.hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"/>
+
+		<ItemsControl ItemsSource="{Binding EffectiveSources.AdditionalMetaToolDirectories}"
+					  IsEnabled="{Binding ToolSettings.EnableTools}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="x:String">
+					<Grid ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,2">
+						<TextBox Grid.Column="0"
+								 Text="{Binding Mode=TwoWay}"
+								 PlaceholderText="{loc:Loc settings.tools.meta_tools.dir.placeholder}"
+								 VerticalContentAlignment="Center"/>
+
+						<Button Grid.Column="1"
+								Command="{Binding #VMRoot.DataContext.BrowseDirectoryCommand}"
+								CommandParameter="{Binding}"
+								Classes="IconButton"
+								Margin="4,0,0,0"
+								ToolTip.Tip="{loc:Loc env.browse}">
+							<ico:MaterialIcon Kind="FolderOpen"/>
+						</Button>
+
+						<Button Grid.Column="2"
+								Command="{Binding #VMRoot.DataContext.OpenPathCommand}"
+								CommandParameter="{Binding}"
+								Classes="IconButton"
+								Margin="2,0"
+								ToolTip.Tip="{loc:Loc env.open_in_explorer}">
+							<ico:MaterialIcon Kind="OpenInNew"/>
+						</Button>
+
+						<Button Grid.Column="3"
+								Command="{Binding #VMRoot.DataContext.RemoveDirectoryCommand}"
+								CommandParameter="{Binding}"
+								Classes="IconButton"
+								Margin="2,0,0,0"
+								ToolTip.Tip="{loc:Loc common.remove}">
+							<ico:MaterialIcon Kind="Close"/>
+						</Button>
+					</Grid>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,10"/>
+
+		<!-- ============================================================ -->
+		<!-- ADDITIONAL META TOOL FILES                                    -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc settings.tools.meta_tools.additional_files}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"
+					   IsEnabled="{Binding ToolSettings.EnableTools}"/>
+
+			<Button Grid.Column="1"
+					Command="{Binding AddFileCommand}"
+					Classes="IconButton"
+					ToolTip.Tip="{loc:Loc common.add}"
+					IsEnabled="{Binding ToolSettings.EnableTools}">
+				<ico:MaterialIcon Kind="Plus"/>
+			</Button>
+		</Grid>
+
+		<TextBlock Text="{loc:Loc settings.tools.meta_tools.additional_files.hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"/>
+
+		<ItemsControl ItemsSource="{Binding EffectiveSources.AdditionalMetaToolFiles}"
+					  IsEnabled="{Binding ToolSettings.EnableTools}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="x:String">
+					<Grid ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,2">
+						<TextBox Grid.Column="0"
+								 Text="{Binding Mode=TwoWay}"
+								 PlaceholderText="{loc:Loc settings.tools.meta_tools.file.placeholder}"
+								 VerticalContentAlignment="Center"/>
+
+						<Button Grid.Column="1"
+								Command="{Binding #VMRoot.DataContext.BrowseFileCommand}"
+								CommandParameter="{Binding}"
+								Classes="IconButton"
+								Margin="4,0,0,0"
+								ToolTip.Tip="{loc:Loc env.browse}">
+							<ico:MaterialIcon Kind="FolderOpen"/>
+						</Button>
+
+						<Button Grid.Column="2"
+								Command="{Binding #VMRoot.DataContext.OpenPathCommand}"
+								CommandParameter="{Binding}"
+								Classes="IconButton"
+								Margin="2,0"
+								ToolTip.Tip="{loc:Loc env.open_in_explorer}">
+							<ico:MaterialIcon Kind="OpenInNew"/>
+						</Button>
+
+						<Button Grid.Column="3"
+								Command="{Binding #VMRoot.DataContext.RemoveFileCommand}"
+								CommandParameter="{Binding}"
+								Classes="IconButton"
+								Margin="2,0,0,0"
+								ToolTip.Tip="{loc:Loc common.remove}">
+							<ico:MaterialIcon Kind="Close"/>
+						</Button>
+					</Grid>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
 
 	</StackPanel>
-
 </UserControl>

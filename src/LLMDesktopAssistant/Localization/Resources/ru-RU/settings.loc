@@ -316,6 +316,75 @@ tool.behaviour_policy.disallowed: Запрещено
 tools.enable: Включить инструменты
 tools.fetch_all: Искать во всех рабочих директориях
 tools.fetch_all.hint: Искать мета-инструменты во всех рабочих директориях, а не только в активной.
+tools.meta_tools.title: Мета-инструменты
+tools.meta_tools.hint: Мета-инструменты — это скрипты (Lua, Python, C#), которые LLM может вызывать как обычные инструменты. Создавайте, редактируйте и управляйте ими здесь.
+tools.meta_tools.create: Создать
+tools.meta_tools.refresh: Перечитать файлы
+tools.meta_tools.open_folder: Открыть папку мета-инструментов
+tools.meta_tools.search.placeholder: Поиск по имени, описанию или категории...
+tools.meta_tools.empty: Мета-инструменты не найдены. Создайте новый или проверьте источники.
+tools.meta_tools.broken: Сломан
+tools.meta_tools.edit: Редактировать
+tools.meta_tools.open_file: Открыть файл
+tools.meta_tools.show_in_explorer: Показать в проводнике
+tools.meta_tools.details: Схема аргументов
+tools.meta_tools.approval: Уровень одобрения
+tools.meta_tools.scope: Область
+tools.meta_tools.scope.all: Все области
+tools.meta_tools.scope.userprofile: Приложение
+tools.meta_tools.scope.workingdirectory: Рабочая директория
+tools.meta_tools.scope.custom: Пользовательский
+tools.meta_tools.language.all: Все языки
+tools.meta_tools.language.lua: Lua
+tools.meta_tools.language.python: Python
+tools.meta_tools.language.csharpscript: C# Script
+tools.meta_tools.rename.title: Переименовать мета-инструмент
+tools.meta_tools.rename.description: Введите новое имя. Оно будет использовано как имя файла и идентификатор инструмента.
+tools.meta_tools.rename.label: Новое имя
+tools.meta_tools.rename.placeholder: my-tool
+tools.meta_tools.rename.error.invalid: Недопустимое имя инструмента. Разрешены латинские буквы, цифры, подчёркивания и дефисы.
+tools.meta_tools.rename.error.exists: Инструмент с таким именем уже существует.
+tools.meta_tools.duplicate.title: Дублировать мета-инструмент
+tools.meta_tools.duplicate.description: Введите имя для копии инструмента.
+tools.meta_tools.duplicate.label: Имя копии
+tools.meta_tools.duplicate.placeholder: my-tool_copy
+tools.meta_tools.delete.title: Удалить мета-инструмент?
+tools.meta_tools.delete.confirm: Файл {0} будет безвозвратно удалён. Это действие нельзя отменить.
+tools.meta_tools.create.error.invalid_name: Недопустимое имя. Разрешены латинские буквы, цифры, подчёркивания и дефисы.
+tools.meta_tools.create.error.no_engine: Нет движка для языка «{0}».
+tools.meta_tools.create.error.exists: Мета-инструмент с таким именем уже существует.
+tools.meta_tools.editor.code: Код
+tools.meta_tools.editor.form: Форма
+tools.meta_tools.editor.preview: Предпросмотр метаданных
+tools.meta_tools.editor.preview.invalid: Не удалось разобрать frontmatter
+tools.meta_tools.editor.preview.schema: Схема аргументов
+tools.meta_tools.editor.form.title: Заголовок
+tools.meta_tools.editor.form.description: Описание
+tools.meta_tools.editor.form.category: Категория
+tools.meta_tools.editor.form.approval: Уровень одобрения
+tools.meta_tools.editor.form.behaviours: Поведение
+tools.meta_tools.editor.form.schema: Схема аргументов (JSON)
+tools.meta_tools.editor.form.code: Код
+tools.meta_tools.editor.error.invalid_schema: Недопустимая схема аргументов
+tools.meta_tools.diagnostic.missingfrontmatter: Отсутствует frontmatter
+tools.meta_tools.diagnostic.frontmatterparsingerror: Ошибка парсинга frontmatter
+tools.meta_tools.diagnostic.frontmatterdecodingerror: Ошибка декодирования frontmatter
+tools.meta_tools.diagnostic.nameformaterror: Недопустимое имя файла
+tools.meta_tools.diagnostic.invalidapprovallevel: Недопустимый уровень одобрения
+tools.meta_tools.diagnostic.invalidbehaviours: Недопустимые поведения
+tools.meta_tools.diagnostic.invalidargumentschema: Недопустимая схема аргументов
+tools.meta_tools.diagnostic.missingfile: Файл не найден
+tools.meta_tools.diagnostic.fileaccesserror: Ошибка доступа к файлу
+tools.meta_tools.diagnostic.generalparsingerror: Ошибка парсинга
+tools.meta_tools.sources: Источники мета-инструментов
+tools.meta_tools.additional_dirs: Дополнительные директории мета-инструментов
+tools.meta_tools.additional_dirs.hint: Пути к директориям с файлами мета-инструментов (например, metatools/). Пример: C:/MyProject/.llmassist/metatools
+tools.meta_tools.additional_files: Дополнительные файлы мета-инструментов
+tools.meta_tools.additional_files.hint: Пути к отдельным файлам мета-инструментов.
+tools.meta_tools.dir.placeholder: C:/MyProject/.llmassist/metatools
+tools.meta_tools.file.placeholder: C:/MyProject/.llmassist/metatools/my-tool.lua
+tools.meta_tools.select_directory: Выберите директорию мета-инструментов
+tools.meta_tools.select_file: Выберите файл мета-инструмента
 user.add.title: Добавить пользователя
 user.clear_image: Очистить
 user.description: Описание
