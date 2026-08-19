@@ -29,3 +29,12 @@ diagnostic.yamlparsingerror: YAML Syntax Error
 diagnostic.yamlparsingerror.hint: The YAML frontmatter contains invalid syntax.
 injection_mode.default: Name + Description
 injection_mode.full: Full Body
+metadata.author: Author
+metadata.compatibility: Compatibility
+metadata.license: License
+metadata.version: Version
+source.custom: Custom
+source.template: Template
+source.unknown: Unknown
+source.userprofile: User Profile
+source.workingdirectory: Working Directory

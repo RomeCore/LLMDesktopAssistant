@@ -241,13 +241,36 @@ skills.additional_files: Additional Skill Files
 skills.additional_files.hint: Additional individual SKILL.md or SKILL.mdx files to load.
 skills.available: Available Skills
 skills.available.hint: Skills discovered in skill directories. Only enabled skills are injected into agent prompts.
+skills.badge.tools: {0} tools
+skills.create: Create
+skills.create.title: New Skill
+skills.create.description: The name will be used as the directory name and skill identifier.
+skills.create.name.label: Skill name
+skills.create.name.placeholder: my-skill
+skills.create.error.invalid_name: Invalid name. Only lowercase letters, digits and hyphens are allowed (no repeats and no leading/trailing hyphens).
+skills.create.error.exists: A skill with this name already exists.
+skills.create.success: Skill created. The file is open for editing.
+skills.delete: Delete file
+skills.delete.title: Delete skill?
+skills.delete.confirm: The file {0} will be permanently deleted. This action cannot be undone.
+skills.details: Details
+skills.details.body: Skill Body
+skills.details.allowed_tools: Without Approval
+skills.details.available_tools: Available
+skills.details.disallowed_tools: Disallowed
+skills.details.metadata: Metadata
+skills.details.none: Not specified
 skills.dir.placeholder: Directory path...
+skills.empty: No skills found. Check the sources or create a new skill.
 skills.enable: Enable skills
 skills.fetch_all: Fetch from all working directories
 skills.file.placeholder: File path...
+skills.open: Open in editor
 skills.refresh: Refresh skills list
+skills.search.placeholder: Search by name, description or tags...
 skills.select_directory: Select skill directory
 skills.select_file: Select skill file
+skills.show_in_explorer: Show in explorer
 skills.sources: Skill sources
 stage.adaptive.additional_router_prompt: Additional agentic router prompt
 stage.adaptive.agents: Agent pool

@@ -16,7 +16,8 @@ namespace LLMDesktopAssistant.Tools
 			var builder = new ParserBuilder();
 
 			builder.CreateMainRule()
-				.UnicodeIdentifier().Label("tool_name")
+				.Identifier(s => char.IsLetter(s) || s is '_' or '-',
+					c => char.IsLetterOrDigit(c) || c is '_' or '-').Label("tool_name")
 				.Optional(b => b
 					.Literal('(')
 					.TextUntil(")").Label("specifier")

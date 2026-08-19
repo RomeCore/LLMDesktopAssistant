@@ -6,6 +6,7 @@
 
 // Tool names
 name.agent-call: Call agent
+name.agent-callsub: Call sub-agent
 name.agent-describe_image: Describe image
 name.clipboard-copy: Copy to clipboard
 name.clipboard-read: Read from clipboard
@@ -87,7 +88,8 @@ name.web-search_get_engines: Get avaliable web-search engines
 name.web-status: Check web status
 
 // Tool descriptions
-description.agent-call: Runs another AI agent with a custom instruction, user message and a set of allowed tools and skills.
+description.agent-call: Runs another AI agent with a custom instruction, user message and a set of allowed tools, skills, sub-agents and memory blocks.
+description.agent-callsub: Runs a predefined sub-agent using its name and input.
 description.agent-describe_image: Describes the content of an image using a separate vision-capable AI agent.
 description.clipboard-copy: Copies a piece of text to the system clipboard.
 description.clipboard-read: Reads the current text content of the system clipboard.

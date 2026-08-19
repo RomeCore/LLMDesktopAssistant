@@ -1,171 +1,26 @@
 using System.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
-using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 
 /// <summary>
-/// ViewModel item for a single skill in the agent skills settings list.
-/// Provides enabled toggle, injection mode selector, and reset command.
-/// </summary>
-public class SkillChangeItemViewModel : ViewModelBase
-{
-	private readonly AgentSkillSettings _settings;
-	private readonly SkillInfo _skillInfo;
-	private readonly RangeObservableCollection<SkillChange> _changes;
-	private SkillChange? _change;
-
-	/// <summary>
-	/// Gets the name of the skill.
-	/// </summary>
-	public string Name => _skillInfo.Name;
-
-	/// <summary>
-	/// Gets the description of the skill.
-	/// </summary>
-	public string Description => _skillInfo.Description;
-
-	/// <summary>
-	/// Gets the file path of the skill, if applicable.
-	/// </summary>
-	public string? Path => _skillInfo.Path;
-
-	/// <summary>
-	/// Gets the list of diagnostic flag infos for display in the UI.
-	/// </summary>
-	public ImmutableList<SkillDiagnosticFlagInfo> DiagnosticFlags { get; }
-
-	/// <summary>
-	/// Gets the list of available injection modes for the ComboBox.
-	/// </summary>
-	public ImmutableList<SkillInjectionModeItem> InjectionModeList { get; } = SkillInjectionModeItem.All;
-
-	/// <summary>
-	/// Gets the command to reset skill changes to default values.
-	/// </summary>
-	public ICommand ResetCommand { get; }
-
-	public SkillChangeItemViewModel(SkillInfo skillInfo, SkillChange? existingChange,
-		RangeObservableCollection<SkillChange> changes, AgentSkillSettings settings)
-	{
-		_skillInfo = skillInfo;
-		_change = existingChange;
-		_changes = changes;
-		_settings = settings;
-		DiagnosticFlags = SkillDiagnosticFlagInfo.CreateFromDiagnostic(skillInfo.Diagnostic);
-		ResetCommand = new RelayCommand(Reset);
-	}
-
-	private void Reset()
-	{
-		if (_change != null)
-		{
-			_changes.Remove(_change);
-			_change = null;
-			RaisePropertyChanged(nameof(Enabled));
-			RaisePropertyChanged(nameof(InjectionMode));
-		}
-	}
-
-	private SkillChange EnsureChange()
-	{
-		if (_change == null)
-		{
-			_change = new SkillChange
-			{
-				SkillName = Name,
-				Enabled = null,
-				InjectionMode = null
-			};
-			_changes.Add(_change);
-		}
-		return _change;
-	}
-
-	/// <summary>
-	/// Gets or sets whether this skill is enabled. Returns <see langword="null"/> for inherited (default) value.
-	/// </summary>
-	public bool? Enabled
-	{
-		get => _change?.Enabled ?? _skillInfo.Enabled;
-		set
-		{
-			if (Enabled != value)
-			{
-				EnsureChange().Enabled = value;
-				RaisePropertyChanged(nameof(Enabled));
-			}
-		}
-	}
-
-	/// <summary>
-	/// Gets or sets the injection mode for this skill.
-	/// </summary>
-	public SkillInjectionModeItem? InjectionMode
-	{
-		get => InjectionModeList.FirstOrDefault(i =>
-			i.Value == (_change?.InjectionMode ?? _skillInfo.InjectionMode));
-		set
-		{
-			if (InjectionMode != value && value != null)
-			{
-				EnsureChange().InjectionMode = value.Value;
-				RaisePropertyChanged(nameof(InjectionMode));
-			}
-		}
-	}
-}
-
-/// <summary>
-/// Represents a <see cref="SkillInjectionMode"/> value with a localized display name for use in ComboBox.
-/// </summary>
-public class SkillInjectionModeItem
-{
-	/// <summary>
-	/// The <see cref="SkillInjectionMode"/> value.
-	/// </summary>
-	public SkillInjectionMode Value { get; }
-
-	/// <summary>
-	/// Localized display name.
-	/// </summary>
-	public string DisplayName { get; }
-
-	public SkillInjectionModeItem(SkillInjectionMode value)
-	{
-		Value = value;
-		var key = $"skill.injection_mode.{value.ToString().ToLower()}";
-		DisplayName = LocalizationManager.LocalizeStatic(key);
-
-		// Fallback to enum name if localization missing
-		if (DisplayName == key || string.IsNullOrEmpty(DisplayName))
-			DisplayName = value.ToString();
-	}
-
-	/// <summary>
-	/// Gets all <see cref="SkillInjectionMode"/> values with localized display names.
-	/// </summary>
-	public static ImmutableList<SkillInjectionModeItem> All { get; } =
-		Enum.GetValues<SkillInjectionMode>()
-			.Select(v => new SkillInjectionModeItem(v))
-			.ToImmutableList();
-}
-
-/// <summary>
-/// ViewModel for per-agent skills settings.
+/// ViewModel for the per-agent skill settings: the list of available skills with
+/// per-agent overrides (enabled + injection mode) built on reusable <see cref="SkillCardViewModel"/> cards.
 /// </summary>
 [ViewModelFor(typeof(AgentSkillSettingsView))]
 public class AgentSkillSettingsViewModel : ViewModelBase
 {
 	private readonly ISkillsetBuildingService _skillsetBuilder;
 	private readonly ChatSettings _chatSettings;
+	private ImmutableList<SkillCardViewModel> _allCards = [];
 
+	/// <summary>
+	/// Gets the underlying agent skill settings.
+	/// </summary>
 	public AgentSkillSettings SkillSettings { get; }
 
 	/// <summary>
@@ -187,11 +42,25 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 		}
 	}
 
-	private RangeObservableCollection<SkillChangeItemViewModel> _skillItems = [];
+	private string _searchText = string.Empty;
 	/// <summary>
-	/// Gets or sets the list of skill items with per-agent override settings.
+	/// Gets or sets the search text filtering the skills by name, description and tags.
 	/// </summary>
-	public ICollection<SkillChangeItemViewModel> SkillItems
+	public string SearchText
+	{
+		get => _searchText;
+		set
+		{
+			if (SetProperty(ref _searchText, value))
+				ApplyFilter();
+		}
+	}
+
+	private RangeObservableCollection<SkillCardViewModel> _skillItems = [];
+	/// <summary>
+	/// Gets or sets the filtered list of skill cards with per-agent override settings.
+	/// </summary>
+	public ICollection<SkillCardViewModel> SkillItems
 	{
 		get => _skillItems;
 		set
@@ -201,6 +70,12 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 		}
 	}
 
+	/// <summary>
+	/// Initializes a new instance of the <see cref="AgentSkillSettingsViewModel"/> class.
+	/// </summary>
+	/// <param name="settings">The agent skill settings.</param>
+	/// <param name="skillsetBuilder">The service providing the available skills.</param>
+	/// <param name="chatSettings">The chat settings used to resolve inherited settings.</param>
 	public AgentSkillSettingsViewModel(AgentSkillSettings settings,
 		ISkillsetBuildingService skillsetBuilder, ChatSettings chatSettings)
 	{
@@ -226,7 +101,7 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 	}
 
 	/// <summary>
-	/// Refreshes the list of available skills and rebuilds the skill items
+	/// Refreshes the list of available skills and rebuilds the cards
 	/// with current per-agent overrides.
 	/// </summary>
 	public void UpdateSkills()
@@ -234,15 +109,37 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 		var allSkills = _skillsetBuilder.GetAvailableSkills();
 		var changes = EffectiveSkillChanges.ToDictionary(c => c.SkillName, c => c);
 
-		SkillItems = allSkills
+		_allCards = allSkills
 			.Where(s => s.Diagnostic?.IsFatal != true)
 			.Select(s =>
 			{
 				changes.TryGetValue(s.Name, out var existingChange);
-				return new SkillChangeItemViewModel(s, existingChange,
-					EffectiveSkillChanges, SkillSettings);
+				return new SkillCardViewModel(
+					s,
+					canToggle: true,
+					change: existingChange,
+					changes: EffectiveSkillChanges,
+					onTagClick: tag => SearchText = tag,
+					onDeleted: UpdateSkills);
 			})
 			.ToImmutableList();
+
+		ApplyFilter();
+	}
+
+	private void ApplyFilter()
+	{
+		var query = SearchText?.Trim() ?? string.Empty;
+		IEnumerable<SkillCardViewModel> filtered = _allCards;
+		if (query.Length > 0)
+		{
+			filtered = _allCards.Where(c =>
+				c.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+				c.Description.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+				c.Tags.Any(t => t.Contains(query, StringComparison.OrdinalIgnoreCase)));
+		}
+
+		SkillItems = filtered.ToImmutableList();
 	}
 
 	/// <inheritdoc/>

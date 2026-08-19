@@ -29,3 +29,12 @@ diagnostic.yamlparsingerror: Ошибка синтаксиса YAML
 diagnostic.yamlparsingerror.hint: YAML frontmatter содержит недопустимый синтаксис.
 injection_mode.default: Имя + описание
 injection_mode.full: Полное тело
+metadata.author: Автор
+metadata.compatibility: Совместимость
+metadata.license: Лицензия
+metadata.version: Версия
+source.custom: Пользовательский
+source.template: Шаблон
+source.unknown: Неизвестно
+source.userprofile: Профиль пользователя
+source.workingdirectory: Рабочая директория

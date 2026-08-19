@@ -241,13 +241,36 @@ skills.additional_files: Дополнительные файлы навыков
 skills.additional_files.hint: Дополнительные отдельные файлы SKILL.md или SKILL.mdx для загрузки.
 skills.available: Доступные навыки
 skills.available.hint: Навыки, найденные в директориях. Только включённые навыки внедряются в промпт агента.
+skills.badge.tools: {0} инструментов
+skills.create: Создать
+skills.create.title: Новый навык
+skills.create.description: Имя будет использовано как имя директории и идентификатор навыка.
+skills.create.name.label: Имя навыка
+skills.create.name.placeholder: my-skill
+skills.create.error.invalid_name: Недопустимое имя. Разрешены строчные латинские буквы, цифры и дефисы без повторов и ведущих/замыкающих дефисов.
+skills.create.error.exists: Навык с таким именем уже существует.
+skills.create.success: Навык создан. Файл открыт для редактирования.
+skills.delete: Удалить файл
+skills.delete.title: Удалить навык?
+skills.delete.confirm: Файл {0} будет безвозвратно удалён. Это действие нельзя отменить.
+skills.details: Подробности
+skills.details.body: Тело навыка
+skills.details.allowed_tools: Без подтверждения
+skills.details.available_tools: Доступные
+skills.details.disallowed_tools: Запрещённые
+skills.details.metadata: Метаданные
+skills.details.none: Не указано
 skills.dir.placeholder: Путь к директории...
+skills.empty: Навыки не найдены. Проверьте источники или создайте новый навык.
 skills.enable: Включить навыки
 skills.fetch_all: Искать во всех рабочих директориях
 skills.file.placeholder: Путь к файлу...
+skills.open: Открыть в редакторе
 skills.refresh: Обновить список навыков
+skills.search.placeholder: Поиск по имени, описанию или тегам...
 skills.select_directory: Выберите директорию навыка
 skills.select_file: Выберите файл навыка
+skills.show_in_explorer: Показать в проводнике
 skills.sources: Источники навыков
 stage.adaptive.additional_router_prompt: Дополнительный промпт для агента-роутера
 stage.adaptive.agents: Пул агентов

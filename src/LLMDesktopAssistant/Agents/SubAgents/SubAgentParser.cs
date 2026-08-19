@@ -98,7 +98,7 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 
 					string? name = frontmatter?.Name ?? fallbackName ?? fileName;
 					string? description = frontmatter?.Description ?? fallbackDesc;
-					string prompt = v.Text[v["yaml"].EndIndex..];
+					string prompt = v.Span[v["yaml"].EndIndex..].Trim().ToString();
 
 					if (string.IsNullOrEmpty(name))
 					{

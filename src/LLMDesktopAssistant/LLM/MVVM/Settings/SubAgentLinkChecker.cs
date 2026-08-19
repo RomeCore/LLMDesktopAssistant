@@ -44,29 +44,25 @@ public static class SubAgentLinkChecker
 	/// <param name="memoryBlockNames">The names of all available memory blocks.</param>
 	/// <returns>The list of broken references.</returns>
 	public static ImmutableList<SubAgentLinkIssue> Check(SubAgentInfo info,
-		IEnumerable<string> skillNames, IEnumerable<string> subAgentNames, IEnumerable<string> memoryBlockNames)
+		HashSet<string> skillNames, HashSet<string> subAgentNames, HashSet<string> memoryBlockNames)
 	{
-		var skillSet = new HashSet<string>(skillNames, StringComparer.OrdinalIgnoreCase);
-		var subAgentSet = new HashSet<string>(subAgentNames, StringComparer.OrdinalIgnoreCase);
-		var memoryBlockSet = new HashSet<string>(memoryBlockNames, StringComparer.OrdinalIgnoreCase);
-
 		var issues = ImmutableList.CreateBuilder<SubAgentLinkIssue>();
 
 		foreach (var skill in info.Skills)
 		{
-			if (!skillSet.Contains(skill))
+			if (!skillNames.Contains(skill))
 				issues.Add(new SubAgentLinkIssue(SubAgentLinkIssueKind.Skill, skill));
 		}
 
 		foreach (var subAgent in info.SubAgents)
 		{
-			if (!subAgentSet.Contains(subAgent))
+			if (!subAgentNames.Contains(subAgent))
 				issues.Add(new SubAgentLinkIssue(SubAgentLinkIssueKind.SubAgent, subAgent));
 		}
 
 		foreach (var blockName in info.MemoryBlocks.Keys)
 		{
-			if (!memoryBlockSet.Contains(blockName))
+			if (!memoryBlockNames.Contains(blockName))
 				issues.Add(new SubAgentLinkIssue(SubAgentLinkIssueKind.MemoryBlock, blockName));
 		}
 

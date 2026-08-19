@@ -96,7 +96,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 					string? name = frontmatter?.Name ?? fallbackName ?? dirName;
 					string? description = frontmatter?.Description ?? fallbackDesc;
-					string body = v.Text[v["yaml"].EndIndex..];
+					string body = v.Span[v["yaml"].EndIndex..].Trim().ToString();
 
 					if (string.IsNullOrEmpty(name))
 					{

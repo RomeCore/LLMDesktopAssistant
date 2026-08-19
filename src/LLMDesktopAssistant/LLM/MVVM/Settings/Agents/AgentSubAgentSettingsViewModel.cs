@@ -112,9 +112,9 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 	public void UpdateSubAgents()
 	{
 		var subAgents = _subAgentSetBuilder.GetAvailableSubAgents().ToList();
-		var subAgentNames = subAgents.Select(s => s.Name);
-		var skillNames = _skillsetBuilder.GetAvailableSkills().Select(s => s.Name);
-		var memoryBlockNames = SettingsManager.GetCategory<MemoryBlock>().GetAll().Select(kvp => kvp.Value.Name);
+		var subAgentNames = subAgents.Select(s => s.Name).ToHashSet();
+		var skillNames = _skillsetBuilder.GetAvailableSkills().Select(s => s.Name).ToHashSet();
+		var memoryBlockNames = SettingsManager.GetCategory<MemoryBlock>().GetAll().Select(kvp => kvp.Value.Name).ToHashSet();
 		var changes = EffectiveSubAgentChanges.ToDictionary(c => c.SubAgentName, c => c);
 
 		_allCards = subAgents
