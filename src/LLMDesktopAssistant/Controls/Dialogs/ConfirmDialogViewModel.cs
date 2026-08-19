@@ -10,14 +10,7 @@ namespace LLMDesktopAssistant.Controls.Dialogs
 	[ViewModelFor(typeof(ConfirmDialogView))]
 	public class ConfirmDialogViewModel : NotifyPropertyChanged
 	{
-		private readonly TaskCompletionSource<bool> _tcs = new();
 		private bool _isResultSet;
-
-		/// <summary>
-		/// Gets the task that completes with the user's choice: <see langword="true"/> when
-		/// confirmed, <see langword="false"/> when cancelled.
-		/// </summary>
-		public Task<bool> Result => _tcs.Task;
 
 		private string _title = string.Empty;
 		/// <summary>
@@ -94,7 +87,6 @@ namespace LLMDesktopAssistant.Controls.Dialogs
 				return;
 
 			_isResultSet = true;
-			_tcs.TrySetResult(true);
 			DialogManager.CloseDialog(true);
 		}
 
@@ -104,7 +96,6 @@ namespace LLMDesktopAssistant.Controls.Dialogs
 				return;
 
 			_isResultSet = true;
-			_tcs.TrySetResult(false);
 			DialogManager.CloseDialog(false);
 		}
 	}

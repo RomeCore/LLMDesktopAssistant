@@ -9,6 +9,7 @@ using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
 using Material.Icons;
+using LLMDesktopAssistant.Controls.Dialogs;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
@@ -160,25 +161,8 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 	public bool IsCodeMode
 	{
 		get => _isCodeMode;
-		private set
-		{
-			if (SetProperty(ref _isCodeMode, value))
-			{
-				OnPropertyChanged(nameof(IsFormMode));
-				OnPropertyChanged(nameof(IsPreviewVisible));
-			}
-		}
+		private set => SetProperty(ref _isCodeMode, value);
 	}
-
-	/// <summary>
-	/// Gets a value indicating whether the form editing mode is active.
-	/// </summary>
-	public bool IsFormMode => !IsCodeMode;
-
-	/// <summary>
-	/// Gets a value indicating whether the live preview panel is visible (code mode only).
-	/// </summary>
-	public bool IsPreviewVisible => IsCodeMode;
 
 	// ─────────────────────────── Code mode ───────────────────────────
 
@@ -351,11 +335,6 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 	public ICommand CancelCommand { get; }
 
 	/// <summary>
-	/// Gets the task that resolves when the dialog is closed.
-	/// </summary>
-	public Task<bool> Result => _tcs.Task;
-
-	/// <summary>
 	/// Closes the dialog with the given result.
 	/// </summary>
 	/// <param name="result">Whether the tool was saved.</param>
@@ -364,10 +343,9 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 		if (_isResultSet)
 			return;
 		_isResultSet = true;
-		_tcs.TrySetResult(result);
+		DialogManager.CloseDialog(result);
 	}
 
-	private readonly TaskCompletionSource<bool> _tcs = new();
 	private bool _isResultSet;
 
 	private void ToggleMode() => IsCodeMode = !IsCodeMode;

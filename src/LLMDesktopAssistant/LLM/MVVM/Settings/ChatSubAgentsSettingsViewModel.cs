@@ -232,8 +232,7 @@ public class ChatSubAgentsSettingsViewModel : ViewModelBase
 			IsRequired = true
 		};
 
-		await DialogManager.ShowDialogAsync(dialog);
-		var name = await dialog.Result;
+		var name = (string?)await DialogManager.ShowDialogAsync(dialog);
 		if (string.IsNullOrEmpty(name))
 			return;
 

@@ -353,6 +353,11 @@ tools.meta_tools.delete.confirm: Файл {0} будет безвозвратн�
 tools.meta_tools.create.error.invalid_name: Недопустимое имя. Разрешены латинские буквы, цифры, подчёркивания и дефисы.
 tools.meta_tools.create.error.no_engine: Нет движка для языка «{0}».
 tools.meta_tools.create.error.exists: Мета-инструмент с таким именем уже существует.
+tools.meta_tools.create_dialog.title: Создать мета-инструмент
+tools.meta_tools.create_dialog.hint: Введите имя и выберите язык скриптов для нового мета-инструмента. Имя будет использовано как имя файла и идентификатор инструмента.
+tools.meta_tools.create_dialog.name: Имя
+tools.meta_tools.create_dialog.name.placeholder: my-tool
+tools.meta_tools.create_dialog.language: Язык
 tools.meta_tools.editor.code: Код
 tools.meta_tools.editor.form: Форма
 tools.meta_tools.editor.preview: Предпросмотр метаданных

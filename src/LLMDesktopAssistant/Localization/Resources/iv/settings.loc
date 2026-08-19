@@ -353,6 +353,11 @@ tools.meta_tools.delete.confirm: The file {0} will be permanently deleted. This 
 tools.meta_tools.create.error.invalid_name: Invalid name. Use alphanumeric characters, underscores and dashes.
 tools.meta_tools.create.error.no_engine: No engine for language '{0}'.
 tools.meta_tools.create.error.exists: A meta tool with this name already exists.
+tools.meta_tools.create_dialog.title: Create meta tool
+tools.meta_tools.create_dialog.hint: Enter a name and choose the scripting language for the new meta tool. The name will be used as the file name and tool identifier.
+tools.meta_tools.create_dialog.name: Name
+tools.meta_tools.create_dialog.name.placeholder: my-tool
+tools.meta_tools.create_dialog.language: Language
 tools.meta_tools.editor.code: Code
 tools.meta_tools.editor.form: Form
 tools.meta_tools.editor.preview: Metadata preview

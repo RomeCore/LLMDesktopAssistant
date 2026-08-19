@@ -4,13 +4,14 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
 using Material.Icons;
 using RCLargeLanguageModels.Tools;
+using UglyToad.PdfPig.Logging;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
@@ -259,8 +260,7 @@ public class MetaToolCardViewModel : ViewModelBase
 			IsRequired = true
 		};
 
-		await DialogManager.ShowDialogAsync(dialog);
-		var newName = await dialog.Result;
+		var newName = (string?)await DialogManager.ShowDialogAsync(dialog);
 		if (string.IsNullOrEmpty(newName) || newName == Name)
 			return;
 
@@ -300,8 +300,7 @@ public class MetaToolCardViewModel : ViewModelBase
 			IsRequired = true
 		};
 
-		await DialogManager.ShowDialogAsync(dialog);
-		var newName = await dialog.Result;
+		var newName = (string?)await DialogManager.ShowDialogAsync(dialog);
 		if (string.IsNullOrEmpty(newName) || newName == Name)
 			return;
 
@@ -347,8 +346,8 @@ public class MetaToolCardViewModel : ViewModelBase
 			IsDanger = true
 		};
 
-		await DialogManager.ShowDialogAsync(confirm);
-		if (!await confirm.Result)
+		var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm)!;
+		if (!confirmed)
 			return;
 
 		try

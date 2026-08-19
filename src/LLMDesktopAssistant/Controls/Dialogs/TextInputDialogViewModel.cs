@@ -10,13 +10,7 @@ namespace LLMDesktopAssistant.Controls.Dialogs
 	[ViewModelFor(typeof(TextInputDialogView))]
 	public class TextInputDialogViewModel : NotifyPropertyChanged
 	{
-		private readonly TaskCompletionSource<string?> _tcs = new();
 		private bool _isResultSet;
-
-		/// <summary>
-		/// Gets the task that completes with the entered text, or <see langword="null"/> when cancelled.
-		/// </summary>
-		public Task<string?> Result => _tcs.Task;
 
 		private string _title = string.Empty;
 		/// <summary>
@@ -142,7 +136,6 @@ namespace LLMDesktopAssistant.Controls.Dialogs
 
 			var result = Value.Trim();
 			_isResultSet = true;
-			_tcs.TrySetResult(result);
 			DialogManager.CloseDialog(result);
 		}
 
@@ -152,7 +145,6 @@ namespace LLMDesktopAssistant.Controls.Dialogs
 				return;
 
 			_isResultSet = true;
-			_tcs.TrySetResult(null);
 			DialogManager.CloseDialog(null);
 		}
 	}

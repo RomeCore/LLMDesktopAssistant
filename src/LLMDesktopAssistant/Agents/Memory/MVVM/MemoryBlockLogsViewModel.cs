@@ -253,8 +253,8 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				IsDanger = true
 			};
 
-			_ = DialogManager.ShowDialogAsync(confirm);
-			if (!await confirm.Result)
+			var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm)!;
+			if (!confirmed)
 				return;
 
 			try
@@ -384,8 +384,8 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				IsDanger = true
 			};
 
-			_ = DialogManager.ShowDialogAsync(confirm);
-			if (!await confirm.Result)
+			var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm)!;
+			if (!confirmed)
 				return;
 
 			try

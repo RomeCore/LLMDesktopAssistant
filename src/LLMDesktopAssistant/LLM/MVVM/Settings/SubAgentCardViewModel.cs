@@ -482,8 +482,8 @@ public class SubAgentCardViewModel : ViewModelBase
 			IsDanger = true
 		};
 
-		await DialogManager.ShowDialogAsync(confirm);
-		if (!await confirm.Result)
+		var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm)!;
+		if (!confirmed)
 			return;
 
 		try

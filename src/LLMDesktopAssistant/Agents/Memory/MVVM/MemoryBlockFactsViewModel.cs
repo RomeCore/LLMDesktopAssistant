@@ -5,6 +5,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Utils;
+using ReverseMarkdown;
 
 namespace LLMDesktopAssistant.Agents.Memory.MVVM
 {
@@ -134,8 +135,8 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				IsDanger = true
 			};
 
-			_ = DialogManager.ShowDialogAsync(confirm);
-			if (!await confirm.Result)
+			var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm)!;
+			if (!confirmed)
 				return;
 
 			try
@@ -243,8 +244,8 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				IsDanger = true
 			};
 
-			_ = DialogManager.ShowDialogAsync(confirm);
-			if (!await confirm.Result)
+			var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm)!;
+			if (!confirmed)
 				return;
 
 			try
@@ -271,8 +272,7 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				IsRequired = true
 			};
 
-			_ = DialogManager.ShowDialogAsync(vm);
-			var replacement = await vm.Result;
+			var replacement = (string?)await DialogManager.ShowDialogAsync(vm);
 			if (string.IsNullOrWhiteSpace(replacement))
 				return;
 
