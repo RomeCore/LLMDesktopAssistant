@@ -1,39 +1,21 @@
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
-using RCParsing;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
 	/// <summary>
-	/// Universal file editing tool. Supports context-based editing (by string content)
-	/// and regex-based editing. Combines capabilities of the old fs-replace and fs-edit.
+	/// Universal file editing tool that applies a list of replacement patches to a text file.
+	/// Supports plain text (with flexible whitespace matching) and regex patterns.
 	/// </summary>
 	[ToolModule]
 	public class FilesystemEditToolModule : FileSystemEditBaseToolModule
 	{
-		private static readonly Parser _regexReplaceTextParser;
-
-		static FilesystemEditToolModule()
-		{
-			var builder = new ParserBuilder();
-
-			builder.CreateRule("main")
-				.Literal('$')
-				.Literal("{{")
-				.Choice(
-					b => b.Number<int>(RCParsing.TokenPatterns.NumberFlags.UnsignedInteger),
-					b => b.TextUntil("}}")
-				)
-				.Literal("}}")
-				.TransformSelect(2);
-
-			_regexReplaceTextParser = builder.Build();
-		}
-
 		private readonly IWorkingDirectoryAccessService _fileAccess;
 
 		public FilesystemEditToolModule(IWorkingDirectoryAccessService fileAccess)
@@ -47,38 +29,36 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = EditPreview,
 				Name = "fs-edit",
 				Description = """
-					Edits a text file by finding a context and performing an operation on it.
-					Supports both plain text (with flexible whitespace matching) and regex patterns.
+					Edits a text file by applying a list of replacement patches.
 
-					Available operations:
-					- `replace`       — replaces all occurrences of `match` with `text`
-					- `insert_before` — inserts `text` BEFORE every occurrence of `match`
-					- `insert_after`  — inserts `text` AFTER every occurrence of `match`
-					- `delete`        — deletes every occurrence of `match`
+					Each patch replaces ALL occurrences of its `match` with the `replace` text.
+					Patches are applied sequentially: each patch sees the result of the previous ones.
+					If a patch finds no occurrences, it is skipped and reported in the result —
+					all other patches are still applied.
 
-					When `useRegex = false` (default — plain text mode):
+					Plain text mode (useRegex = false, default):
 					- `match` is treated as a literal string (can be multi-line)
-					- Leading/trailing whitespace and line endings are ignored in matching
-					- Common indentation in multi-line `match` is automatically stripped (dedent)
-					- So `match: "public class Foo"` will match `"    public class Foo"` in the file
+					- Leading/trailing whitespace and common indentation are ignored in matching:
+					  `match: "public class Foo"` matches `"    public class Foo"` in the file
+					- Text before and after the match is preserved
 
-					When `useRegex = true` (regex mode):
+					Regex mode (useRegex = true):
 					- `match` is interpreted as a .NET regular expression
-					- For `replace` operation: standard regex replacement with capture groups support
-					- For `insert_before`/`insert_after`/`delete`: lines containing the regex match are targeted
-					- `ignoreWhitespace` is not applied in regex mode
+					- `replace` supports standard replacement syntax: $1, ${name}, $&, $$, etc.
+					- To delete a match, pass an empty `replace` string
 
 					Examples:
-					- Replace text (plain, whitespace-insensitive):
-						fs-edit(path: "file.cs", match: "public class Foo", operation: "replace", text: "public class Bar")
-					- Insert attribute before a method:
-						fs-edit(path: "MyClass.cs", match: "void MyMethod()", operation: "insert_before", text: "[MyAttribute]")
-					- Add line after XML element:
-						fs-edit(path: "config.xml", match: "<value key=\"x\"></value>", operation: "insert_after", text: "<data>new</data>")
-					- Regex replace (rename all classes):
-						fs-edit(path: "file.cs", match: "class (\w+)", operation: "replace", text: "class Renamed_${{1}}", useRegex: true)
-					- Regex delete (remove debug lines):
-						fs-edit(path: "file.cs", match: "Console\.WriteLine", operation: "delete", useRegex: true)
+					- Replace text (plain):
+						fs-edit(path: "file.cs", patches: [{ match: "public class Foo", replace: "public class Bar" }])
+					- Regex rename with capture group:
+						fs-edit(path: "file.cs", patches: [{ match: "class (\\w+)", replace: "class Renamed_$1", useRegex: true }])
+					- Delete all matches (empty replace):
+						fs-edit(path: "file.cs", patches: [{ match: "Console\\.WriteLine", replace: "", useRegex: true }])
+					- Multiple patches in one call:
+						fs-edit(path: "file.cs", patches: [
+							{ match: "foo", replace: "bar" },
+							{ match: "class (\\w+)", replace: "class C_$1", useRegex: true }
+						])
 					""",
 				TitleKey = Locale.GetKey("tool.name.fs-edit"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-edit"),
@@ -89,7 +69,43 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			});
 		}
 
-		private string? CheckArgs(string path, string? fullPath, string operation, bool useRegex, string match, string text)
+		/// <summary>
+		/// A single edit operation that replaces all occurrences of a match with a replacement text.
+		/// </summary>
+		public sealed class EditPatch
+		{
+			/// <summary>
+			/// Gets or sets the text or regex pattern to search for.
+			/// Can include multiple lines in plain text mode.
+			/// </summary>
+			[Required]
+			[Description("The text or regex pattern to search for. Can include multiple lines in plain text mode.")]
+			public required string match { get; init; }
+
+			/// <summary>
+			/// Gets or sets the replacement text. An empty string deletes the match.
+			/// In regex mode standard replacement syntax is supported: $1, ${name}, $&, $$, etc.
+			/// </summary>
+			[Required]
+			[Description("The replacement text. An empty string deletes the match. In regex mode supports $1, ${name}, $&, $$.")]
+			public string replace { get; init; } = "";
+
+			/// <summary>
+			/// Gets or sets a value indicating whether <see cref="match"/> is a .NET regular expression.
+			/// </summary>
+			[DefaultValue(false)]
+			[Description("If true, 'match' is treated as a .NET regular expression instead of plain text.")]
+			public bool useRegex { get; init; } = false;
+
+			/// <summary>
+			/// Gets or sets a value indicating whether case is ignored when matching.
+			/// </summary>
+			[DefaultValue(false)]
+			[Description("If true, case is ignored when matching.")]
+			public bool ignoreCase { get; init; } = false;
+		}
+
+		private string? CheckArgs(string path, string? fullPath, List<EditPatch> patches)
 		{
 			if (fullPath == null)
 				return $"Access outside working directory is not allowed: {path}";
@@ -97,11 +113,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			if (!File.Exists(fullPath))
 				return $"File not found: {path}";
 
-			if (string.IsNullOrWhiteSpace(match))
-				return "'match' parameter cannot be empty.";
+			if (patches == null || patches.Count == 0)
+				return "'patches' parameter cannot be empty.";
 
-			if (operation is not ("replace" or "insert_before" or "insert_after" or "delete"))
-				return "'operation' must be one of: 'replace', 'insert_before', 'insert_after', 'delete'.";
+			foreach (var patch in patches)
+			{
+				if (string.IsNullOrWhiteSpace(patch.match))
+					return "'patches[].match' cannot be empty.";
+			}
 
 			return null;
 		}
@@ -110,6 +129,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			public required string Path { get; init; }
 			public required string NewContent { get; init; }
+			public IReadOnlyList<string> PatchErrors { get; init; } = [];
 		}
 
 		private StreamingToolArgumentsAnalysisResult EditStreaming(
@@ -125,12 +145,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 		private PreviewToolExecutionResult EditPreview(
 			[SharedContext] ref FSWriteSharedContext? sharedCtx,
-			string path, string operation, bool useRegex, string match, string text = "",
-			int occurrence = 0, bool ignoreWhitespace = true, bool ignoreCase = false,
+			string path,
+			List<EditPatch> patches,
 			CancellationToken cancellationToken = default)
 		{
 			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.ReadWrite, out var isAccessed);
-			var error = CheckArgs(path, fullPath, operation, useRegex, match, text);
+			var error = CheckArgs(path, fullPath, patches);
 			if (error != null)
 			{
 				return new PreviewToolExecutionResult
@@ -146,29 +166,24 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			var originalContent = File.ReadAllText(fullPath!);
 			var normalizedContent = NormalizeLineEndings(originalContent);
-			var fileLines = normalizedContent.Split('\n').ToList();
+			var (newContent, patchErrors) = ApplyPatches(normalizedContent, patches, cancellationToken);
+			newContent = PreserveLineEndings(originalContent, newContent);
 
-			if (operation is "delete")
-				text = string.Empty;
-
-			string? newContent, errorMessage;
-			if (useRegex)
-				(newContent, errorMessage) = EditWithRegex(match, text, operation, occurrence, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
-			else
-				(newContent, errorMessage) = EditWithString(match, text, operation, occurrence, ignoreWhitespace, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
-
-			if (newContent == null || newContent == originalContent)
+			if (newContent == originalContent)
 			{
 				sharedCtx = new FSWriteSharedContext
 				{
 					Path = fullPath!,
-					NewContent = originalContent
+					NewContent = originalContent,
+					PatchErrors = patchErrors
 				};
 
 				return new PreviewToolExecutionResult
 				{
 					InterruptingSuccess = true,
-					InterruptingContent = errorMessage ?? "No changes were made to the file. The specified match was not found.",
+					InterruptingContent = patchErrors.Count > 0
+						? $"No changes were made to the file.\n{string.Join("\n", patchErrors)}"
+						: "No changes were made to the file. The specified matches were not found.",
 					StatusIcon = MaterialIconKind.FileQuestion,
 					StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.fs-edit.changes_none", $"**{path}**"),
 					ExpectedBehaviour = ToolBehaviour.None |
@@ -179,7 +194,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			sharedCtx = new FSWriteSharedContext
 			{
 				Path = fullPath!,
-				NewContent = newContent
+				NewContent = newContent,
+				PatchErrors = patchErrors
 			};
 
 			return new PreviewToolExecutionResult
@@ -198,25 +214,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			CancellationToken cancellationToken,
 			[Description("The path to the file to edit.")]
 			string path,
-			[Description("The operation: 'replace', 'insert_before', 'insert_after', or 'delete'.")]
-			string operation,
-			[Description("If true, 'match' is treated as a .NET regular expression instead of plain text.")]
-			bool useRegex,
-			[Description("The text or regex pattern to search for. Can include multiple lines in plain text mode.")]
-			string match,
-			[Description("The replacement text (for 'replace'/'insert_before'/'insert_after') or empty for 'delete'.")]
-			string text = "",
-			[Description("Which occurrence to act on: 0 = all, 1 = first, 2 = second, etc.")]
-			int occurrence = 0,
-			[Description("If true (plain text mode only), leading/trailing whitespace and line endings are ignored. Dedent is applied.")]
-			bool ignoreWhitespace = true,
-			[Description("If true, case is ignored when matching.")]
-			bool ignoreCase = false)
+			[Description("The list of patches to apply. Each patch replaces all occurrences of its match with the replacement text.")]
+			List<EditPatch> patches)
 		{
 			try
 			{
 				var fullPath = sharedCtx?.Path ?? _fileAccess.AccessPath(path, DirectoryAccessMode.ReadWrite);
-				var error = CheckArgs(path, fullPath, operation, useRegex, match, text);
+				var error = CheckArgs(path, fullPath, patches);
 
 				if (error != null)
 				{
@@ -227,27 +231,23 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					return;
 				}
 
-				if (operation is "delete")
-					text = string.Empty;
-
 				var originalContent = File.ReadAllText(fullPath!);
-				var normalizedContent = NormalizeLineEndings(originalContent);
-				var fileLines = normalizedContent.Split('\n').ToList();
-
-				string? newContent = sharedCtx?.NewContent, errorMessage = null;
+				var newContent = sharedCtx?.NewContent;
+				var patchErrors = sharedCtx?.PatchErrors ?? [];
 				if (newContent == null)
 				{
-					if (useRegex)
-						(newContent, errorMessage) = EditWithRegex(match, text, operation, occurrence, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
-					else
-						(newContent, errorMessage) = EditWithString(match, text, operation, occurrence, ignoreWhitespace, ignoreCase, originalContent, normalizedContent, fileLines, cancellationToken);
+					var normalizedContent = NormalizeLineEndings(originalContent);
+					(newContent, patchErrors) = ApplyPatches(normalizedContent, patches, cancellationToken);
+					newContent = PreserveLineEndings(originalContent, newContent);
 				}
 
-				if (newContent == null || newContent == originalContent)
+				if (newContent == originalContent)
 				{
 					result.StatusIcon = MaterialIconKind.FileQuestion;
 					result.StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.fs-edit.changes_none", $"**{path}**");
-					result.ResultContent = errorMessage ?? "No changes were made to the file. The specified match was not found.";
+					result.ResultContent = patchErrors.Count > 0
+						? $"No changes were made to the file.\n{string.Join("\n", patchErrors)}"
+						: "No changes were made to the file. The specified matches were not found.";
 					result.CompleteWithSuccess();
 					return;
 				}
@@ -280,6 +280,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				var diff = postProcessResult.AppliedDiff;
 				var (removed, added) = diff.GetChangeCounts();
 
+				string notAppliedText = patchErrors.Count > 0
+					? $"""
+						
+						[NOT APPLIED PATCHES]:
+						{string.Join("\n", patchErrors)}
+						"""
+					: string.Empty;
+
 				result.StatusIcon = MaterialIconKind.FileDocumentEdit;
 				result.StatusTitle = $"**{path}** *(-{removed} +{added})*";
 				result.ResultContent = postProcessResult.RejectedDiff.HasGroups ?
@@ -288,12 +296,12 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					[APPLIED CHANGES]:
 					{diff}
 					[REJECTED CHANGES BY THE USER, THESE ARE NOT APPLIED]:
-					{postProcessResult.RejectedDiff}{userNotesPostfix}
+					{postProcessResult.RejectedDiff}{userNotesPostfix}{notAppliedText}
 					""" :
 					$"""
 					File edited successfully. *(-{removed} +{added})*
 					[APPLIED CHANGES]:
-					{diff}{userNotesPostfix}
+					{diff}{userNotesPostfix}{notAppliedText}
 					""";
 				result.CompleteWithSuccess();
 			}
@@ -313,172 +321,135 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		private (string?, string?) EditWithString(
-			string match,
-			string text,
-			string operation,
-			int occurrence,
-			bool ignoreWhitespace,
-			bool ignoreCase,
-			string originalContent,
-			string normalizedContent,
-			List<string> fileLines,
+		private static (string NewContent, List<string> PatchErrors) ApplyPatches(
+			string content,
+			List<EditPatch> patches,
 			CancellationToken cancellationToken)
 		{
-			var normalizedMatch = NormalizeLineEndings(match);
-			var matchLines = normalizedMatch.Split('\n').ToList();
+			var patchErrors = new List<string>();
+			var current = content;
 
-			var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-			string newContent;
-
-			if (matchLines.Count == 1 && operation is "replace" or "delete")
+			for (int i = 0; i < patches.Count; i++)
 			{
-				if (occurrence == 0)
+				cancellationToken.ThrowIfCancellationRequested();
+				var patch = patches[i];
+
+				string? newContent;
+				try
 				{
-					for (int i = 0; i < fileLines.Count; i++)
-					{
-						fileLines[i] = fileLines[i].Replace(match, text, comparison);
-					}
+					newContent = patch.useRegex
+						? ApplyRegexPatch(current, patch)
+						: ApplyPlainPatch(current, patch);
 				}
+				catch (ArgumentException ex)
+				{
+					patchErrors.Add($"Patch #{i + 1} (match: \"{patch.match}\"): invalid pattern: {ex.Message}");
+					continue;
+				}
+
+				if (newContent == null)
+					patchErrors.Add($"Patch #{i + 1} (match: \"{patch.match}\"): no occurrences found.");
 				else
-				{
-					int count = 0;
-					for (int i = 0; i < fileLines.Count; i++)
-					{
-						var line = fileLines[i];
-						int matchCharIndex = 0;
-						bool found = false;
-						while ((matchCharIndex = line.IndexOf(match, matchCharIndex, comparison)) != -1)
-						{
-							if (++count == occurrence)
-							{
-								fileLines[i] = line.Substring(0, matchCharIndex) + text + line.Substring(matchCharIndex + match.Length);
-								found = true;
-								break;
-							}
+					current = newContent;
+			}
 
-							matchCharIndex++;
-							if (matchCharIndex >= line.Length)
-								break;
-						}
-						if (found)
-							break;
+			return (current, patchErrors);
+		}
+
+		private static string? ApplyPlainPatch(string content, EditPatch patch)
+		{
+			var comparison = patch.ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+			var matchLines = NormalizeLineEndings(patch.match).Split('\n').ToList();
+
+			// Remove trailing empty line if present (LLMs love to add them!)
+			if (matchLines.Count > 0 && string.IsNullOrEmpty(matchLines[^1]))
+				matchLines.RemoveAt(matchLines.Count - 1);
+
+			// Apply dedent and trim each line for comparison
+			matchLines = DedentLines(matchLines);
+			matchLines = matchLines.Select(l => l.Trim()).ToList();
+
+			if (matchLines.Count == 0)
+				return null;
+
+			var replacement = NormalizeLineEndings(patch.replace);
+			var fileLines = content.Split('\n').ToList();
+			var foundAny = false;
+
+			if (matchLines.Count == 1)
+			{
+				// Single-line match: replace all occurrences in every line, preserving surrounding text
+				var match = matchLines[0];
+				for (int i = 0; i < fileLines.Count; i++)
+				{
+					var newLine = fileLines[i].Replace(match, replacement, comparison);
+					if (newLine != fileLines[i])
+					{
+						foundAny = true;
+						fileLines[i] = newLine;
 					}
 				}
-				newContent = string.Join("\n", fileLines);
-				newContent = PreserveLineEndings(originalContent, newContent);
-				return (newContent, null);
-			}
-
-			if (matchLines.Count > 0 && string.IsNullOrEmpty(matchLines[^1]))
-				matchLines.RemoveAt(matchLines.Count - 1); // Remove trailing empty line if present (LLMs loves to add them!)
-
-			if (ignoreWhitespace)
-			{
-				// Apply dedent: remove common leading whitespace
-				matchLines = DedentLines(matchLines);
-				// Also trim each line for comparison
-				matchLines = matchLines.Select(l => l.Trim()).ToList();
-			}
-
-			var foundIndices = FindSequenceIndices(fileLines, matchLines, ignoreWhitespace, comparison, cancellationToken);
-
-			if (foundIndices.Count == 0)
-				return (null, "No occurrences of the specified context were found.");
-
-			var targetIndices = FilterOccurrences(foundIndices, occurrence);
-			if (targetIndices == null)
-				return (null, $"Occurrence {occurrence} not found. Only {foundIndices.Count} occurrence(s) exist.");
-
-			// Apply operations
-			var operationLines = string.IsNullOrEmpty(text)
-				? new List<string>()
-				: NormalizeLineEndings(text).Split('\n').ToList();
-
-			var (totalInsertions, totalDeletions) = ApplyLineOperations(fileLines, targetIndices, matchLines.Count, operationLines, operation);
-
-			newContent = string.Join("\n", fileLines);
-			newContent = PreserveLineEndings(originalContent, newContent);
-			return (newContent, null);
-		}
-		
-		private (string?, string?) EditWithRegex(
-			string pattern,
-			string text,
-			string operation,
-			int occurrence,
-			bool ignoreCase,
-			string originalContent,
-			string normalizedContent,
-			List<string> fileLines,
-			CancellationToken cancellationToken)
-		{
-			var regexOptions = RegexOptions.Compiled | (ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
-			var regex = new Regex(pattern, regexOptions);
-			text ??= string.Empty;
-
-			if (operation is "replace" or "delete")
-			{
-				// Standard regex replace on the whole content
-				var matches = regex.Matches(normalizedContent);
-				var totalReplacements = matches.Count;
-
-				if (totalReplacements == 0)
-					return (null, "No matches found.");
-
-				int count = 0;
-				var newContent = regex.Replace(normalizedContent, m =>
-				{
-					if (++count == occurrence || occurrence == 0)
-					{
-						return _regexReplaceTextParser.ReplaceAllMatches<object>("main", text, g =>
-						{
-							if (g is int groupNum)
-								return m.Groups[groupNum].Value;
-							if (g is string groupName)
-								return m.Groups[groupName].Value;
-							return string.Empty;
-						});
-					}
-					return m.Value; // No replacement for other matches
-				});
-				newContent = PreserveLineEndings(originalContent, newContent);
-				return (newContent, null);
 			}
 			else
 			{
-				// insert_before / insert_after / delete on lines that contain regex match
-				var matchedLineIndices = new List<int>();
-				for (int i = 0; i < fileLines.Count; i++)
+				// Multi-line match: find blocks of lines and replace them
+				var replacementLines = replacement.Length == 0
+					? []
+					: replacement.Split('\n').ToList();
+
+				for (int i = 0; i <= fileLines.Count - matchLines.Count; i++)
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					if (regex.IsMatch(fileLines[i]))
+					var blockMatched = true;
+					for (int j = 0; j < matchLines.Count; j++)
 					{
-						matchedLineIndices.Add(i);
+						if (fileLines[i + j].IndexOf(matchLines[j], comparison) < 0)
+						{
+							blockMatched = false;
+							break;
+						}
 					}
+
+					if (!blockMatched)
+						continue;
+
+					foundAny = true;
+
+					// Preserve the text before the match (first line) and after the match (last line)
+					var firstLine = fileLines[i];
+					var lastLine = fileLines[i + matchLines.Count - 1];
+					var prefix = firstLine[..firstLine.IndexOf(matchLines[0], comparison)];
+					var suffix = lastLine[(lastLine.IndexOf(matchLines[^1], comparison) + matchLines[^1].Length)..];
+
+					var newBlockLines = new List<string>();
+					if (replacementLines.Count == 0)
+					{
+						newBlockLines.Add(prefix + suffix);
+					}
+					else
+					{
+						newBlockLines.Add(prefix + replacementLines[0]);
+						newBlockLines.AddRange(replacementLines.Skip(1));
+						newBlockLines[^1] += suffix;
+					}
+
+					fileLines.RemoveRange(i, matchLines.Count);
+					fileLines.InsertRange(i, newBlockLines);
+
+					// Continue scanning after the replaced block, accounting for the size change
+					i += newBlockLines.Count - matchLines.Count;
 				}
-
-				if (matchedLineIndices.Count == 0)
-					return (null, $"No lines matched pattern '{pattern}'.");
-
-				var targetIndices = FilterOccurrences(matchedLineIndices, occurrence);
-				if (targetIndices == null)
-					return (null, $"Occurrence {occurrence} not found. Only {matchedLineIndices.Count} occurrence(s) exist.");
-
-				var operationLines = string.IsNullOrEmpty(text)
-					? new List<string>()
-					: NormalizeLineEndings(text).Split('\n').ToList();
-
-				// For line-based operations, match length is 1 (single line)
-				var (totalInsertions, totalDeletions) = ApplyLineOperations(fileLines, targetIndices, 1, operationLines, operation);
-
-				var newContent = string.Join("\n", fileLines);
-				newContent = PreserveLineEndings(originalContent, newContent);
-				return (newContent, null);
 			}
+
+			return foundAny ? string.Join("\n", fileLines) : null;
 		}
 
-		#region Shared Helpers
+		private static string? ApplyRegexPatch(string content, EditPatch patch)
+		{
+			var options = RegexOptions.Compiled | (patch.ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+			var regex = new Regex(patch.match, options);
+
+			return regex.IsMatch(content) ? regex.Replace(content, patch.replace) : null;
+		}
 
 		private static string NormalizeLineEndings(string text)
 			=> text.Replace("\r\n", "\n").Replace("\r", "\n");
@@ -519,97 +490,5 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			var prefix = nonEmpty[0][..commonLen];
 			return lines.Select(l => l.StartsWith(prefix) ? l[commonLen..] : l).ToList();
 		}
-
-		private static List<int> FindSequenceIndices(
-			List<string> fileLines,
-			List<string> matchLines,
-			bool ignoreWhitespace,
-			StringComparison comparison,
-			CancellationToken cancellationToken)
-		{
-			var indices = new List<int>();
-			if (matchLines.Count == 0)
-				return indices;
-
-			var trimmedMatch = ignoreWhitespace
-				? matchLines.Select(l => l.Trim()).ToList()
-				: matchLines;
-
-			for (int i = 0; i <= fileLines.Count - matchLines.Count; i++)
-			{
-				cancellationToken.ThrowIfCancellationRequested();
-
-				bool found = true;
-				for (int j = 0; j < matchLines.Count; j++)
-				{
-					var fileLine = fileLines[i + j];
-					if (!fileLine.Contains(trimmedMatch[j], comparison))
-					{
-						found = false;
-						break;
-					}
-				}
-
-				if (found)
-					indices.Add(i);
-			}
-
-			return indices;
-		}
-
-		private static List<int>? FilterOccurrences(List<int> found, int occurrence)
-		{
-			if (occurrence > 0)
-			{
-				if (occurrence > found.Count)
-					return null;
-				return [found[occurrence - 1]];
-			}
-			return found;
-		}
-
-		private static (int totalInsertions, int totalDeletions) ApplyLineOperations(
-			List<string> fileLines,
-			List<int> targetIndices,
-			int matchLength,
-			List<string> operationLines,
-			string operation)
-		{
-			int totalInsertions = 0;
-			int totalDeletions = 0;
-
-			// Apply from end to preserve indices
-			foreach (var idx in targetIndices.OrderByDescending(i => i))
-			{
-				switch (operation)
-				{
-					case "insert_before":
-						fileLines.InsertRange(idx, operationLines);
-						totalInsertions += operationLines.Count;
-						break;
-
-					case "insert_after":
-						fileLines.InsertRange(idx + matchLength, operationLines);
-						totalInsertions += operationLines.Count;
-						break;
-
-					case "replace":
-						fileLines.RemoveRange(idx, matchLength);
-						fileLines.InsertRange(idx, operationLines);
-						totalDeletions += matchLength;
-						totalInsertions += operationLines.Count;
-						break;
-
-					case "delete":
-						fileLines.RemoveRange(idx, matchLength);
-						totalDeletions += matchLength;
-						break;
-				}
-			}
-
-			return (totalInsertions, totalDeletions);
-		}
-
-		#endregion
 	}
 }
