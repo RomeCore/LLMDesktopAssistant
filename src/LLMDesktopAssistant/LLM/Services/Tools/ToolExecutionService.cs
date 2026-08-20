@@ -81,8 +81,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				finally
 				{
 					partialFunctionToolCall.ArgsPartAdded -= AddedPartialArg;
-					toolCall.StatusIcon = null;
-					toolCall.StatusTitle = null;
 				}
 
 				sharedContext = streamingToolExecutionContext.SharedContext;
@@ -110,7 +108,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				cancellationToken.ThrowIfCancellationRequested();
 
 				JsonNode? parsedArgs = null;
-				toolCall.ExpectedBehaviour = toolInfo.DefaultExpectedBehaviour;
 				var toolHandledDecisions = toolInfo.DefaultSelfHandledDecisions;
 
 				if (toolInfo.PreviewExecutor != null)
@@ -170,6 +167,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 						Log.Debug(ex, "Error during preview execution of tool '{ToolName}': {ExceptionMessage}", toolCall.ToolName, ex.Message);
 					}
 				}
+
+				toolCall.ExpectedBehaviour ??= toolInfo.DefaultExpectedBehaviour;
 
 				cancellationToken.ThrowIfCancellationRequested();
 
@@ -287,8 +286,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 				cancellationToken.ThrowIfCancellationRequested();
 
-				toolCall.StatusIcon = null;
-				toolCall.StatusTitle = null;
 				var toolExecutionContext = new ToolExecutionContext
 				{
 					Chat = chat,
@@ -304,8 +301,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				var reactiveResult = await toolInfo.Executor.Invoke(parsedArgs, toolExecutionContext, cancellationToken);
 
 				toolCall.ReactiveToolResult = reactiveResult;
-				toolCall.StatusIcon = reactiveResult.StatusIcon;
-				toolCall.StatusTitle = reactiveResult.StatusTitle;
+				toolCall.StatusIcon = reactiveResult.StatusIcon ?? toolCall.StatusIcon;
+				toolCall.StatusTitle = reactiveResult.StatusTitle ?? toolCall.StatusTitle;
 				toolCall.StructuredResult = reactiveResult.StructuredResult;
 				toolCall.UseMarkdown = reactiveResult.UseMarkdown;
 				toolCall.ResultContent = reactiveResult.ResultContent;
