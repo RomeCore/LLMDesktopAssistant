@@ -77,18 +77,21 @@ public class HelpViewModelTests
 	}
 
 	[Theory]
-	[InlineData("![a](assets/img.png)", "![a](avares://LLMDesktopAssistant/Assets/help/assets/img.png)")]
-	[InlineData("![a](chat/photo.jpg)", "![a](avares://LLMDesktopAssistant/Assets/help/chat/photo.jpg)")]
-	[InlineData("![a](assets/anim.gif)", "![a](avares://LLMDesktopAssistant/Assets/help/assets/anim.gif)")]
-	[InlineData("![a](assets/icon.svg)", "![a](avares://LLMDesktopAssistant/Assets/help/assets/icon.svg)")]
-	[InlineData("![a](assets/img.webp)", "![a](avares://LLMDesktopAssistant/Assets/help/assets/img.webp)")]
-	[InlineData("[link](chat.md)", "[link](chat.md)")]
-	[InlineData("![a](https://example.com/x.png)", "![a](https://example.com/x.png)")]
-	public void ReplaceImageLinks(string input, string expected)
+	[InlineData("![a](assets/img.png)", "getting-started", "![a](avares://LLMDesktopAssistant/Assets/help/assets/img.png)")]
+	[InlineData("![a](img.png)", "chat/agents", "![a](avares://LLMDesktopAssistant/Assets/help/chat/img.png)")]
+	[InlineData("![a](sub/img.png)", "chat/agents", "![a](avares://LLMDesktopAssistant/Assets/help/chat/sub/img.png)")]
+	[InlineData("![a](../assets/img.png)", "chat/agents", "![a](avares://LLMDesktopAssistant/Assets/help/assets/img.png)")]
+	[InlineData("![a](chat/photo.jpg)", "getting-started", "![a](avares://LLMDesktopAssistant/Assets/help/chat/photo.jpg)")]
+	[InlineData("![a](assets/anim.gif)", "getting-started", "![a](avares://LLMDesktopAssistant/Assets/help/assets/anim.gif)")]
+	[InlineData("![a](assets/icon.svg)", "getting-started", "![a](avares://LLMDesktopAssistant/Assets/help/assets/icon.svg)")]
+	[InlineData("![a](assets/img.webp)", "getting-started", "![a](avares://LLMDesktopAssistant/Assets/help/assets/img.webp)")]
+	[InlineData("[link](chat.md)", "getting-started", "[link](chat.md)")]
+	[InlineData("![a](https://example.com/x.png)", "getting-started", "![a](https://example.com/x.png)")]
+	public void ReplaceImageLinks(string input, string documentPath, string expected)
 	{
 		var method = typeof(HelpViewModel).GetMethod("ReplaceImageLinks",
 			BindingFlags.NonPublic | BindingFlags.Static);
-		var result = (string)method!.Invoke(null, new object[] { input })!;
+		var result = (string)method!.Invoke(null, new object[] { input, documentPath })!;
 
 		Assert.Equal(expected, result);
 	}

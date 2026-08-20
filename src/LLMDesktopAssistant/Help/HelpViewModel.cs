@@ -138,7 +138,7 @@ public partial class HelpViewModel : ViewModelBase
 	{
 		if (_selectedNode?.DocumentPath is { } path)
 		{
-			MarkdownText = ReplaceImageLinks(_store.GetContent(path, _locale) ?? string.Empty);
+			MarkdownText = ReplaceImageLinks(_store.GetContent(path, _locale) ?? string.Empty, path);
 		}
 		else
 		{
@@ -151,10 +151,14 @@ public partial class HelpViewModel : ViewModelBase
 		return ApplicationSettingsAccessor.ApplicationSettings.Language.System;
 	}
 
-	private static string ReplaceImageLinks(string markdown)
+	private static string ReplaceImageLinks(string markdown, string documentPath)
 	{
 		var assemblyName = typeof(HelpViewModel).Assembly.GetName().Name;
-		return ImageLinkRegex().Replace(markdown, $"$1avares://{assemblyName}/Assets/help/$2");
+		return ImageLinkRegex().Replace(markdown, match =>
+		{
+			var resolvedPath = ResolveRelativePath(documentPath, match.Groups[2].Value);
+			return $"{match.Groups[1].Value}avares://{assemblyName}/Assets/help/{resolvedPath}";
+		});
 	}
 
 	[GeneratedRegex(@"(!\[[^\]]*\]\()(?!\w+://)([^)\s]+\.(?:png|jpe?g|gif|svg|webp))", RegexOptions.IgnoreCase)]
