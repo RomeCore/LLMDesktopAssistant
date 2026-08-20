@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using LLMDesktopAssistant.LLM.Services;
@@ -378,11 +379,13 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			if (matchLines.Count == 1)
 			{
-				// Single-line match: replace all occurrences in every line, preserving surrounding text
+				// Single-line match: replace all non-overlapping occurrences in every line,
+				// preserving the surrounding text and the file's indentation
 				var match = matchLines[0];
+				var replacementLines = replacement.Split('\n').ToList();
 				for (int i = 0; i < fileLines.Count; i++)
 				{
-					var newLine = fileLines[i].Replace(match, replacement, comparison);
+					var newLine = ReplaceOccurrencesInLine(fileLines[i], match, replacementLines, comparison);
 					if (newLine != fileLines[i])
 					{
 						foundAny = true;
@@ -392,17 +395,32 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 			else
 			{
-				// Multi-line match: find blocks of lines and replace them
+				// Multi-line match: find aligned blocks of lines and replace them
 				var replacementLines = replacement.Length == 0
 					? []
 					: replacement.Split('\n').ToList();
 
 				for (int i = 0; i <= fileLines.Count - matchLines.Count; i++)
 				{
+					var prefixes = new string[matchLines.Count];
+					var suffixes = new string[matchLines.Count];
 					var blockMatched = true;
 					for (int j = 0; j < matchLines.Count; j++)
 					{
-						if (fileLines[i + j].IndexOf(matchLines[j], comparison) < 0)
+						var line = fileLines[i + j];
+						var index = line.IndexOf(matchLines[j], comparison);
+						if (index < 0)
+						{
+							blockMatched = false;
+							break;
+						}
+
+						prefixes[j] = line[..index];
+						suffixes[j] = line[(index + matchLines[j].Length)..];
+
+						// The match must be aligned with the line: non-whitespace text on both
+						// sides of the match would make the replacement position ambiguous
+						if (HasNonWhitespace(prefixes[j]) && HasNonWhitespace(suffixes[j]))
 						{
 							blockMatched = false;
 							break;
@@ -414,22 +432,27 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 					foundAny = true;
 
-					// Preserve the text before the match (first line) and after the match (last line)
-					var firstLine = fileLines[i];
-					var lastLine = fileLines[i + matchLines.Count - 1];
-					var prefix = firstLine[..firstLine.IndexOf(matchLines[0], comparison)];
-					var suffix = lastLine[(lastLine.IndexOf(matchLines[^1], comparison) + matchLines[^1].Length)..];
-
-					var newBlockLines = new List<string>();
+					List<string> newBlockLines;
 					if (replacementLines.Count == 0)
 					{
-						newBlockLines.Add(prefix + suffix);
+						// Delete: keep the text before the match (first line) and after it (last line)
+						newBlockLines = [prefixes[0] + suffixes[^1]];
+					}
+					else if (replacementLines.Count == matchLines.Count)
+					{
+						// Line-by-line replacement: each line inherits the file's surrounding text
+						// and indentation instead of the replacement's own leading whitespace
+						newBlockLines = new List<string>(matchLines.Count);
+						for (int j = 0; j < matchLines.Count; j++)
+							newBlockLines.Add(prefixes[j] + replacementLines[j].TrimStart() + suffixes[j]);
 					}
 					else
 					{
-						newBlockLines.Add(prefix + replacementLines[0]);
+						// Different line count: keep the text before the match (first line)
+						// and after the match (last line)
+						newBlockLines = [prefixes[0] + replacementLines[0].TrimStart()];
 						newBlockLines.AddRange(replacementLines.Skip(1));
-						newBlockLines[^1] += suffix;
+						newBlockLines[^1] += suffixes[^1];
 					}
 
 					fileLines.RemoveRange(i, matchLines.Count);
@@ -442,6 +465,47 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 			return foundAny ? string.Join("\n", fileLines) : null;
 		}
+
+		private static string ReplaceOccurrencesInLine(
+			string line, string match, List<string> replacementLines, StringComparison comparison)
+		{
+			var result = new StringBuilder();
+			int pos = 0;
+			while (true)
+			{
+				int index = line.IndexOf(match, pos, comparison);
+				if (index < 0)
+					break;
+
+				result.Append(line, pos, index - pos);
+
+				var prefix = line[pos..index];
+				var firstLine = replacementLines.Count > 0 ? replacementLines[0] : "";
+				// If the text before the match is pure indentation, keep the file's indentation
+				// and strip the replacement's own leading whitespace to avoid doubling it
+				result.Append(IsIndentation(prefix) ? firstLine.TrimStart() : firstLine);
+
+				for (int k = 1; k < replacementLines.Count; k++)
+				{
+					result.Append('\n');
+					result.Append(replacementLines[k]);
+				}
+
+				pos = index + match.Length;
+			}
+
+			if (pos == 0)
+				return line;
+
+			result.Append(line, pos, line.Length - pos);
+			return result.ToString();
+		}
+
+		private static bool IsIndentation(string text)
+			=> text.Length > 0 && text.All(c => c is ' ' or '\t');
+
+		private static bool HasNonWhitespace(string text)
+			=> text.Any(c => c is not ' ' and not '\t');
 
 		private static string? ApplyRegexPatch(string content, EditPatch patch)
 		{

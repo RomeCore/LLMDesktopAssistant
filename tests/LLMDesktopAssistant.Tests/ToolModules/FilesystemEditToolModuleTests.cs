@@ -539,6 +539,324 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 	}
 
 	[Fact]
+	public async Task Replace_PythonCode_IndentedMatch_IndentedReplace_NoDoubledIndent()
+	{
+		using var temp = new TempDir();
+		var file = temp.Write("file.py", """
+			def foo():
+			    if x:
+			        do_something()
+			    else:
+			        do_other()
+			""");
+
+		var result = await ExecuteAsync(GetFsEditTool(CreateModule(temp.Root)), new JsonObject
+		{
+			["path"] = "file.py",
+			["patches"] = new JsonArray { Patch("    if x:", "    if x and y:") }
+		});
+
+		Assert.Contains("File edited successfully", result.ResultContent);
+		Assert.Equal("""
+			def foo():
+			    if x and y:
+			        do_something()
+			    else:
+			        do_other()
+			""", File.ReadAllText(file));
+	}
+
+	[Fact]
+	public async Task Replace_PythonCode_MatchWithoutIndent_ReplaceWithIndent_UsesFileIndent()
+	{
+		using var temp = new TempDir();
+		var file = temp.Write("file.py", """
+			def foo():
+			    if x:
+			        do_other()
+			""");
+
+		var result = await ExecuteAsync(GetFsEditTool(CreateModule(temp.Root)), new JsonObject
+		{
+			["path"] = "file.py",
+			["patches"] = new JsonArray { Patch("if x:", "if x and y:") }
+		});
+
+		Assert.Contains("File edited successfully", result.ResultContent);
+		Assert.Equal("""
+			def foo():
+			    if x and y:
+			        do_other()
+			""", File.ReadAllText(file));
+	}
+
+	[Fact]
+	public async Task Replace_PythonCode_MultilineBlock_LineByLine_KeepsIndentation()
+	{
+		using var temp = new TempDir();
+		var file = temp.Write("file.py", """
+			def foo():
+			    if x:
+			        do_something()
+			    else:
+			        do_other()
+			""");
+
+		var result = await ExecuteAsync(GetFsEditTool(CreateModule(temp.Root)), new JsonObject
+		{
+			["path"] = "file.py",
+			["patches"] = new JsonArray
+			{
+				Patch("""
+				    if x:
+				        do_something()
+				    """, """
+				    if x and y:
+				        do_something_else()
+				    """)
+			}
+		});
+
+		Assert.Contains("File edited successfully", result.ResultContent);
+		Assert.Equal("""
+			def foo():
+			    if x and y:
+			        do_something_else()
+			    else:
+			        do_other()
+			""", File.ReadAllText(file));
+	}
+
+	[Theory]
+	[InlineData("""
+		if x:
+		    for i in range(3):
+		        print(i)
+		""", """
+		if x:
+		    for i in range(3):
+		        print(i * 2)
+		""")]
+	[InlineData("""
+		 if x:
+		     for i in range(3):
+		         print(i)
+		 """, """
+		 if x:
+		     for i in range(3):
+		         print(i * 2)
+		""")]
+	[InlineData("""
+		  if x:
+		      for i in range(3):
+		          print(i)
+		  """, """
+		  if x:
+		      for i in range(3):
+		          print(i * 2)
+		""")]
+	[InlineData("""
+		   if x:
+		       for i in range(3):
+		           print(i)
+		   """, """
+		   if x:
+		       for i in range(3):
+		           print(i * 2)
+		""")]
+	[InlineData("""
+		    if x:
+		        for i in range(3):
+		            print(i)
+		    """, """
+		    if x:
+		        for i in range(3):
+		            print(i * 2)
+		""")]
+	public async Task Replace_PythonCode_NestedBlock_IgnoresSameIndentation(string match, string text)
+	{
+		using var temp = new TempDir();
+		var file = temp.Write("file.py", """
+			def foo():
+			    if x:
+			        for i in range(3):
+			            print(i)
+			""");
+
+		var result = await ExecuteAsync(GetFsEditTool(CreateModule(temp.Root)), new JsonObject
+		{
+			["path"] = "file.py",
+			["patches"] = new JsonArray
+			{
+				Patch(match, text)
+			}
+		});
+
+		Assert.Contains("File edited successfully", result.ResultContent);
+		Assert.Equal("""
+			def foo():
+			    if x:
+			        for i in range(3):
+			            print(i * 2)
+			""", File.ReadAllText(file));
+	}
+
+	[Fact]
+	public async Task Replace_PythonCode_DeleteBlock_ReplacedBySingleLine()
+	{
+		using var temp = new TempDir();
+		var file = temp.Write("file.py", """
+			def foo():
+			    if x:
+			        do_something()
+			    else:
+			        do_other()
+			""");
+
+		var result = await ExecuteAsync(GetFsEditTool(CreateModule(temp.Root)), new JsonObject
+		{
+			["path"] = "file.py",
+			["patches"] = new JsonArray
+			{
+				Patch("""
+				    if x:
+				        do_something()
+				    else:
+				        do_other()
+				    """, "    pass")
+			}
+		});
+
+		Assert.Contains("File edited successfully", result.ResultContent);
+		Assert.Equal("""
+			def foo():
+			    pass
+			""", File.ReadAllText(file));
+	}
+
+	[Fact]
+	public async Task Replace_PythonCode_TabsIndentation_NoDoubling()
+	{
+		using var temp = new TempDir();
+		var file = temp.Write("file.py", "def foo():\n\tif x:\n\t\tdo_something()");
+
+		var result = await ExecuteAsync(GetFsEditTool(CreateModule(temp.Root)), new JsonObject
+		{
+			["path"] = "file.py",
+			["patches"] = new JsonArray { Patch("\tif x:", "\tif x and y:") }
+		});
+
+		Assert.Contains("File edited successfully", result.ResultContent);
+		Assert.Equal("def foo():\n\tif x and y:\n\t\tdo_something()", File.ReadAllText(file));
+	}
+
+	[Fact]
+	public async Task Replace_Plain_Multiline_MatchWithIndent_ReplacementWithoutIndent()
+	{
+		using var temp = new TempDir();
+		var file = temp.Write("file.py", """
+			def foo():
+			    if x:
+			        do_something()
+			    else:
+			        do_other()
+			""");
+
+		var result = await ExecuteAsync(GetFsEditTool(CreateModule(temp.Root)), new JsonObject
+		{
+			["path"] = "file.py",
+			["patches"] = new JsonArray
+			{
+				Patch("""
+				    if x:
+				        do_something()
+				    """, """
+				    if z:
+				        do_z()
+				    """)
+			}
+		});
+
+		Assert.Contains("File edited successfully", result.ResultContent);
+		Assert.Equal("""
+			def foo():
+			    if z:
+			        do_z()
+			    else:
+			        do_other()
+			""", File.ReadAllText(file));
+	}
+	
+	private async Task TestReplaceAsync(string original, string expected, params JsonObject[] patches)
+	{
+		using var temp = new TempDir();
+		var file = temp.Write("file.txt", original);
+
+		var result = await ExecuteAsync(GetFsEditTool(CreateModule(temp.Root)), new JsonObject
+		{
+			["path"] = "file.txt",
+			["patches"] = new JsonArray([.. patches])
+		});
+
+		Assert.Contains("File edited successfully", result.ResultContent);
+		Assert.Equal(expected, File.ReadAllText(file));
+	}
+
+	[Fact]
+	public async Task Replace_CSharpCode_ComplexPatches()
+	{
+		await TestReplaceAsync("""
+			namespace MyNamespace
+			{
+				public static class Program
+				{
+					public void Main()
+					{
+						var foo = new Foo
+						{
+							Property1 = "value1",
+							Property2 = "value2"
+						};
+					}
+				}
+			}
+			""", """
+			namespace MyNamespace
+			{
+				public static class Program
+				{
+					public void Main(string[] args)
+					{
+						var bar = new Bar
+						{
+							Property3 = "value3",
+							Property4 = "value4"
+						};
+					}
+				}
+			}
+			""", Patch("""
+			Main()
+			""", """
+			Main(string[] args)
+			"""), Patch("""
+			= new Foo
+			{
+				Property1 = "value1",
+				Property2 = "value2
+			""", """
+			= new Bar
+			{
+				Property3 = "value3",
+				Property4 = "value4
+			"""), Patch("""
+			var foo
+			""", """
+			var bar
+			"""));
+	}
+
+	[Fact]
 	public void ArgumentSchema_ContainsPatchesArray()
 	{
 		var tool = GetFsEditTool(CreateModule(Path.GetTempPath()));
