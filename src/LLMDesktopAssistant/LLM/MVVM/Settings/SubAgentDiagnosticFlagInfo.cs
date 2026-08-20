@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
 
-namespace LLMDesktopAssistant.LLM.Messages;
+namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
 /// <summary>
 /// Represents a single <see cref="SubAgentDiagnosticCode"/> flag for display in the UI.

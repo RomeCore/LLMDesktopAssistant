@@ -7,7 +7,7 @@
 						 xmlns:ico="using:Material.Icons.Avalonia"
 						 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
 						 xmlns:loc="using:LLMDesktopAssistant.Localization"
-						 xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
+						 xmlns:settings="using:LLMDesktopAssistant.LLM.MVVM.Settings"
 						 mc:Ignorable="d" d:DesignWidth="380" d:DesignHeight="60"
 						 x:Class="LLMDesktopAssistant.Agents.Tasks.MVVM.AgentToolCallBriefView"
 						 x:DataType="local:AgentToolCallBriefViewModel">
@@ -50,7 +50,7 @@
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="messages:ToolBehaviourFlagInfo">
+						<DataTemplate x:DataType="settings:ToolBehaviourFlagInfo">
 							<Panel>
 								<ToolTip.Tip>
 									<StackPanel Orientation="Vertical" Spacing="4">

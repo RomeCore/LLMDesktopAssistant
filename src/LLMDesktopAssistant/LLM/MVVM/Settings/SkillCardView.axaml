@@ -1,14 +1,13 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
-			 xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
-			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 xmlns:ico="using:Material.Icons.Avalonia"
-			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.SkillCardView"
-			 x:DataType="local:SkillCardViewModel">
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+						 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.SkillCardView"
+						 x:DataType="local:SkillCardViewModel">
 
 	<UserControl.Styles>
 
@@ -205,7 +204,7 @@
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="messages:SkillDiagnosticFlagInfo">
+						<DataTemplate x:DataType="local:SkillDiagnosticFlagInfo">
 							<Panel ToolTip.Tip="{Binding Description}">
 								<ico:MaterialIcon Kind="{Binding Icon}"
 												  Foreground="{Binding Color}"

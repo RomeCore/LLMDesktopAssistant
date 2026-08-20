@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Skills;
 using Material.Icons;
 
-namespace LLMDesktopAssistant.LLM.Messages;
+namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
 /// <summary>
 /// Represents a single <see cref="SkillDiagnosticCode"/> flag for display in the UI.

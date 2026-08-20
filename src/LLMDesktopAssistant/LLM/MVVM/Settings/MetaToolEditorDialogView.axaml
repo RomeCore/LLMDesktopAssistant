@@ -1,17 +1,16 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
-			 xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
-			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 xmlns:ico="using:Material.Icons.Avalonia"
-			 xmlns:beh="using:LLMDesktopAssistant.Controls.Behaviours"
-			 xmlns:edit="using:AvaloniaEdit"
-			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.MetaToolEditorDialogView"
-			 x:DataType="local:MetaToolEditorDialogViewModel"
-			 beh:DialogLayoutBehaviour.DialogMargin="100">
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
+						 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 xmlns:beh="using:LLMDesktopAssistant.Controls.Behaviours"
+						 xmlns:edit="using:AvaloniaEdit"
+						 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.MetaToolEditorDialogView"
+						 x:DataType="local:MetaToolEditorDialogViewModel"
+						 beh:DialogLayoutBehaviour.DialogMargin="100">
 
 	<UserControl.Styles>
 
@@ -164,7 +163,7 @@
 										</ItemsPanelTemplate>
 									</ItemsControl.ItemsPanel>
 									<ItemsControl.ItemTemplate>
-										<DataTemplate x:DataType="messages:ToolBehaviourFlagInfo">
+										<DataTemplate x:DataType="local:ToolBehaviourFlagInfo">
 											<ico:MaterialIcon Kind="{Binding Icon}" Width="11" Height="11" Foreground="{Binding Color}" VerticalAlignment="Center">
 												<ToolTip.Tip>
 													<StackPanel Orientation="Vertical" Spacing="4">

@@ -1,17 +1,18 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.Messages"
-			 xmlns:consents="using:LLMDesktopAssistant.Tools.Consents"
-			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
-			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 xmlns:ico="using:Material.Icons.Avalonia"
-			 xmlns:flui="using:FluentAvalonia.UI.Controls"
-			 xmlns:beh="clr-namespace:LLMDesktopAssistant.Controls.Behaviours"
-			 x:Class="LLMDesktopAssistant.LLM.Messages.ToolCallView"
-			 x:DataType="local:ToolCallViewModel">
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+						 xmlns:local="using:LLMDesktopAssistant.LLM.Messages"
+						 xmlns:consents="using:LLMDesktopAssistant.Tools.Consents"
+						 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 xmlns:flui="using:FluentAvalonia.UI.Controls"
+						 xmlns:beh="clr-namespace:LLMDesktopAssistant.Controls.Behaviours"
+						 xmlns:settings="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+						 x:Class="LLMDesktopAssistant.LLM.Messages.ToolCallView"
+						 x:DataType="local:ToolCallViewModel">
 	
 	<UserControl.Styles>
 		<Style Selector="FlyoutPresenter">
@@ -71,7 +72,7 @@
 											</ItemsPanelTemplate>
 										</ItemsControl.ItemsPanel>
 										<ItemsControl.ItemTemplate>
-											<DataTemplate x:DataType="local:ToolBehaviourFlagInfo">
+											<DataTemplate x:DataType="settings:ToolBehaviourFlagInfo">
 												<Panel>
 													<ToolTip.Tip>
 														<StackPanel Orientation="Vertical" Spacing="4">

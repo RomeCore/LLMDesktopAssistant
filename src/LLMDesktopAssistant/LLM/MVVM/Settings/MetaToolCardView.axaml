@@ -1,14 +1,13 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
-			 xmlns:messages="using:LLMDesktopAssistant.LLM.Messages"
-			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 xmlns:ico="using:Material.Icons.Avalonia"
-			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.MetaToolCardView"
-			 x:DataType="local:MetaToolCardViewModel">
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+						 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.MetaToolCardView"
+						 x:DataType="local:MetaToolCardViewModel">
 
 	<UserControl.Styles>
 
@@ -125,7 +124,7 @@
 							</ItemsPanelTemplate>
 						</ItemsControl.ItemsPanel>
 						<ItemsControl.ItemTemplate>
-							<DataTemplate x:DataType="messages:ToolBehaviourFlagInfo">
+							<DataTemplate x:DataType="local:ToolBehaviourFlagInfo">
 								<ico:MaterialIcon Kind="{Binding Icon}" Width="12" Height="12" VerticalAlignment="Center" Foreground="{Binding Color}">
 									<ToolTip.Tip>
 										<StackPanel Orientation="Vertical" Spacing="4">
@@ -155,7 +154,7 @@
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="messages:MetaToolDiagnosticFlagInfo">
+						<DataTemplate x:DataType="local:MetaToolDiagnosticFlagInfo">
 							<Border Classes="chip" ToolTip.Tip="{Binding DisplayName}">
 								<StackPanel Orientation="Horizontal" Spacing="3">
 									<ico:MaterialIcon Kind="{Binding Icon}" Width="12" Height="12" VerticalAlignment="Center" Foreground="{Binding Color}"/>

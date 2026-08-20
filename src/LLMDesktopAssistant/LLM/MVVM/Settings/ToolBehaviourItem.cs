@@ -1,5 +1,4 @@
 using Avalonia.Media;
-using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
 
