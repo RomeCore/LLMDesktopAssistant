@@ -19,12 +19,12 @@ public class ToolBehaviourFlagInfo
 	/// <summary>
 	/// Localized display name for the tooltip.
 	/// </summary>
-	public string DisplayName { get; }
+	public LocaleKeyBase DisplayName { get; }
 
 	/// <summary>
 	/// Localized description text for the tooltip.
 	/// </summary>
-	public string Description { get; }
+	public LocaleKeyBase Description { get; }
 
 	/// <summary>
 	/// Icon to display for this flag.
@@ -36,7 +36,8 @@ public class ToolBehaviourFlagInfo
 	/// </summary>
 	public IBrush Color { get; }
 
-	public ToolBehaviourFlagInfo(ToolBehaviour flag, string displayName, string description, MaterialIconKind icon, IBrush color)
+	public ToolBehaviourFlagInfo(ToolBehaviour flag, LocaleKeyBase displayName, LocaleKeyBase description,
+		MaterialIconKind icon, IBrush color)
 	{
 		Flag = flag;
 		DisplayName = displayName;
@@ -51,12 +52,8 @@ public class ToolBehaviourFlagInfo
 	public static ToolBehaviourFlagInfo Create(ToolBehaviour flag)
 	{
 		var key = $"tool.behaviour.{flag.ToString().ToLower()}";
-		var displayName = LocalizationManager.LocalizeStatic(key);
-		var description = LocalizationManager.LocalizeStatic($"{key}.hint");
-
-		// Fallback to name if localization missing
-		if (displayName == key || string.IsNullOrEmpty(displayName))
-			displayName = flag.ToString();
+		var displayName = Locale.GetKey(key);
+		var description = Locale.GetKey($"{key}.hint");
 
 		return new ToolBehaviourFlagInfo(flag, displayName, description, GetIcon(flag), GetColor(flag));
 	}

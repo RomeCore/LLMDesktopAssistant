@@ -116,24 +116,30 @@
 					</StackPanel>
 				</Border>
 
-				<!-- Behaviour chips -->
-				<ItemsControl ItemsSource="{Binding BehaviourFlags}" Margin="0,0,0,0">
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<WrapPanel/>
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="messages:ToolBehaviourFlagInfo">
-							<Border Classes="chip" ToolTip.Tip="{Binding Description}">
-								<StackPanel Orientation="Horizontal" Spacing="3">
-									<ico:MaterialIcon Kind="{Binding Icon}" Width="12" Height="12" VerticalAlignment="Center" Foreground="{Binding Color}"/>
-									<TextBlock Classes="chipText" Foreground="{Binding Color}" Text="{Binding DisplayName}"/>
-								</StackPanel>
-							</Border>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
+				<!-- Behaviour chip -->
+				<Border Classes="chip">
+					<ItemsControl ItemsSource="{Binding BehaviourFlags}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="messages:ToolBehaviourFlagInfo">
+								<ico:MaterialIcon Kind="{Binding Icon}" Width="12" Height="12" VerticalAlignment="Center" Foreground="{Binding Color}">
+									<ToolTip.Tip>
+										<StackPanel Orientation="Vertical" Spacing="4">
+											<TextBlock Text="{loc:Loc {Binding DisplayName}}"
+																 FontSize="{DynamicResource FontSizeM}"
+																 FontWeight="SemiBold"/>
+											<TextBlock Text="{loc:Loc {Binding Description}}"/>
+										</StackPanel>
+									</ToolTip.Tip>
+								</ico:MaterialIcon>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</Border>
 
 			</WrapPanel>
 

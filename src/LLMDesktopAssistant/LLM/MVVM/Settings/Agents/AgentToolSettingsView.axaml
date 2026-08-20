@@ -502,11 +502,11 @@
 																	ToolTip.ShowOnDisabled="True">
 											<ToolTip.Tip>
 												<StackPanel Orientation="Vertical" Spacing="4">
-													<TextBlock Text="{Binding DisplayName}"
+													<TextBlock Text="{loc:Loc {Binding DisplayName}}"
 																		 FontSize="{DynamicResource FontSizeM}"
 																		 FontWeight="SemiBold"/>
-													<TextBlock Text="{Binding Description}"/>
-													<TextBlock Text="{Binding StateName}"
+													<TextBlock Text="{loc:Loc {Binding Description}}"/>
+													<TextBlock Text="{loc:Loc {Binding StateName}}"
 																		 Foreground="{Binding StateColor}"
 																		 FontSize="11"/>
 												</StackPanel>
@@ -523,7 +523,7 @@
 
 						</StackPanel>
 
-						<TextBlock Text="{Binding Description}"
+						<TextBlock Text="{loc:Loc {Binding Description}}"
 											 Margin="0,2,0,8"
 											 HorizontalAlignment="Left"
 											 MaxWidth="500"

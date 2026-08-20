@@ -7,11 +7,11 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
 using Material.Icons;
 using RCLargeLanguageModels.Tools;
-using UglyToad.PdfPig.Logging;
+
+#pragma warning disable CS8605
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
@@ -346,7 +346,7 @@ public class MetaToolCardViewModel : ViewModelBase
 			IsDanger = true
 		};
 
-		var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm)!;
+		var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm);
 		if (!confirmed)
 			return;
 

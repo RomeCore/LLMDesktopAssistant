@@ -54,10 +54,10 @@
 							<Panel>
 								<ToolTip.Tip>
 									<StackPanel Orientation="Vertical" Spacing="4">
-										<TextBlock Text="{Binding DisplayName}"
+										<TextBlock Text="{loc:Loc {Binding DisplayName}}"
 										           FontSize="{DynamicResource FontSizeM}"
 										           FontWeight="SemiBold"/>
-										<TextBlock Text="{Binding Description}"/>
+										<TextBlock Text="{loc:Loc {Binding Description}}"/>
 									</StackPanel>
 								</ToolTip.Tip>
 								<ico:MaterialIcon Kind="{Binding Icon}"

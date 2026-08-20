@@ -33,17 +33,17 @@ public class ToolBehaviourMaskItem : NotifyPropertyChanged
 	/// <summary>
 	/// Localized display name of the behaviour.
 	/// </summary>
-	public string DisplayName { get; }
+	public LocaleKeyBase DisplayName { get; }
 
 	/// <summary>
 	/// Localized description of the behaviour.
 	/// </summary>
-	public string Description { get; }
+	public LocaleKeyBase Description { get; }
 
 	/// <summary>
 	/// Gets the localized name of the current override state.
 	/// </summary>
-	public string StateName { get; private set; } = string.Empty;
+	public LocaleKeyBase StateName { get; private set; } = null!;
 
 	/// <summary>
 	/// Gets the color of the current behaviour flag.
@@ -104,9 +104,9 @@ public class ToolBehaviourMaskItem : NotifyPropertyChanged
 	{
 		StateName = _isChecked switch
 		{
-			true => LocalizationManager.LocalizeStatic("settings.tool.behaviour_policy.auto_approve"),
-			false => LocalizationManager.LocalizeStatic("settings.tool.behaviour_policy.disallowed"),
-			_ => LocalizationManager.LocalizeStatic("settings.tool.behaviour_policy.default")
+			true => Locale.GetKey("settings.tool.behaviour_policy.auto_approve"),
+			false => Locale.GetKey("settings.tool.behaviour_policy.disallowed"),
+			_ => Locale.GetKey("settings.tool.behaviour_policy.default")
 		};
 		StateColor = _isChecked switch
 		{

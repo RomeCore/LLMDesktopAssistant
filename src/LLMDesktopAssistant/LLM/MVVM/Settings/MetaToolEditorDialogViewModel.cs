@@ -1,15 +1,16 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.LLM.Messages;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
 using Material.Icons;
-using LLMDesktopAssistant.Controls.Dialogs;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
@@ -23,17 +24,7 @@ public class MetaToolBehaviourToggle : NotifyPropertyChanged
 	/// <summary>
 	/// Gets the behaviour flag.
 	/// </summary>
-	public ToolBehaviour Flag { get; }
-
-	/// <summary>
-	/// Gets the localized display name.
-	/// </summary>
-	public string DisplayName { get; }
-
-	/// <summary>
-	/// Gets the icon of the flag.
-	/// </summary>
-	public MaterialIconKind Icon { get; }
+	public ToolBehaviourFlagInfo FlagInfo { get; }
 
 	/// <summary>
 	/// Gets or sets a value indicating whether the flag is enabled.
@@ -46,9 +37,7 @@ public class MetaToolBehaviourToggle : NotifyPropertyChanged
 
 	public MetaToolBehaviourToggle(ToolBehaviourFlagInfo info, bool isChecked)
 	{
-		Flag = info.Flag;
-		DisplayName = info.DisplayName;
-		Icon = info.Icon;
+		FlagInfo = info;
 		_isChecked = isChecked;
 	}
 }
@@ -109,11 +98,16 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 		_formCategory = tool.Category;
 		_selectedApprovalLevel = ToolApprovalLevelItem.All.FirstOrDefault(i => i.Value == tool.ApprovalLevel)
 			?? ToolApprovalLevelItem.All[0];
-		_formSchema = tool.ArgumentSchema?.ToJsonString(new JsonSerializerOptions { WriteIndented = true }) ?? "{}";
+		_formSchema = tool.ArgumentSchema?.ToJsonString(new JsonSerializerOptions
+		{
+			Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+			WriteIndented = true
+		}) ?? "{}";
 		_formCode = tool.ExecutionCode;
 
 		BehaviourToggles = Enum.GetValues<ToolBehaviour>()
-			.Where(f => f is not ToolBehaviour.None and not ToolBehaviour.All)
+			.Where(f => f is not ToolBehaviour.None and not ToolBehaviour.All
+				and not ToolBehaviour.AdHoc and not ToolBehaviour.MCP and not ToolBehaviour.Meta)
 			.Select(f => new MetaToolBehaviourToggle(ToolBehaviourFlagInfo.Create(f), tool.Behaviours.HasFlag(f)))
 			.ToImmutableList();
 
@@ -402,12 +396,12 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 					ShowError(LocalizationManager.LocalizeStatic("settings.tools.meta_tools.editor.error.invalid_schema"), ex.Message);
 					return;
 				}
-
+				
 				var behaviours = ToolBehaviour.None;
 				foreach (var toggle in BehaviourToggles)
 				{
 					if (toggle.IsChecked)
-						behaviours |= toggle.Flag;
+						behaviours |= toggle.FlagInfo.Flag;
 				}
 
 				_manager.CreateOrUpdateTool(Name, null, FormDescription, FormTitle, FormCategory,
