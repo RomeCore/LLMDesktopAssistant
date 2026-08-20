@@ -155,7 +155,7 @@
 										 Value="{Binding EffectiveContext.MaxVisibleRounds, Mode=TwoWay}"
 										 Minimum="0"
 										 Maximum="999"
-										 Width="120"
+										 Width="170"
 										 HorizontalAlignment="Left"/>
 		</Grid>
 			

@@ -36,6 +36,18 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			set => SetProperty(ref _additionalRouterPrompt, value);
 		}
 
+		private bool _treatUserLikeAgentsAsUsers = true;
+		/// <summary>
+		/// When enabled, messages of agents that identify themselves as users
+		/// (<see cref="AgentInformation.IdentifyAsUser"/>) are treated as user messages
+		/// when building the router context.
+		/// </summary>
+		public bool TreatUserLikeAgentsAsUsers
+		{
+			get => _treatUserLikeAgentsAsUsers;
+			set => SetProperty(ref _treatUserLikeAgentsAsUsers, value);
+		}
+
 		private bool _enforceRouterSelection = false;
 		/// <summary>
 		/// Whether to enforce router selection for the next agent. If disabled, router can choose none.
@@ -127,7 +139,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 
 		private string? SelectContext(AgentPreExecutionContext context)
 		{
-			var rounds = MessagesInterface.GroupMessagesIntoRounds(context.Chat.Messages, MaxVisibleRounds);
+			var rounds = MessagesInterface.GroupMessagesIntoRounds(context.Chat.Messages, MaxVisibleRounds, TreatUserLikeAgentsAsUsers);
 			var promptBuilder = context.Services.GetRequiredService<IChatPromptBuilder>();
 
 			var sb = new StringBuilder();

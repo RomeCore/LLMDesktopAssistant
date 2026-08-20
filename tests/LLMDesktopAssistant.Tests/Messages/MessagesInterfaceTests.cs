@@ -38,6 +38,21 @@ public class MessagesInterfaceTests
 		MessageIndex = index
 	};
 
+	private static BranchedMessage CreateUserLikeAssistantMessage(string content, int index) => new()
+	{
+		Message = new AssistantMessage
+		{
+			Content = content,
+			CreatedAt = DateTime.UtcNow,
+			SenderAgentId = Guid.NewGuid(),
+			AgentStageId = Guid.NewGuid(),
+			IsUserLike = true,
+			CompletionToken = new CompletionSource().Token
+		},
+		MessageId = index,
+		MessageIndex = index
+	};
+
 	private static string[] Contents(List<BranchedMessage> round) => round.Select(b => b.Message.Content).ToArray();
 
 	[Fact]
@@ -260,5 +275,115 @@ public class MessagesInterfaceTests
 		var rounds = MessagesInterface.GroupMessagesIntoRounds([], maxLastRounds: 3);
 
 		Assert.Empty(rounds);
+	}
+
+	[Fact]
+	public void GroupMessagesIntoRounds_UserLikeAssistantAfterAssistant_StartsNewRound()
+	{
+		var messages = new[]
+		{
+			CreateUserMessage("u1", 0),
+			CreateAssistantMessage("a1", 1),
+			CreateUserLikeAssistantMessage("ul1", 2),
+			CreateAssistantMessage("a2", 3)
+		};
+
+		var rounds = MessagesInterface.GroupMessagesIntoRounds(messages);
+
+		Assert.Equal(2, rounds.Count);
+		Assert.Equal(["u1", "a1"], Contents(rounds[0]));
+		Assert.Equal(["ul1", "a2"], Contents(rounds[1]));
+	}
+
+	[Fact]
+	public void GroupMessagesIntoRounds_UserLikeAssistantAfterUser_JoinsSameRound()
+	{
+		var messages = new[]
+		{
+			CreateUserMessage("u1", 0),
+			CreateUserLikeAssistantMessage("ul1", 1),
+			CreateAssistantMessage("a1", 2)
+		};
+
+		var rounds = MessagesInterface.GroupMessagesIntoRounds(messages);
+
+		var round = Assert.Single(rounds);
+		Assert.Equal(["u1", "ul1", "a1"], Contents(round));
+	}
+
+	[Fact]
+	public void GroupMessagesIntoRounds_ConsecutiveUserLikeAssistants_GroupedIntoSameRound()
+	{
+		var messages = new[]
+		{
+			CreateUserLikeAssistantMessage("ul1", 0),
+			CreateUserLikeAssistantMessage("ul2", 1),
+			CreateAssistantMessage("a1", 2)
+		};
+
+		var rounds = MessagesInterface.GroupMessagesIntoRounds(messages);
+
+		var round = Assert.Single(rounds);
+		Assert.Equal(["ul1", "ul2", "a1"], Contents(round));
+	}
+
+	[Fact]
+	public void GroupMessagesIntoRounds_UserLikeAssistantWithTreatUserLikeDisabled_TreatedAsAssistant()
+	{
+		var messages = new[]
+		{
+			CreateUserMessage("u1", 0),
+			CreateAssistantMessage("a1", 1),
+			CreateUserLikeAssistantMessage("ul1", 2),
+			CreateAssistantMessage("a2", 3)
+		};
+
+		var rounds = MessagesInterface.GroupMessagesIntoRounds(messages, treatUserLikeAsUser: false);
+
+		var round = Assert.Single(rounds);
+		Assert.Equal(["u1", "a1", "ul1", "a2"], Contents(round));
+	}
+
+	[Fact]
+	public void GroupMessagesIntoRounds_UserLikeAssistantWithMaxLastRounds_TakesLastRound()
+	{
+		var messages = new[]
+		{
+			CreateUserMessage("u1", 0),
+			CreateAssistantMessage("a1", 1),
+			CreateUserLikeAssistantMessage("ul1", 2),
+			CreateAssistantMessage("a2", 3)
+		};
+
+		var rounds = MessagesInterface.GroupMessagesIntoRounds(messages, maxLastRounds: 1);
+
+		var round = Assert.Single(rounds);
+		Assert.Equal(["ul1", "a2"], Contents(round));
+	}
+
+	[Fact]
+	public void IsEffectiveUserMessage_RealUserMessage_ReturnsTrue()
+	{
+		var message = CreateUserMessage("u1", 0);
+
+		Assert.True(MessagesInterface.IsEffectiveUserMessage(message));
+		Assert.True(MessagesInterface.IsEffectiveUserMessage(message, treatUserLikeAsUser: false));
+	}
+
+	[Fact]
+	public void IsEffectiveUserMessage_UserLikeAssistant_ReturnsTrue()
+	{
+		var message = CreateUserLikeAssistantMessage("ul1", 0);
+
+		Assert.True(MessagesInterface.IsEffectiveUserMessage(message));
+		Assert.False(MessagesInterface.IsEffectiveUserMessage(message, treatUserLikeAsUser: false));
+	}
+
+	[Fact]
+	public void IsEffectiveUserMessage_RegularAssistant_ReturnsFalse()
+	{
+		var message = CreateAssistantMessage("a1", 0);
+
+		Assert.False(MessagesInterface.IsEffectiveUserMessage(message));
 	}
 }

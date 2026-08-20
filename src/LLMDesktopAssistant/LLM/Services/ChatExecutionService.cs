@@ -162,6 +162,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					Status = AssistantMessageStatus.Pending,
 					SenderAgentId = agentId,
 					AgentStageId = agentStageId,
+					IsUserLike = agent.Info.IdentifyAsUser,
 					CompletionToken = completionSource.Token
 				};
 				responsesBuilder.Add(domainResponseMessage);
@@ -426,6 +427,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						Status = AssistantMessageStatus.Pending,
 						SenderAgentId = agentId,
 						AgentStageId = agentStageId,
+						IsUserLike = agent.Info.IdentifyAsUser,
 						CompletionToken = completionSource.Token
 					};
 					responsesBuilder.Add(domainResponseMessage);

@@ -276,6 +276,8 @@ stage.adaptive.additional_router_prompt: Additional agentic router prompt
 stage.adaptive.agents: Agent pool
 stage.adaptive.enforce_router_selection: Enforce selection
 stage.adaptive.max_visible_rounds: Max visible rounds for router agent
+stage.adaptive.treat_user_like_agents_as_users: Treat user-like agents as users
+stage.adaptive.treat_user_like_agents_as_users.hint: When enabled, messages of agents that identify themselves as users are treated as user messages when building the router context.
 stage.add: Add execution stage
 stage.add_agent: Add agent to stage
 stage.can_agents_be_skipped: Can agents be skipped (by weight)

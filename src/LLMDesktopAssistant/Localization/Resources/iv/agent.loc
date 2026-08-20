@@ -7,8 +7,6 @@ exposure.attachments: Attachments
 exposure.attachments.hint: Expose attachments from this agent's messages to other agents.
 exposure.content: Content
 exposure.content.hint: Expose the main content/text of this agent's messages to other agents.
-exposure.identify_self_as_user: Identify self as user
-exposure.identify_self_as_user.hint: When enabled, this agent identifies itself as a user to other agents. Tool calls and reasoning become inaccessible regardless of other flags.
 exposure.messages_with_tool_calls: Messages with tool calls
 exposure.messages_with_tool_calls.hint: Expose messages that contain tool calls. If disabled, such messages may be hidden entirely from other agents.
 exposure.reasoning: Reasoning
@@ -19,6 +17,8 @@ info.clear_image: Clear image
 info.description: Description
 info.description.hint: Provide a brief description of the agent's role and purpose. This helps other agents understand when to delegate tasks.
 info.description.placeholder: Enter agent description...
+info.identify_as_user: Identify as user
+info.identify_as_user.hint: When enabled, this agent identifies itself as a user to other agents. Its messages are treated as user messages and its tool calls and reasoning become inaccessible to other agents.
 info.name.hint: Set a custom name for this agent. This name is used in the agent list and in the chat.
 info.name.placeholder: Enter agent name...
 info.profile_image: Profile image

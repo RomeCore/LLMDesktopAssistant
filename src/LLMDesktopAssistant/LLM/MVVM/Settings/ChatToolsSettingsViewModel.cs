@@ -329,7 +329,9 @@ public class ChatToolsSettingsViewModel : ViewModelBase
 	private async Task EditMetaToolAsync(MetaToolCardViewModel card)
 	{
 		var dialog = new MetaToolEditorDialogViewModel(card.Info, _metaToolManager, _engines);
-		var result = (bool)await DialogManager.ShowDialogAsync(dialog)!;
+#pragma warning disable CS8605 // Unboxing is safe: the dialog always returns bool.
+		var result = (bool)await DialogManager.ShowDialogAsync(dialog);
+#pragma warning restore CS8605
 		if (result)
 			UpdateMetaTools();
 	}
@@ -378,7 +380,9 @@ public class ChatToolsSettingsViewModel : ViewModelBase
 				return;
 
 			var editorDialog = new MetaToolEditorDialogViewModel(info, _metaToolManager, _engines);
-			var result = (bool)await DialogManager.ShowDialogAsync(editorDialog)!;
+#pragma warning disable CS8605 // Unboxing is safe: the dialog always returns bool.
+			var result = (bool)await DialogManager.ShowDialogAsync(editorDialog);
+#pragma warning restore CS8605
 			if (result)
 				UpdateMetaTools();
 		}

@@ -190,7 +190,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var exposure = senderDescriptor.Read.GetEffectiveExposureMode(chatSettings.Settings); // What sender agent exposes
 			var permissions = agent.Read.GetEffectiveReadPermissions(chatSettings.Settings); // What current agent can see
 
-			if (exposure.HasFlag(AgentExposureMode.IdentifySelfAsUser) || permissions.HasFlag(AgentReadPermissions.IdentifyAgentsAsUsers))
+			if (assistantMessage.IsUserLike || permissions.HasFlag(AgentReadPermissions.IdentifyAgentsAsUsers))
 			{
 				var template = templates.GetTextTemplate("user_message_prompt");
 
@@ -202,12 +202,13 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				context["time_sent"] = assistantMessage.CreatedAt.ToString();
 				context["content"] = assistantMessage.Content;
 				context["attachments"] = assistantMessage.Attachments;
-				context["can_read_content"] =
-					permissions.HasFlag(AgentReadPermissions.OtherAgentContent) &&
-					exposure.HasFlag(AgentExposureMode.Content);
-				bool canReadAttachments =
-					permissions.HasFlag(AgentReadPermissions.OtherAgentAttachments) &&
-					exposure.HasFlag(AgentExposureMode.Attachments);
+				// User-like messages are already gated by user read permissions and their content is always readable
+				context["can_read_content"] = assistantMessage.IsUserLike ||
+					(permissions.HasFlag(AgentReadPermissions.OtherAgentContent) &&
+					exposure.HasFlag(AgentExposureMode.Content));
+				bool canReadAttachments = assistantMessage.IsUserLike
+					? permissions.HasFlag(AgentReadPermissions.UserAttachments)
+					: permissions.HasFlag(AgentReadPermissions.OtherAgentAttachments) && exposure.HasFlag(AgentExposureMode.Attachments);
 				context["can_read_attachments"] = canReadAttachments;
 
 				var result = template!.Render(context, functions);
@@ -397,7 +398,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						continue;
 				}
 
-				if (message is Domain.UserMessage)
+				if (message is Domain.UserMessage || message is Domain.AssistantMessage { IsUserLike: true })
 				{
 					encounteredUserMessage = true;
 					if (summaryOfPrevMessages != null)

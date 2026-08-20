@@ -31,5 +31,17 @@ namespace LLMDesktopAssistant.Agents
 			get => _base64ProfileImage;
 			set => SetProperty(ref _base64ProfileImage, value);
 		}
+
+		private bool _identifyAsUser = false;
+		/// <summary>
+		/// When set, this agent identifies itself as a user to other agents.
+		/// Its messages are treated as user messages (grouped into rounds, gated by user read permissions)
+		/// and its tool calls and reasoning become inaccessible to other agents.
+		/// </summary>
+		public bool IdentifyAsUser
+		{
+			get => _identifyAsUser;
+			set => SetProperty(ref _identifyAsUser, value);
+		}
 	}
 }

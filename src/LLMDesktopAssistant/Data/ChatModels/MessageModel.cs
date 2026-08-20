@@ -1,4 +1,4 @@
-﻿using LiteDB;
+using LiteDB;
 using LLMDesktopAssistant.LLM.Domain;
 
 namespace LLMDesktopAssistant.Data.ChatModels
@@ -38,6 +38,11 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		/// Gets or sets the ID of the agent stage associated with this message.
 		/// </summary>
 		public Guid AgentStageId { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this assistant message is treated as a user message.
+		/// </summary>
+		public bool IsUserLike { get; set; }
 
 		/// <summary>
 		/// Gets or sets the visibility of the message. This can be used to control whether the message is visible to all users/agents or aonly specific.

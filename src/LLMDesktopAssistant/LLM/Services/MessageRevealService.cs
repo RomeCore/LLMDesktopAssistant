@@ -10,7 +10,10 @@ namespace LLMDesktopAssistant.LLM.Services
 	{
 		public Task OnResponsePrepareAsync(ChatPrepareExecutionHookContext context, CancellationToken cancellationToken = default)
 		{
-			RevealMessages();
+			// Messages are revealed only when a real assistant responds;
+			// responses of user-like agents do not reveal hidden user messages.
+			if (!context.Response.IsUserLike)
+				RevealMessages();
 			return Task.CompletedTask;
 		}
 

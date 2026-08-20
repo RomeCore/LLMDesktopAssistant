@@ -42,14 +42,5 @@ namespace LLMDesktopAssistant.Agents
 		/// If this flag is not set, messages that include tool calls may be hidden entirely from other agents.
 		/// </summary>
 		MessagesWithToolCalls = 1 << 4,
-
-		/// <summary>
-		/// When set, this agent identifies itself as a user to other agents.
-		/// Other agents will see messages from this agent as if they came from a user,
-		/// meaning tool calls and reasoning become inaccessible regardless of other flags.
-		/// Other agents still need <see cref="AgentReadPermissions.OtherAgentMessages"/> or
-		/// <see cref="AgentReadPermissions.IdentifyAgentsAsUsers"/> to read messages from this agent.
-		/// </summary>
-		IdentifySelfAsUser = 1 << 5,
 	}
 }

@@ -13,7 +13,7 @@
 	<StackPanel>
 
 		<!-- Global repeatable stage settings -->
-		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
 			  Margin="0,0,0,8">
 			
 			<TextBlock Grid.Row="0" Grid.Column="0"
@@ -69,6 +69,19 @@
 			<CheckBox Grid.Row="7" Grid.Column="1"
 					  IsChecked="{Binding AdaptiveStage.EnforceRouterSelection}"
 					  VerticalAlignment="Center" Margin="0,0,0,4"/>
+
+			<TextBlock Grid.Row="8" Grid.Column="0"
+					   Text="{loc:Loc settings.stage.adaptive.treat_user_like_agents_as_users}"
+					   VerticalAlignment="Center" Margin="0,0,8,4"/>
+			<CheckBox Grid.Row="8" Grid.Column="1"
+					  IsChecked="{Binding AdaptiveStage.TreatUserLikeAgentsAsUsers}"
+					  VerticalAlignment="Center" Margin="0,0,0,4"/>
+			<TextBlock Grid.Row="9" Grid.ColumnSpan="2"
+					   Text="{loc:Loc settings.stage.adaptive.treat_user_like_agents_as_users.hint}"
+					   Opacity="0.5"
+					   FontSize="11"
+					   TextWrapping="Wrap"
+					   Margin="0,0,0,4"/>
 
 		</Grid>
 

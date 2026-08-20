@@ -4,6 +4,7 @@ using LLMDesktopAssistant.Desktop.ToolModules;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Specifiers;
 
@@ -32,7 +33,7 @@ public class ShellExecutionToolModuleTests
 
 	private sealed class StubSkillLocator : ISkillLocator
 	{
-		public IEnumerable<string> LocateSkillFiles() => [];
+		public IEnumerable<SkillFileInfo> LocateSkillFiles() => [];
 	}
 
 	private static ShellExecutionToolModule CreateModule()

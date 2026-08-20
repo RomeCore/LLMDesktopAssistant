@@ -482,7 +482,9 @@ public class SubAgentCardViewModel : ViewModelBase
 			IsDanger = true
 		};
 
-		var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm)!;
+#pragma warning disable CS8605 // Unboxing is safe: the confirmation dialog always returns bool.
+		var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm);
+#pragma warning restore CS8605
 		if (!confirmed)
 			return;
 

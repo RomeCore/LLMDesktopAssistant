@@ -11,8 +11,6 @@ using LLMDesktopAssistant.Tools.Meta;
 using Material.Icons;
 using RCLargeLanguageModels.Tools;
 
-#pragma warning disable CS8605
-
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
 /// <summary>
@@ -346,7 +344,9 @@ public class MetaToolCardViewModel : ViewModelBase
 			IsDanger = true
 		};
 
+#pragma warning disable CS8605 // Unboxing is safe: the confirmation dialog always returns bool.
 		var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm);
+#pragma warning restore CS8605
 		if (!confirmed)
 			return;
 

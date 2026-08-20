@@ -60,8 +60,8 @@ namespace LLMDesktopAssistant.Agents
 
 		/// <summary>
 		/// The agent can identify other agents as users.
-		/// When set, agents that have <see cref="AgentExposureMode.IdentifySelfAsUser"/> will be
-		/// visible and treated as user messages to this agent.
+		/// When set, messages of other agents are treated as user messages to this agent,
+		/// meaning their tool calls and reasoning become inaccessible.
 		/// </summary>
 		IdentifyAgentsAsUsers = 1 << 9,
 	}

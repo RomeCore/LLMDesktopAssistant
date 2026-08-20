@@ -276,6 +276,8 @@ stage.adaptive.additional_router_prompt: Дополнительный промп
 stage.adaptive.agents: Пул агентов
 stage.adaptive.enforce_router_selection: Обеспечить выбор
 stage.adaptive.max_visible_rounds: Макс. количество видимых раундов для агента-роутера
+stage.adaptive.treat_user_like_agents_as_users: Считать агентов-пользователей пользователями
+stage.adaptive.treat_user_like_agents_as_users.hint: При включении сообщения агентов, идентифицирующих себя как пользователей, трактуются как пользовательские при формировании контекста роутера.
 stage.add: Добавить этап выполнения
 stage.add_agent: Добавить агента в этап
 stage.can_agents_be_skipped: Пропускать агентов (по весу)

@@ -236,7 +236,9 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				IsDanger = true
 			};
 
-			var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm)!;
+#pragma warning disable CS8605 // Unboxing is safe: the confirmation dialog always returns bool.
+			var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm);
+#pragma warning restore CS8605
 			DialogManager.CloseDialog();
 
 			if (!confirmed)
@@ -272,7 +274,9 @@ namespace LLMDesktopAssistant.Agents.Memory.MVVM
 				IsDanger = true
 			};
 
-			var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm)!;
+#pragma warning disable CS8605 // Unboxing is safe: the confirmation dialog always returns bool.
+			var confirmed = (bool)await DialogManager.ShowDialogAsync(confirm);
+#pragma warning restore CS8605
 
 			if (!confirmed)
 				return;

@@ -54,6 +54,20 @@
 					  Opacity="0.2"
 					  Margin="0,5"/>
 
+		<!-- ===================== Identify as user ===================== -->
+		<CheckBox IsChecked="{Binding AgentInfo.IdentifyAsUser, Mode=TwoWay}"
+					Content="{loc:Loc agent.info.identify_as_user}"/>
+
+		<TextBlock Text="{loc:Loc agent.info.identify_as_user.hint}"
+					  Opacity="0.6"
+					  TextWrapping="Wrap"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,5"/>
+
 		<!-- ===================== Profile Image ===================== -->
 		<TextBlock Text="{loc:Loc agent.info.profile_image}"
 					  FontWeight="Bold"

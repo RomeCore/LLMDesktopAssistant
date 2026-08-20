@@ -66,6 +66,11 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			if (messageAgentId == agent.Id)
 				return permissions.HasFlag(AgentReadPermissions.OwnMessages);
 
+			// User-like messages are treated as user messages: gated by user read permissions,
+			// tool calls and reasoning are inaccessible regardless of other flags.
+			if (assistantMessage.IsUserLike)
+				return permissions.HasFlag(AgentReadPermissions.UserMessages);
+
 			// Other agent messages
 			if (!permissions.HasFlag(AgentReadPermissions.OtherAgentMessages))
 				return false;
@@ -85,9 +90,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				if (!agent.Read.IsFilterWhiteList && inFilter)
 					return false;
 			}
-
-			if (exposure.HasFlag(AgentExposureMode.IdentifySelfAsUser))
-				return permissions.HasFlag(AgentReadPermissions.IdentifyAgentsAsUsers);
 
 			return true;
 		}

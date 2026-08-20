@@ -349,11 +349,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				LocalizationManager.LocalizeStatic("agent.exposure.messages_with_tool_calls"),
 				LocalizationManager.LocalizeStatic("agent.exposure.messages_with_tool_calls.hint"),
 				mode.HasFlag(AgentExposureMode.MessagesWithToolCalls)));
-
-			ExposureModeItems.Add(new ExposureModeItem(this, AgentExposureMode.IdentifySelfAsUser,
-				LocalizationManager.LocalizeStatic("agent.exposure.identify_self_as_user"),
-				LocalizationManager.LocalizeStatic("agent.exposure.identify_self_as_user.hint"),
-				mode.HasFlag(AgentExposureMode.IdentifySelfAsUser)));
 		}
 
 		private void InitializeAgentFilter()
