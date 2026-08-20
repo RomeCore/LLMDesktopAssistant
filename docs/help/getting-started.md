@@ -16,6 +16,15 @@ dASS is a powerful LLM-powered assistant with:
 > This help viewer renders GitHub-flavored alerts. Use `> [!NOTE]`, `> [!TIP]`,
 > `> [!WARNING]` and `> [!CAUTION]` in your own documentation files.
 
+> [!NOTE]
+> Note
+
+> [!WARNING]
+> Warning!
+
+> [!CAUTION]
+> Caution!
+
 ## First steps
 
 1. Add your **API key** in *Settings → Models*.

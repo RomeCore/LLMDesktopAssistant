@@ -1,0 +1,10 @@
+// GitHub-style markdown alerts.
+
+%locale: ru-RU
+%namespace: alert
+
+title.note: Примечание
+title.tip: Совет
+title.important: Важно
+title.warning: Внимание
+title.caution: Осторожно

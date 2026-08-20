@@ -11,6 +11,9 @@
 	- Tables, Codeblocks, Blockquotes, etc.
 	- Math formulas, via `$latex$` or `$$latex$$`
 	- Images, via `![alt text](url)`
+	- GFM alerts (NOTE, TIP, IMPORTANT, WARNING, CAUTION):
+	  > [!NOTE]
+	  > This is a note text!
 	When you writing markdown code blocks, user is provided with `copy`, `save` and `execute` buttons, meaning you can provide a code for direct execution.
 }
 

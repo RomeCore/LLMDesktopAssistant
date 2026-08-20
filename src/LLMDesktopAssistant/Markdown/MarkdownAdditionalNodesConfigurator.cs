@@ -18,6 +18,10 @@ public class MarkdownAdditionalNodesConfigurator
 
 		MarkdownNode.Register<QuickActionUiNode>();
 		MarkdownNode.Register<QuickExplanationUiNode>();
+
+		MarkdownNode.Edit(builder => builder
+			.Unregister<AlertBlockNode>()
+			.Register<AlertBlockUiNode>());
 	}
 
 	private static void ConfigurePipeline(Markdig.MarkdownPipelineBuilder pipeline)

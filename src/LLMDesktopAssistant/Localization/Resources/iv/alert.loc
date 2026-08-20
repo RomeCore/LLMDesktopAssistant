@@ -1,0 +1,10 @@
+// GitHub-style markdown alerts.
+
+%locale: 
+%namespace: alert
+
+title.note: Note
+title.tip: Tip
+title.important: Important
+title.warning: Warning
+title.caution: Caution

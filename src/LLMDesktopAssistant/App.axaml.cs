@@ -29,6 +29,12 @@ namespace LLMDesktopAssistant
 
 		public override void Initialize()
 		{
+			if (Design.IsDesignMode)
+			{
+				AvaloniaXamlLoader.Load(this);
+				return;
+			}
+
 			Directories.ClearTempFiles();
 			Directories.EnsureAll();
 

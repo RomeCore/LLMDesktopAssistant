@@ -168,4 +168,90 @@
 		</Setter>
 	</Style>
 
+
+	<!-- GitHub-style Alerts -->
+	<Style Selector="Border.AlertBlock">
+		<Setter Property="BorderThickness" Value="1"/>
+		<Setter Property="CornerRadius" Value="8"/>
+		<Setter Property="Padding" Value="12,10"/>
+		<Setter Property="Margin" Value="0,4"/>
+	</Style>
+	
+	<Style Selector="StackPanel.AlertBlockRoot">
+		<Setter Property="Spacing" Value="6"/>
+	</Style>
+
+	<Style Selector="StackPanel.AlertBlockHeader">
+		<Setter Property="Spacing" Value="6"/>
+	</Style>
+
+	<Style Selector="StackPanel.AlertBlockBody">
+		<Setter Property="Spacing" Value="8"/>
+	</Style>
+
+	<Style Selector="TextBlock.AlertBlockTitle">
+		<Setter Property="FontWeight" Value="SemiBold"/>
+		<Setter Property="FontSize" Value="{DynamicResource FontSizeS}"/>
+	</Style>
+
+	<Style Selector="Border.AlertBlock.AlertBlockNote">
+		<Setter Property="Background" Value="{DynamicResource AlertNoteBackgroundBrush}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource AlertNoteBorderBrush}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockNote ico|MaterialIcon">
+		<Setter Property="Foreground" Value="{DynamicResource AlertNoteColor}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockNote TextBlock.AlertBlockTitle">
+		<Setter Property="Foreground" Value="{DynamicResource AlertNoteColor}"/>
+		<Setter Property="Text" Value="{loc:Loc alert.title.note}"/>
+	</Style>
+
+	<Style Selector="Border.AlertBlock.AlertBlockTip">
+		<Setter Property="Background" Value="{DynamicResource AlertTipBackgroundBrush}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource AlertTipBorderBrush}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockTip ico|MaterialIcon">
+		<Setter Property="Foreground" Value="{DynamicResource AlertTipColor}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockTip TextBlock.AlertBlockTitle">
+		<Setter Property="Foreground" Value="{DynamicResource AlertTipColor}"/>
+		<Setter Property="Text" Value="{loc:Loc alert.title.tip}"/>
+	</Style>
+
+	<Style Selector="Border.AlertBlock.AlertBlockImportant">
+		<Setter Property="Background" Value="{DynamicResource AlertImportantBackgroundBrush}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource AlertImportantBorderBrush}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockImportant ico|MaterialIcon">
+		<Setter Property="Foreground" Value="{DynamicResource AlertImportantColor}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockImportant TextBlock.AlertBlockTitle">
+		<Setter Property="Foreground" Value="{DynamicResource AlertImportantColor}"/>
+		<Setter Property="Text" Value="{loc:Loc alert.title.important}"/>
+	</Style>
+
+	<Style Selector="Border.AlertBlock.AlertBlockWarning">
+		<Setter Property="Background" Value="{DynamicResource AlertWarningBackgroundBrush}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource AlertWarningBorderBrush}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockWarning ico|MaterialIcon">
+		<Setter Property="Foreground" Value="{DynamicResource AlertWarningColor}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockWarning TextBlock.AlertBlockTitle">
+		<Setter Property="Foreground" Value="{DynamicResource AlertWarningColor}"/>
+		<Setter Property="Text" Value="{loc:Loc alert.title.warning}"/>
+	</Style>
+
+	<Style Selector="Border.AlertBlock.AlertBlockCaution">
+		<Setter Property="Background" Value="{DynamicResource AlertCautionBackgroundBrush}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource AlertCautionBorderBrush}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockCaution ico|MaterialIcon">
+		<Setter Property="Foreground" Value="{DynamicResource AlertCautionColor}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockCaution TextBlock.AlertBlockTitle">
+		<Setter Property="Foreground" Value="{DynamicResource AlertCautionColor}"/>
+		<Setter Property="Text" Value="{loc:Loc alert.title.caution}"/>
+	</Style>
+
 </Styles>
