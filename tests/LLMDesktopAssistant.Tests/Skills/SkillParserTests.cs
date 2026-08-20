@@ -322,6 +322,7 @@ public class SkillParserTests
 			name: whitespace
 			description: Whitespace preservation.
 			---
+			# Instructions
 			
 			  Indented line.
 			  

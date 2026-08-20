@@ -8,14 +8,14 @@ namespace LLMDesktopAssistant.Tests.MetaTools;
 
 public class CSharpScriptMetaToolEngineTests
 {
-	private static readonly MetaToolSerializer Serializer = new();
+	private static readonly MetaToolParser Parser = new();
 	private static readonly IMetaToolEngineDescriptor Descriptor = new CSharpScriptMetaToolEngineDescriptor();
 	private static readonly CSharpScriptMetaToolEngine Engine = new(new CSharpScriptService());
 
-	private static MetaTool CreateTool(string executionCode) => new()
+	private static MetaToolInfo CreateTool(string executionCode) => new()
 	{
 		Name = "get_weather",
-		IsLocal = false,
+		Source = MetaToolSource.Custom,
 		Title = "Weather Checker",
 		Description = "Gets the current weather for a location.",
 		Category = "weather",
@@ -59,7 +59,7 @@ public class CSharpScriptMetaToolEngineTests
 			Result.Write("City: " + city);
 			""";
 
-		var tool = Serializer.Deserialize(content, "get_weather", true, Descriptor);
+		var tool = Parser.Parse("get_weather", content, MetaToolSource.Custom, Descriptor);
 
 		Assert.Equal(ScriptLanguageType.CSharpScript, tool.ScriptLanguage);
 		Assert.Equal("Weather Checker", tool.Title);
@@ -75,7 +75,7 @@ public class CSharpScriptMetaToolEngineTests
 	{
 		var tool = CreateTool("var city = (string?)ToolArgs?[\"city\"];\nResult.Write(\"City: \" + city);");
 
-		var deserialized = Serializer.Deserialize(Serializer.Serialize(tool, Descriptor), "get_weather", true, Descriptor);
+		var deserialized = Parser.Parse("get_weather", Parser.Serialize(tool, Descriptor), MetaToolSource.Custom, Descriptor);
 
 		Assert.Equal(tool.ScriptLanguage, deserialized.ScriptLanguage);
 		Assert.Equal(tool.Title, deserialized.Title);
@@ -86,7 +86,7 @@ public class CSharpScriptMetaToolEngineTests
 	[Fact]
 	public void Serialize_CSX_UsesBlockCommentFrontmatter()
 	{
-		var content = Serializer.Serialize(CreateTool("return 42;"), Descriptor);
+		var content = Parser.Serialize(CreateTool("return 42;"), Descriptor);
 
 		Assert.StartsWith("/*", content);
 		Assert.Contains("title: Weather Checker", content);

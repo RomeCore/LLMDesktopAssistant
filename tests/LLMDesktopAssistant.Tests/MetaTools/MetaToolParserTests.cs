@@ -5,7 +5,7 @@ using LLMDesktopAssistant.Tools.Meta;
 
 namespace LLMDesktopAssistant.Tests.MetaTools;
 
-public class MetaToolSerializerTests
+public class MetaToolParserTests
 {
 	private sealed class TestEngineDescriptor : IMetaToolEngineDescriptor
 	{
@@ -15,9 +15,10 @@ public class MetaToolSerializerTests
 		public required string FrontmatterStart { get; init; }
 		public required string FrontmatterEnd { get; init; }
 		public string Examples => string.Empty;
+		public string Template => string.Empty;
 	}
 
-	private static readonly MetaToolSerializer Serializer = new();
+	private static readonly MetaToolParser Parser = new();
 
 	private static readonly IMetaToolEngineDescriptor LuaDescriptor = new TestEngineDescriptor
 	{
@@ -35,15 +36,14 @@ public class MetaToolSerializerTests
 		FrontmatterEnd = "\"\"\""
 	};
 
-	private static MetaTool CreateTool(
+	private static MetaToolInfo CreateTool(
 		ToolApprovalLevel approvalLevel = ToolApprovalLevel.PolicyBased,
 		ToolBehaviour behaviours = ToolBehaviour.None,
 		ScriptLanguageType language = ScriptLanguageType.Lua)
 	{
-		return new MetaTool
+		return new MetaToolInfo
 		{
 			Name = "get_weather",
-			IsLocal = false,
 			Title = "Weather Checker",
 			Description = "Gets the current weather for a location.",
 			Category = "weather",
@@ -71,10 +71,10 @@ public class MetaToolSerializerTests
 
 	private static string BuildPythonFile(string yaml, string code) => $"\"\"\"\n{yaml}\n\"\"\"\n{code}";
 
-	private static MetaTool Deserialize(string content, string name = "get_weather", bool isLocal = false,
+	private static MetaToolInfo Deserialize(string content, string name = "get_weather", MetaToolSource source = MetaToolSource.UserProfile,
 		IMetaToolEngineDescriptor? descriptor = null)
 	{
-		return Serializer.Deserialize(content, name, isLocal, descriptor ?? LuaDescriptor);
+		return Parser.Parse(name, content, source, descriptor ?? LuaDescriptor);
 	}
 
 	[Fact]
@@ -91,10 +91,10 @@ public class MetaToolSerializerTests
 			argument_schema: '{"type":"object","properties":{"location":{"type":"string"}},"required":["location"]}'
 			""", "print('hi')");
 
-		var tool = Deserialize(content, isLocal: true);
+		var tool = Deserialize(content, source: MetaToolSource.UserProfile);
 
 		Assert.Equal("get_weather", tool.Name);
-		Assert.True(tool.IsLocal);
+		Assert.Equal(MetaToolSource.UserProfile, tool.Source);
 		Assert.Equal("Weather Checker", tool.Title);
 		Assert.Equal("Gets the current weather for a location.", tool.Description);
 		Assert.Equal("weather", tool.Category);
@@ -111,10 +111,9 @@ public class MetaToolSerializerTests
 		var tool = CreateTool(ToolApprovalLevel.PolicyAutoDisallowUnlessApproved,
 			ToolBehaviour.InternetAccess | ToolBehaviour.ExecuteExternalProcess);
 
-		var deserialized = Deserialize(Serializer.Serialize(tool, LuaDescriptor), isLocal: true);
+		var deserialized = Deserialize(Parser.Serialize(tool, LuaDescriptor));
 
 		Assert.Equal(tool.Name, deserialized.Name);
-		Assert.True(deserialized.IsLocal);
 		Assert.Equal(tool.Title, deserialized.Title);
 		Assert.Equal(tool.Description, deserialized.Description);
 		Assert.Equal(tool.Category, deserialized.Category);
@@ -128,7 +127,7 @@ public class MetaToolSerializerTests
 	[Fact]
 	public void Serialize_ContainsFrontmatterAndCode()
 	{
-		var content = Serializer.Serialize(CreateTool(), LuaDescriptor);
+		var content = Parser.Serialize(CreateTool(), LuaDescriptor);
 
 		Assert.StartsWith("--[[", content);
 		Assert.Contains("title: Weather Checker", content);
@@ -151,7 +150,8 @@ public class MetaToolSerializerTests
 	{
 		var tool = CreateTool(approvalLevel: level);
 
-		var deserialized = Deserialize(Serializer.Serialize(tool, LuaDescriptor));
+		var serialized = Parser.Serialize(tool, LuaDescriptor);
+		var deserialized = Deserialize(serialized);
 
 		Assert.Equal(level, deserialized.ApprovalLevel);
 	}
@@ -163,7 +163,7 @@ public class MetaToolSerializerTests
 		{
 			var tool = CreateTool(behaviours: flag);
 
-			var deserialized = Deserialize(Serializer.Serialize(tool, LuaDescriptor));
+			var deserialized = Deserialize(Parser.Serialize(tool, LuaDescriptor));
 
 			Assert.Equal(flag, deserialized.Behaviours);
 		}
@@ -265,7 +265,7 @@ public class MetaToolSerializerTests
 	{
 		var tool = CreateTool(language: ScriptLanguageType.Python);
 
-		var content = Serializer.Serialize(tool, PythonDescriptor);
+		var content = Parser.Serialize(tool, PythonDescriptor);
 
 		Assert.StartsWith("\"\"\"", content);
 		Assert.Contains("title: Weather Checker", content);
@@ -274,7 +274,7 @@ public class MetaToolSerializerTests
 	[Fact]
 	public void Serialize_NoBehaviours_OmitsBehaviorsKey()
 	{
-		var content = Serializer.Serialize(CreateTool(), LuaDescriptor);
+		var content = Parser.Serialize(CreateTool(), LuaDescriptor);
 
 		Assert.DoesNotContain("behaviors", content);
 	}
@@ -284,7 +284,7 @@ public class MetaToolSerializerTests
 	{
 		var tool = CreateTool(behaviours: ToolBehaviour.InternetAccess | ToolBehaviour.FileRead);
 
-		var content = Serializer.Serialize(tool, LuaDescriptor);
+		var content = Parser.Serialize(tool, LuaDescriptor);
 
 		Assert.Contains("internet-access", content);
 		Assert.Contains("file-read", content);
