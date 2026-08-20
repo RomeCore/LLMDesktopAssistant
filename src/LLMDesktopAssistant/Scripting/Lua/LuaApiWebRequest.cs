@@ -137,10 +137,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(r.status_code, r.content)
 			""";
 
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 		private readonly HttpClient _httpClient, _pureHttpClient, _infiniteTimeoutClient;
 
-		public LuaApiWebRequest(WorkingDirectoryAccessService fileAccess)
+		public LuaApiWebRequest(IWorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 			_httpClient = CreateClient(timeoutSeconds: 30);

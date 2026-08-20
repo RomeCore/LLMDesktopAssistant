@@ -14,9 +14,9 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	[ToolModule(chatScoped: true)]
 	public class ShellExecutionToolModule : TerminalBasedToolModule
 	{
-		private readonly WorkingDirectoryAccessService _wdAccess;
+		private readonly IWorkingDirectoryAccessService _wdAccess;
 
-		public ShellExecutionToolModule(WorkingDirectoryAccessService wdAccess,
+		public ShellExecutionToolModule(IWorkingDirectoryAccessService wdAccess,
 			IProcessLauncher processLauncher) : base(processLauncher)
 		{
 			_wdAccess = wdAccess;

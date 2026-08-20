@@ -44,7 +44,7 @@ namespace LLMDesktopAssistant.Scripting.CSX
 				{
 					try
 					{
-						var workdir = context.Chat.Services.GetService<WorkingDirectoryAccessService>()?.GetWorkingDirectory();
+						var workdir = context.Chat.Services.GetService<IWorkingDirectoryAccessService>()?.GetWorkingDirectory();
 
 						var globals = new CSharpScriptGlobals
 						{

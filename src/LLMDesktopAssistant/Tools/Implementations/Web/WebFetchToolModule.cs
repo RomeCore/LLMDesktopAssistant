@@ -13,9 +13,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 	public class WebFetchToolModule : ToolModule
 	{
 		private readonly HttpClient _httpClient, _httpInfiniteTimeoutClient;
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 
-		public WebFetchToolModule(WorkingDirectoryAccessService fileAccess)
+		public WebFetchToolModule(IWorkingDirectoryAccessService fileAccess)
 		{
 			_httpClient = CreateClient();
 			_httpInfiniteTimeoutClient = CreateClient();

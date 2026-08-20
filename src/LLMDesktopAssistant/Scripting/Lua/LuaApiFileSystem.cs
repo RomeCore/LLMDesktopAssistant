@@ -190,9 +190,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  print(info.size, info.modified)
 			""";
 
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 
-		public LuaApiFileSystem(WorkingDirectoryAccessService fileAccess)
+		public LuaApiFileSystem(IWorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 		}

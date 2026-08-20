@@ -14,9 +14,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	[ToolModule]
 	public class FilesystemWriteToolModule : FileSystemEditBaseToolModule
 	{
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 
-		public FilesystemWriteToolModule(WorkingDirectoryAccessService fileAccess)
+		public FilesystemWriteToolModule(IWorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 

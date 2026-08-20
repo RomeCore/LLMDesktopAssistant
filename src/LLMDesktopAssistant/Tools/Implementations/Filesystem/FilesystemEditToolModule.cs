@@ -34,9 +34,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			_regexReplaceTextParser = builder.Build();
 		}
 
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 
-		public FilesystemEditToolModule(WorkingDirectoryAccessService fileAccess)
+		public FilesystemEditToolModule(IWorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 

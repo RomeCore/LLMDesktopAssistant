@@ -17,9 +17,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		private const int DefaultLinesToDisplay = 500;
 		private const int DefaultCharactersPerLineToDisplay = 2000;
 
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 
-		public FilesystemExploreToolModule(WorkingDirectoryAccessService fileAccess)
+		public FilesystemExploreToolModule(IWorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 

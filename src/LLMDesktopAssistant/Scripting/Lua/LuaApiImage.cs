@@ -150,9 +150,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		    if you need to preserve the original.
 		""";
 
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 
-		public LuaApiImage(WorkingDirectoryAccessService fileAccess)
+		public LuaApiImage(IWorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 		}

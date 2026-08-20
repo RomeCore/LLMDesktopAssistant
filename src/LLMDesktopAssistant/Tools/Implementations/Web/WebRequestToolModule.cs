@@ -15,9 +15,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 	public class WebRequestToolModule : ToolModule
 	{
 		private readonly HttpClient _httpClient, _httpInfiniteTimeoutClient;
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 
-		public WebRequestToolModule(WorkingDirectoryAccessService fileAccess)
+		public WebRequestToolModule(IWorkingDirectoryAccessService fileAccess)
 		{
 			_httpClient = CreateClient();
 			_httpInfiniteTimeoutClient = CreateClient();

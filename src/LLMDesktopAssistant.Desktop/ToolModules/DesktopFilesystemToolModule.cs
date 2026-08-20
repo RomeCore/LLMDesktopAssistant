@@ -12,10 +12,10 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	[ToolModule]
 	public class DesktopFilesystemToolModule : ToolModule
 	{
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 		private readonly IExplorerOpener _explorerOpener;
 
-		public DesktopFilesystemToolModule(WorkingDirectoryAccessService fileAccess, IExplorerOpener explorerOpener)
+		public DesktopFilesystemToolModule(IWorkingDirectoryAccessService fileAccess, IExplorerOpener explorerOpener)
 		{
 			_fileAccess = fileAccess;
 			_explorerOpener = explorerOpener;

@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.Prompting.Plugins
 {
 	[ChatService(typeof(IPromptTemplatePlugin))]
 	public class FilesystemPromptTemplatePlugin(
-		WorkingDirectoryAccessService fileAccess
+		IWorkingDirectoryAccessService fileAccess
 		) : IPromptTemplatePlugin
 	{
 		public IEnumerable<TemplateFunction> GetTemplateFunctions()

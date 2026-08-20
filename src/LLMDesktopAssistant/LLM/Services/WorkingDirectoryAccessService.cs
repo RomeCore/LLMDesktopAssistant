@@ -1,4 +1,3 @@
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
 
@@ -8,11 +7,11 @@ namespace LLMDesktopAssistant.LLM.Services
 	/// The service for accessing files inside current working directory.
 	/// </summary>
 	/// <param name="chatSettings">The settings service of the chat.</param>
-	[ChatService]
+	[ChatService(typeof(IWorkingDirectoryAccessService))]
 	public class WorkingDirectoryAccessService(
 		IChatSettingsService chatSettings,
 		ISkillLocator skillLocator
-	)
+	) : IWorkingDirectoryAccessService
 	{
 		public string GetWorkingDirectory()
 		{
@@ -39,7 +38,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			var baseDir = Path.GetFullPath(chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory());
 			var fullPath = string.IsNullOrEmpty(path) ? baseDir : Path.GetFullPath(Path.Combine(baseDir, path));
-			
+
 			isAccessed = false;
 
 			// Any of working directories are allowed to access.

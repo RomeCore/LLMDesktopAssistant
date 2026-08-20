@@ -118,9 +118,9 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Lua
 			  print("Killed:", process.kill(12345))
 			""";
 
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 
-		public LuaApiProcess(WorkingDirectoryAccessService fileAccess)
+		public LuaApiProcess(IWorkingDirectoryAccessService fileAccess)
 		{
 			_fileAccess = fileAccess;
 		}

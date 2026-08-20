@@ -22,10 +22,10 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 	public class PythonExecutionToolModule : TerminalBasedToolModule
 	{
 		private readonly IChatSettingsService _chatSettings;
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 		private readonly PythonHelperService _pythonHelperService;
 
-		public PythonExecutionToolModule(IChatSettingsService chatSettings, WorkingDirectoryAccessService fileAccess,
+		public PythonExecutionToolModule(IChatSettingsService chatSettings, IWorkingDirectoryAccessService fileAccess,
 			PythonHelperService pythonHelperService, IProcessLauncher processLauncher)
 			: base(processLauncher)
 		{

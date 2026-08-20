@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	{
 		private static readonly HttpClient _httpClient = new() { Timeout = TimeSpan.FromSeconds(30) };
 
-		private readonly WorkingDirectoryAccessService _fileAccess;
+		private readonly IWorkingDirectoryAccessService _fileAccess;
 		private Image _image;
 		private bool _disposed;
 
@@ -43,7 +43,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// </summary>
 		public Image Image => EnsureNotDisposed();
 
-		internal LuaImage(WorkingDirectoryAccessService fileAccess, Image image, string? format = null)
+		internal LuaImage(IWorkingDirectoryAccessService fileAccess, Image image, string? format = null)
 		{
 			_fileAccess = fileAccess ?? throw new ArgumentNullException(nameof(fileAccess));
 			_image = image ?? throw new ArgumentNullException(nameof(image));
@@ -55,7 +55,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// <summary>
 		/// Loads an image from a file path.
 		/// </summary>
-		public static LuaImage Load(WorkingDirectoryAccessService fileAccess, string path)
+		public static LuaImage Load(IWorkingDirectoryAccessService fileAccess, string path)
 		{
 			var fullPath = fileAccess.AccessPath(path, DirectoryAccessMode.Read);
 			var image = Image.Load(fullPath);
@@ -66,7 +66,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// <summary>
 		/// Loads an image from base64-encoded string. Format is auto-detected from header bytes.
 		/// </summary>
-		public static LuaImage LoadBase64(WorkingDirectoryAccessService fileAccess, string base64)
+		public static LuaImage LoadBase64(IWorkingDirectoryAccessService fileAccess, string base64)
 		{
 			var bytes = Convert.FromBase64String(base64);
 			var format = DetectFormatFromBytes(bytes);
@@ -77,7 +77,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// <summary>
 		/// Loads an image from a URL.
 		/// </summary>
-		public static LuaImage LoadUrl(WorkingDirectoryAccessService fileAccess, string url)
+		public static LuaImage LoadUrl(IWorkingDirectoryAccessService fileAccess, string url)
 		{
 			var task = Task.Run(async () =>
 			{
@@ -106,7 +106,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// <summary>
 		/// Creates a new image with the specified dimensions and optional background color.
 		/// </summary>
-		public static LuaImage Create(WorkingDirectoryAccessService fileAccess, int width, int height, string? color = null)
+		public static LuaImage Create(IWorkingDirectoryAccessService fileAccess, int width, int height, string? color = null)
 		{
 			Rgba32 bgColor = color != null ? ParseColor(color) : new Rgba32(0, 0, 0, 0);
 			var image = new Image<Rgba32>(width, height, bgColor);
@@ -116,7 +116,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		/// <summary>
 		/// Creates a LuaImage from raw byte data.
 		/// </summary>
-		public static LuaImage FromBytes(WorkingDirectoryAccessService fileAccess, byte[] bytes, string? format = null)
+		public static LuaImage FromBytes(IWorkingDirectoryAccessService fileAccess, byte[] bytes, string? format = null)
 		{
 			var image = Image.Load(bytes);
 			return new LuaImage(fileAccess, image, format ?? DetectFormat(image.Metadata.DecodedImageFormat) ?? "png");
