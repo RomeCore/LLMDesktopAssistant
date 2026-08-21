@@ -3,7 +3,6 @@ using System.Text.Json.Nodes;
 using AngleSharp.Html.Parser;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Settings.Application;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Web;
 using Material.Icons;
@@ -15,26 +14,15 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 	public class WebFetchToolModule : ToolModule
 	{
 		private readonly IWebFetcher _webFetcher;
-		private readonly AsyncCache<(string, string, bool, bool), string> _fetchContentCache;
+		private readonly AsyncCache<(string Url, WebFetchLevel Level), FetchResult> _fetchContentCache;
 
 		public WebFetchToolModule(IWebFetcher webFetcher)
 		{
 			_webFetcher = webFetcher;
-			_fetchContentCache = new AsyncCache<(string, string, bool, bool), string>(
-				async ((string url, string contentType, bool useBrowser, bool useStealthBrowser) args, CancellationToken cancellationToken) =>
+			_fetchContentCache = new AsyncCache<(string Url, WebFetchLevel Level), FetchResult>(
+				async ((string Url, WebFetchLevel Level) args, CancellationToken cancellationToken) =>
 				{
-					var content = await _webFetcher.FetchContentAsync(args.url, new WebFetchOptions(args.useBrowser, args.useStealthBrowser), cancellationToken);
-					switch (args.contentType)
-					{
-						case "sanitized_html":
-							content = HtmlSanitizer.Sanitize(content);
-							break;
-
-						case "markdown":
-							content = HtmlToMarkdownConverter.Convert(content);
-							break;
-					}
-					return content;
+					return await _webFetcher.FetchAsync(args.Url, args.Level, cancellationToken);
 				}, slidingExpirationTime: TimeSpan.FromMinutes(15));
 
 			AddTool(new ToolInitializationInfo
@@ -66,17 +54,25 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 
 		private void RemoveUnsupportedArguments(JsonObject schema)
 		{
-			if (!_webFetcher.SupportsBrowser)
-				schema["properties"]?.AsObject().Remove("useBrowser");
-			if (!_webFetcher.SupportsStealthBrowser)
-				schema["properties"]?.AsObject().Remove("useStealthBrowser");
+			if (schema["properties"]?.AsObject()["fetchLevel"] is not JsonObject fetchLevelProperty)
+				return;
+			if (fetchLevelProperty["enum"] is not JsonArray enumValues)
+				return;
+
+			var maxLevel = _webFetcher.MaxLevel;
+			for (int i = enumValues.Count - 1; i >= 0; i--)
+			{
+				if (enumValues[i]?.GetValue<string>() is string value &&
+					Enum.TryParse<WebFetchLevel>(value, ignoreCase: true, out var level) &&
+					level > maxLevel)
+				{
+					enumValues.RemoveAt(i);
+				}
+			}
 		}
 
-		private WebFetchOptions ResolveOptions(bool useBrowser, bool useStealthBrowser)
-		{
-			var settings = ApplicationSettingsAccessor.ApplicationSettings.WebFetch;
-			return new WebFetchOptions(useBrowser || settings.UseBrowser, useStealthBrowser || settings.UseStealthBrowser);
-		}
+		private static WebFetchLevel ParseLevel(string fetchLevel)
+			=> Enum.TryParse<WebFetchLevel>(fetchLevel, ignoreCase: true, out var level) ? level : WebFetchLevel.HttpClient;
 
 		private StreamingToolArgumentsAnalysisResult FetchStreaming(
 			string? url)
@@ -98,10 +94,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			[Description("The content type to fetch")]
 			[Enum(["html", "sanitized_html", "markdown"])]
 			string contentType = "markdown",
-			[Description("Load the page with a headless browser, rendering JavaScript. Slower, but bypasses basic anti-bot checks.")]
-			bool useBrowser = false,
-			[Description("Load the page with a stealth CloakBrowser, evading advanced anti-bot checks (Cloudflare, reCAPTCHA v3). Slowest option.")]
-			bool useStealthBrowser = false,
+			[Description("The fetch level: plain HTTP request, headless browser (renders JavaScript), or stealth browser (evades advanced anti-bot checks). Escalates automatically when the page denies access.")]
+			[Enum(["HttpClient", "Browser", "StealthBrowser"])]
+			string fetchLevel = "HttpClient",
 			CancellationToken cancellationToken = default)
 		{
 			var result = new ReactiveToolResult
@@ -114,7 +109,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			{
 				try
 				{
-					var content = await _fetchContentCache.GetAsync((url, contentType, useBrowser, useStealthBrowser), cancellationToken);
+					var level = ParseLevel(fetchLevel);
+					var html = await _fetchContentCache.GetAsync((url, level), cancellationToken);
+					var content = contentType switch
+					{
+						"markdown" => HtmlToMarkdownConverter.Convert(html.Html),
+						"sanitized_html" => HtmlSanitizer.Sanitize(html.Html),
+						_ => html.Html
+					};
 
 					start = Math.Max(Math.Min(start, content.Length), 0);
 					count = Math.Min(count, content.Length - start);
@@ -158,10 +160,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			string url,
 			[Description("The query selector to select values with")]
 			string selector,
-			[Description("Load the page with a headless browser, rendering JavaScript. Slower, but bypasses basic anti-bot checks.")]
-			bool useBrowser = false,
-			[Description("Load the page with a stealth CloakBrowser, evading advanced anti-bot checks (Cloudflare, reCAPTCHA v3). Slowest option.")]
-			bool useStealthBrowser = false,
+			[Description("The fetch level: plain HTTP request, headless browser (renders JavaScript), or stealth browser (evades advanced anti-bot checks). Escalates automatically when the page denies access.")]
+			[Enum(["HttpClient", "Browser", "StealthBrowser"])]
+			string fetchLevel = "HttpClient",
 			[Description("The starting index of character to return")]
 			int start = 0,
 			[Description("The maximum count of characters to return")]
@@ -178,9 +179,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			{
 				try
 				{
-					var html = await _webFetcher.FetchContentAsync(url, ResolveOptions(useBrowser, useStealthBrowser), cancellationToken);
+					var level = ParseLevel(fetchLevel);
+					var html = await _fetchContentCache.GetAsync((url, level), cancellationToken);
 					var parser = new HtmlParser();
-					var document = await parser.ParseDocumentAsync(html);
+					var document = await parser.ParseDocumentAsync(html.Html);
 					var elements = document.QuerySelectorAll(selector);
 					var contents = elements.Select(m => m.TextContent);
 
@@ -212,5 +214,5 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			return result;
 		}
 
-		}
+	}
 }

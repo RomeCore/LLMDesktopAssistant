@@ -62,25 +62,30 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - content_length: number or nil — Content-Length header
 			    - server: string or nil — Server header
 			
-			--- async web.fetch(url, [contentType])
+			--- async web.fetch(url, [contentType], [fetchLevel])
 			  Fetches a web page and converts it to the specified content type.
+			  The fetch level escalates automatically when the page denies access.
 
 			  Parameters:
 			    - url: string — URL to fetch
 			    - contentType: string (default: "markdown") — "html", "sanitized_html", or "markdown"
+			    - fetchLevel: string (default: "http_client") — "http_client", "browser", or "stealth_browser"
 
 			  Returns: table with:
 			    - url: string — the fetched URL
 			    - content_type: string — the actual content type returned
 			    - content_length: number — total length of fetched content
-			    - content: string — the converted content (sliced by start/count)
+			    - content: string — the converted content
 
-			--- async web.parse(url, selector)
+			--- async web.parse(url, selector, [fetchLevel])
 			  Fetches HTML content and parses specific elements using a CSS selector.
+			  The fetch level escalates automatically when the page denies access.
 
 			  Parameters:
 			    - url: string — URL to fetch HTML from
 			    - selector: string — CSS selector (e.g. "h1", ".content", "#main > p")
+			    - fetchLevel: string (default: "http_client") — "http_client", "browser", or "stealth_browser"
+
 
 			  Returns: table with:
 			    - url: string — the fetched URL
@@ -114,6 +119,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  local r = await web.fetch("https://example.com", "html")
 			  print(r.content)
 
+			  -- Fetch with a headless browser
+			  local r = await web.fetch("https://example.com", "markdown", "browser")
+			  print(r.content)
+
 			  -- Check website status
 			  local s = await web.status("https://google.com")
 			  print(s.status_code, s.response_time_ms)
@@ -138,11 +147,13 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			""";
 
 		private readonly IWorkingDirectoryAccessService _fileAccess;
+		private readonly IWebFetcher _webFetcher;
 		private readonly HttpClient _httpClient, _pureHttpClient, _infiniteTimeoutClient;
 
-		public LuaApiWebRequest(IWorkingDirectoryAccessService fileAccess)
+		public LuaApiWebRequest(IWorkingDirectoryAccessService fileAccess, IWebFetcher webFetcher)
 		{
 			_fileAccess = fileAccess;
+			_webFetcher = webFetcher;
 			_httpClient = CreateClient(timeoutSeconds: 30);
 			_pureHttpClient = new HttpClient();
 			_infiniteTimeoutClient = CreateClient(timeoutSeconds: null);
@@ -306,7 +317,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private async Task<LuaTuple> FetchAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
 			if (args.Length < 1)
-				throw new LuaRuntimeException("web.fetch(url, [contentType]): at least 1 argument expected.");
+				throw new LuaRuntimeException("web.fetch(url, [contentType], [fetchLevel]): at least 1 argument expected.");
 
 			if (args[0] is not LuaString urlVal)
 				throw new LuaRuntimeException("First argument must be a string (URL).");
@@ -315,9 +326,15 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			if (args.Length > 1 && args[1] is LuaString ctVal)
 				contentType = ctVal.Value;
 
+			var fetchLevel = ParseFetchLevel(args, 2);
+
 			try
 			{
-				string content = await HtmlContentFetcher.FetchContentAsync(urlVal.Value);
+				var fetchResult = await _webFetcher.FetchAsync(urlVal.Value, fetchLevel);
+				if (fetchResult.HttpStatus is >= 400)
+					throw new HttpRequestException($"HTTP {fetchResult.HttpStatus} loading {urlVal.Value}.");
+
+				string content = fetchResult.Html;
 
 				switch (contentType)
 				{
@@ -347,16 +364,21 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private async Task<LuaTuple> ParseAsync(LuaCallingContext ctx, LuaValue[] args)
 		{
 			if (args.Length < 2)
-				throw new LuaRuntimeException("web.parse(url, selector): at least 2 arguments expected.");
+				throw new LuaRuntimeException("web.parse(url, selector, [fetchLevel]): at least 2 arguments expected.");
 
 			if (args[0] is not LuaString urlVal)
 				throw new LuaRuntimeException("First argument must be a string (URL).");
 			if (args[1] is not LuaString selectorVal)
 				throw new LuaRuntimeException("Second argument must be a string (CSS selector).");
 
+			var fetchLevel = ParseFetchLevel(args, 2);
+
 			try
 			{
-				var html = await HtmlContentFetcher.FetchContentAsync(urlVal.Value);
+				var fetchResult = await _webFetcher.FetchAsync(urlVal.Value, fetchLevel);
+				if (fetchResult.HttpStatus is >= 400)
+					throw new HttpRequestException($"HTTP {fetchResult.HttpStatus} loading {urlVal.Value}.");
+				var html = fetchResult.Html;
 				var parser = new HtmlParser();
 				var document = await parser.ParseDocumentAsync(html);
 				var elements = document.QuerySelectorAll(selectorVal.Value);
@@ -456,6 +478,17 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			{
 				throw new LuaRuntimeException($"File download failed: {ex.Message}");
 			}
+		}
+
+		private static WebFetchLevel ParseFetchLevel(LuaValue[] args, int index)
+		{
+			if (args.Length > index && args[index] is LuaString levelVal &&
+				Enum.TryParse<WebFetchLevel>(levelVal.Value.Replace("_", ""), ignoreCase: true, out var level))
+			{
+				return level;
+			}
+
+			return WebFetchLevel.HttpClient;
 		}
 
 		private static HttpClient CreateClient(int? timeoutSeconds = 30)

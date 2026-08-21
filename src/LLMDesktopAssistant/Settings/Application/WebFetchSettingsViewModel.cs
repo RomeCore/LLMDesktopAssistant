@@ -19,23 +19,52 @@ namespace LLMDesktopAssistant.Settings.Application
 		private bool _isInstallingCloakBrowser;
 
 		/// <summary>
-		/// Gets or sets a value indicating whether pages should be loaded with
-		/// a headless browser by default.
+		/// Gets or sets a value indicating whether the headless browser
+		/// <see cref="WebFetchLevel"/> is allowed for page loads.
 		/// </summary>
-		public bool UseBrowser
+		public bool EnableBrowser
 		{
-			get => _settings.UseBrowser;
-			set => _settings.UseBrowser = value;
+			get => _settings.EnableBrowser;
+			set => _settings.EnableBrowser = value;
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether pages should be loaded with
-		/// the stealth CloakBrowser by default.
+		/// Gets or sets a value indicating whether the stealth CloakBrowser
+		/// <see cref="WebFetchLevel"/> is allowed for page loads.
 		/// </summary>
-		public bool UseStealthBrowser
+		public bool EnableStealthBrowser
 		{
-			get => _settings.UseStealthBrowser;
-			set => _settings.UseStealthBrowser = value;
+			get => _settings.EnableStealthBrowser;
+			set => _settings.EnableStealthBrowser = value;
+		}
+
+		/// <summary>
+		/// Gets the available <see cref="WebFetchLevel"/> options for the
+		/// default fetch level selector.
+		/// </summary>
+		public IReadOnlyList<FetchLevelItemViewModel> FetchLevels { get; } = Enum.GetValues<WebFetchLevel>()
+			.Select(level => new FetchLevelItemViewModel(level, LocalizationManager.LocalizeStatic(LevelKey(level))))
+			.ToArray();
+
+		private static string LevelKey(WebFetchLevel level) => level switch
+		{
+			WebFetchLevel.HttpClient => "settings.web.level.http",
+			WebFetchLevel.Browser => "settings.web.level.browser",
+			WebFetchLevel.StealthBrowser => "settings.web.level.stealth",
+			_ => throw new ArgumentOutOfRangeException(nameof(level))
+		};
+
+		/// <summary>
+		/// Gets or sets the selected default <see cref="WebFetchLevel"/> item.
+		/// </summary>
+		public FetchLevelItemViewModel? SelectedFetchLevel
+		{
+			get => FetchLevels.FirstOrDefault(item => item.Value == _settings.DefaultFetchLevel);
+			set
+			{
+				if (value != null)
+					_settings.DefaultFetchLevel = value.Value;
+			}
 		}
 
 		/// <summary>
@@ -150,5 +179,32 @@ namespace LLMDesktopAssistant.Settings.Application
 				},
 				() => CanInstallCloakBrowser);
 		}
+	}
+
+	/// <summary>
+	/// A selectable <see cref="WebFetchLevel"/> option with a localized display name.
+	/// </summary>
+	public sealed class FetchLevelItemViewModel
+	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FetchLevelItemViewModel"/> class.
+		/// </summary>
+		/// <param name="value">The fetch level value.</param>
+		/// <param name="displayName">The localized display name.</param>
+		public FetchLevelItemViewModel(WebFetchLevel value, string displayName)
+		{
+			Value = value;
+			DisplayName = displayName;
+		}
+
+		/// <summary>
+		/// Gets the fetch level value.
+		/// </summary>
+		public WebFetchLevel Value { get; }
+
+		/// <summary>
+		/// Gets the localized display name.
+		/// </summary>
+		public string DisplayName { get; }
 	}
 }

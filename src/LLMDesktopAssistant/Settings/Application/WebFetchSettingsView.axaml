@@ -14,21 +14,36 @@
 				   FontWeight="Bold"
 				   FontSize="{DynamicResource FontSizeL}"/>
 
-		<CheckBox Content="{loc:Loc settings.web.use_browser}"
-				  IsChecked="{Binding UseBrowser}"/>
-		<TextBlock Text="{loc:Loc settings.web.use_browser.hint}"
+		<CheckBox Content="{loc:Loc settings.web.enable_browser}"
+				  IsChecked="{Binding EnableBrowser}"/>
+		<TextBlock Text="{loc:Loc settings.web.enable_browser.hint}"
 				   Opacity="0.7"
 				   FontSize="{DynamicResource FontSizeS}"
 				   TextWrapping="Wrap"
 				   Margin="24,-4,0,0"/>
 
-		<CheckBox Content="{loc:Loc settings.web.use_stealth}"
-				  IsChecked="{Binding UseStealthBrowser}"/>
-		<TextBlock Text="{loc:Loc settings.web.use_stealth.hint}"
+		<CheckBox Content="{loc:Loc settings.web.enable_stealth}"
+				  IsChecked="{Binding EnableStealthBrowser}"/>
+		<TextBlock Text="{loc:Loc settings.web.enable_stealth.hint}"
 				   Opacity="0.7"
 				   FontSize="{DynamicResource FontSizeS}"
 				   TextWrapping="Wrap"
 				   Margin="24,-4,0,0"/>
+
+		<TextBlock Text="{loc:Loc settings.web.default_fetch_level}"
+				   FontWeight="Bold"
+				   Margin="0,8,0,0"/>
+
+		<ComboBox ItemsSource="{Binding FetchLevels}"
+				  SelectedItem="{Binding SelectedFetchLevel}"
+				  MinWidth="220"
+				  HorizontalAlignment="Left">
+			<ComboBox.ItemTemplate>
+				<DataTemplate x:DataType="local:FetchLevelItemViewModel">
+					<TextBlock Text="{Binding DisplayName}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
 
 		<Separator Margin="0,8"/>
 

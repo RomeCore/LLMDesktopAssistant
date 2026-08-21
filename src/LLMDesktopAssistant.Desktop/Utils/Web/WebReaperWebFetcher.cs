@@ -54,35 +54,21 @@ public sealed class WebReaperWebFetcher : IWebFetcher, IAsyncDisposable
 	}
 
 	/// <inheritdoc />
-	public bool SupportsBrowser => true;
+	public WebFetchLevel MaxLevel => WebFetchLevel.StealthBrowser;
 
 	/// <inheritdoc />
-	public bool SupportsStealthBrowser => true;
-
-	/// <inheritdoc />
-	public async Task<string> FetchContentAsync(string url, WebFetchOptions? options = null, CancellationToken cancellationToken = default)
+	public async Task<FetchResult> FetchAsync(string url, WebFetchLevel minFetchLevel = WebFetchLevel.HttpClient, CancellationToken cancellationToken = default)
 	{
-		var result = await FetchWithMetadataAsync(url, options, cancellationToken);
-		if (result.HttpStatus is >= 400)
-			throw new HttpRequestException($"HTTP {result.HttpStatus} loading {url}.");
-		return result.Html;
-	}
+		var level = minFetchLevel > MaxLevel ? MaxLevel : minFetchLevel;
 
-	/// <inheritdoc />
-	public async Task<FetchResult> FetchWithMetadataAsync(string url, WebFetchOptions? options = null, CancellationToken cancellationToken = default)
-	{
-		var useBrowser = options?.UseBrowser ?? false;
-		var useStealthBrowser = options?.UseStealthBrowser ?? false;
-		var request = new PageRequest(url, (useBrowser || useStealthBrowser) ? PageType.Dynamic : PageType.Static);
+		IPageLoadTransport transport = level switch
+		{
+			WebFetchLevel.Browser => _browserTransport.Value,
+			WebFetchLevel.StealthBrowser => await _stealthTransport.Value,
+			_ => _httpTransport
+		};
 
-		IPageLoadTransport transport;
-		if (useStealthBrowser)
-			transport = await _stealthTransport.Value;
-		else if (useBrowser)
-			transport = _browserTransport.Value;
-		else
-			transport = _httpTransport;
-
+		var request = new PageRequest(url, level == WebFetchLevel.HttpClient ? PageType.Static : PageType.Dynamic);
 		var result = await transport.LoadAsync(request, cancellationToken);
 		return new FetchResult(result.Html, result.HttpStatus, result.Headers);
 	}

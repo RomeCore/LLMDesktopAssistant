@@ -1,3 +1,5 @@
+using LLMDesktopAssistant.Utils.Web;
+
 namespace LLMDesktopAssistant.Settings.Application
 {
 	/// <summary>
@@ -5,26 +7,37 @@ namespace LLMDesktopAssistant.Settings.Application
 	/// </summary>
 	public class WebFetchSettings : ApplicationSettingsCategoryBase
 	{
-		private bool _useBrowser;
+		private bool _enableBrowser = true;
 		/// <summary>
-		/// Gets or sets a value indicating whether pages should be loaded with
-		/// a headless browser (rendering JavaScript) by default.
+		/// Gets or sets a value indicating whether the headless browser
+		/// <see cref="WebFetchLevel"/> is allowed for page loads.
 		/// </summary>
-		public bool UseBrowser
+		public bool EnableBrowser
 		{
-			get => _useBrowser;
-			set => SetProperty(ref _useBrowser, value);
+			get => _enableBrowser;
+			set => SetProperty(ref _enableBrowser, value);
 		}
 
-		private bool _useStealthBrowser;
+		private bool _enableStealthBrowser = true;
 		/// <summary>
-		/// Gets or sets a value indicating whether pages should be loaded with
-		/// the stealth CloakBrowser by default.
+		/// Gets or sets a value indicating whether the stealth CloakBrowser
+		/// <see cref="WebFetchLevel"/> is allowed for page loads.
 		/// </summary>
-		public bool UseStealthBrowser
+		public bool EnableStealthBrowser
 		{
-			get => _useStealthBrowser;
-			set => SetProperty(ref _useStealthBrowser, value);
+			get => _enableStealthBrowser;
+			set => SetProperty(ref _enableStealthBrowser, value);
+		}
+
+		private WebFetchLevel _defaultFetchLevel = WebFetchLevel.HttpClient;
+		/// <summary>
+		/// Gets or sets the default <see cref="WebFetchLevel"/> used for page
+		/// loads when the caller does not request a higher level.
+		/// </summary>
+		public WebFetchLevel DefaultFetchLevel
+		{
+			get => _defaultFetchLevel;
+			set => SetProperty(ref _defaultFetchLevel, value);
 		}
 	}
 }

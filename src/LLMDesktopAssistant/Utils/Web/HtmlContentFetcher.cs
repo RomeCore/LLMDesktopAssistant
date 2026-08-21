@@ -13,26 +13,11 @@ namespace LLMDesktopAssistant.Utils.Web
 			slidingExpirationTime: TimeSpan.FromMinutes(15));
 
 		/// <summary>
-		/// Fetches the page and returns the raw HTML body. Convenience wrapper around
-		/// <see cref="FetchWithMetadataAsync"/> that throws on non-success status codes.
-		/// </summary>
-		public static async Task<string> FetchContentAsync(string url, CancellationToken cancellationToken = default)
-		{
-			var result = await FetchWithMetadataAsync(url, cancellationToken);
-			if (result.HttpStatus is >= 400)
-			{
-				throw new HttpRequestException(
-					$"HTTP {(int)result.HttpStatus} loading {url}.");
-			}
-			return result.Html;
-		}
-
-		/// <summary>
 		/// Fetches the page and returns a <see cref="FetchResult"/> with the body,
 		/// HTTP status, and response headers. Non-2xx statuses are returned as data;
 		/// only genuine transport failures throw.
 		/// </summary>
-		public static async Task<FetchResult> FetchWithMetadataAsync(
+		public static async Task<FetchResult> FetchAsync(
 			string url,
 			CancellationToken cancellationToken = default)
 		{

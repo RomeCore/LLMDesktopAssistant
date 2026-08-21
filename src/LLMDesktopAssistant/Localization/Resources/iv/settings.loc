@@ -458,10 +458,14 @@ sub_agents.links.skill_not_found: Skill '{0}' not found
 sub_agents.links.sub_agent_not_found: Sub-agent '{0}' not found
 sub_agents.links.memory_block_not_found: Memory block '{0}' not found
 web.title: Web
-web.use_browser: Use browser for page loads
-web.use_browser.hint: Load pages with a headless browser (renders JavaScript) by default.
-web.use_stealth: Use stealth browser for page loads
-web.use_stealth.hint: Load pages with the stealth CloakBrowser by default. Evades advanced anti-bot systems (Cloudflare, reCAPTCHA v3, FingerprintJS).
+web.enable_browser: Enable browser fetching
+web.enable_browser.hint: Allow pages to be loaded with a headless browser (renders JavaScript) when a higher fetch level is needed.
+web.enable_stealth: Enable stealth browser fetching
+web.enable_stealth.hint: Allow pages to be loaded with the stealth CloakBrowser. Evades advanced anti-bot systems (Cloudflare, reCAPTCHA v3, FingerprintJS).
+web.default_fetch_level: Default fetch level
+web.level.http: Plain HTTP request
+web.level.browser: Headless browser
+web.level.stealth: Stealth browser (CloakBrowser)
 web.runtimes: Browser runtimes
 web.playwright: Playwright
 web.stealth: Stealth (CloakBrowser)
