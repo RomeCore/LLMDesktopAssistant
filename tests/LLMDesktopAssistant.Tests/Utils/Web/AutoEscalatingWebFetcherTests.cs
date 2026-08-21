@@ -1,4 +1,3 @@
-using LLMDesktopAssistant.Settings.Application;
 using LLMDesktopAssistant.Utils.Web;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -127,74 +126,89 @@ public class AutoEscalatingWebFetcherTests
 	[Fact]
 	public async Task FetchAsync_EscalationCappedBySettings_WhenStealthDisabled()
 	{
-		using var _ = new SettingsScope(settings => settings.EnableStealthBrowser = false);
-		var inner = new FakeWebFetcher(WebFetchLevel.StealthBrowser, _ => Result(403));
-		var fetcher = Wrap(inner);
+		await AppSettingsLock.LockAsync(async (settings, ct) =>
+		{
+			settings.WebFetch.EnableStealthBrowser = false;
 
-		var result = await fetcher.FetchAsync("https://example.com");
+			var inner = new FakeWebFetcher(WebFetchLevel.StealthBrowser, _ => Result(403));
+			var fetcher = Wrap(inner);
 
-		Assert.Equal(403, result.HttpStatus);
-		Assert.Equal([WebFetchLevel.HttpClient, WebFetchLevel.Browser], inner.RequestedLevels);
+			var result = await fetcher.FetchAsync("https://example.com");
+
+			Assert.Equal(403, result.HttpStatus);
+			Assert.Equal([WebFetchLevel.HttpClient, WebFetchLevel.Browser], inner.RequestedLevels);
+		});
 	}
 
 	[Fact]
 	public async Task FetchAsync_DoesNotEscalate_WhenBrowsersDisabled()
 	{
-		using var _ = new SettingsScope(settings =>
+		await AppSettingsLock.LockAsync(async (settings, ct) =>
 		{
-			settings.EnableBrowser = false;
-			settings.EnableStealthBrowser = false;
+			settings.WebFetch.EnableBrowser = false;
+			settings.WebFetch.EnableStealthBrowser = false;
+
+			var inner = new FakeWebFetcher(WebFetchLevel.StealthBrowser, _ => Result(403));
+			var fetcher = Wrap(inner);
+
+			var result = await fetcher.FetchAsync("https://example.com");
+
+			Assert.Equal(403, result.HttpStatus);
+			Assert.Equal([WebFetchLevel.HttpClient], inner.RequestedLevels);
 		});
-		var inner = new FakeWebFetcher(WebFetchLevel.StealthBrowser, _ => Result(403));
-		var fetcher = Wrap(inner);
-
-		var result = await fetcher.FetchAsync("https://example.com");
-
-		Assert.Equal(403, result.HttpStatus);
-		Assert.Equal([WebFetchLevel.HttpClient], inner.RequestedLevels);
 	}
 
 	[Fact]
 	public async Task FetchAsync_RaisesToDefaultLevel()
 	{
-		using var _ = new SettingsScope(settings => settings.DefaultFetchLevel = WebFetchLevel.Browser);
-		var inner = new FakeWebFetcher(WebFetchLevel.StealthBrowser, _ => Result(200));
-		var fetcher = Wrap(inner);
+		await AppSettingsLock.LockAsync(async (settings, ct) =>
+		{
+			settings.WebFetch.DefaultFetchLevel = WebFetchLevel.Browser;
 
-		var result = await fetcher.FetchAsync("https://example.com");
+			var inner = new FakeWebFetcher(WebFetchLevel.StealthBrowser, _ => Result(200));
+			var fetcher = Wrap(inner);
 
-		Assert.Equal(200, result.HttpStatus);
-		Assert.Equal([WebFetchLevel.Browser], inner.RequestedLevels);
+			var result = await fetcher.FetchAsync("https://example.com");
+
+			Assert.Equal(200, result.HttpStatus);
+			Assert.Equal([WebFetchLevel.Browser], inner.RequestedLevels);
+		});
 	}
 
 	[Fact]
 	public async Task FetchAsync_DefaultLevelClampedBySettings()
 	{
-		using var _ = new SettingsScope(settings =>
+		await AppSettingsLock.LockAsync(async (settings, ct) =>
 		{
-			settings.DefaultFetchLevel = WebFetchLevel.StealthBrowser;
-			settings.EnableStealthBrowser = false;
+			settings.WebFetch.DefaultFetchLevel = WebFetchLevel.StealthBrowser;
+			settings.WebFetch.EnableStealthBrowser = false;
+
+			var inner = new FakeWebFetcher(WebFetchLevel.StealthBrowser, _ => Result(200));
+			var fetcher = Wrap(inner);
+
+			var result = await fetcher.FetchAsync("https://example.com");
+
+			Assert.Equal(200, result.HttpStatus);
+			Assert.Equal([WebFetchLevel.Browser], inner.RequestedLevels);
 		});
-		var inner = new FakeWebFetcher(WebFetchLevel.StealthBrowser, _ => Result(200));
-		var fetcher = Wrap(inner);
-
-		var result = await fetcher.FetchAsync("https://example.com");
-
-		Assert.Equal(200, result.HttpStatus);
-		Assert.Equal([WebFetchLevel.Browser], inner.RequestedLevels);
 	}
 
 	[Fact]
 	public async Task FetchAsync_RequestedLevelClampedBySettings()
 	{
-		using var _ = new SettingsScope(settings => settings.EnableBrowser = false);
-		var inner = new FakeWebFetcher(WebFetchLevel.StealthBrowser, _ => Result(200));
-		var fetcher = Wrap(inner);
+		await AppSettingsLock.LockAsync(async (settings, ct) =>
+		{
+			settings.WebFetch.EnableBrowser = false;
+			settings.WebFetch.EnableStealthBrowser = false;
 
-		var result = await fetcher.FetchAsync("https://example.com", WebFetchLevel.StealthBrowser);
+			var inner = new FakeWebFetcher(WebFetchLevel.StealthBrowser, _ => Result(200));
+			var fetcher = Wrap(inner);
 
-		Assert.Equal(200, result.HttpStatus);
-		Assert.Equal([WebFetchLevel.HttpClient], inner.RequestedLevels);
+			var result = await fetcher.FetchAsync("https://example.com", WebFetchLevel.StealthBrowser);
+
+			Assert.Equal(200, result.HttpStatus);
+			Assert.Equal([WebFetchLevel.HttpClient], inner.RequestedLevels);
+		});
 	}
 
 	[Theory]

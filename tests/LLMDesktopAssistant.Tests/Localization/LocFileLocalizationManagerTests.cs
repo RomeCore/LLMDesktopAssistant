@@ -1,6 +1,5 @@
 using System.Reflection;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Settings.Application;
 
 namespace LLMDesktopAssistant.Tests.Localization;
 
@@ -10,7 +9,6 @@ public class LocFileLocalizationManagerTests : IDisposable
 
 	public LocFileLocalizationManagerTests()
 	{
-		ApplicationSettingsAccessor.SetApplicationSettings(new ApplicationSettings());
 		_userLocaleDirectory = Path.Combine(Path.GetTempPath(), "locfile_tests_" + Guid.NewGuid().ToString("N"));
 		Directory.CreateDirectory(_userLocaleDirectory);
 	}
@@ -36,127 +34,151 @@ public class LocFileLocalizationManagerTests : IDisposable
 	[Fact]
 	public void LoadsEmbeddedLocaleFiles()
 	{
-		var manager = CreateManager();
-		manager.CurrentLanguage = "ru-RU";
+		AppSettingsLock.Lock(_ =>
+		{
+			var manager = CreateManager();
+			manager.CurrentLanguage = "ru-RU";
 
-		Assert.Equal("Привет из embedded", manager.Localize("embedded.hello"));
+			Assert.Equal("Привет из embedded", manager.Localize("embedded.hello"));
+		});
 	}
 
 	[Fact]
 	public void UserFilesOverrideEmbeddedFiles()
 	{
-		WriteUserFile("override.loc", """"
-			%locale: ru-RU
-			%namespace: embedded
+		AppSettingsLock.Lock(_ =>
+		{
+			WriteUserFile("override.loc", """
+				%locale: ru-RU
+				%namespace: embedded
 
-			hello: Привет от пользователя
-			"""");
+				hello: Привет от пользователя
+				""");
 
-		var manager = CreateManager();
-		manager.CurrentLanguage = "ru-RU";
+			var manager = CreateManager();
+			manager.CurrentLanguage = "ru-RU";
 
-		Assert.Equal("Привет от пользователя", manager.Localize("embedded.hello"));
+			Assert.Equal("Привет от пользователя", manager.Localize("embedded.hello"));
+		});
 	}
 
 	[Fact]
 	public void UserFilesAddNewKeys()
 	{
-		WriteUserFile("custom.loc", """"
-			%locale: ru-RU
-			%namespace: custom
+		AppSettingsLock.Lock(_ =>
+		{
+			WriteUserFile("custom.loc", """
+				%locale: ru-RU
+				%namespace: custom
 
-			greeting: Привет, мир!
-			"""");
+				greeting: Привет, мир!
+				""");
 
-		var manager = CreateManager();
-		manager.CurrentLanguage = "ru-RU";
+			var manager = CreateManager();
+			manager.CurrentLanguage = "ru-RU";
 
-		Assert.Equal("Привет, мир!", manager.Localize("custom.greeting"));
+			Assert.Equal("Привет, мир!", manager.Localize("custom.greeting"));
+		});
 	}
 
 	[Fact]
 	public void FallsBackToNeutralLocale()
 	{
-		WriteUserFile("neutral.loc", """"
-			%locale:
-			%namespace: common
+		AppSettingsLock.Lock(_ =>
+		{
+			WriteUserFile("neutral.loc", """
+				%locale:
+				%namespace: common
 
-			save: Save
-			"""");
+				save: Save
+				""");
 
-		WriteUserFile("russian.loc", """"
-			%locale: ru-RU
-			%namespace: common
+			WriteUserFile("russian.loc", """
+				%locale: ru-RU
+				%namespace: common
 
-			add: Добавить
-			"""");
+				add: Добавить
+				""");
 
-		var manager = CreateManager();
-		manager.CurrentLanguage = "ru-RU";
+			var manager = CreateManager();
+			manager.CurrentLanguage = "ru-RU";
 
-		Assert.Equal("Добавить", manager.Localize("common.add"));
-		Assert.Equal("Save", manager.Localize("common.save"));
+			Assert.Equal("Добавить", manager.Localize("common.add"));
+			Assert.Equal("Save", manager.Localize("common.save"));
+		});
 	}
 
 	[Fact]
 	public void MissingKeyReturnsKeyItself()
 	{
-		var manager = CreateManager();
+		AppSettingsLock.Lock(_ =>
+		{
+			var manager = CreateManager();
 
-		Assert.Equal("some.missing.key", manager.Localize("some.missing.key"));
+			Assert.Equal("some.missing.key", manager.Localize("some.missing.key"));
+		});
 	}
 
 	[Fact]
 	public void GetAvailableLanguages_ContainsLocFileLanguages()
 	{
-		var manager = CreateManager();
+		AppSettingsLock.Lock(_ =>
+		{
+			var manager = CreateManager();
 
-		var languages = manager.GetAvailableLanguages().ToArray();
+			var languages = manager.GetAvailableLanguages().ToArray();
 
-		Assert.Contains("ru-RU", languages);
+			Assert.Contains("ru-RU", languages);
+		});
 	}
 
 	[Fact]
 	public void ChangeLanguage_UpdatesLocalization()
 	{
-		WriteUserFile("russian.loc", """"
-			%locale: ru-RU
-			%namespace: common
+		AppSettingsLock.Lock(_ =>
+		{
+			WriteUserFile("russian.loc", """
+				%locale: ru-RU
+				%namespace: common
 
-			save: Сохранить
-			"""");
+				save: Сохранить
+				""");
 
-		WriteUserFile("neutral.loc", """"
-			%locale:
-			%namespace: common
+			WriteUserFile("neutral.loc", """
+				%locale:
+				%namespace: common
 
-			save: Save
-			"""");
+				save: Save
+				""");
 
-		var manager = CreateManager();
+			var manager = CreateManager();
 
-		manager.CurrentLanguage = "ru-RU";
-		Assert.Equal("Сохранить", manager.Localize("common.save"));
+			manager.CurrentLanguage = "ru-RU";
+			Assert.Equal("Сохранить", manager.Localize("common.save"));
 
-		manager.CurrentLanguage = string.Empty;
-		Assert.Equal("Save", manager.Localize("common.save"));
+			manager.CurrentLanguage = string.Empty;
+			Assert.Equal("Save", manager.Localize("common.save"));
+		});
 	}
 
 	[Fact]
 	public void BrokenUserFileIsSkipped()
 	{
-		WriteUserFile("broken.loc", "this is not valid");
+		AppSettingsLock.Lock(_ =>
+		{
+			WriteUserFile("broken.loc", "this is not valid");
 
-		WriteUserFile("good.loc", """"
-			%locale: ru-RU
-			%namespace: common
+			WriteUserFile("good.loc", """
+				%locale: ru-RU
+				%namespace: common
 
-			save: Сохранить
-			"""");
+				save: Сохранить
+				""");
 
-		var manager = CreateManager();
-		manager.CurrentLanguage = "ru-RU";
+			var manager = CreateManager();
+			manager.CurrentLanguage = "ru-RU";
 
-		Assert.Equal("Сохранить", manager.Localize("common.save"));
+			Assert.Equal("Сохранить", manager.Localize("common.save"));
+		});
 	}
 }

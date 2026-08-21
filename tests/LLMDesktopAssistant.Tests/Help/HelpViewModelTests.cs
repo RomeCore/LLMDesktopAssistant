@@ -1,6 +1,5 @@
 using System.Reflection;
 using LLMDesktopAssistant.Help;
-using LLMDesktopAssistant.Settings.Application;
 
 namespace LLMDesktopAssistant.Tests.Help;
 
@@ -10,8 +9,7 @@ public class HelpViewModelTests
 
 	public HelpViewModelTests()
 	{
-		ApplicationSettingsAccessor.SetApplicationSettings(new ApplicationSettings());
-		_viewModel = new HelpViewModel(CreateStore());
+		_viewModel = AppSettingsLock.Lock(_ => new HelpViewModel(CreateStore()));
 	}
 
 
