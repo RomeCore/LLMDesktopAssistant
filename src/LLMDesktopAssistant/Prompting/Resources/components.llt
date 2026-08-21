@@ -138,7 +138,7 @@
 		@if fileExists(file)
 		{
 			<context>
-			readFile(file)
+			@readFile(file)
 			</context>
 		}
 	}
