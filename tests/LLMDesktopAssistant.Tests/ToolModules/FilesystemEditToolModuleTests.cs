@@ -798,6 +798,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 			["patches"] = new JsonArray([.. patches])
 		});
 
+		output.WriteLine(result.ResultContent);
 		Assert.Contains("File edited successfully", result.ResultContent);
 		Assert.Equal(expected, File.ReadAllText(file));
 	}
@@ -853,6 +854,74 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 			var foo
 			""", """
 			var bar
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_CSharpCode_RealFailure1()
+	{
+		await TestReplaceAsync("""
+			using System.Net;
+
+			namespace LLMDesktopAssistant.Utils.Web
+			{
+				/// <summary>
+				/// The result of a page fetch operation containing the raw HTML, HTTP status code, and response headers.
+				/// </summary>
+				public sealed record FetchResult(
+					string Html,
+					int? HttpStatus,
+					IReadOnlyDictionary<string, string> Headers
+				);
+
+				/// <summary>
+				/// Fetches web page content over HTTP with retries, cookie support, proxy support,
+				/// SSL bypass, and response caching.
+				/// </summary>
+				public static class HtmlContentFetcher
+				{
+					private static readonly AsyncCache<string, FetchResult> _cache = new(
+						FetchCoreAsync,
+						slidingExpirationTime: TimeSpan.FromMinutes(15));
+			""", """
+			using System.Net;
+
+			namespace LLMDesktopAssistant.Utils.Web
+			{
+			    /// <summary>
+			    /// Fetches web page content over HTTP with retries, cookie support, proxy support,
+			    /// SSL bypass, and response caching.
+			    /// </summary>
+			    public static class HtmlContentFetcher
+				{
+					private static readonly AsyncCache<string, FetchResult> _cache = new(
+						FetchCoreAsync,
+						slidingExpirationTime: TimeSpan.FromMinutes(15));
+			""", Patch("""
+			namespace LLMDesktopAssistant.Utils.Web
+			{
+			    /// <summary>
+			    /// The result of a page fetch operation containing the raw HTML, HTTP status code, and response headers.
+			    /// </summary>
+			    public sealed record FetchResult(
+			        string Html,
+			        int? HttpStatus,
+			        IReadOnlyDictionary<string, string> Headers
+			    );
+			  
+			    /// <summary>
+			    /// Fetches web page content over HTTP with retries, cookie support, proxy support,
+			    /// SSL bypass, and response caching.
+			    /// </summary>
+			    public static class HtmlContentFetcher
+			""", """
+			namespace LLMDesktopAssistant.Utils.Web
+			{
+			    /// <summary>
+			    /// Fetches web page content over HTTP with retries, cookie support, proxy support,
+			    /// SSL bypass, and response caching.
+			    /// </summary>
+			    public static class HtmlContentFetcher
 			"""));
 	}
 

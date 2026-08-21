@@ -458,8 +458,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					fileLines.RemoveRange(i, matchLines.Count);
 					fileLines.InsertRange(i, newBlockLines);
 
-					// Continue scanning after the replaced block, accounting for the size change
-					i += newBlockLines.Count - matchLines.Count;
+					// Continue scanning after the replaced block; the for-loop's i++ moves past it
+					i += newBlockLines.Count - 1;
 				}
 			}
 
