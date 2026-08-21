@@ -925,6 +925,68 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 			"""));
 	}
 
+	[Theory]
+	[InlineData("\t")] // 1 tab
+	[InlineData("")] // no indentation
+	public async Task Replace_CSharpCode_RealFailure2(string indentation)
+	{
+		await TestReplaceAsync("""
+			using System.Net;
+
+			namespace LLMDesktopAssistant.Utils.Web
+			{
+				/// <summary>
+				/// The result of a page fetch operation containing the raw HTML, HTTP status code, and response headers.
+				/// </summary>
+				public sealed record FetchResult(
+					string Html,
+					int? HttpStatus,
+					IReadOnlyDictionary<string, string> Headers
+				);
+			
+				/// <summary>
+				/// Fetches web page content over HTTP with retries, cookie support, proxy support,
+				/// SSL bypass, and response caching.
+				/// </summary>
+				public static class HtmlContentFetcher
+				{
+					private static readonly AsyncCache<string, FetchResult> _cache = new(
+						FetchCoreAsync,
+						slidingExpirationTime: TimeSpan.FromMinutes(15));
+			""", """
+			using System.Net;
+			
+			namespace LLMDesktopAssistant.Utils.Web
+			{
+				/// <summary>
+				/// The result of a page fetch operation containing the raw HTML, HTTP status code, and response headers.
+				/// </summary>
+				public sealed record FetchResult(
+					string Html,
+					IReadOnlyDictionary<string, string> Headers
+				);
+			
+				/// <summary>
+				/// Fetches web page content over HTTP with retries, cookie support, proxy support,
+				/// SSL bypass, and response caching.
+				/// </summary>
+				public static class HtmlContentFetcher
+				{
+					private static readonly AsyncCache<string, FetchResult> _cache = new(
+						FetchCoreAsync,
+						slidingExpirationTime: TimeSpan.FromMinutes(15));
+			""", Patch($"""
+			{indentation}	string Html,
+			{indentation}	int? HttpStatus,
+			{indentation}	IReadOnlyDictionary<string, string> Headers
+			{indentation});
+			""", $"""
+			{indentation}	string Html,
+			{indentation}	IReadOnlyDictionary<string, string> Headers
+			{indentation});
+			"""));
+	}
+
 	[Fact]
 	public void ArgumentSchema_ContainsPatchesArray()
 	{

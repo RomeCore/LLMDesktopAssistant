@@ -448,11 +448,49 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					}
 					else
 					{
-						// Different line count: keep the text before the match (first line)
-						// and after the match (last line)
-						newBlockLines = [prefixes[0] + replacementLines[0].TrimStart()];
-						newBlockLines.AddRange(replacementLines.Skip(1));
-						newBlockLines[^1] += suffixes[^1];
+						// Different line count: restore the file's indentation that was ignored
+						// during matching when the replacement uses the same indentation style
+						// as the matched block; otherwise keep the replacement's own whitespace
+						var blockIndentChars = prefixes
+							.Where(p => p.Length > 0)
+							.Select(p => p[0])
+							.Distinct()
+							.ToHashSet();
+						var replacementIndentChars = replacementLines
+							.Where(l => l.Length > 0 && l[0] is ' ' or '\t')
+							.Select(l => l[0])
+							.Distinct()
+							.ToHashSet();
+						var inheritIndentation = blockIndentChars.Count > 0 &&
+							replacementIndentChars.All(blockIndentChars.Contains);
+
+						newBlockLines = new List<string>(replacementLines.Count);
+						for (int j = 0; j < replacementLines.Count; j++)
+						{
+							var isLast = j == replacementLines.Count - 1;
+							string line;
+							if (inheritIndentation)
+							{
+								var mapIndex = isLast && j > 0
+									? matchLines.Count - 1
+									: Math.Min(j, matchLines.Count - 2);
+								var trimmedContent = replacementLines[j].TrimStart();
+								line = trimmedContent.Length == 0 ? "" : prefixes[mapIndex] + trimmedContent;
+							}
+							else if (j == 0)
+							{
+								line = prefixes[0] + replacementLines[j].TrimStart();
+							}
+							else
+							{
+								line = replacementLines[j];
+							}
+
+							if (isLast)
+								line += suffixes[^1];
+
+							newBlockLines.Add(line);
+						}
 					}
 
 					fileLines.RemoveRange(i, matchLines.Count);
