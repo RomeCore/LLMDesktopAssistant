@@ -457,4 +457,15 @@ sub_agents.delete.confirm: Файл {0} будет безвозвратно уд
 sub_agents.links.skill_not_found: Навык «{0}» не найден
 sub_agents.links.sub_agent_not_found: Суб-агент «{0}» не найден
 sub_agents.links.memory_block_not_found: Блок памяти «{0}» не найден
+web.title: Веб
+web.use_browser: Использовать браузер для загрузки страниц
+web.use_browser.hint: Загружать страницы в headless-браузере (рендерит JavaScript) по умолчанию.
+web.use_stealth: Использовать stealth-браузер для загрузки страниц
+web.use_stealth.hint: Загружать страницы в stealth CloakBrowser по умолчанию. Обходит продвинутые анти-бот системы (Cloudflare, reCAPTCHA v3, FingerprintJS).
+web.runtimes: Браузерные рантаймы
+web.playwright: Playwright
+web.stealth: Stealth (CloakBrowser)
+web.installed: Установлен
+web.not_installed: Не установлен
+web.install: Установить
 

@@ -1,27 +1,41 @@
 using System.ComponentModel;
+using System.Text.Json.Nodes;
 using AngleSharp.Html.Parser;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Settings.Application;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Web;
 using Material.Icons;
 using RCLargeLanguageModels.Json.Schema;
-using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Web
 {
 	[ToolModule(chatScoped: true)]
 	public class WebFetchToolModule : ToolModule
 	{
-		private readonly HttpClient _httpClient, _httpInfiniteTimeoutClient;
-		private readonly IWorkingDirectoryAccessService _fileAccess;
+		private readonly IWebFetcher _webFetcher;
+		private readonly AsyncCache<(string, string, bool, bool), string> _fetchContentCache;
 
-		public WebFetchToolModule(IWorkingDirectoryAccessService fileAccess)
+		public WebFetchToolModule(IWebFetcher webFetcher)
 		{
-			_httpClient = CreateClient();
-			_httpInfiniteTimeoutClient = CreateClient();
-			_httpInfiniteTimeoutClient.Timeout = Timeout.InfiniteTimeSpan;
+			_webFetcher = webFetcher;
+			_fetchContentCache = new AsyncCache<(string, string, bool, bool), string>(
+				async ((string url, string contentType, bool useBrowser, bool useStealthBrowser) args, CancellationToken cancellationToken) =>
+				{
+					var content = await _webFetcher.FetchContentAsync(args.url, new WebFetchOptions(args.useBrowser, args.useStealthBrowser), cancellationToken);
+					switch (args.contentType)
+					{
+						case "sanitized_html":
+							content = HtmlSanitizer.Sanitize(content);
+							break;
 
-			_fileAccess = fileAccess;
+						case "markdown":
+							content = HtmlToMarkdownConverter.Convert(content);
+							break;
+					}
+					return content;
+				}, slidingExpirationTime: TimeSpan.FromMinutes(15));
 
 			AddTool(new ToolInitializationInfo
 			{
@@ -32,7 +46,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				TitleKey = Locale.GetKey("tool.name.web-fetch"),
 				DescriptionKey = Locale.GetKey("tool.description.web-fetch"),
 				CategoryKey = Locale.GetKey("tool.category.web"),
-				DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
+				DefaultExpectedBehaviour = ToolBehaviour.InternetAccess,
+				ModifyArgumentSchema = RemoveUnsupportedArguments
 			});
 
 			AddTool(new ToolInitializationInfo
@@ -44,8 +59,23 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				TitleKey = Locale.GetKey("tool.name.web-parse"),
 				DescriptionKey = Locale.GetKey("tool.description.web-parse"),
 				CategoryKey = Locale.GetKey("tool.category.web"),
-				DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
+				DefaultExpectedBehaviour = ToolBehaviour.InternetAccess,
+				ModifyArgumentSchema = RemoveUnsupportedArguments
 			});
+		}
+
+		private void RemoveUnsupportedArguments(JsonObject schema)
+		{
+			if (!_webFetcher.SupportsBrowser)
+				schema["properties"]?.AsObject().Remove("useBrowser");
+			if (!_webFetcher.SupportsStealthBrowser)
+				schema["properties"]?.AsObject().Remove("useStealthBrowser");
+		}
+
+		private WebFetchOptions ResolveOptions(bool useBrowser, bool useStealthBrowser)
+		{
+			var settings = ApplicationSettingsAccessor.ApplicationSettings.WebFetch;
+			return new WebFetchOptions(useBrowser || settings.UseBrowser, useStealthBrowser || settings.UseStealthBrowser);
 		}
 
 		private StreamingToolArgumentsAnalysisResult FetchStreaming(
@@ -68,6 +98,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			[Description("The content type to fetch")]
 			[Enum(["html", "sanitized_html", "markdown"])]
 			string contentType = "markdown",
+			[Description("Load the page with a headless browser, rendering JavaScript. Slower, but bypasses basic anti-bot checks.")]
+			bool useBrowser = false,
+			[Description("Load the page with a stealth CloakBrowser, evading advanced anti-bot checks (Cloudflare, reCAPTCHA v3). Slowest option.")]
+			bool useStealthBrowser = false,
 			CancellationToken cancellationToken = default)
 		{
 			var result = new ReactiveToolResult
@@ -80,7 +114,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			{
 				try
 				{
-					var content = await _fetchContentCache.GetAsync((url, contentType), cancellationToken);
+					var content = await _fetchContentCache.GetAsync((url, contentType, useBrowser, useStealthBrowser), cancellationToken);
 
 					start = Math.Max(Math.Min(start, content.Length), 0);
 					count = Math.Min(count, content.Length - start);
@@ -124,6 +158,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			string url,
 			[Description("The query selector to select values with")]
 			string selector,
+			[Description("Load the page with a headless browser, rendering JavaScript. Slower, but bypasses basic anti-bot checks.")]
+			bool useBrowser = false,
+			[Description("Load the page with a stealth CloakBrowser, evading advanced anti-bot checks (Cloudflare, reCAPTCHA v3). Slowest option.")]
+			bool useStealthBrowser = false,
 			[Description("The starting index of character to return")]
 			int start = 0,
 			[Description("The maximum count of characters to return")]
@@ -140,7 +178,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			{
 				try
 				{
-					var html = await HtmlContentFetcher.FetchContentAsync(url);
+					var html = await _webFetcher.FetchContentAsync(url, ResolveOptions(useBrowser, useStealthBrowser), cancellationToken);
 					var parser = new HtmlParser();
 					var document = await parser.ParseDocumentAsync(html);
 					var elements = document.QuerySelectorAll(selector);
@@ -174,40 +212,5 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			return result;
 		}
 
-		protected override void Dispose(bool disposing)
-		{
-			_httpClient.Dispose();
-			_httpInfiniteTimeoutClient.Dispose();
 		}
-
-		private readonly AsyncCache<(string, string), string> _fetchContentCache = new(
-			async ((string url, string contentType) args, CancellationToken cancellationToken) =>
-			{
-				var content = await HtmlContentFetcher.FetchContentAsync(args.url, cancellationToken);
-				switch (args.contentType)
-				{
-					case "sanitized_html":
-						content = HtmlSanitizer.Sanitize(content);
-						break;
-
-					case "markdown":
-						content = HtmlToMarkdownConverter.Convert(content);
-						break;
-				}
-				return content;
-			}, slidingExpirationTime: TimeSpan.FromMinutes(15));
-
-		private static HttpClient CreateClient()
-		{
-			var httpClient = new HttpClient();
-			httpClient.DefaultRequestHeaders.Add("User-Agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-			httpClient.DefaultRequestHeaders.Add("Accept",
-				"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-			httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.5");
-			httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
-			httpClient.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
-			return httpClient;
-		}
-	}
 }

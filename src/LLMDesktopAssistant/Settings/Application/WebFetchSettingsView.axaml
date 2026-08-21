@@ -1,0 +1,72 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.Settings.Application"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 x:Class="LLMDesktopAssistant.Settings.Application.WebFetchSettingsView"
+			 x:DataType="local:WebFetchSettingsViewModel">
+
+	<StackPanel Margin="10" Spacing="8">
+
+		<TextBlock Text="{loc:Loc settings.web.title}"
+				   FontWeight="Bold"
+				   FontSize="{DynamicResource FontSizeL}"/>
+
+		<CheckBox Content="{loc:Loc settings.web.use_browser}"
+				  IsChecked="{Binding UseBrowser}"/>
+		<TextBlock Text="{loc:Loc settings.web.use_browser.hint}"
+				   Opacity="0.7"
+				   FontSize="{DynamicResource FontSizeS}"
+				   TextWrapping="Wrap"
+				   Margin="24,-4,0,0"/>
+
+		<CheckBox Content="{loc:Loc settings.web.use_stealth}"
+				  IsChecked="{Binding UseStealthBrowser}"/>
+		<TextBlock Text="{loc:Loc settings.web.use_stealth.hint}"
+				   Opacity="0.7"
+				   FontSize="{DynamicResource FontSizeS}"
+				   TextWrapping="Wrap"
+				   Margin="24,-4,0,0"/>
+
+		<Separator Margin="0,8"/>
+
+		<TextBlock Text="{loc:Loc settings.web.runtimes}"
+				   FontWeight="Bold"/>
+
+		<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4">
+			<TextBlock Text="{loc:Loc settings.web.playwright}"
+					   VerticalAlignment="Center"/>
+			<TextBlock Text="{Binding PlaywrightStatusText}"
+					   VerticalAlignment="Center"
+					   Opacity="0.7"/>
+			<Button Content="{loc:Loc settings.web.install}"
+					Command="{Binding InstallPlaywrightCommand}"
+					IsVisible="{Binding !IsPlaywrightInstalled}"
+					VerticalAlignment="Center"/>
+			<ProgressBar IsIndeterminate="True"
+						 Width="80"
+						 IsVisible="{Binding IsInstallingPlaywright}"
+						 VerticalAlignment="Center"/>
+		</StackPanel>
+
+		<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4">
+			<TextBlock Text="{loc:Loc settings.web.stealth}"
+					   VerticalAlignment="Center"/>
+			<TextBlock Text="{Binding CloakBrowserStatusText}"
+					   VerticalAlignment="Center"
+					   Opacity="0.7"/>
+			<Button Content="{loc:Loc settings.web.install}"
+					Command="{Binding InstallCloakBrowserCommand}"
+					IsVisible="{Binding !IsCloakBrowserInstalled}"
+					VerticalAlignment="Center"/>
+			<ProgressBar IsIndeterminate="True"
+						 Width="80"
+						 IsVisible="{Binding IsInstallingCloakBrowser}"
+						 VerticalAlignment="Center"/>
+		</StackPanel>
+
+	</StackPanel>
+
+</UserControl>

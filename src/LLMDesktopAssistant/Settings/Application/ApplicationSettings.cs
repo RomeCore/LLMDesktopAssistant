@@ -24,5 +24,15 @@ namespace LLMDesktopAssistant.Settings.Application
 			get => _language;
 			set => SetProperty(ref _language, value);
 		}
+
+		private WebFetchSettings _webFetch = new();
+		/// <summary>
+		/// Gets or sets the web fetching settings of the application.
+		/// </summary>
+		public WebFetchSettings WebFetch
+		{
+			get => _webFetch;
+			set => SetProperty(ref _webFetch, value);
+		}
 	}
 }

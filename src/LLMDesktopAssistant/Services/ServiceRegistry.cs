@@ -26,11 +26,22 @@ namespace LLMDesktopAssistant.Services
 			CheckInitialized();
 
 			var originalCollection = _serviceProvider.GetRequiredKeyedService<IServiceCollection>(ServiceKeys.AppServices);
-			var serviceTypes = originalCollection.Select(s => s.ServiceType).Distinct();
-			var servicesToAdd = serviceTypes.SelectMany(t => _serviceProvider.GetServices(t).Select(s => (t, s))).Distinct();
-			foreach (var (serviceType, service) in servicesToAdd)
-				if (service != null)
-					services.AddSingleton(serviceType, service);
+			var singletonTypes = new HashSet<Type>();
+
+			foreach (var service in originalCollection)
+			{
+				if (service.Lifetime is ServiceLifetime.Scoped)
+					continue;
+				if (service.Lifetime is ServiceLifetime.Transient || service.ServiceType.ContainsGenericParameters)
+					services.Add(service);
+				else
+					singletonTypes.Add(service.ServiceType);
+			}
+
+			foreach (var type in singletonTypes)
+				foreach (var service in Provider.GetServices(type))
+					if (service is not null)
+						services.AddSingleton(type, service);
 
 			return services;
 		}
@@ -81,7 +92,11 @@ namespace LLMDesktopAssistant.Services
 			_serviceProvider = collection.BuildServiceProvider();
 
 			foreach (var service in collection)
+			{
+				if (service.ServiceType.ContainsGenericParameters)
+					continue;
 				_serviceProvider.GetServices(service.ServiceType);
+			}
 
 			_initialized = true;
 

@@ -51,6 +51,11 @@ namespace LLMDesktopAssistant.Settings.Application
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.language.title"),
 				MaterialIconKind.Translate,
 				() => new ApplicationLanguageSettingsViewModel()));
+
+			SettingsTree.Add(
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.web.title"),
+				MaterialIconKind.Web,
+				() => new WebFetchSettingsViewModel()));
 		}
 
 		/// <inheritdoc/>

@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Utils.Web
+namespace LLMDesktopAssistant.Utils.Web
 {
 	public static class HtmlToMarkdownConverter
 	{
@@ -11,7 +11,7 @@
 				GithubFlavored = true,
 			};
 
-			result.Tags.Unknown = ReverseMarkdown.Config.UnknownTagsOption.Drop;
+			result.Tags.Unknown = ReverseMarkdown.Config.UnknownTagsOption.Bypass;
 			result.Formatting.RemoveComments = true;
 			result.Images.Base64Handling = ReverseMarkdown.Config.Base64ImageHandling.Skip;
 

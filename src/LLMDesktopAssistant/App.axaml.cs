@@ -5,7 +5,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
+using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Extensions.Logging;
 
 namespace LLMDesktopAssistant
 {
@@ -24,7 +26,13 @@ namespace LLMDesktopAssistant
 
 		protected virtual void ConfigureServices(IServiceCollection services)
 		{
-			services.AddSingleton<ILogger>(sp => Log.Logger);
+			services.AddSingleton(sp => Log.Logger);
+			services.AddLogging(l => l.AddProvider(new SerilogLoggerProvider(Log.Logger)));
+			services.AddTransient(sp =>
+			{
+				var factory = sp.GetRequiredService<ILoggerFactory>();
+				return factory.CreateLogger("Uncategorized");
+			});
 		}
 
 		public override void Initialize()

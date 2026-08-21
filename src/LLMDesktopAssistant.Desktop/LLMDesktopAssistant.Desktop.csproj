@@ -26,6 +26,9 @@
 		<PackageReference Include="Porta.Pty" Version="1.0.7" />
 		<PackageReference Include="Unicode.net" Version="2.0.0" />
 		<PackageReference Include="Wcwidth" Version="4.0.1" />
+		<PackageReference Include="WebReaper.Cdp" Version="11.3.1" />
+		<PackageReference Include="WebReaper.Playwright" Version="11.3.1" />
+		<PackageReference Include="WebReaper.Stealth.CloakBrowser" Version="11.3.1" />
 		<PackageReference Include="XTerm.NET" Version="1.0.12" />
 	</ItemGroup>
 

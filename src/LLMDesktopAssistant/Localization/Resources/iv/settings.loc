@@ -457,4 +457,15 @@ sub_agents.delete.confirm: The file {0} will be permanently deleted. This action
 sub_agents.links.skill_not_found: Skill '{0}' not found
 sub_agents.links.sub_agent_not_found: Sub-agent '{0}' not found
 sub_agents.links.memory_block_not_found: Memory block '{0}' not found
+web.title: Web
+web.use_browser: Use browser for page loads
+web.use_browser.hint: Load pages with a headless browser (renders JavaScript) by default.
+web.use_stealth: Use stealth browser for page loads
+web.use_stealth.hint: Load pages with the stealth CloakBrowser by default. Evades advanced anti-bot systems (Cloudflare, reCAPTCHA v3, FingerprintJS).
+web.runtimes: Browser runtimes
+web.playwright: Playwright
+web.stealth: Stealth (CloakBrowser)
+web.installed: Installed
+web.not_installed: Not installed
+web.install: Install
 
