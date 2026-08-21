@@ -87,7 +87,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			generalContext["sliders"] = effectiveSliderValues.Select(s =>
 				{
 					var sliderTemplate = promptRegistry.GetSlider(s.SliderId)?.Template.Template;
-					componentsContext["skilder_value"] = s.Value;
+					componentsContext["slider_value"] = s.Value;
 					return sliderTemplate?.Render(componentsContext, functions);
 				})
 				.Where(c => !string.IsNullOrWhiteSpace(c))
