@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.Providers
 		private readonly ModelModifiersConfiguration modifiers = SettingsManager.Get<ModelModifiersConfiguration>();
 		private readonly Dictionary<string, ModelProviderType> providerTypesMap = providerTypes.ToDictionary(t => t.Id);
 
-		public bool IsModelAvaliable(string fullName)
+		public bool IsModelAvailable(string fullName)
 		{
 			if (!ModelReference.TryParse(fullName, out var reference))
 				return false;

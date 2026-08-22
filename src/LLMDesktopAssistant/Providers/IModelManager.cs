@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Providers
 		/// <param name="fullName">The full name of the model in format {Provider}${Model} or {Provider}${Model}${Modifier},
 		/// OpenAI$gpt-3.5-turbo or DeepSeek$deepseek-v4-flash$Max for example.</param>
 		/// <returns>True if the model is available, otherwise false.</returns>
-		bool IsModelAvaliable(string fullName);
+		bool IsModelAvailable(string fullName);
 
 		/// <summary>
 		/// Gets a model instance by its full name. The model is ready for running.
