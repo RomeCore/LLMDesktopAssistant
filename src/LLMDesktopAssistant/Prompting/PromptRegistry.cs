@@ -94,7 +94,7 @@ namespace LLMDesktopAssistant.Prompting
 					+ string.Join(", ", Enumerable.Range(0, errors.Count).Select(i => $"{{Error{i}}}")),
 					errors.Cast<object>().ToArray());
 
-			SharedLibrary.SetLanguageFallbackScheme(new HierarchicalLanguageFallbackScheme());
+			SharedLibrary.SetLanguageFallbackScheme(new HierarchicalLanguageFallbackScheme(LanguageCode.Invariant));
 
 			var allComponentsBuilder = ImmutableDictionary.CreateBuilder<(Guid, LanguageCode), PromptComponent>();
 			var allPersonasBuilder = ImmutableDictionary.CreateBuilder<(Guid, LanguageCode), Persona>();
