@@ -310,8 +310,9 @@ tool.approval_level.policyaskordisallow: Политика: никогда не �
 tool.approval_level.policyautoapproveunlessdisallowed: Политика: одобрять если не запрещено
 tool.approval_level.policyautodisallowunlessapproved: Политика: запрещать если не одобрено
 tool.approval_level.policybased: По политике
-tool.behaviour_policy.auto_approve: Авто-одобрение
 tool.behaviour_policy.default: По умолчанию
+tool.behaviour_policy.auto_approve: Авто-одобрение
+tool.behaviour_policy.ask: Спрашивать
 tool.behaviour_policy.disallowed: Запрещено
 tools.enable: Включить инструменты
 tools.fetch_all: Искать во всех рабочих директориях

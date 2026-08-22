@@ -19,10 +19,26 @@
 		<Style Selector="ToggleButton.MaskToggle">
 			<Setter Property="Background" Value="Transparent"/>
 			<Setter Property="BorderThickness" Value="0"/>
-			<Setter Property="Padding" Value="9"/>
+			<Setter Property="Width" Value="32"/>
+			<Setter Property="Height" Value="32"/>
+			<Setter Property="Padding" Value="0"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Style Selector="^ > ico|MaterialIcon">
+				<Setter Property="Width" Value="24"/>
+				<Setter Property="Height" Value="24"/>
+			</Style>
+		</Style>
+		<Style Selector="ToggleButton.MaskToggle.Small">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="Width" Value="20"/>
 			<Setter Property="Height" Value="20"/>
+			<Setter Property="Padding" Value="0"/>
 			<Setter Property="CornerRadius" Value="4"/>
+			<Style Selector="^ > ico|MaterialIcon">
+				<Setter Property="Width" Value="16"/>
+				<Setter Property="Height" Value="16"/>
+			</Style>
 		</Style>
 		<Style Selector="ToggleButton.MaskToggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
 			<Setter Property="Background" Value="#22FFFFFF"/>
@@ -81,71 +97,61 @@
 
 		</Grid>
 
-		<!-- Column headers -->
-		<Grid ColumnDefinitions="*,Auto"
-					IsEnabled="{Binding ToolSettings.EnableTools}">
-
-			<TextBlock Grid.Column="0"
-						   Text="{loc:Loc common.name}"
-						   FontWeight="Bold"
-						   Margin="5,0,0,0"/>
-
-			<TextBlock Grid.Column="1"
-						   Text="{loc:Loc common.policy}"
-						   FontWeight="Bold"
-						   Margin="8,0,8,0"/>
-		</Grid>
-
-		<ItemsControl ItemsSource="{Binding PolicyBehaviourItems}"
+		<ItemsControl ItemsSource="{Binding PolicyMaskCategoryItems}"
 									IsEnabled="{Binding ToolSettings.EnableTools}">
+
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Spacing="8"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+
 			<ItemsControl.ItemTemplate>
-				<DataTemplate x:DataType="sett:ToolBehaviourPolicyItem">
+				<DataTemplate x:DataType="local:ToolBehaviourCategoryViewModel">
 					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
 									BorderThickness="1"
 									CornerRadius="4"
-									Padding="8"
-									Margin="0,0,0,8">
-						<Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">
+									Padding="8">
+						<StackPanel Orientation="Vertical" Spacing="6">
+							
+							<TextBlock Text="{loc:Loc {Binding Title}}"
+											   TextTrimming="CharacterEllipsis"
+											   VerticalAlignment="Center"/>
 
-							<!-- Row 0: Icon + Name + ComboBox -->
-							<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+							<ItemsControl ItemsSource="{Binding Toggles}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Horizontal" Spacing="4"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
 
-								<ico:MaterialIcon Grid.Column="0"
-												  Kind="{Binding Icon}"
-												  Foreground="{Binding Color}"
-												  Width="20" Height="20"
-												  VerticalAlignment="Center"
-												  Margin="0,0,8,0"/>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate x:DataType="local:ToolBehaviourMaskItem">
+										<ToggleButton Classes="MaskToggle"
+																	IsThreeState="True"
+																	IsChecked="{Binding IsChecked, Mode=TwoWay}"
+																	IsEnabled="{Binding !IsNone}"
+																	ToolTip.ShowOnDisabled="True">
+											<ToolTip.Tip>
+												<StackPanel Orientation="Vertical" Spacing="4">
+													<TextBlock Text="{loc:Loc {Binding DisplayName}}"
+																		 FontSize="{DynamicResource FontSizeM}"
+																		 FontWeight="SemiBold"/>
+													<TextBlock Text="{loc:Loc {Binding Description}}"/>
+													<TextBlock Text="{loc:Loc {Binding StateName}}"
+																		 Foreground="{Binding StateColor}"
+																		 FontSize="11"/>
+												</StackPanel>
+											</ToolTip.Tip>
+											<ico:MaterialIcon Kind="{Binding Icon}"
+																				Foreground="{Binding Color}"/>
+										</ToggleButton>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
 
-								<TextBlock Grid.Column="1"
-										   Text="{Binding DisplayName.Value}"
-										   FontWeight="Medium"
-										   TextTrimming="CharacterEllipsis"
-										   VerticalAlignment="Center"/>
+							</ItemsControl>
 
-								<ComboBox Grid.Column="2"
-										  ItemsSource="{Binding PolicyModes}"
-										  SelectedItem="{Binding PolicyMode, Mode=TwoWay}"
-										  MinWidth="140"
-										  Margin="8,0,0,0">
-									<ComboBox.ItemTemplate>
-										<DataTemplate x:DataType="sett:PolicyModeItem">
-											<TextBlock Text="{Binding DisplayName}"/>
-										</DataTemplate>
-									</ComboBox.ItemTemplate>
-								</ComboBox>
-							</Grid>
-
-							<!-- Row 1: Description -->
-							<TextBlock Grid.Row="1"
-									   Text="{Binding Description.RawValue}"
-									   Opacity="0.6"
-									   FontSize="12"
-									   TextWrapping="Wrap"
-									   Margin="28,4,0,0"
-									   IsVisible="{Binding Description.RawValue, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
-
-						</Grid>
+						</StackPanel>
 					</Border>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
@@ -495,7 +501,7 @@
 
 								<ItemsControl.ItemTemplate>
 									<DataTemplate x:DataType="local:ToolBehaviourMaskItem">
-										<ToggleButton Classes="MaskToggle"
+										<ToggleButton Classes="MaskToggle Small"
 																	IsThreeState="True"
 																	IsChecked="{Binding IsChecked, Mode=TwoWay}"
 																	IsEnabled="{Binding !IsNone}"
@@ -512,9 +518,7 @@
 												</StackPanel>
 											</ToolTip.Tip>
 											<ico:MaterialIcon Kind="{Binding Icon}"
-																				Foreground="{Binding Color}"
-																				Width="16"
-																				Height="16"/>
+																				Foreground="{Binding Color}"/>
 										</ToggleButton>
 									</DataTemplate>
 								</ItemsControl.ItemTemplate>

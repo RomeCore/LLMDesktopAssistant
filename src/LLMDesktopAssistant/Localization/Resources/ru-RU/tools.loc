@@ -185,9 +185,9 @@ category.skills: Навыки
 category.time: Время
 category.web: Веб
 category.workdir: Рабочие директории
+category.unknown: Неизвестно
 
-// Tool statuses, behaviours, call actions, sources, fixed flags.
-arguments: Аргументы:
+// Tool behaviours.
 behaviour.accessoutsideworkdir: Доступ за пределы рабочей директории
 behaviour.accessoutsideworkdir.hint: Инструмент обращается к путям вне настроенной рабочей директории.
 behaviour.adhoc: Специальные/одноразовые инструменты
@@ -252,6 +252,41 @@ behaviour.userinteraction: Взаимодействие с пользовате�
 behaviour.userinteraction.hint: Инструмент требует ввода от пользователя через формы, подтверждения, выбор файлов и т.д.
 behaviour.workdirchange: Смена рабочей директории
 behaviour.workdirchange.hint: Инструмент переключает активную рабочую директорию, изменяя базу для всех относительных файловых операций.
+
+// Behaviour categories
+behaviour.category.none: Без категории
+behaviour.category.filesystem: Файловая система
+behaviour.category.semanticmemory: Семантическая память
+behaviour.category.database: Базы данных
+behaviour.category.security: Безопасность
+behaviour.category.network: Сетевые запросы
+behaviour.category.performance: Производительность
+behaviour.category.execution: Выполнение
+behaviour.category.userinteraction: Взаимодействие с пользователем
+behaviour.category.agents: Агенты
+behaviour.category.meta: Мета
+behaviour.category.source: Источники
+
+// Specifiers
+specifiers: Спецификаторы
+specifier.parameters: Параметры спецификаторов: {0}
+specifier.union_mode: Режим объединения
+specifier.aggregation_mode: Режим агрегации
+specifier.pattern: Шаблон
+specifier.add: Добавить спецификатор
+specifier.remove: Удалить спецификатор
+specifier.decision.allow: Разрешить
+specifier.decision.ask: Спросить
+specifier.decision.deny: Запретить
+specifier.union_mode.disabled: Отключены
+specifier.union_mode.combinehard: Объединить (строго)
+specifier.union_mode.combinesoft: Объединить (мягко)
+specifier.union_mode.ignorenonspecifierbehaviours: Только спецификаторы
+specifier.aggregation_mode.sequential: Последовательно (последний побеждает)
+specifier.aggregation_mode.prioritized: По приоритету (запрет > спросить > разрешить)
+
+// Tool call actions, statuses, sources, fixed flags
+arguments: Аргументы:
 call.action.approve: Подтвердить
 call.action.reject: Отклонить
 call.note.placeholder: Пояснение или вариант...
@@ -286,25 +321,6 @@ fixed.hint: Этот инструмент всегда включён, пока 
 name_suffix.hint: {0} инструментов
 result: Результат:
 settings: Настройки инструментов
-
-// Specifiers
-specifiers: Спецификаторы
-specifier.parameters: Параметры спецификаторов: {0}
-specifier.union_mode: Режим объединения
-specifier.aggregation_mode: Режим агрегации
-specifier.pattern: Шаблон
-specifier.add: Добавить спецификатор
-specifier.remove: Удалить спецификатор
-specifier.decision.allow: Разрешить
-specifier.decision.ask: Спросить
-specifier.decision.deny: Запретить
-specifier.union_mode.disabled: Отключены
-specifier.union_mode.combinehard: Объединить (строго)
-specifier.union_mode.combinesoft: Объединить (мягко)
-specifier.union_mode.ignorenonspecifierbehaviours: Только спецификаторы
-specifier.aggregation_mode.sequential: Последовательно (последний побеждает)
-specifier.aggregation_mode.prioritized: По приоритету (запрет > спросить > разрешить)
-
 source.mcp: MCP
 source.meta: Мета
 status.agent-describe_image.status: Описываем... *{0} токенов*
@@ -339,4 +355,3 @@ status.script.lines: {0} строк
 status.time-wait.completed: Завершено ({0})
 status.time-wait.status: Ждём... {0} осталось
 status.web-search.results: {0} *({1} результатов)*
-category.unknown: Неизвестно

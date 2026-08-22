@@ -34,6 +34,12 @@
 			<Setter Property="Margin" Value="0,8,0,2"/>
 		</Style>
 		
+		<Style Selector="TextBlock.FieldSubLabel">
+			<Setter Property="FontSize" Value="11"/>
+			<Setter Property="Opacity" Value="0.6"/>
+			<Setter Property="Margin" Value="0,2"/>
+		</Style>
+		
 		<Style Selector="ToggleButton.MaskToggle">
 			<Setter Property="Background" Value="Transparent"/>
 			<Setter Property="BorderThickness" Value="0"/>
@@ -229,27 +235,42 @@
 			<ItemsControl Grid.Row="4" ItemsSource="{Binding BehaviourToggles}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<WrapPanel ItemSpacing="4" LineSpacing="4"/>
+						<WrapPanel ItemSpacing="20" LineSpacing="4"/>
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="local:MetaToolBehaviourToggle">
-						<ToggleButton Classes="MaskToggle"
-													IsChecked="{Binding IsChecked, Mode=TwoWay}"
-													ToolTip.ShowOnDisabled="True">
-							<ToolTip.Tip>
-								<StackPanel Orientation="Vertical" Spacing="4">
-									<TextBlock Text="{loc:Loc {Binding FlagInfo.DisplayName}}"
-														 FontSize="{DynamicResource FontSizeM}"
-														 FontWeight="SemiBold"/>
-									<TextBlock Text="{loc:Loc {Binding FlagInfo.Description}}"/>
-								</StackPanel>
-							</ToolTip.Tip>
-							<ico:MaterialIcon Kind="{Binding FlagInfo.Icon}"
-																Foreground="{Binding FlagInfo.Color}"
-																Width="16"
-																Height="16"/>
-						</ToggleButton>
+					<DataTemplate>
+						<StackPanel Spacing="4" Orientation="Vertical">
+							<TextBlock Classes="FieldSubLabel" Text="{loc:Loc {Binding Title}}"/>
+							<ItemsControl ItemsSource="{Binding Toggles}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Horizontal" Spacing="2"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<ToggleButton Classes="MaskToggle"
+																	IsChecked="{Binding IsChecked, Mode=TwoWay}"
+																	ToolTip.ShowOnDisabled="True">
+											<ToolTip.Tip>
+												<StackPanel Orientation="Vertical" Spacing="4">
+													<TextBlock Text="{loc:Loc {Binding FlagInfo.DisplayName}}"
+																		 FontSize="{DynamicResource FontSizeM}"
+																		 FontWeight="SemiBold"/>
+													<TextBlock Text="{loc:Loc {Binding FlagInfo.Description}}"/>
+												</StackPanel>
+											</ToolTip.Tip>
+											<ico:MaterialIcon Kind="{Binding FlagInfo.Icon}"
+																				Foreground="{Binding FlagInfo.Color}"
+																				Width="16"
+																				Height="16"/>
+										</ToggleButton>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</StackPanel>
+						
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>

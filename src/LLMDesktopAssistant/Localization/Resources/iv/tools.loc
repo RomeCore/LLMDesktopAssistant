@@ -185,9 +185,9 @@ category.skills: Skills
 category.time: Time
 category.web: Web
 category.workdir: Working directories
+category.unknown: Unknown
 
-// Tool statuses, behaviours, call actions, sources, fixed flags.
-arguments: Tool arguments:
+// Tool behaviours.
 behaviour.accessoutsideworkdir: Access outside working directory
 behaviour.accessoutsideworkdir.hint: The tool accesses locations outside the configured working directory.
 behaviour.adhoc: Ad-hoc (special tools)
@@ -252,6 +252,41 @@ behaviour.userinteraction: User interaction (forms, confirmations)
 behaviour.userinteraction.hint: The tool requires user input via forms, confirmations, file pickers, etc.
 behaviour.workdirchange: Change working directory
 behaviour.workdirchange.hint: The tool switches the active working directory, affecting the base for all relative file operations.
+
+// Behaviour categories
+behaviour.category.none: Uncategorized
+behaviour.category.filesystem: File system
+behaviour.category.semanticmemory: Semantic memory
+behaviour.category.database: Database
+behaviour.category.security: Security
+behaviour.category.network: Network
+behaviour.category.performance: Performance
+behaviour.category.execution: Execution
+behaviour.category.userinteraction: User interaction
+behaviour.category.agents: Agents
+behaviour.category.meta: Meta
+behaviour.category.source: Sources
+
+// Specifiers
+specifiers: Specifiers
+specifier.parameters: Specifier parameters: {0}
+specifier.union_mode: Union mode
+specifier.aggregation_mode: Aggregation mode
+specifier.pattern: Pattern
+specifier.add: Add specifier
+specifier.remove: Remove specifier
+specifier.decision.allow: Allow
+specifier.decision.ask: Ask
+specifier.decision.deny: Deny
+specifier.union_mode.disabled: Disabled
+specifier.union_mode.combinehard: Combine (strict)
+specifier.union_mode.combinesoft: Combine (soft)
+specifier.union_mode.ignorenonspecifierbehaviours: Specifiers only
+specifier.aggregation_mode.sequential: Sequential (last match wins)
+specifier.aggregation_mode.prioritized: Prioritized (deny > ask > allow)
+
+// Tool call actions, statuses, sources, fixed flags
+arguments: Tool arguments:
 call.action.approve: Approve
 call.action.reject: Reject
 call.note.placeholder: Note or option...
@@ -286,25 +321,6 @@ fixed.hint: This tool is always enabled while its context is present and cannot 
 name_suffix.hint: {0} tools
 result: Tool result:
 settings: Tools settings
-
-// Specifiers
-specifiers: Specifiers
-specifier.parameters: Specifier parameters: {0}
-specifier.union_mode: Union mode
-specifier.aggregation_mode: Aggregation mode
-specifier.pattern: Pattern
-specifier.add: Add specifier
-specifier.remove: Remove specifier
-specifier.decision.allow: Allow
-specifier.decision.ask: Ask
-specifier.decision.deny: Deny
-specifier.union_mode.disabled: Disabled
-specifier.union_mode.combinehard: Combine (strict)
-specifier.union_mode.combinesoft: Combine (soft)
-specifier.union_mode.ignorenonspecifierbehaviours: Specifiers only
-specifier.aggregation_mode.sequential: Sequential (last match wins)
-specifier.aggregation_mode.prioritized: Prioritized (deny > ask > allow)
-
 source.mcp: MCP
 source.meta: Meta
 status.agent-describe_image.status: Describing... *{0} tokens*
@@ -339,4 +355,3 @@ status.script.lines: {0} lines
 status.time-wait.completed: Completed ({0})
 status.time-wait.status: Waiting... {0} remaining
 status.web-search.results: {0} *({1} results)*
-category.unknown: Unknown

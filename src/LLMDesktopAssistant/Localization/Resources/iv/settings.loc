@@ -310,8 +310,9 @@ tool.approval_level.policyaskordisallow: Policy: never auto-approve
 tool.approval_level.policyautoapproveunlessdisallowed: Policy: auto-approve unless disallowed
 tool.approval_level.policyautodisallowunlessapproved: Policy: auto-disallow unless approved
 tool.approval_level.policybased: Policy-based
-tool.behaviour_policy.auto_approve: Auto-approve
 tool.behaviour_policy.default: Default
+tool.behaviour_policy.auto_approve: Auto-approve
+tool.behaviour_policy.ask: Ask
 tool.behaviour_policy.disallowed: Disallowed
 tools.enable: Enable tools
 tools.fetch_all: Fetch from all working directories

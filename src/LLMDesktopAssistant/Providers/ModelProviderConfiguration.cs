@@ -59,7 +59,6 @@ namespace LLMDesktopAssistant.Providers
 			set => _selectedModelNames.Reset(value);
 		}
 
-
 		private readonly RangeObservableCollection<ModelDescriptor> _models = [];
 		/// <summary>
 		/// A collection of models provided by this model provider.

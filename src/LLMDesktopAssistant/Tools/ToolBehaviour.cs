@@ -185,7 +185,7 @@ public enum ToolBehaviour : ulong
 	/// </summary>
 	RunTerminal = 1 << 23,
 
-	// ────────────────────────────── User Interaction ───────────────────────
+	// ────────────────────────────── User interaction ───────────────────────
 
 	/// <summary>
 	/// The tool requires special user input, such as prompts for confirmation, various forms,
@@ -213,14 +213,6 @@ public enum ToolBehaviour : ulong
 	/// Examples: <c>metatools-create_or_update</c>, <c>metatools-delete</c>, <c>lua-register_or_update_script</c>.
 	/// </summary>
 	ScriptAccess = 1 << 26,
-
-	// ────────────────────────────── Specifier Verdicts ─────────────────────
-
-	// SpecifierApprove = (ulong)1 << 51,
-
-	// SpecifierAsk = (ulong)1 << 52,
-
-	// SpecifierDisallow = (ulong)1 << 53,
 
 	// ────────────────────────────── Source ─────────────────────────────────
 

@@ -53,12 +53,15 @@ namespace LLMDesktopAssistant.Providers
 			var cacheLookup = cache.Descriptors.ToDictionary(k => k.Name);
 			return providers.ModelProviders.SelectMany(p => p.Models.Concat(p.CustomModels)
 				.GroupBy(m => m.Name)
-				.Select(g => g.Last())
-				.Select(m => new ModelItem
+				.Select(g =>
 				{
-					Provider = p,
-					Descriptor = m.IsInformationKnown ? m : cacheLookup.TryGetValue(m.Name, out var cached) ? cached : m,
-					FullName = p.Name + "$" + m.Name
+					var m = g.Last();
+					return new ModelItem
+					{
+						Provider = p,
+						Descriptor = m.IsInformationKnown ? m : cacheLookup.TryGetValue(m.Name, out var cached) ? cached : m,
+						FullName = p.Name + "$" + m.Name
+					};
 				}));
 		}
 

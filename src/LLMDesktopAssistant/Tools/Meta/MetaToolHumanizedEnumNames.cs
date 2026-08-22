@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using YamlDotNet.RepresentationModel;
 
 namespace LLMDesktopAssistant.Tools.Meta
 {
@@ -13,16 +12,9 @@ namespace LLMDesktopAssistant.Tools.Meta
 			.Select(level => (level, ToKebabCase(level.ToString())))
 			.ToImmutableDictionary(k => k.level, v => v.Item2);
 
-		public static readonly ImmutableDictionary<ToolBehaviour, string> BehaviourNames = Enum.GetValues<ToolBehaviour>()
-			.Where(IsSingleFlag)
+		public static readonly ImmutableDictionary<ToolBehaviour, string> BehaviourNames = ToolBehaviours.AllValues
 			.Select(flag => (flag, ToKebabCase(flag.ToString())))
 			.ToImmutableDictionary(k => k.flag, v => v.Item2);
-
-		private static bool IsSingleFlag(ToolBehaviour behaviour)
-		{
-			var value = (long)behaviour;
-			return value != 0 && (value & (value - 1)) == 0;
-		}
 
 		private static string ToKebabCase(string name)
 		{

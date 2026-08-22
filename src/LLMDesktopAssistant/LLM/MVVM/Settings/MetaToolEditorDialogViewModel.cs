@@ -13,31 +13,30 @@ using Material.Icons;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
+public class MetaToolBehaviourCategoryViewModel
+{
+	public required LocaleKeyBase Title { get; init; }
+
+	public required ImmutableList<MetaToolBehaviourToggleViewModel> Toggles { get; init; }
+}
+
 /// <summary>
 /// A behaviour flag toggle for the meta tool editor form.
 /// </summary>
-public class MetaToolBehaviourToggle : NotifyPropertyChanged
+public class MetaToolBehaviourToggleViewModel : NotifyPropertyChanged
 {
-	private bool _isChecked;
-
 	/// <summary>
 	/// Gets the behaviour flag.
 	/// </summary>
-	public ToolBehaviourFlagInfo FlagInfo { get; }
+	public required ToolBehaviourFlagInfo FlagInfo { get; init; }
 
 	/// <summary>
 	/// Gets or sets a value indicating whether the flag is enabled.
 	/// </summary>
-	public bool IsChecked
+	public required bool IsChecked
 	{
-		get => _isChecked;
-		set => SetProperty(ref _isChecked, value);
-	}
-
-	public MetaToolBehaviourToggle(ToolBehaviourFlagInfo info, bool isChecked)
-	{
-		FlagInfo = info;
-		_isChecked = isChecked;
+		get;
+		set => SetProperty(ref field, value);
 	}
 }
 
@@ -46,7 +45,7 @@ public class MetaToolBehaviourToggle : NotifyPropertyChanged
 /// live metadata preview, and a structured form editing.
 /// </summary>
 [ViewModelFor(typeof(MetaToolEditorDialogView))]
-public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
+public class MetaToolEditorDialogViewModel : ViewModelBase
 {
 	private readonly MetaToolInfo _tool;
 	private readonly IMetaToolManagementService _manager;
@@ -105,10 +104,16 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 		}) ?? "{}";
 		_formCode = tool.ExecutionCode;
 
-		BehaviourToggles = Enum.GetValues<ToolBehaviour>()
-			.Where(f => f is not ToolBehaviour.None and not ToolBehaviour.All
-				and not ToolBehaviour.AdHoc and not ToolBehaviour.MCP and not ToolBehaviour.Meta)
-			.Select(f => new MetaToolBehaviourToggle(ToolBehaviourFlagInfo.Create(f), tool.Behaviours.HasFlag(f)))
+		BehaviourToggles = ToolBehaviours.ByCategory.Where(c => c.Key is not ToolBehaviourCategory.Source)
+			.Select(c => new MetaToolBehaviourCategoryViewModel
+			{
+				Title = Locale.GetKey($"tool.behaviour.category.{c.Key.ToString().ToLowerInvariant()}"),
+				Toggles = c.Value.Select(t => new MetaToolBehaviourToggleViewModel
+				{
+					FlagInfo = ToolBehaviourFlagInfo.Create(t),
+					IsChecked = tool.Behaviours.HasFlag(t)
+				}).ToImmutableList()
+			})
 			.ToImmutableList();
 
 		ToggleModeCommand = new RelayCommand(ToggleMode);
@@ -291,7 +296,7 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 	/// <summary>
 	/// Gets the behaviour flag toggles.
 	/// </summary>
-	public ImmutableList<MetaToolBehaviourToggle> BehaviourToggles { get; }
+	public ImmutableList<MetaToolBehaviourCategoryViewModel> BehaviourToggles { get; }
 
 	/// <summary>
 	/// Gets or sets the form argument schema JSON.
@@ -399,7 +404,7 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 				}
 				
 				var behaviours = ToolBehaviour.None;
-				foreach (var toggle in BehaviourToggles)
+				foreach (var toggle in BehaviourToggles.SelectMany(t => t.Toggles))
 				{
 					if (toggle.IsChecked)
 						behaviours |= toggle.FlagInfo.Flag;

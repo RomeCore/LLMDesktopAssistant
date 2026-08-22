@@ -1,7 +1,4 @@
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text;
-using Avalonia;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
@@ -15,7 +12,24 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
-	public class ToolItemViewModel : ViewModelBase
+	public interface ISetPolicyMaskFlag
+	{
+		/// <summary>
+		/// Sets the policy mask override for the specified behaviour flag of the tool/settings.
+		/// </summary>
+		/// <param name="flag">The behaviour flag to override.</param>
+		/// <param name="state"><see langword="true"/> - auto-approve, <see langword="false"/> - disallowed, <see langword="null"/> - ask.</param>
+		public void SetPolicyMaskFlag(ToolBehaviour flag, bool? state);
+	}
+
+	public class ToolBehaviourCategoryViewModel
+	{
+		public required LocaleKeyBase Title { get; init; }
+
+		public required ImmutableList<ToolBehaviourMaskItem> Toggles { get; init; }
+	}
+
+	public class ToolItemViewModel : NotifyPropertyChanged, ISetPolicyMaskFlag
 	{
 		private readonly ToolsetConfiguration _toolset;
 		private readonly ToolInfo _toolInfo;
@@ -64,7 +78,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			var mask = EffectivePolicyMask;
 			PolicyMaskItems = ToolBehaviourFlagInfo.CreateForFlags(tool.DefaultExpectedBehaviour)
-				.Select(i => new ToolBehaviourMaskItem(this, i, GetMaskState(mask, i.Flag)))
+				.Select(i => new ToolBehaviourMaskItem(this, i, GetMaskState(mask, i.Flag), false))
 				.ToImmutableList();
 
 			RebuildSpecifiers();
@@ -325,7 +339,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		}
 	}
 
-	public class ToolCategoryViewModel : ViewModelBase
+	public class ToolCategoryViewModel : NotifyPropertyChanged
 	{
 		public bool IsCategory => true;
 
@@ -419,7 +433,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	}
 
 	[ViewModelFor(typeof(AgentToolSettingsView))]
-	public class AgentToolSettingsViewModel : ViewModelBase
+	public class AgentToolSettingsViewModel : ViewModelBase, ISetPolicyMaskFlag
 	{
 		private enum IdEditMode
 		{
@@ -437,11 +451,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public AgentToolSettings ToolSettings { get; }
 
 		/// <summary>
-		/// Gets the effective tool behaviour policy resolved by the current inheritance level.
-		/// </summary>
-		public ToolPolicyMask EffectivePolicy => ToolSettings.GetEffectivePolicy(_chatSettings);
-
-		/// <summary>
 		/// Gets the effective toolset settings resolved by the current inheritance level.
 		/// </summary>
 		public ToolsetSettings EffectiveToolset => ToolSettings.GetEffectiveToolset(_chatSettings);
@@ -454,7 +463,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// <summary>
 		/// List of ToolBehaviour flags with combined Auto-Approve / Disallowed policy toggles.
 		/// </summary>
-		public ObservableCollection<ToolBehaviourPolicyItem> PolicyBehaviourItems { get; } = [];
+		public ImmutableList<ToolBehaviourCategoryViewModel> PolicyMaskCategoryItems { get; }
 
 		private InheritanceLevelItem _selectedPolicyInheritance;
 		/// <summary>
@@ -559,18 +568,14 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public ICommand ConfirmEditIdCommand { get; }
 		public ICommand CancelEditIdCommand { get; }
 
-		private RangeObservableCollection<ToolCategoryViewModel> _toolCategories = [];
+		private readonly RangeObservableCollection<ToolCategoryViewModel> _toolCategories = [];
 		/// <summary>
 		/// Gets the tool list grouped by categories for the effective toolset.
 		/// </summary>
-		public ICollection<ToolCategoryViewModel> ToolCategories
+		public RangeObservableCollection<ToolCategoryViewModel> ToolCategories
 		{
 			get => _toolCategories;
-			set
-			{
-				_toolCategories.Reset(value);
-				RaisePropertyChanged(nameof(ToolCategories));
-			}
+			set => _toolCategories.Reset(value);
 		}
 
 		/// <summary>
@@ -591,7 +596,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			settings.PropertyChanged += ToolSettings_PropertyChanged;
 
-			InitializeBehaviourItems();
+			PolicyMaskCategoryItems = InitializePolicyMaskItems();
 			UpdateTools();
 
 			CreateNewIdCommand = new RelayCommand(CreateNewId);
@@ -608,8 +613,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				case nameof(AgentToolSettings.PolicyInheritance):
 					_selectedPolicyInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == ToolSettings.PolicyInheritance);
 					RaisePropertyChanged(nameof(SelectedPolicyInheritance));
-					RaisePropertyChanged(nameof(EffectivePolicy));
-					InitializeBehaviourItems();
+					RefreshPolicyMaskItems();
 					break;
 
 				case nameof(AgentToolSettings.ToolsetInheritance):
@@ -625,45 +629,67 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 		}
 
-		private void InitializeBehaviourItems()
+		private ImmutableList<ToolBehaviourCategoryViewModel> InitializePolicyMaskItems()
 		{
-			PolicyBehaviourItems.Clear();
+			var builder = ImmutableList.CreateBuilder<ToolBehaviourCategoryViewModel>();
+			var effectivePolicyMask = ToolSettings.GetEffectivePolicy(_chatSettings);
 
-			foreach (var flag in GetBehaviourFlags())
+			foreach (var (category, flags) in ToolBehaviours.ByCategory)
 			{
-				var key = $"tool.behaviour.{flag.ToString().ToLower()}";
-				var displayName = Locale.GetKey(key);
-				var description = Locale.GetKey($"{key}.hint");
-
-				PolicyBehaviourItems.Add(new ToolBehaviourPolicyItem(
-					() => EffectivePolicy.AutoApproveBehaviours,
-					v =>
-					{
-						ToolSettings.SetEffectivePolicy(_chatSettings, new ToolPolicyMask
-						{
-							AutoApproveBehaviours = v,
-							DisallowedBehaviours = EffectivePolicy.DisallowedBehaviours
-						});
-					},
-					() => EffectivePolicy.DisallowedBehaviours,
-					v =>
-					{
-						ToolSettings.SetEffectivePolicy(_chatSettings, new ToolPolicyMask
-						{
-							AutoApproveBehaviours = EffectivePolicy.AutoApproveBehaviours,
-							DisallowedBehaviours = v,
-						});
-					},
-					flag,
-					displayName,
-					description));
+				builder.Add(new ToolBehaviourCategoryViewModel
+				{
+					Title = Locale.GetKey($"tool.behaviour.category.{category.ToString().ToLower()}"),
+					Toggles = flags.Select(f => new ToolBehaviourMaskItem(this,
+						ToolBehaviourFlagInfo.Create(f), GetPolicyMaskState(effectivePolicyMask, f), true))
+						.ToImmutableList()
+				});
 			}
+
+			return builder.ToImmutableList();
 		}
 
-		private static IEnumerable<ToolBehaviour> GetBehaviourFlags()
+		private static bool? GetPolicyMaskState(ToolPolicyMask mask, ToolBehaviour flag)
 		{
-			return Enum.GetValues<ToolBehaviour>()
-				.Where(v => v != ToolBehaviour.None && v != ToolBehaviour.All);
+			if (mask.AutoApproveBehaviours.HasFlag(flag))
+				return true;
+			if (mask.DisallowedBehaviours.HasFlag(flag))
+				return false;
+			return null;
+		}
+
+		/// <inheritdoc/>
+		public void SetPolicyMaskFlag(ToolBehaviour flag, bool? state)
+		{
+			var mask = ToolSettings.GetEffectivePolicy(_chatSettings);
+
+			mask = state switch
+			{
+				true => new ToolPolicyMask
+				{
+					AutoApproveBehaviours = mask.AutoApproveBehaviours | flag,
+					DisallowedBehaviours = mask.DisallowedBehaviours & ~flag
+				},
+				false => new ToolPolicyMask
+				{
+					AutoApproveBehaviours = mask.AutoApproveBehaviours & ~flag,
+					DisallowedBehaviours = mask.DisallowedBehaviours | flag
+				},
+				_ => new ToolPolicyMask
+				{
+					AutoApproveBehaviours = mask.AutoApproveBehaviours & ~flag,
+					DisallowedBehaviours = mask.DisallowedBehaviours & ~flag
+				}
+			};
+
+			ToolSettings.SetEffectivePolicy(_chatSettings, mask);
+		}
+
+		private void RefreshPolicyMaskItems()
+		{
+			var mask = ToolSettings.GetEffectivePolicy(_chatSettings);
+			foreach (var category in PolicyMaskCategoryItems)
+				foreach (var item in category.Toggles)
+					item.Refresh(GetPolicyMaskState(mask, item.Flag));
 		}
 
 		/// <summary>
@@ -677,10 +703,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			foreach (var category in ToolCategories)
 				category.Dispose();
 
-			ToolCategories = toolVMs
+			ToolCategories.Reset(toolVMs
 				.GroupBy(t => t.Category)
-				.Select(g => new ToolCategoryViewModel(g.Key, g))
-				.ToImmutableList();
+				.Select(g => new ToolCategoryViewModel(g.Key, g)));
 		}
 
 		private void CreateNewId()

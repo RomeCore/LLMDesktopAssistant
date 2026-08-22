@@ -9,42 +9,34 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 /// Represents a single ToolBehaviour flag for display in the UI.
 /// Contains icon, color, and localized tooltip.
 /// </summary>
-public class ToolBehaviourFlagInfo
+public class ToolBehaviourFlagInfo(ToolBehaviour flag,
+	LocaleKeyBase displayName, LocaleKeyBase description,
+	MaterialIconKind icon, IBrush color)
 {
 	/// <summary>
 	/// The ToolBehaviour flag.
 	/// </summary>
-	public ToolBehaviour Flag { get; }
+	public ToolBehaviour Flag { get; } = flag;
 
 	/// <summary>
 	/// Localized display name for the tooltip.
 	/// </summary>
-	public LocaleKeyBase DisplayName { get; }
+	public LocaleKeyBase DisplayName { get; } = displayName;
 
 	/// <summary>
 	/// Localized description text for the tooltip.
 	/// </summary>
-	public LocaleKeyBase Description { get; }
+	public LocaleKeyBase Description { get; } = description;
 
 	/// <summary>
 	/// Icon to display for this flag.
 	/// </summary>
-	public MaterialIconKind Icon { get; }
+	public MaterialIconKind Icon { get; } = icon;
 
 	/// <summary>
 	/// Color associated with this flag's severity/category.
 	/// </summary>
-	public IBrush Color { get; }
-
-	public ToolBehaviourFlagInfo(ToolBehaviour flag, LocaleKeyBase displayName, LocaleKeyBase description,
-		MaterialIconKind icon, IBrush color)
-	{
-		Flag = flag;
-		DisplayName = displayName;
-		Description = description;
-		Icon = icon;
-		Color = color;
-	}
+	public IBrush Color { get; } = color;
 
 	/// <summary>
 	/// Creates a <see cref="ToolBehaviourFlagInfo"/> for a given ToolBehaviour flag.
@@ -61,14 +53,14 @@ public class ToolBehaviourFlagInfo
 	public static ImmutableList<ToolBehaviourFlagInfo> CreateForFlags(ToolBehaviour flags)
 	{
 		var result = ImmutableList.CreateBuilder<ToolBehaviourFlagInfo>();
-		foreach (var flag in Enum.GetValues<ToolBehaviour>())
+		foreach (var flag in ToolBehaviours.AllValues)
 		{
-			if (flag is not ToolBehaviour.None and not ToolBehaviour.All && flags.HasFlag(flag))
+			if (flags.HasFlag(flag))
 			{
 				result.Add(Create(flag));
 			}
 		}
-		if (result.Count == 0 && (flags is ToolBehaviour.None or ToolBehaviour.All))
+		if (result.Count == 0 && flags is ToolBehaviour.None)
 		{
 			result.Add(Create(ToolBehaviour.None));
 		}

@@ -10,10 +10,10 @@ namespace LLMDesktopAssistant.LLM.Services
 	[ChatService(typeof(IChatSettingsService))]
 	public class ChatSettingsService : IChatSettingsService
 	{
-		private ChatSettings _settings = SettingsManager.Get<ChatSettings>();
+		private ChatSettings? _settings;
 
 		/// <inheritdoc/>
-		public ChatSettings Settings => _settings;
+		public ChatSettings Settings => _settings ?? SettingsManager.Get<ChatSettings>();
 
 		/// <inheritdoc/>
 		public event EventHandler? SettingsChanged;

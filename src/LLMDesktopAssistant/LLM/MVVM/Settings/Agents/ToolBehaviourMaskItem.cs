@@ -11,8 +11,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 /// </summary>
 public class ToolBehaviourMaskItem : NotifyPropertyChanged
 {
-	private readonly ToolItemViewModel _owner;
+	private readonly ISetPolicyMaskFlag _owner;
 	private bool? _isChecked;
+	private readonly bool _isDefaultAsk;
 
 	/// <summary>
 	/// Value indicating whether the <see cref="Flag"/> is <see cref="ToolBehaviour.None"/>.
@@ -72,12 +73,14 @@ public class ToolBehaviourMaskItem : NotifyPropertyChanged
 		}
 	}
 
-	public ToolBehaviourMaskItem(ToolItemViewModel owner, ToolBehaviourFlagInfo flagInfo, bool? isChecked)
+	public ToolBehaviourMaskItem(ISetPolicyMaskFlag owner, ToolBehaviourFlagInfo flagInfo,
+		bool? isChecked, bool isDefaultAsk)
 	{
 		_owner = owner;
 		IsNone = flagInfo.Flag == ToolBehaviour.None;
 		Flag = flagInfo.Flag;
 		_isChecked = IsNone ? null : isChecked;
+		_isDefaultAsk = isDefaultAsk;
 
 		Icon = flagInfo.Icon;
 		DisplayName = flagInfo.DisplayName;
@@ -105,7 +108,7 @@ public class ToolBehaviourMaskItem : NotifyPropertyChanged
 		{
 			true => Locale.GetKey("settings.tool.behaviour_policy.auto_approve"),
 			false => Locale.GetKey("settings.tool.behaviour_policy.disallowed"),
-			_ => Locale.GetKey("settings.tool.behaviour_policy.default")
+			_ => _isDefaultAsk ? Locale.GetKey("settings.tool.behaviour_policy.ask") : Locale.GetKey("settings.tool.behaviour_policy.default")
 		};
 		StateColor = _isChecked switch
 		{
