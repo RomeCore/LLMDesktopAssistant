@@ -926,9 +926,13 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 	}
 
 	[Theory]
-	[InlineData("\t")] // 1 tab
-	[InlineData("")] // no indentation
-	public async Task Replace_CSharpCode_RealFailure2(string indentation)
+	[InlineData("\t", "\n\t\t")]
+	[InlineData("", "\n\t\t")]
+	[InlineData("\t", "\n")]
+	[InlineData("", "\n")]
+	[InlineData("\t", "")]
+	[InlineData("", "")]
+	public async Task Replace_CSharpCode_RealFailure2(string indentation, string extraNewline)
 	{
 		await TestReplaceAsync("""
 			using System.Net;
@@ -939,7 +943,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 				/// The result of a page fetch operation containing the raw HTML, HTTP status code, and response headers.
 				/// </summary>
 				public sealed record FetchResult(
-					string Html,
+					string Html,$NEWLINE$
 					int? HttpStatus,
 					IReadOnlyDictionary<string, string> Headers
 				);
@@ -953,7 +957,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 					private static readonly AsyncCache<string, FetchResult> _cache = new(
 						FetchCoreAsync,
 						slidingExpirationTime: TimeSpan.FromMinutes(15));
-			""", """
+			""".Replace("$NEWLINE$", extraNewline), """
 			using System.Net;
 			
 			namespace LLMDesktopAssistant.Utils.Web
@@ -976,7 +980,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 						FetchCoreAsync,
 						slidingExpirationTime: TimeSpan.FromMinutes(15));
 			""", Patch($"""
-			{indentation}	string Html,
+			{indentation}	string Html,{extraNewline}
 			{indentation}	int? HttpStatus,
 			{indentation}	IReadOnlyDictionary<string, string> Headers
 			{indentation});
