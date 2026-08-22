@@ -1016,4 +1016,562 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 		Assert.NotNull(properties["useRegex"]);
 		Assert.NotNull(properties["ignoreCase"]);
 	}
+
+	[Fact]
+	public async Task Replace_CSharpCode_RealFailure_GetCategoriesFormatting()
+	{
+		await TestReplaceAsync("""
+			namespace LLMDesktopAssistant.Tools;
+
+			/// <summary>
+			/// Maps <see cref="ToolBehaviour"/> flags to their corresponding <see cref="ToolBehaviourCategory"/>.
+			/// </summary>
+			public static class ToolBehaviourCategoryClassifier
+			{
+				/// <summary>
+				/// Returns the category of the given tool behaviour flag,
+				/// or <see cref="ToolBehaviourCategory.Unknown"/> for <see cref="ToolBehaviour.None"/>,
+				/// <see cref="ToolBehaviour.All"/>, or composite values spanning multiple categories.
+				/// </summary>
+				/// <param name="behaviour">The tool behaviour flag to classify.</param>
+				/// <returns>The corresponding category, or <see cref="ToolBehaviourCategory.Unknown"/> if the value cannot be classified.</returns>
+				public static ToolBehaviourCategory GetCategory(ToolBehaviour behaviour)
+				{
+					return behaviour switch
+					{
+						ToolBehaviour.None or ToolBehaviour.All => ToolBehaviourCategory.Unknown,
+
+						ToolBehaviour.FileDirectoryCreate or ToolBehaviour.FileRead or ToolBehaviour.FileEdit
+							or ToolBehaviour.FileDelete or ToolBehaviour.DirectoryRead
+							or ToolBehaviour.DirectoryEdit or ToolBehaviour.DirectoryDelete => ToolBehaviourCategory.Filesystem,
+
+						ToolBehaviour.SemanticMemoryRead or ToolBehaviour.SemanticMemoryWrite
+							or ToolBehaviour.SemanticMemoryDelete or ToolBehaviour.SemanticMemoryClear => ToolBehaviourCategory.SemanticMemory,
+
+						ToolBehaviour.DatabaseRead or ToolBehaviour.DatabaseChange
+							or ToolBehaviour.DatabaseCustomConnect => ToolBehaviourCategory.Database,
+
+						ToolBehaviour.ReadSecrets or ToolBehaviour.AccessOutsideWorkdir or ToolBehaviour.WorkdirChange
+							or ToolBehaviour.ClipboardWrite or ToolBehaviour.ClipboardRead => ToolBehaviourCategory.Security,
+
+						ToolBehaviour.InternetAccess => ToolBehaviourCategory.Network,
+
+						ToolBehaviour.LongRunningTask => ToolBehaviourCategory.Performance,
+
+						ToolBehaviour.ExecuteExternalProcess or ToolBehaviour.PossiblyUnexpected
+							or ToolBehaviour.RunTerminal => ToolBehaviourCategory.Execution,
+
+						ToolBehaviour.UserInteraction => ToolBehaviourCategory.UserInteraction,
+
+						ToolBehaviour.AgentExecution => ToolBehaviourCategory.Agents,
+
+						ToolBehaviour.ScriptAccess => ToolBehaviourCategory.Meta,
+
+						ToolBehaviour.MCP or ToolBehaviour.Meta or ToolBehaviour.AdHoc => ToolBehaviourCategory.Source,
+
+						_ => ToolBehaviourCategory.Unknown
+					};
+				}
+
+				public static ToolBehaviourCategory GetCategories(ToolBehaviour behaviourFlags)
+				{
+
+				}
+			}
+			""", """
+			namespace LLMDesktopAssistant.Tools;
+
+			/// <summary>
+			/// Maps <see cref="ToolBehaviour"/> flags to their corresponding <see cref="ToolBehaviourCategory"/>.
+			/// </summary>
+			public static class ToolBehaviourCategoryClassifier
+			{
+				/// <summary>
+				/// Returns the category of the given tool behaviour flag,
+				/// or <see cref="ToolBehaviourCategory.Unknown"/> for <see cref="ToolBehaviour.None"/>,
+				/// <see cref="ToolBehaviour.All"/>, or composite values spanning multiple categories.
+				/// </summary>
+				/// <param name="behaviour">The tool behaviour flag to classify.</param>
+				/// <returns>The corresponding category, or <see cref="ToolBehaviourCategory.Unknown"/> if the value cannot be classified.</returns>
+				public static ToolBehaviourCategory GetCategory(ToolBehaviour behaviour)
+				{
+					return behaviour switch
+					{
+						ToolBehaviour.None or ToolBehaviour.All => ToolBehaviourCategory.Unknown,
+
+						ToolBehaviour.FileDirectoryCreate or ToolBehaviour.FileRead or ToolBehaviour.FileEdit
+							or ToolBehaviour.FileDelete or ToolBehaviour.DirectoryRead
+							or ToolBehaviour.DirectoryEdit or ToolBehaviour.DirectoryDelete => ToolBehaviourCategory.Filesystem,
+
+						ToolBehaviour.SemanticMemoryRead or ToolBehaviour.SemanticMemoryWrite
+							or ToolBehaviour.SemanticMemoryDelete or ToolBehaviour.SemanticMemoryClear => ToolBehaviourCategory.SemanticMemory,
+
+						ToolBehaviour.DatabaseRead or ToolBehaviour.DatabaseChange
+							or ToolBehaviour.DatabaseCustomConnect => ToolBehaviourCategory.Database,
+
+						ToolBehaviour.ReadSecrets or ToolBehaviour.AccessOutsideWorkdir or ToolBehaviour.WorkdirChange
+							or ToolBehaviour.ClipboardWrite or ToolBehaviour.ClipboardRead => ToolBehaviourCategory.Security,
+
+						ToolBehaviour.InternetAccess => ToolBehaviourCategory.Network,
+
+						ToolBehaviour.LongRunningTask => ToolBehaviourCategory.Performance,
+
+						ToolBehaviour.ExecuteExternalProcess or ToolBehaviour.PossiblyUnexpected
+							or ToolBehaviour.RunTerminal => ToolBehaviourCategory.Execution,
+
+						ToolBehaviour.UserInteraction => ToolBehaviourCategory.UserInteraction,
+
+						ToolBehaviour.AgentExecution => ToolBehaviourCategory.Agents,
+
+						ToolBehaviour.ScriptAccess => ToolBehaviourCategory.Meta,
+
+						ToolBehaviour.MCP or ToolBehaviour.Meta or ToolBehaviour.AdHoc => ToolBehaviourCategory.Source,
+
+						_ => ToolBehaviourCategory.Unknown
+					};
+				}
+
+				/// <summary>
+				/// Returns the set of categories spanned by the given tool behaviour flags.
+				/// </summary>
+				/// <param name="behaviourFlags">The tool behaviour flags to classify.</param>
+				/// <returns>
+				/// A combination of <see cref="ToolBehaviourCategory"/> values covering all categories
+				/// of the set flags, or <see cref="ToolBehaviourCategory.Unknown"/> when
+				/// <paramref name="behaviourFlags"/> is <see cref="ToolBehaviour.None"/>.
+				/// </returns>
+				public static ToolBehaviourCategory GetCategories(ToolBehaviour behaviourFlags)
+				{
+					if (behaviourFlags is ToolBehaviour.None)
+					{
+						return ToolBehaviourCategory.Unknown;
+					}
+
+					var categories = ToolBehaviourCategory.Unknown;
+					foreach (var flag in Enum.GetValues<ToolBehaviour>())
+					{
+						if (flag is ToolBehaviour.None or ToolBehaviour.All)
+						{
+							continue;
+						}
+
+						if (behaviourFlags.HasFlag(flag))
+						{
+							categories |= GetCategory(flag);
+						}
+					}
+					return categories;
+				}
+			}
+			""", Patch("""
+			public static ToolBehaviourCategory GetCategories(ToolBehaviour behaviourFlags)
+			{
+
+			}
+			""", """
+			/// <summary>
+			/// Returns the set of categories spanned by the given tool behaviour flags.
+			/// </summary>
+			/// <param name="behaviourFlags">The tool behaviour flags to classify.</param>
+			/// <returns>
+			/// A combination of <see cref="ToolBehaviourCategory"/> values covering all categories
+			/// of the set flags, or <see cref="ToolBehaviourCategory.Unknown"/> when
+			/// <paramref name="behaviourFlags"/> is <see cref="ToolBehaviour.None"/>.
+			/// </returns>
+			public static ToolBehaviourCategory GetCategories(ToolBehaviour behaviourFlags)
+			{
+				if (behaviourFlags is ToolBehaviour.None)
+				{
+					return ToolBehaviourCategory.Unknown;
+				}
+
+				var categories = ToolBehaviourCategory.Unknown;
+				foreach (var flag in Enum.GetValues<ToolBehaviour>())
+				{
+					if (flag is ToolBehaviour.None or ToolBehaviour.All)
+					{
+						continue;
+					}
+
+					if (behaviourFlags.HasFlag(flag))
+					{
+						categories |= GetCategory(flag);
+					}
+				}
+				return categories;
+			}
+			"""));
+	}
+
+
+	[Fact]
+	public async Task Replace_PythonCode_NestedBlock_DeeperReplacement_PreservesRelativeNesting()
+	{
+		await TestReplaceAsync("""
+			def process(items):
+			    for item in items:
+			        handle(item)
+			""", """
+			def process(items):
+			    for item in items:
+			        if item.valid:
+			            handle(item)
+			        else:
+			            skip(item)
+			""", Patch("""
+			for item in items:
+			    handle(item)
+			""", """
+			for item in items:
+			    if item.valid:
+			        handle(item)
+			    else:
+			        skip(item)
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_CSharpCode_ClosingBrace_AlignsWithFile()
+	{
+		await TestReplaceAsync("""
+			public class Service
+			{
+				public void Run()
+				{
+					if (a)
+					{
+						DoA();
+					}
+				}
+			}
+			""", """
+			public class Service
+			{
+				public void Run()
+				{
+					if (a && b)
+					{
+						DoA();
+						DoB();
+					}
+				}
+			}
+			""", Patch("""
+			if (a)
+			{
+				DoA();
+			}
+			""", """
+			if (a && b)
+			{
+				DoA();
+				DoB();
+			}
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_CSharpCode_BlankLineInsideMatch_RemovedWithBlock()
+	{
+		await TestReplaceAsync("""
+			public sealed record FetchResult(
+				string Html,
+
+				int? HttpStatus,
+				IReadOnlyDictionary<string, string> Headers
+			);
+			""", """
+			public sealed record FetchResult(
+				string Html,
+				IReadOnlyDictionary<string, string> Headers
+			);
+			""", Patch("""
+			string Html,
+
+			int? HttpStatus,
+			""", """
+			string Html,
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_PythonCode_MultilineBlock_ReplacedBySingleLine_NoDoubledIndent()
+	{
+		await TestReplaceAsync("""
+			def foo():
+			    if x:
+			        do_something()
+			    else:
+			        do_other()
+			""", """
+			def foo():
+			    pass
+			""", Patch("""
+			if x:
+			    do_something()
+			else:
+			    do_other()
+			""", """
+			pass
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_CSharpCode_TrailingCommentAfterClosingBrace_Preserved()
+	{
+		await TestReplaceAsync("""
+			private void Run()
+			{
+				if (x)
+				{
+					DoIt();
+				} // end if
+			}
+			""", """
+			private void Run()
+			{
+				if (x)
+				{
+					DoIt();
+					Cleanup();
+				} // end if
+			}
+			""", Patch("""
+			if (x)
+			{
+				DoIt();
+			}
+			""", """
+			if (x)
+			{
+				DoIt();
+				Cleanup();
+			}
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_CSharpCode_TrailingCommentInsideBlock_Preserved()
+	{
+		await TestReplaceAsync("""
+			private void Run()
+			{
+				if (x)
+				{
+					DoIt(); // dangerous
+				}
+			}
+			""", """
+			private void Run()
+			{
+				if (x)
+				{
+					DoIt(); // dangerous
+					Cleanup();
+				}
+			}
+			""", Patch("""
+			if (x)
+			{
+				DoIt();
+			}
+			""", """
+			if (x)
+			{
+				DoIt();
+				Cleanup();
+			}
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_PythonCode_MultipleOccurrences_EachReIndentedToOwnLevel()
+	{
+		await TestReplaceAsync("""
+			def a():
+			    foo()
+			    bar()
+
+			def b():
+			    if x:
+			        foo()
+			        bar()
+			""", """
+			def a():
+			    foo()
+			    bar()
+			    baz()
+
+			def b():
+			    if x:
+			        foo()
+			        bar()
+			        baz()
+			""", Patch("""
+			foo()
+			bar()
+			""", """
+			foo()
+			bar()
+			baz()
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_CSharpCode_DedentedReplacement_ReIndentedToFile()
+	{
+		await TestReplaceAsync("""
+			namespace App
+			{
+				public class Service
+				{
+					public void Run()
+					{
+						if (a)
+						{
+							DoA();
+						}
+					}
+				}
+			}
+			""", """
+			namespace App
+			{
+				public class Service
+				{
+					public void Run()
+					{
+						if (a)
+						{
+							DoA();
+							DoB();
+						}
+					}
+				}
+			}
+			""", Patch("""
+						if (a)
+						{
+							DoA();
+						}
+			""", """
+			if (a)
+			{
+				DoA();
+				DoB();
+			}
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_CSharpCode_TextBeforeMatchOnFirstLine_Preserved()
+	{
+		await TestReplaceAsync("""
+			class Program
+			{
+				static void Main()
+				{
+					var options = new Options
+					{
+						Mode = Mode.Fast,
+						Retries = 3;
+					};
+					Run(options);
+				}
+			}
+			""", """
+			class Program
+			{
+				static void Main()
+				{
+					var options = new Options
+					{
+						Mode = Mode.Fast,
+						Retries = 5,
+						Timeout = TimeSpan.FromSeconds(30)
+					};
+					Run(options);
+				}
+			}
+			""", Patch("""
+			= new Options
+			{
+				Mode = Mode.Fast,
+				Retries = 3;
+			};
+			""", """
+			= new Options
+			{
+				Mode = Mode.Fast,
+				Retries = 5,
+				Timeout = TimeSpan.FromSeconds(30)
+			};
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_CSharpCode_Record_BlankLineInside_ClosingParenAligned()
+	{
+		await TestReplaceAsync("""
+			namespace App
+			{
+				public sealed record Result(
+					string Name,
+					int Count,
+
+					string? Note
+				);
+			}
+			""", """
+			namespace App
+			{
+				public sealed record Result(
+					string Name,
+					int Count,
+					string? Note,
+					string? Extra
+				);
+			}
+			""", Patch("""
+			public sealed record Result(
+				string Name,
+				int Count,
+
+				string? Note
+			);
+			""", """
+			public sealed record Result(
+				string Name,
+				int Count,
+				string? Note,
+				string? Extra
+			);
+			"""));
+	}
+
+	[Fact]
+	public async Task Replace_PythonCode_BlankLinesInReplacement_StayEmpty()
+	{
+		await TestReplaceAsync("""
+			def foo():
+			    if x:
+			        a()
+			        b()
+			""", """
+			def foo():
+			    if x:
+			        a()
+
+			        c()
+			""", Patch("""
+			if x:
+			    a()
+			    b()
+			""", """
+			if x:
+			    a()
+
+			    c()
+			"""));
+	}
 }
