@@ -49,7 +49,7 @@ public class MetaToolBehaviourToggle : NotifyPropertyChanged
 public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 {
 	private readonly MetaToolInfo _tool;
-	private readonly IMetaToolManagementService? _manager;
+	private readonly IMetaToolManagementService _manager;
 	private readonly IMetaToolParser _parser;
 	private readonly IMetaToolEngineDescriptor _descriptor;
 	private readonly IReadOnlyList<IMetaToolEngine> _engines;
@@ -75,13 +75,14 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 	/// </summary>
 	/// <param name="tool">The tool to edit.</param>
 	/// <param name="manager">The meta tool management service used to save changes.</param>
+	/// <param name="parser">The meta tool parser used to parse tool scripts.</param>
 	/// <param name="engines">The meta tool engines registered in the chat container.</param>
-	public MetaToolEditorDialogViewModel(MetaToolInfo tool, IMetaToolManagementService? manager,
-		IEnumerable<IMetaToolEngine> engines)
+	public MetaToolEditorDialogViewModel(MetaToolInfo tool, IMetaToolManagementService manager,
+		IMetaToolParser parser, IEnumerable<IMetaToolEngine> engines)
 	{
 		_tool = tool;
 		_manager = manager;
-		_parser = ServiceRegistry.Provider.GetRequiredService<IMetaToolParser>();
+		_parser = parser;
 		_engines = engines.ToArray();
 
 		var extension = Path.GetExtension(tool.Path ?? string.Empty);
@@ -363,7 +364,11 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 			PreviewDescription = info.Description;
 			PreviewCategory = info.Category;
 			PreviewApprovalLevel = LocalizeApprovalLevel(info.ApprovalLevel);
-			PreviewSchema = info.ArgumentSchema?.ToJsonString(new JsonSerializerOptions { WriteIndented = true }) ?? "{}";
+			PreviewSchema = info.ArgumentSchema?.ToJsonString(new JsonSerializerOptions
+			{
+				WriteIndented = true,
+				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+			}) ?? "{}";
 			PreviewBehaviours = ToolBehaviourFlagInfo.CreateForFlags(info.Behaviours);
 		}
 		catch (Exception ex)
@@ -374,9 +379,6 @@ public class MetaToolEditorDialogViewModel : NotifyPropertyChanged
 
 	private async Task SaveAsync()
 	{
-		if (_manager is null)
-			return;
-
 		try
 		{
 			if (IsCodeMode)

@@ -181,6 +181,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				MaterialIconKind.Wrench,
 				() => new ChatToolsSettingsViewModel(Settings.Tools,
 					Chat.Services.GetRequiredService<IMetaToolManagementService>(),
+					Chat.Services.GetRequiredService<IMetaToolParser>(),
 					Chat.Services.GetServices<IMetaToolEngine>())));
 
 			SettingsTree.Add(

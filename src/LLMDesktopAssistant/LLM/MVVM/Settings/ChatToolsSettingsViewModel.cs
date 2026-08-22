@@ -102,9 +102,10 @@ public class MetaToolScopeFilterItem
 [ViewModelFor(typeof(ChatToolsSettingsView))]
 public class ChatToolsSettingsViewModel : ViewModelBase
 {
-	private readonly IMetaToolManagementService? _metaToolManager;
-	private readonly IExplorerOpener? _explorerOpener;
+	private readonly IMetaToolManagementService _metaToolManager;
+	private readonly IMetaToolParser _parser;
 	private readonly IReadOnlyList<IMetaToolEngine> _engines;
+	private readonly IExplorerOpener? _explorerOpener;
 	private ImmutableList<MetaToolCardViewModel> _allCards = [];
 	private string _searchText = string.Empty;
 	private MetaToolLanguageFilterItem? _selectedLanguageFilter;
@@ -116,13 +117,15 @@ public class ChatToolsSettingsViewModel : ViewModelBase
 	/// </summary>
 	/// <param name="settings">The chat tool settings to edit.</param>
 	/// <param name="metaToolManager">The meta tool management service used to list, create and edit tools.</param>
+	/// <param name="parser">The meta tool parser used to parse tool scripts.</param>
 	/// <param name="engines">The meta tool engines registered in the chat container.</param>
-	public ChatToolsSettingsViewModel(ChatToolSettings settings, IMetaToolManagementService? metaToolManager = null,
-		IEnumerable<IMetaToolEngine>? engines = null)
+	public ChatToolsSettingsViewModel(ChatToolSettings settings, IMetaToolManagementService metaToolManager,
+		IMetaToolParser parser, IEnumerable<IMetaToolEngine> engines)
 	{
 		ToolSettings = settings;
 		_metaToolManager = metaToolManager;
-		_engines = engines?.ToArray() ?? [];
+		_parser = parser;
+		_engines = engines.ToArray();
 		_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
 
 		_selectedSourcesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.SourcesInheritance);
@@ -328,7 +331,7 @@ public class ChatToolsSettingsViewModel : ViewModelBase
 
 	private async Task EditMetaToolAsync(MetaToolCardViewModel card)
 	{
-		var dialog = new MetaToolEditorDialogViewModel(card.Info, _metaToolManager, _engines);
+		var dialog = new MetaToolEditorDialogViewModel(card.Info, _metaToolManager, _parser, _engines);
 #pragma warning disable CS8605 // Unboxing is safe: the dialog always returns bool.
 		var result = (bool)await DialogManager.ShowDialogAsync(dialog);
 #pragma warning restore CS8605
@@ -379,7 +382,7 @@ public class ChatToolsSettingsViewModel : ViewModelBase
 			if (info is null)
 				return;
 
-			var editorDialog = new MetaToolEditorDialogViewModel(info, _metaToolManager, _engines);
+			var editorDialog = new MetaToolEditorDialogViewModel(info, _metaToolManager, _parser, _engines);
 #pragma warning disable CS8605 // Unboxing is safe: the dialog always returns bool.
 			var result = (bool)await DialogManager.ShowDialogAsync(editorDialog);
 #pragma warning restore CS8605
