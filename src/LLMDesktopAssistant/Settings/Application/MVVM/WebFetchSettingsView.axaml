@@ -10,7 +10,7 @@
 
 	<StackPanel Margin="10" Spacing="8">
 
-		<TextBlock Text="{loc:Loc appsettings.web.title}"
+		<TextBlock Text="{loc:Loc appsettings.web.fetch.title}"
 				   FontWeight="Bold"
 				   FontSize="{DynamicResource FontSizeL}"/>
 

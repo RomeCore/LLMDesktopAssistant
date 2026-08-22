@@ -48,9 +48,9 @@ namespace LLMDesktopAssistant.Settings.Application.MVVM
 
 		private static string LevelKey(WebFetchLevel level) => level switch
 		{
-			WebFetchLevel.HttpClient => "settings.web.level.http",
-			WebFetchLevel.Browser => "settings.web.level.browser",
-			WebFetchLevel.StealthBrowser => "settings.web.level.stealth",
+			WebFetchLevel.HttpClient => "appsettings.web.level.http",
+			WebFetchLevel.Browser => "appsettings.web.level.browser",
+			WebFetchLevel.StealthBrowser => "appsettings.web.level.stealth",
 			_ => throw new ArgumentOutOfRangeException(nameof(level))
 		};
 
@@ -81,13 +81,13 @@ namespace LLMDesktopAssistant.Settings.Application.MVVM
 		/// Gets the localized status text for the Playwright runtime.
 		/// </summary>
 		public string PlaywrightStatusText => LocalizationManager.LocalizeStatic(
-			IsPlaywrightInstalled ? "settings.web.installed" : "settings.web.not_installed");
+			IsPlaywrightInstalled ? "appsettings.web.installed" : "appsettings.web.not_installed");
 
 		/// <summary>
 		/// Gets the localized status text for the stealth CloakBrowser runtime.
 		/// </summary>
 		public string CloakBrowserStatusText => LocalizationManager.LocalizeStatic(
-			IsCloakBrowserInstalled ? "settings.web.installed" : "settings.web.not_installed");
+			IsCloakBrowserInstalled ? "appsettings.web.installed" : "appsettings.web.not_installed");
 
 		/// <summary>
 		/// Gets a value indicating whether the Playwright runtime can be installed now.

@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Settings.Application.MVVM
 			get
 			{
 				if (string.IsNullOrEmpty(Name))
-					return LocalizationManager.LocalizeStatic("settings.language.system");
+					return LocalizationManager.LocalizeStatic("appsettings.language.system");
 
 				try
 				{
