@@ -14,6 +14,8 @@ exposure.reasoning.hint: Expose the reasoning/thoughts of this agent to other ag
 exposure.tool_calls: Tool calls
 exposure.tool_calls.hint: Expose tool calls and their results from this agent to other agents.
 info.clear_image: Clear image
+info.custom_model: Custom model
+info.custom_model.hint: The custom model used by this agent. If not set, the chat's default model is used.
 info.description: Description
 info.description.hint: Provide a brief description of the agent's role and purpose. This helps other agents understand when to delegate tasks.
 info.description.placeholder: Enter agent description...

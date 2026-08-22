@@ -14,6 +14,8 @@ exposure.reasoning.hint: Показывать рассуждения и мысл
 exposure.tool_calls: Вызовы инструментов
 exposure.tool_calls.hint: Показывать вызовы инструментов и их результаты от этого агента другим агентам.
 info.clear_image: Удалить аватарку
+info.custom_model: Кастомная модель
+info.custom_model.hint: Кастомная модель этого агента. Если не задана, используется модель чата по умолчанию.
 info.description: Описание
 info.description.hint: Кратко опишите роль и назначение агента. Это помогает другим агентам понимать, когда делегировать задачи.
 info.description.placeholder: Введите описание агента...

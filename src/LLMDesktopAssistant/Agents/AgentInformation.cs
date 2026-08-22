@@ -43,5 +43,16 @@ namespace LLMDesktopAssistant.Agents
 			get => _identifyAsUser;
 			set => SetProperty(ref _identifyAsUser, value);
 		}
+
+		private string _customModel = string.Empty;
+		/// <summary>
+		/// The custom model of the agent in format "Provider$Model" or "Provider$Model$Modifier".
+		/// If empty, the chat's default model is used.
+		/// </summary>
+		public string CustomModel
+		{
+			get => _customModel;
+			set => SetProperty(ref _customModel, value);
+		}
 	}
 }

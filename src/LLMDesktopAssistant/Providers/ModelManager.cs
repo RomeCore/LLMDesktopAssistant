@@ -15,25 +15,32 @@ namespace LLMDesktopAssistant.Providers
 	{
 		private readonly ModelProvidersConfiguration providers = SettingsManager.Get<ModelProvidersConfiguration>();
 		private readonly ModelDescriptorsCache cache = SettingsManager.Get<ModelDescriptorsCache>();
+		private readonly ModelModifiersConfiguration modifiers = SettingsManager.Get<ModelModifiersConfiguration>();
 		private readonly Dictionary<string, ModelProviderType> providerTypesMap = providerTypes.ToDictionary(t => t.Id);
 
 		public bool IsModelAvaliable(string fullName)
 		{
-			var (providerName, modelName) = ParseFullName(fullName);
-			var foundProvider = providers.ModelProviders.FirstOrDefault(p => p.Name == providerName);
+			if (!ModelReference.TryParse(fullName, out var reference))
+				return false;
+			var foundProvider = providers.ModelProviders.FirstOrDefault(p => p.Name == reference.Provider);
 			if (foundProvider == null)
 			{
-				Log.Warning("Could not find provider for model {ModelName}: {ProviderName}", modelName, providerName);
+				Log.Warning("Could not find provider for model {ModelName}: {ProviderName}", reference.ModelId, reference.Provider);
 				return false;
 			}
-			return foundProvider.Models.Concat(foundProvider.CustomModels).Any(m => m.Name == modelName);
+			if (!foundProvider.Models.Concat(foundProvider.CustomModels).Any(m => m.Name == reference.ModelId))
+				return false;
+			return reference.Modifier is null || FindModifier(reference.Modifier) is not null;
 		}
 
 		public LLModel GetModel(string fullName)
 		{
-			var (providerName, modelName) = ParseFullName(fullName);
-			var client = CreateClient(providerName);
-			return new LLModel(client, modelName);
+			var reference = ModelReference.Parse(fullName);
+			var client = CreateClient(reference.Provider);
+			var model = new LLModel(client, reference.ModelId);
+			if (reference.Modifier is not null)
+				model = model.WithProperties(FindModifier(reference.Modifier).ToCompletionProperties());
+			return model;
 		}
 
 		public LLModel? TryGetModel(string fullName)
@@ -83,6 +90,8 @@ namespace LLMDesktopAssistant.Providers
 					});
 			});
 		}
+
+		public IReadOnlyList<ModelModifier> ListModifiers() => modifiers.Modifiers;
 
 		public async Task<bool> CheckConnectionAsync(ModelProviderConfiguration provider, CancellationToken cancellationToken = default)
 		{
@@ -168,12 +177,12 @@ namespace LLMDesktopAssistant.Providers
 			};
 		}
 
-		private static (string ProviderName, string ModelName) ParseFullName(string fullName)
+		private ModelModifier FindModifier(string name)
 		{
-			var split = fullName.Split('$', count: 2);
-			if (split.Length < 2)
-				throw new ArgumentException("Invalid model full name format.", nameof(fullName));
-			return (ProviderName: split[0], ModelName: split[1]);
+			var modifier = modifiers.Modifiers.FirstOrDefault(m => m.Name == name);
+			if (modifier is null)
+				throw new ArgumentException($"Modifier '{name}' not found in the model modifiers configuration.", nameof(name));
+			return modifier;
 		}
 	}
 }

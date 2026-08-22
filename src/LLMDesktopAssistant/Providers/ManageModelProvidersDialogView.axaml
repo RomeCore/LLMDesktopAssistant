@@ -49,6 +49,13 @@
 					<TextBlock Text="{loc:Loc settings.provider.delete}"/>
 				</StackPanel>
 			</Button>
+
+			<Button Command="{Binding ManageModifiersCommand}">
+				<StackPanel Orientation="Horizontal" Spacing="4">
+					<ico:MaterialIcon Kind="Tune" Width="14" Height="14"/>
+					<TextBlock Text="{loc:Loc settings.provider.modifiers}"/>
+				</StackPanel>
+			</Button>
 		</StackPanel>
 
 		<!-- Provider list -->

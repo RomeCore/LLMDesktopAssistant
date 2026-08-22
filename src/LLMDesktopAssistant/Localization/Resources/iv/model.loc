@@ -25,10 +25,41 @@ provider.ollama: Ollama
 provider.openai: OpenAI
 provider.openai-compat: OpenAI Compatible
 provider.openrouter: OpenRouter
+modifier.add: Add
+modifier.add.title: Add modifier
+modifier.delete: Delete
+modifier.edit: Edit
+modifier.edit.title: Edit modifier
+modifier.manage.title: Model modifiers
+modifier.max_tokens.label: Max tokens
+modifier.move_down: Move down
+modifier.move_up: Move up
+modifier.name.invalid.error: Modifier name must not contain '$'
+modifier.name.duplicate.error: A modifier with this name already exists
+modifier.name.label: Name
+modifier.name.placeholder: Unique modifier name for identification
+modifier.hint.label: Hint
+modifier.hint.placeholder: Short description of the modifier's purpose
+modifier.name.required.error: Modifier name is required
+modifier.parameter.name: Name
+modifier.parameter.value: Value (JSON)
+modifier.parameters.label: Additional parameters
+modifier.reasoning.default: Default
+modifier.reasoning.disabled: Disabled
+modifier.reasoning.high: High
+modifier.reasoning.label: Reasoning
+modifier.reasoning.low: Low
+modifier.reasoning.maximum: Maximum
+modifier.reasoning.medium: Medium
+modifier.reasoning.minimal: Minimal
+modifier.reasoning.none: None
+modifier.reasoning.xhigh: Extra high
+modifier.temperature.label: Temperature
 selector.available_models: Available Models
 selector.deselect_all: Deselect all
 selector.load.error: Failed to load models
 selector.manage.tooltip: Manage providers & models
+selector.modifier.none: — None —
 selector.no_models: No models available
 selector.none: — None —
 selector.refresh: Refresh Models

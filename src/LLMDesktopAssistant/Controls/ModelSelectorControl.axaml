@@ -1,27 +1,31 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:local="using:LLMDesktopAssistant.Controls"
-			 xmlns:ico="using:Material.Icons.Avalonia"
-			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="40"
-			 x:Class="LLMDesktopAssistant.Controls.ModelSelectorControl">
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 xmlns:local="using:LLMDesktopAssistant.Controls"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="40"
+						 x:Class="LLMDesktopAssistant.Controls.ModelSelectorControl">
 
-	<StackPanel Orientation="Horizontal" Spacing="4"
+	<StackPanel Orientation="Horizontal" Spacing="0"
 							x:Name="SelectorRoot">
 
-		<ComboBox x:Name="Selector"
+		<ComboBox x:Name="ModelSelector"
 							MinWidth="150"
-							VerticalAlignment="Stretch">
+							VerticalAlignment="Stretch"
+							CornerRadius="8,0,0,8">
 
 			<ComboBox.DataTemplates>
 
 				<DataTemplate DataType="local:ModelItemWrapper">
-					<StackPanel Orientation="Horizontal" Spacing="4">
-						<TextBlock Text="{Binding DisplayText}"
-										   VerticalAlignment="Center"/>
-					</StackPanel>
+					<Panel>
+						<TextBlock Text="{loc:Loc {Binding DisplayText}}"
+											 IsVisible="{Binding !IsInvalid}"/>
+						<TextBlock Text="{loc:Loc {Binding DisplayText}}"
+											 Foreground="OrangeRed"
+											 IsVisible="{Binding IsInvalid}"/>
+					</Panel>
 				</DataTemplate>
 
 				<DataTemplate DataType="local:ComboBoxHeaderItem">
@@ -35,10 +39,56 @@
 
 				<DataTemplate DataType="local:ComboBoxEmptyItem">
 					<TextBlock Foreground="Gray"
-									   Text="{Binding Title}"/>
+										 Text="{Binding Title}"/>
 				</DataTemplate>
 
 			</ComboBox.DataTemplates>
+
+		</ComboBox>
+
+		<ComboBox x:Name="ModifierSelector"
+							MinWidth="100"
+							VerticalAlignment="Stretch"
+							CornerRadius="0">
+
+			<ComboBox.ItemTemplate>
+
+				<DataTemplate DataType="local:ModifierSelectorItem">
+					<StackPanel Orientation="Horizontal" Spacing="8">
+						<Panel IsVisible="{Binding !IsHintVisible}">
+							<TextBlock Text="{loc:Loc {Binding DisplayText}}"
+												 IsVisible="{Binding !IsInvalid}"/>
+							<TextBlock Text="{loc:Loc {Binding DisplayText}}"
+												 Foreground="OrangeRed"
+												 IsVisible="{Binding IsInvalid}"/>
+						</Panel>
+						<TextBlock Text="{Binding Hint}"
+											 IsVisible="{Binding IsHintVisible}"/>
+					</StackPanel>
+				</DataTemplate>
+
+			</ComboBox.ItemTemplate>
+
+			<ComboBox.Styles>
+				<Style Selector="ComboBoxItem">
+					<Setter Property="ContentTemplate">
+						<Setter.Value>
+							<DataTemplate DataType="local:ModifierSelectorItem">
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<TextBlock Text="{loc:Loc {Binding DisplayText}}"
+														 IsVisible="{Binding !IsInvalid}"/>
+									<TextBlock Text="{loc:Loc {Binding DisplayText}}"
+														 Foreground="OrangeRed"
+														 IsVisible="{Binding IsInvalid}"/>
+									<TextBlock Text="{Binding Hint}"
+														 IsVisible="{Binding IsHintVisible}"
+														 Opacity="0.6"/>
+								</StackPanel>
+							</DataTemplate>
+						</Setter.Value>
+					</Setter>
+				</Style>
+			</ComboBox.Styles>
 
 		</ComboBox>
 
@@ -46,7 +96,8 @@
 						Classes="IconButton"
 						VerticalAlignment="Center"
 						Click="SettingsButton_Click"
-						ToolTip.Tip="{loc:Loc model.selector.manage.tooltip}">
+						ToolTip.Tip="{loc:Loc model.selector.manage.tooltip}"
+						CornerRadius="0,8,8,0">
 			<ico:MaterialIcon Kind="RobotExcited"/>
 		</Button>
 

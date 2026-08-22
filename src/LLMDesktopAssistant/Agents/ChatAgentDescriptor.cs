@@ -45,16 +45,6 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _executionConditionsSettings, value);
 		}
 
-		private AgentGenerationSettings _generationSettings = new();
-		/// <summary>
-		/// The generation settings for the agent.
-		/// </summary>
-		public AgentGenerationSettings Generation
-		{
-			get => _generationSettings;
-			set => SetProperty(ref _generationSettings, value);
-		}
-
 		private AgentReadSettings _readSettings = new();
 		/// <summary>
 		/// The settings that determine what the agent can read.

@@ -7,21 +7,26 @@ namespace LLMDesktopAssistant.Providers
 		/// <summary>
 		/// Checks if a model is available.
 		/// </summary>
-		/// <param name="fullName">The full name of the model in format {ClientName}${ModelName}, OpenAI$gpt-3.5-turbo for example.</param>
+		/// <param name="fullName">The full name of the model in format {Provider}${Model} or {Provider}${Model}${Modifier},
+		/// OpenAI$gpt-3.5-turbo or DeepSeek$deepseek-v4-flash$Max for example.</param>
 		/// <returns>True if the model is available, otherwise false.</returns>
 		bool IsModelAvaliable(string fullName);
 
 		/// <summary>
 		/// Gets a model instance by its full name. The model is ready for running.
+		/// If the full name contains a modifier, its generation parameters are applied to the model.
 		/// </summary>
-		/// <param name="fullName">The full name of the model in format {ClientName}${ModelName}, OpenAI$gpt-3.5-turbo for example.</param>
+		/// <param name="fullName">The full name of the model in format {Provider}${Model} or {Provider}${Model}${Modifier},
+		/// OpenAI$gpt-3.5-turbo or DeepSeek$deepseek-v4-flash$Max for example.</param>
 		/// <returns>A model instance if available, otherwise throws an exception.</returns>
 		LLModel GetModel(string fullName);
 
 		/// <summary>
 		/// Tries to get a model instance by its full name. The model is ready for running.
+		/// If the full name contains a modifier, its generation parameters are applied to the model.
 		/// </summary>
-		/// <param name="fullName">The full name of the model in format {ClientName}${ModelName}, OpenAI$gpt-3.5-turbo for example.</param>
+		/// <param name="fullName">The full name of the model in format {Provider}${Model} or {Provider}${Model}${Modifier},
+		/// OpenAI$gpt-3.5-turbo or DeepSeek$deepseek-v4-flash$Max for example.</param>
 		/// <returns>A model instance if available, otherwise null.</returns>
 		LLModel? TryGetModel(string fullName);
 
@@ -36,6 +41,12 @@ namespace LLMDesktopAssistant.Providers
 		/// </summary>
 		/// <returns>A collection of model items filtered by selection.</returns>
 		IEnumerable<ModelItem> ListSelectedModels();
+
+		/// <summary>
+		/// Lists all available model modifiers.
+		/// </summary>
+		/// <returns>A collection of model modifiers.</returns>
+		IReadOnlyList<ModelModifier> ListModifiers();
 
 		/// <summary>
 		/// Checks if a connection to a model provider is available and configuration is valid.

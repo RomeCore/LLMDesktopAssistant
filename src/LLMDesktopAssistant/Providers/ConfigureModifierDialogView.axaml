@@ -1,0 +1,152 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 xmlns:local="using:LLMDesktopAssistant.Providers"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 mc:Ignorable="d" d:DesignWidth="460" d:DesignHeight="520"
+						 x:Class="LLMDesktopAssistant.Providers.ConfigureModifierDialogView"
+						 x:DataType="local:ConfigureModifierDialogViewModel"
+						 Name="VMRoot">
+
+	<StackPanel Orientation="Vertical" Spacing="10" Margin="16" Width="440">
+
+		<!-- Header -->
+		<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,6">
+			<ico:MaterialIcon Kind="Tune" Width="20" Height="20"
+												VerticalAlignment="Center"
+												Foreground="{DynamicResource PrimaryAccentBrush}"/>
+			<TextBlock Text="{Binding TitleText}"
+								 FontSize="{DynamicResource FontSizeL}"
+								 FontWeight="Bold"
+								 VerticalAlignment="Center"/>
+		</StackPanel>
+
+		<!-- Error message -->
+		<Border Background="#33FF0000"
+						CornerRadius="4"
+						Padding="8"
+						IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+			<TextBlock Text="{Binding ErrorMessage}"
+								 Foreground="Red"/>
+		</Border>
+
+		<!-- Name -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			<TextBlock Text="{loc:Loc model.modifier.name.label}"
+								 FontWeight="Medium"/>
+			<TextBox Text="{Binding EditingModifier.Name, Mode=TwoWay}"
+							 PlaceholderText="{loc:Loc model.modifier.name.placeholder}"/>
+		</StackPanel>
+		
+		<!-- Hint -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			<TextBlock Text="{loc:Loc model.modifier.hint.label}"
+								 FontWeight="Medium"/>
+			<TextBox Text="{Binding EditingModifier.Hint, Mode=TwoWay}"
+							 PlaceholderText="{loc:Loc model.modifier.hint.placeholder}"/>
+		</StackPanel>
+
+		<!-- Reasoning -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			<TextBlock Text="{loc:Loc model.modifier.reasoning.label}"
+								 FontWeight="Medium"/>
+			<StackPanel Orientation="Horizontal" Spacing="4">
+				<CheckBox IsChecked="{Binding EditingModifier.EnableReasoningMode}"/>
+				<ComboBox ItemsSource="{Binding ReasoningLevels}"
+									SelectedItem="{Binding SelectedReasoning, Mode=TwoWay}"
+									IsEnabled="{Binding EditingModifier.EnableReasoningMode}"
+									HorizontalAlignment="Stretch">
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="local:ModifierReasoningLevelItem">
+							<TextBlock Text="{Binding DisplayName}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+			</StackPanel>
+		</StackPanel>
+
+		<!-- Temperature -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			<TextBlock Text="{loc:Loc model.modifier.temperature.label}"
+								 FontWeight="Medium"/>
+			<StackPanel Orientation="Horizontal" Spacing="4">
+				<CheckBox IsChecked="{Binding EditingModifier.EnableTemperature}"/>
+				<NumericUpDown Value="{Binding EditingModifier.Temperature, Mode=TwoWay}"
+											 Minimum="0" Maximum="2" Increment="0.1"
+											 FormatString="0.##"
+											 IsEnabled="{Binding EditingModifier.EnableTemperature}"
+											 HorizontalAlignment="Stretch"/>
+			</StackPanel>
+		</StackPanel>
+
+		<!-- Max tokens -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			<TextBlock Text="{loc:Loc model.modifier.max_tokens.label}"
+								 FontWeight="Medium"/>
+			<StackPanel Orientation="Horizontal" Spacing="4">
+				<CheckBox IsChecked="{Binding EditingModifier.EnableMaxTokens}"/>
+				<NumericUpDown Value="{Binding EditingModifier.MaxTokens, Mode=TwoWay}"
+											 Minimum="0" Maximum="1000000" Increment="1024"
+											 FormatString="0"
+											 IsEnabled="{Binding EditingModifier.EnableMaxTokens}"
+											 HorizontalAlignment="Stretch"/>
+			</StackPanel>
+		</StackPanel>
+
+		<!-- Additional parameters -->
+		<StackPanel Orientation="Vertical" Spacing="4">
+			<StackPanel Orientation="Horizontal" Spacing="8">
+				<TextBlock Text="{loc:Loc model.modifier.parameters.label}"
+									 FontWeight="Medium"
+									 VerticalAlignment="Center"/>
+				<Button Command="{Binding AddParameterCommand}"
+								Classes="IconButton"
+								ToolTip.Tip="{loc:Loc common.add}">
+					<ico:MaterialIcon Kind="Plus" Width="14" Height="14"/>
+				</Button>
+			</StackPanel>
+
+			<ItemsControl ItemsSource="{Binding EditingModifier.AdditionalParameters}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Spacing="4"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="local:AdditionalGenerationParameter">
+						<Grid ColumnDefinitions="Auto,*,*,Auto">
+							<CheckBox IsChecked="{Binding Enabled}"
+												VerticalAlignment="Center"/>
+							<TextBox Grid.Column="1"
+											 Text="{Binding ParameterName, Mode=TwoWay}"
+											 PlaceholderText="{loc:Loc model.modifier.parameter.name}"
+											 Margin="4,0"/>
+							<TextBox Grid.Column="2"
+											 Text="{Binding ParameterValue, Mode=TwoWay}"
+											 PlaceholderText="{loc:Loc model.modifier.parameter.value}"
+											 Margin="4,0"/>
+							<Button Grid.Column="3"
+											Classes="IconButton"
+											Command="{Binding #VMRoot.DataContext.RemoveParameterCommand}"
+											CommandParameter="{Binding}"
+											ToolTip.Tip="{loc:Loc common.delete}">
+								<ico:MaterialIcon Kind="Delete" Width="14" Height="14"/>
+							</Button>
+						</Grid>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</StackPanel>
+
+		<!-- Buttons -->
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
+			<Button Content="{loc:Loc common.close}"
+							Command="{Binding CloseCommand}"
+							Classes="Secondary"/>
+		</StackPanel>
+
+	</StackPanel>
+
+</UserControl>

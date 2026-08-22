@@ -5,6 +5,7 @@
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
 			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentInfoSettingsView"
 			 x:DataType="local:AgentInfoSettingsViewModel">
@@ -61,6 +62,24 @@
 		<TextBlock Text="{loc:Loc agent.info.identify_as_user.hint}"
 					  Opacity="0.6"
 					  TextWrapping="Wrap"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+					  Fill="{DynamicResource DefaultForeground}"
+					  Opacity="0.2"
+					  Margin="0,5"/>
+
+		<!-- ===================== Custom Model ===================== -->
+		<TextBlock Text="{loc:Loc agent.info.custom_model}"
+					  FontWeight="Bold"
+					  FontSize="{DynamicResource FontSizeL}"
+					  Margin="0,5,0,0"/>
+
+		<TextBlock Text="{loc:Loc agent.info.custom_model.hint}"
+					  Opacity="0.6"
+					  TextWrapping="Wrap"/>
+
+		<ctrl:ModelSelectorControl SelectedModel="{Binding AgentInfo.CustomModel, Mode=TwoWay}"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"

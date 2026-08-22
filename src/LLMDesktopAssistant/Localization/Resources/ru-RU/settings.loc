@@ -17,30 +17,6 @@ agent.filter.deselect_all: Снять выбор со всех
 agent.filter.mode: Режим фильтра:
 agent.filter.select_all: Выбрать всех
 agent.filter.whitelist: Белый список
-agent.generation.additional_parameters: Дополнительные параметры
-agent.generation.additional_parameters.hint: Пользовательские параметры, отправляемые напрямую в API LLM в формате JSON. Имена параметров должны соответствовать спецификации API.
-agent.generation.custom_model: Кастомная модель
-agent.generation.enable_custom_model: Включить кастомную модель
-agent.generation.enable_max_tokens: Включить переопределение макс. токенов
-agent.generation.enable_reasoning: Включить переопределение параметров рассуждений
-agent.generation.enable_temperature: Включить переопределение температуры
-agent.generation.max_tokens: Макс. токенов
-agent.generation.max_tokens_value: Максимум выходных токенов
-agent.generation.param.name: Имя
-agent.generation.param.value: Значение (JSON)
-agent.generation.reasoning: Рассуждения
-agent.generation.reasoning.default: По умолчанию
-agent.generation.reasoning.disabled: Отключено
-agent.generation.reasoning.high: Высокий
-agent.generation.reasoning.low: Низкий
-agent.generation.reasoning.maximum: Максимальный
-agent.generation.reasoning.medium: Средний
-agent.generation.reasoning.minimal: Минимальный
-agent.generation.reasoning.none: Отсутствует
-agent.generation.reasoning.xhigh: Очень высокий
-agent.generation.reasoning_level: Уровень рассуждений
-agent.generation.temperature: Температура
-agent.generation.temperature_value: Значение температуры
 agent.global: (глобальный)
 agent.max_visible_rounds: Макс. видимых раундов:
 agent.max_visible_rounds.hint: Ограничивает количество последних раундов (сообщение пользователя + ответ ассистента), видимых каждому агенту. 0 — без лимита. Помогает экономить контекстное окно.
@@ -225,6 +201,7 @@ provider.edit: Редактировать
 provider.endpoint.label: Endpoint URI
 provider.endpoint.placeholder: https://api.openai.com/v1
 provider.manage.title: Провайдеры моделей
+provider.modifiers: Модификаторы
 provider.models.count: {0} загруженных, {1} выбранных, {2} кастомных моделей
 provider.name.label: Имя провайдера
 provider.name.placeholder: например, Мой OpenAI провайдер

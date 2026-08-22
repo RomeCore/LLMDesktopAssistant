@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
@@ -22,7 +23,56 @@ namespace LLMDesktopAssistant.Controls
 		/// <summary>
 		/// Gets or sets the display text for the model.
 		/// </summary>
-		public required string DisplayText { get; set; }
+		public required LocaleKeyBase DisplayText { get; set; }
+
+		/// <summary>
+		/// Value indicating whether this model item is invalid or not.
+		/// </summary>
+		public bool IsInvalid { get; init; } = false;
+
+		public static ModelItemWrapper None { get; } = new ModelItemWrapper
+		{
+			FullName = string.Empty,
+			DisplayText = Locale.GetKey("model.selector.none")
+		};
+	}
+
+	/// <summary>
+	/// Wrapper for a modifier item in the dropdown list.
+	/// </summary>
+	public class ModifierSelectorItem
+	{
+		/// <summary>
+		/// Gets or sets the name of the modifier, or <see langword="null"/> for the "none" item.
+		/// </summary>
+		public required string? Name { get; init; }
+
+		/// <summary>
+		/// Gets or sets the hint for the modifier, or <see langword="null"/> if no hint is available.
+		/// </summary>
+		public required string? Hint { get; init; }
+
+		/// <summary>
+		/// Gets or sets the display text for the modifier.
+		/// </summary>
+		public required LocaleKeyBase DisplayText { get; init; }
+
+		/// <summary>
+		/// Value indicating whether this model item is invalid or not.
+		/// </summary>
+		public bool IsInvalid { get; init; } = false;
+
+		/// <summary>
+		/// Gets a value indicating whether the hint is visible or not.
+		/// </summary>
+		public bool IsHintVisible => !IsInvalid && !string.IsNullOrWhiteSpace(Hint);
+
+		public static ModifierSelectorItem None { get; } = new ModifierSelectorItem
+		{
+			Name = null,
+			Hint = null,
+			DisplayText = Locale.GetKey("model.selector.modifier.none")
+		};
 	}
 
 	/// <summary>
@@ -42,8 +92,8 @@ namespace LLMDesktopAssistant.Controls
 	}
 
 	/// <summary>
-	/// A control for selecting a model from available providers.
-	/// Works with model full names in format "ProviderName$ModelName".
+	/// A control for selecting a model and an optional modifier from available providers.
+	/// Works with model full names in format "ProviderName$ModelName" or "ProviderName$ModelName$Modifier".
 	/// </summary>
 	public partial class ModelSelectorControl : UserControl
 	{
@@ -68,6 +118,8 @@ namespace LLMDesktopAssistant.Controls
 		/// </summary>
 		public event Action<string>? SelectedModelChanged;
 
+		private bool _isSyncing;
+
 		static ModelSelectorControl()
 		{
 			SelectedModelProperty.Changed.AddClassHandler<ModelSelectorControl>(
@@ -81,8 +133,9 @@ namespace LLMDesktopAssistant.Controls
 		{
 			InitializeComponent();
 
-			Selector.SelectionChanged += Selector_SelectionChanged;
-			Selector.DropDownOpened += (_, _) => Rebuild();
+			ModelSelector.SelectionChanged += ModelSelector_SelectionChanged;
+			ModelSelector.DropDownOpened += (_, _) => Rebuild();
+			ModifierSelector.SelectionChanged += ModifierSelector_SelectionChanged;
 
 			Rebuild();
 		}
@@ -91,36 +144,129 @@ namespace LLMDesktopAssistant.Controls
 		{
 			SelectedModelChanged?.Invoke(newValue);
 
-			if (string.IsNullOrEmpty(newValue))
+			if (_isSyncing)
+				return;
+
+			ApplyValueToSelectors(newValue);
+		}
+
+		private void ModelSelector_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+		{
+			if (_isSyncing)
+				return;
+
+			UpdateSelectedModel();
+		}
+
+		private void ModifierSelector_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+		{
+			if (_isSyncing)
+				return;
+
+			UpdateSelectedModel();
+		}
+
+		private void UpdateSelectedModel()
+		{
+			var model = ModelSelector.SelectedItem as ModelItemWrapper;
+			var modifier = ModifierSelector.SelectedItem as ModifierSelectorItem;
+
+			if (model == null || string.IsNullOrEmpty(model.FullName))
 			{
-				Selector.SelectedIndex = 0;
+				SelectedModel = string.Empty;
 				return;
 			}
 
-			foreach (var item in Selector.Items)
+			SelectedModel = modifier is { Name: not null }
+				? $"{model.FullName}${modifier.Name}"
+				: model.FullName;
+		}
+
+		private void ApplyValueToSelectors(string fullName)
+		{
+			_isSyncing = true;
+			try
 			{
-				if (item is ModelItemWrapper wrapper && wrapper.FullName == newValue)
+				if (ModelReference.TryParse(fullName, out var reference))
 				{
-					Selector.SelectedItem = item;
-					return;
+					var modelItem = FindModelItem(reference.Provider, reference.ModelId);
+					if (modelItem == null)
+					{
+						modelItem = new ModelItemWrapper
+						{
+							FullName = $"{reference.Provider}${reference.ModelId}",
+							DisplayText = Locale.GetConstKey($"{reference.Provider}${reference.ModelId}"),
+							IsInvalid = true
+						};
+						ModelSelector.Items.Insert(0, modelItem);
+					}
+					if (ModelSelector.SelectedItem != modelItem)
+					{
+						ModelSelector.SelectedItem = modelItem;
+						RebuildModifiers(reference.Modifier);
+					}
+
+					var modifierItem = FindModifierItem(reference.Modifier);
+					if (modifierItem == null && reference.Modifier != null)
+					{
+						modifierItem = new ModifierSelectorItem
+						{
+							Name = reference.Modifier,
+							Hint = null,
+							DisplayText = Locale.GetConstKey(reference.Modifier),
+							IsInvalid = true
+						};
+						ModifierSelector.Items.Insert(0, modifierItem);
+					}
+					if (reference.Modifier == null)
+					{
+						ModifierSelector.SelectedIndex = 0;
+					}
+					else if (ModifierSelector.SelectedItem != modifierItem)
+					{
+						ModifierSelector.SelectedItem = modifierItem;
+					}
+				}
+				else
+				{
+					ModelSelector.SelectedIndex = 0;
+					ModifierSelector.SelectedIndex = 0;
+				}
+			}
+			finally
+			{
+				_isSyncing = false;
+			}
+		}
+
+		private ModelItemWrapper? FindModelItem(string provider, string modelId)
+		{
+			foreach (var item in ModelSelector.Items)
+			{
+				if (item is ModelItemWrapper wrapper &&
+					wrapper.FullName == $"{provider}${modelId}")
+				{
+					return wrapper;
+				}
+			}
+			return null;
+		}
+
+		private ModifierSelectorItem? FindModifierItem(string? name)
+		{
+			if (name == null)
+				return null;
+
+			foreach (var item in ModifierSelector.Items)
+			{
+				if (item is ModifierSelectorItem modifierItem &&
+					modifierItem.Name == name)
+				{
+					return modifierItem;
 				}
 			}
 
-			// If not found, add it temporarily
-			Selector.Items.Insert(0, new ModelItemWrapper
-			{
-				FullName = newValue,
-				DisplayText = newValue
-			});
-			Selector.SelectedIndex = 0;
-		}
-
-		private void Selector_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-		{
-			if (Selector.SelectedItem is ModelItemWrapper wrapper)
-				SelectedModel = wrapper.FullName;
-			else
-				SelectedModel = string.Empty;
+			return null;
 		}
 
 		private async void SettingsButton_Click(object? sender, RoutedEventArgs e)
@@ -133,31 +279,29 @@ namespace LLMDesktopAssistant.Controls
 		private void Rebuild()
 		{
 			var prevSelected = SelectedModel;
+			ModelReference.TryParse(prevSelected, out var prevReference);
+			var prevBaseFullName = string.IsNullOrEmpty(prevSelected)
+				? string.Empty
+				: $"{prevReference.Provider}${prevReference.ModelId}";
 
-			Selector.Items.Clear();
-			Selector.Items.Add(new ModelItemWrapper
-			{
-				FullName = string.Empty,
-				DisplayText = LocalizationManager.LocalizeStatic("model.selector.none")
-			});
+			ModelSelector.Items.Clear();
+			ModelSelector.Items.Add(ModelItemWrapper.None);
 
 			try
 			{
 				var modelManager = ServiceRegistry.Provider.GetRequiredService<IModelManager>();
-				var models = modelManager.ListSelectedModels()
-					.OrderBy(m => m.Provider.Name)
-					.ThenBy(m => m.Descriptor.Name)
-					.ToList();
 
 				string? lastProviderName = null;
 				bool found = false;
 
-				foreach (var model in models)
+				foreach (var model in modelManager.ListSelectedModels()
+					.OrderBy(m => m.Provider.Name)
+					.ThenBy(m => m.Descriptor.Name))
 				{
 					if (model.Provider.Name != lastProviderName)
 					{
 						lastProviderName = model.Provider.Name;
-						Selector.Items.Add(new ComboBoxHeaderItem
+						ModelSelector.Items.Add(new ComboBoxHeaderItem
 						{
 							Title = model.Provider.Name
 						});
@@ -166,39 +310,82 @@ namespace LLMDesktopAssistant.Controls
 					var wrapper = new ModelItemWrapper
 					{
 						FullName = model.FullName,
-						DisplayText = !string.IsNullOrEmpty(model.Descriptor.DisplayName) ? model.Descriptor.DisplayName : model.Descriptor.Name
+						DisplayText = Locale.GetConstKey(!string.IsNullOrEmpty(model.Descriptor.DisplayName)
+							? model.Descriptor.DisplayName : model.Descriptor.Name)
 					};
 
-					Selector.Items.Add(wrapper);
+					ModelSelector.Items.Add(wrapper);
 
-					if (model.FullName == prevSelected)
+					if (model.FullName == prevBaseFullName)
 					{
-						Selector.SelectedItem = wrapper;
+						ModelSelector.SelectedItem = wrapper;
 						found = true;
 					}
 				}
 
-				if (!found && !string.IsNullOrEmpty(prevSelected))
+				if (!found && !string.IsNullOrEmpty(prevBaseFullName))
 				{
-					Selector.Items.Add(new ModelItemWrapper
+					ModelSelector.Items.Add(new ModelItemWrapper
 					{
-						FullName = prevSelected,
-						DisplayText = prevSelected
+						FullName = prevBaseFullName,
+						DisplayText = Locale.GetConstKey(prevBaseFullName),
+						IsInvalid = true
 					});
-					Selector.SelectedIndex = Selector.Items.Count - 1;
+					ModelSelector.SelectedIndex = ModelSelector.Items.Count - 1;
 				}
 			}
 			catch (Exception ex)
 			{
 				Log.Warning(ex, "Failed to load models for ModelSelectorControl");
-				Selector.Items.Add(new ComboBoxEmptyItem
+				ModelSelector.Items.Add(new ComboBoxEmptyItem
 				{
 					Title = LocalizationManager.LocalizeStatic("model.selector.load.error")
 				});
 			}
 
-			if (Selector.SelectedItem == null)
-				Selector.SelectedIndex = 0;
+			if (ModelSelector.SelectedItem == null)
+				ModelSelector.SelectedIndex = 0;
+
+			RebuildModifiers(prevReference.Modifier);
+		}
+
+		private void RebuildModifiers(string? selectedModifierName)
+		{
+			ModifierSelector.Items.Clear();
+			ModifierSelector.Items.Add(ModifierSelectorItem.None);
+
+			ModifierSelectorItem? selectedItem = null;
+
+			var modelManager = ServiceRegistry.Provider.GetRequiredService<IModelManager>();
+			var modifiers = modelManager.ListModifiers().ToList();
+
+			foreach (var modifier in modifiers)
+			{
+				var item = new ModifierSelectorItem
+				{
+					Name = modifier.Name,
+					Hint = modifier.Hint,
+					DisplayText = Locale.GetConstKey(modifier.Name)
+				};
+				ModifierSelector.Items.Add(item);
+				if (modifier.Name == selectedModifierName)
+					selectedItem = item;
+			}
+
+			if (selectedItem == null && !string.IsNullOrEmpty(selectedModifierName))
+			{
+				selectedItem = new ModifierSelectorItem
+				{
+					Name = selectedModifierName,
+					Hint = null,
+					DisplayText = Locale.GetConstKey(selectedModifierName),
+					IsInvalid = true
+				};
+				ModifierSelector.Items.Add(selectedItem);
+			}
+
+			ModifierSelector.SelectedItem = selectedItem ?? ModifierSelector.Items[0];
+			ModifierSelector.IsVisible = modifiers.Count > 0 || selectedItem != null;
 		}
 	}
 }

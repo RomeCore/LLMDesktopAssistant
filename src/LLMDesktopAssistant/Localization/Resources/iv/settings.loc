@@ -17,30 +17,6 @@ agent.filter.deselect_all: Deselect all
 agent.filter.mode: Filter mode:
 agent.filter.select_all: Select all
 agent.filter.whitelist: Whitelist
-agent.generation.additional_parameters: Additional parameters
-agent.generation.additional_parameters.hint: Custom parameters sent directly to the LLM API in JSON format. Parameter names must match the API specification.
-agent.generation.custom_model: Custom model
-agent.generation.enable_custom_model: Enable custom model
-agent.generation.enable_max_tokens: Enable max tokens override
-agent.generation.enable_reasoning: Enable reasoning settings override
-agent.generation.enable_temperature: Enable temperature override
-agent.generation.max_tokens: Max tokens
-agent.generation.max_tokens_value: Max output tokens
-agent.generation.param.name: Name
-agent.generation.param.value: Value (JSON)
-agent.generation.reasoning: Reasoning
-agent.generation.reasoning.default: Default
-agent.generation.reasoning.disabled: Disabled
-agent.generation.reasoning.high: High
-agent.generation.reasoning.low: Low
-agent.generation.reasoning.maximum: Maximum
-agent.generation.reasoning.medium: Medium
-agent.generation.reasoning.minimal: Minimal
-agent.generation.reasoning.none: None
-agent.generation.reasoning.xhigh: X-High
-agent.generation.reasoning_level: Reasoning level
-agent.generation.temperature: Temperature
-agent.generation.temperature_value: Temperature value
 agent.global: (global)
 agent.max_visible_rounds: Max visible rounds:
 agent.max_visible_rounds.hint: Limits how many recent conversation rounds (user message + assistant response) are visible to each agent. 0 means unlimited. Helps manage context window usage.
@@ -225,6 +201,7 @@ provider.edit: Edit
 provider.endpoint.label: Endpoint URI
 provider.endpoint.placeholder: https://api.openai.com/v1
 provider.manage.title: Model Providers
+provider.modifiers: Modifiers
 provider.models.count: {0} loaded, {1} selected, {2} custom models
 provider.name.label: Provider Name
 provider.name.placeholder: e.g. My OpenAI Provider

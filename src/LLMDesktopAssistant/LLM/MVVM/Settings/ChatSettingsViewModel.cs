@@ -241,10 +241,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 						MaterialIconKind.Play,
 						() => new AgentExecutionConditionsSettingsViewModel(descriptor.ExecutionConditions, Settings)),
 
-					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.llm_properties"),
-						MaterialIconKind.Tune,
-						() => new AgentGenerationSettingsViewModel(descriptor.Generation, Settings)),
-
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.read"),
 						MaterialIconKind.Eye,
 						() => new AgentReadSettingsViewModel(

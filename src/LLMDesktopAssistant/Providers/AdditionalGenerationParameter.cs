@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Agents
+﻿namespace LLMDesktopAssistant.Providers
 {
 	public class AdditionalGenerationParameter : NotifyPropertyChanged
 	{

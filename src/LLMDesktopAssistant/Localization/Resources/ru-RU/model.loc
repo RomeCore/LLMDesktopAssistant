@@ -25,10 +25,41 @@ provider.ollama: Ollama
 provider.openai: OpenAI
 provider.openai-compat: OpenAI Совместимый
 provider.openrouter: OpenRouter
+modifier.add: Добавить
+modifier.add.title: Добавить модификатор
+modifier.delete: Удалить
+modifier.edit: Редактировать
+modifier.edit.title: Редактировать модификатор
+modifier.manage.title: Модификаторы моделей
+modifier.max_tokens.label: Макс. токенов
+modifier.move_down: Переместить вниз
+modifier.move_up: Переместить вверх
+modifier.name.invalid.error: Имя модификатора не должно содержать '$'
+modifier.name.duplicate.error: Модификатор с таким именем уже существует
+modifier.name.label: Имя
+modifier.name.placeholder: Уникальное имя модификатора для идентификации
+modifier.hint.label: Пояснение
+modifier.hint.placeholder: Краткое пояснение модификатора об его назначении
+modifier.name.required.error: Имя модификатора обязательно
+modifier.parameter.name: Имя
+modifier.parameter.value: Значение (JSON)
+modifier.parameters.label: Дополнительные параметры
+modifier.reasoning.default: По умолчанию
+modifier.reasoning.disabled: Отключено
+modifier.reasoning.high: Высокий
+modifier.reasoning.label: Рассуждения
+modifier.reasoning.low: Низкий
+modifier.reasoning.maximum: Максимальный
+modifier.reasoning.medium: Средний
+modifier.reasoning.minimal: Минимальный
+modifier.reasoning.none: Отсутствует
+modifier.reasoning.xhigh: Очень высокий
+modifier.temperature.label: Температура
 selector.available_models: Доступные модели
 selector.deselect_all: Снять все
 selector.load.error: Не удалось загрузить модели
 selector.manage.tooltip: Управление провайдерами и моделями
+selector.modifier.none: — Нет —
 selector.no_models: Нет доступных моделей
 selector.none: — Нет —
 selector.refresh: Обновить модели

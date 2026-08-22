@@ -45,6 +45,7 @@ namespace LLMDesktopAssistant.Providers
 		public IRelayCommand AddCommand { get; }
 		public IRelayCommand DeleteCommand { get; }
 		public IRelayCommand EditCommand { get; }
+		public IRelayCommand ManageModifiersCommand { get; }
 		public IRelayCommand CloseCommand { get; }
 
 		public ManageModelProvidersDialogViewModel()
@@ -54,6 +55,7 @@ namespace LLMDesktopAssistant.Providers
 			AddCommand = new RelayCommand(Add);
 			DeleteCommand = new RelayCommand(Delete, () => IsProviderSelected);
 			EditCommand = new RelayCommand(Edit, () => IsProviderSelected);
+			ManageModifiersCommand = new RelayCommand(ManageModifiers);
 			CloseCommand = new RelayCommand(Close);
 
 			ReloadProviders();
@@ -103,6 +105,12 @@ namespace LLMDesktopAssistant.Providers
 			providersConfig.ModelProviders.Remove(SelectedProvider.Source);
 			ReloadProviders();
 			SelectedProvider = null;
+		}
+
+		private async void ManageModifiers()
+		{
+			var vm = new ManageModifiersDialogViewModel();
+			await DialogManager.ShowDialogAsync(vm);
 		}
 
 		private void Close()

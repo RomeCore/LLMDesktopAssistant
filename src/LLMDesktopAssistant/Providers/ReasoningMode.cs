@@ -1,6 +1,6 @@
-﻿namespace LLMDesktopAssistant.Agents
+﻿namespace LLMDesktopAssistant.Providers
 {
-	public enum ReasoningSettings
+	public enum ReasoningMode
 	{
 		Disabled,
 		Default,
