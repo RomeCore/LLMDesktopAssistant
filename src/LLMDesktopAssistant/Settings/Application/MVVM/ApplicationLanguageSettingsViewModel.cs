@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Settings.Application
+namespace LLMDesktopAssistant.Settings.Application.MVVM
 {
 	/// <summary>
 	/// Represents a language option in the language selection UI.

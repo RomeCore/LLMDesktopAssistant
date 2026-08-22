@@ -3,14 +3,14 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="450"
-			 xmlns:local="using:LLMDesktopAssistant.Settings.Application"
+			 xmlns:local="using:LLMDesktopAssistant.Settings.Application.MVVM"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 x:Class="LLMDesktopAssistant.Settings.Application.ApplicationLanguageSettingsView"
+			 x:Class="LLMDesktopAssistant.Settings.Application.MVVM.ApplicationLanguageSettingsView"
 			 x:DataType="local:ApplicationLanguageSettingsViewModel">
 
 	<StackPanel Margin="10" Spacing="8">
 
-		<TextBlock Text="{loc:Loc settings.language.title}"
+		<TextBlock Text="{loc:Loc appsettings.language.title}"
 				   FontWeight="Bold"
 				   FontSize="{DynamicResource FontSizeL}"/>
 

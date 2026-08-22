@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace LLMDesktopAssistant.Settings.Application;
+namespace LLMDesktopAssistant.Settings.Application.MVVM;
 
 public partial class ApplicationSettingsView : UserControl
 {

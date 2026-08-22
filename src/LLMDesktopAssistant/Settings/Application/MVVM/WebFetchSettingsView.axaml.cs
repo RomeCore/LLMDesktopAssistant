@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace LLMDesktopAssistant.Settings.Application
+namespace LLMDesktopAssistant.Settings.Application.MVVM
 {
 	/// <summary>
 	/// The web fetching settings view.

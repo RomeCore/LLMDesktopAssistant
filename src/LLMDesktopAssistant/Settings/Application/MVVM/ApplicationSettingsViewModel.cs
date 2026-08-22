@@ -2,7 +2,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
-namespace LLMDesktopAssistant.Settings.Application
+namespace LLMDesktopAssistant.Settings.Application.MVVM
 {
 	/// <summary>
 	/// ViewModel for the application settings page. Builds a tree of settings categories whose
@@ -48,12 +48,12 @@ namespace LLMDesktopAssistant.Settings.Application
 		private void InitializeTree()
 		{
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.language.title"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("appsettings.language.title"),
 				MaterialIconKind.Translate,
 				() => new ApplicationLanguageSettingsViewModel()));
 
 			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.web.title"),
+				new SettingsLeafNode(LocalizationManager.LocalizeStatic("appsettings.web.fetch.title"),
 				MaterialIconKind.Web,
 				() => new WebFetchSettingsViewModel()));
 		}

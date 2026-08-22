@@ -3,11 +3,11 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="750"
-			 xmlns:local="using:LLMDesktopAssistant.Settings.Application"
+			 xmlns:local="using:LLMDesktopAssistant.Settings.Application.MVVM"
 			 xmlns:set="using:LLMDesktopAssistant.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
-			 x:Class="LLMDesktopAssistant.Settings.Application.ApplicationSettingsView"
+			 x:Class="LLMDesktopAssistant.Settings.Application.MVVM.ApplicationSettingsView"
 			 x:DataType="local:ApplicationSettingsViewModel">
 
 	<Grid ColumnDefinitions="240,4,*">

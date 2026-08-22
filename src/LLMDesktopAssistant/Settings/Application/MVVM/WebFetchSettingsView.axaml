@@ -3,34 +3,34 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="450"
-			 xmlns:local="using:LLMDesktopAssistant.Settings.Application"
+			 xmlns:local="using:LLMDesktopAssistant.Settings.Application.MVVM"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
-			 x:Class="LLMDesktopAssistant.Settings.Application.WebFetchSettingsView"
+			 x:Class="LLMDesktopAssistant.Settings.Application.MVVM.WebFetchSettingsView"
 			 x:DataType="local:WebFetchSettingsViewModel">
 
 	<StackPanel Margin="10" Spacing="8">
 
-		<TextBlock Text="{loc:Loc settings.web.title}"
+		<TextBlock Text="{loc:Loc appsettings.web.title}"
 				   FontWeight="Bold"
 				   FontSize="{DynamicResource FontSizeL}"/>
 
-		<CheckBox Content="{loc:Loc settings.web.enable_browser}"
+		<CheckBox Content="{loc:Loc appsettings.web.enable_browser}"
 				  IsChecked="{Binding EnableBrowser}"/>
-		<TextBlock Text="{loc:Loc settings.web.enable_browser.hint}"
+		<TextBlock Text="{loc:Loc appsettings.web.enable_browser.hint}"
 				   Opacity="0.7"
 				   FontSize="{DynamicResource FontSizeS}"
 				   TextWrapping="Wrap"
 				   Margin="24,-4,0,0"/>
 
-		<CheckBox Content="{loc:Loc settings.web.enable_stealth}"
+		<CheckBox Content="{loc:Loc appsettings.web.enable_stealth}"
 				  IsChecked="{Binding EnableStealthBrowser}"/>
-		<TextBlock Text="{loc:Loc settings.web.enable_stealth.hint}"
+		<TextBlock Text="{loc:Loc appsettings.web.enable_stealth.hint}"
 				   Opacity="0.7"
 				   FontSize="{DynamicResource FontSizeS}"
 				   TextWrapping="Wrap"
 				   Margin="24,-4,0,0"/>
 
-		<TextBlock Text="{loc:Loc settings.web.default_fetch_level}"
+		<TextBlock Text="{loc:Loc appsettings.web.default_fetch_level}"
 				   FontWeight="Bold"
 				   Margin="0,8,0,0"/>
 
@@ -47,16 +47,16 @@
 
 		<Separator Margin="0,8"/>
 
-		<TextBlock Text="{loc:Loc settings.web.runtimes}"
+		<TextBlock Text="{loc:Loc appsettings.web.runtimes}"
 				   FontWeight="Bold"/>
 
 		<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4">
-			<TextBlock Text="{loc:Loc settings.web.playwright}"
+			<TextBlock Text="{loc:Loc appsettings.web.playwright}"
 					   VerticalAlignment="Center"/>
 			<TextBlock Text="{Binding PlaywrightStatusText}"
 					   VerticalAlignment="Center"
 					   Opacity="0.7"/>
-			<Button Content="{loc:Loc settings.web.install}"
+			<Button Content="{loc:Loc appsettings.web.install}"
 					Command="{Binding InstallPlaywrightCommand}"
 					IsVisible="{Binding !IsPlaywrightInstalled}"
 					VerticalAlignment="Center"/>
@@ -67,12 +67,12 @@
 		</StackPanel>
 
 		<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4">
-			<TextBlock Text="{loc:Loc settings.web.stealth}"
+			<TextBlock Text="{loc:Loc appsettings.web.stealth}"
 					   VerticalAlignment="Center"/>
 			<TextBlock Text="{Binding CloakBrowserStatusText}"
 					   VerticalAlignment="Center"
 					   Opacity="0.7"/>
-			<Button Content="{loc:Loc settings.web.install}"
+			<Button Content="{loc:Loc appsettings.web.install}"
 					Command="{Binding InstallCloakBrowserCommand}"
 					IsVisible="{Binding !IsCloakBrowserInstalled}"
 					VerticalAlignment="Center"/>

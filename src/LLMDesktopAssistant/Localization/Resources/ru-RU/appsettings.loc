@@ -1,0 +1,23 @@
+// Agents: info, read permissions, exposure modes, selection.
+
+%locale: ru-RU
+%namespace: appsettings
+
+language.system: Системный
+language.title: Язык
+
+web.fetch.title: Веб-загрузка
+web.enable_browser: Разрешить загрузку страниц в браузере
+web.enable_browser.hint: Разрешить загрузку страниц в headless-браузере (рендерит JavaScript), когда нужен более высокий уровень загрузки.
+web.enable_stealth: Разрешить загрузку страниц в stealth-браузере
+web.enable_stealth.hint: Разрешить загрузку страниц в stealth CloakBrowser. Обходит продвинутые анти-бот системы (Cloudflare, reCAPTCHA v3, FingerprintJS).
+web.default_fetch_level: Уровень загрузки по умолчанию
+web.level.http: Обычный HTTP-запрос
+web.level.browser: Headless-браузер
+web.level.stealth: Stealth-браузер (CloakBrowser)
+web.runtimes: Браузерные рантаймы
+web.playwright: Playwright
+web.stealth: Stealth (CloakBrowser)
+web.installed: Установлен
+web.not_installed: Не установлен
+web.install: Установить

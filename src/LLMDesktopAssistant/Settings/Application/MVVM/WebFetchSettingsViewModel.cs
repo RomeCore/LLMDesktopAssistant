@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils.Web;
 
-namespace LLMDesktopAssistant.Settings.Application
+namespace LLMDesktopAssistant.Settings.Application.MVVM
 {
 	/// <summary>
 	/// ViewModel for the web fetching settings category: browser defaults and

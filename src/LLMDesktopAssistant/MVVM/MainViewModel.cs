@@ -8,6 +8,7 @@ using LLMDesktopAssistant.MCP;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings.Application;
+using LLMDesktopAssistant.Settings.Application.MVVM;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
