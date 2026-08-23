@@ -4,6 +4,7 @@ using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Meta;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -52,7 +53,15 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - category: string — tool category (e.g. "web", "scripting")
 			    - display_name: string or nil — user-friendly name
 			    - enabled: boolean — whether the tool is enabled
-			    - ask_for_confirmation: boolean — whether user confirmation is required
+			    - approval_level: string — the tool's approval policy, in kebab-case. One of:
+			        "policy-based" — defer to the agent's behaviour policy (auto-approve, prompt, or reject)
+			        "policy-ask-or-disallow" — prompt the user even if the agent auto-approved the behaviour
+			        "policy-approve-or-ask" — never disallow; auto-approve or prompt per agent policy
+			        "policy-auto-approve-unless-disallowed" — never prompt; execute unless explicitly disallowed
+			        "policy-auto-disallow-unless-approved" — never prompt; reject unless explicitly auto-approved
+			        "always-approve" — execute immediately, bypassing all policy checks
+			        "always-ask" — always prompt the user for confirmation
+			        "always-disallow" — always reject without executing
 			    - source: string — tool source ("native", "meta", "mcp")
 			    - arguments: table — JSON schema of the arguments
 
@@ -161,7 +170,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			if (tool.TitleKey != null)
 				result["display_name"] = new LuaString(tool.TitleKey.Key);
 			result["enabled"] = LuaBoolean.FromBoolean(tool.Enabled);
-			result["approval_level"] = new LuaString(tool.ApprovalLevel.ToString());
+			result["approval_level"] = new LuaString(MetaToolHumanizedEnumNames.SerializeApprovalLevel(tool.ApprovalLevel));
 			result["source"] = new LuaString(tool.Source.ToString().ToLower());
 			result["arguments"] = StructuredLuaConverter.JsonNodeToLuaValue(tool.ArgumentSchema);
 			return result;
