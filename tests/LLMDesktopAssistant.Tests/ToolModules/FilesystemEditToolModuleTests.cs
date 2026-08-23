@@ -675,30 +675,17 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 		""")]
 	public async Task Replace_PythonCode_NestedBlock_IgnoresSameIndentation(string match, string text)
 	{
-		using var temp = new TempDir();
-		var file = temp.Write("file.py", """
+		await TestReplaceAsync("""
 			def foo():
 			    if x:
 			        for i in range(3):
 			            print(i)
-			""");
-
-		var result = await ExecuteAsync(GetFsEditTool(CreateModule(temp.Root)), new JsonObject
-		{
-			["path"] = "file.py",
-			["patches"] = new JsonArray
-			{
-				Patch(match, text)
-			}
-		});
-
-		Assert.Contains("File edited successfully", result.ResultContent);
-		Assert.Equal("""
+			""", """
 			def foo():
 			    if x:
 			        for i in range(3):
 			            print(i * 2)
-			""", File.ReadAllText(file));
+			""", Patch(match, text));
 	}
 
 	[Fact]
@@ -1464,6 +1451,52 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 	}
 
 	[Fact]
+	public async Task Replace_Markdown_MixedInnerIndentation_SavedCorrectly()
+	{
+		await TestReplaceAsync("""
+			## 🧾 Formatting & Scoping Rules
+
+			- Leading indentation is **normalized during parsing**: every line loses up to `depth × TabSize` leading
+			  whitespace, where `depth` is the block nesting level. You can write templates with comfortable
+			  indentation — the common base indent is stripped and the output stays clean
+			- Inner whitespace, line breaks and blank lines are preserved as written
+			- Leading/trailing blank lines of blocks are trimmed; indentation before complex statements
+			  (`@if`, `@foreach`, `@while`) is removed
+			- `TabSize` (default `4`) on `LLTParser` controls how many columns one indent level takes during refinement
+			- `@let` variables are **lexically scoped**
+			- Loop variables do **not leak outside** their block
+			- Nested `@if` and `@foreach` blocks behave predictably, matching C#‑like logical semantics
+			- `TabSize` (default `4`) on `LLTParser` controls indentation handling during refinement
+			""", """
+			## 🧾 Formatting & Scoping Rules
+
+			- Leading indentation is **normalized during parsing**: every line loses up to `depth × TabSize` leading
+			  whitespace, where `depth` is the block nesting level. You can write templates with comfortable
+			  indentation — the common base indent is stripped and the output stays clean
+			- Inner whitespace, line breaks and blank lines are preserved as written
+			- Leading/trailing blank lines of blocks are trimmed; indentation before complex statements
+			  (`@if`, `@foreach`, `@while`) is removed
+			- Lines containing only non-rendering constructs — `@/` and `@* *@` comments, `@let` declarations,
+			  variable assignments — are removed entirely: the surrounding line breaks are trimmed so they
+			  leave no blank lines in the output
+			- `TabSize` (default `4`) on `LLTParser` controls how many columns one indent level takes during refinement
+			- `@let` variables are **lexically scoped**
+			- Loop variables do **not leak outside** their block
+			- Nested `@if` and `@foreach` blocks behave predictably, matching C#‑like logical semantics
+			- `TabSize` (default `4`) on `LLTParser` controls indentation handling during refinement
+			""", Patch("""
+			- Leading/trailing blank lines of blocks are trimmed; indentation before complex statements
+			  (`@if`, `@foreach`, `@while`) is removed
+			""", """
+			- Leading/trailing blank lines of blocks are trimmed; indentation before complex statements
+			  (`@if`, `@foreach`, `@while`) is removed
+			- Lines containing only non-rendering constructs — `@/` and `@* *@` comments, `@let` declarations,
+			  variable assignments — are removed entirely: the surrounding line breaks are trimmed so they
+			  leave no blank lines in the output
+			"""));
+	}
+
+	[Fact]
 	public async Task Replace_CSharpCode_TextBeforeMatchOnFirstLine_Preserved()
 	{
 		await TestReplaceAsync("""
@@ -1573,5 +1606,118 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 
 			    c()
 			"""));
+	}
+	[Fact]
+	public async Task Replace_RealWorldPatch_FirstLineWithoutIndent_IndentationPreserved()
+	{
+		await TestReplaceAsync("""
+						// The block's base indentation in the file: the leading whitespace of the
+						// first non-empty prefix (the prefix may also contain text before the match)
+						var fileBasePrefix = effectivePrefixes.FirstOrDefault(p => p.Length > 0) ?? "";
+						var fileBase = fileBasePrefix[..fileBasePrefix.TakeWhile(c => c is ' ' or '\t').Count()];
+						// The replacement's own base indentation: the common leading whitespace of
+						// all but the last line, since the last line is aligned with the file's
+""", """
+						// The block's base indentation in the file: the leading whitespace of the first
+						// matched line's prefix (the prefix may also contain text before the match)
+						var fileBasePrefix = effectivePrefixes.Length > 0 ? effectivePrefixes[0] : "";
+						var fileBase = fileBasePrefix[..fileBasePrefix.TakeWhile(c => c is ' ' or '\t').Count()];
+						// The replacement's own base indentation: the common leading whitespace of
+						// all but the last line, since the last line is aligned with the file's
+""", Patch("""
+// The block's base indentation in the file: the leading whitespace of the
+						// first non-empty prefix (the prefix may also contain text before the match)
+						var fileBasePrefix = effectivePrefixes.FirstOrDefault(p => p.Length > 0) ?? "";
+""", """
+// The block's base indentation in the file: the leading whitespace of the first
+						// matched line's prefix (the prefix may also contain text before the match)
+						var fileBasePrefix = effectivePrefixes.Length > 0 ? effectivePrefixes[0] : "";
+"""));
+	}
+
+	[Fact]
+	public async Task Replace_RealWorldPatch_InsertBranch_FirstLineWithoutIndent_IndentationPreserved()
+	{
+		await TestReplaceAsync("""
+								var isClosingLine = ownIndent.Length <= replacementBase.Length
+									|| !ownIndent.StartsWith(replacementBase);
+								line = isClosingLine
+									? effectivePrefixes[matchLines.Count - 1] + trimmedContent
+									: fileBase + ownIndent[replacementBase.Length..] + trimmedContent;
+								}
+								else
+								{
+									// Keep the replacement's own relative indentation but
+									// replace its base indentation with the file's
+									var ownIndent = replacementLines[j][..(replacementLines[j].Length - trimmedContent.Length)];
+									var relativeIndent = ownIndent.StartsWith(replacementBase)
+										? ownIndent[replacementBase.Length..]
+										: ownIndent;
+									line = fileBase + relativeIndent + trimmedContent;
+								}
+""", """
+								var isClosingLine = ownIndent.Length <= replacementBase.Length
+									|| !ownIndent.StartsWith(replacementBase);
+								line = isClosingLine
+									? effectivePrefixes[matchLines.Count - 1] + trimmedContent
+									: fileBase + ownIndent[replacementBase.Length..] + trimmedContent;
+								}
+								else if (j < matchLines.Count)
+								{
+									// Align the replacement line with the corresponding matched line:
+									// the file's indentation plus the difference between the replacement's
+									// and the match's own indentation. This tolerates patches whose first
+									// line has no indentation while the rest do (a common LLM style)
+									var ownIndent = replacementLines[j][..(replacementLines[j].Length - trimmedContent.Length)];
+									var matchIndent = matchIndents[j];
+									var relativeIndent = ownIndent.StartsWith(matchIndent)
+										? ownIndent[matchIndent.Length..]
+										: ownIndent;
+									var fileIndent = effectivePrefixes[j][..effectivePrefixes[j].TakeWhile(c => c is ' ' or '\t').Count()];
+									line = fileIndent + relativeIndent + trimmedContent;
+								}
+								else
+								{
+									// Keep the replacement's own relative indentation but
+									// replace its base indentation with the file's
+									var ownIndent = replacementLines[j][..(replacementLines[j].Length - trimmedContent.Length)];
+									var relativeIndent = ownIndent.StartsWith(replacementBase)
+										? ownIndent[replacementBase.Length..]
+										: ownIndent;
+									line = fileBase + relativeIndent + trimmedContent;
+								}
+""", Patch("""
+								line = isClosingLine
+									? effectivePrefixes[matchLines.Count - 1] + trimmedContent
+									: fileBase + ownIndent[replacementBase.Length..] + trimmedContent;
+								}
+								else
+								{
+									// Keep the replacement's own relative indentation but
+									// replace its base indentation with the file's
+""", """
+								line = isClosingLine
+									? effectivePrefixes[matchLines.Count - 1] + trimmedContent
+									: fileBase + ownIndent[replacementBase.Length..] + trimmedContent;
+								}
+								else if (j < matchLines.Count)
+								{
+									// Align the replacement line with the corresponding matched line:
+									// the file's indentation plus the difference between the replacement's
+									// and the match's own indentation. This tolerates patches whose first
+									// line has no indentation while the rest do (a common LLM style)
+									var ownIndent = replacementLines[j][..(replacementLines[j].Length - trimmedContent.Length)];
+									var matchIndent = matchIndents[j];
+									var relativeIndent = ownIndent.StartsWith(matchIndent)
+										? ownIndent[matchIndent.Length..]
+										: ownIndent;
+									var fileIndent = effectivePrefixes[j][..effectivePrefixes[j].TakeWhile(c => c is ' ' or '\t').Count()];
+									line = fileIndent + relativeIndent + trimmedContent;
+								}
+								else
+								{
+									// Keep the replacement's own relative indentation but
+									// replace its base indentation with the file's
+"""));
 	}
 }

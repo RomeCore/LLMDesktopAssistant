@@ -130,8 +130,7 @@ namespace LLMDesktopAssistant.Providers
 				if (!parameter.Enabled)
 					continue;
 
-				var node = JsonNode.Parse(parameter.ParameterValue) ?? JsonValue.Create((string?)null)!;
-				result.Add(new CustomProperty(parameter.ParameterName, node));
+				result.Add(new CustomProperty(parameter.ParameterName, JsonNode.Parse(parameter.ParameterValue)!));
 			}
 
 			return result;
