@@ -95,8 +95,11 @@ public static class FilePatchedReplacer
 			return null;
 
 		var matchTrimmed = matchLines.Select(l => l.Trim()).ToArray();
-		var matchClean = CleanIndents(matchLines, tabSize);
-		var replaceClean = CleanIndents(replaceLines, tabSize);
+		var matchClean = CalculateIndents(matchLines, tabSize, out var matchMin);
+		var replaceClean = CalculateIndents(replaceLines, tabSize, out var replaceMin);
+		var columnMin = Math.Min(matchMin, replaceMin);
+		CleanIndents(matchLines, tabSize, matchClean, columnMin);
+		CleanIndents(replaceLines, tabSize, replaceClean, columnMin);
 		var foundAny = false;
 
 		for (int i = 0; i <= fileLines.Count - matchLines.Count; i++)
@@ -161,7 +164,7 @@ public static class FilePatchedReplacer
 		// on the first line. When it is zero the file and the patch use the same indentation
 		// and the replacement lines keep their own whitespace; otherwise they are re-aligned
 		// to the file line by line.
-		var shift = IndentColumns(fileLines[start], tabSize) - matchClean[0];
+		var shift = GetIndentation(fileLines[start], tabSize) - matchClean[0];
 		var result = new List<string>(replaceLines.Count);
 
 		for (int j = 0; j < replaceLines.Count; j++)
@@ -199,12 +202,12 @@ public static class FilePatchedReplacer
 					while (prev >= 0 && string.IsNullOrWhiteSpace(result[prev]))
 						prev--;
 					styleLine = prev >= 0 ? result[prev] : fileLines[start + mapped];
-					targetColumns = IndentColumns(styleLine, tabSize);
+					targetColumns = GetIndentation(styleLine, tabSize);
 				}
 				else
 				{
 					styleLine = fileLines[start + mapped];
-					targetColumns = replaceClean[j] + IndentColumns(styleLine, tabSize) - matchClean[mapped];
+					targetColumns = replaceClean[j] + GetIndentation(styleLine, tabSize) - matchClean[mapped];
 				}
 				line = MakeIndent(targetColumns, styleLine, tabSize) + replaceLines[j].TrimStart();
 			}
@@ -240,17 +243,15 @@ public static class FilePatchedReplacer
 	private static bool HasNonWhitespace(string text)
 		=> text.Any(c => c is not ' ' and not '\t');
 
-	/// <summary>
-	/// Computes each line's indentation relative to the minimum indentation among non-blank
-	/// lines, in columns. Blank lines do not affect the minimum.
-	/// </summary>
-	private static int[] CleanIndents(List<string> lines, int tabSize)
+
+	private static int[] CalculateIndents(List<string> lines, int tabSize, out int min)
 	{
+		min = int.MaxValue;
+
 		var columns = new int[lines.Count];
-		var min = int.MaxValue;
 		for (int i = 0; i < lines.Count; i++)
 		{
-			columns[i] = IndentColumns(lines[i], tabSize);
+			columns[i] = GetIndentation(lines[i], tabSize);
 			if (!string.IsNullOrWhiteSpace(lines[i]))
 				min = Math.Min(min, columns[i]);
 		}
@@ -258,12 +259,20 @@ public static class FilePatchedReplacer
 		if (min == int.MaxValue)
 			min = 0;
 
-		for (int i = 0; i < columns.Length; i++)
-			columns[i] = Math.Max(0, columns[i] - min);
 		return columns;
 	}
 
-	private static int IndentColumns(string line, int tabSize)
+	/// <summary>
+	/// Computes each line's indentation relative to the minimum indentation among non-blank
+	/// lines, in columns. Blank lines do not affect the minimum.
+	/// </summary>
+	private static void CleanIndents(List<string> lines, int tabSize, int[] columns, int min)
+	{
+		for (int i = 0; i < columns.Length; i++)
+			columns[i] = Math.Max(0, columns[i] - min);
+	}
+
+	private static int GetIndentation(string line, int tabSize)
 	{
 		var columns = 0;
 		foreach (var c in line)
@@ -271,8 +280,6 @@ public static class FilePatchedReplacer
 			if (c == ' ')
 				columns++;
 			else if (c == '\t')
-				// A tab advances to the next column position that is a multiple of tabSize,
-				// not by a fixed number of columns
 				columns += tabSize - (columns % tabSize);
 			else
 				break;

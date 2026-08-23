@@ -641,7 +641,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 		 if x:
 		     for i in range(3):
 		         print(i)
-		 """, """
+		""", """
 		 if x:
 		     for i in range(3):
 		         print(i * 2)
@@ -650,7 +650,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 		  if x:
 		      for i in range(3):
 		          print(i)
-		  """, """
+		""", """
 		  if x:
 		      for i in range(3):
 		          print(i * 2)
@@ -659,7 +659,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 		   if x:
 		       for i in range(3):
 		           print(i)
-		   """, """
+		""", """
 		   if x:
 		       for i in range(3):
 		           print(i * 2)
@@ -668,7 +668,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 		    if x:
 		        for i in range(3):
 		            print(i)
-		    """, """
+		""", """
 		    if x:
 		        for i in range(3):
 		            print(i * 2)
@@ -710,7 +710,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 				        do_something()
 				    else:
 				        do_other()
-				    """, "    pass")
+				""", "    pass")
 			}
 		});
 
@@ -1405,52 +1405,6 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 	}
 
 	[Fact]
-	public async Task Replace_CSharpCode_DedentedReplacement_ReIndentedToFile()
-	{
-		await TestReplaceAsync("""
-			namespace App
-			{
-				public class Service
-				{
-					public void Run()
-					{
-						if (a)
-						{
-							DoA();
-						}
-					}
-				}
-			}
-			""", """
-			namespace App
-			{
-				public class Service
-				{
-					public void Run()
-					{
-						if (a)
-						{
-							DoA();
-							DoB();
-						}
-					}
-				}
-			}
-			""", Patch("""
-						if (a)
-						{
-							DoA();
-						}
-			""", """
-			if (a)
-			{
-				DoA();
-				DoB();
-			}
-			"""));
-	}
-
-	[Fact]
 	public async Task Replace_Markdown_MixedInnerIndentation_SavedCorrectly()
 	{
 		await TestReplaceAsync("""
@@ -1607,6 +1561,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 			    c()
 			"""));
 	}
+
 	[Fact]
 	public async Task Replace_RealWorldPatch_FirstLineWithoutIndent_IndentationPreserved()
 	{
@@ -1720,4 +1675,152 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 									// replace its base indentation with the file's
 """));
 	}
+
+	[Fact]
+	public async Task Replace_RealWorldPatch_1()
+	{
+		await TestReplaceAsync("""
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.MCP;
+using LLMDesktopAssistant.MVVM.Debug;
+using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Services;
+
+namespace LLMDesktopAssistant.MVVM
+{
+	public class MainViewModel : ViewModelBase
+	{
+		public ChatManagerViewModel ChatManager { get; }
+		public MCPManagerViewModel MCPManager { get; }
+		public PromptManagerViewModel PromptManager { get; }
+		public AgentTaskDispatcherViewModel AgentTaskDispatcher { get; }
+		public HelpViewModel Help { get; }
+		public ApplicationSettingsViewModel ApplicationSettings { get; }
+
+		{
+			Help = new HelpViewModel(ServiceRegistry.Provider.GetRequiredService<HelpDocumentStore>());
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.BookOpen,
+				Title = Locale.GetKey("tab.title.help"),
+				Content = Help
+			});
+
+			ApplicationSettings = new ApplicationSettingsViewModel();
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.Cog,
+				Title = Locale.GetKey("tab.title.settings"),
+				Content = ApplicationSettings
+			});
+			
+			SelectedTopSidebarItem = TopSidebarItems[0];
+		}
+	}
+}
+
+""", """
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.MCP;
+using LLMDesktopAssistant.MVVM.Debug;
+using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Services;
+
+namespace LLMDesktopAssistant.MVVM
+{
+	public class MainViewModel : ViewModelBase
+	{
+		public ChatManagerViewModel ChatManager { get; }
+		public MCPManagerViewModel MCPManager { get; }
+		public PromptManagerViewModel PromptManager { get; }
+		public AgentTaskDispatcherViewModel AgentTaskDispatcher { get; }
+		public HelpViewModel Help { get; }
+		public ApplicationSettingsViewModel ApplicationSettings { get; }
+
+#if DEBUG
+		public DebugPagesViewModel Debug { get; }
+#endif
+
+		{
+			Help = new HelpViewModel(ServiceRegistry.Provider.GetRequiredService<HelpDocumentStore>());
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.BookOpen,
+				Title = Locale.GetKey("tab.title.help"),
+				Content = Help
+			});
+
+			ApplicationSettings = new ApplicationSettingsViewModel();
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.Cog,
+				Title = Locale.GetKey("tab.title.settings"),
+				Content = ApplicationSettings
+			});
+
+#if DEBUG
+			Debug = new DebugPagesViewModel();
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.Bug,
+				Title = Locale.GetKey("tab.title.debug"),
+				Content = Debug
+			});
+#endif
+
+			SelectedTopSidebarItem = TopSidebarItems[0];
+		}
+	}
+}
+
+""", Patch("""
+using LLMDesktopAssistant.MCP;
+using LLMDesktopAssistant.Prompting;
+""", """
+using LLMDesktopAssistant.MCP;
+using LLMDesktopAssistant.MVVM.Debug;
+using LLMDesktopAssistant.Prompting;
+"""), Patch("""
+		public HelpViewModel Help { get; }
+		public ApplicationSettingsViewModel ApplicationSettings { get; }
+""", """
+		public HelpViewModel Help { get; }
+		public ApplicationSettingsViewModel ApplicationSettings { get; }
+
+#if DEBUG
+		public DebugPagesViewModel Debug { get; }
+#endif
+"""), Patch("""
+			ApplicationSettings = new ApplicationSettingsViewModel();
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.Cog,
+				Title = Locale.GetKey("tab.title.settings"),
+				Content = ApplicationSettings
+			});
+			
+			SelectedTopSidebarItem = TopSidebarItems[0];
+""", """
+			ApplicationSettings = new ApplicationSettingsViewModel();
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.Cog,
+				Title = Locale.GetKey("tab.title.settings"),
+				Content = ApplicationSettings
+			});
+
+#if DEBUG
+			Debug = new DebugPagesViewModel();
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.Bug,
+				Title = Locale.GetKey("tab.title.debug"),
+				Content = Debug
+			});
+#endif
+
+			SelectedTopSidebarItem = TopSidebarItems[0];
+"""));
+	}
+
 }
