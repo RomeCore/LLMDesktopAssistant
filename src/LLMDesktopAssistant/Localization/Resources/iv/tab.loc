@@ -7,3 +7,4 @@ title.prompt_manager: Prompt
 title.agent_tasks: Agent Tasks
 title.help: Help
 title.settings: Application Settings
+title.debug: Debug

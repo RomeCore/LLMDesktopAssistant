@@ -1,0 +1,9 @@
+%locale:
+%namespace: debug
+
+llt_editor.title: LLT Editor
+llt_editor.reset: Reset sample
+llt_editor.tokens.label: Tokens
+llt_editor.errors.label: Errors
+llt_editor.parse_time.label: Parse time
+llt_editor.errors.title: Errors

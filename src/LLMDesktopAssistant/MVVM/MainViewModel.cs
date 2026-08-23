@@ -5,6 +5,7 @@ using LLMDesktopAssistant.LLM.MVVM;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.MCP;
+using LLMDesktopAssistant.MVVM.Debug;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings.Application;
@@ -99,6 +100,10 @@ namespace LLMDesktopAssistant.MVVM
 		public HelpViewModel Help { get; }
 		public ApplicationSettingsViewModel ApplicationSettings { get; }
 
+#if DEBUG
+		public DebugPagesViewModel Debug { get; }
+#endif
+
 		public MainViewModel()
 		{
 			TopSidebarItems = [];
@@ -152,6 +157,16 @@ namespace LLMDesktopAssistant.MVVM
 				Title = Locale.GetKey("tab.title.settings"),
 				Content = ApplicationSettings
 			});
+
+#if DEBUG
+			Debug = new DebugPagesViewModel();
+			BottomSidebarItems.Add(new MainViewModelSidebarItemViewModel
+			{
+				Icon = MaterialIconKind.Bug,
+				Title = Locale.GetKey("tab.title.debug"),
+				Content = Debug
+			});
+#endif
 
 			SelectedTopSidebarItem = TopSidebarItems[0];
 		}

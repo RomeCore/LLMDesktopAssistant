@@ -1,0 +1,9 @@
+%locale: ru-RU
+%namespace: debug
+
+llt_editor.title: LLT-редактор
+llt_editor.reset: Сбросить пример
+llt_editor.tokens.label: Токены
+llt_editor.errors.label: Ошибки
+llt_editor.parse_time.label: Время парсинга
+llt_editor.errors.title: Ошибки

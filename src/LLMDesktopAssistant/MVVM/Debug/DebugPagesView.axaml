@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="750"
+			 xmlns:local="using:LLMDesktopAssistant.MVVM.Debug"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 xmlns:ico="using:Material.Icons.Avalonia"
+			 x:Class="LLMDesktopAssistant.MVVM.Debug.DebugPagesView"
+			 x:DataType="local:DebugPagesViewModel">
+
+	<Grid ColumnDefinitions="240,4,*">
+
+		<TreeView ItemsSource="{Binding DebugTree}"
+							SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+							BorderThickness="0"
+							Margin="4">
+
+			<TreeView.DataTemplates>
+
+				<TreeDataTemplate DataType="local:DebugParentNode"
+													ItemsSource="{Binding Children}">
+					<StackPanel Orientation="Horizontal" Spacing="6" Margin="4,3">
+						<ico:MaterialIcon Kind="{Binding Icon}"
+															Width="18" Height="18"
+															VerticalAlignment="Center"/>
+						<TextBlock Text="{Binding DisplayName}"
+											 FontWeight="Bold"
+											 VerticalAlignment="Center"/>
+					</StackPanel>
+				</TreeDataTemplate>
+
+				<DataTemplate DataType="local:DebugLeafNode">
+					<StackPanel Orientation="Horizontal" Spacing="6" Margin="4,3">
+						<ico:MaterialIcon Kind="{Binding Icon}"
+															Width="16" Height="16"
+															VerticalAlignment="Center"
+															Opacity="0.8"/>
+						<TextBlock Text="{Binding DisplayName}"
+											 VerticalAlignment="Center"/>
+					</StackPanel>
+				</DataTemplate>
+
+			</TreeView.DataTemplates>
+
+		</TreeView>
+
+		<GridSplitter Grid.Column="1"
+					  Width="4"
+					  ResizeDirection="Columns"
+					  HorizontalAlignment="Stretch"/>
+
+		<DockPanel Grid.Column="2"
+				   Margin="6">
+
+			<Border DockPanel.Dock="Top"
+							BorderBrush="{DynamicResource SecondaryAccentBrush}"
+							BorderThickness="0,0,0,1"
+							Padding="8,6"
+							IsVisible="{Binding SelectedNode.DisplayName, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+				<TextBlock Text="{Binding SelectedNode.DisplayName}"
+						   FontWeight="Bold"
+						   FontSize="{DynamicResource FontSizeL}"/>
+			</Border>
+
+			<ContentControl Content="{Binding SelectedNode.Page}"
+							HorizontalContentAlignment="Stretch"
+							VerticalContentAlignment="Stretch"/>
+
+		</DockPanel>
+
+	</Grid>
+
+</UserControl>

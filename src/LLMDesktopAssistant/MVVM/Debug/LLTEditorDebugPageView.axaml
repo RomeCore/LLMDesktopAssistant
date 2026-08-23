@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="750"
+			 xmlns:local="using:LLMDesktopAssistant.MVVM.Debug"
+			 xmlns:llt="using:LLMDesktopAssistant.Prompting.LLT"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 x:Class="LLMDesktopAssistant.MVVM.Debug.LLTEditorDebugPageView"
+			 x:DataType="local:LLTEditorDebugPageViewModel">
+
+	<Grid ColumnDefinitions="*,320">
+
+		<llt:LLTEditorControl Grid.Column="0"
+							   Text="{Binding Text, Mode=TwoWay}"
+							   Margin="6"/>
+
+		<DockPanel Grid.Column="1"
+				   Margin="6,6,6,0">
+
+			<StackPanel DockPanel.Dock="Top" Spacing="6">
+
+				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
+
+					<TextBlock Grid.Row="0" Grid.Column="0"
+							   Text="{loc:Loc debug.llt_editor.tokens.label}"/>
+					<TextBlock Grid.Row="0" Grid.Column="1"
+							   Text="{Binding TokenCount}"/>
+
+					<TextBlock Grid.Row="1" Grid.Column="0"
+							   Text="{loc:Loc debug.llt_editor.errors.label}"/>
+					<TextBlock Grid.Row="1" Grid.Column="1"
+							   Text="{Binding ErrorCount}"
+							   Foreground="{DynamicResource ErrorBrush}"/>
+
+					<TextBlock Grid.Row="2" Grid.Column="0"
+							   Text="{loc:Loc debug.llt_editor.parse_time.label}"/>
+					<TextBlock Grid.Row="2" Grid.Column="1"
+							   Text="{Binding ParseTimeMs, StringFormat={}{0:F1} ms}"/>
+
+				</Grid>
+
+				<Button Content="{loc:Loc debug.llt_editor.reset}"
+						Command="{Binding ResetCommand}"
+						HorizontalAlignment="Left"/>
+
+				<TextBlock Text="{loc:Loc debug.llt_editor.errors.title}"
+						   FontWeight="Bold"
+						   Margin="0,8,0,0"/>
+
+			</StackPanel>
+
+			<ListBox ItemsSource="{Binding Errors}">
+
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Display}"
+								   TextWrapping="Wrap"
+								   Foreground="{DynamicResource ErrorBrush}"/>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+
+			</ListBox>
+
+		</DockPanel>
+
+	</Grid>
+
+</UserControl>
