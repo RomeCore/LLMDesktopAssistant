@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using DocumentFormat.OpenXml.Office.CustomUI;
 using LLTSharp.Locale;
+using Microsoft.CodeAnalysis;
 
 namespace LLMDesktopAssistant.Prompting
 {
@@ -82,21 +83,27 @@ namespace LLMDesktopAssistant.Prompting
 			set => SetProperty(ref _template, value);
 		}
 
+		private PromptPartDiagnostic? _localizationDiagnostic = null;
+		[JsonIgnore]
+		public PromptPartDiagnostic? LocalizationDiagnostic
+		{
+			get => _localizationDiagnostic;
+			set => SetProperty(ref _localizationDiagnostic, value);
+		}
+
+		private SerializableTemplate? _localizedTemplate = null;
+		[JsonIgnore]
+		public SerializableTemplate? LocalizedTemplate
+		{
+			get => _localizedTemplate;
+			set => SetProperty(ref _localizedTemplate, value);
+		}
+
+		public PromptPartDiagnostic? CombinedDiagnostic => PromptPartDiagnostic.Combine(Diagnostic, LocalizationDiagnostic);
+
 		public void ExpandDiagnostic(PromptPartDiagnostic diagnostic)
 		{
-			if (Diagnostic == null)
-			{
-				Diagnostic = diagnostic;
-				return;
-			}
-
-			Diagnostic = new PromptPartDiagnostic
-			{
-				IsFatal = Diagnostic.IsFatal || diagnostic.IsFatal,
-				Code = Diagnostic.Code | diagnostic.Code,
-				Messages = [.. Diagnostic.Messages, .. diagnostic.Messages],
-				Exception = diagnostic.Exception ?? Diagnostic.Exception
-			};
+			Diagnostic = PromptPartDiagnostic.Combine(Diagnostic, diagnostic);
 		}
 	}
 }

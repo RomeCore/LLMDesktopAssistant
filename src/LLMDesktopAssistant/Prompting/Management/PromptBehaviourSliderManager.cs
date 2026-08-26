@@ -76,6 +76,13 @@ namespace LLMDesktopAssistant.Prompting.Management
 			localized.MinimumValue = original.MinimumValue;
 			localized.MaximumValue = original.MaximumValue;
 			localized.DefaultValue = original.DefaultValue;
+
+			if (!original.Titles.Keys.ToHashSet().SetEquals(localized.Titles.Keys))
+				localized.LocalizationDiagnostic = new PromptPartDiagnostic
+				{
+					IsFatal = false,
+					Code = PromptPartDiagnosticCode.InvalidSliderHints
+				};
 		}
 	}
 }

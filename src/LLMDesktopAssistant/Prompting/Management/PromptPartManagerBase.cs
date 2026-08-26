@@ -283,7 +283,7 @@ namespace LLMDesktopAssistant.Prompting.Management
 				if (selectedPartToLocalize is not null)
 				{
 					PopulateLocalized(selectedPartToLocalize, selectedPart);
-					selectedPart.Template = selectedPartToLocalize.Template;
+					selectedPart.LocalizedTemplate = selectedPartToLocalize.Template;
 				}
 			}
 
@@ -328,7 +328,8 @@ namespace LLMDesktopAssistant.Prompting.Management
 			_lock.Enter();
 			try
 			{
-				return _byKey.TryGetValue(key, out var parts) && parts.Count > 0 ? PickBest(parts)?.Template.Template : null;
+				var result = _byKey.TryGetValue(key, out var parts) && parts.Count > 0 ? PickBest(parts) : null;
+				return result != null ? (result.LocalizedTemplate ?? result.Template).Template : null;
 			}
 			finally
 			{
