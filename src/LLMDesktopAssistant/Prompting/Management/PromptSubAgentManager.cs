@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.Prompting.Management
 		protected override string GetKey(PromptSubAgent part) => part.StrId;
 
 		/// <inheritdoc/>
-		protected override void PopulatePart(PromptSubAgent part, IMetadataCollection metadata)
+		protected override void PopulateFromMetadata(PromptSubAgent part, IMetadataCollection metadata, bool isLocalized)
 		{
 			// Description is required for all sub-agents.
 			if (string.IsNullOrWhiteSpace(part.Description))
@@ -37,6 +37,11 @@ namespace LLMDesktopAssistant.Prompting.Management
 					Code = PromptPartDiagnosticCode.MissingDescription,
 					IsFatal = true
 				});
+		}
+
+		/// <inheritdoc/>
+		protected override void PopulateLocalized(PromptSubAgent original, PromptSubAgent localized)
+		{
 		}
 	}
 }

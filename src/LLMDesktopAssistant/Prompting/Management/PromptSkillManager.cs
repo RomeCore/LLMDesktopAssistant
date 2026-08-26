@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.Prompting.Management
 		protected override string GetKey(PromptSkill part) => part.StrId;
 
 		/// <inheritdoc/>
-		protected override void PopulatePart(PromptSkill part, IMetadataCollection metadata)
+		protected override void PopulateFromMetadata(PromptSkill part, IMetadataCollection metadata, bool isLocalized)
 		{
 			// Description is required for all skills.
 			if (string.IsNullOrWhiteSpace(part.Description))
@@ -37,6 +37,11 @@ namespace LLMDesktopAssistant.Prompting.Management
 					Code = PromptPartDiagnosticCode.MissingDescription,
 					IsFatal = true
 				});
+		}
+
+		/// <inheritdoc/>
+		protected override void PopulateLocalized(PromptSkill original, PromptSkill localized)
+		{
 		}
 	}
 }

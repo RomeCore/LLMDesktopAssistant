@@ -1,5 +1,4 @@
 ﻿using System.Collections.Specialized;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using LLMDesktopAssistant.Settings.Application;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
@@ -37,6 +36,10 @@ namespace LLMDesktopAssistant.Prompting.Management
 			_capturedConfiguration.PromptParts.CollectionChanged += PromptParts_CollectionChanged;
 			PromptParts_CollectionChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, _capturedConfiguration.PromptParts));
 		}
+
+		protected abstract void PopulateFromMetadata(V part, IMetadataCollection metadata, bool isLocalized);
+		protected abstract void PopulateLocalized(V original, V localized);
+		protected abstract K GetKey(V part);
 
 		private void PromptParts_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -176,7 +179,7 @@ namespace LLMDesktopAssistant.Prompting.Management
 					},
 					Template = new SerializableTemplate(template)
 				};
-				PopulatePart(part, template.Metadata);
+				PopulateFromMetadata(part, template.Metadata, localizedFor != null);
 			}
 			catch (Exception ex)
 			{
@@ -222,9 +225,6 @@ namespace LLMDesktopAssistant.Prompting.Management
 			}
 		}
 
-		protected abstract void PopulatePart(V part, IMetadataCollection metadata);
-		protected abstract K GetKey(V part);
-
 		public bool DropTemplate(ITemplate template)
 		{
 			_lock.Enter();
@@ -248,26 +248,61 @@ namespace LLMDesktopAssistant.Prompting.Management
 			}
 		}
 
+		private static readonly HierarchicalLanguageFallbackScheme _langFallbackScheme = new(LanguageCode.Invariant);
+
+		private V? PickBest(IEnumerable<V> parts)
+		{
+			var appSettings = ApplicationSettingsAccessor.ApplicationSettings.Language;
+			var preferredLanguageCode = new LanguageCode((appSettings.Prompt ?? appSettings.System).ToNullIfEmpty() ?? "iv");
+			var languageGroups = parts.ToLookup(p => p.Language);
+			var selectedLanguage = _langFallbackScheme.GetFallbackLanguage(preferredLanguageCode, languageGroups.Select(g => g.Key));
+
+			var selectedPart = languageGroups[selectedLanguage].MaxBy(p => p.Source switch
+			{
+				PromptPartSource.BuiltInTemplate => 1,
+				PromptPartSource.UserTemplate => 2,
+				PromptPartSource.Configuration => 3,
+				PromptPartSource.WorkdirTemplate => 4,
+				_ => 0
+			});
+
+			if (selectedPart is null)
+				return selectedPart;
+
+			if (selectedPart.LocalizedFor is not null)
+			{
+				var selectedPartToLocalize = languageGroups[selectedPart.LocalizedFor.Value].MaxBy(p => p.Source switch
+				{
+					PromptPartSource.BuiltInTemplate => 1,
+					PromptPartSource.UserTemplate => 2,
+					PromptPartSource.Configuration => 3,
+					PromptPartSource.WorkdirTemplate => 4,
+					_ => 0
+				});
+				
+				if (selectedPartToLocalize is not null)
+				{
+					PopulateLocalized(selectedPartToLocalize, selectedPart);
+					selectedPart.Template = selectedPartToLocalize.Template;
+				}
+			}
+
+			return selectedPart;
+		}
+
+		private IEnumerable<V> PickBestMultiple(IEnumerable<V> parts)
+		{
+			return parts.GroupBy(GetKey)
+				.Select(PickBest)
+				.Where(p => p != null)!;
+		}
+
 		public V? TryGet(K key)
 		{
 			_lock.Enter();
 			try
 			{
-				var appSettings = ApplicationSettingsAccessor.ApplicationSettings.Language;
-				var preferredLanguageCode = new LanguageCode((appSettings.Prompt ?? appSettings.System).ToNullIfEmpty() ?? "iv");
-
-				var result = _byKey.TryGetValue(key, out var parts) && parts.Count > 0 ? parts
-					.OrderBy(p => p.Language == preferredLanguageCode ? 1 : 0)
-					.ThenBy(p => p.Source switch
-					{
-						PromptPartSource.BuiltInTemplate => 3,
-						PromptPartSource.UserTemplate => 2,
-						PromptPartSource.Configuration => 1,
-						PromptPartSource.WorkdirTemplate => 0,
-						_ => 4
-					}).First() : null;
-
-				return result;
+				return _byKey.TryGetValue(key, out var parts) && parts.Count > 0 ? PickBest(parts) : null;
 			}
 			finally
 			{
@@ -293,25 +328,7 @@ namespace LLMDesktopAssistant.Prompting.Management
 			_lock.Enter();
 			try
 			{
-				var appSettings = ApplicationSettingsAccessor.ApplicationSettings.Language;
-				var preferredLanguageCode = new LanguageCode((appSettings.Prompt ?? appSettings.System).ToNullIfEmpty() ?? "iv");
-
-				var result = _byKey.TryGetValue(key, out var parts) && parts.Count > 0 ? parts
-					.OrderBy(p => p.Language == preferredLanguageCode ? 1 : 0)
-					.ThenBy(p => p.Source switch
-					{
-						PromptPartSource.BuiltInTemplate => 3,
-						PromptPartSource.UserTemplate => 2,
-						PromptPartSource.Configuration => 1,
-						PromptPartSource.WorkdirTemplate => 0,
-						_ => 4
-					}).First() : null;
-
-				if (result is null || result.LocalizedFor is null)
-					return result?.Template.Template;
-
-				var localeTarget = parts!.FirstOrDefault(p => p.Language == result.LocalizedFor);
-				return localeTarget?.Template.Template ?? result.Template.Template;
+				return _byKey.TryGetValue(key, out var parts) && parts.Count > 0 ? PickBest(parts)?.Template.Template : null;
 			}
 			finally
 			{
@@ -324,7 +341,7 @@ namespace LLMDesktopAssistant.Prompting.Management
 			_lock.Enter();
 			try
 			{
-				return [.. _parts];
+				return [.. PickBestMultiple(_parts)];
 			}
 			finally
 			{
@@ -337,7 +354,7 @@ namespace LLMDesktopAssistant.Prompting.Management
 			_lock.Enter();
 			try
 			{
-				return _bySource.TryGetValue(templateSource, out var parts) ? [.. parts] : [];
+				return _bySource.TryGetValue(templateSource, out var parts) ? [.. PickBestMultiple(parts)] : [];
 			}
 			finally
 			{

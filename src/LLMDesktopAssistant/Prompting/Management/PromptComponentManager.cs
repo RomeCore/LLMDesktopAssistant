@@ -28,7 +28,12 @@ namespace LLMDesktopAssistant.Prompting.Management
 		protected override Guid GetKey(PromptComponent part) => part.Guid;
 
 		/// <inheritdoc/>
-		protected override void PopulatePart(PromptComponent part, IMetadataCollection metadata)
+		protected override void PopulateFromMetadata(PromptComponent part, IMetadataCollection metadata, bool isLocalized)
+		{
+		}
+
+		/// <inheritdoc/>
+		protected override void PopulateLocalized(PromptComponent original, PromptComponent localized)
 		{
 		}
 	}

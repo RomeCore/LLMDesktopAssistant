@@ -1,11 +1,13 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using AvaloniaEdit.Utils;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 
@@ -159,19 +161,18 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	[ViewModelFor(typeof(AgentPromptSettingsView))]
 	public class AgentPromptSettingsViewModel : ViewModelBase
 	{
+		private readonly ChatSettings _chatSettings;
+		private readonly IChatPromptBuilder _promptBuilder;
+		private readonly ChatAgentDescriptor _agent;
+		private readonly IPromptComponentManager _componentManager;
+		private readonly IPromptPersonaManager _personaManager;
+		private readonly IPromptSpecializationManager _specializationManager;
+		private readonly IPromptBehaviourSliderManager _behaviourSliderManager;
+
 		/// <summary>
 		/// Gets the underlying agent prompt settings.
 		/// </summary>
 		public AgentPromptSettings PromptSettings { get; }
-
-		/// <summary>
-		/// Gets the prompt registry used to resolve components, personas and specializations.
-		/// </summary>
-		public PromptRegistry PromptRegistry { get; }
-
-		private readonly ChatSettings _chatSettings;
-		private readonly IChatPromptBuilder _promptBuilder;
-		private readonly ChatAgentDescriptor _agent;
 
 		/// <summary>
 		/// Gets the effective system prompt resolved by the current inheritance level.
@@ -341,15 +342,22 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public AgentPromptSettingsViewModel(
 			AgentPromptSettings settings,
 			ChatSettings chatSettings,
-			IPromptRegistry promptRegistry,
 			IChatPromptBuilder promptBuilder,
-			ChatAgentDescriptor agent)
+			ChatAgentDescriptor agent,
+			IPromptComponentManager componentManager,
+			IPromptPersonaManager personaManager,
+			IPromptSpecializationManager specializationManager,
+			IPromptBehaviourSliderManager behaviourSliderManager)
 		{
 			PromptSettings = settings;
 			_chatSettings = chatSettings;
-			PromptRegistry = promptRegistry as PromptRegistry ?? throw new InvalidOperationException("Prompt registry must be of type PromptRegistry.");
 			_promptBuilder = promptBuilder;
 			_agent = agent;
+
+			_componentManager = componentManager;
+			_personaManager = personaManager;
+			_specializationManager = specializationManager;
+			_behaviourSliderManager = behaviourSliderManager;
 
 			_selectedSystemPromptInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SystemPromptInheritance);
 			_selectedComponentsInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.PromptComponentsInheritance);
@@ -480,8 +488,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			// --- Components ---
 			var allComponents = new List<PromptComponent>();
 			var componentsConfig = SettingsManager.Get<PromptComponentsConfiguration>();
-			allComponents.AddRange(componentsConfig.Components);
-			allComponents.AddRange(PromptRegistry.BuiltinComponents.Values);
+			allComponents.AddRange(_componentManager.GetAll());
 
 			var grouped = allComponents.GroupBy(c => string.IsNullOrEmpty(c.Category)
 				? LocalizationManager.LocalizeStatic("prompt.category.uncategorized")
@@ -502,9 +509,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			// --- Personas ---
 			AvailablePersonas.Clear();
 			var personasConfig = SettingsManager.Get<PromptPersonasConfiguration>();
-			foreach (var persona in PromptRegistry.BuiltinPersonas.Values)
-				AvailablePersonas.Add(new PersonaItemViewModel(this, persona));
-			foreach (var persona in personasConfig.Personas)
+			foreach (var persona in _personaManager.GetAll())
 				AvailablePersonas.Add(new PersonaItemViewModel(this, persona));
 
 			if (EffectivePersona.PersonaId.HasValue)
@@ -519,9 +524,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			// --- Specializations ---
 			AvailableSpecializations.Clear();
 			var specializationsConfig = SettingsManager.Get<PromptSpecializationsConfiguration>();
-			foreach (var specialization in PromptRegistry.BuiltinSpecializations.Values)
-				AvailableSpecializations.Add(new SpecializationItemViewModel(this, specialization));
-			foreach (var specialization in specializationsConfig.Specializations)
+			foreach (var specialization in _specializationManager.GetAll())
 				AvailableSpecializations.Add(new SpecializationItemViewModel(this, specialization));
 
 			if (EffectiveSpecialization.SpecializationId.HasValue)
@@ -536,8 +539,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			// --- Sliders ---
 			SliderItems.Clear();
 			var sliderValues = EffectiveSliderValues;
-			foreach (var (sliderId, slider) in PromptRegistry.BuiltinSliders)
+			foreach (var slider in _behaviourSliderManager.GetAll())
 			{
+				var sliderId = slider.Guid;
 				// Find existing slider value or create new one with default (0)
 				var existingValue = sliderValues.FirstOrDefault(sv => sv.SliderId == sliderId);
 				if (existingValue == null)

@@ -28,14 +28,14 @@ namespace LLMDesktopAssistant.Prompting.Management
 		protected override Guid GetKey(PromptBehaviourSlider part) => part.Guid;
 
 		/// <inheritdoc/>
-		protected override void PopulatePart(PromptBehaviourSlider part, IMetadataCollection metadata)
+		protected override void PopulateFromMetadata(PromptBehaviourSlider part, IMetadataCollection metadata, bool isLocalized)
 		{
 			var hintsRaw = metadata.TryGetAdditional<object?[]>("hints") ?? [];
 			var sliderMin = (int)metadata.TryGetAdditional<double>("slider_min");
 			var sliderMax = (int)metadata.TryGetAdditional<double>("slider_max");
 			var sliderDefault = (int)metadata.TryGetAdditional<double>("slider_default");
 
-			if (sliderMin >= sliderMax || sliderDefault < sliderMin || sliderDefault > sliderMax)
+			if ((sliderMin >= sliderMax || sliderDefault < sliderMin || sliderDefault > sliderMax) && !isLocalized)
 			{
 				part.ExpandDiagnostic(new PromptPartDiagnostic
 				{
@@ -47,9 +47,9 @@ namespace LLMDesktopAssistant.Prompting.Management
 			}
 
 			var hints = ImmutableDictionary.CreateBuilder<int, string>();
-			var hintsLength = sliderMin != 0 && sliderMax != 0 ? sliderMax - sliderMin + 1 : hintsRaw.Length;
+			var hintsLength = sliderMax - sliderMin + 1;
 
-			if (hintsLength != hintsRaw.Length)
+			if (!isLocalized && hintsLength != hintsRaw.Length)
 			{
 				part.ExpandDiagnostic(new PromptPartDiagnostic
 				{
@@ -61,13 +61,21 @@ namespace LLMDesktopAssistant.Prompting.Management
 				return;
 			}
 
-			for (int i = 0; i < hintsLength; i++)
+			for (int i = 0; i < hintsRaw.Length; i++)
 				hints[i + sliderMin] = hintsRaw[i]?.ToString() ?? string.Empty;
 
 			part.Titles = hints.ToImmutable();
 			part.MinimumValue = sliderMin;
 			part.MaximumValue = sliderMax;
 			part.DefaultValue = sliderDefault;
+		}
+
+		/// <inheritdoc/>
+		protected override void PopulateLocalized(PromptBehaviourSlider original, PromptBehaviourSlider localized)
+		{
+			localized.MinimumValue = original.MinimumValue;
+			localized.MaximumValue = original.MaximumValue;
+			localized.DefaultValue = original.DefaultValue;
 		}
 	}
 }

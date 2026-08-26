@@ -6,7 +6,7 @@ using LLTSharp.Metadata;
 
 namespace LLMDesktopAssistant.Prompting.Management
 {
-	[ChatService(typeof(ChatTemplateImporter))]
+	[ChatService(typeof(IChatTemplateImporter))]
 	public class ChatTemplateImporter : Disposable, IChatTemplateImporter
 	{
 		private readonly TemplateLibrary _library;

@@ -18,6 +18,7 @@ using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools.Meta;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Settings;
+using LLMDesktopAssistant.Prompting.Management;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -230,8 +231,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 				SettingsTree.RemoveRange(_generalSettingsCount, SettingsTree.Count - _generalSettingsCount);
 			}
 
-			var promptRegistry = Chat.Services.GetRequiredService<IPromptRegistry>();
-
 			var allAgents = _agentManager.ListAgents();
 			foreach (var (descriptor, isGlobal) in allAgents)
 			{
@@ -251,9 +250,12 @@ namespace LLMDesktopAssistant.LLM.Settings
 						() => new AgentPromptSettingsViewModel(
 							descriptor.Prompts,
 							Settings,
-							promptRegistry,
 							Chat.Services.GetRequiredService<IChatPromptBuilder>(),
-							descriptor)),
+							descriptor,
+							Chat.Services.GetRequiredService<IPromptComponentManager>(),
+							Chat.Services.GetRequiredService<IPromptPersonaManager>(),
+							Chat.Services.GetRequiredService<IPromptSpecializationManager>(),
+							Chat.Services.GetRequiredService<IPromptBehaviourSliderManager>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.tools"),
 						MaterialIconKind.Wrench,
