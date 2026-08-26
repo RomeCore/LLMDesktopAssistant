@@ -133,7 +133,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			string? title = null,
 			[Description("The human-readable category of the tool for showing it in the UI.")]
 			string? category = null,
-			[Description("The tool approval level. 'policy-based' is used by default.")]
+			[Description("Whether the tool is enabled or not. Uses settings by default.")]
+			bool? enabled = null,
+			[Description("The tool approval level. Uses settings by default.")]
 			string? approvalLevel = null,
 			[Description("The expected behaviors of the tool.")]
 			string[]? behaviours = null,
@@ -195,7 +197,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					: (ToolBehaviour?)null;
 
 				_metaToolManager.CreateOrUpdateTool(name, isLocal, description, title, category,
-					approvalLevelEnum, behavioursEnum, argumentSchemaJson, lang, executionCode);
+					enabled, approvalLevelEnum, behavioursEnum, argumentSchemaJson, lang, executionCode);
 
 				return new ToolResult($"Tool '{name}' ({lang}) created or updated successfully");
 			}
@@ -222,7 +224,8 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				result.AppendLine($"Description: {tool.Description}");
 				result.AppendLine($"Category: {tool.Category}");
 				result.AppendLine($"Language: {tool.ScriptLanguage}");
-				result.AppendLine($"Approval level: {MetaToolHumanizedEnumNames.SerializeApprovalLevel(tool.ApprovalLevel)}");
+				result.AppendLine($"Approval level: {(tool.ApprovalLevel is null ? "default" :
+					MetaToolHumanizedEnumNames.SerializeApprovalLevel(tool.ApprovalLevel.Value))}");
 
 				var behaviours = MetaToolHumanizedEnumNames.SerializeBehaviours(tool.Behaviours);
 				result.AppendLine("Behaviours:");

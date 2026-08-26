@@ -38,3 +38,5 @@ source.template: Шаблон
 source.unknown: Неизвестно
 source.userprofile: Профиль пользователя
 source.workingdirectory: Рабочая директория
+skills_enabled_by_default: Включить неизменённые навыки по умолчанию
+skills_enabled_by_default.hint: При включении навыки без явного переопределения для агента доступны по умолчанию. Снимите флажок, чтобы отключить все неизменённые навыки.

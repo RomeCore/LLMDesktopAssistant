@@ -9,3 +9,6 @@ rename: Rename toolset
 shared: Shared toolset:
 use_custom: Use custom toolset
 use_custom.hint: Edits apply only to this agent. When disabled, a shared toolset configuration is used.
+tools_enabled_by_default: Enable unchanged tools by default
+tools_enabled_by_default.hint: When checked, tools without an explicit per-agent override are enabled by default. Uncheck to disable all unchanged tools.
+default_approval_level: Default approval level

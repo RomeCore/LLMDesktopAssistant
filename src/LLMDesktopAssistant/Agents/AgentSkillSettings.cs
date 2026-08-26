@@ -1,6 +1,4 @@
-using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.SourceGenerators;
-using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents
 {
@@ -21,15 +19,15 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _enableSkills, value);
 		}
 
-		private readonly RangeObservableCollection<SkillChange> _skillChanges = [];
+		private SkillsetSettings _skillset = new();
 		/// <summary>
-		/// Gets or sets the skill changes compared to all available skills.
+		/// Gets or sets the skillset settings for the agent.
 		/// </summary>
 		[InheritedChatAgentSetting]
-		public RangeObservableCollection<SkillChange> SkillChanges
+		public SkillsetSettings Skillset
 		{
-			get => _skillChanges;
-			set => _skillChanges.Reset(value);
+			get => _skillset;
+			set => SetProperty(ref _skillset, value);
 		}
 	}
 }

@@ -279,6 +279,7 @@ stage.type.sequential: Последовательный
 stage.weight.tooltip: Вероятность выбора агента (0 = всегда пропускать, 1 = никогда не пропускать)
 stage.weighted_agents: Взвешенные агенты
 tool.approval_level: Уровень подтверждения
+tool.approval_level.default: По-умолчанию
 tool.approval_level.alwaysapprove: Авто-одобрение
 tool.approval_level.alwaysask: Всегда спрашивать
 tool.approval_level.alwaysdisallow: Всегда запрещать

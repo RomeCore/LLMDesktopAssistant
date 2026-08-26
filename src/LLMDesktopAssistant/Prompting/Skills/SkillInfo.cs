@@ -32,6 +32,11 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		public required SkillSource Source { get; init; }
 
 		/// <summary>
+		/// The source of the prompt template used to import the skill.
+		/// </summary>
+		public PromptPartSource TemplateSource { get; init; } = PromptPartSource.Unknown;
+
+		/// <summary>
 		/// The absolute path to the SKILL.md file, if applicable. Null otherwise.
 		/// </summary>
 		public string? Path { get; init; } = null;
@@ -95,9 +100,9 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		public SkillDiagnostic? Diagnostic { get; init; } = null;
 
 		/// <summary>
-		/// Whether or not this skill is enabled. Defaults to true.
+		/// Whether or not this skill is enabled. Defaults to null, meaning it is not explicitly enabled or disabled.
 		/// </summary>
-		public bool Enabled { get; init; } = true;
+		public bool? Enabled { get; init; }
 
 		/// <summary>
 		/// The mode in which the skill should be injected into the prompt.

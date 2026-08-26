@@ -3,15 +3,16 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Services.Configurators
 {
-	[ServiceConfigurator(ServiceScope.Chat)]
-	public class LuaApiConfigurator : ServiceConfigurator
+	[ServiceConfigurator(ServiceScope.App)]
+	public class AppLuaApiConfigurator : ServiceConfigurator
 	{
 		public override void Configure(IServiceCollection services)
 		{
 			var luaApis = ReflectionUtility.GetTypesWithAttribute<LuaApiBaseAsync, LuaApiAttribute>().ToList();
 			foreach (var luaApi in luaApis)
 			{
-				services.AddScoped(typeof(LuaApiBaseAsync), luaApi.Type);
+				if (!luaApi.Attribute.ChatScoped)
+					services.AddSingleton(typeof(LuaApiBaseAsync), luaApi.Type);
 			}
 		}
 	}

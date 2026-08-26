@@ -279,6 +279,7 @@ stage.type.sequential: Sequential
 stage.weight.tooltip: Probability of being selected (0 = always skipped, 1 = never skipped)
 stage.weighted_agents: Weighted agents
 tool.approval_level: Approval Level
+tool.approval_level.default: Default
 tool.approval_level.alwaysapprove: Auto-approve
 tool.approval_level.alwaysask: Always ask
 tool.approval_level.alwaysdisallow: Always disallow

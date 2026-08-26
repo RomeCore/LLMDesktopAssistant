@@ -129,9 +129,9 @@ namespace LLMDesktopAssistant.Tools
 		public ToolSource Source { get; init; } = ToolSource.Native;
 
 		/// <summary>
-		/// A value indicating whether the tool is enabled. Defaults to true.
+		/// A value indicating whether the tool is enabled. Defaults to null, meaning it is not explicitly enabled or disabled.
 		/// </summary>
-		public bool Enabled { get; init; } = true;
+		public bool? Enabled { get; init; } = null;
 
 		/// <summary>
 		/// A value indicating whether the tool is fixed and cannot be disabled (but approval level can be modified).
@@ -140,9 +140,9 @@ namespace LLMDesktopAssistant.Tools
 		public bool IsFixed { get; init; } = false;
 
 		/// <summary>
-		/// A value indicating whether the tool requires user confirmation before execution.
+		/// A value indicating whether the tool requires user confirmation before execution. By default, uses agent's default approval level.
 		/// </summary>
-		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.PolicyBased;
+		public ToolApprovalLevel? ApprovalLevel { get; init; } = null;
 
 		/// <summary>
 		/// The individual policy mask that overrides the agent's policy for this tool.

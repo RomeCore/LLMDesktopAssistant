@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	/// Provides access to SixLabors.ImageSharp functionality.
 	/// Registered in the global namespace as "image".
 	/// </summary>
-	[LuaApi(chatScoped: false)]
+	[LuaApi(chatScoped: true)]
 	public class LuaApiImage : LuaApiBaseAsync
 	{
 		public override string? Namespace => "image";

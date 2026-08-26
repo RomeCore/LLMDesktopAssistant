@@ -39,7 +39,8 @@ namespace LLMDesktopAssistant.Tools.Meta
 			public string Title { get; set; } = string.Empty;
 			public string Description { get; set; } = string.Empty;
 			public string Category { get; set; } = string.Empty;
-			public string ApprovalLevel { get; set; } = "policy-based";
+			public bool? Enabled { get; set; }
+			public string? ApprovalLevel { get; set; }
 			public string[]? Behaviours { get; set; }
 			public string ArgumentSchema { get; set; } = string.Empty;
 		}
@@ -119,14 +120,14 @@ namespace LLMDesktopAssistant.Tools.Meta
 					});
 			}
 
-			ToolApprovalLevel approvalLevel;
+			ToolApprovalLevel? approvalLevel = null;
 			try
 			{
-				approvalLevel = MetaToolHumanizedEnumNames.DeserializeApprovalLevel(frontmatter.ApprovalLevel);
+				if (!string.IsNullOrEmpty(frontmatter.ApprovalLevel))
+					approvalLevel = MetaToolHumanizedEnumNames.DeserializeApprovalLevel(frontmatter.ApprovalLevel);
 			}
 			catch
 			{
-				approvalLevel = ToolApprovalLevel.PolicyBased;
 				codes |= MetaToolDiagnosticCode.InvalidApprovalLevel;
 			}
 
@@ -181,14 +182,15 @@ namespace LLMDesktopAssistant.Tools.Meta
 				Title = frontmatter.Title,
 				Description = frontmatter.Description,
 				Category = frontmatter.Category,
-				ApprovalLevel = approvalLevel,
 				Behaviours = behaviours,
 				ArgumentSchema = argumentSchema,
 				ScriptLanguage = engineDescriptor.Language,
 				ExecutionCode = executionCode.Trim(),
 				Source = source,
 				Path = filePath,
-				Diagnostic = diagnostic
+				Diagnostic = diagnostic,
+				Enabled = frontmatter.Enabled,
+				ApprovalLevel = approvalLevel
 			};
 		}
 
@@ -211,7 +213,8 @@ namespace LLMDesktopAssistant.Tools.Meta
 				Title = tool.Title,
 				Description = tool.Description,
 				Category = tool.Category,
-				ApprovalLevel = MetaToolHumanizedEnumNames.SerializeApprovalLevel(tool.ApprovalLevel),
+				Enabled = tool.Enabled,
+				ApprovalLevel = tool.ApprovalLevel is null ? null : MetaToolHumanizedEnumNames.SerializeApprovalLevel(tool.ApprovalLevel.Value),
 				Behaviours = MetaToolHumanizedEnumNames.SerializeBehaviours(tool.Behaviours),
 				ArgumentSchema = argumentSchemaText
 			};

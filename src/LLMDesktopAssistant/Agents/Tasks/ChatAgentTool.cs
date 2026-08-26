@@ -33,7 +33,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			ChatToolInfo = chatToolInfo;
 			ExecutionContext = executionContext;
 
-			ApprovalLevel = chatToolInfo.ApprovalLevel;
+			ApprovalLevel = chatToolInfo.ApprovalLevel ?? ToolApprovalLevel.PolicyBased;
 			DefaultExpectedBehaviour = chatToolInfo.DefaultExpectedBehaviour;
 			PolicyMask = chatToolInfo.PolicyMask;
 			SpecifierUnionMode = chatToolInfo.SpecifierUnionMode;

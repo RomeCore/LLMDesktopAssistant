@@ -11,23 +11,29 @@ public class ToolApprovalLevelItem
 	/// <summary>
 	/// The ToolApprovalLevel value.
 	/// </summary>
-	public ToolApprovalLevel Value { get; }
+	public ToolApprovalLevel? Value { get; }
 
 	/// <summary>
 	/// Localized display name.
 	/// </summary>
 	public string DisplayName { get; }
 
-	public ToolApprovalLevelItem(ToolApprovalLevel value)
+	public ToolApprovalLevelItem(ToolApprovalLevel? value)
 	{
 		Value = value;
-		var key = $"settings.tool.approval_level.{value.ToString().ToLower()}";
+		var key = $"settings.tool.approval_level.{(value?.ToString().ToLower() ?? "default")}";
 		DisplayName = LocalizationManager.LocalizeStatic(key);
-
-		// Fallback to enum name if localization missing
-		if (DisplayName == key || string.IsNullOrEmpty(DisplayName))
-			DisplayName = value.ToString();
 	}
+
+	/// <summary>
+	/// Gets all ToolApprovalLevel values with localized display names, but with default value as <see langword="null"/>.
+	/// </summary>
+	public static ImmutableList<ToolApprovalLevelItem> AllWithDefault { get; } =
+		Enum.GetValues<ToolApprovalLevel>()
+			.Select(v => (ToolApprovalLevel?)v)
+			.Prepend(null)
+			.Select(v => new ToolApprovalLevelItem(v))
+			.ToImmutableList();
 
 	/// <summary>
 	/// Gets all ToolApprovalLevel values with localized display names.

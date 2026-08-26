@@ -88,11 +88,17 @@
 			<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" VerticalAlignment="Center">
 
 				<!-- Enabled toggle (agent settings) -->
-				<CheckBox Grid.Column="0"
-						  IsChecked="{Binding Enabled}"
-						  HorizontalAlignment="Center"
-						  VerticalAlignment="Center"
-						  IsVisible="{Binding CanToggle}"/>
+				<Grid Grid.Column="0"
+					  ColumnDefinitions="2,auto"
+					  IsVisible="{Binding CanToggle}">
+					<Rectangle Grid.Column="0"
+							   Fill="{DynamicResource PrimaryAccentBrush}"
+							   IsVisible="{Binding EnabledChanged}"/>
+					<CheckBox Grid.Column="1"
+							  IsChecked="{Binding Enabled}"
+							  HorizontalAlignment="Center"
+							  VerticalAlignment="Center"/>
+				</Grid>
 
 				<!-- Enabled indicator (chat settings) -->
 				<Panel Grid.Column="0" IsVisible="{Binding CanToggle, Converter={StaticResource InverseBooleanConverter}}">
@@ -121,10 +127,16 @@
 				</StackPanel>
 
 				<!-- Model selector (agent settings) -->
-				<ctrl:ModelSelectorControl Grid.Column="2"
+				<Grid Grid.Column="2"
+					  ColumnDefinitions="2,auto"
+					  IsVisible="{Binding CanToggle}">
+					<Rectangle Grid.Column="0"
+							   Fill="{DynamicResource PrimaryAccentBrush}"
+							   IsVisible="{Binding ModelChanged}"/>
+					<ctrl:ModelSelectorControl Grid.Column="1"
 											SelectedModel="{Binding SelectedModel, Mode=TwoWay}"
-											VerticalAlignment="Center"
-											IsVisible="{Binding CanToggle}"/>
+											VerticalAlignment="Center"/>
+				</Grid>
 
 				<!-- Reset (agent settings) -->
 				<Button Grid.Column="3"

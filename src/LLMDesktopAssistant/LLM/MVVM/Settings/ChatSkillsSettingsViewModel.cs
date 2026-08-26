@@ -69,11 +69,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	public ICollection<SkillCardViewModel> AvailableSkills
 	{
 		get => _availableSkills;
-		set
-		{
-			_availableSkills.Reset(value);
-			RaisePropertyChanged(nameof(AvailableSkills));
-		}
+		set => _availableSkills.Reset(value);
 	}
 
 	/// <summary>
@@ -181,6 +177,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	/// </summary>
 	public void UpdateSkills()
 	{
+		_allCards.ForEach(c => c.Dispose());
 		_allCards = (_skillsetBuilder?.GetAvailableSkills() ?? [])
 			.Select(s => new SkillCardViewModel(
 				s,
@@ -340,6 +337,9 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 		base.Dispose(disposing);
 
 		if (disposing)
+		{
 			SkillSettings.PropertyChanged -= SkillSettings_PropertyChanged;
+			_allCards.ForEach(c => c.Dispose());
+		}
 	}
 }

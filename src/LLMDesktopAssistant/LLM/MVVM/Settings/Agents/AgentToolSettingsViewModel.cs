@@ -9,6 +9,7 @@ using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Specifiers;
 using LLMDesktopAssistant.Utils;
+using static AvaloniaEdit.Document.TextDocumentWeakEventManager;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
@@ -56,6 +57,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			_toolInfo = tool;
 			_change = _toolset.ToolChanges.FirstOrDefault(x => x.ToolName == tool.Name);
 
+			_toolset.PropertyChanged += Toolset_PropertyChanged;
+
 			switch (tool.Source)
 			{
 				case ToolSource.MCP:
@@ -84,6 +87,24 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			RebuildSpecifiers();
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				_toolset.PropertyChanged -= Toolset_PropertyChanged;
+			}
+		}
+
+		private void Toolset_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName is nameof(ToolsetConfiguration.ToolsEnabledByDefault) && !EnabledChanged)
+				RaisePropertyChanged(nameof(Enabled));
+			if (e.PropertyName is nameof(ToolsetConfiguration.DefaultApprovalLevel) && !ApprovalLevelChanged)
+				RaisePropertyChanged(nameof(ApprovalLevel));
+		}
+
 		private void Reset()
 		{
 			if (_change != null)
@@ -91,7 +112,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				_toolset.ToolChanges.Remove(_change);
 				_change = null;
 				RaisePropertyChanged(nameof(Enabled));
+				RaisePropertyChanged(nameof(EnabledChanged));
 				RaisePropertyChanged(nameof(ApprovalLevel));
+				RaisePropertyChanged(nameof(ApprovalLevelChanged));
 				RaisePropertyChanged(nameof(SpecifierUnionMode));
 				RaisePropertyChanged(nameof(SpecifierAggregationMode));
 				RaisePropertyChanged(nameof(IsSpecifierSectionEnabled));
@@ -117,9 +140,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			return _change;
 		}
 
+		public bool EnabledChanged => _change != null && _change.Enabled != null;
+
 		public bool? Enabled
 		{
-			get => IsFixed ? true : (_change?.Enabled ?? _toolInfo.Enabled);
+			get => IsFixed ? true : (_change?.Enabled ?? _toolInfo.Enabled ?? _toolset.ToolsEnabledByDefault);
 			set
 			{
 				if (IsFixed)
@@ -128,21 +153,25 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				{
 					EnsureChange().Enabled = value;
 					RaisePropertyChanged(nameof(Enabled));
+					RaisePropertyChanged(nameof(EnabledChanged));
 				}
 			}
 		}
 
 		public ImmutableList<ToolApprovalLevelItem> ApprovalLevelList { get; } = ToolApprovalLevelItem.All;
 
+		public bool ApprovalLevelChanged => _change != null && _change.ApprovalLevel != null;
+		
 		public ToolApprovalLevelItem? ApprovalLevel
 		{
-			get => ApprovalLevelList.FirstOrDefault(i => i.Value == (_change?.ApprovalLevel ?? _toolInfo.ApprovalLevel));
+			get => ApprovalLevelList.FirstOrDefault(i => i.Value == EffectiveApprovalLevel);
 			set
 			{
 				if (ApprovalLevel != value)
 				{
 					EnsureChange().ApprovalLevel = value?.Value;
 					RaisePropertyChanged(nameof(ApprovalLevel));
+					RaisePropertyChanged(nameof(ApprovalLevelChanged));
 					RaisePropertyChanged(nameof(IsSpecifierSectionEnabled));
 					RaisePropertyChanged(nameof(IsSpecifierListEnabled));
 					RaisePropertyChanged(nameof(IsPolicyMaskEnabled));
@@ -153,7 +182,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// <summary>
 		/// Gets the effective approval level of the tool (the change overrides the tool info).
 		/// </summary>
-		public ToolApprovalLevel EffectiveApprovalLevel => _change?.ApprovalLevel ?? _toolInfo.ApprovalLevel;
+		public ToolApprovalLevel EffectiveApprovalLevel => _change?.ApprovalLevel ?? _toolInfo.ApprovalLevel ?? _toolset.DefaultApprovalLevel;
 
 		/// <summary>
 		/// Gets a value indicating whether the tool supports specifiers.
@@ -393,7 +422,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			base.Dispose(disposing);
 
 			foreach (var tool in Tools)
+			{
 				tool.PropertyChanged -= Tool_PropertyChanged;
+				tool.Dispose();
+			}
 		}
 
 		private void ResetAllTools()
@@ -404,9 +436,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		private void Tool_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == nameof(Enabled) || e.PropertyName == nameof(ApprovalLevel))
+			if (e.PropertyName is nameof(Enabled) or nameof(EnabledChanged) or nameof(ApprovalLevel) or nameof(ApprovalLevelChanged))
 				RaisePropertyChanged(e.PropertyName);
 		}
+
+		public bool EnabledChanged => Tools.Any(t => t.EnabledChanged);
 
 		public bool? Enabled
 		{
@@ -419,6 +453,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 							tool.Enabled = value;
 			}
 		}
+
+		public bool ApprovalLevelChanged => Tools.Any(t => t.ApprovalLevelChanged);
 
 		public ToolApprovalLevelItem? ApprovalLevel
 		{
@@ -459,6 +495,24 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// Gets the effective toolset configuration (custom or referenced shared).
 		/// </summary>
 		public ToolsetConfiguration EffectiveToolsetConfiguration => EffectiveToolset.GetEffectiveConfiguration();
+
+		/// <summary>
+		/// Gets the list of default approval level options for unchanged tools.
+		/// </summary>
+		public ImmutableList<ToolApprovalLevelItem> DefaultApprovalLevelList { get; } = ToolApprovalLevelItem.All;
+
+		/// <summary>
+		/// Gets or sets the default approval level for unchanged tools.
+		/// </summary>
+		public ToolApprovalLevelItem? DefaultApprovalLevel
+		{
+			get => DefaultApprovalLevelList.FirstOrDefault(i => i.Value == EffectiveToolsetConfiguration.DefaultApprovalLevel);
+			set
+			{
+				if (value != null && DefaultApprovalLevel?.Value != value.Value)
+					EffectiveToolsetConfiguration.DefaultApprovalLevel = value.Value!.Value; // Value... value... value...
+			}
+		}
 
 		/// <summary>
 		/// List of ToolBehaviour flags with combined Auto-Approve / Disallowed policy toggles.
@@ -622,6 +676,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					RaisePropertyChanged(nameof(SelectedToolsetInheritance));
 					RaisePropertyChanged(nameof(EffectiveToolset));
 					RaisePropertyChanged(nameof(EffectiveToolsetConfiguration));
+					RaisePropertyChanged(nameof(DefaultApprovalLevel));
 					RaisePropertyChanged(nameof(SelectedToolsetId));
 					RaisePropertyChanged(nameof(UseCustomToolset));
 					UpdateTools();

@@ -18,12 +18,13 @@ namespace LLMDesktopAssistant.Tools.Meta
 		/// <param name="description">The description of the tool.</param>
 		/// <param name="title">The human-readable title of the tool.</param>
 		/// <param name="category">The category of the tool.</param>
+		/// <param name="enabled">Indicates whether the tool is enabled by default.</param>
 		/// <param name="approvalLevel">The level of approval for the tool.</param>
 		/// <param name="behaviours">The behaviors of the tool. Describes what tool does.</param>
 		/// <param name="argumentSchema">The JSON schema describing the arguments for the tool.</param>
 		/// <param name="language">The programming language in which the tool is written.</param>
 		/// <param name="executionCode">The code to execute when the tool is called.</param>
-		void CreateOrUpdateTool(string name, bool? isLocal, string? description, string? title, string? category,
+		void CreateOrUpdateTool(string name, bool? isLocal, string? description, string? title, string? category, bool? enabled,
 			ToolApprovalLevel? approvalLevel, ToolBehaviour? behaviours, JsonObject? argumentSchema, ScriptLanguageType? language, string? executionCode);
 
 		/// <summary>

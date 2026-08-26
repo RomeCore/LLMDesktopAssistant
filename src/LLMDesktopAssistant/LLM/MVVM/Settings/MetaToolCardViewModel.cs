@@ -86,7 +86,7 @@ public class MetaToolCardViewModel : ViewModelBase
 	/// <summary>
 	/// Gets the localized display name of the approval level.
 	/// </summary>
-	public string ApprovalLevelName => ToolApprovalLevelItem.All.FirstOrDefault(i => i.Value == _info.ApprovalLevel)?.DisplayName ?? _info.ApprovalLevel.ToString();
+	public string? ApprovalLevelName => ToolApprovalLevelItem.AllWithDefault.FirstOrDefault(i => i.Value == _info.ApprovalLevel)?.DisplayName;
 
 	/// <summary>
 	/// Gets the behaviour flag chips of the tool.

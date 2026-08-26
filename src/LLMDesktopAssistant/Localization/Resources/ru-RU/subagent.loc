@@ -36,3 +36,5 @@ source.template: Шаблон
 source.unknown: Неизвестно
 source.userprofile: Профиль пользователя
 source.workingdirectory: Рабочая директория
+sub_agents_enabled_by_default: Включить неизменённых суб-агентов по умолчанию
+sub_agents_enabled_by_default.hint: При включении суб-агенты без явного переопределения для агента доступны по умолчанию. Снимите флажок, чтобы отключить всех неизменённых суб-агентов.

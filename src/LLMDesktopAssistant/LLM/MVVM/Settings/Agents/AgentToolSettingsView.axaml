@@ -202,7 +202,7 @@
 		<!-- Shared toolset name editor -->
 		<StackPanel Orientation="Horizontal"
 								Spacing="4"
-								IsVisible="{Binding UseCustomToolset, Converter={StaticResource InverseBooleanConverter}}"
+								IsVisible="{Binding !UseCustomToolset}"
 								IsEnabled="{Binding ToolSettings.EnableTools}">
 
 			<TextBlock Text="{loc:Loc toolset.shared}"
@@ -212,7 +212,7 @@
 
 			<StackPanel Orientation="Horizontal"
 									Spacing="4"
-									IsVisible="{Binding IsEditingId, Converter={StaticResource InverseBooleanConverter}}">
+									IsVisible="{Binding !IsEditingId}">
 
 				<ComboBox MinWidth="150"
 									VerticalAlignment="Center"
@@ -278,6 +278,39 @@
 		<Rectangle Height="1"
 							 Fill="{DynamicResource DefaultForeground}"
 							 Opacity="0.2"/>
+
+		<CheckBox IsChecked="{Binding EffectiveToolsetConfiguration.ToolsEnabledByDefault, Mode=TwoWay}"
+							Content="{loc:Loc toolset.tools_enabled_by_default}"/>
+
+		<TextBlock Text="{loc:Loc toolset.tools_enabled_by_default.hint}"
+							 Opacity="0.5"
+							 FontSize="11"
+							 Margin="24,0,0,4"
+							 TextWrapping="Wrap"/>
+
+		<Grid ColumnDefinitions="Auto,*"
+					Margin="0,4,0,0">
+
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc toolset.default_approval_level}"
+								 VerticalAlignment="Center"
+								 Margin="0,0,8,0"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{Binding DefaultApprovalLevelList}"
+								SelectedItem="{Binding DefaultApprovalLevel, Mode=TwoWay}"
+								MinWidth="200"
+								HorizontalAlignment="Left">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="sett:ToolApprovalLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
 
 		<!-- Column headers for tool list -->
 		<Grid Grid.IsSharedSizeScope="True">
@@ -375,23 +408,35 @@
 						</StackPanel>
 
 						<!-- Enabled -->
-						<CheckBox Grid.Column="2"
-											IsChecked="{Binding Enabled, Mode=TwoWay}"
-											IsEnabled="{Binding CanToggleEnabled}"
-											HorizontalAlignment="Center"/>
+						<Grid Grid.Column="2"
+									ColumnDefinitions="2,auto">
+							<Rectangle Grid.Column="0"
+												 Fill="{DynamicResource PrimaryAccentBrush}"
+												 IsVisible="{Binding EnabledChanged}"/>
+							<CheckBox Grid.Column="1"
+												IsChecked="{Binding Enabled, Mode=TwoWay}"
+												IsEnabled="{Binding CanToggleEnabled}"
+												HorizontalAlignment="Center"/>
+						</Grid>
 
 						<!-- Approval Level -->
-						<ComboBox Grid.Column="4"
-											SelectedItem="{Binding ApprovalLevel, Mode=TwoWay}"
-											ItemsSource="{Binding ApprovalLevelList}"
-											HorizontalAlignment="Stretch"
-											Margin="2,0">
-							<ComboBox.ItemTemplate>
-								<DataTemplate>
-									<TextBlock Text="{Binding DisplayName}"/>
-								</DataTemplate>
-							</ComboBox.ItemTemplate>
-						</ComboBox>
+						<Grid Grid.Column="4"
+									ColumnDefinitions="2,auto">
+							<Rectangle Grid.Column="0"
+												 Fill="{DynamicResource PrimaryAccentBrush}"
+												 IsVisible="{Binding ApprovalLevelChanged}"/>
+							<ComboBox Grid.Column="1"
+												SelectedItem="{Binding ApprovalLevel, Mode=TwoWay}"
+												ItemsSource="{Binding ApprovalLevelList}"
+												HorizontalAlignment="Stretch"
+												Margin="2,0">
+								<ComboBox.ItemTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding DisplayName}"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+						</Grid>
 
 						<!-- Reset -->
 						<Button Grid.Column="6"

@@ -186,7 +186,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					disallowedBehaviours &= ~policyMask.AutoApproveBehaviours;
 				}
 
-				var approvalLevel = toolInfo.ApprovalLevel;
+				var approvalLevel = toolInfo.ApprovalLevel ?? ToolApprovalLevel.PolicyBased;
 
 				// Specifier layer: evaluated only for policy-based approval levels.
 				SpecifierVerdict specifierVerdict = SpecifierVerdict.None;

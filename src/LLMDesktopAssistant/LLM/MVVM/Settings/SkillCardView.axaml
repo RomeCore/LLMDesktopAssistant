@@ -78,11 +78,17 @@
 			<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" VerticalAlignment="Center">
 
 				<!-- Enabled toggle (agent settings) -->
-				<CheckBox Grid.Column="0"
-						  IsChecked="{Binding Enabled}"
-						  HorizontalAlignment="Center"
-						  VerticalAlignment="Center"
-						  IsVisible="{Binding CanToggle}"/>
+				<Grid Grid.Column="0"
+					  ColumnDefinitions="2,auto"
+					  IsVisible="{Binding CanToggle}">
+					<Rectangle Grid.Column="0"
+							   Fill="{DynamicResource PrimaryAccentBrush}"
+							   IsVisible="{Binding EnabledChanged}"/>
+					<CheckBox Grid.Column="1"
+							  IsChecked="{Binding Enabled}"
+							  HorizontalAlignment="Center"
+							  VerticalAlignment="Center"/>
+				</Grid>
 
 				<!-- Enabled indicator (chat settings) -->
 				<Panel Grid.Column="0" IsVisible="{Binding CanToggle, Converter={StaticResource InverseBooleanConverter}}">
@@ -111,18 +117,24 @@
 				</StackPanel>
 
 				<!-- Injection mode selector (agent settings) -->
-				<ComboBox Grid.Column="2"
-						  SelectedItem="{Binding SelectedInjectionMode, Mode=TwoWay}"
-						  ItemsSource="{Binding InjectionModeList}"
-						  MinWidth="140"
-						  VerticalAlignment="Center"
-						  IsVisible="{Binding CanToggle}">
-					<ComboBox.ItemTemplate>
-						<DataTemplate x:DataType="local:SkillInjectionModeItem">
-							<TextBlock Text="{Binding DisplayName}"/>
-						</DataTemplate>
-					</ComboBox.ItemTemplate>
-				</ComboBox>
+				<Grid Grid.Column="2"
+					  ColumnDefinitions="2,auto"
+					  IsVisible="{Binding CanToggle}">
+					<Rectangle Grid.Column="0"
+							   Fill="{DynamicResource PrimaryAccentBrush}"
+							   IsVisible="{Binding InjectionModeChanged}"/>
+					<ComboBox Grid.Column="1"
+							  SelectedItem="{Binding SelectedInjectionMode, Mode=TwoWay}"
+							  ItemsSource="{Binding InjectionModeList}"
+							  MinWidth="140"
+							  VerticalAlignment="Center">
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="local:SkillInjectionModeItem">
+								<TextBlock Text="{Binding DisplayName}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+				</Grid>
 
 				<!-- Reset (agent settings) -->
 				<Button Grid.Column="3"

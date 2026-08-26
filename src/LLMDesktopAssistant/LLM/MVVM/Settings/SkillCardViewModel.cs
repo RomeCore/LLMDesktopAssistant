@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Skills;
@@ -77,6 +78,7 @@ public class SkillInjectionModeItem
 public class SkillCardViewModel : ViewModelBase
 {
 	private readonly SkillInfo _info;
+	private readonly SkillsetSettings? _settings;
 	private readonly RangeObservableCollection<SkillChange>? _changes;
 	private readonly Action<string>? _onTagClick;
 	private readonly Action? _onDeleted;
@@ -97,6 +99,7 @@ public class SkillCardViewModel : ViewModelBase
 	public SkillCardViewModel(SkillInfo info, bool canToggle,
 		SkillChange? change = null,
 		RangeObservableCollection<SkillChange>? changes = null,
+		SkillsetSettings? settings = null,
 		Action<string>? onTagClick = null,
 		Action? onDeleted = null)
 	{
@@ -107,6 +110,9 @@ public class SkillCardViewModel : ViewModelBase
 		_onTagClick = onTagClick;
 		_onDeleted = onDeleted;
 		_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
+
+		_settings = settings;
+		_settings?.PropertyChanged += SkillsetSettings_PropertyChanged;
 
 		DiagnosticFlags = SkillDiagnosticFlagInfo.CreateFromDiagnostic(info.Diagnostic);
 
@@ -128,6 +134,22 @@ public class SkillCardViewModel : ViewModelBase
 		ShowInExplorerCommand = new RelayCommand(ShowInExplorer, () => HasPath);
 		OpenFileCommand = new RelayCommand(OpenFile, () => HasPath);
 		DeleteFileCommand = new AsyncRelayCommand(DeleteFileAsync, () => HasPath);
+	}
+
+	protected override void Dispose(bool disposing)
+	{
+		base.Dispose(disposing);
+
+		if (disposing)
+		{
+			_settings?.PropertyChanged -= SkillsetSettings_PropertyChanged;
+		}
+	}
+
+	private void SkillsetSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(SkillsetSettings.SkillsEnabledByDefault))
+			RaisePropertyChanged(nameof(Enabled));
 	}
 
 	/// <summary>
@@ -193,18 +215,29 @@ public class SkillCardViewModel : ViewModelBase
 	public string DefinitionInjectionMode => LocalizeInjectionMode(_info.InjectionMode);
 
 	/// <summary>
+	/// Gets a value indicating whether this skill has an explicit enabled override.
+	/// </summary>
+	public bool EnabledChanged => _change != null && _change.Enabled != null;
+
+	/// <summary>
+	/// Gets a value indicating whether this skill has an explicit injection mode override.
+	/// </summary>
+	public bool InjectionModeChanged => _change != null && _change.InjectionMode != null;
+
+	/// <summary>
 	/// Gets or sets whether the skill is enabled. Returns the skill-defined value when
-	/// <see cref="CanToggle"/> is <see langword="false"/>.
+	/// <see cref="CanToggle"/> is <see langword="false"/>, falling back to the default.
 	/// </summary>
 	public bool Enabled
 	{
-		get => _change?.Enabled ?? _info.Enabled;
+		get => _change?.Enabled ?? _info.Enabled ?? _settings?.SkillsEnabledByDefault ?? true;
 		set
 		{
 			if (Enabled != value)
 			{
 				EnsureChange().Enabled = value;
 				RaisePropertyChanged(nameof(Enabled));
+				RaisePropertyChanged(nameof(EnabledChanged));
 			}
 		}
 	}
@@ -237,6 +270,7 @@ public class SkillCardViewModel : ViewModelBase
 			{
 				EnsureChange().InjectionMode = value.Value;
 				RaisePropertyChanged(nameof(SelectedInjectionMode));
+				RaisePropertyChanged(nameof(InjectionModeChanged));
 			}
 		}
 	}
@@ -334,7 +368,9 @@ public class SkillCardViewModel : ViewModelBase
 			_changes.Remove(_change);
 			_change = null;
 			RaisePropertyChanged(nameof(Enabled));
+			RaisePropertyChanged(nameof(EnabledChanged));
 			RaisePropertyChanged(nameof(SelectedInjectionMode));
+			RaisePropertyChanged(nameof(InjectionModeChanged));
 		}
 	}
 

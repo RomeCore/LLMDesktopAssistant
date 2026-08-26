@@ -84,6 +84,7 @@ public class SubAgentLinkIssueItem
 public class SubAgentCardViewModel : ViewModelBase
 {
 	private readonly SubAgentInfo _info;
+	private readonly SubAgentsetSettings? _settings;
 	private readonly RangeObservableCollection<SubAgentChange>? _changes;
 	private readonly Action<string>? _onTagClick;
 	private readonly Action? _onDeleted;
@@ -106,6 +107,7 @@ public class SubAgentCardViewModel : ViewModelBase
 		SubAgentChange? change = null,
 		RangeObservableCollection<SubAgentChange>? changes = null,
 		IEnumerable<SubAgentLinkIssue>? linkIssues = null,
+		SubAgentsetSettings? settings = null,
 		Action<string>? onTagClick = null,
 		Action? onDeleted = null)
 	{
@@ -116,6 +118,9 @@ public class SubAgentCardViewModel : ViewModelBase
 		_onTagClick = onTagClick;
 		_onDeleted = onDeleted;
 		_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
+
+		_settings = settings;
+		_settings?.PropertyChanged += SubAgentsetSettings_PropertyChanged;
 
 		DiagnosticFlags = SubAgentDiagnosticFlagInfo.CreateFromDiagnostic(info.Diagnostic);
 		LinkIssues = linkIssues?.ToImmutableList() ?? [];
@@ -144,6 +149,22 @@ public class SubAgentCardViewModel : ViewModelBase
 		ShowInExplorerCommand = new RelayCommand(ShowInExplorer, () => HasPath);
 		OpenFileCommand = new RelayCommand(OpenFile, () => HasPath);
 		DeleteFileCommand = new AsyncRelayCommand(DeleteFileAsync, () => HasPath);
+	}
+
+	protected override void Dispose(bool disposing)
+	{
+		base.Dispose(disposing);
+
+		if (disposing)
+		{
+			_settings?.PropertyChanged -= SubAgentsetSettings_PropertyChanged;
+		}
+	}
+
+	private void SubAgentsetSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(SubAgentsetSettings.SubAgentsEnabledByDefault))
+			RaisePropertyChanged(nameof(Enabled));
 	}
 
 	/// <summary>
@@ -209,18 +230,29 @@ public class SubAgentCardViewModel : ViewModelBase
 	public string? DefinitionModel => _info.Model;
 
 	/// <summary>
-	/// Gets or sets whether the sub-agent is enabled. Returns <see langword="null"/> for inherited
-	/// (default) value when <see cref="CanToggle"/> is <see langword="true"/>.
+	/// Gets a value indicating whether this sub-agent has an explicit enabled override.
+	/// </summary>
+	public bool EnabledChanged => _change != null && _change.Enabled != null;
+
+	/// <summary>
+	/// Gets a value indicating whether this sub-agent has an explicit model override.
+	/// </summary>
+	public bool ModelChanged => _change != null && _change.Model != null;
+
+	/// <summary>
+	/// Gets or sets whether the sub-agent is enabled. Returns the sub-agent-defined value when
+	/// <see cref="CanToggle"/> is <see langword="false"/>, falling back to the default.
 	/// </summary>
 	public bool Enabled
 	{
-		get => _change?.Enabled ?? _info.Enabled;
+		get => _change?.Enabled ?? _info.Enabled ?? _settings?.SubAgentsEnabledByDefault ?? true;
 		set
 		{
 			if (Enabled != value)
 			{
 				EnsureChange().Enabled = value;
 				RaisePropertyChanged(nameof(Enabled));
+				RaisePropertyChanged(nameof(EnabledChanged));
 			}
 		}
 	}
@@ -380,12 +412,14 @@ public class SubAgentCardViewModel : ViewModelBase
 				{
 					_change.Model = null;
 					RaisePropertyChanged(nameof(SelectedModel));
+					RaisePropertyChanged(nameof(ModelChanged));
 				}
 				return;
 			}
 
 			EnsureChange().Model = value;
 			RaisePropertyChanged(nameof(SelectedModel));
+			RaisePropertyChanged(nameof(ModelChanged));
 		}
 	}
 
@@ -426,7 +460,9 @@ public class SubAgentCardViewModel : ViewModelBase
 			_changes.Remove(_change);
 			_change = null;
 			RaisePropertyChanged(nameof(Enabled));
+			RaisePropertyChanged(nameof(EnabledChanged));
 			RaisePropertyChanged(nameof(SelectedModel));
+			RaisePropertyChanged(nameof(ModelChanged));
 		}
 	}
 

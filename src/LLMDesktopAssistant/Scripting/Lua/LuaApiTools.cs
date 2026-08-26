@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
@@ -52,8 +53,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			    - description: string — tool description
 			    - category: string — tool category (e.g. "web", "scripting")
 			    - display_name: string or nil — user-friendly name
-			    - enabled: boolean — whether the tool is enabled
+			    - enabled: boolean or nil — whether the tool is enabled, nil when tool is not changed by settings and default 'enabled' state is used
 			    - approval_level: string — the tool's approval policy, in kebab-case. One of:
+			        "default" - tool is subject to the agent's default approval level
 			        "policy-based" — defer to the agent's behaviour policy (auto-approve, prompt, or reject)
 			        "policy-ask-or-disallow" — prompt the user even if the agent auto-approved the behaviour
 			        "policy-approve-or-ask" — never disallow; auto-approve or prompt per agent policy
@@ -93,14 +95,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  but use ["key-name"] for keys containing spaces or hyphens).
 			- The result is a structured table containing content, success status, and metadata.
 			""";
-
+		
+		private readonly Chat _chat;
 		private readonly IToolsetCacheService _toolsetCache;
-		private readonly IServiceProvider _services;
 
-		public LuaApiTools(IToolsetCacheService toolsetCache, IServiceProvider services)
+		public LuaApiTools(Chat chat, IToolsetCacheService toolsetCache)
 		{
+			_chat = chat;
 			_toolsetCache = toolsetCache;
-			_services = services;
 		}
 
 		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
@@ -125,8 +127,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var context = ctx.TryGetToolExecutionContext();
 			if (context == null)
 			{
-				var chat = _services.GetRequiredService<Chat>();
-				context = ToolExecutionContext.CreateDummy(tool, jsonArgs, chat);
+				context = ToolExecutionContext.CreateDummy(tool, jsonArgs, _chat);
 			}
 			var reactiveResult = await tool.Executor.Invoke(jsonArgs, context, CancellationToken.None);
 
@@ -169,8 +170,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			result["category"] = new LuaString(tool.CategoryKey?.Key ?? string.Empty);
 			if (tool.TitleKey != null)
 				result["display_name"] = new LuaString(tool.TitleKey.Key);
-			result["enabled"] = LuaBoolean.FromBoolean(tool.Enabled);
-			result["approval_level"] = new LuaString(MetaToolHumanizedEnumNames.SerializeApprovalLevel(tool.ApprovalLevel));
+			result["enabled"] = tool.Enabled is null ? LuaNil.Instance : LuaBoolean.FromBoolean(tool.Enabled.Value);
+			result["approval_level"] = tool.ApprovalLevel is null ? new LuaString("default") : new LuaString(MetaToolHumanizedEnumNames.SerializeApprovalLevel(tool.ApprovalLevel.Value));
 			result["source"] = new LuaString(tool.Source.ToString().ToLower());
 			result["arguments"] = StructuredLuaConverter.JsonNodeToLuaValue(tool.ArgumentSchema);
 			return result;

@@ -95,7 +95,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			{
 				if (changes.TryGetValue(toolInfo.Tool.Name, out var change))
 				{
-					if (toolInfo.IsFixed || (change.Enabled ?? toolInfo.Enabled))
+					if (toolInfo.IsFixed || (change.Enabled ?? toolInfo.Enabled ?? toolset.ToolsEnabledByDefault))
 						result.Add(new ToolInfo
 						{
 							Name = toolInfo.Name,
@@ -116,7 +116,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 							Source = toolInfo.Source,
 							Enabled = true,
 							IsFixed = toolInfo.IsFixed,
-							ApprovalLevel = change.ApprovalLevel ?? toolInfo.ApprovalLevel,
+							ApprovalLevel = change.ApprovalLevel ?? toolInfo.ApprovalLevel ?? toolset.DefaultApprovalLevel,
 							PolicyMask = change.PolicyMask ?? toolInfo.PolicyMask,
 							SpecifierUnionMode = change.SpecifierUnionMode ?? toolInfo.SpecifierUnionMode,
 							SpecifierAggregationMode = change.SpecifierAggregationMode ?? toolInfo.SpecifierAggregationMode,
@@ -126,7 +126,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				}
 				else
 				{
-					if (toolInfo.Enabled)
+					if (toolInfo.Enabled ?? toolset.ToolsEnabledByDefault)
 						result.Add(toolInfo);
 				}
 			}

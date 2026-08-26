@@ -1,6 +1,4 @@
-using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.SourceGenerators;
-using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Agents
 {
@@ -21,15 +19,15 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _enableSubAgents, value);
 		}
 
-		private readonly RangeObservableCollection<SubAgentChange> _subAgentChanges = [];
+		private SubAgentsetSettings _subAgentset = new();
 		/// <summary>
-		/// Gets or sets the sub-agent changes compared to all available sub-agents.
+		/// Gets or sets the sub-agentset settings.
 		/// </summary>
 		[InheritedChatAgentSetting]
-		public RangeObservableCollection<SubAgentChange> SubAgentChanges
+		public SubAgentsetSettings SubAgentset
 		{
-			get => _subAgentChanges;
-			set => _subAgentChanges.Reset(value);
+			get => _subAgentset;
+			set => SetProperty(ref _subAgentset, value);
 		}
 	}
 }

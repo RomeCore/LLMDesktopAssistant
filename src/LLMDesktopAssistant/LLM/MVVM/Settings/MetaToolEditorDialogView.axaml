@@ -211,16 +211,21 @@
 		<Grid Grid.Row="1" IsVisible="{Binding !IsCodeMode}"
 					RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" Margin="0,0,8,0">
 			
-			<Grid Grid.Row="0" ColumnDefinitions="*,*,Auto" Margin="0,8,0,0">
-				<StackPanel Grid.Column="0" Margin="0,0,8,0">
+			<Grid Grid.Row="0" ColumnDefinitions="*,*,Auto,Auto" Margin="0,8,0,0" ColumnSpacing="8">
+				<StackPanel Grid.Column="0">
 					<TextBlock Classes="FieldLabel" Text="{loc:Loc settings.tools.meta_tools.editor.form.title}" Margin="0,0,0,2"/>
 					<TextBox Text="{Binding FormTitle, Mode=TwoWay}"/>
 				</StackPanel>
-				<StackPanel Grid.Column="1" Margin="0,0,8,0">
+				<StackPanel Grid.Column="1">
 					<TextBlock Classes="FieldLabel" Text="{loc:Loc settings.tools.meta_tools.editor.form.category}" Margin="0,0,0,2"/>
 					<TextBox Text="{Binding FormCategory, Mode=TwoWay}"/>
 				</StackPanel>
-				<StackPanel Grid.Column="2">
+				<CheckBox Grid.Column="2"
+									IsChecked="{Binding Enabled}"
+									Content="{loc:Loc common.enable}"
+									VerticalAlignment="Bottom"
+									IsThreeState="True"/>
+				<StackPanel Grid.Column="3">
 					<TextBlock Classes="FieldLabel" Text="{loc:Loc settings.tools.meta_tools.editor.form.approval}" Margin="0,0,0,2"/>
 					<ComboBox ItemsSource="{Binding ApprovalLevelItems}"
 									  SelectedItem="{Binding SelectedApprovalLevel, Mode=TwoWay}"

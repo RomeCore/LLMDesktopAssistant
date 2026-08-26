@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Tools;
 using YamlDotNet.RepresentationModel;
 
@@ -24,6 +25,11 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 		/// The source of the sub-agent.
 		/// </summary>
 		public required SubAgentSource Source { get; init; }
+
+		/// <summary>
+		/// The source of the prompt template used to import the sub-agent.
+		/// </summary>
+		public PromptPartSource TemplateSource { get; init; } = PromptPartSource.Unknown;
 
 		/// <summary>
 		/// The absolute path to the sub-agent file, if applicable. Null otherwise.
@@ -94,9 +100,9 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 		public SubAgentDiagnostic? Diagnostic { get; init; } = null;
 
 		/// <summary>
-		/// Whether or not this sub-agent is enabled. Defaults to true.
+		/// Whether or not this sub-agent is enabled. Defaults to null, meaning it is not explicitly enabled or disabled.
 		/// </summary>
-		public bool Enabled { get; init; } = true;
+		public bool? Enabled { get; init; } = null;
 
 		/// <summary>
 		/// The model used for this sub-agent. Can be overriden in the sub-agent configuration.

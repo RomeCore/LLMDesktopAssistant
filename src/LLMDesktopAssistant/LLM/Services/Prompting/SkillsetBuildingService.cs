@@ -1,7 +1,4 @@
-using DocumentFormat.OpenXml.Bibliography;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
@@ -41,7 +38,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						Name = s.Name,
 						Description = s.Description ?? string.Empty,
 						BodyGetter = new(() => s.Template.Template.Render(context, templateFunctions).ToString() ?? string.Empty),
-						Source = SkillSource.Template
+						Source = SkillSource.Template,
+						TemplateSource = s.Source
 					};
 				}));
 			}
@@ -70,6 +68,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						Description = last.Description,
 						BodyGetter = last.BodyGetter,
 						Source = last.Source,
+						TemplateSource = last.TemplateSource,
 						Path = last.Path,
 						HomeDirectory = last.HomeDirectory,
 						Metadata = last.Metadata,
@@ -96,7 +95,9 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var skills = GetAvailableSkills();
 			var result = new List<SkillInfo>();
 
-			var changes = settings.GetEffectiveSkillChanges(chatSettings.Settings).ToDictionary(c => c.SkillName, c => c);
+			var skillset = settings.GetEffectiveSkillset(chatSettings.Settings);
+
+			var changes = skillset.SkillChanges.ToDictionary(c => c.SkillName, c => c);
 			foreach (var skillInfo in skills)
 			{
 				if (skillInfo.Diagnostic?.IsFatal == true)
@@ -104,13 +105,14 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 				if (changes.TryGetValue(skillInfo.Name, out var change))
 				{
-					if (change.Enabled ?? skillInfo.Enabled)
+					if (change.Enabled ?? skillInfo.Enabled ?? skillset.SkillsEnabledByDefault)
 						result.Add(new SkillInfo
 						{
 							Enabled = true,
 							InjectionMode = change.InjectionMode ?? skillInfo.InjectionMode,
 							Name = skillInfo.Name,
 							Source = skillInfo.Source,
+							TemplateSource = skillInfo.TemplateSource,
 							Description = skillInfo.Description,
 							BodyGetter = skillInfo.BodyGetter,
 							Path = skillInfo.Path,
@@ -124,7 +126,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				}
 				else
 				{
-					if (skillInfo.Enabled)
+					if (skillInfo.Enabled ?? skillset.SkillsEnabledByDefault)
 						result.Add(skillInfo);
 				}
 			}

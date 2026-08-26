@@ -108,7 +108,8 @@
 					</StackPanel>
 				</Border>
 
-				<Border Classes="chip" ToolTip.Tip="{loc:Loc settings.tools.meta_tools.approval}">
+				<Border Classes="chip" ToolTip.Tip="{loc:Loc settings.tools.meta_tools.approval}"
+								IsVisible="{Binding ApprovalLevelName}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="ShieldCheck" Width="12" Height="12" VerticalAlignment="Center"/>
 						<TextBlock Classes="chipText" Text="{Binding ApprovalLevelName}"/>

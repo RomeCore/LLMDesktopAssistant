@@ -29,11 +29,6 @@ namespace LLMDesktopAssistant.Tools.Meta
 		public string Category { get; init; } = string.Empty;
 
 		/// <summary>
-		/// Gets the default approval level of the tool.
-		/// </summary>
-		public ToolApprovalLevel ApprovalLevel { get; init; } = ToolApprovalLevel.PolicyBased;
-
-		/// <summary>
 		/// Gets the behaviours of the tool describing what the tool does.
 		/// </summary>
 		public ToolBehaviour Behaviours { get; init; } = ToolBehaviour.None;
@@ -69,8 +64,13 @@ namespace LLMDesktopAssistant.Tools.Meta
 		public MetaToolDiagnostic? Diagnostic { get; init; }
 
 		/// <summary>
-		/// Gets a value indicating whether the tool is enabled. Defaults to <see langword="true"/>.
+		/// Gets a value indicating whether the tool is enabled. Defaults to <see langword="null"/>.
 		/// </summary>
-		public bool Enabled { get; init; } = true;
+		public bool? Enabled { get; init; } = null;
+
+		/// <summary>
+		/// Gets the default approval level of the tool.
+		/// </summary>
+		public ToolApprovalLevel? ApprovalLevel { get; init; }
 	}
 }

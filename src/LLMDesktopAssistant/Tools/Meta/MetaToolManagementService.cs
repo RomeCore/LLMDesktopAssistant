@@ -55,7 +55,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 
 		/// <inheritdoc/>
 		public void CreateOrUpdateTool(string name, bool? isLocal,
-			string? description, string? title, string? category,
+			string? description, string? title, string? category, bool? enabled,
 			ToolApprovalLevel? approvalLevel, ToolBehaviour? behaviours, JsonObject? argumentSchema,
 			ScriptLanguageType? language, string? executionCode)
 		{
@@ -81,6 +81,7 @@ namespace LLMDesktopAssistant.Tools.Meta
 					Title = title ?? existingTool.Title,
 					Description = description ?? existingTool.Description,
 					Category = category ?? existingTool.Category,
+					Enabled = enabled ?? existingTool.Enabled,
 					ApprovalLevel = approvalLevel ?? existingTool.ApprovalLevel,
 					Behaviours = behaviours ?? existingTool.Behaviours,
 					ArgumentSchema = argumentSchema ?? existingTool.ArgumentSchema,
@@ -127,7 +128,8 @@ namespace LLMDesktopAssistant.Tools.Meta
 					Title = title ?? name,
 					Description = description ?? $"Meta tool '{name}'.",
 					Category = category ?? "general",
-					ApprovalLevel = approvalLevel ?? ToolApprovalLevel.AlwaysAsk,
+					Enabled = enabled,
+					ApprovalLevel = approvalLevel,
 					Behaviours = behaviours ?? ToolBehaviour.None,
 					ArgumentSchema = argumentSchema ?? new JsonObject
 					{
@@ -215,8 +217,8 @@ namespace LLMDesktopAssistant.Tools.Meta
 					TitleKey = !string.IsNullOrEmpty(tool.Title) ? Locale.GetConstKey(tool.Title) : null,
 					CategoryKey = !string.IsNullOrEmpty(tool.Category) ? Locale.GetConstKey(tool.Category) : null,
 					Source = ToolSource.Meta,
-					ApprovalLevel = tool.ApprovalLevel,
-					Enabled = true
+					Enabled = tool.Enabled,
+					ApprovalLevel = tool.ApprovalLevel
 				});
 			}
 

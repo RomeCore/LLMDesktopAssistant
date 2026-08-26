@@ -38,7 +38,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						Name = s.Name,
 						Description = s.Description ?? string.Empty,
 						SystemPromptGetter = new(() => s.Template.Template.Render(context, templateFunctions).ToString() ?? string.Empty),
-						Source = SubAgentSource.Template
+						Source = SubAgentSource.Template,
+						TemplateSource = s.Source
 					};
 				}));
 			}
@@ -67,6 +68,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						Description = last.Description,
 						SystemPromptGetter = last.SystemPromptGetter,
 						Source = last.Source,
+						TemplateSource = last.TemplateSource,
 						Path = last.Path,
 						Metadata = last.Metadata,
 						AdditionalMetadata = last.AdditionalMetadata,
@@ -97,7 +99,9 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var subAgents = GetAvailableSubAgents();
 			var result = new List<SubAgentInfo>();
 
-			var changes = settings.GetEffectiveSubAgentChanges(chatSettings.Settings).ToDictionary(c => c.SubAgentName, c => c);
+			var subAgentset = settings.GetEffectiveSubAgentset(chatSettings.Settings);
+
+			var changes = subAgentset.SubAgentChanges.ToDictionary(c => c.SubAgentName, c => c);
 			foreach (var subAgentInfo in subAgents)
 			{
 				if (subAgentInfo.Diagnostic?.IsFatal == true)
@@ -105,13 +109,14 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 				if (changes.TryGetValue(subAgentInfo.Name, out var change))
 				{
-					if (change.Enabled ?? subAgentInfo.Enabled)
+					if (change.Enabled ?? subAgentInfo.Enabled ?? subAgentset.SubAgentsEnabledByDefault)
 						result.Add(new SubAgentInfo
 						{
 							Enabled = true,
 							Model = change.Model ?? subAgentInfo.Model,
 							Name = subAgentInfo.Name,
 							Source = subAgentInfo.Source,
+							TemplateSource = subAgentInfo.TemplateSource,
 							Description = subAgentInfo.Description,
 							SystemPromptGetter = subAgentInfo.SystemPromptGetter,
 							Path = subAgentInfo.Path,
@@ -129,7 +134,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				}
 				else
 				{
-					if (subAgentInfo.Enabled)
+					if (subAgentInfo.Enabled ?? subAgentset.SubAgentsEnabledByDefault)
 						result.Add(subAgentInfo);
 				}
 			}

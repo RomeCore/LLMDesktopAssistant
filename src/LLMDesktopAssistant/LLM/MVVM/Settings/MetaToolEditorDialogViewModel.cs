@@ -2,6 +2,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using CommunityToolkit.Mvvm.Input;
+using DocumentFormat.OpenXml.Wordprocessing;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Scripting;
@@ -67,6 +68,7 @@ public class MetaToolEditorDialogViewModel : ViewModelBase
 	private string _formCategory;
 	private string _formSchema;
 	private string _formCode;
+	private bool? _enabled;
 	private ToolApprovalLevelItem? _selectedApprovalLevel;
 
 	/// <summary>
@@ -95,8 +97,9 @@ public class MetaToolEditorDialogViewModel : ViewModelBase
 		_formTitle = tool.Title;
 		_formDescription = tool.Description;
 		_formCategory = tool.Category;
-		_selectedApprovalLevel = ToolApprovalLevelItem.All.FirstOrDefault(i => i.Value == tool.ApprovalLevel)
-			?? ToolApprovalLevelItem.All[0];
+		_enabled = tool.Enabled;
+		_selectedApprovalLevel = ToolApprovalLevelItem.AllWithDefault.FirstOrDefault(i => i.Value == tool.ApprovalLevel)
+			?? ToolApprovalLevelItem.AllWithDefault[0];
 		_formSchema = tool.ArgumentSchema?.ToJsonString(new JsonSerializerOptions
 		{
 			Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -280,9 +283,18 @@ public class MetaToolEditorDialogViewModel : ViewModelBase
 	}
 
 	/// <summary>
+	/// Gets or sets the enabled state
+	/// </summary>
+	public bool? Enabled
+	{
+		get => _enabled;
+		set => SetProperty(ref _enabled, value);
+	}
+
+	/// <summary>
 	/// Gets the approval level items.
 	/// </summary>
-	public ImmutableList<ToolApprovalLevelItem> ApprovalLevelItems => ToolApprovalLevelItem.All;
+	public ImmutableList<ToolApprovalLevelItem> ApprovalLevelItems => ToolApprovalLevelItem.AllWithDefault;
 
 	/// <summary>
 	/// Gets or sets the selected approval level.
@@ -411,7 +423,7 @@ public class MetaToolEditorDialogViewModel : ViewModelBase
 				}
 
 				_manager.CreateOrUpdateTool(Name, null, FormDescription, FormTitle, FormCategory,
-					SelectedApprovalLevel?.Value, behaviours, schema, null, FormCode);
+					Enabled, SelectedApprovalLevel?.Value, behaviours, schema, null, FormCode);
 			}
 
 			Close(true);
@@ -435,8 +447,10 @@ public class MetaToolEditorDialogViewModel : ViewModelBase
 		return localized == key ? language.ToString() : localized;
 	}
 
-	private static string LocalizeApprovalLevel(ToolApprovalLevel level)
+	private static string LocalizeApprovalLevel(ToolApprovalLevel? level)
 	{
-		return ToolApprovalLevelItem.All.FirstOrDefault(i => i.Value == level)?.DisplayName ?? level.ToString();
+		if (level is null)
+			return Locale.Get("settings.tool.approval_level.default");
+		return ToolApprovalLevelItem.All.FirstOrDefault(i => i.Value == level.Value)?.DisplayName ?? level.Value.ToString();
 	}
 }

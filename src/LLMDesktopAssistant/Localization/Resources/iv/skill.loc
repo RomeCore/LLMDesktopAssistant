@@ -38,3 +38,5 @@ source.template: Template
 source.unknown: Unknown
 source.userprofile: User Profile
 source.workingdirectory: Working Directory
+skills_enabled_by_default: Enable unchanged skills by default
+skills_enabled_by_default.hint: When checked, skills without an explicit per-agent override are enabled by default. Uncheck to disable all unchanged skills.

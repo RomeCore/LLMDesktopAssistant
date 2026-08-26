@@ -192,6 +192,7 @@ public class ChatSubAgentsSettingsViewModel : ViewModelBase
 		var skillNames = _skillsetBuilder.GetAvailableSkills().Select(s => s.Name).ToHashSet();
 		var memoryBlockNames = SettingsManager.GetCategory<MemoryBlock>().GetAll().Select(kvp => kvp.Value.Name).ToHashSet();
 
+		_allCards.ForEach(c => c.Dispose());
 		_allCards = subAgents
 			.Select(s => new SubAgentCardViewModel(
 				s,
@@ -351,6 +352,9 @@ public class ChatSubAgentsSettingsViewModel : ViewModelBase
 		base.Dispose(disposing);
 
 		if (disposing)
+		{
 			SubAgentSettings.PropertyChanged -= SubAgentSettings_PropertyChanged;
+			_allCards.ForEach(c => c.Dispose());
+		}
 	}
 }

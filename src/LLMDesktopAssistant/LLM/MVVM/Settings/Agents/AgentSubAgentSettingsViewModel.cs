@@ -27,9 +27,14 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 	public AgentSubAgentSettings SubAgentSettings { get; }
 
 	/// <summary>
+	/// Gets the effective sub-agentset resolved by the current inheritance level.
+	/// </summary>
+	public SubAgentsetSettings EffectiveSubAgentset => SubAgentSettings.GetEffectiveSubAgentset(_chatSettings);
+
+	/// <summary>
 	/// Gets the effective sub-agent changes resolved by the current inheritance level.
 	/// </summary>
-	public RangeObservableCollection<SubAgentChange> EffectiveSubAgentChanges => SubAgentSettings.GetEffectiveSubAgentChanges(_chatSettings);
+	public RangeObservableCollection<SubAgentChange> EffectiveSubAgentChanges => EffectiveSubAgentset.SubAgentChanges;
 
 	private InheritanceLevelItem _selectedSubAgentChangesInheritance;
 	/// <summary>
@@ -41,7 +46,7 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 		set
 		{
 			if (SetProperty(ref _selectedSubAgentChangesInheritance, value) && value != null)
-				SubAgentSettings.SubAgentChangesInheritance = value.Value;
+				SubAgentSettings.SubAgentsetInheritance = value.Value;
 		}
 	}
 
@@ -59,18 +64,14 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 		}
 	}
 
-	private RangeObservableCollection<SubAgentCardViewModel> _subAgentItems = [];
+	private readonly RangeObservableCollection<SubAgentCardViewModel> _subAgentItems = [];
 	/// <summary>
 	/// Gets or sets the filtered list of sub-agent cards with per-agent override settings.
 	/// </summary>
 	public ICollection<SubAgentCardViewModel> SubAgentItems
 	{
 		get => _subAgentItems;
-		set
-		{
-			_subAgentItems.Reset(value);
-			RaisePropertyChanged(nameof(SubAgentItems));
-		}
+		set => _subAgentItems.Reset(value);
 	}
 
 	/// <summary>
@@ -88,7 +89,7 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 		_subAgentSetBuilder = subAgentSetBuilder;
 		_skillsetBuilder = skillsetBuilder;
 
-		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SubAgentChangesInheritance);
+		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SubAgentsetInheritance);
 		settings.PropertyChanged += SubAgentSettings_PropertyChanged;
 
 		UpdateSubAgents();
@@ -96,11 +97,12 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 
 	private void SubAgentSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName != nameof(AgentSubAgentSettings.SubAgentChangesInheritance))
+		if (e.PropertyName != nameof(AgentSubAgentSettings.SubAgentsetInheritance))
 			return;
 
-		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == SubAgentSettings.SubAgentChangesInheritance);
+		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == SubAgentSettings.SubAgentsetInheritance);
 		RaisePropertyChanged(nameof(SelectedSubAgentChangesInheritance));
+		RaisePropertyChanged(nameof(EffectiveSubAgentset));
 		RaisePropertyChanged(nameof(EffectiveSubAgentChanges));
 		UpdateSubAgents();
 	}
@@ -117,6 +119,7 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 		var memoryBlockNames = SettingsManager.GetCategory<MemoryBlock>().GetAll().Select(kvp => kvp.Value.Name).ToHashSet();
 		var changes = EffectiveSubAgentChanges.ToDictionary(c => c.SubAgentName, c => c);
 
+		_allCards.ForEach(c => c.Dispose());
 		_allCards = subAgents
 			.Where(s => s.Diagnostic?.IsFatal != true)
 			.Select(s =>
@@ -127,6 +130,7 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 					canToggle: true,
 					change: existingChange,
 					changes: EffectiveSubAgentChanges,
+					settings: EffectiveSubAgentset,
 					linkIssues: SubAgentLinkChecker.Check(s, skillNames, subAgentNames, memoryBlockNames),
 					onTagClick: tag => SearchText = tag,
 					onDeleted: UpdateSubAgents);
@@ -157,6 +161,9 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 		base.Dispose(disposing);
 
 		if (disposing)
+		{
 			SubAgentSettings.PropertyChanged -= SubAgentSettings_PropertyChanged;
+			_allCards.ForEach(c => c.Dispose());
+		}
 	}
 }

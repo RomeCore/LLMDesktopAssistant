@@ -49,6 +49,20 @@
 				   Opacity="0.6"
 				   TextWrapping="Wrap"/>
 
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"/>
+
+		<CheckBox IsChecked="{Binding EffectiveSkillset.SkillsEnabledByDefault, Mode=TwoWay}"
+				  Content="{loc:Loc skill.skills_enabled_by_default}"/>
+
+		<TextBlock Text="{loc:Loc skill.skills_enabled_by_default.hint}"
+				   Opacity="0.5"
+				   FontSize="11"
+				   Margin="24,0,0,4"
+				   TextWrapping="Wrap"/>
+
 		<!-- Search -->
 		<TextBox Text="{Binding SearchText, Mode=TwoWay}"
 				 PlaceholderText="{loc:Loc settings.skills.search.placeholder}"
