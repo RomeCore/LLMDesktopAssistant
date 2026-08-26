@@ -1,8 +1,7 @@
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.SubAgents;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
+using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLTSharp;
 
@@ -13,7 +12,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		IChatSettingsService chatSettings,
 		ISubAgentLocator subAgentLocator,
 		ISubAgentLoader subAgentLoader,
-		IPromptRegistry promptRegistry,
+		IPromptSubAgentManager subAgentManager,
 		IEnumerable<IPromptSystemContextExpander> promptSystemContextExpanders,
 		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins
 	) : ISubAgentSetBuildingService
@@ -24,7 +23,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			List<SubAgentInfo> subAgents = [];
 
-			var promptSubAgents = promptRegistry.GetSubAgents().ToList();
+			var promptSubAgents = subAgentManager.GetAll().ToList();
 			if (promptSubAgents.Count > 0)
 			{
 				var context = new Dictionary<string, object?>();
@@ -38,7 +37,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{
 						Name = s.Name,
 						Description = s.Description ?? string.Empty,
-						SystemPromptGetter = new(() => s.Template.Template.Render(context, templateFunctions)),
+						SystemPromptGetter = new(() => s.Template.Template.Render(context, templateFunctions).ToString() ?? string.Empty),
 						Source = SubAgentSource.Template
 					};
 				}));

@@ -182,10 +182,6 @@
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>
 		</Compile>
-		<Compile Update="Prompting\PromptManagerView.axaml.cs">
-		  <SubType>Code</SubType>
-		  <DependentUpon>%(Filename)</DependentUpon>
-		</Compile>
 		<Compile Update="Providers\ConfigureModelProviderDialogView.axaml.cs">
 		  <DependentUpon>ConfigureModelProviderDialogView.axaml</DependentUpon>
 		</Compile>

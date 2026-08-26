@@ -1,6 +1,6 @@
 namespace LLMDesktopAssistant.Prompting
 {
-	public class Persona : PromptBase
+	public class PromptPersona : PromptPartBase
 	{
 	}
 }

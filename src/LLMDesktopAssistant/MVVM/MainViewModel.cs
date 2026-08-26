@@ -95,7 +95,6 @@ namespace LLMDesktopAssistant.MVVM
 
 		public ChatManagerViewModel ChatManager { get; }
 		public MCPManagerViewModel MCPManager { get; }
-		public PromptManagerViewModel PromptManager { get; }
 		public AgentTaskDispatcherViewModel AgentTaskDispatcher { get; }
 		public HelpViewModel Help { get; }
 		public ApplicationSettingsViewModel ApplicationSettings { get; }
@@ -123,14 +122,6 @@ namespace LLMDesktopAssistant.MVVM
 				Icon = MaterialIconKind.Connection,
 				Title = Locale.GetKey("tab.title.mcp_manager"),
 				Content = MCPManager
-			});
-
-			PromptManager = new PromptManagerViewModel();
-			TopSidebarItems.Add(new MainViewModelSidebarItemViewModel
-			{
-				Icon = MaterialIconKind.Text,
-				Title = Locale.GetKey("tab.title.prompt_manager"),
-				Content = PromptManager
 			});
 
 			AgentTaskDispatcher = new AgentTaskDispatcherViewModel(

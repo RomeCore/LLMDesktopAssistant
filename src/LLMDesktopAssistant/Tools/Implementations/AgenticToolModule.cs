@@ -23,7 +23,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	{
 		private readonly Chat _chat;
 		private readonly IChatSettingsService _chatSettings;
-		private readonly TemplateLibraryAccessor _templates;
+		private readonly ITemplateLibraryAccessor _templates;
 		private readonly IWorkingDirectoryAccessService _fileAccess;
 		private readonly IAgentManagementService _agentManager;
 		private readonly IAgentTaskExecutor _agentTaskExecutor;
@@ -33,7 +33,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly ISubAgentSetBuildingService _subAgentSetBuildingService;
 		private readonly ISubAgentTaskParamsResolver _subAgentParamsResolver;
 
-		public AgenticToolModule(Chat chat, IChatSettingsService chatSettings, TemplateLibraryAccessor templates,
+		public AgenticToolModule(Chat chat, IChatSettingsService chatSettings, ITemplateLibraryAccessor templates,
 			IWorkingDirectoryAccessService fileAccess,
 			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
 			IToolsetBuildingService toolsetBuildingService, ISkillsetBuildingService skillsetBuildingService,

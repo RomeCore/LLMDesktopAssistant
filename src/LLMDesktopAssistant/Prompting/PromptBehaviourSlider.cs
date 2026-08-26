@@ -1,6 +1,6 @@
 ﻿namespace LLMDesktopAssistant.Prompting
 {
-	public class BehaviourSlider : PromptBase
+	public class PromptBehaviourSlider : PromptPartBase
 	{
 		private int _minimumValue = 0;
 		public int MinimumValue

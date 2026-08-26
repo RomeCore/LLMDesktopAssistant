@@ -5,7 +5,7 @@ namespace LLMDesktopAssistant.Prompting
 	/// Each slider has a unique identifier and an integer value.
 	/// Value 0 represents the default (no modification to prompt).
 	/// </summary>
-	public class BehaviorSliderValue : NotifyPropertyChanged
+	public class PromptBehaviourSliderValue : NotifyPropertyChanged
 	{
 		private Guid _sliderId;
 		/// <summary>

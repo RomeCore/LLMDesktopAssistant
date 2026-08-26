@@ -3,6 +3,7 @@ using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
+using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLTSharp;
@@ -14,7 +15,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		IChatSettingsService chatSettings,
 		ISkillLocator skillLocator,
 		ISkillLoader skillLoader,
-		IPromptRegistry promptRegistry,
+		IPromptSkillManager skillManager,
 		IEnumerable<IPromptSystemContextExpander> promptSystemContextExpanders,
 		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins
 	) : ISkillsetBuildingService
@@ -25,7 +26,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			List<SkillInfo> skills = [];
 
-			var promptSkills = promptRegistry.GetSkills().ToList();
+			var promptSkills = skillManager.GetAll().ToList();
 			if (promptSkills.Count > 0)
 			{
 				var context = new Dictionary<string, object?>();
@@ -39,7 +40,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{
 						Name = s.Name,
 						Description = s.Description ?? string.Empty,
-						BodyGetter = new(() => s.Template.Template.Render(context, templateFunctions)),
+						BodyGetter = new(() => s.Template.Template.Render(context, templateFunctions).ToString() ?? string.Empty),
 						Source = SkillSource.Template
 					};
 				}));

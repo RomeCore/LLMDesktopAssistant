@@ -7,41 +7,14 @@ using RCParsing.TokenPatterns.Combinators;
 namespace LLMDesktopAssistant.Prompting.LLT;
 
 /// <summary>
-/// Represents a classified fragment of LLT source text.
-/// </summary>
-/// <param name="Start">The start offset of the segment in the source text.</param>
-/// <param name="Length">The length of the segment in characters.</param>
-/// <param name="Kind">The semantic kind of the segment.</param>
-public readonly record struct LLTTokenSegment(int Start, int Length, LLTTokenKind Kind)
-{
-	/// <summary>
-	/// Gets the exclusive end offset of the segment.
-	/// </summary>
-	public int End => Start + Length;
-}
-
-/// <summary>
-/// Represents a parse error with its source position.
-/// </summary>
-/// <param name="Position">The offset of the error in the source text.</param>
-/// <param name="Line">The 1-based line number of the error.</param>
-/// <param name="Column">The 1-based column number of the error.</param>
-/// <param name="Message">The error message.</param>
-public readonly record struct LLTParseError(int Position, int Line, int Column, string Message)
-{
-	/// <summary>
-	/// Gets a human-readable representation of the error with its position.
-	/// </summary>
-	public string Display => $"L{Line}:C{Column}: {Message}";
-}
-
-/// <summary>
 /// Classifies LLT source text into colorizable segments using an
 /// <see cref="LLTDiagnosticsParser"/> with error recovery.
 /// </summary>
-public sealed class LLTTokenClassifier
+public sealed partial class LLTTokenClassifier
 {
-	private static readonly Regex NumberRegex = new(@"^-?\d+(\.\d+)?$", RegexOptions.Compiled);
+	[GeneratedRegex(@"^-?\d+(\.\d+)?$", RegexOptions.Compiled)]
+	private static partial Regex GetNumberRegex();
+	private static readonly Regex NumberRegex = GetNumberRegex();
 
 	private readonly LLTDiagnosticsParser _parser = new();
 	private readonly LLTParser.LLTParsingContext _context = new()

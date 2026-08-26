@@ -58,12 +58,12 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _specialization, value);
 		}
 
-		private readonly RangeObservableCollection<BehaviorSliderValue> _sliderValues = [];
+		private readonly RangeObservableCollection<PromptBehaviourSliderValue> _sliderValues = [];
 		/// <summary>
 		/// Gets or sets the behavior slider values of the agent.
 		/// </summary>
 		[InheritedChatAgentSetting]
-		public RangeObservableCollection<BehaviorSliderValue> SliderValues
+		public RangeObservableCollection<PromptBehaviourSliderValue> SliderValues
 		{
 			get => _sliderValues;
 			set => _sliderValues.Reset(value);

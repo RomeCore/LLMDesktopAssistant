@@ -1,5 +1,7 @@
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLTSharp;
 using LLTSharp.DataAccessors;
@@ -20,13 +22,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			Templates are identified by ID and can be filtered by metadata (language, model, etc.).
 
 			FUNCTIONS:
-			
-			--- dass.templates.import(templateString)
-			  Imports one or more templates from a string (LLT format).
-			  Parameters:
-			    - templateString: string — LLT template source code.
-			  Returns:
-			    - number — number of imported templates.
 			
 			--- dass.templates.render(filters, [context])
 			  Renders a template from the template library.
@@ -127,41 +122,19 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			  local experimental = dass.templates.list({ my_custom_tag = "experimental" })
 			""";
 
-		private readonly TemplateLibrary _templateLibrary;
+		private readonly IChatTemplateImporter _chatTemplateImporter;
 		private readonly IEnumerable<IPromptTemplatePlugin> _promptTemplatePlugins;
 
-		public LuaApiTemplates(TemplateLibrary templateLibrary, IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins)
+		public LuaApiTemplates(IChatTemplateImporter chatTemplateImporter, IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins)
 		{
-			_templateLibrary = templateLibrary;
+			_chatTemplateImporter = chatTemplateImporter;
 			_promptTemplatePlugins = promptTemplatePlugins;
 		}
 
 		public override void Populate(LuaTable globals, LuaTable ns, LuaService luaService)
 		{
-			ns["import"] = new LuaCallbackFunction(Import);
 			ns["render"] = new LuaCallbackFunction(Render);
 			ns["list"] = new LuaCallbackFunction(List);
-		}
-
-		private LuaTuple Import(LuaCallingContext ctx, LuaValue[] args)
-		{
-			if (args.Length < 1)
-				throw new LuaRuntimeException("dass.templates.import(templateString): at least 1 argument expected.");
-
-			if (args[0] is not LuaString templateStr)
-				throw new LuaRuntimeException("dass.templates.import(): first argument must be a string.");
-
-			try
-			{
-				var beforeCount = _templateLibrary.Count();
-				_templateLibrary.ImportFromString(templateStr.Value, languageCode: "llt");
-				var afterCount = _templateLibrary.Count();
-				return new LuaTuple(new LuaNumber(afterCount - beforeCount));
-			}
-			catch (Exception ex)
-			{
-				throw new LuaRuntimeException($"dass.templates.import(): {ex.Message}");
-			}
 		}
 
 		private LuaTuple Render(LuaCallingContext ctx, LuaValue[] args)
@@ -184,7 +157,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 				if (filters is LuaString filterStr)
 				{
-					template = _templateLibrary.RetrieveAll(filterStr.Value).Last();
+					template = _chatTemplateImporter.Library.RetrieveAll(filterStr.Value).Last();
 				}
 				else
 				{
@@ -237,9 +210,9 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					}
 
 					if (id != null)
-						template = _templateLibrary.RetrieveAll(id, metadatas.ToArray()).Last();
+						template = _chatTemplateImporter.Library.RetrieveAll(id, metadatas.ToArray()).Last();
 					else
-						template = _templateLibrary.RetrieveAll(metadatas.ToArray()).Last();
+						template = _chatTemplateImporter.Library.RetrieveAll(metadatas.ToArray()).Last();
 				}
 
 				if (template is ITextTemplate textTemplate)
@@ -315,7 +288,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var result = new LuaTable();
 			int index = 1;
 
-			foreach (var template in _templateLibrary)
+			foreach (var template in _chatTemplateImporter.Library)
 			{
 				if (typeFilter != null)
 				{

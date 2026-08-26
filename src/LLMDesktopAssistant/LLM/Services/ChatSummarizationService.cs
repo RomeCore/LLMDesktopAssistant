@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		Chat chat,
 		IChatSettingsService chatSettings,
 		IChatPromptBuilder promptBuilder,
-		TemplateLibraryAccessor templates,
+		ITemplateLibraryAccessor templates,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager
 		) : IChatSummarizationService, IChatExecutionHook

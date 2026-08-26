@@ -1,0 +1,348 @@
+﻿using System.Collections.Specialized;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using LLMDesktopAssistant.Settings.Application;
+using LLMDesktopAssistant.Utils;
+using LLTSharp;
+using LLTSharp.Locale;
+using LLTSharp.Metadata;
+using LLTSharp.Metadata.Types;
+
+namespace LLMDesktopAssistant.Prompting.Management
+{
+	public abstract class PromptPartManagerBase<K, V> : IPromptPartManager<K, V>
+		where K : notnull
+		where V : PromptPartBase, new()
+	{
+		private readonly Lock _lock = new();
+
+		private readonly HashSet<V> _parts = [];
+		private readonly Dictionary<K, HashSet<V>> _byKey = [];
+		private readonly Dictionary<ITemplate, V> _byTemplate = [];
+		private readonly Dictionary<PromptPartSource, HashSet<V>> _bySource = [];
+		private readonly Dictionary<ITemplate, (K, PromptPartSource)> _templateSourceKeys = [];
+
+		private readonly string _templateType;
+		private readonly PromptPartConfigurationBase<V> _capturedConfiguration;
+
+		protected abstract bool RequiresGuid { get; }
+		protected abstract bool RequiresStrId { get; }
+		public abstract string TemplateType { get; }
+		protected abstract PromptPartConfigurationBase<V> Configuration { get; }
+
+		public PromptPartManagerBase()
+		{
+			_templateType = TemplateType;
+			_capturedConfiguration = Configuration;
+
+			_capturedConfiguration.PromptParts.CollectionChanged += PromptParts_CollectionChanged;
+			PromptParts_CollectionChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, _capturedConfiguration.PromptParts));
+		}
+
+		private void PromptParts_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			_lock.Enter();
+			try
+			{
+				if (e.OldItems != null)
+					foreach (var _item in e.OldItems)
+					{
+						if (_item is not V part)
+							continue;
+						if (!_parts.Remove(part))
+							continue;
+						var key = GetKey(part);
+						_byKey[key].Remove(part);
+						_bySource[PromptPartSource.Configuration].Remove(part);
+					}
+
+				if (e.NewItems != null)
+					foreach (var _item in e.NewItems)
+					{
+						if (_item is not V part)
+							continue;
+						if (!_parts.Add(part))
+							continue;
+						var key = GetKey(part);
+						if (!_byKey.TryGetValue(key, out var keySet))
+							_byKey[key] = keySet = [];
+						keySet.Add(part);
+						if (!_bySource.TryGetValue(PromptPartSource.Configuration, out var sourceSet))
+							_bySource[PromptPartSource.Configuration] = sourceSet = [];
+						sourceSet.Add(part);
+						part.Source = PromptPartSource.Configuration;
+					}
+			}
+			finally
+			{
+				_lock.Exit();
+			}
+		}
+
+		public bool ImportFromTemplate(ITemplate template, PromptPartSource source)
+		{
+			ArgumentNullException.ThrowIfNull(template);
+
+			if (_byTemplate.ContainsKey(template))
+				return false;
+
+			if (source is not PromptPartSource.BuiltInTemplate and not PromptPartSource.UserTemplate and not PromptPartSource.WorkdirTemplate)
+				throw new ArgumentException("Invalid source type, must be one of BuiltInTemplate, UserTemplate, or WorkdirTemplate.", nameof(source));
+
+			var type = template.Metadata.TryGetAdditional<string>("type");
+			if (type is null)
+				throw new InvalidDataException($"Importing template missing 'type' metadata.");
+			if (type != _templateType)
+				throw new InvalidDataException($"Importing template (type:'{type ?? "null"}') does not match expected type '{_templateType}'.");
+
+			var diagnosticCode = PromptPartDiagnosticCode.None;
+			bool isDiagnosticFatal = false;
+			V part;
+
+			string id = string.Empty;
+			Guid guid = Guid.Empty;
+			string strid = string.Empty;
+			LanguageCode langCode = LanguageCode.Invariant;
+			string? title = null, description = null, category = null;
+			LanguageCode? localizedFor = null;
+
+			try
+			{
+				id = template.Metadata.TryGet<TemplateIdentifierMetadata>()?.Identifier!;
+				if (id is null)
+				{
+					diagnosticCode |= PromptPartDiagnosticCode.MissingTemplateIdentifier;
+					id = string.Empty;
+				}
+
+				var guidStr = template.Metadata.TryGetAdditional<string>("guid");
+				if (string.IsNullOrWhiteSpace(guidStr))
+				{
+					if (RequiresGuid)
+					{
+						diagnosticCode |= PromptPartDiagnosticCode.MissingGuid;
+						isDiagnosticFatal = true;
+					}
+				}
+				else
+				{
+					if (!Guid.TryParse(guidStr, out guid))
+					{
+						diagnosticCode |= PromptPartDiagnosticCode.InvalidGuid;
+						isDiagnosticFatal = true;
+						guid = Guid.Empty;
+					}
+				}
+
+				strid = template.Metadata.TryGetAdditional<string>("strid")!;
+				if (string.IsNullOrWhiteSpace(strid))
+				{
+					if (RequiresStrId)
+					{
+						diagnosticCode |= PromptPartDiagnosticCode.MissingStrId;
+						isDiagnosticFatal = true;
+					}
+					strid = string.Empty;
+				}
+
+				var lang = template.Metadata.TryGet<LanguageMetadata>();
+				langCode = lang?.LanguageCode ?? LanguageCode.Invariant;
+				if (lang is null)
+				{
+					diagnosticCode |= PromptPartDiagnosticCode.MissingLanguage;
+				}
+
+				title = template.Metadata.TryGetAdditional<string>("title");
+				description = template.Metadata.TryGetAdditional<string>("description");
+				category = template.Metadata.TryGetAdditional<string>("category");
+				var localizedForRaw = template.Metadata.TryGetAdditional<string>("localized_for");
+				localizedFor = localizedForRaw != null ? new LanguageCode(localizedForRaw) : null;
+
+				part = new V
+				{
+					Guid = guid,
+					StrId = strid,
+					Name = title ?? id,
+					Description = description,
+					Category = category,
+					Language = langCode,
+					LocalizedFor = localizedFor,
+					Source = source,
+					Diagnostic = new PromptPartDiagnostic
+					{
+						IsFatal = isDiagnosticFatal,
+						Code = diagnosticCode,
+						Messages = [],
+						Exception = null
+					},
+					Template = new SerializableTemplate(template)
+				};
+				PopulatePart(part, template.Metadata);
+			}
+			catch (Exception ex)
+			{
+				part = new V
+				{
+					Guid = Guid.Empty,
+					StrId = string.Empty,
+					Name = title ?? id,
+					Description = description,
+					Category = category,
+					Language = langCode,
+					LocalizedFor = localizedFor,
+					Source = source,
+					Diagnostic = new PromptPartDiagnostic
+					{
+						IsFatal = isDiagnosticFatal,
+						Code = diagnosticCode,
+						Messages = [ex.Message],
+						Exception = ex
+					}
+				};
+			}
+			var key = GetKey(part);
+
+			_lock.Enter();
+			try
+			{
+				_parts.Add(part);
+				if (!_byKey.TryGetValue(key, out var keySet))
+					_byKey[key] = keySet = [];
+				keySet.Add(part);
+				if (!_bySource.TryGetValue(source, out var sourceSet))
+					_bySource[source] = sourceSet = [];
+				sourceSet.Add(part);
+				_byTemplate[template] = part;
+				_templateSourceKeys[template] = (key, source);
+
+				return true;
+			}
+			finally
+			{
+				_lock.Exit();
+			}
+		}
+
+		protected abstract void PopulatePart(V part, IMetadataCollection metadata);
+		protected abstract K GetKey(V part);
+
+		public bool DropTemplate(ITemplate template)
+		{
+			_lock.Enter();
+			try
+			{
+				if (!_byTemplate.TryGetValue(template, out var part))
+					return false;
+
+				_parts.Remove(part);
+				_byTemplate.Remove(template);
+				var (key, source) = _templateSourceKeys[template];
+				_templateSourceKeys.Remove(template);
+				_byKey[key].Remove(part);
+				_bySource[source].Remove(part);
+
+				return true;
+			}
+			finally
+			{
+				_lock.Exit();
+			}
+		}
+
+		public V? TryGet(K key)
+		{
+			_lock.Enter();
+			try
+			{
+				var appSettings = ApplicationSettingsAccessor.ApplicationSettings.Language;
+				var preferredLanguageCode = new LanguageCode((appSettings.Prompt ?? appSettings.System).ToNullIfEmpty() ?? "iv");
+
+				var result = _byKey.TryGetValue(key, out var parts) && parts.Count > 0 ? parts
+					.OrderBy(p => p.Language == preferredLanguageCode ? 1 : 0)
+					.ThenBy(p => p.Source switch
+					{
+						PromptPartSource.BuiltInTemplate => 3,
+						PromptPartSource.UserTemplate => 2,
+						PromptPartSource.Configuration => 1,
+						PromptPartSource.WorkdirTemplate => 0,
+						_ => 4
+					}).First() : null;
+
+				return result;
+			}
+			finally
+			{
+				_lock.Exit();
+			}
+		}
+
+		public V? TryGet(ITemplate template)
+		{
+			_lock.Enter();
+			try
+			{
+				return _byTemplate.TryGetValue(template, out var part) ? part : null;
+			}
+			finally
+			{
+				_lock.Exit();
+			}
+		}
+
+		public ITemplate? TryGetTemplate(K key)
+		{
+			_lock.Enter();
+			try
+			{
+				var appSettings = ApplicationSettingsAccessor.ApplicationSettings.Language;
+				var preferredLanguageCode = new LanguageCode((appSettings.Prompt ?? appSettings.System).ToNullIfEmpty() ?? "iv");
+
+				var result = _byKey.TryGetValue(key, out var parts) && parts.Count > 0 ? parts
+					.OrderBy(p => p.Language == preferredLanguageCode ? 1 : 0)
+					.ThenBy(p => p.Source switch
+					{
+						PromptPartSource.BuiltInTemplate => 3,
+						PromptPartSource.UserTemplate => 2,
+						PromptPartSource.Configuration => 1,
+						PromptPartSource.WorkdirTemplate => 0,
+						_ => 4
+					}).First() : null;
+
+				if (result is null || result.LocalizedFor is null)
+					return result?.Template.Template;
+
+				var localeTarget = parts!.FirstOrDefault(p => p.Language == result.LocalizedFor);
+				return localeTarget?.Template.Template ?? result.Template.Template;
+			}
+			finally
+			{
+				_lock.Exit();
+			}
+		}
+
+		public IEnumerable<V> GetAll()
+		{
+			_lock.Enter();
+			try
+			{
+				return [.. _parts];
+			}
+			finally
+			{
+				_lock.Exit();
+			}
+		}
+
+		public IEnumerable<V> GetAll(PromptPartSource templateSource)
+		{
+			_lock.Enter();
+			try
+			{
+				return _bySource.TryGetValue(templateSource, out var parts) ? [.. parts] : [];
+			}
+			finally
+			{
+				_lock.Exit();
+			}
+		}
+	}
+}

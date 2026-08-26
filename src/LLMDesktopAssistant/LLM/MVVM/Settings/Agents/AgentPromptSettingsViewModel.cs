@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		{
 			_parent = parent;
 			Component = component;
-			_isSelected = parent.EffectivePromptComponents.Contains(component.Id);
+			_isSelected = parent.EffectivePromptComponents.Contains(component.Guid);
 		}
 
 		private bool _isSelected;
@@ -51,9 +51,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	public class PersonaItemViewModel : NotifyPropertyChanged
 	{
 		private readonly AgentPromptSettingsViewModel _parent;
-		public Persona Persona { get; }
+		public PromptPersona Persona { get; }
 
-		public PersonaItemViewModel(AgentPromptSettingsViewModel parent, Persona persona)
+		public PersonaItemViewModel(AgentPromptSettingsViewModel parent, PromptPersona persona)
 		{
 			_parent = parent;
 			Persona = persona;
@@ -63,9 +63,9 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	public class SpecializationItemViewModel : NotifyPropertyChanged
 	{
 		private readonly AgentPromptSettingsViewModel _parent;
-		public Specialization Specialization { get; }
+		public PromptSpecialization Specialization { get; }
 
-		public SpecializationItemViewModel(AgentPromptSettingsViewModel parent, Specialization specialization)
+		public SpecializationItemViewModel(AgentPromptSettingsViewModel parent, PromptSpecialization specialization)
 		{
 			_parent = parent;
 			Specialization = specialization;
@@ -86,7 +86,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	public class BehaviorSliderItemViewModel : NotifyPropertyChanged
 	{
 		private readonly AgentPromptSettingsViewModel _parent;
-		private readonly BehaviorSliderValue _sliderValue;
+		private readonly PromptBehaviourSliderValue _sliderValue;
 
 		/// <summary>
 		/// The GUID of the slider definition.
@@ -138,7 +138,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		public BehaviorSliderItemViewModel(
 			AgentPromptSettingsViewModel parent,
-			BehaviorSliderValue sliderValue,
+			PromptBehaviourSliderValue sliderValue,
 			Guid sliderId,
 			string displayName,
 			int minValue,
@@ -204,7 +204,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// <summary>
 		/// Gets the effective behavior slider values resolved by the current inheritance level.
 		/// </summary>
-		public RangeObservableCollection<BehaviorSliderValue> EffectiveSliderValues => PromptSettings.GetEffectiveSliderValues(_chatSettings);
+		public RangeObservableCollection<PromptBehaviourSliderValue> EffectiveSliderValues => PromptSettings.GetEffectiveSliderValues(_chatSettings);
 
 		private InheritanceLevelItem _selectedSystemPromptInheritance;
 		/// <summary>
@@ -286,7 +286,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				if (SetProperty(ref _selectedPersona, value))
 				{
-					EffectivePersona.PersonaId = value?.Persona.Id;
+					EffectivePersona.PersonaId = value?.Persona.Guid;
 					RegeneratePreview();
 				}
 			}
@@ -303,7 +303,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				if (SetProperty(ref _selectedSpecialization, value))
 				{
-					EffectiveSpecialization.SpecializationId = value?.Specialization.Id;
+					EffectiveSpecialization.SpecializationId = value?.Specialization.Guid;
 					RegeneratePreview();
 				}
 			}
@@ -414,7 +414,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		private PersonaSettings? _subscribedPersona;
 		private SpecializationSettings? _subscribedSpecialization;
-		private readonly List<BehaviorSliderValue> _subscribedSliderValues = [];
+		private readonly List<PromptBehaviourSliderValue> _subscribedSliderValues = [];
 
 		/// <summary>
 		/// Subscribes to the currently effective persona and specialization objects so that
@@ -446,7 +446,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			RegeneratePreview();
 		}
 
-		private void SubscribeSliderValue(BehaviorSliderValue value)
+		private void SubscribeSliderValue(PromptBehaviourSliderValue value)
 		{
 			if (_subscribedSliderValues.Contains(value))
 				return;
@@ -501,7 +501,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			// --- Personas ---
 			AvailablePersonas.Clear();
-			var personasConfig = SettingsManager.Get<PersonasConfiguration>();
+			var personasConfig = SettingsManager.Get<PromptPersonasConfiguration>();
 			foreach (var persona in PromptRegistry.BuiltinPersonas.Values)
 				AvailablePersonas.Add(new PersonaItemViewModel(this, persona));
 			foreach (var persona in personasConfig.Personas)
@@ -509,7 +509,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			if (EffectivePersona.PersonaId.HasValue)
 			{
-				SelectedPersona = AvailablePersonas.FirstOrDefault(p => p.Persona.Id == EffectivePersona.PersonaId.Value);
+				SelectedPersona = AvailablePersonas.FirstOrDefault(p => p.Persona.Guid == EffectivePersona.PersonaId.Value);
 			}
 			else
 			{
@@ -518,7 +518,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			// --- Specializations ---
 			AvailableSpecializations.Clear();
-			var specializationsConfig = SettingsManager.Get<SpecializationsConfiguration>();
+			var specializationsConfig = SettingsManager.Get<PromptSpecializationsConfiguration>();
 			foreach (var specialization in PromptRegistry.BuiltinSpecializations.Values)
 				AvailableSpecializations.Add(new SpecializationItemViewModel(this, specialization));
 			foreach (var specialization in specializationsConfig.Specializations)
@@ -526,7 +526,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			if (EffectiveSpecialization.SpecializationId.HasValue)
 			{
-				SelectedSpecialization = AvailableSpecializations.FirstOrDefault(s => s.Specialization.Id == EffectiveSpecialization.SpecializationId.Value);
+				SelectedSpecialization = AvailableSpecializations.FirstOrDefault(s => s.Specialization.Guid == EffectiveSpecialization.SpecializationId.Value);
 			}
 			else
 			{
@@ -542,7 +542,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				var existingValue = sliderValues.FirstOrDefault(sv => sv.SliderId == sliderId);
 				if (existingValue == null)
 				{
-					existingValue = new BehaviorSliderValue
+					existingValue = new PromptBehaviourSliderValue
 					{
 						SliderId = sliderId,
 						Value = slider.DefaultValue
@@ -579,7 +579,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				foreach (var component in category.Components)
 				{
 					if (component.IsSelected)
-						selectedIds.Add(component.Component.Id);
+						selectedIds.Add(component.Component.Guid);
 				}
 			}
 

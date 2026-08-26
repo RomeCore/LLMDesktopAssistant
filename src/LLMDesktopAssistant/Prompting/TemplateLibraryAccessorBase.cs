@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
-using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.Settings.Application;
+using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Locale;
 using LLTSharp.Metadata;
@@ -7,14 +8,15 @@ using LLTSharp.Metadata.Types;
 
 namespace LLMDesktopAssistant.Prompting
 {
-	[Service]
-	public class TemplateLibraryAccessor(
-		TemplateLibrary templateLibrary
-	)
+	public abstract class TemplateLibraryAccessorBase : ITemplateLibraryAccessor
 	{
-		private LanguageMetadata GetCurrentLanguageMetadata()
+		public abstract TemplateLibrary Library { get; }
+
+		private static LanguageMetadata GetCurrentLanguageMetadata()
 		{
-			return new LanguageMetadata(new LanguageCode(CultureInfo.CurrentCulture));
+			var appSettiings = ApplicationSettingsAccessor.ApplicationSettings.Language;
+			var targetLanguage = (appSettiings.Prompt ?? appSettiings.System).ToNullIfEmpty() ?? "iv";
+			return new LanguageMetadata(new LanguageCode(targetLanguage));
 		}
 
 		private T GetTemplateInternal<T>(string id, IMetadata[] metadata)
@@ -25,7 +27,7 @@ namespace LLMDesktopAssistant.Prompting
 				metadata = [new TemplateIdentifierMetadata(id), languageMetadata];
 			else
 				metadata = [new TemplateIdentifierMetadata(id), languageMetadata, .. metadata];
-			var lastTemplate = (templateLibrary.TryRetrieveBestAllWithFallback(metadata)?.LastOrDefault())
+			var lastTemplate = (Library.TryRetrieveBestAllWithFallback(metadata)?.LastOrDefault())
 				?? throw new KeyNotFoundException($"No templates found for the given ID '{id}'");
 			if (lastTemplate is not T result)
 				throw new InvalidCastException($"The retrieved template of ID '{id}' is not an instance of {typeof(T)}.");

@@ -80,7 +80,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 				throw new InvalidOperationException($"Agentic router model '{routerModelName}' is not available: {ex.Message}");
 			}
 
-			var templates = context.Services.GetRequiredService<TemplateLibraryAccessor>();
+			var templates = context.Services.GetRequiredService<ITemplateLibraryAccessor>();
 			var agentTaskExecutor = context.Services.GetRequiredService<IAgentTaskExecutor>();
 
 			var agents = selectFrom

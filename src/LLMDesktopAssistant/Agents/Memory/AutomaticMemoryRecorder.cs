@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 		IMemoryLogStore memoryLogStore,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager,
-		TemplateLibraryAccessor templates
+		ITemplateLibraryAccessor templates
 	) : IChatExecutionHook
 	{
 		/// <inheritdoc />
