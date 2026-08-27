@@ -193,7 +193,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 		});
 
 		Assert.Contains("File edited successfully", result.ResultContent);
-		Assert.Equal("    x\ny\n    b", File.ReadAllText(file));
+		Assert.Equal("    x\n    y\n    b", File.ReadAllText(file));
 	}
 
 	[Fact]
@@ -1820,6 +1820,236 @@ using LLMDesktopAssistant.Prompting;
 #endif
 
 			SelectedTopSidebarItem = TopSidebarItems[0];
+"""));
+	}
+
+	[Fact]
+	public async Task Replace_RealWorldPatch_2()
+	{
+		await TestReplaceAsync("""
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.MCP;
+using LLMDesktopAssistant.MVVM.Debug;
+using LLMDesktopAssistant.Prompting;
+
+namespace LLMDesktopAssistant.Tests
+{
+	public class SomeTests
+	{
+		private static TrackedContext CreateTracked() => new();
+	
+		[Fact]
+		public void ReplaceValue_UntracksOldAndTracksNew()
+		{
+			var ctx = new TrackedItemContext();
+			var oldItem = new ObservableItem();
+			var newItem = new ObservableItem();
+			ctx.Dict.Add("item", oldItem);
+			ctx.Dict["item"] = newItem; // Replace
+			ctx.Changed = 0;
+		
+			oldItem.Value = 1;
+			Assert.Equal(0, ctx.Changed);
+		
+			newItem.Value = 2;
+			Assert.Equal(1, ctx.Changed);
+		}
+		
+		// ========== Known limitation ==========
+	
+		[Fact]
+		public void DeepChanges_InsideValues_AreNotTracked()
+		{
+			// ChangeTracker tracks collection items as reference-typed objects, but dictionary
+			// items are KeyValuePair<TKey, TValue> value types, so objects stored as values
+			// are not tracked deeply. Collection-level changes are still tracked.
+			var dict = new ObservableDictionary<string, ObservableItem>();
+			var item = new ObservableItem();
+			dict.Add("item", item);
+			var changed = 0;
+			using var tracker = new ChangeTracker(dict, () => changed++);
+		
+			item.Value = 42;
+		
+			Assert.Equal(0, changed);
+		}
+	}
+}
+
+""", """
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.MCP;
+using LLMDesktopAssistant.MVVM.Debug;
+using LLMDesktopAssistant.Prompting;
+
+namespace LLMDesktopAssistant.Tests
+{
+	public class SomeTests
+	{
+		private static TrackedContext CreateTracked() => new();
+
+		private sealed class TrackedItemContext
+		{
+			public ObservableDictionary<string, ObservableItem> Dict { get; } = new();
+
+			public ChangeTracker Tracker { get; }
+
+			public int Changed;
+
+			public TrackedItemContext()
+			{
+				Tracker = new ChangeTracker(Dict, () => Changed++);
+			}
+		}
+	
+		[Fact]
+		public void ReplaceValue_UntracksOldAndTracksNew()
+		{
+			var ctx = new TrackedItemContext();
+			var oldItem = new ObservableItem();
+			var newItem = new ObservableItem();
+			ctx.Dict.Add("item", oldItem);
+			ctx.Dict["item"] = newItem; // Replace
+			ctx.Changed = 0;
+		
+			oldItem.Value = 1;
+			Assert.Equal(0, ctx.Changed);
+		
+			newItem.Value = 2;
+			Assert.Equal(1, ctx.Changed);
+		}
+		
+		// ========== Deep tracking of values ==========
+
+		[Fact]
+		public void DeepChanges_InsideValues_AreTracked()
+		{
+			var ctx = new TrackedItemContext();
+			var item = new ObservableItem();
+			ctx.Dict.Add("item", item);
+			ctx.Changed = 0;
+
+			item.Value = 42;
+
+			Assert.Equal(1, ctx.Changed);
+		}
+
+		[Fact]
+		public void ReplaceValue_UntracksOldAndTracksNew()
+		{
+			var ctx = new TrackedItemContext();
+			var oldItem = new ObservableItem();
+			var newItem = new ObservableItem();
+			ctx.Dict.Add("item", oldItem);
+			ctx.Dict["item"] = newItem; // Replace
+			ctx.Changed = 0;
+
+			oldItem.Value = 1;
+			Assert.Equal(0, ctx.Changed);
+
+			newItem.Value = 2;
+			Assert.Equal(1, ctx.Changed);
+		}
+
+		[Fact]
+		public void Remove_UntracksValue()
+		{
+			var ctx = new TrackedItemContext();
+			var item = new ObservableItem();
+			ctx.Dict.Add("item", item);
+			ctx.Dict.Remove("item");
+			ctx.Changed = 0;
+
+			item.Value = 1;
+
+			Assert.Equal(0, ctx.Changed);
+		}
+	}
+}
+
+""", Patch("""
+	private static TrackedContext CreateTracked() => new();
+""", """
+	private static TrackedContext CreateTracked() => new();
+	
+	private sealed class TrackedItemContext
+	{
+		public ObservableDictionary<string, ObservableItem> Dict { get; } = new();
+	
+		public ChangeTracker Tracker { get; }
+	
+		public int Changed;
+	
+		public TrackedItemContext()
+		{
+			Tracker = new ChangeTracker(Dict, () => Changed++);
+		}
+	}
+"""), Patch("""
+	// ========== Known limitation ==========
+	
+	[Fact]
+	public void DeepChanges_InsideValues_AreNotTracked()
+	{
+		// ChangeTracker tracks collection items as reference-typed objects, but dictionary
+		// items are KeyValuePair<TKey, TValue> value types, so objects stored as values
+		// are not tracked deeply. Collection-level changes are still tracked.
+		var dict = new ObservableDictionary<string, ObservableItem>();
+		var item = new ObservableItem();
+		dict.Add("item", item);
+		var changed = 0;
+		using var tracker = new ChangeTracker(dict, () => changed++);
+	
+		item.Value = 42;
+	
+		Assert.Equal(0, changed);
+	}
+""", """
+	// ========== Deep tracking of values ==========
+	
+	[Fact]
+	public void DeepChanges_InsideValues_AreTracked()
+	{
+		var ctx = new TrackedItemContext();
+		var item = new ObservableItem();
+		ctx.Dict.Add("item", item);
+		ctx.Changed = 0;
+	
+		item.Value = 42;
+	
+		Assert.Equal(1, ctx.Changed);
+	}
+	
+	[Fact]
+	public void ReplaceValue_UntracksOldAndTracksNew()
+	{
+		var ctx = new TrackedItemContext();
+		var oldItem = new ObservableItem();
+		var newItem = new ObservableItem();
+		ctx.Dict.Add("item", oldItem);
+		ctx.Dict["item"] = newItem; // Replace
+		ctx.Changed = 0;
+	
+		oldItem.Value = 1;
+		Assert.Equal(0, ctx.Changed);
+	
+		newItem.Value = 2;
+		Assert.Equal(1, ctx.Changed);
+	}
+	
+	[Fact]
+	public void Remove_UntracksValue()
+	{
+		var ctx = new TrackedItemContext();
+		var item = new ObservableItem();
+		ctx.Dict.Add("item", item);
+		ctx.Dict.Remove("item");
+		ctx.Changed = 0;
+	
+		item.Value = 1;
+	
+		Assert.Equal(0, ctx.Changed);
+	}
 """));
 	}
 

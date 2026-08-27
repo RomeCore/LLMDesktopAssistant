@@ -30,7 +30,7 @@ public static class FilePatchedReplacer
 
 		var fileLines = Normalize(content).Split('\n').ToList();
 
-		if (matchLines.Count == 1)
+		if (matchLines.Count == 1 && replaceLines.Count <= 1)
 			return ReplaceSingleLine(fileLines, matchLines[0].Trim(), replaceLines, comparison);
 
 		return ReplaceBlock(fileLines, matchLines, replaceLines, tabSize, comparison);
@@ -196,13 +196,11 @@ public static class FilePatchedReplacer
 				int targetColumns;
 				if (string.IsNullOrWhiteSpace(matchLines[mapped]))
 				{
-					// A blank matched line carries no indentation of its own; inherit the
-					// indentation of the previous replacement line instead
-					var prev = result.Count - 1;
-					while (prev >= 0 && string.IsNullOrWhiteSpace(result[prev]))
-						prev--;
-					styleLine = prev >= 0 ? result[prev] : fileLines[start + mapped];
-					targetColumns = GetIndentation(styleLine, tabSize);
+					// A blank matched line carries no indentation of its own; align the
+					// replacement line with the block's base indentation (the file's
+					// indentation of the first matched line) plus its own relative depth
+					styleLine = fileLines[start];
+					targetColumns = replaceClean[j] + shift;
 				}
 				else
 				{
