@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -89,7 +89,7 @@ namespace LLMDesktopAssistant.Utils
 
 				incc.CollectionChanged += OnCollectionChanged;
 
-				var values = en.Cast<object?>().ToArray();
+				var values = en.Cast<object?>().Select(UnwrapCollectionItem).ToArray();
 
 				lock (_lock)
 					_collectionValues[obj] = values;
@@ -200,6 +200,20 @@ namespace LLMDesktopAssistant.Utils
 			return false;
 		}
 
+		private static object? UnwrapCollectionItem(object? item)
+		{
+			if (item == null)
+				return null;
+
+			// Dictionary-like collections enumerate KeyValuePair<TKey, TValue> items which are value types.
+			// Unwrap them so that the values (reference types) can be tracked deeply.
+			var type = item.GetType();
+			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+				return type.GetProperty("Value")!.GetValue(item);
+
+			return item;
+		}
+
 		private static bool IsIgnoredType(Type type)
 		{
 			return type.IsPrimitive || type.IsValueType || type == typeof(string);
@@ -243,16 +257,16 @@ namespace LLMDesktopAssistant.Utils
 			if (e.OldItems != null)
 			{
 				foreach (var item in e.OldItems)
-					UntrackObject(item);
+					UntrackObject(UnwrapCollectionItem(item));
 			}
 
 			if (e.NewItems != null)
 			{
 				foreach (var item in e.NewItems)
-					TrackObject(item);
+					TrackObject(UnwrapCollectionItem(item));
 			}
 
-			var newValues = en.Cast<object?>().ToArray();
+			var newValues = en.Cast<object?>().Select(UnwrapCollectionItem).ToArray();
 
 			if (e.Action == NotifyCollectionChangedAction.Reset)
 			{
