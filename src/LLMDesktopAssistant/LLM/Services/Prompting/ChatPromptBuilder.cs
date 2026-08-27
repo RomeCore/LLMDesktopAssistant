@@ -85,12 +85,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			generalContext["prompt"] = effectiveSystemPrompt;
 			generalContext["components"] = effectiveComponents
-				.Select(id => componentManager.TryGet(id)?.Template.Template.Render(componentsContext, functions).ToString())
+				.Select(id => componentManager.TryGetTemplate(id)?.Render(componentsContext, functions).ToString())
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
 			generalContext["sliders"] = effectiveSliderValues.Select(s =>
 				{
-					var sliderTemplate = behaviourSliderManager.TryGet(s.SliderId)?.Template.Template;
+					var sliderTemplate = behaviourSliderManager.TryGetTemplate(s.SliderId);
 					componentsContext["slider_value"] = s.Value;
 					return sliderTemplate?.Render(componentsContext, functions).ToString();
 				})
@@ -100,12 +100,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			generalContext["assistant_nickname"] = effectivePersona.Nickname;
 			generalContext["specialization"] = effectiveSpecialization.UseCustomSpecialization ?
 				effectiveSpecialization.CustomSpecialization :
-				(effectiveSpecialization.SpecializationId != null ? specializationManager.TryGet(effectiveSpecialization.SpecializationId.Value)
-					?.Template.Template.Render(componentsContext, functions).ToString() : null);
+				(effectiveSpecialization.SpecializationId != null ? specializationManager.TryGetTemplate(effectiveSpecialization.SpecializationId.Value)
+					?.Render(componentsContext, functions).ToString() : null);
 			generalContext["persona"] = effectivePersona.UseCustomPersona ?
 				effectivePersona.CustomPersona :
-				(effectivePersona.PersonaId != null ? personaManager.TryGet(effectivePersona.PersonaId.Value)
-					?.Template.Template.Render(componentsContext, functions).ToString() : null);
+				(effectivePersona.PersonaId != null ? personaManager.TryGetTemplate(effectivePersona.PersonaId.Value)
+					?.Render(componentsContext, functions).ToString() : null);
 			generalContext["skills"] = skillsetBuilder.GetSkillsForAgent(agent).Select(s => new
 			{
 				name = s.Name,

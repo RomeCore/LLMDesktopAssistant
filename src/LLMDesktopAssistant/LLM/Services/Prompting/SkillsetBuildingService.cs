@@ -37,7 +37,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{
 						Name = s.Name,
 						Description = s.Description ?? string.Empty,
-						BodyGetter = new(() => s.Template.Template.Render(context, templateFunctions).ToString() ?? string.Empty),
+						BodyGetter = new(() => s.EffectiveTemplate.Render(context, templateFunctions).ToString() ?? string.Empty),
 						Source = SkillSource.Template,
 						TemplateSource = s.Source
 					};

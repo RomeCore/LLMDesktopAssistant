@@ -238,7 +238,7 @@ public class MetaToolParserTests
 
 		var tool = Deserialize(content);
 
-		Assert.Equal(ToolApprovalLevel.PolicyBased, tool.ApprovalLevel);
+		Assert.Null(tool.ApprovalLevel);
 		Assert.Equal("Tool", tool.Title);
 	}
 

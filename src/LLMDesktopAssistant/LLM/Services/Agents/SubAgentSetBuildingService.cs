@@ -1,11 +1,12 @@
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.SubAgents;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLTSharp;
 
-namespace LLMDesktopAssistant.LLM.Services.Prompting
+namespace LLMDesktopAssistant.LLM.Services.Agents
 {
 	[ChatService(typeof(ISubAgentSetBuildingService))]
 	public class SubAgentSetBuildingService(
@@ -37,7 +38,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{
 						Name = s.Name,
 						Description = s.Description ?? string.Empty,
-						SystemPromptGetter = new(() => s.Template.Template.Render(context, templateFunctions).ToString() ?? string.Empty),
+						SystemPromptGetter = new(() => s.EffectiveTemplate.Render(context, templateFunctions).ToString() ?? string.Empty),
 						Source = SubAgentSource.Template,
 						TemplateSource = s.Source
 					};

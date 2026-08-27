@@ -99,6 +99,11 @@ namespace LLMDesktopAssistant.Prompting
 			set => SetProperty(ref _localizedTemplate, value);
 		}
 
+		/// <summary>
+		/// The effective template to use for this prompt instance. This is the localized template if available, otherwise the default template.
+		/// </summary>
+		public ITemplate EffectiveTemplate => (LocalizedTemplate ?? Template).Template;
+
 		public PromptPartDiagnostic? CombinedDiagnostic => PromptPartDiagnostic.Combine(Diagnostic, LocalizationDiagnostic);
 
 		public void ExpandDiagnostic(PromptPartDiagnostic diagnostic)
