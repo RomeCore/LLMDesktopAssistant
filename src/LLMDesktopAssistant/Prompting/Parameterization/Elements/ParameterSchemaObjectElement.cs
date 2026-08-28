@@ -27,6 +27,9 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 						: element.CreateOrFixValue(null, log);
 					dictValue.Items[key] = propertyValue;
 				}
+				var removedKeys = dictValue.Items.Keys.Except(Properties.Keys).ToList();
+				foreach (var key in removedKeys)
+					dictValue.Items.Remove(key);
 				return dictValue;
 			}
 

@@ -5,6 +5,19 @@
 
 assistant_nickname.hint: Имя ассистента
 behavior_sliders: Слайдеры поведения
+card.broken: Сломан
+card.delete: Удалить
+card.details: Детали
+card.duplicate: Дублировать
+card.edit: Редактировать
+card.metadata: Метаданные
+card.open_file: Открыть файл
+card.parameters: Параметры
+card.selected: Выбран
+card.show_in_explorer: Показать в проводнике
+card.template_body: Тело шаблона
+card.todo: Ещё не реализовано
+card.use: Использовать этот элемент
 behavior_sliders.hint: Настройте слайдеры, чтобы управлять тоном, стилем и личностью ассистента
 category: Категория
 category.uncategorized: Без категории
@@ -14,14 +27,49 @@ custom_persona.hint: Введите кастомную персону...
 custom_persona.placeholder: Опишите персону в деталях...
 custom_specialization.hint: Введите описание специализации...
 custom_specialization.placeholder: Опишите профессиональную роль, которую должен выполнять ассистент...
+diagnostic.invalidguid: Неверный GUID
+diagnostic.invalidguid.hint: Значение метаданных 'guid' не является корректным GUID.
+diagnostic.invalidparameterschema: Неверная схема параметров
+diagnostic.invalidparameterschema.hint: Блок метаданных 'params_schema' содержит ошибки.
+diagnostic.invalidsliderhints: Неверные подсказки слайдера
+diagnostic.invalidsliderhints.hint: Метаданные подсказок слайдера некорректны.
+diagnostic.invalidsliderrange: Неверный диапазон слайдера
+diagnostic.invalidsliderrange.hint: Метаданные диапазона слайдера некорректны.
+diagnostic.invalidslotkind: Неверный вид слота
+diagnostic.invalidslotkind.hint: Значение метаданных 'slot' не является одним из 'system', 'persona', 'specialization'.
+diagnostic.missingcategory: Отсутствует категория
+diagnostic.missingcategory.hint: В шаблоне нет метаданных 'category'.
+diagnostic.missingdescription: Отсутствует описание
+diagnostic.missingdescription.hint: В шаблоне нет метаданных 'description'.
+diagnostic.missingguid: Отсутствует GUID
+diagnostic.missingguid.hint: В шаблоне нет метаданных 'guid'.
+diagnostic.missinglanguage: Отсутствует язык
+diagnostic.missinglanguage.hint: В шаблоне нет метаданных 'lang'.
+diagnostic.missingname: Отсутствует имя
+diagnostic.missingname.hint: В шаблоне нет метаданных 'title'.
+diagnostic.missingstrid: Отсутствует строковый идентификатор
+diagnostic.missingstrid.hint: В шаблоне нет метаданных 'strid'.
+diagnostic.missingtemplateidentifier: Отсутствует идентификатор шаблона
+diagnostic.missingtemplateidentifier.hint: В шаблоне нет метаданных идентификатора.
 edit_component: Редактировать компонент
 edit_persona: Редактировать персону
 edit_specialization: Редактировать специализацию
+empty: Элементы промптов не найдены
 import: Импорт
 import_component: Импорт компонента
 import_persona: Импорт персоны
 import_specialization: Импорт специализации
+kind.persona: Персона
+kind.specialization: Специализация
+kind.system: Система
 manager.header: Менеджер промптов
+metadata.category: Категория
+metadata.guid: GUID
+metadata.kind: Вид
+metadata.language: Язык
+metadata.localized_for: Локализован для
+metadata.source: Источник
+metadata.strid: Строковый ID
 name: Название
 new_component: Новый компонент
 new_persona: Новая персона
@@ -31,6 +79,7 @@ persona.clear: Очистить персону
 personas: Персоны
 preview.header: Предпросмотр системного промпта
 preview.toggle: Показать/скрыть предпросмотр системного промпта
+search.placeholder: Поиск элементов промптов...
 select_persona: Выберите персону...
 select_specialization: Выберите специализацию...
 selected_persona.hint: Выберите персону для применения к чату
@@ -38,11 +87,20 @@ selected_specialization.hint: Выберите специализацию для
 specialization: Специализация
 specialization.clear: Очистить специализацию
 specialization.hint: Выберите профессиональную специализацию ассистента. Определяет, что ассистент знает и умеет.
+slot_elements.hint: Выберите переиспользуемые элементы промптов (системные промпты, персоны, специализации) для этого агента. Нажмите на карточку, чтобы использовать её.
+source.builtintemplate: Встроенный
+source.configuration: Конфигурация
+source.unknown: Неизвестный
+source.usertemplate: Пользовательский
+source.workdirtemplate: Рабочая директория
 specializations: Специализации
 system_prompt: Системный промпт
 system_prompt.hint: Введите системный промпт...
 system_prompt.placeholder: например, You are a helpful assistant
 text: Текст
+todo.import: Импорт (ещё не реализовано)
+todo.new: Новый (ещё не реализовано)
 use_custom_persona: Использовать кастомную персону
+use_custom_system_prompt: Использовать свой системный промпт
 use_custom_specialization: Использовать свою специализацию
 user_nickname.placeholder: например, Иван

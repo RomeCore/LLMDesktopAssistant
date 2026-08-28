@@ -29,8 +29,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		IChatSettingsService chatSettings,
 		ITemplateLibraryAccessor templates,
 		IPromptComponentManager componentManager,
-		IPromptPersonaManager personaManager,
-		IPromptSpecializationManager specializationManager,
+		IPromptSlotElementManager slotElementManager,
 		IPromptBehaviourSliderManager behaviourSliderManager,
 		IAgentManagementService agentManager,
 		IUserManagementService userManager,
@@ -74,7 +73,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var generalContext = new Dictionary<string, object?>();
 			foreach (var expander in promptSystemContextExpanders)
 				expander.ExpandPromptContext(generalContext);
-			var componentsContext = generalContext.ToDictionary(); // Clone
+			var partsContext = generalContext.ToDictionary();
 
 			var effectiveSystemPrompt = promptSettings.GetEffectiveSystemPrompt(chatSettings.Settings);
 			var effectiveComponents = promptSettings.GetEffectivePromptComponents(chatSettings.Settings);
@@ -83,29 +82,47 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var effectiveSpecialization = promptSettings.GetEffectiveSpecialization(chatSettings.Settings);
 			var effectiveChatMemoryOptions = chatSettings.Settings.Memory.GetEffectiveMemoryOptions();
 
-			generalContext["prompt"] = effectiveSystemPrompt;
+			string? RenderPromptPart<K, V>(IPromptPartManager<K, V> manager, PromptPartSelection selection, K key)
+				where K : notnull
+				where V : PromptPartBase
+			{
+				var part = manager.TryGet(key);
+				if (part is null)
+					return null;
+				if (part.ParameterSchema is not null)
+				{
+					selection.Parameters = part.ParameterSchema.Root.CreateOrFixValue(selection.Parameters, []);
+					partsContext["params"] = selection.Parameters?.GetTemplateDataAccessor();
+				}
+				var result = part.EffectiveTemplate.Render(partsContext, functions).ToString();
+				partsContext.Remove("params");
+				return result;
+			}
+
+			generalContext["prompt"] =
+				effectiveSystemPrompt.UseCustomSystemPrompt ? effectiveSystemPrompt.CustomSystemPrompt :
+				RenderPromptPart(slotElementManager, effectiveSystemPrompt, (effectiveSystemPrompt.Id, PromptSlotKind.System));
+			generalContext["specialization"] =
+				effectiveSpecialization.UseCustomSpecialization ? effectiveSpecialization.CustomSpecialization :
+				RenderPromptPart(slotElementManager, effectiveSpecialization, (effectiveSpecialization.Id, PromptSlotKind.Specialization));
+			generalContext["persona"] =
+				effectivePersona.UseCustomPersona ? effectivePersona.CustomPersona :
+				RenderPromptPart(slotElementManager, effectivePersona, (effectivePersona.Id, PromptSlotKind.Persona));
 			generalContext["components"] = effectiveComponents
-				.Select(id => componentManager.TryGetTemplate(id)?.Render(componentsContext, functions).ToString())
+				.Select(c => RenderPromptPart(componentManager, c, c.Id))
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
 			generalContext["sliders"] = effectiveSliderValues.Select(s =>
 				{
-					var sliderTemplate = behaviourSliderManager.TryGetTemplate(s.SliderId);
-					componentsContext["slider_value"] = s.Value;
-					return sliderTemplate?.Render(componentsContext, functions).ToString();
+					partsContext["slider_value"] = s.Value;
+					var result = RenderPromptPart(behaviourSliderManager, s, s.Id);
+					partsContext.Remove("slider_value");
+					return result;
 				})
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
-			componentsContext.Remove("slider_value");
+			partsContext.Remove("slider_value");
 			generalContext["assistant_nickname"] = effectivePersona.Nickname;
-			generalContext["specialization"] = effectiveSpecialization.UseCustomSpecialization ?
-				effectiveSpecialization.CustomSpecialization :
-				(effectiveSpecialization.SpecializationId != null ? specializationManager.TryGetTemplate(effectiveSpecialization.SpecializationId.Value)
-					?.Render(componentsContext, functions).ToString() : null);
-			generalContext["persona"] = effectivePersona.UseCustomPersona ?
-				effectivePersona.CustomPersona :
-				(effectivePersona.PersonaId != null ? personaManager.TryGetTemplate(effectivePersona.PersonaId.Value)
-					?.Render(componentsContext, functions).ToString() : null);
 			generalContext["skills"] = skillsetBuilder.GetSkillsForAgent(agent).Select(s => new
 			{
 				name = s.Name,

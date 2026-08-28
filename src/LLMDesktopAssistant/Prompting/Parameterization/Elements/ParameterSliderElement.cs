@@ -42,13 +42,18 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			set => SetProperty(ref field, value);
 		}
 
-		private double ToInteger(double value) => Math.Round(value);
+		private double TryToInteger(double value)
+		{
+			if (IsInteger)
+				return Math.Round(value);
+			return value;
+		}
 
 		public override ParameterSchemaValue CreateOrFixValue(ParameterSchemaValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
 		{
 			if (existing is null)
 			{
-				var final = ToInteger(Default);
+				var final = TryToInteger(Default);
 				log.Append(new ParameterValidationLogEntry
 				{
 					Status = ParameterValidationStatus.Created,
@@ -63,7 +68,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 
 			if (existing is not ParameterSchemaNumberValue numberValue)
 			{
-				var final = ToInteger(Default);
+				var final = TryToInteger(Default);
 				log.Append(new ParameterValidationLogEntry
 				{
 					Status = ParameterValidationStatus.Invalid,
@@ -78,7 +83,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 
 			if (numberValue.Value < Min || numberValue.Value > Max)
 			{
-				var final = ToInteger(Math.Clamp(numberValue.Value, Min, Max));
+				var final = TryToInteger(Math.Clamp(numberValue.Value, Min, Max));
 				log.Append(new ParameterValidationLogEntry
 				{
 					Status = ParameterValidationStatus.Fixed,
@@ -121,10 +126,13 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 				[!Slider.TickFrequencyProperty] = CreateBinding(this, nameof(Step)),
 				[!Slider.ValueProperty] = CreateBinding(numberValue, nameof(numberValue.Value))
 			};
-			if (IsInteger)
+			if (IsInteger || Math.Abs(Step) > double.Epsilon)
 			{
 				slider.IsSnapToTickEnabled = true;
-				slider.TickFrequency = Math.Max(1, Step);
+				if (IsInteger)
+					slider.TickFrequency = Math.Max(1, Step);
+				else
+					slider.TickFrequency = Step;
 			}
 
 			var valueText = new TextBlock

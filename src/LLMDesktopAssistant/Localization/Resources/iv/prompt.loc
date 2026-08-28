@@ -5,6 +5,19 @@
 
 assistant_nickname.hint: The assistant nickname
 behavior_sliders: Behavior sliders
+card.broken: Broken
+card.delete: Delete
+card.details: Details
+card.duplicate: Duplicate
+card.edit: Edit
+card.metadata: Metadata
+card.open_file: Open file
+card.parameters: Parameters
+card.selected: Selected
+card.show_in_explorer: Show in explorer
+card.template_body: Template body
+card.todo: Not implemented yet
+card.use: Use this element
 behavior_sliders.hint: Adjust behavior sliders to control the assistant's tone, style, and personality
 category: Category
 category.uncategorized: Uncategorized
@@ -14,14 +27,49 @@ custom_persona.hint: Enter custom persona...
 custom_persona.placeholder: Describe the persona in detail...
 custom_specialization.hint: Enter custom specialization description...
 custom_specialization.placeholder: Describe the professional role you want the assistant to have...
+diagnostic.invalidguid: Invalid GUID
+diagnostic.invalidguid.hint: The 'guid' metadata value is not a valid GUID.
+diagnostic.invalidparameterschema: Invalid parameter schema
+diagnostic.invalidparameterschema.hint: The 'params_schema' metadata block contains errors.
+diagnostic.invalidsliderhints: Invalid slider hints
+diagnostic.invalidsliderhints.hint: The slider hints metadata is invalid.
+diagnostic.invalidsliderrange: Invalid slider range
+diagnostic.invalidsliderrange.hint: The slider range metadata is invalid.
+diagnostic.invalidslotkind: Invalid slot kind
+diagnostic.invalidslotkind.hint: The 'slot' metadata value is not one of 'system', 'persona', 'specialization'.
+diagnostic.missingcategory: Missing category
+diagnostic.missingcategory.hint: The template has no 'category' metadata.
+diagnostic.missingdescription: Missing description
+diagnostic.missingdescription.hint: The template has no 'description' metadata.
+diagnostic.missingguid: Missing GUID
+diagnostic.missingguid.hint: The template has no 'guid' metadata.
+diagnostic.missinglanguage: Missing language
+diagnostic.missinglanguage.hint: The template has no 'lang' metadata.
+diagnostic.missingname: Missing name
+diagnostic.missingname.hint: The template has no 'title' metadata.
+diagnostic.missingstrid: Missing string id
+diagnostic.missingstrid.hint: The template has no 'strid' metadata.
+diagnostic.missingtemplateidentifier: Missing template identifier
+diagnostic.missingtemplateidentifier.hint: The template has no identifier metadata.
 edit_component: Edit Component
 edit_persona: Edit Persona
 edit_specialization: Edit Specialization
+empty: No prompt elements found
 import: Import
 import_component: Import component
 import_persona: Import persona
 import_specialization: Import specialization
+kind.persona: Persona
+kind.specialization: Specialization
+kind.system: System
 manager.header: Prompt manager
+metadata.category: Category
+metadata.guid: GUID
+metadata.kind: Kind
+metadata.language: Language
+metadata.localized_for: Localized for
+metadata.source: Source
+metadata.strid: String id
 name: Name
 new_component: New component
 new_persona: New persona
@@ -31,6 +79,7 @@ persona.clear: Clear persona
 personas: Personas
 preview.header: System Prompt Preview
 preview.toggle: Toggle system prompt preview
+search.placeholder: Search prompt elements...
 select_persona: Select persona...
 select_specialization: Select specialization...
 selected_persona.hint: Select a persona to apply to the chat
@@ -38,11 +87,20 @@ selected_specialization.hint: Select a specialization to define the assistant's 
 specialization: Specialization
 specialization.clear: Clear specialization
 specialization.hint: Choose a professional specialization for the assistant. This defines what the assistant knows and can do.
+slot_elements.hint: Select reusable prompt elements (system prompts, personas, specializations) for this agent. Click a card to use it.
+source.builtintemplate: Built-in
+source.configuration: Configuration
+source.unknown: Unknown
+source.usertemplate: User
+source.workdirtemplate: Workdir
 specializations: Specializations
 system_prompt: System prompt
 system_prompt.hint: Enter system prompt...
 system_prompt.placeholder: for example, You are a helpful assistant
 text: Text
+todo.import: Import (not implemented yet)
+todo.new: New (not implemented yet)
 use_custom_persona: Use custom persona
+use_custom_system_prompt: Use custom system prompt
 use_custom_specialization: Use custom specialization
 user_nickname.placeholder: e.g. John

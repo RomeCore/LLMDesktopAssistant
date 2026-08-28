@@ -23,8 +23,10 @@ namespace LLMDesktopAssistant.Prompting
 
 		InvalidParameterSchema = 1 << 8,
 
-		InvalidSliderRange = 1 << 9,
+		InvalidSlotKind = 1 << 9,
 
-		InvalidSliderHints = 1 << 10,
+		InvalidSliderRange = 1 << 10,
+
+		InvalidSliderHints = 1 << 11,
 	}
 }

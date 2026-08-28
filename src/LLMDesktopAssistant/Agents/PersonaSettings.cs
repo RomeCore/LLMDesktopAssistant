@@ -1,10 +1,12 @@
+using LLMDesktopAssistant.Prompting;
+
 namespace LLMDesktopAssistant.Agents
 {
 	/// <summary>
 	/// Represents the persona group of an agent prompt: the agent's nickname and the persona
 	/// selection (a registered persona or a custom persona text).
 	/// </summary>
-	public class PersonaSettings : NotifyPropertyChanged
+	public class PersonaSettings : PromptPartKeyedSelection<Guid>
 	{
 		private string? _nickname;
 		/// <summary>
@@ -19,7 +21,7 @@ namespace LLMDesktopAssistant.Agents
 
 		private bool _useCustomPersona = false;
 		/// <summary>
-		/// Whether to use a custom persona. False for <see cref="PersonaId"/>, true for <see cref="CustomPersona"/>.
+		/// Whether to use a custom persona.
 		/// </summary>
 		public bool UseCustomPersona
 		{
@@ -29,23 +31,12 @@ namespace LLMDesktopAssistant.Agents
 
 		private string? _customPersona;
 		/// <summary>
-		/// The custom personality prompt to use for the agent, if not null or empty, this will be used instead of <see cref="PersonaId"/>.
+		/// The custom personality prompt to use for the agent.
 		/// </summary>
 		public string? CustomPersona
 		{
 			get => _customPersona;
 			set => SetProperty(ref _customPersona, value);
-		}
-
-		private Guid? _personaId;
-		/// <summary>
-		/// The personality ID of the agent. This can be used to influence the behavior and tone of the agent.
-		/// The identifier leads to <see cref="Prompting.PromptRegistry.GetPersona(Guid)"/>
-		/// </summary>
-		public Guid? PersonaId
-		{
-			get => _personaId;
-			set => SetProperty(ref _personaId, value);
 		}
 	}
 }

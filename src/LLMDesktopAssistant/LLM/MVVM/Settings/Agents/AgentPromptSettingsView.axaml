@@ -3,6 +3,7 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+			 xmlns:card="using:LLMDesktopAssistant.LLM.MVVM.Settings"
 			 xmlns:set="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
@@ -22,13 +23,13 @@
 										IsChecked="{Binding IsPreviewVisible, Mode=OneWay}">
 
 				<StackPanel Orientation="Horizontal" Spacing="8">
-				
+
 					<ico:MaterialIcon Kind="Eye"
 														Width="18" Height="18"/>
-					
+
 					<TextBlock Text="{loc:Loc prompt.preview.header}"
-										 FontWeight="Bold"
-										 VerticalAlignment="Center"/>
+											FontWeight="Bold"
+											VerticalAlignment="Center"/>
 
 				</StackPanel>
 
@@ -54,401 +55,425 @@
 							 Opacity="0.2"
 							 IsVisible="{Binding IsPreviewVisible}"/>
 
-		<!-- ============================================================ -->
-		<!-- SYSTEM PROMPT -->
-		<!-- ============================================================ -->
-		<Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+		<!-- Search -->
+		<TextBox Text="{Binding SearchText, Mode=TwoWay}"
+				 PlaceholderText="{loc:Loc prompt.search.placeholder}">
 
-			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc prompt.system_prompt}"
-								 FontSize="{DynamicResource FontSizeL}"
-								 FontWeight="Bold"
-								 VerticalAlignment="Center"/>
+			<TextBox.InnerLeftContent>
+				<ico:MaterialIcon Kind="TextBoxSearch"
+								  Width="16" Height="16"
+								  Margin="6,0"
+								  VerticalAlignment="Center"
+								  Opacity="0.5"/>
+			</TextBox.InnerLeftContent>
 
-			<ComboBox Grid.Column="1"
-								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-								SelectedItem="{Binding SelectedSystemPromptInheritance}"
-								VerticalAlignment="Center"
-								Margin="0,0,8,0"
-								MinWidth="120">
+		</TextBox>
 
-				<ComboBox.ItemTemplate>
-					<DataTemplate x:DataType="set:InheritanceLevelItem">
-						<TextBlock Text="{Binding DisplayName}"/>
-					</DataTemplate>
-				</ComboBox.ItemTemplate>
-
-			</ComboBox>
-
-		</Grid>
-
-		<TextBlock Text="{loc:Loc prompt.system_prompt.hint}"
-					  Opacity="0.6"
-					  TextWrapping="Wrap"/>
-
-		<TextBox Text="{Binding EffectiveSystemPrompt, Mode=TwoWay}"
-					AcceptsReturn="True"
-					TextWrapping="Wrap"
-					MinHeight="80"
-					MaxHeight="200"
-					ScrollViewer.VerticalScrollBarVisibility="Auto"
-					PlaceholderText="{loc:Loc prompt.system_prompt.placeholder}"/>
-
-		<!-- Separator -->
-		<Rectangle Height="1"
-							 Fill="{DynamicResource DefaultForeground}"
-							 Opacity="0.2"
-							 Margin="0,5"/>
+		<!-- Empty state -->
+		<TextBlock Text="{loc:Loc prompt.empty}"
+				   Opacity="0.5"
+				   TextWrapping="Wrap"
+				   IsVisible="{Binding IsAnyCardVisible, Converter={StaticResource InverseBooleanConverter}}"/>
 
 		<!-- ============================================================ -->
-		<!-- COMPONENTS -->
+		<!-- SYSTEM PROMPT SECTION                                        -->
 		<!-- ============================================================ -->
-		<Grid ColumnDefinitions="*,Auto">
+		<StackPanel Spacing="6" IsVisible="{Binding IsSystemSectionVisible}">
 
-			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc prompt.components}"
-								 FontSize="{DynamicResource FontSizeL}"
-								 FontWeight="Bold"
-								 VerticalAlignment="Center"/>
+			<Grid ColumnDefinitions="*,Auto,Auto,Auto">
 
-			<ComboBox Grid.Column="1"
-								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-								SelectedItem="{Binding SelectedComponentsInheritance}"
-								VerticalAlignment="Center"
-								Margin="0,0,8,0"
-								MinWidth="120">
+				<TextBlock Grid.Column="0"
+						   Text="{loc:Loc prompt.system_prompt}"
+						   FontSize="{DynamicResource FontSizeL}"
+						   FontWeight="Bold"
+						   VerticalAlignment="Center"/>
 
-				<ComboBox.ItemTemplate>
-					<DataTemplate x:DataType="set:InheritanceLevelItem">
-						<TextBlock Text="{Binding DisplayName}"/>
-					</DataTemplate>
-				</ComboBox.ItemTemplate>
+				<!-- TODO: dialogs for creating/importing prompt parts are not implemented yet -->
+				<Button Grid.Column="1"
+						Classes="IconButton"
+						IsEnabled="False"
+						ToolTip.Tip="{loc:Loc prompt.todo.new}"
+						VerticalAlignment="Center">
+					<ico:MaterialIcon Kind="Plus"/>
+				</Button>
 
-			</ComboBox>
+				<Button Grid.Column="2"
+						Classes="IconButton"
+						IsEnabled="False"
+						ToolTip.Tip="{loc:Loc prompt.todo.import}"
+						VerticalAlignment="Center"
+						Margin="0,0,8,0">
+					<ico:MaterialIcon Kind="Import"/>
+				</Button>
 
-		</Grid>
-
-		<TextBlock Text="{loc:Loc prompt.components.hint}"
-					  Opacity="0.6"
-					  TextWrapping="Wrap"/>
-
-		<TreeView ItemsSource="{Binding ComponentCategories}"
-					BorderThickness="0">
-
-			<TreeView.DataTemplates>
-
-				<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
-									ItemsSource="{Binding Components}">
-
-					<TextBlock Text="{Binding CategoryName}"
-									FontWeight="Bold"
-									Margin="0,2"/>
-
-				</TreeDataTemplate>
-
-				<DataTemplate DataType="local:ComponentItemViewModel">
-
-					<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-								Content="{Binding Component.Name}"
-								Margin="16,1,0,1"/>
-
-				</DataTemplate>
-
-			</TreeView.DataTemplates>
-
-		</TreeView>
-
-		<!-- Separator -->
-		<Rectangle Height="1"
-					  Fill="{DynamicResource DefaultForeground}"
-					  Opacity="0.2"
-					  Margin="0,5"/>
-
-		<!-- ============================================================ -->
-		<!-- PERSONA + NICKNAME -->
-		<!-- ============================================================ -->
-		<Grid ColumnDefinitions="*,Auto">
-
-			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc prompt.persona}"
-								 FontSize="{DynamicResource FontSizeL}"
-								 FontWeight="Bold"
-								 VerticalAlignment="Center"/>
-
-			<ComboBox Grid.Column="1"
-								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-								SelectedItem="{Binding SelectedPersonaInheritance}"
-								VerticalAlignment="Center"
-								Margin="0,0,8,0"
-								MinWidth="120">
-
-				<ComboBox.ItemTemplate>
-					<DataTemplate x:DataType="set:InheritanceLevelItem">
-						<TextBlock Text="{Binding DisplayName}"/>
-					</DataTemplate>
-				</ComboBox.ItemTemplate>
-
-			</ComboBox>
-
-		</Grid>
-
-		<!-- Nickname -->
-		<TextBlock Text="{loc:Loc prompt.assistant_nickname.hint}"
-								Opacity="0.6"/>
-
-		<TextBox Text="{Binding EffectivePersona.Nickname, Mode=TwoWay}"
-							TextWrapping="NoWrap"
-							PlaceholderText="{loc:Loc prompt.user_nickname.placeholder}"/>
-
-		<!-- Custom persona checkbox -->
-		<CheckBox IsChecked="{Binding EffectivePersona.UseCustomPersona, Mode=TwoWay}"
-					Content="{loc:Loc prompt.use_custom_persona}"/>
-
-		<!-- Custom Persona -->
-		<StackPanel IsVisible="{Binding EffectivePersona.UseCustomPersona}"
-					Spacing="4"
-					Margin="20,0,0,0">
-
-			<TextBlock Text="{loc:Loc prompt.custom_persona.hint}"
-						  Opacity="0.6"
-						  TextWrapping="Wrap"/>
-
-			<TextBox Text="{Binding EffectivePersona.CustomPersona, Mode=TwoWay}"
-						AcceptsReturn="True"
-						TextWrapping="Wrap"
-						MinHeight="100"
-						MaxHeight="200"
-						ScrollViewer.VerticalScrollBarVisibility="Auto"
-						PlaceholderText="{loc:Loc prompt.custom_persona.placeholder}"/>
-
-		</StackPanel>
-
-		<!-- Preset Persona -->
-		<StackPanel IsVisible="{Binding EffectivePersona.UseCustomPersona, Converter={StaticResource InverseBooleanConverter}}"
-					Spacing="4"
-					Margin="20,0,0,0">
-
-			<StackPanel Orientation="Horizontal"
-						Spacing="5">
-
-				<ComboBox SelectedItem="{Binding SelectedPersona, Mode=TwoWay}"
-							ItemsSource="{Binding AvailablePersonas}"
-							PlaceholderText="{loc:Loc prompt.select_persona}"
-							MinWidth="200">
+				<ComboBox Grid.Column="3"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedSystemPromptInheritance}"
+						  VerticalAlignment="Center"
+						  MinWidth="120">
 
 					<ComboBox.ItemTemplate>
-						<DataTemplate>
-							<TextBlock Text="{Binding Persona.Name}"/>
+						<DataTemplate x:DataType="set:InheritanceLevelItem">
+							<TextBlock Text="{Binding DisplayName}"/>
 						</DataTemplate>
 					</ComboBox.ItemTemplate>
 
 				</ComboBox>
 
-				<Button Classes="IconButton"
-						Command="{Binding ClearPersonaCommand}"
-						ToolTip.Tip="{loc:Loc prompt.persona.clear}">
+			</Grid>
 
-					<ico:MaterialIcon Kind="Remove"/>
+			<TextBlock Text="{loc:Loc prompt.slot_elements.hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
 
-				</Button>
+			<CheckBox IsChecked="{Binding EffectiveSystemPrompt.UseCustomSystemPrompt, Mode=TwoWay}"
+					  Content="{loc:Loc prompt.use_custom_system_prompt}"/>
 
-			</StackPanel>
+			<TextBox IsVisible="{Binding EffectiveSystemPrompt.UseCustomSystemPrompt}"
+					 Text="{Binding EffectiveSystemPrompt.CustomSystemPrompt, Mode=TwoWay}"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 MinHeight="80"
+					 MaxHeight="200"
+					 ScrollViewer.VerticalScrollBarVisibility="Auto"
+					 PlaceholderText="{loc:Loc prompt.system_prompt.placeholder}"/>
 
-			<TextBlock Text="{loc:Loc prompt.selected_persona.hint}"
-						  Opacity="0.6"
-						  FontSize="12"/>
+			<ItemsControl ItemsSource="{Binding SystemElementCards}"
+						  IsEnabled="{Binding EffectiveSystemPrompt.UseCustomSystemPrompt, Converter={StaticResource InverseBooleanConverter}}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="card:PromptPartCardViewModel">
+						<card:PromptPartCardView/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
 
 		</StackPanel>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
-					  Fill="{DynamicResource DefaultForeground}"
-					  Opacity="0.2"
-					  Margin="0,5"/>
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,5"
+				   IsVisible="{Binding IsSystemSectionVisible}"/>
 
 		<!-- ============================================================ -->
-		<!-- SPECIALIZATION -->
+		<!-- PERSONA SECTION                                              -->
 		<!-- ============================================================ -->
-		<Grid ColumnDefinitions="*,Auto">
+		<StackPanel Spacing="6" IsVisible="{Binding IsPersonaSectionVisible}">
 
-			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc prompt.specialization}"
-								 FontSize="{DynamicResource FontSizeL}"
-								 FontWeight="Bold"
-								 VerticalAlignment="Center"/>
+			<Grid ColumnDefinitions="*,Auto,Auto,Auto">
 
-			<ComboBox Grid.Column="1"
-								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-								SelectedItem="{Binding SelectedSpecializationInheritance}"
-								VerticalAlignment="Center"
-								Margin="0,0,8,0"
-								MinWidth="120">
+				<TextBlock Grid.Column="0"
+						   Text="{loc:Loc prompt.persona}"
+						   FontSize="{DynamicResource FontSizeL}"
+						   FontWeight="Bold"
+						   VerticalAlignment="Center"/>
 
-				<ComboBox.ItemTemplate>
-					<DataTemplate x:DataType="set:InheritanceLevelItem">
-						<TextBlock Text="{Binding DisplayName}"/>
-					</DataTemplate>
-				</ComboBox.ItemTemplate>
+				<!-- TODO: dialogs for creating/importing prompt parts are not implemented yet -->
+				<Button Grid.Column="1"
+						Classes="IconButton"
+						IsEnabled="False"
+						ToolTip.Tip="{loc:Loc prompt.todo.new}"
+						VerticalAlignment="Center">
+					<ico:MaterialIcon Kind="Plus"/>
+				</Button>
 
-			</ComboBox>
+				<Button Grid.Column="2"
+						Classes="IconButton"
+						IsEnabled="False"
+						ToolTip.Tip="{loc:Loc prompt.todo.import}"
+						VerticalAlignment="Center"
+						Margin="0,0,8,0">
+					<ico:MaterialIcon Kind="Import"/>
+				</Button>
 
-		</Grid>
-
-		<TextBlock Text="{loc:Loc prompt.specialization.hint}"
-					  Opacity="0.6"
-					  TextWrapping="Wrap"/>
-
-		<CheckBox IsChecked="{Binding EffectiveSpecialization.UseCustomSpecialization, Mode=TwoWay}"
-					Content="{loc:Loc prompt.use_custom_specialization}"/>
-
-		<!-- Custom Specialization -->
-		<StackPanel IsVisible="{Binding EffectiveSpecialization.UseCustomSpecialization}"
-					Spacing="4"
-					Margin="20,0,0,0">
-
-			<TextBlock Text="{loc:Loc prompt.custom_specialization.hint}"
-						  Opacity="0.6"
-						  TextWrapping="Wrap"/>
-
-			<TextBox Text="{Binding EffectiveSpecialization.CustomSpecialization, Mode=TwoWay}"
-						AcceptsReturn="True"
-						TextWrapping="Wrap"
-						MinHeight="100"
-						MaxHeight="200"
-						ScrollViewer.VerticalScrollBarVisibility="Auto"
-						PlaceholderText="{loc:Loc prompt.custom_specialization.placeholder}"/>
-
-		</StackPanel>
-
-		<!-- Preset Specialization -->
-		<StackPanel IsVisible="{Binding EffectiveSpecialization.UseCustomSpecialization, Converter={StaticResource InverseBooleanConverter}}"
-					Spacing="4"
-					Margin="20,0,0,0">
-
-			<StackPanel Orientation="Horizontal"
-						Spacing="5">
-
-				<ComboBox SelectedItem="{Binding SelectedSpecialization, Mode=TwoWay}"
-							ItemsSource="{Binding AvailableSpecializations}"
-							PlaceholderText="{loc:Loc prompt.select_specialization}"
-							MinWidth="200">
+				<ComboBox Grid.Column="3"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedPersonaInheritance}"
+						  VerticalAlignment="Center"
+						  MinWidth="120">
 
 					<ComboBox.ItemTemplate>
-						<DataTemplate>
-							<TextBlock Text="{Binding Specialization.Name}"/>
+						<DataTemplate x:DataType="set:InheritanceLevelItem">
+							<TextBlock Text="{Binding DisplayName}"/>
 						</DataTemplate>
 					</ComboBox.ItemTemplate>
 
 				</ComboBox>
 
-				<Button Classes="IconButton"
-						Command="{Binding ClearSpecializationCommand}"
-						ToolTip.Tip="{loc:Loc prompt.specialization.clear}">
+			</Grid>
 
-					<ico:MaterialIcon Kind="Remove"/>
+			<!-- Nickname -->
+			<TextBlock Text="{loc:Loc prompt.assistant_nickname.hint}"
+					   Opacity="0.6"/>
 
-				</Button>
+			<TextBox Text="{Binding EffectivePersona.Nickname, Mode=TwoWay}"
+					 TextWrapping="NoWrap"
+					 PlaceholderText="{loc:Loc prompt.user_nickname.placeholder}"/>
 
-			</StackPanel>
+			<CheckBox IsChecked="{Binding EffectivePersona.UseCustomPersona, Mode=TwoWay}"
+					  Content="{loc:Loc prompt.use_custom_persona}"/>
 
-			<TextBlock Text="{loc:Loc prompt.selected_specialization.hint}"
-						  Opacity="0.6"
-						  FontSize="12"/>
+			<TextBox IsVisible="{Binding EffectivePersona.UseCustomPersona}"
+					 Text="{Binding EffectivePersona.CustomPersona, Mode=TwoWay}"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 MinHeight="100"
+					 MaxHeight="200"
+					 ScrollViewer.VerticalScrollBarVisibility="Auto"
+					 PlaceholderText="{loc:Loc prompt.custom_persona.placeholder}"/>
+
+			<ItemsControl ItemsSource="{Binding PersonaElementCards}"
+						  IsEnabled="{Binding EffectivePersona.UseCustomPersona, Converter={StaticResource InverseBooleanConverter}}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="card:PromptPartCardViewModel">
+						<card:PromptPartCardView/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
 
 		</StackPanel>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
-					  Fill="{DynamicResource DefaultForeground}"
-					  Opacity="0.2"
-					  Margin="0,5"/>
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,5"
+				   IsVisible="{Binding IsPersonaSectionVisible}"/>
 
 		<!-- ============================================================ -->
-		<!-- BEHAVIOR SLIDERS -->
+		<!-- SPECIALIZATION SECTION                                       -->
 		<!-- ============================================================ -->
-		<Grid ColumnDefinitions="*,Auto">
+		<StackPanel Spacing="6" IsVisible="{Binding IsSpecializationSectionVisible}">
 
-			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc prompt.behavior_sliders}"
-								 FontSize="{DynamicResource FontSizeL}"
-								 FontWeight="Bold"
-								 VerticalAlignment="Center"/>
+			<Grid ColumnDefinitions="*,Auto,Auto,Auto">
 
-			<ComboBox Grid.Column="1"
-								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-								SelectedItem="{Binding SelectedSliderValuesInheritance}"
-								VerticalAlignment="Center"
-								Margin="0,0,8,0"
-								MinWidth="120">
+				<TextBlock Grid.Column="0"
+						   Text="{loc:Loc prompt.specialization}"
+						   FontSize="{DynamicResource FontSizeL}"
+						   FontWeight="Bold"
+						   VerticalAlignment="Center"/>
 
-				<ComboBox.ItemTemplate>
-					<DataTemplate x:DataType="set:InheritanceLevelItem">
-						<TextBlock Text="{Binding DisplayName}"/>
+				<!-- TODO: dialogs for creating/importing prompt parts are not implemented yet -->
+				<Button Grid.Column="1"
+						Classes="IconButton"
+						IsEnabled="False"
+						ToolTip.Tip="{loc:Loc prompt.todo.new}"
+						VerticalAlignment="Center">
+					<ico:MaterialIcon Kind="Plus"/>
+				</Button>
+
+				<Button Grid.Column="2"
+						Classes="IconButton"
+						IsEnabled="False"
+						ToolTip.Tip="{loc:Loc prompt.todo.import}"
+						VerticalAlignment="Center"
+						Margin="0,0,8,0">
+					<ico:MaterialIcon Kind="Import"/>
+				</Button>
+
+				<ComboBox Grid.Column="3"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedSpecializationInheritance}"
+						  VerticalAlignment="Center"
+						  MinWidth="120">
+
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="set:InheritanceLevelItem">
+							<TextBlock Text="{Binding DisplayName}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+
+				</ComboBox>
+
+			</Grid>
+
+			<TextBlock Text="{loc:Loc prompt.specialization.hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
+			<CheckBox IsChecked="{Binding EffectiveSpecialization.UseCustomSpecialization, Mode=TwoWay}"
+					  Content="{loc:Loc prompt.use_custom_specialization}"/>
+
+			<TextBox IsVisible="{Binding EffectiveSpecialization.UseCustomSpecialization}"
+					 Text="{Binding EffectiveSpecialization.CustomSpecialization, Mode=TwoWay}"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 MinHeight="100"
+					 MaxHeight="200"
+					 ScrollViewer.VerticalScrollBarVisibility="Auto"
+					 PlaceholderText="{loc:Loc prompt.custom_specialization.placeholder}"/>
+
+			<ItemsControl ItemsSource="{Binding SpecializationElementCards}"
+						  IsEnabled="{Binding EffectiveSpecialization.UseCustomSpecialization, Converter={StaticResource InverseBooleanConverter}}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="card:PromptPartCardViewModel">
+						<card:PromptPartCardView/>
 					</DataTemplate>
-				</ComboBox.ItemTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
 
-			</ComboBox>
+		</StackPanel>
 
-		</Grid>
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,5"
+				   IsVisible="{Binding IsSpecializationSectionVisible}"/>
 
-		<TextBlock Text="{loc:Loc prompt.behavior_sliders.hint}"
-					  Opacity="0.6"
-					  TextWrapping="Wrap"/>
+		<!-- ============================================================ -->
+		<!-- COMPONENTS SECTION                                           -->
+		<!-- ============================================================ -->
+		<StackPanel Spacing="6" IsVisible="{Binding IsComponentsSectionVisible}">
 
-		<ItemsControl ItemsSource="{Binding SliderItems}">
-			<ItemsControl.ItemsPanel>
-				<ItemsPanelTemplate>
-					<StackPanel Orientation="Vertical"/>
-				</ItemsPanelTemplate>
-			</ItemsControl.ItemsPanel>
+			<Grid ColumnDefinitions="*,Auto,Auto,Auto">
 
-			<ItemsControl.ItemTemplate>
-				<DataTemplate>
-					<StackPanel Margin="0,6">
+				<TextBlock Grid.Column="0"
+						   Text="{loc:Loc prompt.components}"
+						   FontSize="{DynamicResource FontSizeL}"
+						   FontWeight="Bold"
+						   VerticalAlignment="Center"/>
 
-						<TextBlock Text="{Binding DisplayName}"
-												FontWeight="Medium"
-												FontSize="{DynamicResource FontSizeM}"
-												Margin="0,0,0,4"/>
+				<!-- TODO: dialogs for creating/importing prompt parts are not implemented yet -->
+				<Button Grid.Column="1"
+						Classes="IconButton"
+						IsEnabled="False"
+						ToolTip.Tip="{loc:Loc prompt.todo.new}"
+						VerticalAlignment="Center">
+					<ico:MaterialIcon Kind="Plus"/>
+				</Button>
 
-						<ItemsControl x:Name="HintItemsControl"
-													SizeChanged="HintItemsControl_SizeChanged"
-													Margin="10,0"
-													ItemsSource="{Binding Hints}">
+				<Button Grid.Column="2"
+						Classes="IconButton"
+						IsEnabled="False"
+						ToolTip.Tip="{loc:Loc prompt.todo.import}"
+						VerticalAlignment="Center"
+						Margin="0,0,8,0">
+					<ico:MaterialIcon Kind="Import"/>
+				</Button>
 
-							<ItemsControl.ItemsPanel>
-								<ItemsPanelTemplate>
-									<UniformGrid Columns="{Binding Range}"/>
-								</ItemsPanelTemplate>
-							</ItemsControl.ItemsPanel>
+				<ComboBox Grid.Column="3"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedComponentsInheritance}"
+						  VerticalAlignment="Center"
+						  MinWidth="120">
 
-							<ItemsControl.ItemTemplate>
-								<DataTemplate x:DataType="local:BehaviorSliderHintViewModel">
-									<TextBlock Text="{Binding Label}"
-															Opacity="0.6"
-															TextAlignment="Center"
-															VerticalAlignment="Bottom"
-															HorizontalAlignment="Center"
-															Grid.Column="{Binding Column}"/>
-								</DataTemplate>
-							</ItemsControl.ItemTemplate>
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="set:InheritanceLevelItem">
+							<TextBlock Text="{Binding DisplayName}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
 
-						</ItemsControl>
+				</ComboBox>
 
-						<!-- Slider -->
-						<Slider x:Name="BehaviorSlider"
-										Value="{Binding Value, Mode=TwoWay}"
-										Minimum="{Binding MinValue}"
-										Maximum="{Binding MaxValue}"
-										TickFrequency="1"
-										HorizontalAlignment="Stretch"
-										IsSnapToTickEnabled="True"
-										TickPlacement="TopLeft"/>
+			</Grid>
 
-					</StackPanel>
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
-		</ItemsControl>
+			<TextBlock Text="{loc:Loc prompt.components.hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
+			<ItemsControl ItemsSource="{Binding ComponentCards}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="card:PromptPartCardViewModel">
+						<card:PromptPartCardView/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+		</StackPanel>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,5"
+				   IsVisible="{Binding IsComponentsSectionVisible}"/>
+
+		<!-- ============================================================ -->
+		<!-- BEHAVIOR SLIDERS                                             -->
+		<!-- ============================================================ -->
+		<StackPanel Spacing="6">
+
+			<Grid ColumnDefinitions="*,Auto">
+
+				<TextBlock Grid.Column="0"
+						   Text="{loc:Loc prompt.behavior_sliders}"
+						   FontSize="{DynamicResource FontSizeL}"
+						   FontWeight="Bold"
+						   VerticalAlignment="Center"/>
+
+				<ComboBox Grid.Column="1"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedSliderValuesInheritance}"
+						  VerticalAlignment="Center"
+						  MinWidth="120">
+
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="set:InheritanceLevelItem">
+							<TextBlock Text="{Binding DisplayName}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+
+				</ComboBox>
+
+			</Grid>
+
+			<TextBlock Text="{loc:Loc prompt.behavior_sliders.hint}"
+					   Opacity="0.6"
+					   TextWrapping="Wrap"/>
+
+			<ItemsControl ItemsSource="{Binding SliderItems}">
+
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<StackPanel Margin="0,6">
+
+							<TextBlock Text="{Binding DisplayName}"
+									   FontWeight="Medium"
+									   FontSize="{DynamicResource FontSizeM}"
+									   Margin="0,0,0,4"/>
+
+							<ItemsControl x:Name="HintItemsControl"
+										  SizeChanged="HintItemsControl_SizeChanged"
+										  Margin="10,0"
+										  ItemsSource="{Binding Hints}">
+
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<UniformGrid Columns="{Binding Range}"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+
+								<ItemsControl.ItemTemplate>
+									<DataTemplate x:DataType="local:BehaviorSliderHintViewModel">
+										<TextBlock Text="{Binding Label}"
+												   Opacity="0.6"
+												   TextAlignment="Center"
+												   VerticalAlignment="Bottom"
+												   HorizontalAlignment="Center"
+												   Grid.Column="{Binding Column}"/>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+
+							</ItemsControl>
+
+							<Slider x:Name="BehaviorSlider"
+									Value="{Binding Value, Mode=TwoWay}"
+									Minimum="{Binding MinValue}"
+									Maximum="{Binding MaxValue}"
+									TickFrequency="1"
+									HorizontalAlignment="Stretch"
+									IsSnapToTickEnabled="True"
+									TickPlacement="TopLeft"/>
+
+						</StackPanel>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+
+			</ItemsControl>
+
+		</StackPanel>
 
 	</StackPanel>
 

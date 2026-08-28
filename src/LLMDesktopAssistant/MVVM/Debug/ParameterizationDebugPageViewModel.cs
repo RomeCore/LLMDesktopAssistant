@@ -220,7 +220,6 @@ public class ParameterizationDebugPageViewModel : ViewModelBase
 		ParseErrorsText = null;
 		ValidationLogText = null;
 		_schema = null;
-		_rootValue = null;
 		RefreshValueCommand.NotifyCanExecuteChanged();
 
 		try
@@ -248,7 +247,7 @@ public class ParameterizationDebugPageViewModel : ViewModelBase
 				ParseErrorsText = string.Join(Environment.NewLine,
 					errors.Select(e => $"[{e.Path.Value}] {e.Type}: {e.Message}"));
 			}
-
+			
 			var log = new AppendOnlyList<ParameterValidationLogEntry>();
 			_rootValue = _schema.Root.CreateOrFixValue(_rootValue, log);
 			ValidationLogText = log.Count > 0

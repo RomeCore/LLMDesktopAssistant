@@ -53,14 +53,14 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			var title = new TextBlock
 			{
 				Classes = { ParameterElementsStyles.TitleText },
-				[!TextBox.TextProperty] = CreateBinding(this, nameof(Title)),
-				[!TextBox.IsVisibleProperty] = CreateBinding(this, nameof(Title), converter: StringNonEmptyToBooleanConverter.Instance)
+				[!TextBlock.TextProperty] = CreateBinding(this, nameof(Title)),
+				[!TextBlock.IsVisibleProperty] = CreateBinding(this, nameof(Title), converter: StringNonEmptyToBooleanConverter.Instance)
 			};
 			var description = new TextBlock
 			{
 				Classes = { ParameterElementsStyles.DescriptionText },
-				[!TextBox.TextProperty] = CreateBinding(this, nameof(Description)),
-				[!TextBox.IsVisibleProperty] = CreateBinding(this, nameof(Description), converter: StringNonEmptyToBooleanConverter.Instance)
+				[!TextBlock.TextProperty] = CreateBinding(this, nameof(Description)),
+				[!TextBlock.IsVisibleProperty] = CreateBinding(this, nameof(Description), converter: StringNonEmptyToBooleanConverter.Instance)
 			};
 			return new StackPanel
 			{

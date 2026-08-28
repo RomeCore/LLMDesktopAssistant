@@ -13,24 +13,24 @@ namespace LLMDesktopAssistant.Agents
 	[SettingsRoute(nameof(ChatAgentDescriptor.Prompts))]
 	public partial class AgentPromptSettings : AgentSettingsCategoryBase
 	{
-		private string? _systemPrompt;
+		private SystemPromptSettings _systemPrompt = new();
 		/// <summary>
 		/// The system prompt to use for the agent.
 		/// </summary>
 		[InheritedChatAgentSetting]
-		public string? SystemPrompt
+		public SystemPromptSettings SystemPrompt
 		{
 			get => _systemPrompt;
 			set => SetProperty(ref _systemPrompt, value);
 		}
 
-		private readonly RangeObservableCollection<Guid> _promptComponents = [];
+		private readonly RangeObservableCollection<PromptPartKeyedSelection<Guid>> _promptComponents = [];
 		/// <summary>
 		/// The collection of prompt components IDs that should be appended to the system message in addition to the <see cref="SystemPrompt"/>.
 		/// The identifiers leads to <see cref="Prompting.PromptRegistry.GetComponent(Guid)"/>
 		/// </summary>
 		[InheritedChatAgentSetting]
-		public ICollection<Guid> PromptComponents
+		public RangeObservableCollection<PromptPartKeyedSelection<Guid>> PromptComponents
 		{
 			get => _promptComponents;
 			set => _promptComponents.Reset(value);
