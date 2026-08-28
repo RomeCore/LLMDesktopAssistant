@@ -253,8 +253,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 							Chat.Services.GetRequiredService<IChatPromptBuilder>(),
 							descriptor,
 							Chat.Services.GetRequiredService<IPromptComponentManager>(),
-							Chat.Services.GetRequiredService<IPromptSlotElementManager>(),
-							Chat.Services.GetRequiredService<IPromptBehaviourSliderManager>())),
+							Chat.Services.GetRequiredService<IPromptSlotElementManager>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.tools"),
 						MaterialIconKind.Wrench,

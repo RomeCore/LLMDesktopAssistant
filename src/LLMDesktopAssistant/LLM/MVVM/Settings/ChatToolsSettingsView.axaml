@@ -91,13 +91,30 @@
 				   IsVisible="{Binding MetaTools.Count, Converter={StaticResource InverseBooleanConverter}}"/>
 
 		<!-- Meta tools list -->
-		<ItemsControl ItemsSource="{Binding MetaTools}">
-			<ItemsControl.ItemTemplate>
-				<DataTemplate x:DataType="local:MetaToolCardViewModel">
-					<local:MetaToolCardView/>
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
-		</ItemsControl>
+		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+						BorderThickness="1"
+						CornerRadius="4">
+
+			<ScrollViewer MaxHeight="600"
+									  VerticalScrollBarVisibility="Auto"
+									  HorizontalScrollBarVisibility="Disabled">
+
+				<ItemsControl ItemsSource="{Binding MetaTools}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Vertical" Spacing="8"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="local:MetaToolCardViewModel">
+							<local:MetaToolCardView/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+					
+			</ScrollViewer>
+
+		</Border>
 
 		<!-- Separator -->
 		<Rectangle Height="1"

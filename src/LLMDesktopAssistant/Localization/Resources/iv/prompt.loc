@@ -82,6 +82,7 @@ preview.toggle: Toggle system prompt preview
 search.placeholder: Search prompt elements...
 select_persona: Select persona...
 select_specialization: Select specialization...
+select_system_prompt: Select system prompt...
 selected_persona.hint: Select a persona to apply to the chat
 selected_specialization.hint: Select a specialization to define the assistant's professional role
 specialization: Specialization
@@ -95,11 +96,14 @@ source.usertemplate: User
 source.workdirtemplate: Workdir
 specializations: Specializations
 system_prompt: System prompt
+system_prompt.clear: Clear system prompt
 system_prompt.hint: Enter system prompt...
 system_prompt.placeholder: for example, You are a helpful assistant
 text: Text
 todo.import: Import (not implemented yet)
 todo.new: New (not implemented yet)
+type.all: All types
+type.component: Component
 use_custom_persona: Use custom persona
 use_custom_system_prompt: Use custom system prompt
 use_custom_specialization: Use custom specialization

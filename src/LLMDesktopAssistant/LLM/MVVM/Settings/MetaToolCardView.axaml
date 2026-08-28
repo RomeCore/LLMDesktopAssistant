@@ -11,7 +11,7 @@
 
 	<UserControl.Styles>
 
-		<Style Selector="Border.chip">
+		<Style Selector="Border.Chip">
 			<Setter Property="CornerRadius" Value="8"/>
 			<Setter Property="Padding" Value="6,2"/>
 			<Setter Property="Margin" Value="0,0,4,2"/>
@@ -20,12 +20,12 @@
 			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
 
-		<Style Selector="TextBlock.chipText">
+		<Style Selector="TextBlock.ChipText">
 			<Setter Property="FontSize" Value="11"/>
 			<Setter Property="Opacity" Value="0.8"/>
 		</Style>
 
-		<Style Selector="Border.chipRed">
+		<Style Selector="Border.ChipRed">
 			<Setter Property="CornerRadius" Value="8"/>
 			<Setter Property="Padding" Value="6,2"/>
 			<Setter Property="Margin" Value="0,0,4,2"/>
@@ -37,43 +37,42 @@
 	</UserControl.Styles>
 
 	<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-			BorderThickness="1"
-			CornerRadius="4"
-			Padding="8"
-			Margin="0,0,0,8">
+					BorderThickness="1"
+					CornerRadius="4"
+					Padding="8">
 
-		<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+		<StackPanel Orientation="Vertical" Spacing="4">
 
 			<!-- ============================================================ -->
 			<!-- Row 0: Language icon | Title | name | Broken indicator       -->
 			<!-- ============================================================ -->
 			<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
 
-				<Border Grid.Column="0" Classes="chip">
+				<Border Grid.Column="0" Classes="Chip">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="{Binding LanguageIcon}" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{Binding LanguageName}"/>
+						<TextBlock Classes="ChipText" Text="{Binding LanguageName}"/>
 					</StackPanel>
 				</Border>
 
 				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" Margin="8,0,8,0" VerticalAlignment="Center">
 					<TextBlock Text="{Binding Title}"
-							   FontWeight="Bold"
-							   VerticalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"/>
+									   FontWeight="Bold"
+									   VerticalAlignment="Center"
+									   TextTrimming="CharacterEllipsis"/>
 					<TextBlock Text="{Binding Name}"
-							   FontSize="11"
-							   Opacity="0.6"
-							   VerticalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"/>
+									   FontSize="11"
+									   Opacity="0.6"
+									   VerticalAlignment="Center"
+									   TextTrimming="CharacterEllipsis"/>
 				</StackPanel>
 
-				<Border Grid.Column="2" Classes="chipRed"
-						IsVisible="{Binding IsBroken}"
-						ToolTip.Tip="{Binding Error}">
+				<Border Grid.Column="2" Classes="ChipRed"
+								IsVisible="{Binding IsBroken}"
+								ToolTip.Tip="{Binding Error}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="AlertCircle" Width="12" Height="12" Foreground="#FF5252" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{loc:Loc settings.tools.meta_tools.broken}"/>
+						<TextBlock Classes="ChipText" Text="{loc:Loc settings.tools.meta_tools.broken}"/>
 					</StackPanel>
 				</Border>
 
@@ -82,42 +81,40 @@
 			<!-- ============================================================ -->
 			<!-- Row 1: Description                                            -->
 			<!-- ============================================================ -->
-			<TextBlock Grid.Row="1"
-					   Text="{Binding Description}"
-					   TextWrapping="Wrap"
-					   Opacity="0.8"
-					   Margin="0,4,0,4"
-					   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+			<TextBlock Text="{Binding Description}"
+							   TextWrapping="Wrap"
+							   Opacity="0.8"
+							   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 
 			<!-- ============================================================ -->
 			<!-- Row 2: Chips: scope, category, approval level, behaviours    -->
 			<!-- ============================================================ -->
-			<WrapPanel Grid.Row="2" Margin="0,0,0,4">
+			<WrapPanel>
 
-				<Border Classes="chip" ToolTip.Tip="{loc:Loc settings.tools.meta_tools.scope}">
+				<Border Classes="Chip" ToolTip.Tip="{loc:Loc settings.tools.meta_tools.scope}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="{Binding SourceIcon}" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{Binding SourceName}"/>
+						<TextBlock Classes="ChipText" Text="{Binding SourceName}"/>
 					</StackPanel>
 				</Border>
 
-				<Border Classes="chip" IsVisible="{Binding Category, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+				<Border Classes="Chip" IsVisible="{Binding Category, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="TagOutline" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{Binding Category}"/>
+						<TextBlock Classes="ChipText" Text="{Binding Category}"/>
 					</StackPanel>
 				</Border>
 
-				<Border Classes="chip" ToolTip.Tip="{loc:Loc settings.tools.meta_tools.approval}"
+				<Border Classes="Chip" ToolTip.Tip="{loc:Loc settings.tools.meta_tools.approval}"
 								IsVisible="{Binding ApprovalLevelName}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="ShieldCheck" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{Binding ApprovalLevelName}"/>
+						<TextBlock Classes="ChipText" Text="{Binding ApprovalLevelName}"/>
 					</StackPanel>
 				</Border>
 
-				<!-- Behaviour chip -->
-				<Border Classes="chip">
+				<!-- Behaviour Chip -->
+				<Border Classes="Chip">
 					<ItemsControl ItemsSource="{Binding BehaviourFlags}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
@@ -144,10 +141,10 @@
 			</WrapPanel>
 
 			<!-- ============================================================ -->
-			<!-- Row 3: Diagnostic chips + error                               -->
+			<!-- Row 3: Diagnostic Chips + error                               -->
 			<!-- ============================================================ -->
-			<StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="4" Margin="0,0,0,4"
-						IsVisible="{Binding HasDiagnostics}">
+			<StackPanel Orientation="Horizontal" Spacing="4"
+									IsVisible="{Binding HasDiagnostics}">
 				<ItemsControl ItemsSource="{Binding DiagnosticFlags}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
@@ -156,10 +153,10 @@
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
 						<DataTemplate x:DataType="local:MetaToolDiagnosticFlagInfo">
-							<Border Classes="chip" ToolTip.Tip="{Binding DisplayName}">
+							<Border Classes="Chip" ToolTip.Tip="{Binding DisplayName}">
 								<StackPanel Orientation="Horizontal" Spacing="3">
 									<ico:MaterialIcon Kind="{Binding Icon}" Width="12" Height="12" VerticalAlignment="Center" Foreground="{Binding Color}"/>
-									<TextBlock Classes="chipText" Foreground="{Binding Color}" Text="{Binding DisplayName}"/>
+									<TextBlock Classes="ChipText" Foreground="{Binding Color}" Text="{Binding DisplayName}"/>
 								</StackPanel>
 							</Border>
 						</DataTemplate>
@@ -170,58 +167,58 @@
 			<!-- ============================================================ -->
 			<!-- Row 4: Path + actions                                          -->
 			<!-- ============================================================ -->
-			<Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="0,2,0,2">
+			<Grid ColumnDefinitions="*,Auto">
 
 				<StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
 					<ico:MaterialIcon Kind="FileOutline" Width="12" Height="12" Opacity="0.5" VerticalAlignment="Center"/>
 					<TextBlock Text="{Binding FilePath}"
-							   FontSize="11"
-							   Opacity="0.6"
-							   VerticalAlignment="Center"
-							   TextTrimming="CharacterEllipsis"/>
+									   FontSize="11"
+									   Opacity="0.6"
+									   VerticalAlignment="Center"
+									   TextTrimming="CharacterEllipsis"/>
 				</StackPanel>
 
 				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
 
 					<Button Command="{Binding EditCommand}"
-							ToolTip.Tip="{loc:Loc settings.tools.meta_tools.edit}"
-							Padding="4">
+									ToolTip.Tip="{loc:Loc settings.tools.meta_tools.edit}"
+									Padding="4">
 						<ico:MaterialIcon Kind="Pencil" Width="14" Height="14"/>
 					</Button>
 
 					<Button Command="{Binding OpenFileCommand}"
-							ToolTip.Tip="{loc:Loc settings.tools.meta_tools.open_file}"
-							Padding="4">
+									ToolTip.Tip="{loc:Loc settings.tools.meta_tools.open_file}"
+									Padding="4">
 						<ico:MaterialIcon Kind="OpenInNew" Width="14" Height="14"/>
 					</Button>
 
 					<Button Command="{Binding ShowInExplorerCommand}"
-							ToolTip.Tip="{loc:Loc settings.tools.meta_tools.show_in_explorer}"
-							Padding="4">
+									ToolTip.Tip="{loc:Loc settings.tools.meta_tools.show_in_explorer}"
+									Padding="4">
 						<ico:MaterialIcon Kind="FolderOpen" Width="14" Height="14"/>
 					</Button>
 
 					<Button Command="{Binding RenameCommand}"
-							ToolTip.Tip="{loc:Loc settings.tools.meta_tools.rename.title}"
-							Padding="4">
+									ToolTip.Tip="{loc:Loc settings.tools.meta_tools.rename.title}"
+									Padding="4">
 						<ico:MaterialIcon Kind="Rename" Width="14" Height="14"/>
 					</Button>
 
 					<Button Command="{Binding DuplicateCommand}"
-							ToolTip.Tip="{loc:Loc settings.tools.meta_tools.duplicate.title}"
-							Padding="4">
+									ToolTip.Tip="{loc:Loc settings.tools.meta_tools.duplicate.title}"
+									Padding="4">
 						<ico:MaterialIcon Kind="ContentCopy" Width="14" Height="14"/>
 					</Button>
 
 					<Button Command="{Binding DeleteCommand}"
-							ToolTip.Tip="{loc:Loc settings.tools.meta_tools.delete.title}"
-							Padding="4">
+									ToolTip.Tip="{loc:Loc settings.tools.meta_tools.delete.title}"
+									Padding="4">
 						<ico:MaterialIcon Kind="Delete" Width="14" Height="14"/>
 					</Button>
 
 					<Button Command="{Binding ToggleDetailsCommand}"
-							ToolTip.Tip="{loc:Loc settings.tools.meta_tools.details}"
-							Padding="4">
+									ToolTip.Tip="{loc:Loc settings.tools.meta_tools.details}"
+									Padding="4">
 						<ico:MaterialIcon Kind="CodeJson" Width="14" Height="14"/>
 					</Button>
 
@@ -232,19 +229,17 @@
 			<!-- ============================================================ -->
 			<!-- Row 5: Details (argument schema)                              -->
 			<!-- ============================================================ -->
-			<Border Grid.Row="5"
-					Background="#11000000"
-					CornerRadius="4"
-					Padding="8"
-					Margin="0,4,0,0"
-					IsVisible="{Binding IsDetailsVisible}">
+			<Border Background="#11000000"
+							CornerRadius="4"
+							Padding="8"
+							IsVisible="{Binding IsDetailsVisible}">
 				<TextBlock Text="{Binding ArgumentSchemaText}"
-						   FontFamily="Consolas,Monospace"
-						   FontSize="11"
-						   TextWrapping="Wrap"/>
+								   FontFamily="Consolas,Monospace"
+								   FontSize="11"
+								   TextWrapping="Wrap"/>
 			</Border>
 
-		</Grid>
+		</StackPanel>
 
 	</Border>
 </UserControl>

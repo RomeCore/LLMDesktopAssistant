@@ -82,6 +82,7 @@ preview.toggle: Показать/скрыть предпросмотр сист�
 search.placeholder: Поиск элементов промптов...
 select_persona: Выберите персону...
 select_specialization: Выберите специализацию...
+select_system_prompt: Выберите системный промпт...
 selected_persona.hint: Выберите персону для применения к чату
 selected_specialization.hint: Выберите специализацию для определения профессиональной роли ассистента
 specialization: Специализация
@@ -95,11 +96,14 @@ source.usertemplate: Пользовательский
 source.workdirtemplate: Рабочая директория
 specializations: Специализации
 system_prompt: Системный промпт
+system_prompt.clear: Очистить системный промпт
 system_prompt.hint: Введите системный промпт...
 system_prompt.placeholder: например, You are a helpful assistant
 text: Текст
 todo.import: Импорт (ещё не реализовано)
 todo.new: Новый (ещё не реализовано)
+type.all: Все типы
+type.component: Компонент
 use_custom_persona: Использовать кастомную персону
 use_custom_system_prompt: Использовать свой системный промпт
 use_custom_specialization: Использовать свою специализацию

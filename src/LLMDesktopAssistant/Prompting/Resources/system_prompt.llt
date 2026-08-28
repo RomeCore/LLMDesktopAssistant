@@ -12,10 +12,6 @@
 	{
 		@component
 	}
-	@foreach slider in sliders
-	{
-		@slider
-	}
 	@if persona
 	{
 		<persona>

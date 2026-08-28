@@ -24,7 +24,7 @@
 
 	<Style Selector="TextBox.PromptParameterDescriptionText">
 		<Setter Property="FontSize" Value="11"/>
-		<Setter Property="Opacity" Value="0.7"/>
+		<Setter Property="Opacity" Value="0.6"/>
 		<Setter Property="BorderThickness" Value="0"/>
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="Padding" Value="0"/>

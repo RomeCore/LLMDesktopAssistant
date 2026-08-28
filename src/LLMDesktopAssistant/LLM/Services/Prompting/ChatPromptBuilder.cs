@@ -30,7 +30,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		ITemplateLibraryAccessor templates,
 		IPromptComponentManager componentManager,
 		IPromptSlotElementManager slotElementManager,
-		IPromptBehaviourSliderManager behaviourSliderManager,
 		IAgentManagementService agentManager,
 		IUserManagementService userManager,
 		ISkillsetBuildingService skillsetBuilder,
@@ -77,7 +76,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			var effectiveSystemPrompt = promptSettings.GetEffectiveSystemPrompt(chatSettings.Settings);
 			var effectiveComponents = promptSettings.GetEffectivePromptComponents(chatSettings.Settings);
-			var effectiveSliderValues = promptSettings.GetEffectiveSliderValues(chatSettings.Settings);
 			var effectivePersona = promptSettings.GetEffectivePersona(chatSettings.Settings);
 			var effectiveSpecialization = promptSettings.GetEffectiveSpecialization(chatSettings.Settings);
 			var effectiveChatMemoryOptions = chatSettings.Settings.Memory.GetEffectiveMemoryOptions();
@@ -112,16 +110,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				.Select(c => RenderPromptPart(componentManager, c, c.Id))
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
-			generalContext["sliders"] = effectiveSliderValues.Select(s =>
-				{
-					partsContext["slider_value"] = s.Value;
-					var result = RenderPromptPart(behaviourSliderManager, s, s.Id);
-					partsContext.Remove("slider_value");
-					return result;
-				})
-				.Where(c => !string.IsNullOrWhiteSpace(c))
-				.ToArray();
-			partsContext.Remove("slider_value");
 			generalContext["assistant_nickname"] = effectivePersona.Nickname;
 			generalContext["skills"] = skillsetBuilder.GetSkillsForAgent(agent).Select(s => new
 			{

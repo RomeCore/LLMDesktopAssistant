@@ -24,9 +24,5 @@ namespace LLMDesktopAssistant.Prompting
 		InvalidParameterSchema = 1 << 8,
 
 		InvalidSlotKind = 1 << 9,
-
-		InvalidSliderRange = 1 << 10,
-
-		InvalidSliderHints = 1 << 11,
 	}
 }

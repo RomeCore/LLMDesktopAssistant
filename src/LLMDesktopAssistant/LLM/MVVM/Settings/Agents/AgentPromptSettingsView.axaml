@@ -4,10 +4,11 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
 			 xmlns:card="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:ctrls="using:LLMDesktopAssistant.Controls"
 			 xmlns:set="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
-			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
+			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="850"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentPromptSettingsView"
 			 x:DataType="local:AgentPromptSettingsViewModel">
 
@@ -19,17 +20,16 @@
 					Margin="0,0,0,4">
 
 			<ToggleButton Command="{Binding TogglePreviewCommand}"
-										ToolTip.Tip="{loc:Loc prompt.preview.toggle}"
-										IsChecked="{Binding IsPreviewVisible, Mode=OneWay}">
+						  ToolTip.Tip="{loc:Loc prompt.preview.toggle}"
+						  IsChecked="{Binding IsPreviewVisible, Mode=OneWay}">
 
 				<StackPanel Orientation="Horizontal" Spacing="8">
 
-					<ico:MaterialIcon Kind="Eye"
-														Width="18" Height="18"/>
+					<ico:MaterialIcon Kind="Eye" Width="18" Height="18"/>
 
 					<TextBlock Text="{loc:Loc prompt.preview.header}"
-											FontWeight="Bold"
-											VerticalAlignment="Center"/>
+							   FontWeight="Bold"
+							   VerticalAlignment="Center"/>
 
 				</StackPanel>
 
@@ -39,48 +39,106 @@
 
 		<!-- Preview Content -->
 		<TextBox IsVisible="{Binding IsPreviewVisible}"
-						 Text="{Binding SystemPromptPreview}"
-						 IsReadOnly="True"
-						 AcceptsReturn="True"
-						 TextWrapping="Wrap"
-						 FontFamily="Cascadia Code,Consolas,monospace"
-						 FontSize="12"
-						 MinHeight="60"
-						 MaxHeight="450"
-						 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+				 Text="{Binding SystemPromptPreview}"
+				 IsReadOnly="True"
+				 AcceptsReturn="True"
+				 TextWrapping="Wrap"
+				 FontFamily="Cascadia Code,Consolas,monospace"
+				 FontSize="12"
+				 MinHeight="60"
+				 MaxHeight="450"
+				 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
 		<!-- Separator -->
 		<Rectangle Height="1"
-							 Fill="{DynamicResource DefaultForeground}"
-							 Opacity="0.2"
-							 IsVisible="{Binding IsPreviewVisible}"/>
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   IsVisible="{Binding IsPreviewVisible}"/>
 
-		<!-- Search -->
-		<TextBox Text="{Binding SearchText, Mode=TwoWay}"
-				 PlaceholderText="{loc:Loc prompt.search.placeholder}">
+		<!-- ============================================================ -->
+		<!-- PROMPT LIBRARY SEARCH / PICKER                               -->
+		<!-- ============================================================ -->
+		<StackPanel Spacing="6">
 
-			<TextBox.InnerLeftContent>
-				<ico:MaterialIcon Kind="TextBoxSearch"
-								  Width="16" Height="16"
-								  Margin="6,0"
-								  VerticalAlignment="Center"
-								  Opacity="0.5"/>
-			</TextBox.InnerLeftContent>
+			<Grid ColumnDefinitions="*,Auto">
 
-		</TextBox>
+				<TextBox Grid.Column="0"
+						 Text="{Binding SearchText, Mode=TwoWay}"
+						 PlaceholderText="{loc:Loc prompt.search.placeholder}">
 
-		<!-- Empty state -->
-		<TextBlock Text="{loc:Loc prompt.empty}"
-				   Opacity="0.5"
-				   TextWrapping="Wrap"
-				   IsVisible="{Binding IsAnyCardVisible, Converter={StaticResource InverseBooleanConverter}}"/>
+					<TextBox.InnerLeftContent>
+						<ico:MaterialIcon Kind="TextBoxSearch"
+										  Width="16" Height="16"
+										  Margin="6,0"
+										  VerticalAlignment="Center"
+										  Opacity="0.5"/>
+					</TextBox.InnerLeftContent>
+
+				</TextBox>
+
+				<ComboBox Grid.Column="1"
+						  ItemsSource="{Binding TypeFilters}"
+						  SelectedItem="{Binding SelectedTypeFilter}"
+						  MinWidth="130"
+						  Margin="6,0,0,0"
+						  VerticalAlignment="Center">
+
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="local:PromptPartTypeFilterItem">
+							<TextBlock Text="{loc:Loc {Binding DisplayNameKey}}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+
+				</ComboBox>
+
+			</Grid>
+			
+			<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+					BorderThickness="1"
+					CornerRadius="4">
+				<ScrollViewer MaxHeight="500"
+							  VerticalScrollBarVisibility="Auto"
+							  HorizontalScrollBarVisibility="Disabled">
+					<StackPanel Spacing="6">
+						
+						<!-- Empty state -->
+						<TextBlock Text="{loc:Loc prompt.empty}"
+										   Opacity="0.5"
+											 Margin="12"
+										   TextWrapping="Wrap"
+										   IsVisible="{Binding IsSearchEmpty}"/>
+
+						<ItemsControl ItemsSource="{Binding SearchResults}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel Orientation="Vertical" Spacing="8"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="card:PromptPartCardViewModel">
+									<card:PromptPartCardView/>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+
+					</StackPanel>
+				</ScrollViewer>
+			</Border>
+
+		</StackPanel>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,2"/>
 
 		<!-- ============================================================ -->
 		<!-- SYSTEM PROMPT SECTION                                        -->
 		<!-- ============================================================ -->
-		<StackPanel Spacing="6" IsVisible="{Binding IsSystemSectionVisible}">
+		<StackPanel Spacing="6">
 
-			<Grid ColumnDefinitions="*,Auto,Auto,Auto">
+			<Grid ColumnDefinitions="*,Auto">
 
 				<TextBlock Grid.Column="0"
 						   Text="{loc:Loc prompt.system_prompt}"
@@ -88,25 +146,7 @@
 						   FontWeight="Bold"
 						   VerticalAlignment="Center"/>
 
-				<!-- TODO: dialogs for creating/importing prompt parts are not implemented yet -->
-				<Button Grid.Column="1"
-						Classes="IconButton"
-						IsEnabled="False"
-						ToolTip.Tip="{loc:Loc prompt.todo.new}"
-						VerticalAlignment="Center">
-					<ico:MaterialIcon Kind="Plus"/>
-				</Button>
-
-				<Button Grid.Column="2"
-						Classes="IconButton"
-						IsEnabled="False"
-						ToolTip.Tip="{loc:Loc prompt.todo.import}"
-						VerticalAlignment="Center"
-						Margin="0,0,8,0">
-					<ico:MaterialIcon Kind="Import"/>
-				</Button>
-
-				<ComboBox Grid.Column="3"
+				<ComboBox Grid.Column="1"
 						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
 						  SelectedItem="{Binding SelectedSystemPromptInheritance}"
 						  VerticalAlignment="Center"
@@ -122,15 +162,11 @@
 
 			</Grid>
 
-			<TextBlock Text="{loc:Loc prompt.slot_elements.hint}"
-					   Opacity="0.6"
-					   TextWrapping="Wrap"/>
-
-			<CheckBox IsChecked="{Binding EffectiveSystemPrompt.UseCustomSystemPrompt, Mode=TwoWay}"
+			<CheckBox IsChecked="{Binding SystemPromptSection.UseCustom, Mode=TwoWay}"
 					  Content="{loc:Loc prompt.use_custom_system_prompt}"/>
 
-			<TextBox IsVisible="{Binding EffectiveSystemPrompt.UseCustomSystemPrompt}"
-					 Text="{Binding EffectiveSystemPrompt.CustomSystemPrompt, Mode=TwoWay}"
+			<TextBox IsVisible="{Binding SystemPromptSection.IsCustom}"
+					 Text="{Binding SystemPromptSection.CustomText, Mode=TwoWay}"
 					 AcceptsReturn="True"
 					 TextWrapping="Wrap"
 					 MinHeight="80"
@@ -138,14 +174,42 @@
 					 ScrollViewer.VerticalScrollBarVisibility="Auto"
 					 PlaceholderText="{loc:Loc prompt.system_prompt.placeholder}"/>
 
-			<ItemsControl ItemsSource="{Binding SystemElementCards}"
-						  IsEnabled="{Binding EffectiveSystemPrompt.UseCustomSystemPrompt, Converter={StaticResource InverseBooleanConverter}}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="card:PromptPartCardViewModel">
-						<card:PromptPartCardView/>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
+			<StackPanel Spacing="6" IsVisible="{Binding SystemPromptSection.IsPreset}">
+
+				<Grid ColumnDefinitions="*,Auto">
+
+					<ComboBox Grid.Column="0"
+							  ItemsSource="{Binding SystemPromptSection.Options}"
+							  SelectedItem="{Binding SystemPromptSection.SelectedOption}"
+							  PlaceholderText="{loc:Loc prompt.select_system_prompt}"
+							  HorizontalAlignment="Stretch">
+
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="local:PromptPartOptionViewModel">
+								<TextBlock Text="{Binding Name}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+
+					</ComboBox>
+
+					<Button Grid.Column="1"
+							Classes="IconButton"
+							Command="{Binding SystemPromptSection.ClearCommand}"
+							ToolTip.Tip="{loc:Loc prompt.system_prompt.clear}"
+							Margin="4,0,0,0"
+							VerticalAlignment="Center">
+
+						<ico:MaterialIcon Kind="Remove"/>
+
+					</Button>
+
+				</Grid>
+
+				<ctrls:PromptPartParameterEditorControl Schema="{Binding SystemPromptSection.SelectedOption.Element.ParameterSchema}"
+														Value="{Binding SystemPromptSection.Settings.Parameters}"
+														IsVisible="{Binding SystemPromptSection.HasParameters}"/>
+
+			</StackPanel>
 
 		</StackPanel>
 
@@ -153,181 +217,14 @@
 		<Rectangle Height="1"
 				   Fill="{DynamicResource DefaultForeground}"
 				   Opacity="0.2"
-				   Margin="0,5"
-				   IsVisible="{Binding IsSystemSectionVisible}"/>
-
-		<!-- ============================================================ -->
-		<!-- PERSONA SECTION                                              -->
-		<!-- ============================================================ -->
-		<StackPanel Spacing="6" IsVisible="{Binding IsPersonaSectionVisible}">
-
-			<Grid ColumnDefinitions="*,Auto,Auto,Auto">
-
-				<TextBlock Grid.Column="0"
-						   Text="{loc:Loc prompt.persona}"
-						   FontSize="{DynamicResource FontSizeL}"
-						   FontWeight="Bold"
-						   VerticalAlignment="Center"/>
-
-				<!-- TODO: dialogs for creating/importing prompt parts are not implemented yet -->
-				<Button Grid.Column="1"
-						Classes="IconButton"
-						IsEnabled="False"
-						ToolTip.Tip="{loc:Loc prompt.todo.new}"
-						VerticalAlignment="Center">
-					<ico:MaterialIcon Kind="Plus"/>
-				</Button>
-
-				<Button Grid.Column="2"
-						Classes="IconButton"
-						IsEnabled="False"
-						ToolTip.Tip="{loc:Loc prompt.todo.import}"
-						VerticalAlignment="Center"
-						Margin="0,0,8,0">
-					<ico:MaterialIcon Kind="Import"/>
-				</Button>
-
-				<ComboBox Grid.Column="3"
-						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-						  SelectedItem="{Binding SelectedPersonaInheritance}"
-						  VerticalAlignment="Center"
-						  MinWidth="120">
-
-					<ComboBox.ItemTemplate>
-						<DataTemplate x:DataType="set:InheritanceLevelItem">
-							<TextBlock Text="{Binding DisplayName}"/>
-						</DataTemplate>
-					</ComboBox.ItemTemplate>
-
-				</ComboBox>
-
-			</Grid>
-
-			<!-- Nickname -->
-			<TextBlock Text="{loc:Loc prompt.assistant_nickname.hint}"
-					   Opacity="0.6"/>
-
-			<TextBox Text="{Binding EffectivePersona.Nickname, Mode=TwoWay}"
-					 TextWrapping="NoWrap"
-					 PlaceholderText="{loc:Loc prompt.user_nickname.placeholder}"/>
-
-			<CheckBox IsChecked="{Binding EffectivePersona.UseCustomPersona, Mode=TwoWay}"
-					  Content="{loc:Loc prompt.use_custom_persona}"/>
-
-			<TextBox IsVisible="{Binding EffectivePersona.UseCustomPersona}"
-					 Text="{Binding EffectivePersona.CustomPersona, Mode=TwoWay}"
-					 AcceptsReturn="True"
-					 TextWrapping="Wrap"
-					 MinHeight="100"
-					 MaxHeight="200"
-					 ScrollViewer.VerticalScrollBarVisibility="Auto"
-					 PlaceholderText="{loc:Loc prompt.custom_persona.placeholder}"/>
-
-			<ItemsControl ItemsSource="{Binding PersonaElementCards}"
-						  IsEnabled="{Binding EffectivePersona.UseCustomPersona, Converter={StaticResource InverseBooleanConverter}}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="card:PromptPartCardViewModel">
-						<card:PromptPartCardView/>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-
-		</StackPanel>
-
-		<!-- Separator -->
-		<Rectangle Height="1"
-				   Fill="{DynamicResource DefaultForeground}"
-				   Opacity="0.2"
-				   Margin="0,5"
-				   IsVisible="{Binding IsPersonaSectionVisible}"/>
-
-		<!-- ============================================================ -->
-		<!-- SPECIALIZATION SECTION                                       -->
-		<!-- ============================================================ -->
-		<StackPanel Spacing="6" IsVisible="{Binding IsSpecializationSectionVisible}">
-
-			<Grid ColumnDefinitions="*,Auto,Auto,Auto">
-
-				<TextBlock Grid.Column="0"
-						   Text="{loc:Loc prompt.specialization}"
-						   FontSize="{DynamicResource FontSizeL}"
-						   FontWeight="Bold"
-						   VerticalAlignment="Center"/>
-
-				<!-- TODO: dialogs for creating/importing prompt parts are not implemented yet -->
-				<Button Grid.Column="1"
-						Classes="IconButton"
-						IsEnabled="False"
-						ToolTip.Tip="{loc:Loc prompt.todo.new}"
-						VerticalAlignment="Center">
-					<ico:MaterialIcon Kind="Plus"/>
-				</Button>
-
-				<Button Grid.Column="2"
-						Classes="IconButton"
-						IsEnabled="False"
-						ToolTip.Tip="{loc:Loc prompt.todo.import}"
-						VerticalAlignment="Center"
-						Margin="0,0,8,0">
-					<ico:MaterialIcon Kind="Import"/>
-				</Button>
-
-				<ComboBox Grid.Column="3"
-						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-						  SelectedItem="{Binding SelectedSpecializationInheritance}"
-						  VerticalAlignment="Center"
-						  MinWidth="120">
-
-					<ComboBox.ItemTemplate>
-						<DataTemplate x:DataType="set:InheritanceLevelItem">
-							<TextBlock Text="{Binding DisplayName}"/>
-						</DataTemplate>
-					</ComboBox.ItemTemplate>
-
-				</ComboBox>
-
-			</Grid>
-
-			<TextBlock Text="{loc:Loc prompt.specialization.hint}"
-					   Opacity="0.6"
-					   TextWrapping="Wrap"/>
-
-			<CheckBox IsChecked="{Binding EffectiveSpecialization.UseCustomSpecialization, Mode=TwoWay}"
-					  Content="{loc:Loc prompt.use_custom_specialization}"/>
-
-			<TextBox IsVisible="{Binding EffectiveSpecialization.UseCustomSpecialization}"
-					 Text="{Binding EffectiveSpecialization.CustomSpecialization, Mode=TwoWay}"
-					 AcceptsReturn="True"
-					 TextWrapping="Wrap"
-					 MinHeight="100"
-					 MaxHeight="200"
-					 ScrollViewer.VerticalScrollBarVisibility="Auto"
-					 PlaceholderText="{loc:Loc prompt.custom_specialization.placeholder}"/>
-
-			<ItemsControl ItemsSource="{Binding SpecializationElementCards}"
-						  IsEnabled="{Binding EffectiveSpecialization.UseCustomSpecialization, Converter={StaticResource InverseBooleanConverter}}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="card:PromptPartCardViewModel">
-						<card:PromptPartCardView/>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-
-		</StackPanel>
-
-		<!-- Separator -->
-		<Rectangle Height="1"
-				   Fill="{DynamicResource DefaultForeground}"
-				   Opacity="0.2"
-				   Margin="0,5"
-				   IsVisible="{Binding IsSpecializationSectionVisible}"/>
+				   Margin="0,4"/>
 
 		<!-- ============================================================ -->
 		<!-- COMPONENTS SECTION                                           -->
 		<!-- ============================================================ -->
-		<StackPanel Spacing="6" IsVisible="{Binding IsComponentsSectionVisible}">
+		<StackPanel Spacing="6">
 
-			<Grid ColumnDefinitions="*,Auto,Auto,Auto">
+			<Grid ColumnDefinitions="*,Auto">
 
 				<TextBlock Grid.Column="0"
 						   Text="{loc:Loc prompt.components}"
@@ -335,25 +232,7 @@
 						   FontWeight="Bold"
 						   VerticalAlignment="Center"/>
 
-				<!-- TODO: dialogs for creating/importing prompt parts are not implemented yet -->
-				<Button Grid.Column="1"
-						Classes="IconButton"
-						IsEnabled="False"
-						ToolTip.Tip="{loc:Loc prompt.todo.new}"
-						VerticalAlignment="Center">
-					<ico:MaterialIcon Kind="Plus"/>
-				</Button>
-
-				<Button Grid.Column="2"
-						Classes="IconButton"
-						IsEnabled="False"
-						ToolTip.Tip="{loc:Loc prompt.todo.import}"
-						VerticalAlignment="Center"
-						Margin="0,0,8,0">
-					<ico:MaterialIcon Kind="Import"/>
-				</Button>
-
-				<ComboBox Grid.Column="3"
+				<ComboBox Grid.Column="1"
 						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
 						  SelectedItem="{Binding SelectedComponentsInheritance}"
 						  VerticalAlignment="Center"
@@ -373,13 +252,31 @@
 					   Opacity="0.6"
 					   TextWrapping="Wrap"/>
 
-			<ItemsControl ItemsSource="{Binding ComponentCards}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="card:PromptPartCardViewModel">
-						<card:PromptPartCardView/>
+			<TreeView ItemsSource="{Binding ComponentCategories}"
+					  BorderThickness="0">
+
+				<TreeView.DataTemplates>
+
+					<TreeDataTemplate DataType="local:ComponentCategoryViewModel"
+									  ItemsSource="{Binding Components}">
+
+						<TextBlock Text="{Binding CategoryName}"
+								   FontWeight="Bold"
+								   Margin="0,2"/>
+
+					</TreeDataTemplate>
+
+					<DataTemplate DataType="local:ComponentItemViewModel">
+
+						<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+								  Content="{Binding Name}"
+								  Margin="16,1,0,1"/>
+
 					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
+
+				</TreeView.DataTemplates>
+
+			</TreeView>
 
 		</StackPanel>
 
@@ -387,25 +284,24 @@
 		<Rectangle Height="1"
 				   Fill="{DynamicResource DefaultForeground}"
 				   Opacity="0.2"
-				   Margin="0,5"
-				   IsVisible="{Binding IsComponentsSectionVisible}"/>
+				   Margin="0,4"/>
 
 		<!-- ============================================================ -->
-		<!-- BEHAVIOR SLIDERS                                             -->
+		<!-- PERSONA SECTION                                              -->
 		<!-- ============================================================ -->
 		<StackPanel Spacing="6">
 
 			<Grid ColumnDefinitions="*,Auto">
 
 				<TextBlock Grid.Column="0"
-						   Text="{loc:Loc prompt.behavior_sliders}"
+						   Text="{loc:Loc prompt.persona}"
 						   FontSize="{DynamicResource FontSizeL}"
 						   FontWeight="Bold"
 						   VerticalAlignment="Center"/>
 
 				<ComboBox Grid.Column="1"
 						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
-						  SelectedItem="{Binding SelectedSliderValuesInheritance}"
+						  SelectedItem="{Binding SelectedPersonaInheritance}"
 						  VerticalAlignment="Center"
 						  MinWidth="120">
 
@@ -419,59 +315,152 @@
 
 			</Grid>
 
-			<TextBlock Text="{loc:Loc prompt.behavior_sliders.hint}"
+			<!-- Nickname -->
+			<TextBlock Text="{loc:Loc prompt.assistant_nickname.hint}"
+					   Opacity="0.6"/>
+
+			<TextBox Text="{Binding PersonaSection.Settings.Nickname, Mode=TwoWay}"
+					 TextWrapping="NoWrap"
+					 PlaceholderText="{loc:Loc prompt.user_nickname.placeholder}"/>
+
+			<CheckBox IsChecked="{Binding PersonaSection.UseCustom, Mode=TwoWay}"
+					  Content="{loc:Loc prompt.use_custom_persona}"/>
+
+			<TextBox IsVisible="{Binding PersonaSection.IsCustom}"
+					 Text="{Binding PersonaSection.CustomText, Mode=TwoWay}"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 MinHeight="100"
+					 MaxHeight="200"
+					 ScrollViewer.VerticalScrollBarVisibility="Auto"
+					 PlaceholderText="{loc:Loc prompt.custom_persona.placeholder}"/>
+
+			<StackPanel Spacing="6" IsVisible="{Binding PersonaSection.IsPreset}">
+
+				<Grid ColumnDefinitions="*,Auto">
+
+					<ComboBox Grid.Column="0"
+							  ItemsSource="{Binding PersonaSection.Options}"
+							  SelectedItem="{Binding PersonaSection.SelectedOption}"
+							  PlaceholderText="{loc:Loc prompt.select_persona}"
+							  HorizontalAlignment="Stretch">
+
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="local:PromptPartOptionViewModel">
+								<TextBlock Text="{Binding Name}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+
+					</ComboBox>
+
+					<Button Grid.Column="1"
+							Classes="IconButton"
+							Command="{Binding PersonaSection.ClearCommand}"
+							ToolTip.Tip="{loc:Loc prompt.persona.clear}"
+							Margin="4,0,0,0"
+							VerticalAlignment="Center">
+
+						<ico:MaterialIcon Kind="Remove"/>
+
+					</Button>
+
+				</Grid>
+
+				<ctrls:PromptPartParameterEditorControl Schema="{Binding PersonaSection.SelectedOption.Element.ParameterSchema}"
+														Value="{Binding PersonaSection.Settings.Parameters}"
+														IsVisible="{Binding PersonaSection.HasParameters}"/>
+
+			</StackPanel>
+
+		</StackPanel>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,4"/>
+
+		<!-- ============================================================ -->
+		<!-- SPECIALIZATION SECTION                                       -->
+		<!-- ============================================================ -->
+		<StackPanel Spacing="6">
+
+			<Grid ColumnDefinitions="*,Auto">
+
+				<TextBlock Grid.Column="0"
+						   Text="{loc:Loc prompt.specialization}"
+						   FontSize="{DynamicResource FontSizeL}"
+						   FontWeight="Bold"
+						   VerticalAlignment="Center"/>
+
+				<ComboBox Grid.Column="1"
+						  ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+						  SelectedItem="{Binding SelectedSpecializationInheritance}"
+						  VerticalAlignment="Center"
+						  MinWidth="120">
+
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="set:InheritanceLevelItem">
+							<TextBlock Text="{Binding DisplayName}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+
+				</ComboBox>
+
+			</Grid>
+
+			<TextBlock Text="{loc:Loc prompt.specialization.hint}"
 					   Opacity="0.6"
 					   TextWrapping="Wrap"/>
 
-			<ItemsControl ItemsSource="{Binding SliderItems}">
+			<CheckBox IsChecked="{Binding SpecializationSection.UseCustom, Mode=TwoWay}"
+					  Content="{loc:Loc prompt.use_custom_specialization}"/>
 
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
-						<StackPanel Margin="0,6">
+			<TextBox IsVisible="{Binding SpecializationSection.IsCustom}"
+					 Text="{Binding SpecializationSection.CustomText, Mode=TwoWay}"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 MinHeight="100"
+					 MaxHeight="200"
+					 ScrollViewer.VerticalScrollBarVisibility="Auto"
+					 PlaceholderText="{loc:Loc prompt.custom_specialization.placeholder}"/>
 
-							<TextBlock Text="{Binding DisplayName}"
-									   FontWeight="Medium"
-									   FontSize="{DynamicResource FontSizeM}"
-									   Margin="0,0,0,4"/>
+			<StackPanel Spacing="6" IsVisible="{Binding SpecializationSection.IsPreset}">
 
-							<ItemsControl x:Name="HintItemsControl"
-										  SizeChanged="HintItemsControl_SizeChanged"
-										  Margin="10,0"
-										  ItemsSource="{Binding Hints}">
+				<Grid ColumnDefinitions="*,Auto">
 
-								<ItemsControl.ItemsPanel>
-									<ItemsPanelTemplate>
-										<UniformGrid Columns="{Binding Range}"/>
-									</ItemsPanelTemplate>
-								</ItemsControl.ItemsPanel>
+					<ComboBox Grid.Column="0"
+							  ItemsSource="{Binding SpecializationSection.Options}"
+							  SelectedItem="{Binding SpecializationSection.SelectedOption}"
+							  PlaceholderText="{loc:Loc prompt.select_specialization}"
+							  HorizontalAlignment="Stretch">
 
-								<ItemsControl.ItemTemplate>
-									<DataTemplate x:DataType="local:BehaviorSliderHintViewModel">
-										<TextBlock Text="{Binding Label}"
-												   Opacity="0.6"
-												   TextAlignment="Center"
-												   VerticalAlignment="Bottom"
-												   HorizontalAlignment="Center"
-												   Grid.Column="{Binding Column}"/>
-									</DataTemplate>
-								</ItemsControl.ItemTemplate>
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="local:PromptPartOptionViewModel">
+								<TextBlock Text="{Binding Name}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
 
-							</ItemsControl>
+					</ComboBox>
 
-							<Slider x:Name="BehaviorSlider"
-									Value="{Binding Value, Mode=TwoWay}"
-									Minimum="{Binding MinValue}"
-									Maximum="{Binding MaxValue}"
-									TickFrequency="1"
-									HorizontalAlignment="Stretch"
-									IsSnapToTickEnabled="True"
-									TickPlacement="TopLeft"/>
+					<Button Grid.Column="1"
+							Classes="IconButton"
+							Command="{Binding SpecializationSection.ClearCommand}"
+							ToolTip.Tip="{loc:Loc prompt.specialization.clear}"
+							Margin="4,0,0,0"
+							VerticalAlignment="Center">
 
-						</StackPanel>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
+						<ico:MaterialIcon Kind="Remove"/>
 
-			</ItemsControl>
+					</Button>
+
+				</Grid>
+
+				<ctrls:PromptPartParameterEditorControl Schema="{Binding SpecializationSection.SelectedOption.Element.ParameterSchema}"
+														Value="{Binding SpecializationSection.Settings.Parameters}"
+														IsVisible="{Binding SpecializationSection.HasParameters}"/>
+
+			</StackPanel>
 
 		</StackPanel>
 

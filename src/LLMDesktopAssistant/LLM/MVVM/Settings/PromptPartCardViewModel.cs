@@ -1,11 +1,9 @@
 using System.ComponentModel;
-using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.Parameterization;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
@@ -23,7 +21,7 @@ public class PromptPartCardViewModel : ViewModelBase
 	private readonly AgentPromptSettingsViewModel _parent;
 	private bool _isDetailsVisible;
 	private bool _isParametersVisible;
-	private Control? _parameterControl;
+	private bool _lastCanShowParameters;
 	private PromptPartKeyedSelection<Guid>? _selection;
 	private bool _parameterValueSubscribed;
 
@@ -50,6 +48,15 @@ public class PromptPartCardViewModel : ViewModelBase
 		ToggleDetailsCommand = new RelayCommand(() => IsDetailsVisible = !IsDetailsVisible);
 		ToggleParametersCommand = new RelayCommand(ToggleParameters);
 		SelectCommand = new RelayCommand(() => _parent.SelectCard(this));
+
+		// The parameter editor is visible by default for a selected part with a schema,
+		// and can be collapsed with the Tune toggle.
+		_lastCanShowParameters = CanShowParameters;
+		if (_lastCanShowParameters)
+		{
+			EnsureParameters();
+			IsParametersVisible = true;
+		}
 		FilterByCategoryCommand = new RelayCommand<string?>(category =>
 		{
 			if (!string.IsNullOrEmpty(category))
@@ -185,9 +192,28 @@ public class PromptPartCardViewModel : ViewModelBase
 	public bool HasDiagnostics => DiagnosticFlags.Count > 0;
 
 	/// <summary>
-	/// Gets a value indicating whether the card is selected for the agent.
+	/// Gets or sets a value indicating whether the card is selected for the agent.
+	/// For radio cards (slot elements) the setter selects/deselects the element,
+	/// for checkbox cards (components) it toggles the component in the settings.
 	/// </summary>
-	public bool IsSelected => _parent.IsSelected(this);
+	public bool IsSelected
+	{
+		get => _parent.IsSelected(this);
+		set
+		{
+			if (IsRadio)
+			{
+				if (value)
+					_parent.SelectCard(this);
+				else
+					_parent.DeselectCard(this);
+			}
+			else
+			{
+				_parent.SetComponentSelected(this, value);
+			}
+		}
+	}
 
 	/// <summary>
 	/// Gets the selection icon of the card (radio mode).
@@ -196,13 +222,9 @@ public class PromptPartCardViewModel : ViewModelBase
 
 	/// <summary>
 	/// Gets a value indicating whether the parameter UI can be shown for this part.
+	/// Parameters are only editable for the selected part with a schema.
 	/// </summary>
-	public bool CanShowParameters => Part.ParameterSchema is not null && Selection is not null;
-
-	/// <summary>
-	/// Gets the generated parameterization control, or <see langword="null"/> until built.
-	/// </summary>
-	public Control? ParameterControl => _parameterControl;
+	public bool CanShowParameters => Part.ParameterSchema is not null && IsSelected && Selection is not null;
 
 	/// <summary>
 	/// Gets or sets a value indicating whether the parameters section is visible.
@@ -281,29 +303,26 @@ public class PromptPartCardViewModel : ViewModelBase
 			oldValue.PropertyChanged -= Parameters_PropertyChanged;
 		_parameterValueSubscribed = false;
 		_selection = selection;
-		_parameterControl = null;
 		RaisePropertyChanged(nameof(Selection));
 		RaisePropertyChanged(nameof(CanShowParameters));
-		RaisePropertyChanged(nameof(ParameterControl));
 	}
 
 	/// <summary>
-	/// Builds the parameterization control lazily from the current selection's parameters.
+	/// Creates or fixes the parameter value from the part's schema for the current selection.
 	/// </summary>
 	public void EnsureParameters()
 	{
-		if (_parameterControl is not null || Part.ParameterSchema is null || Selection is null)
+		if (Part.ParameterSchema is null || Selection is null)
 			return;
 
 		var log = new AppendOnlyList<ParameterValidationLogEntry>();
 		Selection.Parameters = Part.ParameterSchema.Root.CreateOrFixValue(Selection.Parameters, log);
-		_parameterControl = Part.ParameterSchema.Root.CreateControl(Selection.Parameters);
 		if (!_parameterValueSubscribed && Selection.Parameters is { } value)
 		{
 			_parameterValueSubscribed = true;
 			value.PropertyChanged += Parameters_PropertyChanged;
 		}
-		RaisePropertyChanged(nameof(ParameterControl));
+		RaisePropertyChanged(nameof(CanShowParameters));
 	}
 
 	/// <summary>
@@ -311,8 +330,18 @@ public class PromptPartCardViewModel : ViewModelBase
 	/// </summary>
 	public void NotifySelectionChanged()
 	{
+		var canShow = CanShowParameters;
+		if (canShow != _lastCanShowParameters)
+		{
+			// Open the parameter editor automatically when the part becomes selectable
+			// (selected and has a schema), and collapse it when it is deselected.
+			_lastCanShowParameters = canShow;
+			IsParametersVisible = canShow;
+		}
+
 		RaisePropertyChanged(nameof(IsSelected));
 		RaisePropertyChanged(nameof(SelectionIcon));
+		RaisePropertyChanged(nameof(CanShowParameters));
 	}
 
 	private void ToggleParameters()
@@ -345,7 +374,7 @@ public class PromptPartCardViewModel : ViewModelBase
 
 	private static string LocalizeKindValue(PromptSlotKind kind)
 	{
-		return Locale.GetKey($"prompt.kind.{kind.ToString().ToLower()}").Value;
+		return Locale.Get($"prompt.kind.{kind.ToString().ToLower()}");
 	}
 
 	/// <inheritdoc/>

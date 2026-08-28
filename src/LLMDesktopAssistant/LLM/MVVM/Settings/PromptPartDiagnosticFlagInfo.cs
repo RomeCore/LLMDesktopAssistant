@@ -114,8 +114,6 @@ public class PromptPartDiagnosticFlagInfo
 		// Format issues
 		PromptPartDiagnosticCode.InvalidParameterSchema => MaterialIconKind.CodeBraces,
 		PromptPartDiagnosticCode.InvalidSlotKind => MaterialIconKind.Layers,
-		PromptPartDiagnosticCode.InvalidSliderRange => MaterialIconKind.Tune,
-		PromptPartDiagnosticCode.InvalidSliderHints => MaterialIconKind.FormatListBulleted,
 
 		_ => MaterialIconKind.HelpCircle
 	};
@@ -130,13 +128,11 @@ public class PromptPartDiagnosticFlagInfo
 		// Critical warnings (orange)
 		PromptPartDiagnosticCode.MissingTemplateIdentifier => Brushes.Orange,
 		PromptPartDiagnosticCode.InvalidParameterSchema => Brushes.Orange,
-		PromptPartDiagnosticCode.InvalidSliderRange => Brushes.Orange,
 
 		// Medium warnings (gold)
 		PromptPartDiagnosticCode.MissingStrId => Brushes.Gold,
 		PromptPartDiagnosticCode.MissingName => Brushes.Gold,
 		PromptPartDiagnosticCode.MissingDescription => Brushes.Gold,
-		PromptPartDiagnosticCode.InvalidSliderHints => Brushes.Gold,
 
 		// Low warnings (dodger blue)
 		PromptPartDiagnosticCode.MissingLanguage => Brushes.DodgerBlue,

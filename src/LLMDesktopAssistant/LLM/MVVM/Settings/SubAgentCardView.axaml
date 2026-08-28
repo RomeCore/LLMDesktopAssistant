@@ -77,15 +77,14 @@
 	<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
 			BorderThickness="1"
 			CornerRadius="4"
-			Padding="8"
-			Margin="0,0,0,8">
+			Padding="8">
 
-		<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+		<StackPanel Orientation="Vertical" Spacing="4">
 
 			<!-- ============================================================ -->
 			<!-- Row 0: Toggle | Name | Model | Reset                         -->
 			<!-- ============================================================ -->
-			<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" VerticalAlignment="Center">
+			<Grid ColumnDefinitions="Auto,*,Auto,Auto" VerticalAlignment="Center">
 
 				<!-- Enabled toggle (agent settings) -->
 				<Grid Grid.Column="0"
@@ -153,13 +152,12 @@
 			<!-- ============================================================ -->
 			<!-- Row 1: Description                                           -->
 			<!-- ============================================================ -->
-			<TextBlock Grid.Row="1"
-					   Text="{Binding Description}"
-					   Opacity="0.7"
-					   FontSize="12"
-					   TextWrapping="Wrap"
-					   Margin="28,4,0,0"
-					   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+			<TextBlock Text="{Binding Description}"
+							   Opacity="0.7"
+							   FontSize="12"
+							   TextWrapping="Wrap"
+							   Margin="28,0,0,0"
+							   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 
 			<!-- ============================================================ -->
 			<!-- Row 2: Badges | Tags | Source | Definition model             -->
@@ -227,7 +225,7 @@
 			<!-- ============================================================ -->
 			<!-- Row 3: Diagnostics + link issues                             -->
 			<!-- ============================================================ -->
-			<StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="4" Margin="28,4,0,0">
+			<StackPanel Orientation="Horizontal" Spacing="4" Margin="28,0,0,0">
 
 				<!-- Diagnostic flags -->
 				<ItemsControl ItemsSource="{Binding DiagnosticFlags}"
@@ -279,8 +277,8 @@
 			<!-- ============================================================ -->
 			<!-- Row 4: Path + file actions                                   -->
 			<!-- ============================================================ -->
-			<Grid Grid.Row="4" ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="28,4,0,0"
-				  IsVisible="{Binding IsFileBased}">
+			<Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="28,0,0,0"
+					  IsVisible="{Binding IsFileBased}">
 
 				<StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
 					<Button Command="{Binding OpenFileCommand}"
@@ -312,10 +310,9 @@
 			<!-- ============================================================ -->
 			<!-- Row 5: Details toggle                                        -->
 			<!-- ============================================================ -->
-			<ToggleButton Grid.Row="5"
-						  Margin="24,4,0,0"
-						  Command="{Binding ToggleDetailsCommand}"
-						  IsChecked="{Binding IsDetailsVisible, Mode=OneWay}">
+			<ToggleButton Margin="24,0,0,0"
+										Command="{Binding ToggleDetailsCommand}"
+										IsChecked="{Binding IsDetailsVisible, Mode=OneWay}">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<ico:MaterialIcon Kind="CardAccountDetailsOutline" Width="16" Height="16" VerticalAlignment="Center"/>
 					<TextBlock Text="{loc:Loc settings.sub_agents.details}" VerticalAlignment="Center"/>
@@ -325,10 +322,9 @@
 			<!-- ============================================================ -->
 			<!-- Row 6: Details content                                       -->
 			<!-- ============================================================ -->
-			<StackPanel Grid.Row="6"
-						Spacing="8"
-						Margin="24,8,0,0"
-						IsVisible="{Binding IsDetailsVisible}">
+			<StackPanel Spacing="8"
+									Margin="24,0,0,0"
+									IsVisible="{Binding IsDetailsVisible}">
 
 				<TextBlock Text="{loc:Loc settings.sub_agents.details.none}"
 						   Opacity="0.5"
@@ -473,6 +469,6 @@
 
 			</StackPanel>
 
-		</Grid>
+		</StackPanel>
 	</Border>
 </UserControl>

@@ -143,3 +143,28 @@
 		}
 	}
 }
+
+@template test_params_schema_1
+{
+	@metadata
+	{
+		guid: '3a4b5c6d-7e8f-9a0b-1c2d-3e4f5a6b7c8d',
+		lang: 'en-US',
+		type: 'slot',
+		slot: 'system',
+		title: 'Тестовые параметры',
+		params_schema: {
+			name: {
+				type: 'textbox/string',
+				placeholder: 'Ваше имя'
+			},
+			combo: {
+				type: 'combobox/string',
+				choices: [ 'Мужик', 'Баба', 'Боевой вертолет' ]
+			}
+		}
+	}
+	Итак, это тест системного промпта с параметрами!
+	Имя: @params.name
+	Гендер: @params.combo
+}

@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:ctrls="using:LLMDesktopAssistant.Controls"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.PromptPartCardView"
@@ -11,7 +12,7 @@
 
 	<UserControl.Styles>
 
-		<Style Selector="Border.chip">
+		<Style Selector="Border.Chip">
 			<Setter Property="CornerRadius" Value="8"/>
 			<Setter Property="Padding" Value="6,2"/>
 			<Setter Property="Margin" Value="0,0,4,2"/>
@@ -20,12 +21,12 @@
 			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
 
-		<Style Selector="TextBlock.chipText">
+		<Style Selector="TextBlock.ChipText">
 			<Setter Property="FontSize" Value="11"/>
 			<Setter Property="Opacity" Value="0.8"/>
 		</Style>
 
-		<Style Selector="Border.chipRed">
+		<Style Selector="Border.ChipRed">
 			<Setter Property="CornerRadius" Value="8"/>
 			<Setter Property="Padding" Value="6,2"/>
 			<Setter Property="Margin" Value="0,0,4,2"/>
@@ -34,7 +35,7 @@
 			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
 
-		<Style Selector="Border.chipGreen">
+		<Style Selector="Border.ChipGreen">
 			<Setter Property="CornerRadius" Value="8"/>
 			<Setter Property="Padding" Value="6,2"/>
 			<Setter Property="Margin" Value="0,0,4,2"/>
@@ -43,7 +44,7 @@
 			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
 
-		<Style Selector="Button.chipButton">
+		<Style Selector="Button.ChipButton">
 			<Setter Property="CornerRadius" Value="8"/>
 			<Setter Property="Padding" Value="6,2"/>
 			<Setter Property="Margin" Value="0,0,4,2"/>
@@ -54,73 +55,72 @@
 			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
 
-		<Style Selector="Button.chipButton:pointerover">
+		<Style Selector="Button.ChipButton:pointerover">
 			<Setter Property="Opacity" Value="0.7"/>
 		</Style>
 
 	</UserControl.Styles>
 
 	<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-			BorderThickness="1"
-			CornerRadius="4"
-			Padding="8"
-			Margin="0,0,0,8">
+					BorderThickness="1"
+					CornerRadius="4"
+					Padding="8">
 
-		<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+		<StackPanel Orientation="Vertical" Spacing="4">
 
 			<!-- ============================================================ -->
 			<!-- Row 0: Selection | Kind | Name | Selected | Broken           -->
 			<!-- ============================================================ -->
-			<Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*,Auto,Auto" VerticalAlignment="Center">
+			<Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" VerticalAlignment="Center">
 
 				<!-- Multi-selection checkbox (components) -->
 				<CheckBox Grid.Column="0"
-						  IsChecked="{Binding IsSelected, Mode=TwoWay}"
-						  IsVisible="{Binding IsRadio, Converter={StaticResource InverseBooleanConverter}}"
-						  VerticalAlignment="Center"/>
+								  IsChecked="{Binding IsSelected, Mode=TwoWay}"
+								  IsVisible="{Binding IsRadio, Converter={StaticResource InverseBooleanConverter}}"
+								  VerticalAlignment="Center"/>
 
 				<!-- Single-selection radio button (slot elements) -->
 				<Button Grid.Column="0"
-						Classes="IconButton"
-						Command="{Binding SelectCommand}"
-						ToolTip.Tip="{loc:Loc prompt.card.use}"
-						IsVisible="{Binding IsRadio}"
-						VerticalAlignment="Center">
+								Classes="IconButton"
+								Command="{Binding SelectCommand}"
+								ToolTip.Tip="{loc:Loc prompt.card.use}"
+								IsVisible="{Binding IsRadio}"
+								VerticalAlignment="Center">
 					<ico:MaterialIcon Kind="{Binding SelectionIcon}" Width="18" Height="18"/>
 				</Button>
 
-				<!-- Kind chip -->
-				<Border Grid.Column="1" Classes="chip" Margin="6,0,4,0" IsVisible="{Binding HasKind}">
+				<!-- Kind Chip -->
+				<Border Grid.Column="1" Classes="Chip" Margin="6,0,4,0" IsVisible="{Binding HasKind}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="{Binding KindIcon}" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{loc:Loc {Binding KindNameKey}}"/>
+						<TextBlock Classes="ChipText" Text="{loc:Loc {Binding KindNameKey}}"/>
 					</StackPanel>
 				</Border>
 
 				<!-- Name -->
 				<TextBlock Grid.Column="2"
-						   Text="{Binding Name}"
-						   FontWeight="Bold"
-						   Margin="4,0,8,0"
-						   VerticalAlignment="Center"
-						   TextTrimming="CharacterEllipsis"/>
+								   Text="{Binding Name}"
+								   FontWeight="Bold"
+								   Margin="4,0,8,0"
+								   VerticalAlignment="Center"
+								   TextTrimming="CharacterEllipsis"/>
 
-				<!-- Selected chip -->
-				<Border Grid.Column="3" Classes="chipGreen"
-						IsVisible="{Binding IsSelected}">
+				<!-- Selected Chip -->
+				<Border Grid.Column="3" Classes="ChipGreen"
+								IsVisible="{Binding IsSelected}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="Check" Width="12" Height="12" Foreground="#4CAF50" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{loc:Loc prompt.card.selected}" Foreground="#4CAF50"/>
+						<TextBlock Classes="ChipText" Text="{loc:Loc prompt.card.selected}" Foreground="#4CAF50"/>
 					</StackPanel>
 				</Border>
 
-				<!-- Broken chip -->
-				<Border Grid.Column="4" Classes="chipRed"
-						IsVisible="{Binding IsBroken}"
-						ToolTip.Tip="{Binding Error}">
+				<!-- Broken Chip -->
+				<Border Grid.Column="4" Classes="ChipRed"
+								IsVisible="{Binding IsBroken}"
+								ToolTip.Tip="{Binding Error}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="AlertCircle" Width="12" Height="12" Foreground="#FF5252" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{loc:Loc prompt.card.broken}" Foreground="#FF5252"/>
+						<TextBlock Classes="ChipText" Text="{loc:Loc prompt.card.broken}" Foreground="#FF5252"/>
 					</StackPanel>
 				</Border>
 
@@ -129,59 +129,57 @@
 			<!-- ============================================================ -->
 			<!-- Row 1: Description                                            -->
 			<!-- ============================================================ -->
-			<TextBlock Grid.Row="1"
-					   Text="{Binding Description}"
-					   TextWrapping="Wrap"
-					   Opacity="0.7"
-					   FontSize="12"
-					   Margin="0,4,0,4"
-					   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+			<TextBlock Text="{Binding Description}"
+							   TextWrapping="Wrap"
+							   Opacity="0.7"
+							   FontSize="12"
+							   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 
 			<!-- ============================================================ -->
 			<!-- Row 2: Chips: source, category, language                     -->
 			<!-- ============================================================ -->
-			<WrapPanel Grid.Row="2" Margin="0,0,0,4">
+			<WrapPanel>
 
-				<Border Classes="chip" ToolTip.Tip="{loc:Loc prompt.metadata.source}">
+				<Border Classes="Chip" ToolTip.Tip="{loc:Loc prompt.metadata.source}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="{Binding SourceIcon}" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{loc:Loc {Binding SourceNameKey}}"/>
+						<TextBlock Classes="ChipText" Text="{loc:Loc {Binding SourceNameKey}}"/>
 					</StackPanel>
 				</Border>
 
-				<Button Classes="chipButton"
-						Command="{Binding FilterByCategoryCommand}"
-						CommandParameter="{Binding Category}"
-						ToolTip.Tip="{loc:Loc prompt.search.placeholder}"
-						IsVisible="{Binding HasCategory}">
+				<Button Classes="ChipButton"
+								Command="{Binding FilterByCategoryCommand}"
+								CommandParameter="{Binding Category}"
+								ToolTip.Tip="{loc:Loc prompt.search.placeholder}"
+								IsVisible="{Binding HasCategory}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="TagOutline" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{Binding Category}"/>
+						<TextBlock Classes="ChipText" Text="{Binding Category}"/>
 					</StackPanel>
 				</Button>
 
-				<Border Classes="chip" ToolTip.Tip="{loc:Loc prompt.metadata.language}">
+				<Border Classes="Chip" ToolTip.Tip="{loc:Loc prompt.metadata.language}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="Language" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{Binding LanguageName}"/>
+						<TextBlock Classes="ChipText" Text="{Binding LanguageName}"/>
 					</StackPanel>
 				</Border>
 
-				<Border Classes="chip" ToolTip.Tip="{loc:Loc prompt.metadata.localized_for}"
-						IsVisible="{Binding LocalizedForName, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+				<Border Classes="Chip" ToolTip.Tip="{loc:Loc prompt.metadata.localized_for}"
+								IsVisible="{Binding LocalizedForName, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="Translate" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="chipText" Text="{Binding LocalizedForName}"/>
+						<TextBlock Classes="ChipText" Text="{Binding LocalizedForName}"/>
 					</StackPanel>
 				</Border>
 
 			</WrapPanel>
 
 			<!-- ============================================================ -->
-			<!-- Row 3: Diagnostic chips                                       -->
+			<!-- Row 3: Diagnostic Chips                                       -->
 			<!-- ============================================================ -->
-			<StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="4" Margin="0,0,0,4"
-						IsVisible="{Binding HasDiagnostics}">
+			<StackPanel Orientation="Horizontal" Spacing="4"
+									IsVisible="{Binding HasDiagnostics}">
 				<ItemsControl ItemsSource="{Binding DiagnosticFlags}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
@@ -190,10 +188,10 @@
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
 						<DataTemplate x:DataType="local:PromptPartDiagnosticFlagInfo">
-							<Border Classes="chip" ToolTip.Tip="{loc:Loc {Binding DescriptionKey}}">
+							<Border Classes="Chip" ToolTip.Tip="{loc:Loc {Binding DescriptionKey}}">
 								<StackPanel Orientation="Horizontal" Spacing="3">
 									<ico:MaterialIcon Kind="{Binding Icon}" Width="12" Height="12" VerticalAlignment="Center" Foreground="{Binding Color}"/>
-									<TextBlock Classes="chipText" Foreground="{Binding Color}" Text="{loc:Loc {Binding DisplayNameKey}}"/>
+									<TextBlock Classes="ChipText" Foreground="{Binding Color}" Text="{loc:Loc {Binding DisplayNameKey}}"/>
 								</StackPanel>
 							</Border>
 						</DataTemplate>
@@ -204,7 +202,7 @@
 			<!-- ============================================================ -->
 			<!-- Row 4: Actions                                                -->
 			<!-- ============================================================ -->
-			<Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="0,2,0,2">
+			<Grid ColumnDefinitions="*,Auto">
 
 				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
 
@@ -263,52 +261,36 @@
 			<!-- ============================================================ -->
 			<!-- Row 5: Parameters content                                     -->
 			<!-- ============================================================ -->
-			<Border Grid.Row="5"
-					Background="#11000000"
-					CornerRadius="4"
-					Padding="8"
-					Margin="0,4,0,0"
-					IsVisible="{Binding IsParametersVisible}">
-				<ContentControl Content="{Binding ParameterControl}"/>
+			<Border Background="#11000000"
+							CornerRadius="4"
+							Padding="8"
+							IsVisible="{Binding IsParametersVisible}">
+				<ctrls:PromptPartParameterEditorControl Schema="{Binding Part.ParameterSchema}"
+													  Value="{Binding Selection.Parameters}"/>
 			</Border>
 
 			<!-- ============================================================ -->
-			<!-- Row 6: Details toggle                                         -->
+			<!-- Row 6: Details content                                        -->
 			<!-- ============================================================ -->
-			<ToggleButton Grid.Row="6"
-						  Margin="0,4,0,0"
-						  Command="{Binding ToggleDetailsCommand}"
-						  IsChecked="{Binding IsDetailsVisible, Mode=OneWay}">
-				<StackPanel Orientation="Horizontal" Spacing="6">
-					<ico:MaterialIcon Kind="CardAccountDetailsOutline" Width="16" Height="16" VerticalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc prompt.card.details}" VerticalAlignment="Center"/>
-				</StackPanel>
-			</ToggleButton>
-
-			<!-- ============================================================ -->
-			<!-- Row 7: Details content                                        -->
-			<!-- ============================================================ -->
-			<StackPanel Grid.Row="7"
-						Spacing="8"
-						Margin="0,8,0,0"
-						IsVisible="{Binding IsDetailsVisible}">
+			<StackPanel Spacing="8"
+									IsVisible="{Binding IsDetailsVisible}">
 
 				<!-- Template body -->
 				<StackPanel Spacing="2" IsVisible="{Binding HasTemplateBody}">
 					<TextBlock Text="{loc:Loc prompt.card.template_body}"
-							   FontWeight="SemiBold"
-							   Opacity="0.8"
-							   FontSize="12"/>
+									   FontWeight="SemiBold"
+									   Opacity="0.8"
+									   FontSize="12"/>
 					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-							BorderThickness="1"
-							CornerRadius="4"
-							Padding="8">
+									BorderThickness="1"
+									CornerRadius="4"
+									Padding="8">
 						<ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto">
 							<TextBlock Text="{Binding TemplateBody}"
-									   FontFamily="Cascadia Mono,Consolas,monospace"
-									   FontSize="11"
-									   Opacity="0.8"
-									   TextWrapping="Wrap"/>
+											   FontFamily="Cascadia Mono,Consolas,monospace"
+											   FontSize="11"
+											   Opacity="0.8"
+											   TextWrapping="Wrap"/>
 						</ScrollViewer>
 					</Border>
 				</StackPanel>
@@ -316,22 +298,22 @@
 				<!-- Metadata -->
 				<StackPanel Spacing="2" IsVisible="{Binding MetadataItems.Count}">
 					<TextBlock Text="{loc:Loc prompt.card.metadata}"
-							   FontWeight="SemiBold"
-							   Opacity="0.8"
-							   FontSize="12"/>
+									   FontWeight="SemiBold"
+									   Opacity="0.8"
+									   FontSize="12"/>
 					<ItemsControl ItemsSource="{Binding MetadataItems}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate x:DataType="local:PromptPartMetadataItem">
 								<Grid ColumnDefinitions="Auto,*" Margin="0,1">
 									<TextBlock Grid.Column="0"
-											   Text="{loc:Loc {Binding Key}}"
-											   FontWeight="SemiBold"
-											   Opacity="0.8"
-											   Margin="0,0,8,0"/>
+													   Text="{loc:Loc {Binding Key}}"
+													   FontWeight="SemiBold"
+													   Opacity="0.8"
+													   Margin="0,0,8,0"/>
 									<TextBlock Grid.Column="1"
-											   Text="{Binding Value}"
-											   Opacity="0.7"
-											   TextWrapping="Wrap"/>
+													   Text="{Binding Value}"
+													   Opacity="0.7"
+													   TextWrapping="Wrap"/>
 								</Grid>
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
@@ -340,7 +322,7 @@
 
 			</StackPanel>
 
-		</Grid>
+		</StackPanel>
 
 	</Border>
 

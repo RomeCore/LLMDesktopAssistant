@@ -67,15 +67,28 @@
 				   Opacity="0.5"
 				   TextWrapping="Wrap"
 				   IsVisible="{Binding AvailableSubAgents.Count, Converter={StaticResource InverseBooleanConverter}}"/>
-
-		<ItemsControl ItemsSource="{Binding AvailableSubAgents}"
-					  IsEnabled="{Binding SubAgentSettings.EnableSubAgents}">
-			<ItemsControl.ItemTemplate>
-				<DataTemplate x:DataType="local:SubAgentCardViewModel">
-					<local:SubAgentCardView/>
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
-		</ItemsControl>
+		
+		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
+						BorderThickness="1"
+						CornerRadius="4">
+			<ScrollViewer MaxHeight="600"
+									  VerticalScrollBarVisibility="Auto"
+									  HorizontalScrollBarVisibility="Disabled">
+				<ItemsControl ItemsSource="{Binding AvailableSubAgents}"
+										  IsEnabled="{Binding SubAgentSettings.EnableSubAgents}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Vertical" Spacing="8"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="local:SubAgentCardViewModel">
+							<local:SubAgentCardView/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</ScrollViewer>
+		</Border>
 
 		<!-- Separator -->
 		<Rectangle Height="1"

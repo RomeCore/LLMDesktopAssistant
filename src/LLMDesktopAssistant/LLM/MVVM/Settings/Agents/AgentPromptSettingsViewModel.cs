@@ -1,103 +1,98 @@
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 
-public class BehaviorSliderHintViewModel : NotifyPropertyChanged
+/// <summary>
+/// A type filter for the prompt part search picker.
+/// Note: the <see cref="PromptSlotElement"/> type is expanded into its concrete slot kinds
+/// (system / persona / specialization), so the generic "slot" type is never shown.
+/// </summary>
+public class PromptPartTypeFilterItem
 {
-	public string? Label { get; set; }
+	public LocaleKeyBase DisplayNameKey { get; }
 
-	public int Column { get; set; }
+	public Func<PromptPartBase, bool>? Predicate { get; }
+
+	public PromptPartTypeFilterItem(LocaleKeyBase displayNameKey, Func<PromptPartBase, bool>? predicate)
+	{
+		DisplayNameKey = displayNameKey;
+		Predicate = predicate;
+	}
 }
 
 /// <summary>
-/// ViewModel for a single behavior slider.
-/// Loads metadata from the slider's .llt template definition.
+/// A single prompt component checkbox item of the components section.
 /// </summary>
-public class BehaviorSliderItemViewModel : NotifyPropertyChanged
+public class ComponentItemViewModel : NotifyPropertyChanged
 {
 	private readonly AgentPromptSettingsViewModel _parent;
-	private readonly PromptBehaviourSliderValue _sliderValue;
+	private bool _isSelected;
 
-	/// <summary>
-	/// The GUID of the slider definition.
-	/// </summary>
-	public Guid SliderId { get; }
+	public PromptComponent Component { get; }
 
-	/// <summary>
-	/// Display name of the slider (from .llt metadata "title").
-	/// </summary>
-	public string DisplayName { get; }
-
-	/// <summary>
-	/// Minimum value of the slider (from .llt metadata "sliderMin").
-	/// </summary>
-	public int MinValue { get; }
-
-	/// <summary>
-	/// Maximum value of the slider (from .llt metadata "sliderMax").
-	/// </summary>
-	public int MaxValue { get; }
-
-	/// <summary>
-	/// Hints/labels for each slider position (from .llt metadata "hints").
-	/// Index 0 corresponds to MinValue, last index to MaxValue.
-	/// null entries mean no label for that position.
-	/// </summary>
-	public BehaviorSliderHintViewModel[] Hints { get; }
-
-	/// <summary>
-	/// The number of positions on the slider. Range = MaxValue - MinValue + 1.
-	/// </summary>
-	public int Range => MaxValue - MinValue + 1;
-
-	/// <summary>
-	/// The current value of the slider.
-	/// </summary>
-	public int Value
+	public ComponentItemViewModel(AgentPromptSettingsViewModel parent, PromptComponent component)
 	{
-		get => _sliderValue.Value;
+		_parent = parent;
+		Component = component;
+		_isSelected = parent.IsComponentSelected(component.Guid);
+	}
+
+	public string Name => Component.Name;
+
+	public bool IsSelected
+	{
+		get => _isSelected;
 		set
 		{
-			if (_sliderValue.Value != value)
-			{
-				_sliderValue.Value = value;
-				RaisePropertyChanged();
-			}
+			if (SetProperty(ref _isSelected, value))
+				_parent.SetComponentSelected(Component, value);
 		}
 	}
 
-	public BehaviorSliderItemViewModel(
-		AgentPromptSettingsViewModel parent,
-		PromptBehaviourSliderValue sliderValue,
-		Guid sliderId,
-		string displayName,
-		int minValue,
-		int maxValue,
-		BehaviorSliderHintViewModel[] hints)
+	/// <summary>
+	/// Refreshes the checkbox state from the effective selection without invoking the parent callback.
+	/// </summary>
+	public void SyncSelection()
 	{
-		_parent = parent;
-		_sliderValue = sliderValue;
-		SliderId = sliderId;
-		DisplayName = displayName;
-		MinValue = minValue;
-		MaxValue = maxValue;
-		Hints = hints;
+		var selected = _parent.IsComponentSelected(Component.Guid);
+		if (_isSelected != selected)
+		{
+			_isSelected = selected;
+			RaisePropertyChanged(nameof(IsSelected));
+		}
 	}
 }
 
 /// <summary>
-/// ViewModel for the agent prompt settings: reusable prompt slot elements (system prompt,
-/// persona, specialization) and prompt components shown as cards with diagnostics,
-/// parameters and metadata, plus behavior sliders and the system prompt preview.
+/// A category group of the components section.
+/// </summary>
+public class ComponentCategoryViewModel : NotifyPropertyChanged
+{
+	public string CategoryName { get; }
+
+	public ObservableCollection<ComponentItemViewModel> Components { get; } = [];
+
+	public ComponentCategoryViewModel(string categoryName)
+	{
+		CategoryName = categoryName;
+	}
+}
+
+/// <summary>
+/// ViewModel for the agent prompt settings: a searchable library picker of reusable prompt parts
+/// (slot elements and components) plus compact sections for the system prompt, prompt components,
+/// the persona and the specialization. Each slot section supports a custom text or a registered
+/// element picked from a combo box with an optional parameter editor.
 /// </summary>
 [ViewModelFor(typeof(AgentPromptSettingsView))]
 public class AgentPromptSettingsViewModel : ViewModelBase
@@ -107,7 +102,6 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 	private readonly ChatAgentDescriptor _agent;
 	private readonly IPromptSlotElementManager _slotElementManager;
 	private readonly IPromptComponentManager _componentManager;
-	private readonly IPromptBehaviourSliderManager _behaviourSliderManager;
 
 	/// <summary>
 	/// Gets the underlying agent prompt settings.
@@ -133,11 +127,6 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 	/// Gets the effective prompt component selections resolved by the current inheritance level.
 	/// </summary>
 	public RangeObservableCollection<PromptPartKeyedSelection<Guid>> EffectivePromptComponents => PromptSettings.GetEffectivePromptComponents(_chatSettings);
-
-	/// <summary>
-	/// Gets the effective behavior slider values resolved by the current inheritance level.
-	/// </summary>
-	public RangeObservableCollection<PromptBehaviourSliderValue> EffectiveSliderValues => PromptSettings.GetEffectiveSliderValues(_chatSettings);
 
 	private InheritanceLevelItem _selectedSystemPromptInheritance;
 	/// <summary>
@@ -195,23 +184,9 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 		}
 	}
 
-	private InheritanceLevelItem _selectedSliderValuesInheritance;
-	/// <summary>
-	/// Gets or sets the inheritance level for the behavior slider values.
-	/// </summary>
-	public InheritanceLevelItem SelectedSliderValuesInheritance
-	{
-		get => _selectedSliderValuesInheritance;
-		set
-		{
-			if (SetProperty(ref _selectedSliderValuesInheritance, value) && value != null)
-				PromptSettings.SliderValuesInheritance = value.Value;
-		}
-	}
-
 	private string _searchText = string.Empty;
 	/// <summary>
-	/// Gets or sets the search text filtering the cards by name, description and category.
+	/// Gets or sets the search text filtering the library picker by name, description and category.
 	/// </summary>
 	public string SearchText
 	{
@@ -224,51 +199,58 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 	}
 
 	/// <summary>
-	/// Full (unfiltered) card lists per group.
+	/// The type filters available in the library picker.
 	/// </summary>
-	private readonly List<PromptPartCardViewModel> _allSystemCards = [];
-	private readonly List<PromptPartCardViewModel> _allPersonaCards = [];
-	private readonly List<PromptPartCardViewModel> _allSpecializationCards = [];
-	private readonly List<PromptPartCardViewModel> _allComponentCards = [];
+	public ObservableCollection<PromptPartTypeFilterItem> TypeFilters { get; } = [];
+
+	private PromptPartTypeFilterItem _selectedTypeFilter = null!;
+	/// <summary>
+	/// Gets or sets the active type filter of the library picker.
+	/// </summary>
+	public PromptPartTypeFilterItem SelectedTypeFilter
+	{
+		get => _selectedTypeFilter;
+		set
+		{
+			if (SetProperty(ref _selectedTypeFilter, value) && value != null)
+				ApplyFilter();
+		}
+	}
+
+	/// <summary>
+	/// All prompt part cards (slot elements and components), unfiltered.
+	/// </summary>
 	private readonly List<PromptPartCardViewModel> _allCards = [];
 
 	/// <summary>
-	/// Filtered card lists for display.
+	/// The filtered prompt part cards shown in the library picker.
 	/// </summary>
-	public ObservableCollection<PromptPartCardViewModel> SystemElementCards { get; } = [];
-	public ObservableCollection<PromptPartCardViewModel> PersonaElementCards { get; } = [];
-	public ObservableCollection<PromptPartCardViewModel> SpecializationElementCards { get; } = [];
-	public ObservableCollection<PromptPartCardViewModel> ComponentCards { get; } = [];
+	public ObservableCollection<PromptPartCardViewModel> SearchResults { get; } = [];
 
 	/// <summary>
-	/// Gets a value indicating whether the system prompt section has any visible cards.
+	/// Gets a value indicating whether the library picker has no visible results.
 	/// </summary>
-	public bool IsSystemSectionVisible => SystemElementCards.Count > 0;
+	public bool IsSearchEmpty => SearchResults.Count == 0;
 
 	/// <summary>
-	/// Gets a value indicating whether the persona section has any visible cards.
+	/// The system prompt slot section.
 	/// </summary>
-	public bool IsPersonaSectionVisible => PersonaElementCards.Count > 0;
+	public PromptSlotSectionViewModel<SystemPromptSettings>? SystemPromptSection { get; private set; }
 
 	/// <summary>
-	/// Gets a value indicating whether the specialization section has any visible cards.
+	/// The persona slot section.
 	/// </summary>
-	public bool IsSpecializationSectionVisible => SpecializationElementCards.Count > 0;
+	public PromptSlotSectionViewModel<PersonaSettings>? PersonaSection { get; private set; }
 
 	/// <summary>
-	/// Gets a value indicating whether the components section has any visible cards.
+	/// The specialization slot section.
 	/// </summary>
-	public bool IsComponentsSectionVisible => ComponentCards.Count > 0;
+	public PromptSlotSectionViewModel<SpecializationSettings>? SpecializationSection { get; private set; }
 
 	/// <summary>
-	/// Gets a value indicating whether any card is visible (for the empty state).
+	/// The components section, grouped by category.
 	/// </summary>
-	public bool IsAnyCardVisible => IsSystemSectionVisible || IsPersonaSectionVisible || IsSpecializationSectionVisible || IsComponentsSectionVisible;
-
-	/// <summary>
-	/// Collection of behavior slider ViewModels for the UI.
-	/// </summary>
-	public ObservableCollection<BehaviorSliderItemViewModel> SliderItems { get; } = [];
+	public ObservableCollection<ComponentCategoryViewModel> ComponentCategories { get; } = [];
 
 	private bool _isPreviewVisible;
 	/// <summary>
@@ -298,8 +280,7 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 		IChatPromptBuilder promptBuilder,
 		ChatAgentDescriptor agent,
 		IPromptComponentManager componentManager,
-		IPromptSlotElementManager slotElementManager,
-		IPromptBehaviourSliderManager behaviourSliderManager)
+		IPromptSlotElementManager slotElementManager)
 	{
 		PromptSettings = settings;
 		_chatSettings = chatSettings;
@@ -308,21 +289,34 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 
 		_componentManager = componentManager;
 		_slotElementManager = slotElementManager;
-		_behaviourSliderManager = behaviourSliderManager;
 
 		_selectedSystemPromptInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SystemPromptInheritance);
 		_selectedComponentsInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.PromptComponentsInheritance);
 		_selectedPersonaInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.PersonaInheritance);
 		_selectedSpecializationInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SpecializationInheritance);
-		_selectedSliderValuesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SliderValuesInheritance);
 
 		TogglePreviewCommand = new RelayCommand(() => IsPreviewVisible = !IsPreviewVisible);
 
+		BuildTypeFilters();
+
 		settings.PropertyChanged += PromptSettings_PropertyChanged;
-		SubscribeEffectiveObjects();
+		SubscribeEffectiveComponents();
 
 		Refresh();
+		RebuildSections();
 		RegeneratePreview();
+	}
+
+	private void BuildTypeFilters()
+	{
+		TypeFilters.Add(new PromptPartTypeFilterItem(Locale.GetKey("prompt.type.all"), null));
+		TypeFilters.Add(new PromptPartTypeFilterItem(Locale.GetKey("prompt.kind.system"), p => p is PromptSlotElement { Kind: PromptSlotKind.System }));
+		TypeFilters.Add(new PromptPartTypeFilterItem(Locale.GetKey("prompt.kind.persona"), p => p is PromptSlotElement { Kind: PromptSlotKind.Persona }));
+		TypeFilters.Add(new PromptPartTypeFilterItem(Locale.GetKey("prompt.kind.specialization"), p => p is PromptSlotElement { Kind: PromptSlotKind.Specialization }));
+		TypeFilters.Add(new PromptPartTypeFilterItem(Locale.GetKey("prompt.type.component"), p => p is PromptComponent));
+
+		_selectedTypeFilter = TypeFilters[0];
+		RaisePropertyChanged(nameof(SelectedTypeFilter));
 	}
 
 	private void PromptSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -332,126 +326,47 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 			case nameof(AgentPromptSettings.SystemPromptInheritance):
 				_selectedSystemPromptInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.SystemPromptInheritance);
 				RaisePropertyChanged(nameof(SelectedSystemPromptInheritance));
-				RaisePropertyChanged(nameof(EffectiveSystemPrompt));
 				break;
 
 			case nameof(AgentPromptSettings.PromptComponentsInheritance):
 				_selectedComponentsInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.PromptComponentsInheritance);
 				RaisePropertyChanged(nameof(SelectedComponentsInheritance));
-				RaisePropertyChanged(nameof(EffectivePromptComponents));
 				break;
 
 			case nameof(AgentPromptSettings.PersonaInheritance):
 				_selectedPersonaInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.PersonaInheritance);
 				RaisePropertyChanged(nameof(SelectedPersonaInheritance));
-				RaisePropertyChanged(nameof(EffectivePersona));
 				break;
 
 			case nameof(AgentPromptSettings.SpecializationInheritance):
 				_selectedSpecializationInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.SpecializationInheritance);
 				RaisePropertyChanged(nameof(SelectedSpecializationInheritance));
-				RaisePropertyChanged(nameof(EffectiveSpecialization));
-				break;
-
-			case nameof(AgentPromptSettings.SliderValuesInheritance):
-				_selectedSliderValuesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == PromptSettings.SliderValuesInheritance);
-				RaisePropertyChanged(nameof(SelectedSliderValuesInheritance));
-				RaisePropertyChanged(nameof(EffectiveSliderValues));
 				break;
 		}
 
-		SubscribeEffectiveObjects();
+		SubscribeEffectiveComponents();
 		Refresh();
+		RebuildSections();
 		RegeneratePreview();
 	}
 
-	private SystemPromptSettings? _subscribedSystemPrompt;
-	private PersonaSettings? _subscribedPersona;
-	private SpecializationSettings? _subscribedSpecialization;
 	private RangeObservableCollection<PromptPartKeyedSelection<Guid>>? _subscribedComponents;
-	private RangeObservableCollection<PromptBehaviourSliderValue>? _subscribedSliderValues;
-	private readonly List<PromptBehaviourSliderValue> _subscribedSliderValueItems = [];
 
-	/// <summary>
-	/// Subscribes to the currently effective groups and collections so that edits
-	/// regenerate the preview and selection states live.
-	/// </summary>
-	private void SubscribeEffectiveObjects()
+	private void SubscribeEffectiveComponents()
 	{
-		var systemPrompt = EffectiveSystemPrompt;
-		if (!ReferenceEquals(_subscribedSystemPrompt, systemPrompt))
-		{
-			if (_subscribedSystemPrompt != null)
-				_subscribedSystemPrompt.PropertyChanged -= OnEffectiveGroupChanged;
-			_subscribedSystemPrompt = systemPrompt;
-			systemPrompt.PropertyChanged += OnEffectiveGroupChanged;
-		}
-
-		var persona = EffectivePersona;
-		if (!ReferenceEquals(_subscribedPersona, persona))
-		{
-			if (_subscribedPersona != null)
-				_subscribedPersona.PropertyChanged -= OnEffectiveGroupChanged;
-			_subscribedPersona = persona;
-			persona.PropertyChanged += OnEffectiveGroupChanged;
-		}
-
-		var specialization = EffectiveSpecialization;
-		if (!ReferenceEquals(_subscribedSpecialization, specialization))
-		{
-			if (_subscribedSpecialization != null)
-				_subscribedSpecialization.PropertyChanged -= OnEffectiveGroupChanged;
-			_subscribedSpecialization = specialization;
-			specialization.PropertyChanged += OnEffectiveGroupChanged;
-		}
-
 		var components = EffectivePromptComponents;
-		if (!ReferenceEquals(_subscribedComponents, components))
-		{
-			if (_subscribedComponents != null)
-				_subscribedComponents.CollectionChanged -= EffectiveComponents_CollectionChanged;
-			_subscribedComponents = components;
-			components.CollectionChanged += EffectiveComponents_CollectionChanged;
-		}
-
-		var sliderValues = EffectiveSliderValues;
-		if (!ReferenceEquals(_subscribedSliderValues, sliderValues))
-		{
-			if (_subscribedSliderValues != null)
-				_subscribedSliderValues.CollectionChanged -= EffectiveSliderValues_CollectionChanged;
-			_subscribedSliderValues = sliderValues;
-			sliderValues.CollectionChanged += EffectiveSliderValues_CollectionChanged;
-		}
-	}
-
-	private void OnEffectiveGroupChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		RefreshSelectionStates();
-		RegeneratePreview();
+		if (ReferenceEquals(_subscribedComponents, components))
+			return;
+		if (_subscribedComponents is not null)
+			_subscribedComponents.CollectionChanged -= EffectiveComponents_CollectionChanged;
+		_subscribedComponents = components;
+		components.CollectionChanged += EffectiveComponents_CollectionChanged;
 	}
 
 	private void EffectiveComponents_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
 		RefreshSelectionStates();
-		RegeneratePreview();
-	}
-
-	private void EffectiveSliderValues_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-	{
-		RegeneratePreview();
-	}
-
-	private void SubscribeSliderValue(PromptBehaviourSliderValue value)
-	{
-		if (_subscribedSliderValueItems.Contains(value))
-			return;
-
-		_subscribedSliderValueItems.Add(value);
-		value.PropertyChanged += SliderValue_PropertyChanged;
-	}
-
-	private void SliderValue_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
+		RefreshComponentItems();
 		RegeneratePreview();
 	}
 
@@ -475,13 +390,8 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 	/// </summary>
 	public void Refresh()
 	{
-		// Dispose old cards
 		_allCards.ForEach(c => c.Dispose());
 		_allCards.Clear();
-		_allSystemCards.Clear();
-		_allPersonaCards.Clear();
-		_allSpecializationCards.Clear();
-		_allComponentCards.Clear();
 
 		// --- Slot elements ---
 		foreach (var element in _slotElementManager.GetAll())
@@ -493,20 +403,7 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 				PromptSlotKind.Specialization => EffectiveSpecialization,
 				_ => null
 			};
-			var card = new PromptPartCardViewModel(this, element, element.Kind, selection, isRadio: true);
-			_allCards.Add(card);
-			switch (element.Kind)
-			{
-				case PromptSlotKind.System:
-					_allSystemCards.Add(card);
-					break;
-				case PromptSlotKind.Persona:
-					_allPersonaCards.Add(card);
-					break;
-				case PromptSlotKind.Specialization:
-					_allSpecializationCards.Add(card);
-					break;
-			}
+			_allCards.Add(new PromptPartCardViewModel(this, element, element.Kind, selection, isRadio: true));
 		}
 
 		// --- Components ---
@@ -514,50 +411,80 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 		foreach (var component in _componentManager.GetAll())
 		{
 			var selection = componentSelections.FirstOrDefault(s => s.Id == component.Guid);
-			var card = new PromptPartCardViewModel(this, component, null, selection, isRadio: false);
-			_allCards.Add(card);
-			_allComponentCards.Add(card);
+			_allCards.Add(new PromptPartCardViewModel(this, component, null, selection, isRadio: false));
 		}
 
-		// --- Sliders ---
-		SliderItems.Clear();
-		var sliderValues = EffectiveSliderValues;
-		foreach (var slider in _behaviourSliderManager.GetAll())
-		{
-			var sliderId = slider.Guid;
-			// Find existing slider value or create new one with default (0)
-			var existingValue = sliderValues.FirstOrDefault(sv => sv.Id == sliderId);
-			if (existingValue == null)
-			{
-				existingValue = new PromptBehaviourSliderValue
-				{
-					Id = sliderId,
-					Value = slider.DefaultValue
-				};
-				sliderValues.Add(existingValue);
-			}
-
-			SubscribeSliderValue(existingValue);
-
-			var itemVm = new BehaviorSliderItemViewModel(
-				this,
-				existingValue,
-				sliderId,
-				slider.Name,
-				slider.MinimumValue,
-				slider.MaximumValue,
-				slider.Titles.Values
-					.Select((label, index) => new BehaviorSliderHintViewModel
-					{
-						Label = label,
-						Column = index
-					})
-					.ToArray());
-
-			SliderItems.Add(itemVm);
-		}
-
+		RefreshComponentCategories();
 		ApplyFilter();
+	}
+
+	private void RefreshComponentCategories()
+	{
+		ComponentCategories.Clear();
+		var grouped = _componentManager.GetAll()
+			.GroupBy(c => string.IsNullOrWhiteSpace(c.Category)
+				? LocalizationManager.LocalizeStatic("prompt.category.uncategorized")
+				: c.Category);
+
+		foreach (var group in grouped.OrderBy(g => g.Key))
+		{
+			var categoryVm = new ComponentCategoryViewModel(group.Key);
+			foreach (var component in group.OrderBy(c => c.Name))
+				categoryVm.Components.Add(new ComponentItemViewModel(this, component));
+			ComponentCategories.Add(categoryVm);
+		}
+	}
+
+	/// <summary>
+	/// Recreates the slot sections for the current effective settings.
+	/// </summary>
+	private void RebuildSections()
+	{
+		SystemPromptSection?.Dispose();
+		PersonaSection?.Dispose();
+		SpecializationSection?.Dispose();
+
+		SystemPromptSection = CreateSection(PromptSlotKind.System, EffectiveSystemPrompt,
+			s => s.UseCustomSystemPrompt, (s, v) => s.UseCustomSystemPrompt = v,
+			s => s.CustomSystemPrompt, (s, v) => s.CustomSystemPrompt = v);
+
+		PersonaSection = CreateSection(PromptSlotKind.Persona, EffectivePersona,
+			s => s.UseCustomPersona, (s, v) => s.UseCustomPersona = v,
+			s => s.CustomPersona, (s, v) => s.CustomPersona = v);
+
+		SpecializationSection = CreateSection(PromptSlotKind.Specialization, EffectiveSpecialization,
+			s => s.UseCustomSpecialization, (s, v) => s.UseCustomSpecialization = v,
+			s => s.CustomSpecialization, (s, v) => s.CustomSpecialization = v);
+
+		RaisePropertyChanged(nameof(SystemPromptSection));
+		RaisePropertyChanged(nameof(PersonaSection));
+		RaisePropertyChanged(nameof(SpecializationSection));
+	}
+
+	private PromptSlotSectionViewModel<TSettings> CreateSection<TSettings>(
+		PromptSlotKind kind,
+		TSettings settings,
+		Func<TSettings, bool> getUseCustom,
+		Action<TSettings, bool> setUseCustom,
+		Func<TSettings, string?> getCustomText,
+		Action<TSettings, string?> setCustomText)
+		where TSettings : PromptPartKeyedSelection<Guid>
+	{
+		return new PromptSlotSectionViewModel<TSettings>(
+			kind,
+			settings,
+			() => getUseCustom(settings),
+			v => setUseCustom(settings, v),
+			() => getCustomText(settings),
+			v => setCustomText(settings, v),
+			_slotElementManager,
+			OnSectionChanged);
+	}
+
+	private void OnSectionChanged()
+	{
+		RefreshSelectionStates();
+		RegeneratePreview();
 	}
 
 	/// <summary>
@@ -581,9 +508,37 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 	}
 
 	/// <summary>
-	/// Selects a radio card (slot element) for the agent and opens its parameters.
+	/// Selects a radio card (slot element) for the agent, or deselects it when already selected.
 	/// </summary>
 	public void SelectCard(PromptPartCardViewModel card)
+	{
+		if (!card.IsRadio)
+			return;
+
+		if (IsSelected(card))
+		{
+			DeselectCard(card);
+			return;
+		}
+
+		switch (card.Kind)
+		{
+			case PromptSlotKind.System:
+				SystemPromptSection?.SelectOption(card.Part.Guid);
+				break;
+			case PromptSlotKind.Persona:
+				PersonaSection?.SelectOption(card.Part.Guid);
+				break;
+			case PromptSlotKind.Specialization:
+				SpecializationSection?.SelectOption(card.Part.Guid);
+				break;
+		}
+	}
+
+	/// <summary>
+	/// Deselects the given radio card (clears the slot selection).
+	/// </summary>
+	public void DeselectCard(PromptPartCardViewModel card)
 	{
 		if (!card.IsRadio)
 			return;
@@ -591,21 +546,15 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 		switch (card.Kind)
 		{
 			case PromptSlotKind.System:
-				EffectiveSystemPrompt.UseCustomSystemPrompt = false;
-				EffectiveSystemPrompt.Id = card.Part.Guid;
+				SystemPromptSection?.Clear();
 				break;
 			case PromptSlotKind.Persona:
-				EffectivePersona.UseCustomPersona = false;
-				EffectivePersona.Id = card.Part.Guid;
+				PersonaSection?.Clear();
 				break;
 			case PromptSlotKind.Specialization:
-				EffectiveSpecialization.UseCustomSpecialization = false;
-				EffectiveSpecialization.Id = card.Part.Guid;
+				SpecializationSection?.Clear();
 				break;
 		}
-
-		card.EnsureParameters();
-		card.IsParametersVisible = true;
 	}
 
 	/// <summary>
@@ -619,18 +568,35 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 		if (selected && existing is null)
 		{
 			var selection = new PromptPartKeyedSelection<Guid> { Id = card.Part.Guid };
-			collection.Add(selection);
 			card.SetSelection(selection);
+			collection.Add(selection);
 			card.EnsureParameters();
-			card.IsParametersVisible = true;
 		}
 		else if (!selected && existing is not null)
 		{
 			collection.Remove(existing);
 			card.SetSelection(null);
-			card.IsParametersVisible = false;
 		}
 	}
+
+	/// <summary>
+	/// Sets a component selection for the agent (used by the components section checkboxes).
+	/// </summary>
+	public void SetComponentSelected(PromptComponent component, bool selected)
+	{
+		var collection = EffectivePromptComponents;
+		var existing = collection.FirstOrDefault(s => s.Id == component.Guid);
+
+		if (selected && existing is null)
+			collection.Add(new PromptPartKeyedSelection<Guid> { Id = component.Guid });
+		else if (!selected && existing is not null)
+			collection.Remove(existing);
+	}
+
+	/// <summary>
+	/// Gets a value indicating whether the component with the given GUID is selected.
+	/// </summary>
+	public bool IsComponentSelected(Guid guid) => EffectivePromptComponents.Any(s => s.Id == guid);
 
 	private void RefreshSelectionStates()
 	{
@@ -638,35 +604,36 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 			card.NotifySelectionChanged();
 	}
 
+	private void RefreshComponentItems()
+	{
+		foreach (var category in ComponentCategories)
+		{
+			foreach (var item in category.Components)
+				item.SyncSelection();
+		}
+	}
+
 	private void ApplyFilter()
 	{
 		var query = SearchText?.Trim() ?? string.Empty;
+		var typePredicate = SelectedTypeFilter?.Predicate;
 
-		ApplyFilterTo(SystemElementCards, _allSystemCards, query);
-		ApplyFilterTo(PersonaElementCards, _allPersonaCards, query);
-		ApplyFilterTo(SpecializationElementCards, _allSpecializationCards, query);
-		ApplyFilterTo(ComponentCards, _allComponentCards, query);
-
-		RaisePropertyChanged(nameof(IsSystemSectionVisible));
-		RaisePropertyChanged(nameof(IsPersonaSectionVisible));
-		RaisePropertyChanged(nameof(IsSpecializationSectionVisible));
-		RaisePropertyChanged(nameof(IsComponentsSectionVisible));
-		RaisePropertyChanged(nameof(IsAnyCardVisible));
-	}
-
-	private static void ApplyFilterTo(ObservableCollection<PromptPartCardViewModel> target, List<PromptPartCardViewModel> source, string query)
-	{
-		target.Clear();
-		foreach (var card in source)
+		SearchResults.Clear();
+		foreach (var card in _allCards)
 		{
-			if (query.Length == 0 ||
-				card.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-				card.Description.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-				card.Category.Contains(query, StringComparison.OrdinalIgnoreCase))
+			if (typePredicate is not null && !typePredicate(card.Part))
+				continue;
+			if (query.Length > 0 &&
+				!card.Name.Contains(query, StringComparison.OrdinalIgnoreCase) &&
+				!card.Description.Contains(query, StringComparison.OrdinalIgnoreCase) &&
+				!card.Category.Contains(query, StringComparison.OrdinalIgnoreCase))
 			{
-				target.Add(card);
+				continue;
 			}
+			SearchResults.Add(card);
 		}
+
+		RaisePropertyChanged(nameof(IsSearchEmpty));
 	}
 
 	/// <inheritdoc/>
@@ -677,21 +644,12 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 		if (disposing)
 		{
 			PromptSettings.PropertyChanged -= PromptSettings_PropertyChanged;
-
-			if (_subscribedSystemPrompt is not null)
-				_subscribedSystemPrompt.PropertyChanged -= OnEffectiveGroupChanged;
-			if (_subscribedPersona is not null)
-				_subscribedPersona.PropertyChanged -= OnEffectiveGroupChanged;
-			if (_subscribedSpecialization is not null)
-				_subscribedSpecialization.PropertyChanged -= OnEffectiveGroupChanged;
 			if (_subscribedComponents is not null)
 				_subscribedComponents.CollectionChanged -= EffectiveComponents_CollectionChanged;
-			if (_subscribedSliderValues is not null)
-				_subscribedSliderValues.CollectionChanged -= EffectiveSliderValues_CollectionChanged;
 
-			foreach (var value in _subscribedSliderValueItems)
-				value.PropertyChanged -= SliderValue_PropertyChanged;
-			_subscribedSliderValueItems.Clear();
+			SystemPromptSection?.Dispose();
+			PersonaSection?.Dispose();
+			SpecializationSection?.Dispose();
 
 			_allCards.ForEach(c => c.Dispose());
 			_allCards.Clear();

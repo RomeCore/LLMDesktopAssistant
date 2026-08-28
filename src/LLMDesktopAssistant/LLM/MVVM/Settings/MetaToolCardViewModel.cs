@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Controls.Dialogs;
@@ -47,7 +48,7 @@ public class MetaToolCardViewModel : ViewModelBase
 		BehaviourFlags = ToolBehaviourFlagInfo.CreateForFlags(info.Behaviours);
 		ArgumentSchemaText = info.ArgumentSchema is null
 			? null
-			: JsonSerializer.Serialize(info.ArgumentSchema, new JsonSerializerOptions { WriteIndented = true });
+			: JsonSerializer.Serialize(info.ArgumentSchema, new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
 
 		ToggleDetailsCommand = new RelayCommand(() => IsDetailsVisible = !IsDetailsVisible);
 		EditCommand = new RelayCommand(() => _onEdit?.Invoke(this));
