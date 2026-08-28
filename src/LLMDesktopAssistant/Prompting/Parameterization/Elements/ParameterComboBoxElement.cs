@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Data;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Parameterization.Values;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
@@ -143,8 +144,8 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 		{
 			var items = new List<ParameterBooleanComboItem>
 			{
-				new() { Value = true, Title = TrueTitle ?? "True" },
-				new() { Value = false, Title = FalseTitle ?? "False" }
+				new() { Value = true, Title = TrueTitle ?? Locale.Get("parameterization.combo.true") },
+				new() { Value = false, Title = FalseTitle ?? Locale.Get("parameterization.combo.false") }
 			};
 
 			var comboBox = new ComboBox

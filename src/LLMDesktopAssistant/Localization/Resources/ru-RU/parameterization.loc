@@ -1,0 +1,7 @@
+%locale: ru-RU
+%namespace: parameterization
+
+list.add: Добавить
+list.remove: Удалить
+combo.true: Да
+combo.false: Нет

@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Data;
 using LLMDesktopAssistant.Prompting.Parameterization.Values;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
@@ -125,7 +126,25 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 				slider.IsSnapToTickEnabled = true;
 				slider.TickFrequency = Math.Max(1, Step);
 			}
-			return WrapControl(slider);
+
+			var valueText = new TextBlock
+			{
+				Classes = { ParameterElementsStyles.SliderValueText },
+				[!TextBlock.TextProperty] = CreateBinding(numberValue, nameof(numberValue.Value), BindingMode.OneWay)
+			};
+
+			var panel = new Grid
+			{
+				ColumnDefinitions =
+				{
+					new ColumnDefinition(GridLength.Star),
+					new ColumnDefinition(new GridLength(50))
+				},
+				Children = { slider, valueText }
+			};
+			Grid.SetColumn(valueText, 1);
+
+			return WrapControl(panel);
 		}
 	}
 }

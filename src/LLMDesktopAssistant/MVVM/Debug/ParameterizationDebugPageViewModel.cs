@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Parameterization.Values;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
@@ -229,14 +230,14 @@ public class ParameterizationDebugPageViewModel : ViewModelBase
 			var schemaMetadata = template?.Metadata.TryGet<ParameterSchemaTemplateMetadata>();
 			if (schemaMetadata is null)
 			{
-				ParseErrorsText = "No 'params_schema' metadata found in the template.";
+				ParseErrorsText = Locale.Get("debug.parameterization.errors.no_metadata");
 				return;
 			}
 
 			var parserManager = ServiceRegistry.Provider.GetService<IParameterSchemaParserManager>();
 			if (parserManager is null)
 			{
-				ParseErrorsText = "IParameterSchemaParserManager service is not registered.";
+				ParseErrorsText = Locale.Get("debug.parameterization.errors.no_service");
 				return;
 			}
 
@@ -249,11 +250,11 @@ public class ParameterizationDebugPageViewModel : ViewModelBase
 			}
 
 			var log = new AppendOnlyList<ParameterValidationLogEntry>();
-			_rootValue = _schema.Root.CreateOrFixValue(null, log);
+			_rootValue = _schema.Root.CreateOrFixValue(_rootValue, log);
 			ValidationLogText = log.Count > 0
 				? string.Join(Environment.NewLine,
 					log.Select(l => $"{l.Status}: {l.OriginalValue?.ToString() ?? "null"} -> {l.FinalValue?.ToString() ?? "null"}"))
-				: "(empty)";
+				: Locale.Get("debug.parameterization.log.empty");
 
 			ParameterControl = _schema.Root.CreateControl(_rootValue);
 			RefreshValue();

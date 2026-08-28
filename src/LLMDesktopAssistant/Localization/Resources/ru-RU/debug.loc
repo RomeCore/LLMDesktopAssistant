@@ -16,3 +16,6 @@ parameterization.result.label: Параметризация
 parameterization.value.label: Значение (JSON)
 parameterization.errors.label: Ошибки парсинга
 parameterization.log.label: Лог валидации
+parameterization.errors.no_metadata: Метаданные 'params_schema' не найдены в шаблоне.
+parameterization.errors.no_service: Сервис IParameterSchemaParserManager не зарегистрирован.
+parameterization.log.empty: (пусто)

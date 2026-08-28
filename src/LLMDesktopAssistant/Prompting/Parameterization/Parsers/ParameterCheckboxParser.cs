@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Parsers
 	{
 		public string ElementType => "checkbox";
 
-		public ParameterSchemaLimitationType SupportedValueTypes => ParameterSchemaLimitationType.Boolean;
+		public ParameterSchemaLimitationType SupportedValueTypes => ParameterSchemaLimitationType.NotSpecified | ParameterSchemaLimitationType.Boolean;
 
 		public ParameterSchemaElement Parse(TemplateDictionaryAccessor lltSchema,
 			ParameterSchemaLimitationType requestedType, ParameterSchemaPath path, AppendOnlyList<ParameterSchemaParsingError> errors)

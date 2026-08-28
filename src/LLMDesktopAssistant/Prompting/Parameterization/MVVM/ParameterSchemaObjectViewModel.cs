@@ -27,7 +27,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.MVVM
 				var propertyValue = propertyElement.CreateOrFixValue(
 					value.Items.TryGetValue(key, out var existing) ? existing : null, []);
 				value.Items[key] = propertyValue;
-				Items.Add(new ParameterSchemaObjectItemViewModel(key, propertyElement, propertyValue));
+				Items.Add(new ParameterSchemaObjectItemViewModel(propertyElement, propertyValue));
 			}
 		}
 	}
@@ -37,17 +37,14 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.MVVM
 	/// </summary>
 	public class ParameterSchemaObjectItemViewModel
 	{
-		public string Key { get; }
-
 		public ParameterSchemaElement Element { get; }
 
 		public ParameterSchemaValue Value { get; }
 
 		public Control Control { get; }
 
-		public ParameterSchemaObjectItemViewModel(string key, ParameterSchemaElement element, ParameterSchemaValue value)
+		public ParameterSchemaObjectItemViewModel(ParameterSchemaElement element, ParameterSchemaValue value)
 		{
-			Key = key;
 			Element = element;
 			Value = value;
 			Control = element.CreateControl(value);

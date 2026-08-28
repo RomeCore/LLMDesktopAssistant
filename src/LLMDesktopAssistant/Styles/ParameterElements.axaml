@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:ico="using:Material.Icons.Avalonia">
 
 	<Design.PreviewWith>
 		<Border Padding="20">
@@ -9,7 +10,6 @@
 
 	<Style Selector="StackPanel.PromptParameterContainer">
 		<Setter Property="Spacing" Value="4"/>
-		<Setter Property="Margin" Value="0,4"/>
 	</Style>
 
 	<Style Selector="TextBox.PromptParameterTitleText">
@@ -36,6 +36,14 @@
 		<Setter Property="MinWidth" Value="200"/>
 	</Style>
 
+	<Style Selector="TextBlock.PromptParameterSliderValue">
+		<Setter Property="MinWidth" Value="40"/>
+		<Setter Property="TextAlignment" Value="Right"/>
+		<Setter Property="VerticalAlignment" Value="Center"/>
+		<Setter Property="FontSize" Value="12"/>
+		<Setter Property="Opacity" Value="0.8"/>
+	</Style>
+
 	<Style Selector="CheckBox.PromptParameterCheckbox">
 		<Setter Property="VerticalAlignment" Value="Center"/>
 	</Style>
@@ -51,48 +59,6 @@
 
 	<Style Selector="TextBox.PromptParameterTextBoxMultiline">
 		<Setter Property="MinHeight" Value="80"/>
-	</Style>
-
-	<Style Selector="ItemsControl.PromptParameterObject">
-		<Setter Property="Margin" Value="0,4"/>
-	</Style>
-
-	<Style Selector="StackPanel.PromptParameterPropertyContainer">
-		<Setter Property="Spacing" Value="4"/>
-		<Setter Property="Margin" Value="0,6,0,2"/>
-	</Style>
-
-	<Style Selector="TextBlock.PromptParameterPropertyTitle">
-		<Setter Property="FontSize" Value="12"/>
-		<Setter Property="FontWeight" Value="SemiBold"/>
-		<Setter Property="Opacity" Value="0.8"/>
-	</Style>
-
-	<Style Selector="ItemsControl.PromptParameterList">
-		<Setter Property="Margin" Value="0,4"/>
-	</Style>
-
-	<Style Selector="StackPanel.PromptParameterListContainer">
-		<Setter Property="Spacing" Value="4"/>
-	</Style>
-
-	<Style Selector="DockPanel.PromptParameterListItem">
-		<Setter Property="Margin" Value="0,4"/>
-	</Style>
-
-	<Style Selector="Button.PromptParameterAddButton">
-		<Setter Property="Margin" Value="0,4"/>
-		<Setter Property="Padding" Value="8,4"/>
-		<Setter Property="HorizontalAlignment" Value="Left"/>
-		<Setter Property="Opacity" Value="0.8"/>
-	</Style>
-
-	<Style Selector="Button.PromptParameterRemoveButton">
-		<Setter Property="Opacity" Value="0.5"/>
-	</Style>
-
-	<Style Selector="Button.PromptParameterRemoveButton:pointerover">
-		<Setter Property="Opacity" Value="1"/>
 	</Style>
 
 </Styles>

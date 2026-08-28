@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Parsers
 	/// Every method returns a <see cref="ParameterSchemaErrorElement"/> (and appends the error)
 	/// when the field is missing or has an invalid type, or <c>null</c> on success.
 	/// </summary>
-	internal static class ParameterSchemaParserHelpers
+	public static class ParameterSchemaParserHelpers
 	{
 		public static ParameterSchemaErrorElement? RequireString(TemplateDictionaryAccessor schema, string key,
 			ParameterSchemaPath path, AppendOnlyList<ParameterSchemaParsingError> errors, out string value)

@@ -1,5 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Data;
+using Avalonia.Data.Converters;
+using LLMDesktopAssistant.Converters;
 using LLMDesktopAssistant.Prompting.Parameterization.Values;
 using LLMDesktopAssistant.Utils;
 
@@ -36,28 +38,29 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 		/// <returns>The created control.</returns>
 		public abstract Control CreateControl(ParameterSchemaValue value);
 
-		protected BindingBase CreateBinding(object source, string path, BindingMode mode = BindingMode.Default)
+		protected BindingBase CreateBinding(object source, string path, BindingMode mode = BindingMode.Default, IValueConverter? converter = null)
 		{
 			return new ReflectionBinding(path)
 			{
 				Source = source,
-				Mode = mode
+				Mode = mode,
+				Converter = converter
 			};
 		}
 
 		protected Control WrapControl(Control control)
 		{
-			var title = new TextBox
+			var title = new TextBlock
 			{
 				Classes = { ParameterElementsStyles.TitleText },
 				[!TextBox.TextProperty] = CreateBinding(this, nameof(Title)),
-				[!TextBox.IsVisibleProperty] = CreateBinding(this, nameof(Title))
+				[!TextBox.IsVisibleProperty] = CreateBinding(this, nameof(Title), converter: StringNonEmptyToBooleanConverter.Instance)
 			};
-			var description = new TextBox
+			var description = new TextBlock
 			{
 				Classes = { ParameterElementsStyles.DescriptionText },
 				[!TextBox.TextProperty] = CreateBinding(this, nameof(Description)),
-				[!TextBox.IsVisibleProperty] = CreateBinding(this, nameof(Description))
+				[!TextBox.IsVisibleProperty] = CreateBinding(this, nameof(Description), converter: StringNonEmptyToBooleanConverter.Instance)
 			};
 			return new StackPanel
 			{

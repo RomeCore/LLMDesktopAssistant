@@ -16,3 +16,6 @@ parameterization.result.label: Parameterization
 parameterization.value.label: Value (JSON)
 parameterization.errors.label: Parsing errors
 parameterization.log.label: Validation log
+parameterization.errors.no_metadata: No 'params_schema' metadata found in the template.
+parameterization.errors.no_service: IParameterSchemaParserManager service is not registered.
+parameterization.log.empty: (empty)

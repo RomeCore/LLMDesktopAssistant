@@ -7,13 +7,15 @@
 			 x:Class="LLMDesktopAssistant.Prompting.Parameterization.MVVM.ParameterSchemaObjectView"
 			 x:DataType="local:ParameterSchemaObjectViewModel">
 
-	<ItemsControl ItemsSource="{Binding Items}" Classes="PromptParameterObject">
+	<ItemsControl ItemsSource="{Binding Items}">
+		<ItemsControl.ItemsPanel>
+			<ItemsPanelTemplate>
+				<StackPanel Orientation="Vertical" Spacing="4"/>
+			</ItemsPanelTemplate>
+		</ItemsControl.ItemsPanel>
 		<ItemsControl.ItemTemplate>
 			<DataTemplate x:DataType="local:ParameterSchemaObjectItemViewModel">
-				<StackPanel Classes="PromptParameterPropertyContainer">
-					<TextBlock Text="{Binding Key}" Classes="PromptParameterPropertyTitle"/>
-					<ContentControl Content="{Binding Control}"/>
-				</StackPanel>
+				<ContentControl Content="{Binding Control}"/>
 			</DataTemplate>
 		</ItemsControl.ItemTemplate>
 	</ItemsControl>

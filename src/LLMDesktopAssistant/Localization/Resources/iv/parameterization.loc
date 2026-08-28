@@ -1,0 +1,7 @@
+%locale:
+%namespace: parameterization
+
+list.add: Add
+list.remove: Remove
+combo.true: Yes
+combo.false: No
