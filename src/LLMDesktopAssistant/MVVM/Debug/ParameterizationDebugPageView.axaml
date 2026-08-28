@@ -1,0 +1,102 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+			 xmlns:local="using:LLMDesktopAssistant.MVVM.Debug"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 x:Class="LLMDesktopAssistant.MVVM.Debug.ParameterizationDebugPageView"
+			 x:DataType="local:ParameterizationDebugPageViewModel">
+
+	<Grid ColumnDefinitions="*,10,430" Margin="8">
+
+		<!-- Schema editor -->
+		<DockPanel>
+			<StackPanel DockPanel.Dock="Top"
+						Orientation="Horizontal"
+						Spacing="8"
+						Margin="0,0,0,6">
+				<Button Content="{loc:Loc debug.parameterization.parse}"
+						Command="{Binding ParseCommand}"/>
+				<Button Content="{loc:Loc debug.parameterization.reset}"
+						Command="{Binding ResetCommand}"/>
+				<Button Content="{loc:Loc debug.parameterization.refresh}"
+						Command="{Binding RefreshValueCommand}"/>
+			</StackPanel>
+			<TextBox Text="{Binding Text, Mode=TwoWay}"
+					 AcceptsReturn="True"
+					 TextWrapping="Wrap"
+					 FontFamily="Consolas, monospace"
+					 FontSize="12"/>
+		</DockPanel>
+
+		<GridSplitter Grid.Column="1"
+					  Width="4"
+					  ResizeDirection="Columns"
+					  HorizontalAlignment="Stretch"/>
+
+		<!-- Result -->
+		<ScrollViewer Grid.Column="2"
+					  VerticalScrollBarVisibility="Auto">
+			<StackPanel Spacing="10">
+
+				<TextBlock Text="{loc:Loc debug.parameterization.result.label}"
+						   FontWeight="Bold"
+						   FontSize="14"/>
+
+				<Border BorderBrush="{DynamicResource CardBorderBrush}"
+						BorderThickness="1"
+						CornerRadius="6"
+						Padding="10">
+					<ContentControl Content="{Binding ParameterControl}"
+									HorizontalContentAlignment="Stretch"/>
+				</Border>
+
+				<TextBlock Text="{loc:Loc debug.parameterization.value.label}"
+						   FontWeight="Bold"
+						   FontSize="14"/>
+				<Border BorderBrush="{DynamicResource CardBorderBrush}"
+						BorderThickness="1"
+						CornerRadius="6"
+						Padding="10">
+					<TextBlock Text="{Binding ValueJson}"
+							   FontFamily="Consolas, monospace"
+							   FontSize="11"
+							   TextWrapping="Wrap"/>
+				</Border>
+
+				<TextBlock Text="{loc:Loc debug.parameterization.errors.label}"
+						   FontWeight="Bold"
+						   FontSize="14"
+						   IsVisible="{Binding ParseErrorsText, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+				<Border BorderBrush="IndianRed"
+						BorderThickness="1"
+						CornerRadius="6"
+						Padding="10"
+						IsVisible="{Binding ParseErrorsText, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+					<TextBlock Text="{Binding ParseErrorsText}"
+							   Foreground="IndianRed"
+							   FontFamily="Consolas, monospace"
+							   FontSize="11"
+							   TextWrapping="Wrap"/>
+				</Border>
+
+				<TextBlock Text="{loc:Loc debug.parameterization.log.label}"
+						   FontWeight="Bold"
+						   FontSize="14"/>
+				<Border BorderBrush="{DynamicResource CardBorderBrush}"
+						BorderThickness="1"
+						CornerRadius="6"
+						Padding="10">
+					<TextBlock Text="{Binding ValidationLogText}"
+							   FontFamily="Consolas, monospace"
+							   FontSize="11"
+							   TextWrapping="Wrap"/>
+				</Border>
+
+			</StackPanel>
+		</ScrollViewer>
+
+	</Grid>
+
+</UserControl>

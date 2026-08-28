@@ -7,3 +7,12 @@ llt_editor.tokens.label: Tokens
 llt_editor.errors.label: Errors
 llt_editor.parse_time.label: Parse time
 llt_editor.errors.title: Errors
+
+parameterization.title: Parameterization
+parameterization.parse: Parse
+parameterization.reset: Reset
+parameterization.refresh: Refresh value
+parameterization.result.label: Parameterization
+parameterization.value.label: Value (JSON)
+parameterization.errors.label: Parsing errors
+parameterization.log.label: Validation log

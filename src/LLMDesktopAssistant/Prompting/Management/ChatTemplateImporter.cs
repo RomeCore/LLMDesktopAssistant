@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Prompting.Parameterization;
 using LLTSharp;
 using LLTSharp.Locale;
 using LLTSharp.Metadata;
@@ -19,6 +20,7 @@ namespace LLMDesktopAssistant.Prompting.Management
 			IEnumerable<IImportablePromptPartManager> promptPartManagers)
 		{
 			_library = new TemplateLibrary();
+			_library.MetadataFactories.Add(new ParameterSchemaTemplateMetadataFactory());
 			_library.SetLanguageFallbackScheme(new HierarchicalLanguageFallbackScheme(LanguageCode.Invariant));
 
 			_appTemplateImporter = appTemplateImporter;

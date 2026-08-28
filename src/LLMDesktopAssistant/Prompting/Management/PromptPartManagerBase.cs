@@ -1,4 +1,6 @@
 ﻿using System.Collections.Specialized;
+using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings.Application;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
@@ -107,6 +109,8 @@ namespace LLMDesktopAssistant.Prompting.Management
 			LanguageCode langCode = LanguageCode.Invariant;
 			string? title = null, description = null, category = null;
 			LanguageCode? localizedFor = null;
+			ParameterSchema? parameterSchema = null;
+			ParameterSchemaParsingDiagnostic? parameterSchemaParsingDiagnostic = null;
 
 			try
 			{
@@ -154,6 +158,38 @@ namespace LLMDesktopAssistant.Prompting.Management
 					diagnosticCode |= PromptPartDiagnosticCode.MissingLanguage;
 				}
 
+				var parameterSchemaData = template.Metadata.TryGet<ParameterSchemaTemplateMetadata>();
+				var parameterSchemaParser = ServiceRegistry.Provider.GetService<IParameterSchemaParserManager>();
+				if (parameterSchemaData is not null && parameterSchemaParser is not null)
+				{
+					try
+					{
+						var errors = new AppendOnlyList<ParameterSchemaParsingError>();
+						parameterSchema = parameterSchemaParser.ParseRoot(parameterSchemaData.Value, errors);
+
+						if (errors.Count > 0)
+						{
+							parameterSchemaParsingDiagnostic = new ParameterSchemaParsingDiagnostic
+							{
+								IsFatal = false,
+								Errors = errors.ToImmutableList(),
+								Exception = null
+							};
+							diagnosticCode |= PromptPartDiagnosticCode.InvalidParameterSchema;
+						}
+					}
+					catch (Exception ex)
+					{
+						parameterSchemaParsingDiagnostic = new ParameterSchemaParsingDiagnostic
+						{
+							IsFatal = true,
+							Errors = [],
+							Exception = ex
+						};
+						diagnosticCode |= PromptPartDiagnosticCode.InvalidParameterSchema;
+					}
+				}
+
 				title = template.Metadata.TryGetAdditional<string>("title");
 				description = template.Metadata.TryGetAdditional<string>("description");
 				category = template.Metadata.TryGetAdditional<string>("category");
@@ -177,7 +213,9 @@ namespace LLMDesktopAssistant.Prompting.Management
 						Messages = [],
 						Exception = null
 					},
-					Template = new SerializableTemplate(template)
+					Template = new SerializableTemplate(template),
+					ParameterSchema = parameterSchema,
+					ParameterSchemaParsingDiagnostic = parameterSchemaParsingDiagnostic
 				};
 				PopulateFromMetadata(part, template.Metadata, localizedFor != null);
 			}
@@ -199,7 +237,9 @@ namespace LLMDesktopAssistant.Prompting.Management
 						Code = diagnosticCode,
 						Messages = [ex.Message],
 						Exception = ex
-					}
+					},
+					ParameterSchema = parameterSchema,
+					ParameterSchemaParsingDiagnostic = parameterSchemaParsingDiagnostic
 				};
 			}
 			var key = GetKey(part);

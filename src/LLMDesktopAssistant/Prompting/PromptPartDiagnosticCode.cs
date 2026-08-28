@@ -21,8 +21,10 @@ namespace LLMDesktopAssistant.Prompting
 
 		MissingCategory = 1 << 7,
 
-		InvalidSliderRange = 1 << 8,
+		InvalidParameterSchema = 1 << 8,
 
-		InvalidSliderHints = 1 << 9,
+		InvalidSliderRange = 1 << 9,
+
+		InvalidSliderHints = 1 << 10,
 	}
 }

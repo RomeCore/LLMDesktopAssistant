@@ -52,6 +52,11 @@ public class DebugPagesViewModel : ViewModelBase
 			new DebugLeafNode(LocalizationManager.LocalizeStatic("debug.llt_editor.title"),
 				MaterialIconKind.FileCode,
 				() => new LLTEditorDebugPageViewModel()));
+
+		DebugTree.Add(
+			new DebugLeafNode(LocalizationManager.LocalizeStatic("debug.parameterization.title"),
+				MaterialIconKind.Tune,
+				() => new ParameterizationDebugPageViewModel()));
 	}
 
 	/// <inheritdoc/>

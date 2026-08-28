@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using LLMDesktopAssistant.Prompting.Parameterization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
@@ -25,6 +26,7 @@ namespace LLMDesktopAssistant.Prompting.Management
 		public AppTemplateImporter()
 		{
 			_library = new TemplateLibrary();
+			_library.MetadataFactories.Add(new ParameterSchemaTemplateMetadataFactory());
 			_library.SetLanguageFallbackScheme(new HierarchicalLanguageFallbackScheme(LanguageCode.Invariant));
 
 			_parser = new LLTParser();

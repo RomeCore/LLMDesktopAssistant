@@ -7,3 +7,12 @@ llt_editor.tokens.label: Токены
 llt_editor.errors.label: Ошибки
 llt_editor.parse_time.label: Время парсинга
 llt_editor.errors.title: Ошибки
+
+parameterization.title: Параметризация
+parameterization.parse: Разобрать
+parameterization.reset: Сбросить
+parameterization.refresh: Обновить значение
+parameterization.result.label: Параметризация
+parameterization.value.label: Значение (JSON)
+parameterization.errors.label: Ошибки парсинга
+parameterization.log.label: Лог валидации

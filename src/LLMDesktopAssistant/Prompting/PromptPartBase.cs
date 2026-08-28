@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
-using DocumentFormat.OpenXml.Office.CustomUI;
+using LLMDesktopAssistant.Prompting.Parameterization;
+using LLTSharp;
 using LLTSharp.Locale;
-using Microsoft.CodeAnalysis;
 
 namespace LLMDesktopAssistant.Prompting
 {
@@ -81,6 +81,21 @@ namespace LLMDesktopAssistant.Prompting
 		{
 			get => _template;
 			set => SetProperty(ref _template, value);
+		}
+
+		private ParameterSchema? _parameterSchema = null;
+		public ParameterSchema? ParameterSchema
+		{
+			get => _parameterSchema;
+			set => SetProperty(ref _parameterSchema, value);
+		}
+
+		private ParameterSchemaParsingDiagnostic? _parameterSchemaParsingDiagnostic = null;
+		[JsonIgnore]
+		public ParameterSchemaParsingDiagnostic? ParameterSchemaParsingDiagnostic
+		{
+			get => _parameterSchemaParsingDiagnostic;
+			set => SetProperty(ref _parameterSchemaParsingDiagnostic, value);
 		}
 
 		private PromptPartDiagnostic? _localizationDiagnostic = null;
