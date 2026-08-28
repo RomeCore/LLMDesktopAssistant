@@ -1160,19 +1160,90 @@ public class ObservableDictionaryTests
 	{
 		var dict = new ObservableDictionary<int, int>();
 
-		var addTask = Task.Run(() =>
+		var addTask = Task.Run(async () =>
 		{
 			for (int i = 0; i < 1000; i++)
+			{
 				dict.TryAdd(i, i);
+				await Task.Delay(1);
+			}
 		});
-		var readTask = Task.Run(() =>
+		var readTask = Task.Run(async () =>
 		{
 			for (int i = 0; i < 100; i++)
+			{
 				_ = dict.Keys;
+				await Task.Delay(1);
+			}
 		});
 
 		await Task.WhenAll(addTask, readTask);
 
 		Assert.Equal(1000, dict.Count);
+	}
+
+	// ========== Serialization ==========
+
+	[Fact]
+	public void Serialize_WithSystemTextJson_RoundTrip()
+	{
+		var dict = new ObservableDictionary<string, int> { ["a"] = 1, ["b"] = 2 };
+		var systemDict = new Dictionary<string, int> { ["a"] = 1, ["b"] = 2 };
+
+		var json = System.Text.Json.JsonSerializer.Serialize(dict);
+		var systemDictJson = System.Text.Json.JsonSerializer.Serialize(systemDict);
+
+		Assert.Equal(systemDictJson, json);
+
+		var deserialized = System.Text.Json.JsonSerializer.Deserialize<ObservableDictionary<string, int>>(json)!;
+		var deserializedDict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json)!;
+
+		Assert.Equal(dict.Keys, deserialized.Keys);
+		Assert.Equal(deserializedDict.Keys, deserialized.Keys);
+		Assert.Equal(dict.Values, deserialized.Values);
+		Assert.Equal(deserializedDict.Values, deserialized.Values);
+	}
+
+	[Fact]
+	public void Serialize_WithLiteDB_BSON_RoundTrip()
+	{
+		var dict = new ObservableDictionary<string, int> { ["a"] = 1, ["b"] = 2 };
+		var systemDict = new Dictionary<string, int> { ["a"] = 1, ["b"] = 2 };
+
+		var bson = LiteDB.BsonSerializer.Serialize(LiteDB.BsonMapper.Global.Serialize(dict).AsDocument);
+		var systemDictBson = LiteDB.BsonSerializer.Serialize(LiteDB.BsonMapper.Global.Serialize(systemDict).AsDocument);
+
+		Assert.Equal(systemDictBson, bson);
+
+		var deserialized = LiteDB.BsonMapper.Global.Deserialize<ObservableDictionary<string, int>>(LiteDB.BsonSerializer.Deserialize(bson));
+		var deserializedDict = LiteDB.BsonMapper.Global.Deserialize<Dictionary<string, int>>(LiteDB.BsonSerializer.Deserialize(bson));
+
+		Assert.Equal(dict.Keys, deserialized.Keys);
+		Assert.Equal(deserializedDict.Keys, deserialized.Keys);
+		Assert.Equal(dict.Values, deserialized.Values);
+		Assert.Equal(deserializedDict.Values, deserialized.Values);
+	}
+
+	[Fact]
+	public void Serialize_WithYamlDotNet_RoundTrip()
+	{
+		var dict = new ObservableDictionary<string, int> { ["a"] = 1, ["b"] = 2 };
+		var systemDict = new Dictionary<string, int> { ["a"] = 1, ["b"] = 2 };
+
+		var serializer = new YamlDotNet.Serialization.SerializerBuilder().Build();
+		var deserializer = new YamlDotNet.Serialization.DeserializerBuilder().Build();
+
+		var yaml = serializer.Serialize(dict);
+		var systemDictYaml = serializer.Serialize(systemDict);
+
+		Assert.Equal(systemDictYaml, yaml);
+
+		var deserialized = deserializer.Deserialize<ObservableDictionary<string, int>>(yaml);
+		var deserializedDict = deserializer.Deserialize<Dictionary<string, int>>(yaml);
+
+		Assert.Equal(dict.Keys, deserialized.Keys);
+		Assert.Equal(deserializedDict.Keys, deserialized.Keys);
+		Assert.Equal(dict.Values, deserialized.Values);
+		Assert.Equal(deserializedDict.Values, deserialized.Values);
 	}
 }
