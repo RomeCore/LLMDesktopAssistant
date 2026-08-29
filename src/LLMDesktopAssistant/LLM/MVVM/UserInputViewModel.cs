@@ -484,7 +484,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 
 		public UserInput? GetCurrentUserInput()
 		{
-			if (IsEmpty())
+			if (IsEmpty)
 				return null;
 
 			var userManager = Chat.Services.GetRequiredService<IUserManagementService>();
@@ -529,10 +529,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			EditingMessage = null;
 		}
 
-		public bool IsEmpty()
-		{
-			return string.IsNullOrWhiteSpace(_text) && Attachments.Count == 0;
-		}
+		public bool IsEmpty => string.IsNullOrWhiteSpace(_text) && Attachments.Count == 0;
 
 		public async Task AcceptDropAsync(DragEventArgs args)
 		{

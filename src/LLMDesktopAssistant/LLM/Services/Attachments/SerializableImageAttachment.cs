@@ -3,7 +3,7 @@ using LiteDB;
 using RCLargeLanguageModels.Messages.Attachments;
 using SixLabors.ImageSharp;
 
-namespace LLMDesktopAssistant.Attachments
+namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
 	public class SerializableImageAttachment : IImageBase64Attachment
 	{

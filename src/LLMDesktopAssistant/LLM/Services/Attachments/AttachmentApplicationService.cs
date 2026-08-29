@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Files;
+using RCLargeLanguageModels.Messages.Attachments;
 
 namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
@@ -85,6 +86,25 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 			return name;
 		}
 
+		private static readonly string[] ImageExtensions =
+		[
+			".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp", ".tif", ".tiff", ".avif", ".qoi"
+		];
+
+		private static bool IsImageFile(string path)
+		{
+			var extension = Path.GetExtension(path);
+			return !string.IsNullOrEmpty(extension) &&
+				ImageExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+		}
+
+		private static string GetTempDestinationPath(Uri uri)
+		{
+			var fileName = Path.GetFileName(uri.LocalPath);
+			var safeName = string.IsNullOrWhiteSpace(fileName) ? "download" : SanitizeFileName(fileName);
+			return Path.Combine(Directories.TempFiles, $"{Guid.NewGuid():N}-{safeName}");
+		}
+
 		public async Task<Attachment> ApplyAttachmentAsync(
 			AttachmentApplicationParameters parameters,
 			CancellationToken cancellationToken = default)
@@ -92,15 +112,47 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 			var sourceUri = parameters.SourceUri;
 
 			var workingDir = chatSettings.Settings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
-			var attachmentsDir = Path.Combine(workingDir, Directories.WorkingHome, "attachments");
-			Directory.CreateDirectory(attachmentsDir);
 
-			var destPath = GetDestinationPath(sourceUri, attachmentsDir);
-			var localPath = Path.GetRelativePath(workingDir, destPath);
+			string destPath;
+			if (parameters.CopyToWorkingDirectory)
+			{
+				var attachmentsDir = Path.Combine(workingDir, Directories.WorkingHome, "attachments");
+				Directory.CreateDirectory(attachmentsDir);
 
-			await EnsureLocalFileAsync(sourceUri, destPath, cancellationToken);
+				destPath = GetDestinationPath(sourceUri, attachmentsDir);
+				await EnsureLocalFileAsync(sourceUri, destPath, cancellationToken);
+			}
+			else if (IsWebUrl(sourceUri))
+			{
+				// Web resources cannot be attached without downloading,
+				// but they are stored outside the working directory.
+				destPath = GetTempDestinationPath(sourceUri);
+				await EnsureLocalFileAsync(sourceUri, destPath, cancellationToken);
+			}
+			else
+			{
+				// Use the source file as is, without copying it to the working directory.
+				destPath = sourceUri.LocalPath;
+				if (!File.Exists(destPath))
+					throw new FileNotFoundException("File not found", destPath);
+			}
 
+			var localPath = parameters.CopyToWorkingDirectory ? Path.GetRelativePath(workingDir, destPath) : null;
 			var metrics = FileUtils.GetFileMetrics(destPath);
+
+			IAttachment? nativeAttachment = null;
+			if (parameters.ApplyNative && IsImageFile(destPath))
+			{
+				try
+				{
+					nativeAttachment = new SerializableImageAttachment(destPath);
+				}
+				catch
+				{
+					// The file has an image extension but is not a valid image,
+					// so it is attached without a native LLM attachment.
+				}
+			}
 
 			return new Attachment
 			{
@@ -108,7 +160,8 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 				SourceUrl = sourceUri.AbsoluteUri,
 				LocalPath = localPath,
 				Size = (int)metrics.Size,
-				Lines = metrics.LineCount
+				Lines = metrics.LineCount,
+				NativeAttachment = nativeAttachment
 			};
 		}
 	}

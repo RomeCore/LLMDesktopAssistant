@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// Gets or sets the local path relative to the working folder (see <see cref="IChatSettingsService.Settings"/>).
 		/// This is where attachment file is copied and can be used for tools like Python, Filesystem, Shell interpreters, etc.
 		/// </summary>
-		public required string LocalPath { get; init; }
+		public required string? LocalPath { get; init; }
 
 		/// <summary>
 		/// Gets or sets the size of the attachment in bytes.
