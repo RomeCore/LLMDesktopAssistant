@@ -92,8 +92,8 @@ slot_elements.hint: Select reusable prompt elements (system prompts, personas, s
 source.builtintemplate: Built-in
 source.configuration: Configuration
 source.unknown: Unknown
-source.usertemplate: User
-source.workdirtemplate: Workdir
+source.usertemplate: User Profile
+source.workdirtemplate: Working Directory
 specializations: Specializations
 system_prompt: System prompt
 system_prompt.clear: Clear system prompt

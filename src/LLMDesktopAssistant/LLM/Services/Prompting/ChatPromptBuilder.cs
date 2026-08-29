@@ -116,7 +116,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				name = s.Name,
 				description = s.Description,
 				path = s.Path,
-				body = s.InjectionMode is SkillInjectionMode.Full ? s.BodyGetter() : null
+				body = s.InjectionMode is SkillInjectionMode.Full ? s.BodyGetter(s) : null
 			});
 			generalContext["sub_agents"] = subAgentSetBuilder.GetSubAgentsForAgent(agent).Select(s => new
 			{

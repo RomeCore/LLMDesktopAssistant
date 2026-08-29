@@ -233,7 +233,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 							{
 								Name = name.Trim(),
 								Description = description.Trim(),
-								BodyGetter = new(() => body),
+								BodyGetter = _ => body,
 								Source = source,
 								Path = fullpath,
 								HomeDirectory = homeDir,
@@ -258,7 +258,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 							{
 								Name = name.Trim(),
 								Description = description.Trim(),
-								BodyGetter = new(() => body),
+								BodyGetter = _ => body,
 								Source = source,
 								Path = fullpath,
 								HomeDirectory = homeDir,
@@ -276,7 +276,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 					{
 						Name = name.Trim(),
 						Description = description.Trim(),
-						BodyGetter = new(() => body),
+						BodyGetter = _ => body,
 						Source = source,
 						Path = fullpath,
 						HomeDirectory = homeDir,

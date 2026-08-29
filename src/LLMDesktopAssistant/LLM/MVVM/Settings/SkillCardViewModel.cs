@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.Prompting.Parameterization.Values;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
@@ -85,6 +87,8 @@ public class SkillCardViewModel : ViewModelBase
 	private readonly IExplorerOpener? _explorerOpener;
 	private SkillChange? _change;
 	private bool _isDetailsVisible;
+	private bool _isParametersVisible;
+	private ParameterSchemaValue? _localParameters;
 	private string? _body;
 
 	/// <summary>
@@ -125,6 +129,7 @@ public class SkillCardViewModel : ViewModelBase
 			.ToImmutableList();
 
 		ToggleDetailsCommand = new RelayCommand(() => IsDetailsVisible = !IsDetailsVisible);
+		ToggleParametersCommand = new RelayCommand(ToggleParameters);
 		ResetCommand = new RelayCommand(Reset, () => CanToggle);
 		FilterByTagCommand = new RelayCommand<string?>(tag =>
 		{
@@ -313,7 +318,49 @@ public class SkillCardViewModel : ViewModelBase
 	/// <summary>
 	/// Gets the body (SKILL.md content excluding the YAML frontmatter) of the skill.
 	/// </summary>
-	public string Body => _body ??= _info.BodyGetter();
+	public string Body => _body ??= _info.BodyGetter(_info);
+
+	/// <summary>
+	/// Gets a value indicating whether the skill template has a parameter schema that can be edited.
+	/// </summary>
+	public bool CanShowParameters => Info.ParameterSchema is not null;
+
+	/// <summary>
+	/// Gets or sets a value indicating whether the parameters section is visible.
+	/// When the section is collapsed, the body preview is invalidated so that it
+	/// reflects the current parameter values on the next access.
+	/// </summary>
+	public bool IsParametersVisible
+	{
+		get => _isParametersVisible;
+		set
+		{
+			if (SetProperty(ref _isParametersVisible, value) && !value)
+				InvalidateBody();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the current parameter values of the skill.
+	/// When <see cref="CanToggle"/> is <see langword="true"/>, the values are persisted in the
+	/// <see cref="SkillChange"/>; otherwise they are only used as a local preview (defaults).
+	/// </summary>
+	public ParameterSchemaValue? Parameters
+	{
+		get => _change?.Parameters ?? _localParameters;
+		set
+		{
+			if (CanToggle)
+			{
+				if (_change != null)
+					_change.Parameters = value;
+			}
+			else
+			{
+				_localParameters = value;
+			}
+		}
+	}
 
 	/// <summary>
 	/// Gets a value indicating whether the details section has any content.
@@ -335,6 +382,11 @@ public class SkillCardViewModel : ViewModelBase
 	/// Gets the command that toggles the details section visibility.
 	/// </summary>
 	public ICommand ToggleDetailsCommand { get; }
+
+	/// <summary>
+	/// Gets the command that toggles the parameters section visibility.
+	/// </summary>
+	public ICommand ToggleParametersCommand { get; }
 
 	/// <summary>
 	/// Gets the command that resets the per-agent changes of this skill.
@@ -367,11 +419,49 @@ public class SkillCardViewModel : ViewModelBase
 		{
 			_changes.Remove(_change);
 			_change = null;
+			IsParametersVisible = false;
 			RaisePropertyChanged(nameof(Enabled));
 			RaisePropertyChanged(nameof(EnabledChanged));
 			RaisePropertyChanged(nameof(SelectedInjectionMode));
 			RaisePropertyChanged(nameof(InjectionModeChanged));
+			RaisePropertyChanged(nameof(Parameters));
 		}
+	}
+
+	/// <summary>
+	/// Creates or fixes the parameter value from the skill's schema and persists it in the change.
+	/// </summary>
+	public void EnsureParameters()
+	{
+		if (Info.ParameterSchema is null)
+			return;
+
+		if (CanToggle)
+		{
+			var change = EnsureChange();
+			var log = new AppendOnlyList<ParameterValidationLogEntry>();
+			change.Parameters = Info.ParameterSchema.Root.CreateOrFixValue(change.Parameters, log);
+		}
+		else
+		{
+			_localParameters = Info.ParameterSchema.Root.CreateOrFixValue(_localParameters, []);
+		}
+		RaisePropertyChanged(nameof(Parameters));
+	}
+
+	private void ToggleParameters()
+	{
+		if (!CanShowParameters)
+			return;
+		EnsureParameters();
+		IsParametersVisible = !IsParametersVisible;
+	}
+
+	private void InvalidateBody()
+	{
+		_body = null;
+		RaisePropertyChanged(nameof(Body));
+		RaisePropertyChanged(nameof(HasDetails));
 	}
 
 	private SkillChange EnsureChange()

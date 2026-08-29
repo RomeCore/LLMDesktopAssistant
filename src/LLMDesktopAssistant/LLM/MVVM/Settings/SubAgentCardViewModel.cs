@@ -4,6 +4,8 @@ using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.Prompting.Parameterization.Values;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
@@ -91,6 +93,8 @@ public class SubAgentCardViewModel : ViewModelBase
 	private readonly IExplorerOpener? _explorerOpener;
 	private SubAgentChange? _change;
 	private bool _isDetailsVisible;
+	private bool _isParametersVisible;
+	private ParameterSchemaValue? _localParameters;
 	private string? _systemPrompt;
 
 	/// <summary>
@@ -140,6 +144,7 @@ public class SubAgentCardViewModel : ViewModelBase
 			.ToImmutableList();
 
 		ToggleDetailsCommand = new RelayCommand(() => IsDetailsVisible = !IsDetailsVisible);
+		ToggleParametersCommand = new RelayCommand(ToggleParameters);
 		ResetCommand = new RelayCommand(Reset, () => CanToggle);
 		FilterByTagCommand = new RelayCommand<string?>(tag =>
 		{
@@ -374,7 +379,49 @@ public class SubAgentCardViewModel : ViewModelBase
 	/// <summary>
 	/// Gets the system prompt of the sub-agent.
 	/// </summary>
-	public string SystemPrompt => _systemPrompt ??= _info.SystemPromptGetter();
+	public string SystemPrompt => _systemPrompt ??= _info.SystemPromptGetter(_info);
+
+	/// <summary>
+	/// Gets a value indicating whether the sub-agent template has a parameter schema that can be edited.
+	/// </summary>
+	public bool CanShowParameters => Info.ParameterSchema is not null;
+
+	/// <summary>
+	/// Gets or sets a value indicating whether the parameters section is visible.
+	/// When the section is collapsed, the system prompt preview is invalidated so that it
+	/// reflects the current parameter values on the next access.
+	/// </summary>
+	public bool IsParametersVisible
+	{
+		get => _isParametersVisible;
+		set
+		{
+			if (SetProperty(ref _isParametersVisible, value) && !value)
+				InvalidateSystemPrompt();
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the current parameter values of the sub-agent.
+	/// When <see cref="CanToggle"/> is <see langword="true"/>, the values are persisted in the
+	/// <see cref="SubAgentChange"/>; otherwise they are only used as a local preview (defaults).
+	/// </summary>
+	public ParameterSchemaValue? Parameters
+	{
+		get => _change?.Parameters ?? _localParameters;
+		set
+		{
+			if (CanToggle)
+			{
+				if (_change != null)
+					_change.Parameters = value;
+			}
+			else
+			{
+				_localParameters = value;
+			}
+		}
+	}
 
 	/// <summary>
 	/// Gets a value indicating whether the details section has any content.
@@ -429,6 +476,11 @@ public class SubAgentCardViewModel : ViewModelBase
 	public ICommand ToggleDetailsCommand { get; }
 
 	/// <summary>
+	/// Gets the command that toggles the parameters section visibility.
+	/// </summary>
+	public ICommand ToggleParametersCommand { get; }
+
+	/// <summary>
 	/// Gets the command that resets the per-agent changes of this sub-agent.
 	/// </summary>
 	public ICommand ResetCommand { get; }
@@ -459,11 +511,49 @@ public class SubAgentCardViewModel : ViewModelBase
 		{
 			_changes.Remove(_change);
 			_change = null;
+			IsParametersVisible = false;
 			RaisePropertyChanged(nameof(Enabled));
 			RaisePropertyChanged(nameof(EnabledChanged));
 			RaisePropertyChanged(nameof(SelectedModel));
 			RaisePropertyChanged(nameof(ModelChanged));
+			RaisePropertyChanged(nameof(Parameters));
 		}
+	}
+
+	/// <summary>
+	/// Creates or fixes the parameter value from the sub-agent's schema and persists it in the change.
+	/// </summary>
+	public void EnsureParameters()
+	{
+		if (Info.ParameterSchema is null)
+			return;
+
+		if (CanToggle)
+		{
+			var change = EnsureChange();
+			var log = new AppendOnlyList<ParameterValidationLogEntry>();
+			change.Parameters = Info.ParameterSchema.Root.CreateOrFixValue(change.Parameters, log);
+		}
+		else
+		{
+			_localParameters = Info.ParameterSchema.Root.CreateOrFixValue(_localParameters, []);
+		}
+		RaisePropertyChanged(nameof(Parameters));
+	}
+
+	private void ToggleParameters()
+	{
+		if (!CanShowParameters)
+			return;
+		EnsureParameters();
+		IsParametersVisible = !IsParametersVisible;
+	}
+
+	private void InvalidateSystemPrompt()
+	{
+		_systemPrompt = null;
+		RaisePropertyChanged(nameof(SystemPrompt));
+		RaisePropertyChanged(nameof(HasDetails));
 	}
 
 	private SubAgentChange EnsureChange()

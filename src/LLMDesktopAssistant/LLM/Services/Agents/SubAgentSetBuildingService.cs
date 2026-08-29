@@ -27,20 +27,37 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 			var promptSubAgents = subAgentManager.GetAll().ToList();
 			if (promptSubAgents.Count > 0)
 			{
-				var context = new Dictionary<string, object?>();
-				foreach (var expander in promptSystemContextExpanders)
-					expander.ExpandPromptContext(context);
-				var templateFunctions = new TemplateFunctionSet(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
-
-				subAgents.AddRange(promptSubAgents.Select(s =>
+				subAgents.AddRange(promptSubAgents.Select(sp =>
 				{
 					return new SubAgentInfo
 					{
-						Name = s.Name,
-						Description = s.Description ?? string.Empty,
-						SystemPromptGetter = new(() => s.EffectiveTemplate.Render(context, templateFunctions).ToString() ?? string.Empty),
+						Name = sp.Name,
+						Description = sp.Description ?? string.Empty,
+						SystemPromptGetter = new(si =>
+						{
+							var context = new Dictionary<string, object?>();
+							foreach (var expander in promptSystemContextExpanders)
+								expander.ExpandPromptContext(context);
+							var templateFunctions = new TemplateFunctionSet(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
+
+							if (sp.ParameterSchema is not null)
+							{
+								if (si.Change is not null)
+								{
+									si.Change.Parameters = sp.ParameterSchema.Root.CreateOrFixValue(si.Change.Parameters, []);
+									context["params"] = si.Change.Parameters.GetTemplateDataAccessor();
+								}
+								else
+								{
+									var @params = sp.ParameterSchema.Root.CreateOrFixValue(null, []);
+									context["params"] = @params.GetTemplateDataAccessor();
+								}
+							}
+							return sp.EffectiveTemplate.Render(context, templateFunctions).ToString() ?? string.Empty;
+						}),
 						Source = SubAgentSource.Template,
-						TemplateSource = s.Source
+						TemplateSource = sp.Source,
+						ParameterSchema = sp.ParameterSchema
 					};
 				}));
 			}
@@ -83,6 +100,7 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 						AdditionalProperties = last.AdditionalProperties,
 						Model = last.Model,
 						Enabled = last.Enabled,
+						ParameterSchema = last.ParameterSchema,
 						Overrides = overridesBuilder.ToImmutable()
 					};
 				});
@@ -113,8 +131,6 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 					if (change.Enabled ?? subAgentInfo.Enabled ?? subAgentset.SubAgentsEnabledByDefault)
 						result.Add(new SubAgentInfo
 						{
-							Enabled = true,
-							Model = change.Model ?? subAgentInfo.Model,
 							Name = subAgentInfo.Name,
 							Source = subAgentInfo.Source,
 							TemplateSource = subAgentInfo.TemplateSource,
@@ -131,6 +147,11 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 							MemoryBlocks = subAgentInfo.MemoryBlocks,
 							Tags = subAgentInfo.Tags,
 							AdditionalProperties = subAgentInfo.AdditionalProperties,
+							Enabled = true,
+							Model = change.Model ?? subAgentInfo.Model,
+							Change = change,
+							ParameterSchema = subAgentInfo.ParameterSchema,
+							Overrides = subAgentInfo.Overrides
 						});
 				}
 				else

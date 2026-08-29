@@ -228,6 +228,7 @@ skills.create.success: Skill created. The file is open for editing.
 skills.delete: Delete file
 skills.delete.title: Delete skill?
 skills.delete.confirm: The file {0} will be permanently deleted. This action cannot be undone.
+skills.parameters: Parameters
 skills.details: Details
 skills.details.body: Skill Body
 skills.details.allowed_tools: Without Approval
@@ -310,8 +311,8 @@ tools.meta_tools.details: Argument schema
 tools.meta_tools.approval: Approval level
 tools.meta_tools.scope: Scope
 tools.meta_tools.scope.all: All scopes
-tools.meta_tools.scope.userprofile: App
-tools.meta_tools.scope.workingdirectory: Working directory
+tools.meta_tools.scope.userprofile: User Profile
+tools.meta_tools.scope.workingdirectory: Working Directory
 tools.meta_tools.scope.custom: Custom
 tools.meta_tools.language.all: All languages
 tools.meta_tools.language.lua: Lua
@@ -410,6 +411,7 @@ sub_agents.file.placeholder: C:/MyProject/.claude/agents/my-agent.md
 sub_agents.select_directory: Select sub-agent directory
 sub_agents.select_file: Select sub-agent file
 sub_agents.empty: No sub-agents found. Check the sources or create a new sub-agent.
+sub_agents.parameters: Parameters
 sub_agents.details: Details
 sub_agents.details.system_prompt: System Prompt
 sub_agents.details.allowed_tools: Without Approval

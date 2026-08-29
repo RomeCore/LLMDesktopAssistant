@@ -147,7 +147,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 				Name = name,
 				Description = string.Empty,
 				Source = SkillSource.Unknown,
-				BodyGetter = new(() => string.Empty),
+				BodyGetter = _ => string.Empty,
 				Diagnostic = diagnostic,
 				Path = file,
 				HomeDirectory = Path.GetDirectoryName(file)

@@ -147,7 +147,7 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 				Name = name,
 				Description = string.Empty,
 				Source = SubAgentSource.Unknown,
-				SystemPromptGetter = new(() => string.Empty),
+				SystemPromptGetter = _ => string.Empty,
 				Diagnostic = diagnostic,
 				Path = file
 			};

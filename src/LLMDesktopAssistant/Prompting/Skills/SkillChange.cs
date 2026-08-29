@@ -1,6 +1,6 @@
 ﻿namespace LLMDesktopAssistant.Prompting.Skills
 {
-	public class SkillChange : NotifyPropertyChanged
+	public class SkillChange : PromptPartSelection
 	{
 		private string _skillName = string.Empty;
 		/// <summary>

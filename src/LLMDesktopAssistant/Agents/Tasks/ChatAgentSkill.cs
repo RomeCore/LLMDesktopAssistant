@@ -22,6 +22,6 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			ChatSkillInfo = chatSkillInfo;
 		}
 
-		public override Task<string> GetBodyAsync(CancellationToken cancellationToken = default) => Task.FromResult(ChatSkillInfo.BodyGetter());
+		public override Task<string> GetBodyAsync(CancellationToken cancellationToken = default) => Task.FromResult(ChatSkillInfo.BodyGetter(ChatSkillInfo));
 	}
 }

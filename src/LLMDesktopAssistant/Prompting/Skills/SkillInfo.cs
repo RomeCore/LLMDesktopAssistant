@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.Prompting.Parameterization.Values;
 using LLMDesktopAssistant.Tools;
 using YamlDotNet.RepresentationModel;
 
@@ -24,7 +26,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		/// <summary>
 		/// The SKILL.md content getter, excluding the YAML frontmatter.
 		/// </summary>
-		public required Func<string> BodyGetter { get; init; }
+		public required Func<SkillInfo, string> BodyGetter { get; init; }
 
 		/// <summary>
 		/// The source of the skill.
@@ -108,6 +110,17 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		/// The mode in which the skill should be injected into the prompt.
 		/// </summary>
 		public SkillInjectionMode InjectionMode { get; init; } = SkillInjectionMode.Default;
+
+		/// <summary>
+		/// The change confiuration object that been used to make some changes to this skill instance.
+		/// </summary>
+		public SkillChange? Change { get; init; } = null;
+
+		/// <summary>
+		/// The parameter schema of the skill template, if the skill body is an LLT template with @params metadata.
+		/// Null for plain-text skills without parameters.
+		/// </summary>
+		public ParameterSchema? ParameterSchema { get; init; } = null;
 
 		/// <summary>
 		/// Gets the list of overriden skills during deduplication by name.

@@ -140,13 +140,6 @@
 			<!-- ============================================================ -->
 			<WrapPanel>
 
-				<Border Classes="Chip" ToolTip.Tip="{loc:Loc prompt.metadata.source}">
-					<StackPanel Orientation="Horizontal" Spacing="3">
-						<ico:MaterialIcon Kind="{Binding SourceIcon}" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="ChipText" Text="{loc:Loc {Binding SourceNameKey}}"/>
-					</StackPanel>
-				</Border>
-
 				<Button Classes="ChipButton"
 								Command="{Binding FilterByCategoryCommand}"
 								CommandParameter="{Binding Category}"
@@ -162,16 +155,18 @@
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="Language" Width="12" Height="12" VerticalAlignment="Center"/>
 						<TextBlock Classes="ChipText" Text="{Binding LanguageName}"/>
+						<TextBlock Classes="ChipText" Text="→"
+									   IsVisible="{Binding LocalizedForName, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+						<TextBlock Classes="ChipText" Text="{Binding LocalizedForName}"
+									   IsVisible="{Binding LocalizedForName, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 					</StackPanel>
 				</Border>
 
-				<Border Classes="Chip" ToolTip.Tip="{loc:Loc prompt.metadata.localized_for}"
-								IsVisible="{Binding LocalizedForName, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
-					<StackPanel Orientation="Horizontal" Spacing="3">
-						<ico:MaterialIcon Kind="Translate" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="ChipText" Text="{Binding LocalizedForName}"/>
-					</StackPanel>
-				</Border>
+				<!-- Source indicator -->
+				<StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" Margin="4,0,0,0">
+					<ico:MaterialIcon Kind="{Binding SourceIcon}" Width="12" Height="12" Opacity="0.5" VerticalAlignment="Center"/>
+					<TextBlock Text="{loc:Loc {Binding SourceNameKey}}" Opacity="0.5" FontSize="11" VerticalAlignment="Center"/>
+				</StackPanel>
 
 			</WrapPanel>
 

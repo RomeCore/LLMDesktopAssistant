@@ -91,8 +91,8 @@ specialization.hint: Выберите профессиональную спец�
 slot_elements.hint: Выберите переиспользуемые элементы промптов (системные промпты, персоны, специализации) для этого агента. Нажмите на карточку, чтобы использовать её.
 source.builtintemplate: Встроенный
 source.configuration: Конфигурация
-source.unknown: Неизвестный
-source.usertemplate: Пользовательский
+source.unknown: Неизвестно
+source.usertemplate: Профиль пользователя
 source.workdirtemplate: Рабочая директория
 specializations: Специализации
 system_prompt: Системный промпт

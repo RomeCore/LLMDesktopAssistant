@@ -6,6 +6,7 @@
 						 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
 						 xmlns:loc="using:LLMDesktopAssistant.Localization"
 						 xmlns:ico="using:Material.Icons.Avalonia"
+						 xmlns:ctrls="using:LLMDesktopAssistant.Controls"
 						 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.SkillCardView"
 						 x:DataType="local:SkillCardViewModel">
 
@@ -145,6 +146,7 @@
 								IsVisible="{Binding CanToggle}">
 					<ico:MaterialIcon Kind="Refresh"/>
 				</Button>
+
 			</Grid>
 
 			<!-- ============================================================ -->
@@ -227,49 +229,70 @@
 			</StackPanel>
 
 			<!-- ============================================================ -->
-			<!-- Row 4: Path + file actions                                   -->
+			<!-- Row 4: Actions + Parameters/Details                          -->
 			<!-- ============================================================ -->
-			<Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="28,0,0,0"
-					  IsVisible="{Binding IsFileBased}">
+			<Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="28,0,0,0">
 
-				<StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
-					<Button Command="{Binding OpenFileCommand}"
-							Classes="SmallIconButton"
-							ToolTip.Tip="{loc:Loc settings.skills.open}">
-						<ico:MaterialIcon Kind="OpenInNew"/>
-					</Button>
-					<Button Command="{Binding ShowInExplorerCommand}"
-							Classes="SmallIconButton"
-							ToolTip.Tip="{loc:Loc settings.skills.show_in_explorer}">
-						<ico:MaterialIcon Kind="FolderOpen"/>
-					</Button>
-					<Button Command="{Binding DeleteFileCommand}"
-							Classes="SmallIconButton"
-							ToolTip.Tip="{loc:Loc settings.skills.delete}">
-						<ico:MaterialIcon Kind="Delete"/>
-					</Button>
-				</StackPanel>
-
-				<TextBlock Grid.Column="1"
+				<TextBlock Grid.Column="0"
 						   Text="{Binding Path}"
 						   Opacity="0.4"
 						   FontSize="11"
 						   TextTrimming="CharacterEllipsis"
 						   VerticalAlignment="Center"
 						   IsVisible="{Binding Path, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+				
+				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+					<Button Command="{Binding OpenFileCommand}"
+							Classes="SmallIconButton"
+							ToolTip.Tip="{loc:Loc settings.skills.open}"
+							IsEnabled="{Binding HasPath}">
+						<ico:MaterialIcon Kind="OpenInNew"/>
+					</Button>
+					<Button Command="{Binding ShowInExplorerCommand}"
+							Classes="SmallIconButton"
+							ToolTip.Tip="{loc:Loc settings.skills.show_in_explorer}"
+							IsEnabled="{Binding HasPath}">
+						<ico:MaterialIcon Kind="FolderOpen"/>
+					</Button>
+					<Button Command="{Binding DeleteFileCommand}"
+							Classes="SmallIconButton"
+							ToolTip.Tip="{loc:Loc settings.skills.delete}"
+							IsEnabled="{Binding HasPath}">
+						<ico:MaterialIcon Kind="Delete"/>
+					</Button>
+
+					<!-- Parameters -->
+					<ToggleButton Command="{Binding ToggleParametersCommand}"
+									IsChecked="{Binding IsParametersVisible, Mode=OneWay}"
+									Classes="SmallIconButton"
+									ToolTip.Tip="{loc:Loc settings.skills.parameters}"
+									IsVisible="{Binding CanShowParameters}"
+									Margin="4,0,0,0">
+						<ico:MaterialIcon Kind="Tune" Width="14" Height="14"/>
+					</ToggleButton>
+
+					<!-- Details -->
+					<ToggleButton Command="{Binding ToggleDetailsCommand}"
+									IsChecked="{Binding IsDetailsVisible, Mode=OneWay}"
+									Classes="SmallIconButton"
+									ToolTip.Tip="{loc:Loc settings.skills.details}">
+						<ico:MaterialIcon Kind="CardAccountDetailsOutline" Width="14" Height="14"/>
+					</ToggleButton>
+				</StackPanel>
+
 			</Grid>
 
 			<!-- ============================================================ -->
-			<!-- Row 5: Details toggle                                        -->
+			<!-- Row 5: Parameters content                                   -->
 			<!-- ============================================================ -->
-			<ToggleButton Margin="24,0,0,0"
-									  Command="{Binding ToggleDetailsCommand}"
-									  IsChecked="{Binding IsDetailsVisible, Mode=OneWay}">
-				<StackPanel Orientation="Horizontal" Spacing="6">
-					<ico:MaterialIcon Kind="CardAccountDetailsOutline" Width="16" Height="16" VerticalAlignment="Center"/>
-					<TextBlock Text="{loc:Loc settings.skills.details}" VerticalAlignment="Center"/>
-				</StackPanel>
-			</ToggleButton>
+			<Border Background="#11000000"
+							CornerRadius="4"
+							Padding="8"
+							Margin="24,0,0,0"
+							IsVisible="{Binding IsParametersVisible}">
+				<ctrls:PromptPartParameterEditorControl Schema="{Binding Info.ParameterSchema}"
+																Value="{Binding Parameters}"/>
+			</Border>
 
 			<!-- ============================================================ -->
 			<!-- Row 6: Details content                                       -->

@@ -1,9 +1,11 @@
+using LLMDesktopAssistant.Prompting;
+
 namespace LLMDesktopAssistant.Agents.SubAgents
 {
 	/// <summary>
 	/// Represents a change applied to a sub-agent compared to the available sub-agent definitions.
 	/// </summary>
-	public class SubAgentChange : NotifyPropertyChanged
+	public class SubAgentChange : PromptPartSelection
 	{
 		private string _subAgentName = string.Empty;
 		/// <summary>

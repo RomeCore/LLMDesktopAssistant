@@ -26,20 +26,37 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var promptSkills = skillManager.GetAll().ToList();
 			if (promptSkills.Count > 0)
 			{
-				var context = new Dictionary<string, object?>();
-				foreach (var expander in promptSystemContextExpanders)
-					expander.ExpandPromptContext(context);
-				var templateFunctions = new TemplateFunctionSet(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
-
-				skills.AddRange(promptSkills.Select(s =>
+				skills.AddRange(promptSkills.Select(sp =>
 				{
 					return new SkillInfo
 					{
-						Name = s.Name,
-						Description = s.Description ?? string.Empty,
-						BodyGetter = new(() => s.EffectiveTemplate.Render(context, templateFunctions).ToString() ?? string.Empty),
+						Name = sp.Name,
+						Description = sp.Description ?? string.Empty,
+						BodyGetter = new(si =>
+						{
+							var context = new Dictionary<string, object?>();
+							foreach (var expander in promptSystemContextExpanders)
+								expander.ExpandPromptContext(context);
+							var templateFunctions = new TemplateFunctionSet(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
+
+							if (sp.ParameterSchema is not null)
+							{
+								if (si.Change is not null)
+								{
+									si.Change.Parameters = sp.ParameterSchema.Root.CreateOrFixValue(si.Change.Parameters, []);
+									context["params"] = si.Change.Parameters.GetTemplateDataAccessor();
+								}
+								else
+								{
+									var @params = sp.ParameterSchema.Root.CreateOrFixValue(null, []);
+									context["params"] = @params.GetTemplateDataAccessor();
+								}
+							}
+							return sp.EffectiveTemplate.Render(context, templateFunctions).ToString() ?? string.Empty;
+						}),
 						Source = SkillSource.Template,
-						TemplateSource = s.Source
+						TemplateSource = sp.Source,
+						ParameterSchema = sp.ParameterSchema
 					};
 				}));
 			}
@@ -78,6 +95,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						AdditionalProperties = last.AdditionalProperties,
 						Enabled = last.Enabled,
 						InjectionMode = last.InjectionMode,
+						ParameterSchema = last.ParameterSchema,
 						Overrides = overridesBuilder.ToImmutable()
 					};
 				});
@@ -108,8 +126,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					if (change.Enabled ?? skillInfo.Enabled ?? skillset.SkillsEnabledByDefault)
 						result.Add(new SkillInfo
 						{
-							Enabled = true,
-							InjectionMode = change.InjectionMode ?? skillInfo.InjectionMode,
 							Name = skillInfo.Name,
 							Source = skillInfo.Source,
 							TemplateSource = skillInfo.TemplateSource,
@@ -122,6 +138,11 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 							AllowedTools = skillInfo.AllowedTools,
 							Tags = skillInfo.Tags,
 							AdditionalProperties = skillInfo.AdditionalProperties,
+							Enabled = true,
+							InjectionMode = change.InjectionMode ?? skillInfo.InjectionMode,
+							Change = change,
+							ParameterSchema = skillInfo.ParameterSchema,
+							Overrides = skillInfo.Overrides
 						});
 				}
 				else

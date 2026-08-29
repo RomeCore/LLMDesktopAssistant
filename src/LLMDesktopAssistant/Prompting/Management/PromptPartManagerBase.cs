@@ -223,8 +223,8 @@ namespace LLMDesktopAssistant.Prompting.Management
 			{
 				part = new V
 				{
-					Guid = Guid.Empty,
-					StrId = string.Empty,
+					Guid = guid,
+					StrId = strid,
 					Name = title ?? id,
 					Description = description,
 					Category = category,

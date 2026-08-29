@@ -61,7 +61,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				}.CompleteWithError();
 			}
 
-			var body = foundSkill.BodyGetter();
+			var body = foundSkill.BodyGetter(foundSkill);
 
 			return new ReactiveToolResult
 			{

@@ -228,6 +228,7 @@ skills.create.success: Навык создан. Файл открыт для р�
 skills.delete: Удалить файл
 skills.delete.title: Удалить навык?
 skills.delete.confirm: Файл {0} будет безвозвратно удалён. Это действие нельзя отменить.
+skills.parameters: Параметры
 skills.details: Подробности
 skills.details.body: Тело навыка
 skills.details.allowed_tools: Без подтверждения
@@ -310,7 +311,7 @@ tools.meta_tools.details: Схема аргументов
 tools.meta_tools.approval: Уровень одобрения
 tools.meta_tools.scope: Область
 tools.meta_tools.scope.all: Все области
-tools.meta_tools.scope.userprofile: Приложение
+tools.meta_tools.scope.userprofile: Профиль пользователя
 tools.meta_tools.scope.workingdirectory: Рабочая директория
 tools.meta_tools.scope.custom: Пользовательский
 tools.meta_tools.language.all: Все языки
@@ -410,6 +411,7 @@ sub_agents.file.placeholder: C:/MyProject/.claude/agents/my-agent.md
 sub_agents.select_directory: Выберите директорию суб-агентов
 sub_agents.select_file: Выберите файл суб-агента
 sub_agents.empty: Суб-агенты не найдены. Проверьте источники или создайте нового суб-агента.
+sub_agents.parameters: Параметры
 sub_agents.details: Подробности
 sub_agents.details.system_prompt: Системный промпт
 sub_agents.details.allowed_tools: Без подтверждения

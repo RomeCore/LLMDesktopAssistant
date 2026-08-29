@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Services.Prompting;
@@ -126,7 +126,7 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 				ModelName = info.Model ?? chatSettingsObj.Models.GetEffectiveSelection().AgenticToolsModel,
 				Behaviour = AgentTaskExecutionBehaviour.Normal,
 				InitialMessages = [
-					new AgentSystemMessage { Content = info.SystemPromptGetter() },
+					new AgentSystemMessage { Content = info.SystemPromptGetter(info) },
 						..additionalMessages ],
 
 				AutoApproveBehaviours = sourceParameters.AutoApproveBehaviours,

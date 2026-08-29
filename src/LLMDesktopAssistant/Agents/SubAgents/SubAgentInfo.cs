@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Prompting.Parameterization;
 using LLMDesktopAssistant.Tools;
 using YamlDotNet.RepresentationModel;
 
@@ -19,7 +20,7 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 		/// <summary>
 		/// The sub-agent file content getter, excluding the YAML frontmatter.
 		/// </summary>
-		public required Func<string> SystemPromptGetter { get; init; }
+		public required Func<SubAgentInfo, string> SystemPromptGetter { get; init; }
 
 		/// <summary>
 		/// The source of the sub-agent.
@@ -108,6 +109,17 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 		/// The model used for this sub-agent. Can be overriden in the sub-agent configuration.
 		/// </summary>
 		public string? Model { get; init; } = null;
+
+		/// <summary>
+		/// The change confiuration object that been used to make some changes to this sub-agent instance.
+		/// </summary>
+		public SubAgentChange? Change { get; init; } = null;
+
+		/// <summary>
+		/// The parameter schema of the sub-agent template, if the system prompt is an LLT template with @params metadata.
+		/// Null for plain-text sub-agents without parameters.
+		/// </summary>
+		public ParameterSchema? ParameterSchema { get; init; } = null;
 
 		/// <summary>
 		/// Gets the list of overriden sub-agents during deduplication by name.

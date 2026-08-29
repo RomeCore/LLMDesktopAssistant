@@ -91,13 +91,6 @@
 			<!-- ============================================================ -->
 			<WrapPanel>
 
-				<Border Classes="Chip" ToolTip.Tip="{loc:Loc settings.tools.meta_tools.scope}">
-					<StackPanel Orientation="Horizontal" Spacing="3">
-						<ico:MaterialIcon Kind="{Binding SourceIcon}" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="ChipText" Text="{Binding SourceName}"/>
-					</StackPanel>
-				</Border>
-
 				<Border Classes="Chip" IsVisible="{Binding Category, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="TagOutline" Width="12" Height="12" VerticalAlignment="Center"/>
@@ -137,6 +130,12 @@
 						</ItemsControl.ItemTemplate>
 					</ItemsControl>
 				</Border>
+
+				<!-- Source indicator -->
+				<StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" Margin="4,0,0,0">
+					<ico:MaterialIcon Kind="{Binding SourceIcon}" Width="12" Height="12" Opacity="0.5" VerticalAlignment="Center"/>
+					<TextBlock Text="{Binding SourceName}" Opacity="0.5" FontSize="11" VerticalAlignment="Center"/>
+				</StackPanel>
 
 			</WrapPanel>
 

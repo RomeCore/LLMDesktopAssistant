@@ -308,7 +308,7 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 							{
 								Name = name.Trim(),
 								Description = description.Trim(),
-								SystemPromptGetter = new(() => prompt),
+								SystemPromptGetter = _ => prompt,
 								Source = source,
 								Path = fullpath,
 								Metadata = metadataBuilder.ToImmutableDictionary(),
@@ -336,7 +336,7 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 							{
 								Name = name.Trim(),
 								Description = description.Trim(),
-								SystemPromptGetter = new(() => prompt),
+								SystemPromptGetter = _ => prompt,
 								Source = source,
 								Path = fullpath,
 								Diagnostic = new SubAgentDiagnostic
@@ -353,7 +353,7 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 					{
 						Name = name.Trim(),
 						Description = description.Trim(),
-						SystemPromptGetter = new(() => prompt),
+						SystemPromptGetter = _ => prompt,
 						Source = source,
 						Path = fullpath,
 						Diagnostic = new SubAgentDiagnostic
