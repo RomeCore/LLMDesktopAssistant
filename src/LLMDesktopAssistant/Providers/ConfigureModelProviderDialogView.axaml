@@ -8,7 +8,8 @@
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 mc:Ignorable="d" d:DesignWidth="560" d:DesignHeight="600"
 			 x:Class="LLMDesktopAssistant.Providers.ConfigureModelProviderDialogView"
-			 x:DataType="local:ConfigureModelProviderDialogViewModel">
+			 x:DataType="local:ConfigureModelProviderDialogViewModel"
+			 Name="VMRoot">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<StackPanel Orientation="Vertical" Spacing="10" Margin="20" Width="520">
@@ -233,6 +234,108 @@
 						</ItemsControl>
 					</ScrollViewer>
 				</Border>
+			</StackPanel>
+
+			<!-- Custom models -->
+			<StackPanel Orientation="Vertical" Spacing="4">
+
+				<Separator Margin="0,4"/>
+
+				<TextBlock Text="{loc:Loc settings.provider.custom.title}"
+							 FontWeight="Bold"
+							 FontSize="{DynamicResource FontSizeL}"
+							 VerticalAlignment="Center"/>
+
+				<TextBlock Text="{loc:Loc settings.provider.custom.hint}"
+							 FontSize="{DynamicResource FontSizeS}"
+							 Opacity="0.6"
+							 TextWrapping="Wrap"/>
+
+				<!-- Add custom model form -->
+				<StackPanel Orientation="Horizontal" Spacing="6" Margin="0,4,0,0">
+					<TextBox Text="{Binding CustomModelName, Mode=TwoWay}"
+							 Width="220"
+							 PlaceholderText="{loc:Loc settings.provider.custom.name.placeholder}"/>
+					<TextBox Text="{Binding CustomModelDisplayName, Mode=TwoWay}"
+							 Width="180"
+							 PlaceholderText="{loc:Loc settings.provider.custom.displayname.placeholder}"/>
+					<Button Command="{Binding AddCustomModelCommand}"
+							Classes="Primary"
+							VerticalAlignment="Stretch">
+						<StackPanel Orientation="Horizontal" Spacing="4">
+							<ico:MaterialIcon Kind="Add" Width="14" Height="14"/>
+							<TextBlock Text="{loc:Loc settings.provider.custom.add}"/>
+						</StackPanel>
+					</Button>
+				</StackPanel>
+
+				<TextBlock Text="{Binding CustomModelError}"
+							 Foreground="Red"
+							 FontSize="{DynamicResource FontSizeS}"
+							 IsVisible="{Binding CustomModelError, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
+				<!-- Custom model list -->
+				<Border BorderBrush="{DynamicResource DefaultForeground}"
+							 BorderThickness="1"
+							 CornerRadius="4"
+							 MaxHeight="200"
+							 IsVisible="{Binding HasCustomModels}">
+					<ScrollViewer VerticalScrollBarVisibility="Auto">
+						<ItemsControl ItemsSource="{Binding CustomModels}"
+											Margin="5,5,20,10">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="local:ModelDescriptor">
+									<Panel>
+
+										<Border BorderThickness="0,0,0,1"
+												BorderBrush="{DynamicResource DefaultForeground}"
+												Opacity="0.3"
+												Padding="4"/>
+
+										<Grid ColumnDefinitions="*,Auto"
+													ColumnSpacing="6">
+
+											<StackPanel Grid.Column="0" Orientation="Vertical"
+														IsVisible="{Binding DisplayName, Converter={StaticResource StringNonEmptyToBooleanConverter}}">
+												<TextBlock Text="{Binding DisplayName}"
+														 ToolTip.Tip="{Binding DisplayName}"
+														 TextTrimming="CharacterEllipsis"
+														 FontWeight="Medium"/>
+												<TextBlock Text="{Binding Name}"
+														 ToolTip.Tip="{Binding Name}"
+														 TextTrimming="CharacterEllipsis"
+														 FontSize="{DynamicResource FontSizeS}"
+														 Opacity="0.6"/>
+											</StackPanel>
+
+											<TextBlock Grid.Column="0"
+														 Text="{Binding Name}"
+														 ToolTip.Tip="{Binding Name}"
+														 TextTrimming="CharacterEllipsis"
+														 IsVisible="{Binding DisplayName, Converter={StaticResource StringNonEmptyToBooleanConverterInverted}}"/>
+
+											<Button Grid.Column="1"
+													Classes="IconButton"
+													Command="{Binding #VMRoot.DataContext.RemoveCustomModelCommand}"
+													CommandParameter="{Binding}"
+													ToolTip.Tip="{loc:Loc settings.provider.custom.remove.tooltip}"
+													VerticalAlignment="Center">
+												<ico:MaterialIcon Kind="Delete" Width="14" Height="14"/>
+											</Button>
+
+										</Grid>
+									</Panel>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+				</Border>
+
+				<TextBlock Text="{loc:Loc settings.provider.custom.empty}"
+							 FontSize="{DynamicResource FontSizeS}"
+							 Opacity="0.6"
+							 IsVisible="{Binding !HasCustomModels}"/>
+
 			</StackPanel>
 
 			<!-- Buttons -->

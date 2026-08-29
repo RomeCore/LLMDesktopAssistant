@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.ApiKeys;
 using LLMDesktopAssistant.Controls.Dialogs;
@@ -132,10 +133,60 @@ namespace LLMDesktopAssistant.Providers
 			set => SetProperty(ref _isLoadingModels, value);
 		}
 
+		/// <summary>
+		/// Gets the collection of custom models added by the user.
+		/// These models are always available in the model selector and are not
+		/// part of the default set of models offered by the provider.
+		/// </summary>
+		public RangeObservableCollection<ModelDescriptor> CustomModels => EditingProvider.CustomModels;
+
+		private string _customModelName = string.Empty;
+		/// <summary>
+		/// Gets or sets the name (ID) of the custom model being added.
+		/// </summary>
+		public string CustomModelName
+		{
+			get => _customModelName;
+			set
+			{
+				if (SetProperty(ref _customModelName, value))
+				{
+					CustomModelError = null;
+				}
+			}
+		}
+
+		private string _customModelDisplayName = string.Empty;
+		/// <summary>
+		/// Gets or sets the optional display name of the custom model being added.
+		/// </summary>
+		public string CustomModelDisplayName
+		{
+			get => _customModelDisplayName;
+			set => SetProperty(ref _customModelDisplayName, value);
+		}
+
+		private string? _customModelError;
+		/// <summary>
+		/// Gets or sets the validation error message for the custom model form.
+		/// </summary>
+		public string? CustomModelError
+		{
+			get => _customModelError;
+			set => SetProperty(ref _customModelError, value);
+		}
+
+		/// <summary>
+		/// Gets whether the provider has any custom models.
+		/// </summary>
+		public bool HasCustomModels => CustomModels.Count > 0;
+
 		public IRelayCommand LoadModelsCommand { get; }
 		public IRelayCommand SelectAllCommand { get; }
 		public IRelayCommand DeselectAllCommand { get; }
 		public IRelayCommand TestConnectionCommand { get; }
+		public IRelayCommand AddCustomModelCommand { get; }
+		public IRelayCommand<ModelDescriptor> RemoveCustomModelCommand { get; }
 		public IRelayCommand CloseCommand { get; }
 
 		public ConfigureModelProviderDialogViewModel(ModelProviderConfiguration editingProvider)
@@ -156,10 +207,57 @@ namespace LLMDesktopAssistant.Providers
 			SelectAllCommand = new RelayCommand(() => SetAllModelsSelected(true));
 			DeselectAllCommand = new RelayCommand(() => SetAllModelsSelected(false));
 			TestConnectionCommand = new AsyncRelayCommand(TestConnectionAsync);
+			AddCustomModelCommand = new RelayCommand(AddCustomModel);
+			RemoveCustomModelCommand = new RelayCommand<ModelDescriptor>(RemoveCustomModel);
 			CloseCommand = new RelayCommand(Close);
+
+			CustomModels.CollectionChanged += OnCustomModelsChanged;
 
 			SelectedProviderType = ProviderTypes.FirstOrDefault(p => p.Id == editingProvider.Type) ?? ProviderTypes.First();
 			RefreshModelList();
+		}
+
+		private void OnCustomModelsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			RaisePropertyChanged(nameof(HasCustomModels));
+		}
+
+		private void AddCustomModel()
+		{
+			var name = CustomModelName.Trim();
+			if (string.IsNullOrEmpty(name))
+			{
+				CustomModelError = LocalizationManager.LocalizeStatic("settings.provider.custom.name.required.error");
+				return;
+			}
+			if (name.Contains('$'))
+			{
+				CustomModelError = LocalizationManager.LocalizeStatic("settings.provider.custom.name.invalid.error");
+				return;
+			}
+			if (CustomModels.Any(m => string.Equals(m.Name, name, StringComparison.OrdinalIgnoreCase)))
+			{
+				CustomModelError = LocalizationManager.LocalizeStatic("settings.provider.custom.name.duplicate.error");
+				return;
+			}
+
+			var displayName = CustomModelDisplayName.Trim();
+			CustomModels.Add(new ModelDescriptor
+			{
+				Name = name,
+				DisplayName = displayName
+			});
+
+			CustomModelName = string.Empty;
+			CustomModelDisplayName = string.Empty;
+			CustomModelError = null;
+		}
+
+		private void RemoveCustomModel(ModelDescriptor? model)
+		{
+			if (model == null)
+				return;
+			CustomModels.Remove(model);
 		}
 
 		private void SetAllModelsSelected(bool selected)

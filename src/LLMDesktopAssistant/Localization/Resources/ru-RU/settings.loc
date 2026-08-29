@@ -196,6 +196,16 @@ provider.apikey.label: API-ключ
 provider.connection.error: Ошибка: {0}
 provider.connection.failure: ✗ Соединение не удалось
 provider.connection.success: ✓ Соединение успешно
+provider.custom.add: Добавить
+provider.custom.displayname.placeholder: Отображаемое имя (необязательно)
+provider.custom.empty: Пока нет кастомных моделей
+provider.custom.hint: Добавьте модели, которых нет в списке провайдера (например, новые, приватные или локальные). Кастомные модели всегда доступны в селекторе моделей.
+provider.custom.name.duplicate.error: Такая кастомная модель уже добавлена
+provider.custom.name.invalid.error: ID модели не должен содержать '$'
+provider.custom.name.placeholder: ID модели
+provider.custom.name.required.error: Укажите ID модели
+provider.custom.remove.tooltip: Удалить кастомную модель
+provider.custom.title: Кастомные модели
 provider.delete: Удалить
 provider.edit: Редактировать
 provider.endpoint.label: Endpoint URI

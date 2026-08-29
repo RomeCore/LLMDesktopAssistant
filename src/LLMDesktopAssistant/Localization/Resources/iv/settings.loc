@@ -196,6 +196,16 @@ provider.apikey.label: API Key
 provider.connection.error: Error: {0}
 provider.connection.failure: ✗ Connection failed
 provider.connection.success: ✓ Connection successful
+provider.custom.add: Add
+provider.custom.displayname.placeholder: Display name (optional)
+provider.custom.empty: No custom models yet
+provider.custom.hint: Add models that are not listed by the provider (e.g. new, private or self-hosted models). Custom models are always available in the model selector.
+provider.custom.name.duplicate.error: This custom model is already added
+provider.custom.name.invalid.error: Model ID must not contain '$'
+provider.custom.name.placeholder: Model ID
+provider.custom.name.required.error: Model ID is required
+provider.custom.remove.tooltip: Remove custom model
+provider.custom.title: Custom Models
 provider.delete: Delete
 provider.edit: Edit
 provider.endpoint.label: Endpoint URI
