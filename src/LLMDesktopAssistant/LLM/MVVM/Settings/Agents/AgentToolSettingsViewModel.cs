@@ -574,6 +574,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				if (SetProperty(ref _selectedToolsetId, value))
 				{
 					EffectiveToolset.Reference.Id = value.Id;
+					RaisePropertyChanged(nameof(EffectiveToolsetConfiguration));
+					RaisePropertyChanged(nameof(DefaultApprovalLevel));
 					UpdateTools();
 				}
 			}
@@ -610,7 +612,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				if (EffectiveToolset.UseCustomToolset != value)
 				{
 					EffectiveToolset.UseCustomToolset = value;
-					RaisePropertyChanged();
+					RaisePropertyChanged(nameof(EffectiveToolsetConfiguration));
+					RaisePropertyChanged(nameof(DefaultApprovalLevel));
 					UpdateTools();
 				}
 			}
