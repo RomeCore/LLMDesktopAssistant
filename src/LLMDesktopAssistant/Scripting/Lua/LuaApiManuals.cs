@@ -4,7 +4,7 @@ using AsyncLua.Values;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	[LuaApi(chatScoped: false)]
+	[LuaApi(chatScoped: true)]
 	public class LuaApiManuals : LuaApiBaseAsync
 	{
 		public override string? Namespace => null;
