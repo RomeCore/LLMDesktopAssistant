@@ -127,7 +127,7 @@
 			</Grid>
 
 			<!-- ============================================================ -->
-			<!-- Row 1: Description                                            -->
+			<!-- Row 1: Description                                           -->
 			<!-- ============================================================ -->
 			<TextBlock Text="{Binding Description}"
 							   TextWrapping="Wrap"
@@ -154,11 +154,11 @@
 				<Border Classes="Chip" ToolTip.Tip="{loc:Loc prompt.metadata.language}">
 					<StackPanel Orientation="Horizontal" Spacing="3">
 						<ico:MaterialIcon Kind="Language" Width="12" Height="12" VerticalAlignment="Center"/>
-						<TextBlock Classes="ChipText" Text="{Binding LanguageName}"/>
-						<TextBlock Classes="ChipText" Text="→"
-									   IsVisible="{Binding LocalizedForName, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 						<TextBlock Classes="ChipText" Text="{Binding LocalizedForName}"
 									   IsVisible="{Binding LocalizedForName, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+						<TextBlock Classes="ChipText" Text="→"
+									   IsVisible="{Binding LocalizedForName, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+						<TextBlock Classes="ChipText" Text="{Binding LanguageName}"/>
 					</StackPanel>
 				</Border>
 
@@ -171,7 +171,7 @@
 			</WrapPanel>
 
 			<!-- ============================================================ -->
-			<!-- Row 3: Diagnostic Chips                                       -->
+			<!-- Row 3: Diagnostic Chips                                      -->
 			<!-- ============================================================ -->
 			<StackPanel Orientation="Horizontal" Spacing="4"
 									IsVisible="{Binding HasDiagnostics}">
@@ -195,7 +195,7 @@
 			</StackPanel>
 
 			<!-- ============================================================ -->
-			<!-- Row 4: Actions                                                -->
+			<!-- Row 4: Actions                                               -->
 			<!-- ============================================================ -->
 			<Grid ColumnDefinitions="*,Auto">
 
@@ -254,7 +254,7 @@
 			</Grid>
 
 			<!-- ============================================================ -->
-			<!-- Row 5: Parameters content                                     -->
+			<!-- Row 5: Parameters content                                    -->
 			<!-- ============================================================ -->
 			<Border Background="#11000000"
 							CornerRadius="4"
@@ -265,7 +265,7 @@
 			</Border>
 
 			<!-- ============================================================ -->
-			<!-- Row 6: Details content                                        -->
+			<!-- Row 6: Details content                                       -->
 			<!-- ============================================================ -->
 			<StackPanel Spacing="8"
 									IsVisible="{Binding IsDetailsVisible}">
