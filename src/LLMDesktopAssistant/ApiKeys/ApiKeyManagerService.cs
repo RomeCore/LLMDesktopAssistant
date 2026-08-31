@@ -298,7 +298,7 @@ namespace LLMDesktopAssistant.ApiKeys
 				Name = source.Name,
 				StoredValue = source.StoredValue != null
 					? (source.StorageScheme == ApiKeyStorageScheme.EnvironmentVariable
-						? "$" + source.StoredValue // show env var name as-is (it's not secret)
+						? source.StoredValue // env var name is not a secret, show it as-is
 						: "••••••••")
 					: null,
 				StorageScheme = source.StorageScheme

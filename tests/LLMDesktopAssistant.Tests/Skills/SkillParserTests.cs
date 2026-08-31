@@ -21,7 +21,7 @@ public class SkillParserTests
 
 		Assert.Equal("test-skill", skill.Name);
 		Assert.Equal("A test skill for unit testing.", skill.Description);
-		Assert.Empty(skill.BodyGetter());
+		Assert.Empty(skill.BodyGetter(skill));
 	}
 
 	[Fact]
@@ -105,9 +105,9 @@ public class SkillParserTests
 			Some notes here.
 			""");
 
-		Assert.Contains("Step 1: Do something.", skill.BodyGetter());
-		Assert.Contains("Step 2: Do another thing.", skill.BodyGetter());
-		Assert.Contains("## Notes", skill.BodyGetter());
+		Assert.Contains("Step 1: Do something.", skill.BodyGetter(skill));
+		Assert.Contains("Step 2: Do another thing.", skill.BodyGetter(skill));
+		Assert.Contains("## Notes", skill.BodyGetter(skill));
 	}
 
 	[Fact]
@@ -127,7 +127,7 @@ public class SkillParserTests
 			This skill does something useful.
 			Use this skill when you need to do X.
 			""", skill.Description);
-		Assert.Contains("Detailed instructions go here.", skill.BodyGetter());
+		Assert.Contains("Detailed instructions go here.", skill.BodyGetter(skill));
 	}
 
 	[Fact]
@@ -137,7 +137,7 @@ public class SkillParserTests
 
 		Assert.Equal("fallback-name", skill.Name);
 		Assert.Equal("Just some plain text content.", skill.Description);
-		Assert.Equal("Just some plain text content.", skill.BodyGetter());
+		Assert.Equal("Just some plain text content.", skill.BodyGetter(skill));
 	}
 
 	[Fact]
@@ -329,8 +329,8 @@ public class SkillParserTests
 			Another line.
 			""");
 
-		Assert.Contains("  Indented line.", skill.BodyGetter());
-		Assert.Contains("Another line.", skill.BodyGetter());
+		Assert.Contains("  Indented line.", skill.BodyGetter(skill));
+		Assert.Contains("Another line.", skill.BodyGetter(skill));
 	}
 
 	[Fact(Skip = "YamlDotNet issue with unescaped colons in scalar values")]

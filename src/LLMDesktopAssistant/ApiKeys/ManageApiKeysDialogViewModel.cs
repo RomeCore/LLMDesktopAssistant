@@ -86,13 +86,11 @@ namespace LLMDesktopAssistant.ApiKeys
 			if (SelectedKey == null)
 				return;
 
-			var resolvedValue = _apiKeys.ResolveKey(SelectedKey.Id);
-
 			var editVm = new AddApiKeyDialogViewModel
 			{
 				EditingKeyId = SelectedKey.Id,
 				Name = SelectedKey.Name,
-				Value = resolvedValue ?? string.Empty,
+				Value = GetEditableValue(SelectedKey),
 				Scheme = SelectedKey.StorageScheme
 			};
 
@@ -100,6 +98,20 @@ namespace LLMDesktopAssistant.ApiKeys
 
 			if (result is true)
 				ReloadKeys();
+		}
+
+		/// <summary>
+		/// Returns the value that should be pre-filled into the edit dialog.
+		/// For environment-variable keys this is the env var NAME, because resolving it
+		/// would replace the stored name with the actual secret on save.
+		/// For encrypted/raw keys the actual value is resolved so it can be viewed and edited.
+		/// </summary>
+		private string GetEditableValue(ApiKeyDisplayItem key)
+		{
+			if (key.StorageScheme == ApiKeyStorageScheme.EnvironmentVariable)
+				return key.Source.StoredValue ?? string.Empty;
+
+			return _apiKeys.ResolveKey(key.Id) ?? string.Empty;
 		}
 
 		private void Close()

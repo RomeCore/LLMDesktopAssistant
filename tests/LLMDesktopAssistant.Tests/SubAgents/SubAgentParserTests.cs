@@ -21,7 +21,7 @@ public class SubAgentParserTests
 
 		Assert.Equal("test-agent", subAgent.Name);
 		Assert.Equal("A test sub-agent for unit testing.", subAgent.Description);
-		Assert.Empty(subAgent.SystemPromptGetter());
+		Assert.Empty(subAgent.SystemPromptGetter(subAgent));
 	}
 
 	[Fact]
@@ -109,9 +109,9 @@ public class SubAgentParserTests
 			Some notes here.
 			""");
 
-		Assert.Contains("Step 1: Do something.", subAgent.SystemPromptGetter());
-		Assert.Contains("Step 2: Do another thing.", subAgent.SystemPromptGetter());
-		Assert.Contains("## Notes", subAgent.SystemPromptGetter());
+		Assert.Contains("Step 1: Do something.", subAgent.SystemPromptGetter(subAgent));
+		Assert.Contains("Step 2: Do another thing.", subAgent.SystemPromptGetter(subAgent));
+		Assert.Contains("## Notes", subAgent.SystemPromptGetter(subAgent));
 	}
 
 	[Fact]
@@ -131,7 +131,7 @@ public class SubAgentParserTests
 			This sub-agent does something useful.
 			Use this sub-agent when you need to do X.
 			""", subAgent.Description);
-		Assert.Contains("Detailed instructions go here.", subAgent.SystemPromptGetter());
+		Assert.Contains("Detailed instructions go here.", subAgent.SystemPromptGetter(subAgent));
 	}
 
 	[Fact]
@@ -141,7 +141,7 @@ public class SubAgentParserTests
 
 		Assert.Equal("fallback-name", subAgent.Name);
 		Assert.Equal("Just some plain text content.", subAgent.Description);
-		Assert.Equal("Just some plain text content.", subAgent.SystemPromptGetter());
+		Assert.Equal("Just some plain text content.", subAgent.SystemPromptGetter(subAgent));
 	}
 
 	[Fact]
