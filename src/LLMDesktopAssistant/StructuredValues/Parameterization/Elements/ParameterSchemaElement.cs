@@ -1,12 +1,11 @@
-﻿using Avalonia.Controls;
-using Avalonia.Data;
-using Avalonia.Data.Converters;
-using LLMDesktopAssistant.Converters;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 {
+	/// <summary>
+	/// Base class for parameter schema elements.
+	/// </summary>
 	public abstract class ParameterSchemaElement : NotifyPropertyChanged
 	{
 		public string? Title
@@ -30,43 +29,5 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 		/// <param name="log">A list to log validation or fixing messages.</param>
 		/// <returns>The created or fixed value.</returns>
 		public abstract ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log);
-
-		/// <summary>
-		/// Creates a control for the parameter schema element.
-		/// </summary>
-		/// <param name="value">The value to use for the control.</param>
-		/// <returns>The created control.</returns>
-		public abstract Control CreateControl(ReactiveNodeValue value);
-
-		protected BindingBase CreateBinding(object source, string path, BindingMode mode = BindingMode.Default, IValueConverter? converter = null)
-		{
-			return new ReflectionBinding(path)
-			{
-				Source = source,
-				Mode = mode,
-				Converter = converter
-			};
-		}
-
-		protected Control WrapControl(Control control)
-		{
-			var title = new TextBlock
-			{
-				Classes = { ParameterElementsStyles.TitleText },
-				[!TextBlock.TextProperty] = CreateBinding(this, nameof(Title)),
-				[!TextBlock.IsVisibleProperty] = CreateBinding(this, nameof(Title), converter: StringNonEmptyToBooleanConverter.Instance)
-			};
-			var description = new TextBlock
-			{
-				Classes = { ParameterElementsStyles.DescriptionText },
-				[!TextBlock.TextProperty] = CreateBinding(this, nameof(Description)),
-				[!TextBlock.IsVisibleProperty] = CreateBinding(this, nameof(Description), converter: StringNonEmptyToBooleanConverter.Instance)
-			};
-			return new StackPanel
-			{
-				Classes = { ParameterElementsStyles.ParameterContainer },
-				Children = { title, description, control }
-			};
-		}
 	}
 }

@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.StructuredValues.Parameterization.Controls;
 using LLMDesktopAssistant.StructuredValues.Parameterization.Elements;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
@@ -15,6 +16,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.MVVM
 	{
 		private readonly ParameterListElement _element;
 		private readonly ReactiveNodeArrayValue _value;
+		private readonly IParameterSchemaControlFactoryManager _controlFactory;
 		private readonly AppendOnlyList<ParameterValidationLogEntry> _log = [];
 
 		public RangeObservableCollection<ParameterSchemaListItemViewModel> Items { get; } = [];
@@ -27,16 +29,24 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.MVVM
 
 		public bool CanRemove => Items.Count > _element.Min;
 
-		public ParameterSchemaListViewModel(ParameterListElement element, ReactiveNodeArrayValue value)
+		public ParameterSchemaListViewModel(ParameterListElement element, ReactiveNodeArrayValue value,
+			IParameterSchemaControlFactoryManager controlFactory)
 		{
 			_element = element;
 			_value = value;
+			_controlFactory = controlFactory;
 
 			foreach (var itemValue in value.Items)
-				Items.Add(new ParameterSchemaListItemViewModel(element.ItemsSchema, itemValue));
+				Items.Add(CreateItem(itemValue));
 
 			AddCommand = new RelayCommand(AddItem, () => CanAdd);
 			RemoveCommand = new RelayCommand<ParameterSchemaListItemViewModel>(RemoveItem, _ => CanRemove);
+		}
+
+		private ParameterSchemaListItemViewModel CreateItem(ReactiveNodeValue itemValue)
+		{
+			return new ParameterSchemaListItemViewModel(_element.ItemsSchema, itemValue,
+				_controlFactory.CreateControl(_element.ItemsSchema, itemValue));
 		}
 
 		private void AddItem()
@@ -45,7 +55,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.MVVM
 				return;
 			var itemValue = _element.ItemsSchema.CreateOrFixValue(null, _log);
 			_value.Items.Add(itemValue);
-			Items.Add(new ParameterSchemaListItemViewModel(_element.ItemsSchema, itemValue));
+			Items.Add(CreateItem(itemValue));
 			RefreshCommands();
 		}
 
@@ -76,11 +86,11 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.MVVM
 
 		public Control Control { get; }
 
-		public ParameterSchemaListItemViewModel(ParameterSchemaElement element, ReactiveNodeValue value)
+		public ParameterSchemaListItemViewModel(ParameterSchemaElement element, ReactiveNodeValue value, Control control)
 		{
 			Element = element;
 			Value = value;
-			Control = element.CreateControl(value);
+			Control = control;
 		}
 	}
 }

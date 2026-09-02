@@ -1,5 +1,3 @@
-using Avalonia.Controls;
-using LLMDesktopAssistant.StructuredValues.Parameterization.MVVM;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
@@ -72,16 +70,6 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 			for (int i = 0; i < Min; i++)
 				newArray.Items.Add(ItemsSchema.CreateOrFixValue(null, log));
 			return newArray;
-		}
-
-		public override Control CreateControl(ReactiveNodeValue value)
-		{
-			var arrayValue = (ReactiveNodeArrayValue)value;
-			var viewModel = new ParameterSchemaListViewModel(this, arrayValue);
-			return WrapControl(new ContentControl
-			{
-				Content = viewModel
-			});
 		}
 	}
 }

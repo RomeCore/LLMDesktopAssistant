@@ -7,8 +7,9 @@ using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Metadata;
-using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.StructuredValues.Parameterization;
+using LLMDesktopAssistant.StructuredValues.Parameterization.Controls;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 
 namespace LLMDesktopAssistant.MVVM.Debug;
 
@@ -255,7 +256,8 @@ public class ParameterizationDebugPageViewModel : ViewModelBase
 					log.Select(l => $"{l.Status}: {l.OriginalValue?.ToString() ?? "null"} -> {l.FinalValue?.ToString() ?? "null"}"))
 				: Locale.Get("debug.parameterization.log.empty");
 
-			ParameterControl = _schema.Root.CreateControl(_rootValue);
+			var controlFactory = ServiceRegistry.Provider.GetService<IParameterSchemaControlFactoryManager>();
+			ParameterControl = controlFactory?.CreateControl(_schema.Root, _rootValue);
 			RefreshValue();
 			RefreshValueCommand.NotifyCanExecuteChanged();
 		}

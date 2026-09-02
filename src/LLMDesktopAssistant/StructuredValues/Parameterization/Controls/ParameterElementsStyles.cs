@@ -1,4 +1,4 @@
-namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
+namespace LLMDesktopAssistant.StructuredValues.Parameterization.Controls
 {
 	public static class ParameterElementsStyles
 	{

@@ -1,5 +1,3 @@
-﻿using LLTSharp;
-
 namespace LLMDesktopAssistant.StructuredValues.Reactive
 {
 	public abstract class ReactiveNodeValue : NotifyPropertyChanged, INodeValue

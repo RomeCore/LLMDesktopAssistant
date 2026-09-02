@@ -205,7 +205,7 @@
 
 				</Grid>
 
-				<ctrls:PromptPartParameterEditorControl Schema="{Binding SystemPromptSection.SelectedOption.Element.ParameterSchema}"
+				<ctrls:ParameterEditorControl Schema="{Binding SystemPromptSection.SelectedOption.Element.ParameterSchema}"
 														Value="{Binding SystemPromptSection.Settings.Parameters}"
 														IsVisible="{Binding SystemPromptSection.HasParameters}"/>
 
@@ -366,7 +366,7 @@
 
 				</Grid>
 
-				<ctrls:PromptPartParameterEditorControl Schema="{Binding PersonaSection.SelectedOption.Element.ParameterSchema}"
+				<ctrls:ParameterEditorControl Schema="{Binding PersonaSection.SelectedOption.Element.ParameterSchema}"
 														Value="{Binding PersonaSection.Settings.Parameters}"
 														IsVisible="{Binding PersonaSection.HasParameters}"/>
 
@@ -456,7 +456,7 @@
 
 				</Grid>
 
-				<ctrls:PromptPartParameterEditorControl Schema="{Binding SpecializationSection.SelectedOption.Element.ParameterSchema}"
+				<ctrls:ParameterEditorControl Schema="{Binding SpecializationSection.SelectedOption.Element.ParameterSchema}"
 														Value="{Binding SpecializationSection.Settings.Parameters}"
 														IsVisible="{Binding SpecializationSection.HasParameters}"/>
 

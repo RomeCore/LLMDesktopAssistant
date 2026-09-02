@@ -13,7 +13,8 @@ namespace LLMDesktopAssistant.StructuredValues.Const
 		/// </summary>
 		public ImmutableDictionary<string, ConstNodeValue> Items { get; init; } = [];
 
-		IReadOnlyDictionary<string, INodeValue> INodeDictionaryValue.Items => Items.ToDictionary(v => v.Key, v => (INodeValue)v.Value);
+		IReadOnlyDictionary<string, INodeValue> INodeDictionaryValue.Items =>
+			Items.ToDictionary(v => v.Key, v => (INodeValue)v.Value);
 
 		/// <inheritdoc />
 		public override object? TakeValueSnapshot()

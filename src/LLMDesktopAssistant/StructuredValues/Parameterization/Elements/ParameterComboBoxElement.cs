@@ -1,6 +1,3 @@
-using Avalonia.Controls;
-using Avalonia.Data;
-using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
@@ -113,63 +110,6 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 			{
 				Value = final
 			};
-		}
-
-		public override Control CreateControl(ReactiveNodeValue value)
-		{
-			if (ValueType == ParameterSchemaLimitationType.Boolean)
-				return CreateBooleanControl((ReactiveNodeBooleanValue)value);
-
-			return CreateStringControl((ReactiveNodeStringValue)value);
-		}
-
-		private Control CreateStringControl(ReactiveNodeStringValue stringValue)
-		{
-			var comboBox = new ComboBox
-			{
-				Classes = { ParameterElementsStyles.ComboBox },
-				ItemsSource = Choices,
-				IsEditable = IsEditable
-			};
-
-			if (IsEditable)
-				comboBox[!ComboBox.TextProperty] = CreateBinding(stringValue, nameof(stringValue.Value), BindingMode.TwoWay);
-			else
-				comboBox[!ComboBox.SelectedItemProperty] = CreateBinding(stringValue, nameof(stringValue.Value), BindingMode.TwoWay);
-
-			return WrapControl(comboBox);
-		}
-
-		private Control CreateBooleanControl(ReactiveNodeBooleanValue booleanValue)
-		{
-			var items = new List<ParameterBooleanComboItem>
-			{
-				new() { Value = true, Title = TrueTitle ?? Locale.Get("parameterization.combo.true") },
-				new() { Value = false, Title = FalseTitle ?? Locale.Get("parameterization.combo.false") }
-			};
-
-			var comboBox = new ComboBox
-			{
-				Classes = { ParameterElementsStyles.ComboBox },
-				ItemsSource = items
-			};
-			comboBox.SelectionChanged += (_, _) =>
-			{
-				if (comboBox.SelectedItem is ParameterBooleanComboItem item)
-					booleanValue.Value = item.Value;
-			};
-			comboBox.SelectedItem = items.FirstOrDefault(i => i.Value == booleanValue.Value) ?? items[0];
-
-			return WrapControl(comboBox);
-		}
-
-		private sealed class ParameterBooleanComboItem
-		{
-			public required bool Value { get; init; }
-
-			public required string Title { get; init; }
-
-			public override string ToString() => Title;
 		}
 	}
 }

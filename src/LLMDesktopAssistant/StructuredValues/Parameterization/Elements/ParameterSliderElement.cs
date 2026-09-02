@@ -1,5 +1,3 @@
-using Avalonia.Controls;
-using Avalonia.Data;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
@@ -112,47 +110,6 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 			}
 
 			return existing;
-		}
-
-		public override Control CreateControl(ReactiveNodeValue value)
-		{
-			var numberValue = (ReactiveNodeNumberValue)value;
-
-			var slider = new Slider
-			{
-				Classes = { ParameterElementsStyles.Slider },
-				[!Slider.MinimumProperty] = CreateBinding(this, nameof(Min)),
-				[!Slider.MaximumProperty] = CreateBinding(this, nameof(Max)),
-				[!Slider.TickFrequencyProperty] = CreateBinding(this, nameof(Step)),
-				[!Slider.ValueProperty] = CreateBinding(numberValue, nameof(numberValue.Value))
-			};
-			if (IsInteger || Math.Abs(Step) > double.Epsilon)
-			{
-				slider.IsSnapToTickEnabled = true;
-				if (IsInteger)
-					slider.TickFrequency = Math.Max(1, Step);
-				else
-					slider.TickFrequency = Step;
-			}
-
-			var valueText = new TextBlock
-			{
-				Classes = { ParameterElementsStyles.SliderValueText },
-				[!TextBlock.TextProperty] = CreateBinding(numberValue, nameof(numberValue.Value), BindingMode.OneWay)
-			};
-
-			var panel = new Grid
-			{
-				ColumnDefinitions =
-				{
-					new ColumnDefinition(GridLength.Star),
-					new ColumnDefinition(new GridLength(50))
-				},
-				Children = { slider, valueText }
-			};
-			Grid.SetColumn(valueText, 1);
-
-			return WrapControl(panel);
 		}
 	}
 }

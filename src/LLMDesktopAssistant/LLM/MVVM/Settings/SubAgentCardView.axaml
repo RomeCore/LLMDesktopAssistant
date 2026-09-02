@@ -337,7 +337,7 @@
 							Padding="8"
 							Margin="24,0,0,0"
 							IsVisible="{Binding IsParametersVisible}">
-				<ctrl:PromptPartParameterEditorControl Schema="{Binding Info.ParameterSchema}"
+				<ctrl:ParameterEditorControl Schema="{Binding Info.ParameterSchema}"
 															Value="{Binding Parameters}"/>
 			</Border>
 

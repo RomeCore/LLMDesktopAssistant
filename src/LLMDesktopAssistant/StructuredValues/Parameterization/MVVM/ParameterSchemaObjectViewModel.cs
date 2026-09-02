@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using LLMDesktopAssistant.StructuredValues.Parameterization.Controls;
 using LLMDesktopAssistant.StructuredValues.Parameterization.Elements;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
@@ -16,7 +17,8 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.MVVM
 
 		public RangeObservableCollection<ParameterSchemaObjectItemViewModel> Items { get; } = [];
 
-		public ParameterSchemaObjectViewModel(ParameterSchemaObjectElement element, ReactiveNodeDictionaryValue value)
+		public ParameterSchemaObjectViewModel(ParameterSchemaObjectElement element, ReactiveNodeDictionaryValue value,
+			IParameterSchemaControlFactoryManager controlFactory)
 		{
 			_element = element;
 			_value = value;
@@ -26,7 +28,8 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.MVVM
 				var propertyValue = propertyElement.CreateOrFixValue(
 					value.Items.TryGetValue(key, out var existing) ? existing : null, []);
 				value.Items[key] = propertyValue;
-				Items.Add(new ParameterSchemaObjectItemViewModel(propertyElement, propertyValue));
+				Items.Add(new ParameterSchemaObjectItemViewModel(propertyElement, propertyValue,
+					controlFactory.CreateControl(propertyElement, propertyValue)));
 			}
 		}
 	}
@@ -42,11 +45,11 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.MVVM
 
 		public Control Control { get; }
 
-		public ParameterSchemaObjectItemViewModel(ParameterSchemaElement element, ReactiveNodeValue value)
+		public ParameterSchemaObjectItemViewModel(ParameterSchemaElement element, ReactiveNodeValue value, Control control)
 		{
 			Element = element;
 			Value = value;
-			Control = element.CreateControl(value);
+			Control = control;
 		}
 	}
 }

@@ -260,7 +260,7 @@
 							CornerRadius="4"
 							Padding="8"
 							IsVisible="{Binding IsParametersVisible}">
-				<ctrls:PromptPartParameterEditorControl Schema="{Binding Part.ParameterSchema}"
+				<ctrls:ParameterEditorControl Schema="{Binding Part.ParameterSchema}"
 													  Value="{Binding Selection.Parameters}"/>
 			</Border>
 

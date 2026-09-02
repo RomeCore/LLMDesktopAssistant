@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
@@ -29,18 +28,6 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 			{
 				Value = Default
 			};
-		}
-
-		public override Control CreateControl(ReactiveNodeValue value)
-		{
-			var booleanValue = (ReactiveNodeBooleanValue)value;
-
-			var checkBox = new CheckBox
-			{
-				Classes = { ParameterElementsStyles.Checkbox },
-				[!CheckBox.IsCheckedProperty] = CreateBinding(booleanValue, nameof(booleanValue.Value))
-			};
-			return WrapControl(checkBox);
 		}
 	}
 }

@@ -1,9 +1,11 @@
-﻿using Avalonia.Controls;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 {
+	/// <summary>
+	/// An element that represents a parameter schema parsing error.
+	/// </summary>
 	public class ParameterSchemaErrorElement : ParameterSchemaElement
 	{
 		public ParameterSchemaParsingError ParsingError { get; }
@@ -22,11 +24,6 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 		public override ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
 		{
 			return new ReactiveNodeNullValue();
-		}
-
-		public override Control CreateControl(ReactiveNodeValue value)
-		{
-			return new Panel();
 		}
 	}
 }
