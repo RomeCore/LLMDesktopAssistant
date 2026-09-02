@@ -29,6 +29,7 @@ namespace LLMDesktopAssistant.Settings
 				{
 					new JsonStringEnumConverter(),
 					new SettingsReferenceConverter(),
+					new JsonLocaleKeyConverter()
 				},
 			};
 
