@@ -3,6 +3,7 @@ using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLMDesktopAssistant.Prompting.Skills;
+using LLMDesktopAssistant.StructuredValues.Converters;
 using LLTSharp;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
@@ -44,12 +45,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 								if (si.Change is not null)
 								{
 									si.Change.Parameters = sp.ParameterSchema.Root.CreateOrFixValue(si.Change.Parameters, []);
-									context["params"] = si.Change.Parameters.GetTemplateDataAccessor();
+									context["params"] = LLTStructuredConverter.ToTemplateDataAccessor(si.Change.Parameters);
 								}
 								else
 								{
 									var @params = sp.ParameterSchema.Root.CreateOrFixValue(null, []);
-									context["params"] = @params.GetTemplateDataAccessor();
+									context["params"] = LLTStructuredConverter.ToTemplateDataAccessor(@params);
 								}
 							}
 							return sp.EffectiveTemplate.Render(context, templateFunctions).ToString() ?? string.Empty;

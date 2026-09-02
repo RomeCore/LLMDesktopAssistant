@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Prompting.Parameterization.Values;
+﻿using LLMDesktopAssistant.StructuredValues.Reactive;
 
 namespace LLMDesktopAssistant.Prompting
 {
@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Prompting
 			set => SetProperty(ref field, value);
 		}
 
-		public ParameterSchemaValue? Parameters
+		public ReactiveNodeValue? Parameters
 		{
 			get;
 			set => SetProperty(ref field, value);

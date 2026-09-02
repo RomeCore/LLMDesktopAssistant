@@ -4,10 +4,10 @@ using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Parameterization;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
@@ -88,7 +88,7 @@ public class SkillCardViewModel : ViewModelBase
 	private SkillChange? _change;
 	private bool _isDetailsVisible;
 	private bool _isParametersVisible;
-	private ParameterSchemaValue? _localParameters;
+	private ReactiveNodeValue? _localParameters;
 	private string? _body;
 
 	/// <summary>
@@ -345,7 +345,7 @@ public class SkillCardViewModel : ViewModelBase
 	/// When <see cref="CanToggle"/> is <see langword="true"/>, the values are persisted in the
 	/// <see cref="SkillChange"/>; otherwise they are only used as a local preview (defaults).
 	/// </summary>
-	public ParameterSchemaValue? Parameters
+	public ReactiveNodeValue? Parameters
 	{
 		get => _change?.Parameters ?? _localParameters;
 		set

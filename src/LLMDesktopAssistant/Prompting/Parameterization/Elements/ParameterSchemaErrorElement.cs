@@ -1,5 +1,5 @@
 ﻿using Avalonia.Controls;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
@@ -19,12 +19,12 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			errors.Append(ParsingError);
 		}
 
-		public override ParameterSchemaValue CreateOrFixValue(ParameterSchemaValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
+		public override ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
 		{
-			return new ParameterSchemaNullValue();
+			return new ReactiveNodeNullValue();
 		}
 
-		public override Control CreateControl(ParameterSchemaValue value)
+		public override Control CreateControl(ReactiveNodeValue value)
 		{
 			return new Panel();
 		}

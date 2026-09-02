@@ -3,13 +3,13 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using LLMDesktopAssistant.Prompting.Parameterization;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 
 namespace LLMDesktopAssistant.Controls
 {
 	/// <summary>
 	/// Reusable control that renders a parameter editor for a <see cref="ParameterSchema"/> and
-	/// the corresponding <see cref="ParameterSchemaValue"/>. The editor is rebuilt whenever the
+	/// the corresponding <see cref="ReactiveNodeValue"/>. The editor is rebuilt whenever the
 	/// schema or the value changes, so it can be safely reused for different prompt parts.
 	/// </summary>
 	public partial class PromptPartParameterEditorControl : UserControl
@@ -23,8 +23,8 @@ namespace LLMDesktopAssistant.Controls
 		/// <summary>
 		/// Defines the <see cref="Value"/> property. Bound two-way by default.
 		/// </summary>
-		public static readonly StyledProperty<ParameterSchemaValue?> ValueProperty =
-			AvaloniaProperty.Register<PromptPartParameterEditorControl, ParameterSchemaValue?>(
+		public static readonly StyledProperty<ReactiveNodeValue?> ValueProperty =
+			AvaloniaProperty.Register<PromptPartParameterEditorControl, ReactiveNodeValue?>(
 				nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace LLMDesktopAssistant.Controls
 		/// <summary>
 		/// Gets or sets the parameter value to edit.
 		/// </summary>
-		public ParameterSchemaValue? Value
+		public ReactiveNodeValue? Value
 		{
 			get => GetValue(ValueProperty);
 			set => SetValue(ValueProperty, value);

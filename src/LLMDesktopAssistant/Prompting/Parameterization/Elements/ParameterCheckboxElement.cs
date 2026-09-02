@@ -1,5 +1,5 @@
 using Avalonia.Controls;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
 
@@ -14,9 +14,9 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			set => SetProperty(ref field, value);
 		}
 
-		public override ParameterSchemaValue CreateOrFixValue(ParameterSchemaValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
+		public override ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
 		{
-			if (existing is ParameterSchemaBooleanValue booleanValue)
+			if (existing is ReactiveNodeBooleanValue booleanValue)
 				return booleanValue;
 
 			log.Append(new ParameterValidationLogEntry
@@ -25,15 +25,15 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 				OriginalValue = existing?.TakeValueSnapshot(),
 				FinalValue = Default
 			});
-			return new ParameterSchemaBooleanValue
+			return new ReactiveNodeBooleanValue
 			{
 				Value = Default
 			};
 		}
 
-		public override Control CreateControl(ParameterSchemaValue value)
+		public override Control CreateControl(ReactiveNodeValue value)
 		{
-			var booleanValue = (ParameterSchemaBooleanValue)value;
+			var booleanValue = (ReactiveNodeBooleanValue)value;
 
 			var checkBox = new CheckBox
 			{

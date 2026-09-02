@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Prompting.Parameterization.Elements;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Prompting.Parameterization.MVVM
@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.MVVM
 	public class ParameterSchemaListViewModel : ViewModelBase
 	{
 		private readonly ParameterListElement _element;
-		private readonly ParameterSchemaArrayValue _value;
+		private readonly ReactiveNodeArrayValue _value;
 		private readonly AppendOnlyList<ParameterValidationLogEntry> _log = [];
 
 		public RangeObservableCollection<ParameterSchemaListItemViewModel> Items { get; } = [];
@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.MVVM
 
 		public bool CanRemove => Items.Count > _element.Min;
 
-		public ParameterSchemaListViewModel(ParameterListElement element, ParameterSchemaArrayValue value)
+		public ParameterSchemaListViewModel(ParameterListElement element, ReactiveNodeArrayValue value)
 		{
 			_element = element;
 			_value = value;
@@ -73,11 +73,11 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.MVVM
 	{
 		public ParameterSchemaElement Element { get; }
 
-		public ParameterSchemaValue Value { get; }
+		public ReactiveNodeValue Value { get; }
 
 		public Control Control { get; }
 
-		public ParameterSchemaListItemViewModel(ParameterSchemaElement element, ParameterSchemaValue value)
+		public ParameterSchemaListItemViewModel(ParameterSchemaElement element, ReactiveNodeValue value)
 		{
 			Element = element;
 			Value = value;

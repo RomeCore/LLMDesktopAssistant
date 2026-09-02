@@ -2,7 +2,7 @@
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using LLMDesktopAssistant.Converters;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
@@ -29,14 +29,14 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 		/// <param name="existing">The existing value to validate or fix.</param>
 		/// <param name="log">A list to log validation or fixing messages.</param>
 		/// <returns>The created or fixed value.</returns>
-		public abstract ParameterSchemaValue CreateOrFixValue(ParameterSchemaValue? existing, AppendOnlyList<ParameterValidationLogEntry> log);
+		public abstract ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log);
 
 		/// <summary>
 		/// Creates a control for the parameter schema element.
 		/// </summary>
 		/// <param name="value">The value to use for the control.</param>
 		/// <returns>The created control.</returns>
-		public abstract Control CreateControl(ParameterSchemaValue value);
+		public abstract Control CreateControl(ReactiveNodeValue value);
 
 		protected BindingBase CreateBinding(object source, string path, BindingMode mode = BindingMode.Default, IValueConverter? converter = null)
 		{

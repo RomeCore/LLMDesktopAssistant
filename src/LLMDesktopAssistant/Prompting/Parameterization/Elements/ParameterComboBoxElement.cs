@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Data;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
 
@@ -73,11 +73,11 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			set => SetProperty(ref field, value);
 		}
 
-		public override ParameterSchemaValue CreateOrFixValue(ParameterSchemaValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
+		public override ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
 		{
 			if (ValueType == ParameterSchemaLimitationType.Boolean)
 			{
-				if (existing is ParameterSchemaBooleanValue booleanValue)
+				if (existing is ReactiveNodeBooleanValue booleanValue)
 					return booleanValue;
 
 				log.Append(new ParameterValidationLogEntry
@@ -86,20 +86,20 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 					OriginalValue = existing?.TakeValueSnapshot(),
 					FinalValue = DefaultBoolean
 				});
-				return new ParameterSchemaBooleanValue
+				return new ReactiveNodeBooleanValue
 				{
 					Value = DefaultBoolean
 				};
 			}
 
-			if (existing is ParameterSchemaStringValue stringValue &&
+			if (existing is ReactiveNodeStringValue stringValue &&
 				stringValue.Value is not null &&
 				(IsEditable || Choices is null || Choices.Contains(stringValue.Value)))
 			{
 				return stringValue;
 			}
 
-			var final = existing is ParameterSchemaStringValue existingString && existingString.Value is not null
+			var final = existing is ReactiveNodeStringValue existingString && existingString.Value is not null
 				? existingString.Value
 				: Default ?? Choices?.FirstOrDefault() ?? string.Empty;
 
@@ -109,21 +109,21 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 				OriginalValue = existing?.TakeValueSnapshot(),
 				FinalValue = final
 			});
-			return new ParameterSchemaStringValue
+			return new ReactiveNodeStringValue
 			{
 				Value = final
 			};
 		}
 
-		public override Control CreateControl(ParameterSchemaValue value)
+		public override Control CreateControl(ReactiveNodeValue value)
 		{
 			if (ValueType == ParameterSchemaLimitationType.Boolean)
-				return CreateBooleanControl((ParameterSchemaBooleanValue)value);
+				return CreateBooleanControl((ReactiveNodeBooleanValue)value);
 
-			return CreateStringControl((ParameterSchemaStringValue)value);
+			return CreateStringControl((ReactiveNodeStringValue)value);
 		}
 
-		private Control CreateStringControl(ParameterSchemaStringValue stringValue)
+		private Control CreateStringControl(ReactiveNodeStringValue stringValue)
 		{
 			var comboBox = new ComboBox
 			{
@@ -140,7 +140,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			return WrapControl(comboBox);
 		}
 
-		private Control CreateBooleanControl(ParameterSchemaBooleanValue booleanValue)
+		private Control CreateBooleanControl(ReactiveNodeBooleanValue booleanValue)
 		{
 			var items = new List<ParameterBooleanComboItem>
 			{

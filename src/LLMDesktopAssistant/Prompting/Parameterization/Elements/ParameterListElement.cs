@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using LLMDesktopAssistant.Prompting.Parameterization.MVVM;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
 
@@ -36,9 +36,9 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			set => SetProperty(ref field, value);
 		}
 
-		public override ParameterSchemaValue CreateOrFixValue(ParameterSchemaValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
+		public override ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
 		{
-			if (existing is ParameterSchemaArrayValue arrayValue)
+			if (existing is ReactiveNodeArrayValue arrayValue)
 			{
 				for (int i = 0; i < arrayValue.Items.Count; i++)
 					arrayValue.Items[i] = ItemsSchema.CreateOrFixValue(arrayValue.Items[i], log);
@@ -68,15 +68,15 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 				FinalValue = null
 			});
 
-			var newArray = new ParameterSchemaArrayValue();
+			var newArray = new ReactiveNodeArrayValue();
 			for (int i = 0; i < Min; i++)
 				newArray.Items.Add(ItemsSchema.CreateOrFixValue(null, log));
 			return newArray;
 		}
 
-		public override Control CreateControl(ParameterSchemaValue value)
+		public override Control CreateControl(ReactiveNodeValue value)
 		{
-			var arrayValue = (ParameterSchemaArrayValue)value;
+			var arrayValue = (ReactiveNodeArrayValue)value;
 			var viewModel = new ParameterSchemaListViewModel(this, arrayValue);
 			return WrapControl(new ContentControl
 			{

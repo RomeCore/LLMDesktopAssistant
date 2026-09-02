@@ -2,7 +2,7 @@ using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Media;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
 
@@ -38,11 +38,11 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			set => SetProperty(ref field, value);
 		}
 
-		public override ParameterSchemaValue CreateOrFixValue(ParameterSchemaValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
+		public override ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
 		{
 			if (ValueType == ParameterSchemaLimitationType.Number)
 			{
-				if (existing is ParameterSchemaNumberValue numberValue)
+				if (existing is ReactiveNodeNumberValue numberValue)
 					return numberValue;
 
 				var final = double.TryParse(Default, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : 0;
@@ -52,13 +52,13 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 					OriginalValue = existing?.TakeValueSnapshot(),
 					FinalValue = final
 				});
-				return new ParameterSchemaNumberValue
+				return new ReactiveNodeNumberValue
 				{
 					Value = final
 				};
 			}
 
-			if (existing is ParameterSchemaStringValue stringValue && stringValue.Value is not null)
+			if (existing is ReactiveNodeStringValue stringValue && stringValue.Value is not null)
 				return stringValue;
 
 			var finalString = Default ?? string.Empty;
@@ -68,21 +68,21 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 				OriginalValue = existing?.TakeValueSnapshot(),
 				FinalValue = finalString
 			});
-			return new ParameterSchemaStringValue
+			return new ReactiveNodeStringValue
 			{
 				Value = finalString
 			};
 		}
 
-		public override Control CreateControl(ParameterSchemaValue value)
+		public override Control CreateControl(ReactiveNodeValue value)
 		{
 			if (ValueType == ParameterSchemaLimitationType.Number)
-				return CreateNumberControl((ParameterSchemaNumberValue)value);
+				return CreateNumberControl((ReactiveNodeNumberValue)value);
 
-			return CreateStringControl((ParameterSchemaStringValue)value);
+			return CreateStringControl((ReactiveNodeStringValue)value);
 		}
 
-		private Control CreateStringControl(ParameterSchemaStringValue stringValue)
+		private Control CreateStringControl(ReactiveNodeStringValue stringValue)
 		{
 			var textBox = new TextBox
 			{
@@ -94,7 +94,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			return WrapControl(textBox);
 		}
 
-		private Control CreateNumberControl(ParameterSchemaNumberValue numberValue)
+		private Control CreateNumberControl(ReactiveNodeNumberValue numberValue)
 		{
 			var textBox = new TextBox
 			{
@@ -116,7 +116,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 					updating = false;
 				}
 			};
-			numberValue.SubscribeChanged(nameof(ParameterSchemaNumberValue.Value), (object? _) =>
+			numberValue.SubscribeChanged(nameof(ReactiveNodeNumberValue.Value), (object? _) =>
 			{
 				updating = true;
 				textBox.Text = numberValue.Value.ToString(CultureInfo.InvariantCulture);

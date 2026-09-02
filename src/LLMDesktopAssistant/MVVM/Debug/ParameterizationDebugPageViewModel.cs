@@ -4,11 +4,11 @@ using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Prompting.Parameterization;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Metadata;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 
 namespace LLMDesktopAssistant.MVVM.Debug;
 
@@ -179,7 +179,7 @@ public class ParameterizationDebugPageViewModel : ViewModelBase
 	}
 
 	private ParameterSchema? _schema;
-	private ParameterSchemaValue? _rootValue;
+	private ReactiveNodeValue? _rootValue;
 
 	/// <summary>
 	/// Gets the command that parses the current text and rebuilds the parameterization control.
@@ -273,14 +273,14 @@ public class ParameterizationDebugPageViewModel : ViewModelBase
 		ValueJson = node?.ToJsonString(new JsonSerializerOptions { WriteIndented = true }) ?? "null";
 	}
 
-	private static JsonNode? ToJsonNode(ParameterSchemaValue value) => value switch
+	private static JsonNode? ToJsonNode(ReactiveNodeValue value) => value switch
 	{
-		ParameterSchemaNullValue => null,
-		ParameterSchemaBooleanValue b => JsonValue.Create(b.Value),
-		ParameterSchemaNumberValue n => JsonValue.Create(n.Value),
-		ParameterSchemaStringValue s => JsonValue.Create(s.Value),
-		ParameterSchemaArrayValue a => new JsonArray(a.Items.Select(ToJsonNode).ToArray()),
-		ParameterSchemaDictionaryValue d => new JsonObject(d.Items.Select(kvp => KeyValuePair.Create(kvp.Key, ToJsonNode(kvp.Value)))),
+		ReactiveNodeNullValue => null,
+		ReactiveNodeBooleanValue b => JsonValue.Create(b.Value),
+		ReactiveNodeNumberValue n => JsonValue.Create(n.Value),
+		ReactiveNodeStringValue s => JsonValue.Create(s.Value),
+		ReactiveNodeArrayValue a => new JsonArray(a.Items.Select(ToJsonNode).ToArray()),
+		ReactiveNodeDictionaryValue d => new JsonObject(d.Items.Select(kvp => KeyValuePair.Create(kvp.Key, ToJsonNode(kvp.Value)))),
 		_ => null
 	};
 }

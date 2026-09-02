@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Prompting.Parameterization.Elements;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Prompting.Parameterization.MVVM
@@ -13,11 +13,11 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.MVVM
 	public class ParameterSchemaObjectViewModel : ViewModelBase
 	{
 		private readonly ParameterSchemaObjectElement _element;
-		private readonly ParameterSchemaDictionaryValue _value;
+		private readonly ReactiveNodeDictionaryValue _value;
 
 		public RangeObservableCollection<ParameterSchemaObjectItemViewModel> Items { get; } = [];
 
-		public ParameterSchemaObjectViewModel(ParameterSchemaObjectElement element, ParameterSchemaDictionaryValue value)
+		public ParameterSchemaObjectViewModel(ParameterSchemaObjectElement element, ReactiveNodeDictionaryValue value)
 		{
 			_element = element;
 			_value = value;
@@ -39,11 +39,11 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.MVVM
 	{
 		public ParameterSchemaElement Element { get; }
 
-		public ParameterSchemaValue Value { get; }
+		public ReactiveNodeValue Value { get; }
 
 		public Control Control { get; }
 
-		public ParameterSchemaObjectItemViewModel(ParameterSchemaElement element, ParameterSchemaValue value)
+		public ParameterSchemaObjectItemViewModel(ParameterSchemaElement element, ReactiveNodeValue value)
 		{
 			Element = element;
 			Value = value;

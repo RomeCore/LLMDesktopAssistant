@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Data;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
 
@@ -49,7 +49,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			return value;
 		}
 
-		public override ParameterSchemaValue CreateOrFixValue(ParameterSchemaValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
+		public override ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
 		{
 			if (existing is null)
 			{
@@ -60,13 +60,13 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 					OriginalValue = null,
 					FinalValue = final
 				});
-				return new ParameterSchemaNumberValue
+				return new ReactiveNodeNumberValue
 				{
 					Value = final
 				};
 			}
 
-			if (existing is not ParameterSchemaNumberValue numberValue)
+			if (existing is not ReactiveNodeNumberValue numberValue)
 			{
 				var final = TryToInteger(Default);
 				log.Append(new ParameterValidationLogEntry
@@ -75,7 +75,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 					OriginalValue = existing.TakeValueSnapshot(),
 					FinalValue = final
 				});
-				return new ParameterSchemaNumberValue
+				return new ReactiveNodeNumberValue
 				{
 					Value = final
 				};
@@ -90,7 +90,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 					OriginalValue = numberValue.Value,
 					FinalValue = final
 				});
-				return new ParameterSchemaNumberValue
+				return new ReactiveNodeNumberValue
 				{
 					Value = final
 				};
@@ -105,7 +105,7 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 					OriginalValue = numberValue.Value,
 					FinalValue = final
 				});
-				return new ParameterSchemaNumberValue
+				return new ReactiveNodeNumberValue
 				{
 					Value = final
 				};
@@ -114,9 +114,9 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			return existing;
 		}
 
-		public override Control CreateControl(ParameterSchemaValue value)
+		public override Control CreateControl(ReactiveNodeValue value)
 		{
-			var numberValue = (ParameterSchemaNumberValue)value;
+			var numberValue = (ReactiveNodeNumberValue)value;
 
 			var slider = new Slider
 			{

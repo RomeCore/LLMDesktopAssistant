@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using LLMDesktopAssistant.Prompting.Parameterization.MVVM;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Json;
 
@@ -16,9 +16,9 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 			set => _properties.Reset(value);
 		}
 
-		public override ParameterSchemaValue CreateOrFixValue(ParameterSchemaValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
+		public override ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)
 		{
-			if (existing is ParameterSchemaDictionaryValue dictValue)
+			if (existing is ReactiveNodeDictionaryValue dictValue)
 			{
 				foreach (var (key, element) in Properties)
 				{
@@ -40,15 +40,15 @@ namespace LLMDesktopAssistant.Prompting.Parameterization.Elements
 				FinalValue = null
 			});
 
-			var newDict = new ParameterSchemaDictionaryValue();
+			var newDict = new ReactiveNodeDictionaryValue();
 			foreach (var (key, element) in Properties)
 				newDict.Items.Add(key, element.CreateOrFixValue(null, log));
 			return newDict;
 		}
 
-		public override Control CreateControl(ParameterSchemaValue value)
+		public override Control CreateControl(ReactiveNodeValue value)
 		{
-			var dictValue = (ParameterSchemaDictionaryValue)value;
+			var dictValue = (ReactiveNodeDictionaryValue)value;
 			var viewModel = new ParameterSchemaObjectViewModel(this, dictValue);
 			return WrapControl(new ContentControl
 			{

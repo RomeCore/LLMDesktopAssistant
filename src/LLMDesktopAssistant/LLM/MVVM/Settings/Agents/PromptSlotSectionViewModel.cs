@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Parameterization;
-using LLMDesktopAssistant.Prompting.Parameterization.Values;
+using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
@@ -49,7 +49,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		private readonly PromptSlotKind _kind;
 		private bool _isSyncing;
 		private PromptPartOptionViewModel? _selectedOption;
-		private ParameterSchemaValue? _subscribedValue;
+		private ReactiveNodeValue? _subscribedValue;
 
 		public PromptSlotSectionViewModel(
 			PromptSlotKind kind,
@@ -247,7 +247,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 		}
 
-		private void SubscribeValue(ParameterSchemaValue? value)
+		private void SubscribeValue(ReactiveNodeValue? value)
 		{
 			if (ReferenceEquals(_subscribedValue, value))
 				return;

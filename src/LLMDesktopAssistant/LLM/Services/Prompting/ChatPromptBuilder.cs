@@ -8,6 +8,7 @@ using LLMDesktopAssistant.Prompting.Hooks;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLMDesktopAssistant.Prompting.Skills;
+using LLMDesktopAssistant.StructuredValues.Converters;
 using LLMDesktopAssistant.Users;
 using LLTSharp;
 using RCLargeLanguageModels.Messages;
@@ -90,7 +91,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				if (part.ParameterSchema is not null)
 				{
 					selection.Parameters = part.ParameterSchema.Root.CreateOrFixValue(selection.Parameters, []);
-					partsContext["params"] = selection.Parameters?.GetTemplateDataAccessor();
+					partsContext["params"] = LLTStructuredConverter.ToTemplateDataAccessor(selection.Parameters);
 				}
 				var result = part.EffectiveTemplate.Render(partsContext, functions).ToString();
 				partsContext.Remove("params");
