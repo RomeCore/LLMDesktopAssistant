@@ -7,6 +7,7 @@ using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Metadata;
+using LLMDesktopAssistant.StructuredValues.Converters;
 using LLMDesktopAssistant.StructuredValues.Parameterization;
 using LLMDesktopAssistant.StructuredValues.Parameterization.Controls;
 using LLMDesktopAssistant.StructuredValues.Reactive;
@@ -271,18 +272,7 @@ public class ParameterizationDebugPageViewModel : ViewModelBase
 	{
 		if (_rootValue is null)
 			return;
-		var node = ToJsonNode(_rootValue);
+		var node = JsonStructuredConverter.ToJsonNode(_rootValue);
 		ValueJson = node?.ToJsonString(new JsonSerializerOptions { WriteIndented = true }) ?? "null";
 	}
-
-	private static JsonNode? ToJsonNode(ReactiveNodeValue value) => value switch
-	{
-		ReactiveNodeNullValue => null,
-		ReactiveNodeBooleanValue b => JsonValue.Create(b.Value),
-		ReactiveNodeNumberValue n => JsonValue.Create(n.Value),
-		ReactiveNodeStringValue s => JsonValue.Create(s.Value),
-		ReactiveNodeArrayValue a => new JsonArray(a.Items.Select(ToJsonNode).ToArray()),
-		ReactiveNodeDictionaryValue d => new JsonObject(d.Items.Select(kvp => KeyValuePair.Create(kvp.Key, ToJsonNode(kvp.Value)))),
-		_ => null
-	};
 }

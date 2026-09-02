@@ -53,7 +53,7 @@ namespace LLMDesktopAssistant.StructuredValues.Converters
 
 		private static TemplateDataAccessor ConvertToTemplate(INodeValue value) => value switch
 		{
-			INodeNullValue => TemplateNullAccessor.Instance,
+			INodeNullValue or null => TemplateNullAccessor.Instance,
 			INodeBooleanValue b => new TemplateBooleanAccessor(b.Value),
 			INodeNumberValue n => new TemplateNumberAccessor(n.Value),
 			INodeStringValue s => new TemplateStringAccessor(s.Value),
