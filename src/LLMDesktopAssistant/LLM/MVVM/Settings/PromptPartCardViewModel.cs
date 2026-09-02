@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
-using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.StructuredValues.Parameterization;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 

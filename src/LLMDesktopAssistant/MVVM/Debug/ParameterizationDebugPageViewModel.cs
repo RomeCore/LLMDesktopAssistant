@@ -2,13 +2,13 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.Prompting.Parameterization;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Metadata;
 using LLMDesktopAssistant.StructuredValues.Reactive;
+using LLMDesktopAssistant.StructuredValues.Parameterization;
 
 namespace LLMDesktopAssistant.MVVM.Debug;
 

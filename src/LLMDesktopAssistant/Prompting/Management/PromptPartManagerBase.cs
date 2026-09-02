@@ -1,7 +1,7 @@
-﻿using System.Collections.Specialized;
-using LLMDesktopAssistant.Prompting.Parameterization;
+using System.Collections.Specialized;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Settings.Application;
+using LLMDesktopAssistant.StructuredValues.Parameterization;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Locale;

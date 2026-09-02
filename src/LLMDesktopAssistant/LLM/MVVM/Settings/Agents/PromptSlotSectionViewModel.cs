@@ -3,7 +3,7 @@ using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.Management;
-using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.StructuredValues.Parameterization;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 using LLMDesktopAssistant.Utils;
 

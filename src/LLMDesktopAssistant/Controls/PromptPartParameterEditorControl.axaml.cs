@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
-using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.StructuredValues.Parameterization;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 
 namespace LLMDesktopAssistant.Controls

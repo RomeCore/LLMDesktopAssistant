@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using LLMDesktopAssistant.Prompting.Parameterization;
 using LLMDesktopAssistant.Services;
+using LLMDesktopAssistant.StructuredValues.Parameterization;
 using LLMDesktopAssistant.Utils;
 using LLTSharp;
 using LLTSharp.Locale;

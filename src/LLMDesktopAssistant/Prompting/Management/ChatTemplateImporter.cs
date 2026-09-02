@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.StructuredValues.Parameterization;
 using LLTSharp;
 using LLTSharp.Locale;
 using LLTSharp.Metadata;

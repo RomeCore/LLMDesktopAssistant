@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.StructuredValues.Parameterization;
 using LLTSharp;
 using LLTSharp.Locale;
 

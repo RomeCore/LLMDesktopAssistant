@@ -1,5 +1,5 @@
 using LLMDesktopAssistant.Prompting;
-using LLMDesktopAssistant.Prompting.Parameterization;
+using LLMDesktopAssistant.StructuredValues.Parameterization;
 using LLMDesktopAssistant.Tools;
 using YamlDotNet.RepresentationModel;
 
