@@ -191,8 +191,4 @@
 		</Compile>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Prompting\Parameterization\" />
-	</ItemGroup>
-
 </Project>
