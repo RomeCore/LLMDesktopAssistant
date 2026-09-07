@@ -1,16 +1,9 @@
-﻿using LLMDesktopAssistant.Utils;
-using LLTSharp;
+﻿using LLTSharp;
 
 namespace LLMDesktopAssistant.Prompting.Management
 {
-	public interface IAppTemplateImporter
+	public interface IAppTemplateImporter : ITemplateImporter
 	{
-		TemplateLibrary Library { get; }
-
 		IEnumerable<ITemplate> BuiltInTemplates { get; }
-
-		ReadOnlyObservableCollection<ITemplate> UserTemplates { get; }
-
-		ReadOnlyObservableCollection<(string Path, Exception Exception)> ImportingErrors { get; }
 	}
 }

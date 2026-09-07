@@ -2,8 +2,7 @@
 
 namespace LLMDesktopAssistant.Prompting.Management
 {
-	public interface IChatTemplateImporter
+	public interface IChatTemplateImporter : ITemplateImporter
 	{
-		TemplateLibrary Library { get; }
 	}
 }

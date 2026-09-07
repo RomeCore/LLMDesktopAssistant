@@ -21,6 +21,14 @@ namespace LLMDesktopAssistant.Addons.Loading
 		protected abstract string[] Extensions { get; }
 
 		/// <summary>
+		/// Whether use a name deduplication mechanism to avoid loading duplicate addons.
+		/// If enabled, locator will deduplicate by file name (for short format) and by folder name (for full format),
+		/// while priorizing by extensions. When both forms exist for the same addon name,
+		/// the full format takes precedence over the short format. <see langword="true"/> by default.
+		/// </summary>
+		protected virtual bool UseNameDeduplication => true;
+
+		/// <summary>
 		/// Gets whether to allow short format names for addons.
 		/// </summary>
 		protected abstract bool AllowShortFormat { get; }
@@ -60,50 +68,94 @@ namespace LLMDesktopAssistant.Addons.Loading
 
 			var files = new List<AddonPathInfo>();
 
-			// key = extension without dot, value = priority (higher number means higher priority)
-			var comparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
-			var extensions = new Dictionary<string, int>(comparer);
-			var prioritizedPaths = new Dictionary<string, (int, AddonPathInfo)>(comparer);
-			for (int i = 0; i < Extensions.Length; i++)
+			if (UseNameDeduplication)
 			{
-				var ext = Extensions[i].TrimStart('.');
-				extensions[ext] = Extensions.Length - i;
-			}
-
-			void TryAddFile(string file, bool isShortForm, AddonPackInfo? sourcePack)
-			{
-				var ext = Path.GetExtension(file)?.TrimStart('.') ?? string.Empty;
-				if (extensions.TryGetValue(ext, out var priority))
+				// key = extension without dot, value = priority (higher number means higher priority)
+				var comparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+				var extensions = new Dictionary<string, int>(comparer);
+				var prioritizedPaths = new Dictionary<string, (int, AddonPathInfo)>(comparer);
+				for (int i = 0; i < Extensions.Length; i++)
 				{
-					var purePath = file[..^ext.Length].TrimEnd('.');
-					if (!prioritizedPaths.TryGetValue(purePath, out var entry) || entry.Item1 < priority)
-						prioritizedPaths[purePath] = (priority, new AddonPathInfo(file, isShortForm, sourcePack));
+					var ext = Extensions[i].TrimStart('.');
+					extensions[ext] = Extensions.Length - i;
 				}
-			}
 
-			foreach (var folder in folders)
-			{
-				if (FullFormatName != null)
+				static bool HasPrioritizedForm(bool? existingIsShort, bool newIsShort)
 				{
-					foreach (var directory in Directory.GetDirectories(folder.Path))
+					// existing -> new (implication):
+					//
+					// existing: full, new: short -> ignore
+					// any other case -> add
+
+					if (existingIsShort is true)
+						return true;
+					return existingIsShort == newIsShort;
+				}
+
+				void TryAddFile(string file, bool isShortForm, AddonPackInfo? sourcePack)
+				{
+					var ext = Path.GetExtension(file)?.TrimStart('.') ?? string.Empty;
+					if (extensions.TryGetValue(ext, out var priority))
 					{
-						foreach (var file in Directory.GetFiles(directory, $"{FullFormatName}.*", SearchOption.TopDirectoryOnly))
+						// Deduplicate by file name (for short format, e.g. 'skills/my-skill.md')
+						// and by folder name (for full format, e.g. 'skills/my-skill/SKILL.md'),
+						// so that both forms of the same addon collide on the same key.
+						var purePath = isShortForm
+							? file[..^ext.Length].TrimEnd('.')
+							: Path.GetDirectoryName(file) ?? file;
+						if (!prioritizedPaths.TryGetValue(purePath, out var entry) ||
+							(entry.Item1 < priority && HasPrioritizedForm(entry.Item2.IsShortForm, isShortForm)))
+							prioritizedPaths[purePath] = (priority, new AddonPathInfo(file, isShortForm, sourcePack));
+					}
+				}
+
+				foreach (var folder in folders)
+				{
+					if (FullFormatName != null)
+					{
+						foreach (var directory in Directory.GetDirectories(folder.Path))
 						{
-							TryAddFile(file, false, folder.SourcePack);
+							foreach (var file in Directory.GetFiles(directory, $"{FullFormatName}.*", SearchOption.TopDirectoryOnly))
+							{
+								TryAddFile(file, false, folder.SourcePack);
+							}
+						}
+					}
+					if (AllowShortFormat)
+					{
+						foreach (var file in Directory.GetFiles(folder.Path))
+						{
+							TryAddFile(file, true, folder.SourcePack);
 						}
 					}
 				}
-				if (AllowShortFormat)
+
+				foreach (var entry in prioritizedPaths)
+					files.Add(entry.Value.Item2);
+			}
+			else
+			{
+				foreach (var folder in folders)
 				{
-					foreach (var file in Directory.GetFiles(folder.Path))
+					if (FullFormatName != null)
 					{
-						TryAddFile(file, true, folder.SourcePack);
+						foreach (var directory in Directory.GetDirectories(folder.Path))
+						{
+							foreach (var file in Directory.GetFiles(directory, $"{FullFormatName}.*", SearchOption.TopDirectoryOnly))
+							{
+								files.Add(new AddonPathInfo(file, false, folder.SourcePack));
+							}
+						}
+					}
+					if (AllowShortFormat)
+					{
+						foreach (var file in Directory.GetFiles(folder.Path))
+						{
+							files.Add(new AddonPathInfo(file, true, folder.SourcePack));
+						}
 					}
 				}
 			}
-
-			foreach (var entry in prioritizedPaths)
-				files.Add(entry.Value.Item2);
 
 			files.AddRange(notExistingFolders);
 			files.AddRange(config.AddonFiles ?? []);

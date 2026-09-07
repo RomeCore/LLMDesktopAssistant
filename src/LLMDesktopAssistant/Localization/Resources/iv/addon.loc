@@ -60,6 +60,8 @@ settings.file.placeholder: File path...
 // =====================================================
 type.skills.name: Skills
 type.skills.description: Reusable skill procedures (SKILL.md files) that teach agents how to perform specific tasks.
+type.templates.name: Prompt Templates
+type.templates.description: Reusable prompt templates (LLT files) that define prompt parts for chats and agents: system prompts, personas, specializations, components, skills and sub-agents.
 
 // =====================================================
 // === Diagnostics                                   ===

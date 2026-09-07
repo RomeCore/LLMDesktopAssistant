@@ -13,6 +13,8 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 		public Type ClrType => typeof(SkillInfo);
 
+		public bool UseDefaultDiagnosticFactory => true;
+
 		public LocaleKeyBase NameKey => Locale.GetKey("addon.type.skills.name");
 
 		public LocaleKeyBase? DescriptionKey => Locale.GetKey("addon.type.skills.description");

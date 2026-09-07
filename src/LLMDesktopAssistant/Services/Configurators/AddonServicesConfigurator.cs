@@ -25,8 +25,8 @@ namespace LLMDesktopAssistant.Services.Configurators
 			foreach (var descriptorType in descriptorTypes)
 			{
 				var descriptor = descriptorType.Type.Instantiate<IAddonTypeDescriptor>();
-				services.AddSingleton(typeof(IAddonTypeDescriptor), descriptor);
-				AddonServiceRegistration.Register(services, descriptor.ClrType, isAppScope: true);
+				services.AddSingleton(descriptor);
+				AddonServiceRegistration.Register(services, descriptor, isAppScope: true);
 			}
 		}
 	}
@@ -50,19 +50,22 @@ namespace LLMDesktopAssistant.Services.Configurators
 		{
 			foreach (var descriptor in ServiceRegistry.Provider.GetServices<IAddonTypeDescriptor>())
 			{
-				services.AddSingleton(typeof(IAddonTypeDescriptor), descriptor);
-				AddonServiceRegistration.Register(services, descriptor.ClrType, isAppScope: false);
+				services.AddSingleton(descriptor);
+				AddonServiceRegistration.Register(services, descriptor, isAppScope: false);
 			}
 		}
 	}
 
 	internal static class AddonServiceRegistration
 	{
-		public static void Register(IServiceCollection services, Type addonType, bool isAppScope)
+		public static void Register(IServiceCollection services, IAddonTypeDescriptor descriptor, bool isAppScope)
 		{
+			var addonType = descriptor.ClrType;
+
 			Register(typeof(IAddonAccessor<>), typeof(AddonAccessor<>));
 			Register(typeof(IReactiveAddonLoader<>), typeof(AddonFileCachedLoader<>));
-			Register(typeof(IDiagnosticAddonFactory<>), typeof(DiagnosticAddonFactory<>));
+			if (descriptor.UseDefaultDiagnosticFactory)
+				Register(typeof(IDiagnosticAddonFactory<>), typeof(DiagnosticAddonFactory<>));
 
 			void Register(Type openServiceType, Type openImplementationType)
 			{

@@ -18,6 +18,11 @@ namespace LLMDesktopAssistant.Addons
 		Type ClrType { get; }
 
 		/// <summary>
+		/// Gets a value indicating whether to use the default diagnostic factory.
+		/// </summary>
+		bool UseDefaultDiagnosticFactory { get; }
+
+		/// <summary>
 		/// Gets the localized display name of the addon type. Used in the addon settings UI.
 		/// </summary>
 		LocaleKeyBase NameKey { get; }

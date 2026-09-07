@@ -13,9 +13,9 @@ namespace LLMDesktopAssistant.Prompting.Skills
 	{
 		protected override string[] Folders => ["skills"];
 
-		protected override string[] Extensions => [".md", ".mdx"];
+		protected override string[] Extensions => [".md", ".mdx", ".txt"];
 
-		protected override bool AllowShortFormat => false;
+		protected override bool AllowShortFormat => true;
 
 		protected override string? FullFormatName => "SKILL";
 	}
