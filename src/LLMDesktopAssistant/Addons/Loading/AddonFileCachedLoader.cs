@@ -1,14 +1,10 @@
 using System.Collections.Concurrent;
 using LLMDesktopAssistant.Addons.Parsers;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 using Serilog;
 
 namespace LLMDesktopAssistant.Addons.Loading
 {
-	[Service(typeof(IReactiveAddonLoader<>))]
-	[ChatService(typeof(IReactiveAddonLoader<>))]
 	public class AddonFileCachedLoader<T>(
 		IAddonFileParser<T> parser,
 		IDiagnosticAddonFactory<T> diagnosticFactory

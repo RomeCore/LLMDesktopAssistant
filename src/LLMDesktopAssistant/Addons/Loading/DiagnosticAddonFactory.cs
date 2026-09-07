@@ -1,8 +1,5 @@
-using LLMDesktopAssistant.Services;
-
 namespace LLMDesktopAssistant.Addons.Loading
 {
-	[Service(typeof(IDiagnosticAddonFactory<>))]
 	public class DiagnosticAddonFactory<TAddon> : IDiagnosticAddonFactory<TAddon>
 		where TAddon : AddonBase<TAddon>, new()
 	{

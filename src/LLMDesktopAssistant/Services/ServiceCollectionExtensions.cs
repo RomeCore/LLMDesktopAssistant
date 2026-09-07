@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 namespace LLMDesktopAssistant.Services
 {
 	/// <summary>
@@ -29,12 +31,12 @@ namespace LLMDesktopAssistant.Services
 		/// <returns>The same service collection, rebuilt with deduplicated registrations.</returns>
 		public static IServiceCollection DeduplicateServices(this IServiceCollection services)
 		{
-			var descriptors = services.ToArray();
-			services.Clear();
+			var descriptors = services.Select((d, i) => (Index: i, Descriptor: d)).ToArray();
+			var result = new List<(int Index, ServiceDescriptor Descriptor)>(descriptors.Length);
 
 			foreach (var group in descriptors
-				.Where(d => d.ImplementationType != null && !d.IsKeyedService)
-				.GroupBy(d => (ImplementationType: d.ImplementationType!, Lifetime: d.Lifetime)))
+				.Where(d => d.Descriptor.ImplementationType != null && !d.Descriptor.IsKeyedService)
+				.GroupBy(d => (ImplementationType: d.Descriptor.ImplementationType!, Lifetime: d.Descriptor.Lifetime)))
 			{
 				var implementationType = group.Key.ImplementationType;
 				var lifetime = group.Key.Lifetime;
@@ -42,29 +44,35 @@ namespace LLMDesktopAssistant.Services
 
 				if (registrations.Length == 1)
 				{
-					services.Add(registrations[0]);
+					result.Add(registrations[0]);
 					continue;
 				}
 
+				int minIndex = registrations.Min(d => d.Index);
+
 				// Register the concrete type once; every interface forwards to it so that all
 				// service types of this implementation share a single instance.
-				if (!registrations.Any(d => d.ServiceType == implementationType))
-					services.Add(ServiceDescriptor.Describe(implementationType, implementationType, lifetime));
+				if (!registrations.Any(d => d.Descriptor.ServiceType == implementationType))
+					result.Add((minIndex, ServiceDescriptor.Describe(implementationType, implementationType, lifetime)));
 
 				foreach (var descriptor in registrations)
 				{
-					if (descriptor.ServiceType == implementationType)
-						services.Add(descriptor);
+					if (descriptor.Descriptor.ServiceType == implementationType)
+						result.Add((minIndex, descriptor.Descriptor));
 					else
-						services.Add(ServiceDescriptor.Describe(
-							descriptor.ServiceType,
+						result.Add((minIndex, ServiceDescriptor.Describe(
+							descriptor.Descriptor.ServiceType,
 							sp => sp.GetRequiredService(implementationType),
-							descriptor.Lifetime));
+							descriptor.Descriptor.Lifetime)));
 				}
 			}
 
-			foreach (var descriptor in descriptors.Where(d => d.ImplementationType == null || d.IsKeyedService))
-				services.Add(descriptor);
+			foreach (var descriptor in descriptors.Where(d => d.Descriptor.ImplementationType == null || d.Descriptor.IsKeyedService))
+				result.Add(descriptor);
+
+			services.Clear();
+			foreach (var r in result.OrderBy(r => r.Index))
+				services.Add(r.Descriptor);
 
 			return services;
 		}

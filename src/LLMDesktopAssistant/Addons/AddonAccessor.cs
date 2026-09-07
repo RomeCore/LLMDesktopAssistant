@@ -1,13 +1,9 @@
 using System.Collections.Specialized;
 using LLMDesktopAssistant.Addons.Management;
-using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Addons
 {
-	[Service(typeof(IAddonAccessor<>))]
-	[ChatService(typeof(IAddonAccessor<>))]
 	public class AddonAccessor<T> : Disposable, IAddonAccessor<T>
 	{
 		private readonly RangeObservableCollection<T> _addons = [];

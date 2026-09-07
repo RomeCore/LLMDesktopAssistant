@@ -34,14 +34,11 @@ namespace LLMDesktopAssistant.Services
 					continue;
 				if (service.Lifetime is ServiceLifetime.Transient || service.ServiceType.ContainsGenericParameters)
 					services.Add(service);
-				else
-					singletonTypes.Add(service.ServiceType);
+				else if (singletonTypes.Add(service.ServiceType))
+					foreach (var singletonService in Provider.GetServices(service.ServiceType))
+						if (singletonService is not null)
+							services.AddSingleton(service.ServiceType, singletonService);
 			}
-
-			foreach (var type in singletonTypes)
-				foreach (var service in Provider.GetServices(type))
-					if (service is not null)
-						services.AddSingleton(type, service);
 
 			return services;
 		}
