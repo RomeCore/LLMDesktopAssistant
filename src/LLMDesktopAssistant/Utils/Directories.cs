@@ -16,6 +16,11 @@ namespace LLMDesktopAssistant.Utils
 		public static string LocalAppData { get; }
 
 		/// <summary>
+		/// The path to the user's profile directory, typically located at %USERPROFILE%.
+		/// </summary>
+		public static string UserProfile { get; }
+
+		/// <summary>
 		/// The path where to store the temporary files for the application. They will be cleared upon application exit.
 		/// </summary>
 		public static string TempFiles { get; }
@@ -34,6 +39,11 @@ namespace LLMDesktopAssistant.Utils
 		/// The path where to store the plugins for the application. These are typically .dll files or other executable components that extend the functionality of the application.
 		/// </summary>
 		public static string Plugins { get; }
+
+		/// <summary>
+		/// The path where to store the addon packs for the application.
+		/// </summary>
+		public static string AddonPacks { get; }
 
 		/// <summary>
 		/// The path where to store the additional templates for prompting, they are usually has .llt extension.
@@ -98,10 +108,12 @@ namespace LLMDesktopAssistant.Utils
 		static Directories()
 		{
 			LocalAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), WorkingHome);
+			UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 			TempFiles = Path.Combine(LocalAppData, "temp");
 			LuaScripts = Path.Combine(LocalAppData, "scripts", "lua");
 			TempScripts = Path.Combine(LocalAppData, "temp", "scripts");
 			Plugins = Path.Combine(LocalAppData, "plugins");
+			AddonPacks = Path.Combine(LocalAppData, "packs");
 			Templates = Path.Combine(LocalAppData, "templates");
 			Metatools = Path.Combine(LocalAppData, "metatools");
 			Skills = Path.Combine(LocalAppData, "skills");
@@ -122,6 +134,7 @@ namespace LLMDesktopAssistant.Utils
 			Directory.CreateDirectory(LuaScripts);
 			Directory.CreateDirectory(TempScripts);
 			Directory.CreateDirectory(Plugins);
+			Directory.CreateDirectory(AddonPacks);
 			Directory.CreateDirectory(Templates);
 			Directory.CreateDirectory(Metatools);
 			Directory.CreateDirectory(Skills);

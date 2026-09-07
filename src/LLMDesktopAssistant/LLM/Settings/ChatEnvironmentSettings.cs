@@ -9,37 +9,34 @@ namespace LLMDesktopAssistant.LLM.Settings
 	[SettingsRoute(nameof(ChatSettings.Environment))]
 	public partial class ChatEnvironmentSettings : ChatSettingsCategoryBase
 	{
-		private WorkingDirectoriesSettings _workingDirectories = new();
 		/// <summary>
 		/// Gets or sets the working directory configuration for the chat.
 		/// </summary>
 		[InheritedChatSetting]
 		public WorkingDirectoriesSettings WorkingDirectories
 		{
-			get => _workingDirectories;
-			set => SetProperty(ref _workingDirectories, value);
+			get => field ??= new();
+			set => SetProperty(ref field, value);
 		}
 		
-		private readonly RangeObservableCollection<DirectoryAccessSetting> _directoryAccessRules = [];
 		/// <summary>
 		/// The list of directory access rules.
 		/// </summary>
 		[InheritedChatSetting]
 		public RangeObservableCollection<DirectoryAccessSetting> DirectoryAccessRules
 		{
-			get => _directoryAccessRules;
-			set => _directoryAccessRules.Reset(value);
+			get => field ??= new();
+			set => (field ??= new()).Reset(value);
 		}
 
-		private readonly RangeObservableCollection<AdditionalEnvironmentSetting> _additionalSettings = [];
 		/// <summary>
 		/// The list of additional environment settings.
 		/// </summary>
 		[InheritedChatSetting]
 		public RangeObservableCollection<AdditionalEnvironmentSetting> AdditionalSettings
 		{
-			get => _additionalSettings;
-			set => _additionalSettings.Reset(value);
+			get => field ??= new();
+			set => (field ??= new()).Reset(value);
 		}
 
 		/// <summary>

@@ -1,0 +1,79 @@
+// Паки аддонов и настройки аддонов в UI.
+
+%locale: ru-RU
+%namespace: addon
+
+// =====================================================
+// === Паки                                            ===
+// =====================================================
+pack.localappdata.name: %LOCALAPPDATA%
+pack.localappdata.description: Каталог данных приложения (%LOCALAPPDATA%\.llmassist)
+pack.useragentshome.name: Дом агентов пользователя
+pack.useragentshome.description: Пользовательский дом агентов (например, ~/.agents)
+pack.agentshome.name: Дом агентов рабочей директории
+pack.agentshome.description: Дом агентов рабочей директории (например, .agents)
+pack.source.unknown: Неизвестно
+pack.source.appdata: Данные приложения
+pack.source.useragentshome: Пользовательские агенты
+pack.source.agentshome: Агенты рабочей директории
+pack.source.configuration: Конфигурация
+pack.source.scanned: Найденные
+
+// =====================================================
+// === UI настроек                                     ===
+// =====================================================
+settings.title: Аддоны
+settings.sources: Источники аддонов
+settings.sources.hint: Настройте, откуда загружаются аддоны: рабочие директории, дополнительные пути паков и дополнительные источники по типам.
+settings.search_folders: Папки поиска
+settings.search_folders.hint: Эти папки ищутся на предмет паков аддонов внутри профиля пользователя и в каждой рабочей директории.
+settings.fetch_all: Загружать аддоны из всех рабочих директорий
+settings.fetch_all.hint: При включении паки аддонов загружаются из всех включённых рабочих директорий. Иначе используется только текущая.
+settings.additional_pack_paths: Дополнительные пути паков
+settings.additional_pack_paths.hint: Прямые пути к пакам аддонов, например '~/.agents/packs/my-pack/'.
+settings.additional_pack_paths.placeholder: Путь к паку аддонов...
+settings.addon_sources: Дополнительные источники по типам
+settings.addon_sources.hint: Добавьте дополнительные каталоги и файлы для конкретного типа аддонов (например, skills, tools, sub-agents).
+settings.addon_sources.type_placeholder: Тип аддона (например, skills)...
+settings.addon_sources.directories: Каталоги
+settings.addon_sources.files: Файлы
+settings.packs: Паки аддонов
+settings.packs.hint: Включайте и отключайте настраиваемые паки аддонов. Паки, не указанные здесь, всегда включены.
+settings.packs.empty: Настраиваемые паки аддонов не найдены
+settings.packs.refresh: Обновить
+settings.enable_packs_by_default: Включать паки по умолчанию
+settings.enable_packs_by_default.hint: При включении паки без явного переопределения включены по умолчанию. Снимите флажок, чтобы отключить все неизменённые паки.
+settings.pack.enabled: Включён
+settings.pack.disabled: Выключен
+settings.pack.manifest_invalid: Невалидный манифест
+settings.pack.source: Источник
+settings.directory.placeholder: Путь...
+settings.file.placeholder: Путь к файлу...
+
+// =====================================================
+// === Диагностика                                     ===
+// =====================================================
+diagnostic.fileaccesserror: Ошибка доступа к файлу
+diagnostic.fileaccesserror.hint: Не удалось прочитать файл аддона. Проверьте права доступа.
+diagnostic.generalparsingerror: Ошибка парсинга
+diagnostic.generalparsingerror.hint: Произошла непредвиденная ошибка при разборе файла аддона.
+diagnostic.missingdescription: Отсутствует описание
+diagnostic.missingdescription.hint: У аддона нет описания. Добавьте описание в YAML frontmatter или первым абзацем.
+diagnostic.missingfile: Файл не найден
+diagnostic.missingfile.hint: Файл аддона не найден по ожидаемому пути.
+diagnostic.missingname: Отсутствует имя
+diagnostic.missingname.hint: У аддона нет имени, указанного в YAML frontmatter, заголовке или имени папки.
+diagnostic.missingyaml: Отсутствует YAML
+diagnostic.missingyaml.hint: В файле аддона отсутствует блок YAML frontmatter (--- ... ---).
+diagnostic.missingyamldescription: Отсутствует описание в YAML
+diagnostic.missingyamldescription.hint: Поле 'description' отсутствует в YAML frontmatter. Использовано значение по умолчанию.
+diagnostic.missingyamlname: Отсутствует имя в YAML
+diagnostic.missingyamlname.hint: Поле 'name' отсутствует в YAML frontmatter. Использовано имя по умолчанию.
+diagnostic.namedirectorymismatch: Несоответствие имени и каталога
+diagnostic.namedirectorymismatch.hint: Имя аддона не совпадает с именем каталога, содержащего файл аддона.
+diagnostic.nameformaterror: Неверный формат имени
+diagnostic.nameformaterror.hint: Имя аддона содержит недопустимые символы. Имена аддонов должны использовать строчные буквы, цифры и дефисы.
+diagnostic.yamldecodingerror: Ошибка декодирования YAML
+diagnostic.yamldecodingerror.hint: Не удалось десериализовать YAML frontmatter в ожидаемую структуру.
+diagnostic.yamlparsingerror: Ошибка синтаксиса YAML
+diagnostic.yamlparsingerror.hint: YAML frontmatter содержит недопустимый синтаксис.

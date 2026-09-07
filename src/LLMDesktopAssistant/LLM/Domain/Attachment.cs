@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using LiteDB;
 using LLMDesktopAssistant.Utils.Files;
 using RCLargeLanguageModels.Messages.Attachments;
+using YamlDotNet.Serialization;
 
 namespace LLMDesktopAssistant.LLM.Domain
 {
@@ -43,8 +44,9 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// Gets the display size of the attachment in a human-readable format.
 		/// Example: "50 KB", "35 MB", "12 GB".
 		/// </summary>
-		[BsonIgnore]
 		[JsonIgnore]
+		[BsonIgnore]
+		[YamlIgnore]
 		public string DisplaySize => FileUtils.BytesToDisplaySize(Size);
 
 		/// <summary>

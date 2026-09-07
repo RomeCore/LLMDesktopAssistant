@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using LiteDB;
 using RCLargeLanguageModels;
+using YamlDotNet.Serialization;
 
 namespace LLMDesktopAssistant
 {
@@ -275,6 +276,7 @@ namespace LLMDesktopAssistant
 		/// </summary>
 		[JsonIgnore]
 		[BsonIgnore]
+		[YamlIgnore]
 		protected virtual bool AutoSubscribeSelf => true;
 
 		/// <summary>

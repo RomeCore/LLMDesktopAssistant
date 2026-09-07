@@ -8,15 +8,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 	[SettingsRoute(nameof(ChatSettings.Databases))]
 	public partial class ChatDatabaseSettings : ChatSettingsCategoryBase
 	{
-		private DatabaseConnectionSettings _databaseConnection = new();
 		/// <summary>
 		/// Gets or sets the database connection configuration for the chat.
 		/// </summary>
 		[InheritedChatSetting]
 		public DatabaseConnectionSettings DatabaseConnection
 		{
-			get => _databaseConnection;
-			set => SetProperty(ref _databaseConnection, value);
+			get => field ??= new();
+			set => SetProperty(ref field, value);
 		}
 	}
 }

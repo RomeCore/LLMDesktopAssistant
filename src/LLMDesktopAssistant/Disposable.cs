@@ -1,6 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using LiteDB;
+using YamlDotNet.Serialization;
 
 namespace LLMDesktopAssistant
 {
@@ -19,13 +20,13 @@ namespace LLMDesktopAssistant
 
 
 		private bool _isDisposed;
-
 		/// <summary>
 		/// Gets a value indicating whether this instance has been disposed.
 		/// </summary>
 		[IgnoreDataMember]
 		[JsonIgnore]
 		[BsonIgnore]
+		[YamlIgnore]
 		public bool Disposed => _isDisposed;
 
 		/// <summary>

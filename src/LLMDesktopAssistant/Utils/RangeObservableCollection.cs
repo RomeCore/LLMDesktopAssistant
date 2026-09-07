@@ -277,12 +277,21 @@ namespace LLMDesktopAssistant.Utils
 		/// <returns><see langword="true"/> if the item was successfully removed; otherwise, <see langword="false"/>.</returns>
 		public virtual bool Remove(T item)
 		{
-			int index = IndexOf(item);
+			int index;
+			T removedItem;
 
-			if (index == -1)
-				return false;
+			lock (_lock)
+			{
+				index = IndexOf(item);
+				if (index == -1)
+					return false;
 
-			RemoveAt(index);
+				removedItem = _items[index];
+				_items.RemoveAt(index);
+				_count = _items.Count;
+			}
+
+			RaiseChangedEvents(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removedItem, index));
 			return true;
 		}
 		void IList.Remove(object? value)

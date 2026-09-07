@@ -6,24 +6,22 @@ namespace LLMDesktopAssistant.LLM.Settings
 {
 	public class ChatAgentSettings : ChatSettingsCategoryBase
 	{
-		private RangeObservableCollection<ChatAgentDescriptor> _agents = [];
 		/// <summary>
 		/// The list of chat-specific agents (local to this chat session).
 		/// </summary>
 		public RangeObservableCollection<ChatAgentDescriptor> ChatAgents
 		{
-			get => _agents;
-			set => _agents.Reset(value);
+			get => field ??= new();
+			set => (field ??= new()).Reset(value);
 		}
 
-		private RangeObservableCollection<AgentExecutionStage> _executionStages = [];
 		/// <summary>
 		/// The list of ordered agent execution stages for the chat session.
 		/// </summary>
 		public RangeObservableCollection<AgentExecutionStage> ExecutionStages
 		{
-			get => _executionStages;
-			set => _executionStages.Reset(value);
+			get => field ??= new();
+			set => (field ??= new()).Reset(value);
 		}
 
 		/// <summary>

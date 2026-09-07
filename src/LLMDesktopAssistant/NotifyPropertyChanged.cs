@@ -2,31 +2,61 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant
 {
+	public abstract class OnPropertyChangeAttributeBase : Attribute
+	{
+		public abstract string[] PropertyNames { get; }
+	}
+
 	/// <summary>
 	/// The attribute used to mark methods that should be called when a specific property changes, applicable to <see cref="NotifyPropertyChanged"/> and its subscribers.
 	/// </summary>
 	/// <param name="propertyNames">The name of the properties to subscribe this method to.</param>
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-	public class OnPropertyChangedAttribute(params string[] propertyNames) : Attribute
+	public class OnPropertyChangedAttribute(params string[] propertyNames) : OnPropertyChangeAttributeBase
 	{
 		/// <summary>
 		/// Gets the name of the property to subscribe this method to.
 		/// </summary>
-		public string[] PropertyNames { get; } = propertyNames ?? throw new ArgumentNullException(nameof(propertyNames));
+		public override string[] PropertyNames { get; } = propertyNames ?? throw new ArgumentNullException(nameof(propertyNames));
+	}
+
+	/// <summary>
+	/// The attribute used to mark methods that should be called when a specific property about to change, applicable to <see cref="NotifyPropertyChanged"/> and its subscribers.
+	/// </summary>
+	/// <param name="propertyNames">The name of the properties to subscribe this method to.</param>
+	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+	public class OnPropertyChangingAttribute(params string[] propertyNames) : OnPropertyChangeAttributeBase
+	{
+		/// <summary>
+		/// Gets the name of the property to subscribe this method to.
+		/// </summary>
+		public override string[] PropertyNames { get; } = propertyNames ?? throw new ArgumentNullException(nameof(propertyNames));
 	}
 
 	/// <summary>
 	/// Represents an event data class for property change events.
 	/// </summary>
-	public sealed class PropertyChangedEventData : EventData<string, Action<object, object?, object?>>
+	public sealed class PropertyChangeEventData : EventData<string, Action<object, object?, object?>>
 	{
+		public bool IsChanged { get; }
+
+		public PropertyChangeEventData(bool isChanged)
+		{
+			IsChanged = isChanged;
+		}
+
 		protected override (IEnumerable<string>, Action<object, object?, object?>)?
 			TryCreateHandlerDelegate(MethodInfo method)
 		{
-			var attribute = method.GetCustomAttribute<OnPropertyChangedAttribute>();
+			OnPropertyChangeAttributeBase? attribute;
+			if (IsChanged)
+				attribute = method.GetCustomAttribute<OnPropertyChangedAttribute>();
+			else
+				attribute = method.GetCustomAttribute<OnPropertyChangingAttribute>();
 			if (attribute == null || attribute.PropertyNames.Length == 0)
 				return null;
 
@@ -67,17 +97,42 @@ namespace LLMDesktopAssistant
 	/// <summary>
 	/// Provides a base class for implementing INotifyPropertyChanged.
 	/// </summary>
-	public class NotifyPropertyChanged : EventObject, INotifyPropertyChanged
+	public class NotifyPropertyChanged : EventObject, INotifyPropertyChanging, INotifyPropertyChanged
 	{
-		private readonly PropertyChangedEventData _propertyChangedEvt = new();
+		private readonly PropertyChangeEventData _propertyChangingEvt = new(false), _propertyChangedEvt = new(true);
 
-		protected override IEnumerable<EventData> GetEventData() => [_propertyChangedEvt];
+		protected override IEnumerable<EventData> GetEventData() => [_propertyChangingEvt, _propertyChangedEvt];
 
-		private PropertyChangedEventHandler? _propertyChangedHandler = null;
-		public event PropertyChangedEventHandler? PropertyChanged
+		/// <inheritdoc/>
+		public event PropertyChangingEventHandler? PropertyChanging;
+
+		/// <inheritdoc/>
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+		private EventHandler? _deepChangedHandler = null;
+		private ChangeTracker? _changeTracker = null;
+
+		/// <summary>
+		/// Occurs when a property changes, either directly or deeply through nested objects and collections.
+		/// </summary>
+		public event EventHandler? DeepChanged
 		{
-			add => _propertyChangedHandler += value;
-			remove => _propertyChangedHandler -= value;
+			add
+			{
+				bool wasNull = _deepChangedHandler == null;
+				_deepChangedHandler += value;
+				if (wasNull)
+					_changeTracker = new ChangeTracker(this, () => _deepChangedHandler?.Invoke(this, EventArgs.Empty));
+			}
+			remove
+			{
+				_deepChangedHandler -= value;
+				if (_deepChangedHandler == null && _changeTracker != null)
+				{
+					_changeTracker.Dispose();
+					_changeTracker = null;
+				}
+			}
 		}
 
 		/// <summary>
@@ -90,7 +145,26 @@ namespace LLMDesktopAssistant
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-			_propertyChangedHandler = null;
+
+			PropertyChanging = null;
+			PropertyChanged = null;
+			_deepChangedHandler = null;
+			_changeTracker?.Dispose();
+			_changeTracker = null;
+		}
+
+		/// <summary>
+		/// Raises the PropertyChanging event for a specific property.
+		/// </summary>
+		/// <param name="propertyName">The name of the property that about to change.</param>
+		/// <param name="oldValue">The old value of the property.</param>
+		/// <param name="newValue">The new value of the property.</param>
+		protected void RaisePropertyChanging([CallerMemberName] string? propertyName = null, object? oldValue = null, object? newValue = null)
+		{
+			OnPropertyChanging(propertyName, oldValue, newValue);
+			if (propertyName != null)
+				_propertyChangingEvt.Call(propertyName, (c, e) => e(c, oldValue, newValue));
+			PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
 		}
 
 		/// <summary>
@@ -104,7 +178,7 @@ namespace LLMDesktopAssistant
 			OnPropertyChanged(propertyName, oldValue, newValue);
 			if (propertyName != null)
 				_propertyChangedEvt.Call(propertyName, (c, e) => e(c, oldValue, newValue));
-			_propertyChangedHandler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		/// <summary>
@@ -119,6 +193,7 @@ namespace LLMDesktopAssistant
 		{
 			if (!Equals(backingField, value))
 			{
+				RaisePropertyChanging(propertyName, backingField, value);
 				var oldValue = backingField;
 				backingField = value;
 				RaisePropertyChanged(propertyName, oldValue, value);
@@ -140,6 +215,7 @@ namespace LLMDesktopAssistant
 		{
 			if (!Equals(backingField, value))
 			{
+				RaisePropertyChanging(propertyName, backingField, value);
 				oldValue = backingField;
 				backingField = value;
 				RaisePropertyChanged(propertyName, oldValue, value);
@@ -147,6 +223,16 @@ namespace LLMDesktopAssistant
 			}
 			oldValue = value;
 			return false;
+		}
+
+		/// <summary>
+		/// The method that is called just before a property value changes.
+		/// </summary>
+		/// <param name="propertyName">The name of the property that is about to change.</param>
+		/// <param name="oldValue">The old value of the property.</param>
+		/// <param name="newValue">The new value of the property.</param>
+		protected virtual void OnPropertyChanging(string? propertyName, object? oldValue = null, object? newValue = null)
+		{
 		}
 
 		/// <summary>
@@ -159,13 +245,13 @@ namespace LLMDesktopAssistant
 		{
 		}
 
-		private void Subscribe(string propertyName, Action<object, object?, object?> handler, out IDisposable unsubscriber)
+		private void SubscribeChangedCore(string propertyName, Action<object, object?, object?> handler, out IDisposable unsubscriber)
 		{
 			ArgumentNullException.ThrowIfNull(propertyName);
 			_propertyChangedEvt.Subscribe(propertyName, this, handler, out unsubscriber);
 		}
 
-		private void Subscribe(string propertyName, Action<object, object?, object?> handler)
+		private void SubscribeChangedCore(string propertyName, Action<object, object?, object?> handler)
 		{
 			ArgumentNullException.ThrowIfNull(propertyName);
 			_propertyChangedEvt.Subscribe(propertyName, this, handler);
@@ -181,7 +267,7 @@ namespace LLMDesktopAssistant
 		public void SubscribeChanged(string propertyName, Action<object?> handler)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler(newValue);
-			Subscribe(propertyName, _handler);
+			SubscribeChangedCore(propertyName, _handler);
 		}
 
 		/// <summary>
@@ -194,7 +280,7 @@ namespace LLMDesktopAssistant
 		public void SubscribeChanged(string propertyName, Action<object?, object?> handler)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler(oldValue, newValue);
-			Subscribe(propertyName, _handler);
+			SubscribeChangedCore(propertyName, _handler);
 		}
 
 		/// <summary>
@@ -207,7 +293,7 @@ namespace LLMDesktopAssistant
 		public void SubscribeChanged<T>(string propertyName, Action<T?> handler)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler((T?)newValue);
-			Subscribe(propertyName, _handler);
+			SubscribeChangedCore(propertyName, _handler);
 		}
 
 		/// <summary>
@@ -220,7 +306,7 @@ namespace LLMDesktopAssistant
 		public void SubscribeChanged<T>(string propertyName, Action<T?, T?> handler)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler((T?)oldValue, (T?)newValue);
-			Subscribe(propertyName, _handler);
+			SubscribeChangedCore(propertyName, _handler);
 		}
 
 		/// <summary>
@@ -233,7 +319,7 @@ namespace LLMDesktopAssistant
 		public void SubscribeChanged<T>(string propertyName, Action<object, T?, T?> handler)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler(i, (T?)oldValue, (T?)newValue);
-			Subscribe(propertyName, _handler);
+			SubscribeChangedCore(propertyName, _handler);
 		}
 
 		/// <summary>
@@ -246,7 +332,7 @@ namespace LLMDesktopAssistant
 		public void SubscribeChanged(string propertyName, Action<object?> handler, out IDisposable unsubscriber)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler(newValue);
-			Subscribe(propertyName, _handler, out unsubscriber);
+			SubscribeChangedCore(propertyName, _handler, out unsubscriber);
 		}
 
 		/// <summary>
@@ -259,7 +345,7 @@ namespace LLMDesktopAssistant
 		public void SubscribeChanged(string propertyName, Action<object?, object?> handler, out IDisposable unsubscriber)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler(oldValue, newValue);
-			Subscribe(propertyName, _handler, out unsubscriber);
+			SubscribeChangedCore(propertyName, _handler, out unsubscriber);
 		}
 
 		/// <summary>
@@ -272,7 +358,7 @@ namespace LLMDesktopAssistant
 		public void SubscribeChanged<T>(string propertyName, Action<T?> handler, out IDisposable unsubscriber)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler((T?)newValue);
-			Subscribe(propertyName, _handler, out unsubscriber);
+			SubscribeChangedCore(propertyName, _handler, out unsubscriber);
 		}
 
 		/// <summary>
@@ -285,7 +371,7 @@ namespace LLMDesktopAssistant
 		public void SubscribeChanged<T>(string propertyName, Action<T?, T?> handler, out IDisposable unsubscriber)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler((T?)oldValue, (T?)newValue);
-			Subscribe(propertyName, _handler, out unsubscriber);
+			SubscribeChangedCore(propertyName, _handler, out unsubscriber);
 		}
 
 		/// <summary>
@@ -298,7 +384,7 @@ namespace LLMDesktopAssistant
 		public void SubscribeChanged<T>(string propertyName, Action<object, T?, T?> handler, out IDisposable unsubscriber)
 		{
 			void _handler(object i, object? oldValue, object? newValue) => handler(i, (T?)oldValue, (T?)newValue);
-			Subscribe(propertyName, _handler, out unsubscriber);
+			SubscribeChangedCore(propertyName, _handler, out unsubscriber);
 		}
 	}
 }

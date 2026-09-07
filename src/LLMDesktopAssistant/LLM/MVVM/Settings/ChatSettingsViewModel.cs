@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Addons.Loading;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.ApiKeys;
 using LLMDesktopAssistant.Data.Connectors;
@@ -202,6 +203,13 @@ namespace LLMDesktopAssistant.LLM.Settings
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.memory"),
 				MaterialIconKind.Database,
 				() => new ChatMemorySettingsViewModel(Settings.Memory)));
+
+			SettingsTree.Add(
+				new SettingsLeafNode(Locale.Get("addon.settings.title"),
+				MaterialIconKind.PuzzleOutline,
+				() => new ChatAddonsSettingsViewModel(Settings.Addons,
+					Chat.Services.GetRequiredService<IChatAddonPackLocator>(),
+					Chat.Services.GetRequiredService<IAddonPackSearchFoldersProvider>())));
 
 			_generalSettingsCount = SettingsTree.Count;
 

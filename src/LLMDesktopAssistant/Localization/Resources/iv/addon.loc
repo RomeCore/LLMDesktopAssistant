@@ -1,0 +1,79 @@
+// Addon packs and addon settings UI.
+
+%locale: 
+%namespace: addon
+
+// =====================================================
+// === Packs                                          ===
+// =====================================================
+pack.localappdata.name: %LOCALAPPDATA%
+pack.localappdata.description: Application data directory (%LOCALAPPDATA%\.llmassist)
+pack.useragentshome.name: User Agents Home
+pack.useragentshome.description: User-scoped agents home (e.g. ~/.agents)
+pack.agentshome.name: Workspace Agents Home
+pack.agentshome.description: Workspace-scoped agents home (e.g. .agents)
+pack.source.unknown: Unknown
+pack.source.appdata: App Data
+pack.source.useragentshome: User Agents
+pack.source.agentshome: Workspace Agents
+pack.source.configuration: Configuration
+pack.source.scanned: Scanned
+
+// =====================================================
+// === Settings UI                                    ===
+// =====================================================
+settings.title: Addons
+settings.sources: Addon Sources
+settings.sources.hint: Configure where addons are fetched from: working directories, additional pack paths and per-type additional sources.
+settings.search_folders: Search Folders
+settings.search_folders.hint: These folders are searched for addon packs inside the user profile and each working directory.
+settings.fetch_all: Fetch addons from all working directories
+settings.fetch_all.hint: When enabled, addon packs from all enabled working directories are loaded. Otherwise, only the current working directory is used.
+settings.additional_pack_paths: Additional Pack Paths
+settings.additional_pack_paths.hint: Direct paths to addon packs, similar to '~/.agents/packs/my-pack/'.
+settings.additional_pack_paths.placeholder: Path to an addon pack...
+settings.addon_sources: Additional Sources per Type
+settings.addon_sources.hint: Add extra directories and files for a specific addon type (e.g. skills, tools, sub-agents).
+settings.addon_sources.type_placeholder: Addon type (e.g. skills)...
+settings.addon_sources.directories: Directories
+settings.addon_sources.files: Files
+settings.packs: Addon Packs
+settings.packs.hint: Enable or disable configurable addon packs. Packs not listed here are always enabled.
+settings.packs.empty: No configurable addon packs found
+settings.packs.refresh: Refresh
+settings.enable_packs_by_default: Enable packs by default
+settings.enable_packs_by_default.hint: When checked, packs without an explicit override are enabled by default. Uncheck to disable all unchanged packs.
+settings.pack.enabled: Enabled
+settings.pack.disabled: Disabled
+settings.pack.manifest_invalid: Invalid manifest
+settings.pack.source: Source
+settings.directory.placeholder: Path...
+settings.file.placeholder: File path...
+
+// =====================================================
+// === Diagnostics                                    ===
+// =====================================================
+diagnostic.fileaccesserror: File Access Error
+diagnostic.fileaccesserror.hint: Unable to read the addon file. Check file permissions.
+diagnostic.generalparsingerror: Parse Error
+diagnostic.generalparsingerror.hint: An unexpected error occurred while parsing the addon file.
+diagnostic.missingdescription: Missing Description
+diagnostic.missingdescription.hint: The addon has no description. Add a description in YAML frontmatter or as the first paragraph.
+diagnostic.missingfile: File Missing
+diagnostic.missingfile.hint: The addon file could not be found at the expected location.
+diagnostic.missingname: Missing Name
+diagnostic.missingname.hint: The addon has no name defined in YAML frontmatter, header, or folder name.
+diagnostic.missingyaml: Missing YAML
+diagnostic.missingyaml.hint: The addon file does not have a YAML frontmatter block (--- ... ---).
+diagnostic.missingyamldescription: Missing YAML Description
+diagnostic.missingyamldescription.hint: The 'description' field is missing from the YAML frontmatter. A fallback was used.
+diagnostic.missingyamlname: Missing YAML Name
+diagnostic.missingyamlname.hint: The 'name' field is missing from the YAML frontmatter. A fallback name was used.
+diagnostic.namedirectorymismatch: Name/Directory Mismatch
+diagnostic.namedirectorymismatch.hint: The addon name does not match the name of the directory containing the addon file.
+diagnostic.nameformaterror: Invalid Name Format
+diagnostic.nameformaterror.hint: The addon name contains invalid characters. Addon names must use lowercase letters, digits and hyphens.
+diagnostic.yamldecodingerror: YAML Decode Error
+diagnostic.yamldecodingerror.hint: Failed to deserialize the YAML frontmatter into the expected structure.
+diagnostic.yamlparsingerror: YAML Syntax Error
+diagnostic.yamlparsingerror.hint: The YAML frontmatter contains invalid syntax.

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Avalonia.Threading;
@@ -698,7 +699,7 @@ namespace LLMDesktopAssistant.Utils
 		/// <param name="key">The key of the value to get.</param>
 		/// <param name="value">When this method returns, contains the value associated with the specified key, if found; otherwise, the default value.</param>
 		/// <returns><see langword="true"/> if the dictionary contains an element with the specified key; otherwise, <see langword="false"/>.</returns>
-		public virtual bool TryGetValue(TKey key, out TValue value)
+		public virtual bool TryGetValue(TKey key, [NotNullWhen(true)] out TValue value)
 		{
 			lock (_lock)
 				return _items.TryGetValue(key, out value!);

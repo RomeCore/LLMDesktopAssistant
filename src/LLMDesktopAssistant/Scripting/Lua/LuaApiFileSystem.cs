@@ -273,13 +273,16 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			var path = GetPath(args, 0);
 			if (args[1] is not LuaTable bytesTable)
 				throw new LuaRuntimeException("fs.write_binary(): second argument must be a table of bytes.");
-			var bytes = new List<byte>();
-			foreach (var kv in bytesTable.Entries)
+			// NOTE: iterate by numeric indexes (1..Length) instead of Entries,
+			// because LuaTable stores entries in a ConcurrentDictionary which does NOT
+			// guarantee enumeration order - bytes would be written in random order!
+			var bytes = new byte[bytesTable.Length];
+			for (int i = 0; i < bytesTable.Length; i++)
 			{
-				if (kv.Value is LuaNumber num)
-					bytes.Add((byte)num.Value);
+				if (bytesTable.Get(i + 1) is LuaNumber num)
+					bytes[i] = (byte)num.Value;
 			}
-			File.WriteAllBytes(path, [.. bytes]);
+			File.WriteAllBytes(path, bytes);
 			return new LuaTuple(LuaNil.Instance);
 		}
 
