@@ -1,6 +1,4 @@
-using System.ComponentModel;
 using System.Diagnostics;
-using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Controls.Dialogs;
@@ -23,7 +21,6 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 {
 	private readonly ISkillsetBuildingService _skillsetBuilder;
 	private readonly IAddonManagerInvalidator _addonInvalidator;
-	private readonly IExplorerOpener? _explorerOpener;
 	private ImmutableList<SkillCardViewModel> _allCards = [];
 
 	/// <summary>
@@ -31,25 +28,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	/// </summary>
 	public ChatSkillSettings SkillSettings { get; }
 
-	/// <summary>
-	/// Gets the effective skill sources resolved by the current inheritance level.
-	/// </summary>
-	public SkillSourcesSettings EffectiveSources => SkillSettings.GetEffectiveSources();
-
-	private InheritanceLevelItem _selectedSourcesInheritance;
-	/// <summary>
-	/// Gets or sets the inheritance level for the skill sources group.
-	/// </summary>
-	public InheritanceLevelItem SelectedSourcesInheritance
-	{
-		get => _selectedSourcesInheritance;
-		set
-		{
-			if (SetProperty(ref _selectedSourcesInheritance, value) && value != null)
-				SkillSettings.SourcesInheritance = value.Value;
-		}
-	}
-
+	
 	private string _searchText = string.Empty;
 	/// <summary>
 	/// Gets or sets the search text filtering the available skills by name, description and tags.
@@ -75,41 +54,6 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	}
 
 	/// <summary>
-	/// Gets the command that adds a new additional skill directory path.
-	/// </summary>
-	public ICommand AddDirectoryCommand { get; }
-
-	/// <summary>
-	/// Gets the command that removes an additional skill directory path.
-	/// </summary>
-	public ICommand RemoveDirectoryCommand { get; }
-
-	/// <summary>
-	/// Gets the command that adds a new additional skill file path.
-	/// </summary>
-	public ICommand AddFileCommand { get; }
-
-	/// <summary>
-	/// Gets the command that removes an additional skill file path.
-	/// </summary>
-	public ICommand RemoveFileCommand { get; }
-
-	/// <summary>
-	/// Gets the command that opens a folder picker for selecting a skill directory.
-	/// </summary>
-	public ICommand BrowseDirectoryCommand { get; }
-
-	/// <summary>
-	/// Gets the command that opens a file picker for selecting a skill file.
-	/// </summary>
-	public ICommand BrowseFileCommand { get; }
-
-	/// <summary>
-	/// Gets the command that opens a path in the system file explorer.
-	/// </summary>
-	public ICommand OpenPathCommand { get; }
-
-	/// <summary>
 	/// Gets the command that refreshes the list of available skills from disk.
 	/// </summary>
 	public ICommand RefreshSkillsCommand { get; }
@@ -128,50 +72,11 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 		SkillSettings = settings;
 		_skillsetBuilder = skillsetBuilder;
 		_addonInvalidator = addonInvalidator;
-		_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
 
-		_selectedSourcesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.SourcesInheritance);
-		settings.PropertyChanged += SkillSettings_PropertyChanged;
-
-		AddDirectoryCommand = new RelayCommand(() =>
-		{
-			EffectiveSources.AdditionalSkillDirectories.Add(string.Empty);
-		});
-
-		RemoveDirectoryCommand = new RelayCommand<string?>(path =>
-		{
-			if (path != null)
-				EffectiveSources.AdditionalSkillDirectories.Remove(path);
-		});
-
-		AddFileCommand = new RelayCommand(() =>
-		{
-			EffectiveSources.AdditionalSkillFiles.Add(string.Empty);
-		});
-
-		RemoveFileCommand = new RelayCommand<string?>(path =>
-		{
-			if (path != null)
-				EffectiveSources.AdditionalSkillFiles.Remove(path);
-		});
-
-		BrowseDirectoryCommand = new AsyncRelayCommand<string?>(BrowseDirectoryAsync);
-		BrowseFileCommand = new AsyncRelayCommand<string?>(BrowseFileAsync);
-		OpenPathCommand = new RelayCommand<string?>(OpenPath);
 		RefreshSkillsCommand = new RelayCommand(UpdateSkills);
 		CreateSkillCommand = new AsyncRelayCommand(CreateSkillAsync);
 
 		UpdateSkills();
-	}
-
-	private void SkillSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		if (e.PropertyName != nameof(ChatSkillSettings.SourcesInheritance))
-			return;
-
-		_selectedSourcesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == SkillSettings.SourcesInheritance);
-		RaisePropertyChanged(nameof(SelectedSourcesInheritance));
-		RaisePropertyChanged(nameof(EffectiveSources));
 	}
 
 	/// <summary>
@@ -268,73 +173,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 		Write the instructions for this skill here.
 		""";
 
-	private async Task BrowseDirectoryAsync(string? currentPath)
-	{
-		var result = await App.MainTopLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-		{
-			Title = LocalizationManager.LocalizeStatic("settings.skills.select_directory"),
-			AllowMultiple = false
-		});
-
-		if (result.Count > 0)
-		{
-			var newPath = result[0].Path.LocalPath;
-			ReplaceOrSetPath(EffectiveSources.AdditionalSkillDirectories, currentPath, newPath);
-		}
-	}
-
-	private async Task BrowseFileAsync(string? currentPath)
-	{
-		var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-		{
-			Title = LocalizationManager.LocalizeStatic("settings.skills.select_file"),
-			AllowMultiple = false,
-			FileTypeFilter =
-			[
-				new("Skill files (*.md, *.mdx)") { Patterns = ["SKILL.md", "SKILL.mdx", "*.md", "*.mdx"] },
-				new("All files (*.*)") { Patterns = ["*.*"] }
-			]
-		});
-
-		if (result.Count > 0)
-		{
-			var newPath = result[0].Path.LocalPath;
-			ReplaceOrSetPath(EffectiveSources.AdditionalSkillFiles, currentPath, newPath);
-		}
-	}
-
-	private static void ReplaceOrSetPath(RangeObservableCollection<string> collection, string? oldValue, string newValue)
-	{
-		if (string.IsNullOrEmpty(oldValue))
-		{
-			for (int i = 0; i < collection.Count; i++)
-			{
-				if (string.IsNullOrEmpty(collection[i]))
-				{
-					collection[i] = newValue;
-					return;
-				}
-			}
-			collection.Add(newValue);
-		}
-		else
-		{
-			var index = collection.IndexOf(oldValue);
-			if (index >= 0)
-				collection[index] = newValue;
-			else
-				collection.Add(newValue);
-		}
-	}
-
-	private void OpenPath(string? path)
-	{
-		if (string.IsNullOrWhiteSpace(path))
-			return;
-
-		_explorerOpener?.OpenPath(path);
-	}
-
+	
 	/// <inheritdoc/>
 	protected override void Dispose(bool disposing)
 	{
@@ -342,7 +181,6 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 
 		if (disposing)
 		{
-			SkillSettings.PropertyChanged -= SkillSettings_PropertyChanged;
 			_allCards.ForEach(c => c.Dispose());
 		}
 	}

@@ -32,11 +32,16 @@ settings.fetch_all.hint: When enabled, addon packs from all enabled working dire
 settings.additional_pack_paths: Additional Pack Paths
 settings.additional_pack_paths.hint: Direct paths to addon packs, similar to '~/.agents/packs/my-pack/'.
 settings.additional_pack_paths.placeholder: Path to an addon pack...
+settings.select_pack_folder: Select addon pack folder
+settings.select_directory: Choose directory...
+settings.select_file: Choose file...
 settings.addon_sources: Additional Sources per Type
-settings.addon_sources.hint: Add extra directories and files for a specific addon type (e.g. skills, tools, sub-agents).
-settings.addon_sources.type_placeholder: Addon type (e.g. skills)...
+settings.addon_sources.hint: Add extra directories and files for each registered addon type (e.g. skills, tools, sub-agents).
+settings.addon_sources.empty: No addon types registered yet
 settings.addon_sources.directories: Directories
+settings.addon_sources.directories.hint: Additional folders that will be scanned for addons of this type.
 settings.addon_sources.files: Files
+settings.addon_sources.files.hint: Individual files that will be loaded as addons of this type.
 settings.packs: Addon Packs
 settings.packs.hint: Enable or disable configurable addon packs. Packs not listed here are always enabled.
 settings.packs.empty: No configurable addon packs found
@@ -49,6 +54,12 @@ settings.pack.manifest_invalid: Invalid manifest
 settings.pack.source: Source
 settings.directory.placeholder: Path...
 settings.file.placeholder: File path...
+
+// =====================================================
+// === Addon types                                   ===
+// =====================================================
+type.skills.name: Skills
+type.skills.description: Reusable skill procedures (SKILL.md files) that teach agents how to perform specific tasks.
 
 // =====================================================
 // === Diagnostics                                   ===

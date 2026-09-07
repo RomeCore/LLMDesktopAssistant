@@ -1,5 +1,5 @@
 using LLMDesktopAssistant.Addons;
-using LLMDesktopAssistant.Prompting.Skills;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Prompting.Skills
 {
@@ -12,5 +12,9 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		public string Type => "skills";
 
 		public Type ClrType => typeof(SkillInfo);
+
+		public LocaleKeyBase NameKey => Locale.GetKey("addon.type.skills.name");
+
+		public LocaleKeyBase? DescriptionKey => Locale.GetKey("addon.type.skills.description");
 	}
 }

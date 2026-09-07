@@ -32,11 +32,16 @@ settings.fetch_all.hint: При включении паки аддонов за�
 settings.additional_pack_paths: Дополнительные пути паков
 settings.additional_pack_paths.hint: Прямые пути к пакам аддонов, например '~/.agents/packs/my-pack/'.
 settings.additional_pack_paths.placeholder: Путь к паку аддонов...
+settings.select_pack_folder: Выберите папку пака аддонов
+settings.select_directory: Выбрать каталог...
+settings.select_file: Выбрать файл...
 settings.addon_sources: Дополнительные источники по типам
-settings.addon_sources.hint: Добавьте дополнительные каталоги и файлы для конкретного типа аддонов (например, skills, tools, sub-agents).
-settings.addon_sources.type_placeholder: Тип аддона (например, skills)...
+settings.addon_sources.hint: Добавьте дополнительные каталоги и файлы для каждого зарегистрированного типа аддонов (например, skills, tools, sub-agents).
+settings.addon_sources.empty: Типы аддонов пока не зарегистрированы
 settings.addon_sources.directories: Каталоги
+settings.addon_sources.directories.hint: Дополнительные каталоги, в которых будет выполняться поиск аддонов этого типа.
 settings.addon_sources.files: Файлы
+settings.addon_sources.files.hint: Отдельные файлы, загружаемые как аддоны этого типа.
 settings.packs: Паки аддонов
 settings.packs.hint: Включайте и отключайте настраиваемые паки аддонов. Паки, не указанные здесь, всегда включены.
 settings.packs.empty: Настраиваемые паки аддонов не найдены
@@ -49,6 +54,12 @@ settings.pack.manifest_invalid: Невалидный манифест
 settings.pack.source: Источник
 settings.directory.placeholder: Путь...
 settings.file.placeholder: Путь к файлу...
+
+// =====================================================
+// === Типы аддонов                                    ===
+// =====================================================
+type.skills.name: Навыки
+type.skills.description: Многоразовые процедуры навыков (файлы SKILL.md), обучающие агентов выполнению конкретных задач.
 
 // =====================================================
 // === Диагностика                                     ===

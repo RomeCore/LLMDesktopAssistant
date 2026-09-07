@@ -220,10 +220,7 @@ provider.type.label: Provider Type
 scope.agent: Agent profile
 scope.application: Application
 scope.profile: Chat profile
-skills.additional_dirs: Additional Skill Directories
-skills.additional_dirs.hint: Additional directories to search for skills. Subdirectories containing SKILL.md or SKILL.mdx files will be loaded.
-skills.additional_files: Additional Skill Files
-skills.additional_files.hint: Additional individual SKILL.md or SKILL.mdx files to load.
+
 skills.available: Available Skills
 skills.available.hint: Skills discovered in skill directories. Only enabled skills are injected into agent prompts.
 skills.badge.tools: {0} tools
@@ -246,18 +243,16 @@ skills.details.available_tools: Available
 skills.details.disallowed_tools: Disallowed
 skills.details.metadata: Metadata
 skills.details.none: Not specified
-skills.dir.placeholder: Directory path...
-skills.empty: No skills found. Check the sources or create a new skill.
+
+skills.empty: No skills found. Configure the addon sources or create a new skill.
 skills.enable: Enable skills
-skills.fetch_all: Fetch from all working directories
-skills.file.placeholder: File path...
+
 skills.open: Open in editor
 skills.refresh: Refresh skills list
 skills.search.placeholder: Search by name, description or tags...
-skills.select_directory: Select skill directory
-skills.select_file: Select skill file
+
 skills.show_in_explorer: Show in explorer
-skills.sources: Skill sources
+
 stage.adaptive.additional_router_prompt: Additional agentic router prompt
 stage.adaptive.agents: Agent pool
 stage.adaptive.enforce_router_selection: Enforce selection

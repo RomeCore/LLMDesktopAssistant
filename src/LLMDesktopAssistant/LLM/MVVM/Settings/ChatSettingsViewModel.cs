@@ -24,8 +24,6 @@ using LLMDesktopAssistant.Addons.Management;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
-
-
 	/// <summary>
 	/// A settings tree node that represents an agent and groups its category nodes together.
 	/// </summary>
@@ -179,39 +177,40 @@ namespace LLMDesktopAssistant.LLM.Settings
 				MaterialIconKind.Connection,
 				() => new ChatMCPSettingsViewModel(Settings.Mcp, Chat.Services.GetRequiredService<IMCPManagementService>())));
 
-			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.tools"),
-				MaterialIconKind.Wrench,
-				() => new ChatToolsSettingsViewModel(Settings.Tools,
-					Chat.Services.GetRequiredService<IMetaToolManagementService>(),
-					Chat.Services.GetRequiredService<IMetaToolParser>(),
-					Chat.Services.GetServices<IMetaToolEngine>())));
-
-			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),
-				MaterialIconKind.Cards,
-				() => new ChatSkillsSettingsViewModel(Settings.Skills,
-					Chat.Services.GetRequiredService<ISkillsetBuildingService>(),
-					Chat.Services.GetRequiredService<IAddonManagerInvalidator>())));
-
-			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.sub_agents"),
-				MaterialIconKind.RobotHappy,
-				() => new ChatSubAgentsSettingsViewModel(Settings.SubAgents,
-					Chat.Services.GetRequiredService<ISubAgentSetBuildingService>(),
-					Chat.Services.GetRequiredService<ISkillsetBuildingService>())));
-
-			SettingsTree.Add(
-				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.memory"),
-				MaterialIconKind.Database,
-				() => new ChatMemorySettingsViewModel(Settings.Memory)));
-
-			SettingsTree.Add(
-				new SettingsLeafNode(Locale.Get("addon.settings.title"),
+			SettingsTree.Add(new SettingsParentNode(
+				Locale.Get("addon.settings.title"),
 				MaterialIconKind.PuzzleOutline,
+				[
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.tools"),
+						MaterialIconKind.Wrench,
+						() => new ChatToolsSettingsViewModel(Settings.Tools,
+							Chat.Services.GetRequiredService<IMetaToolManagementService>(),
+							Chat.Services.GetRequiredService<IMetaToolParser>(),
+							Chat.Services.GetServices<IMetaToolEngine>())),
+
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),
+						MaterialIconKind.Cards,
+						() => new ChatSkillsSettingsViewModel(Settings.Skills,
+							Chat.Services.GetRequiredService<ISkillsetBuildingService>(),
+							Chat.Services.GetRequiredService<IAddonManagerInvalidator>())),
+
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.sub_agents"),
+						MaterialIconKind.RobotHappy,
+						() => new ChatSubAgentsSettingsViewModel(Settings.SubAgents,
+							Chat.Services.GetRequiredService<ISubAgentSetBuildingService>(),
+							Chat.Services.GetRequiredService<ISkillsetBuildingService>())),
+
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.memory"),
+						MaterialIconKind.Database,
+						() => new ChatMemorySettingsViewModel(Settings.Memory))
+				],
 				() => new ChatAddonsSettingsViewModel(Settings.Addons,
 					Chat.Services.GetRequiredService<IChatAddonPackLocator>(),
-					Chat.Services.GetRequiredService<IAddonPackSearchFoldersProvider>())));
+					Chat.Services.GetRequiredService<IAddonPackSearchFoldersProvider>(),
+					Chat.Services.GetServices<LLMDesktopAssistant.Addons.IAddonTypeDescriptor>()))
+			{
+				IsExpanded = true
+			});
 
 			_generalSettingsCount = SettingsTree.Count;
 

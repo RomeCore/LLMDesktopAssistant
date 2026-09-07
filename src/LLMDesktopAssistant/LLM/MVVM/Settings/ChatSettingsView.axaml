@@ -20,6 +20,14 @@
 							BorderThickness="0"
 							Margin="4">
 
+			<TreeView.ItemContainerTheme>
+				<ControlTheme TargetType="TreeViewItem"
+							  BasedOn="{StaticResource {x:Type TreeViewItem}}">
+					<Setter Property="IsExpanded"
+							Value="{Binding IsExpanded, Mode=TwoWay, x:DataType=set:SettingsTreeNode}"/>
+				</ControlTheme>
+			</TreeView.ItemContainerTheme>
+
 			<TreeView.DataTemplates>
 
 				<TreeDataTemplate DataType="set:SettingsParentNode"

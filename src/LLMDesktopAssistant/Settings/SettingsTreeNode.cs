@@ -36,6 +36,17 @@ namespace LLMDesktopAssistant.Settings
 		/// </summary>
 		public abstract IEnumerable<SettingsTreeNode>? Children { get; }
 
+		private bool _isExpanded;
+		/// <summary>
+		/// Gets or sets a value indicating whether the node is expanded in the settings tree.
+		/// Used for parent nodes to control the expanded state of their <see cref="TreeViewItem"/>.
+		/// </summary>
+		public bool IsExpanded
+		{
+			get => _isExpanded;
+			set => SetProperty(ref _isExpanded, value);
+		}
+
 		/// <summary>
 		/// Gets the view model shown when this node is selected, creating it lazily on first access.
 		/// </summary>

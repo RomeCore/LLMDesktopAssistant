@@ -19,6 +19,7 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 {
 	private readonly IChatAddonPackLocator? _packLocator;
 	private readonly IExplorerOpener? _explorerOpener;
+	private readonly ImmutableList<IAddonTypeDescriptor> _addonTypeDescriptors = [];
 
 	/// <summary>
 	/// Gets the underlying chat addon settings.
@@ -165,16 +166,7 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 	/// </summary>
 	public RangeObservableCollection<AddonSourceItemViewModel> AddonSourceItems => _addonSourceItems;
 
-	private string? _newSourceTypeName = string.Empty;
-	/// <summary>
-	/// Gets or sets the new addon type name used to create an additional sources group.
-	/// </summary>
-	public string? NewSourceTypeName
-	{
-		get => _newSourceTypeName;
-		set => SetProperty(ref _newSourceTypeName, value);
-	}
-
+	
 	// ===================================
 	// === Commands                    ===
 	// ===================================
@@ -204,30 +196,24 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 	/// </summary>
 	public ICommand RefreshPacksCommand { get; }
 
-	/// <summary>
-	/// Gets the command that creates a new addon sources group for the entered type name.
-	/// </summary>
-	public ICommand AddSourceTypeCommand { get; }
-
-	/// <summary>
-	/// Gets the command that removes an addon sources group.
-	/// </summary>
-	public ICommand RemoveSourceTypeCommand { get; }
-
+	
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ChatAddonsSettingsViewModel"/> class.
 	/// </summary>
 	/// <param name="settings">The chat addon settings.</param>
 	/// <param name="packLocator">The pack locator providing configurable packs, or <see langword="null"/>.</param>
 	/// <param name="foldersProvider">The provider of addon search folders, or <see langword="null"/>.</param>
+	/// <param name="addonTypeDescriptors">The registered addon type descriptors, or <see langword="null"/> to use none.</param>
 	public ChatAddonsSettingsViewModel(
 		ChatAddonSettings settings,
 		IChatAddonPackLocator? packLocator = null,
-		IAddonPackSearchFoldersProvider? foldersProvider = null)
+		IAddonPackSearchFoldersProvider? foldersProvider = null,
+		IEnumerable<IAddonTypeDescriptor>? addonTypeDescriptors = null)
 	{
 		Settings = settings;
 		_packLocator = packLocator;
 		_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
+		_addonTypeDescriptors = addonTypeDescriptors?.DistinctBy(d => d.Type).ToImmutableList() ?? [];
 
 		SearchFolders = foldersProvider?.GetSearchFolders().ToImmutableArray() ?? [];
 
@@ -247,9 +233,7 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 		BrowsePackPathCommand = new AsyncRelayCommand<string?>(BrowsePackPathAsync);
 		OpenPathCommand = new RelayCommand<string?>(OpenPath);
 		RefreshPacksCommand = new RelayCommand(RefreshPacks);
-		AddSourceTypeCommand = new RelayCommand<string?>(AddSourceType);
-		RemoveSourceTypeCommand = new RelayCommand<AddonSourceItemViewModel?>(RemoveSourceType);
-
+		
 		RefreshSourceItems();
 		RefreshPacks();
 	}
@@ -319,39 +303,21 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 
 	private void RefreshSourceItems()
 	{
-		var items = EffectiveAddonSources.Keys
-			.OrderBy(k => k, StringComparer.OrdinalIgnoreCase)
-			.Select(k => new AddonSourceItemViewModel(k, EffectiveAddonSources[k]))
+		// Self-populate the settings from the registered addon type descriptors:
+		// each descriptor gets its own group of additional sources, created on demand.
+		var items = _addonTypeDescriptors
+			.OrderBy(d => d.NameKey.Value, StringComparer.OrdinalIgnoreCase)
+			.Select(d => new AddonSourceItemViewModel(d, EffectiveAddonSources.GetOrAdd(d.Type, _ => new AddonSourcesSettings())))
 			.ToImmutableList();
 
 		_addonSourceItems.Reset(items);
-	}
-
-	private void AddSourceType(string? typeName)
-	{
-		if (string.IsNullOrWhiteSpace(typeName))
-			return;
-
-		var type = typeName.Trim();
-		EffectiveAddonSources.GetOrAdd(type, _ => new AddonSourcesSettings());
-		NewSourceTypeName = string.Empty;
-		RefreshSourceItems();
-	}
-
-	private void RemoveSourceType(AddonSourceItemViewModel? item)
-	{
-		if (item == null)
-			return;
-
-		EffectiveAddonSources.Remove(item.TypeName);
-		RefreshSourceItems();
 	}
 
 	private async Task BrowsePackPathAsync(string? currentPath)
 	{
 		var result = await App.MainTopLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
 		{
-			Title = Locale.Get("addon.settings.addon_sources.type_placeholder"),
+			Title = Locale.Get("addon.settings.select_pack_folder"),
 			AllowMultiple = false
 		});
 
@@ -370,7 +336,7 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 		_explorerOpener?.OpenPath(path);
 	}
 
-	private static void ReplaceOrSetPath(RangeObservableCollection<string> collection, string? oldValue, string newValue)
+	internal static void ReplaceOrSetPath(RangeObservableCollection<string> collection, string? oldValue, string newValue)
 	{
 		if (string.IsNullOrEmpty(oldValue))
 		{
@@ -480,9 +446,19 @@ public class AddonPackToggleItemViewModel : NotifyPropertyChanged
 public class AddonSourceItemViewModel : NotifyPropertyChanged
 {
 	/// <summary>
-	/// Gets the addon type name.
+	/// Gets the addon type descriptor.
 	/// </summary>
-	public string TypeName { get; }
+	public IAddonTypeDescriptor Descriptor { get; }
+
+	/// <summary>
+	/// Gets the localized display name of the addon type.
+	/// </summary>
+	public string Name => Descriptor.NameKey.Value;
+
+	/// <summary>
+	/// Gets the localized description of the addon type.
+	/// </summary>
+	public string? Description => Descriptor.DescriptionKey?.Value;
 
 	/// <summary>
 	/// Gets the underlying addon sources settings.
@@ -520,13 +496,23 @@ public class AddonSourceItemViewModel : NotifyPropertyChanged
 	public ICommand RemoveFileCommand { get; }
 
 	/// <summary>
+	/// Gets the command that opens a folder picker for an additional directory entry.
+	/// </summary>
+	public ICommand BrowseDirectoryCommand { get; }
+
+	/// <summary>
+	/// Gets the command that opens a file picker for an additional file entry.
+	/// </summary>
+	public ICommand BrowseFileCommand { get; }
+
+	/// <summary>
 	/// Initializes a new instance of the <see cref="AddonSourceItemViewModel"/> class.
 	/// </summary>
-	/// <param name="typeName">The addon type name.</param>
+	/// <param name="descriptor">The addon type descriptor.</param>
 	/// <param name="sources">The underlying addon sources settings.</param>
-	public AddonSourceItemViewModel(string typeName, AddonSourcesSettings sources)
+	public AddonSourceItemViewModel(IAddonTypeDescriptor descriptor, AddonSourcesSettings sources)
 	{
-		TypeName = typeName;
+		Descriptor = descriptor;
 		Sources = sources;
 
 		AddDirectoryCommand = new RelayCommand(() => Directories.Add(string.Empty));
@@ -535,6 +521,7 @@ public class AddonSourceItemViewModel : NotifyPropertyChanged
 			if (path != null)
 				Directories.Remove(path);
 		});
+		BrowseDirectoryCommand = new AsyncRelayCommand<string?>(BrowseDirectoryAsync);
 
 		AddFileCommand = new RelayCommand(() => Files.Add(string.Empty));
 		RemoveFileCommand = new RelayCommand<string?>(path =>
@@ -542,5 +529,35 @@ public class AddonSourceItemViewModel : NotifyPropertyChanged
 			if (path != null)
 				Files.Remove(path);
 		});
+		BrowseFileCommand = new AsyncRelayCommand<string?>(BrowseFileAsync);
+	}
+
+	private async Task BrowseDirectoryAsync(string? currentPath)
+	{
+		var result = await App.MainTopLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+		{
+			Title = Locale.Get("addon.settings.select_directory"),
+			AllowMultiple = false
+		});
+
+		if (result.Count > 0)
+			ChatAddonsSettingsViewModel.ReplaceOrSetPath(Directories, currentPath, result[0].Path.LocalPath);
+	}
+
+	private async Task BrowseFileAsync(string? currentPath)
+	{
+		var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+		{
+			Title = Locale.Get("addon.settings.select_file"),
+			AllowMultiple = false,
+			FileTypeFilter =
+			[
+				new("Markdown (*.md, *.mdx)") { Patterns = ["*.md", "*.mdx"] },
+				new("All files (*.*)") { Patterns = ["*.*"] }
+			]
+		});
+
+		if (result.Count > 0)
+			ChatAddonsSettingsViewModel.ReplaceOrSetPath(Files, currentPath, result[0].Path.LocalPath);
 	}
 }
