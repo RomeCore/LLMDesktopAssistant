@@ -1,35 +1,36 @@
-﻿namespace LLMDesktopAssistant.Addons
+namespace LLMDesktopAssistant.Addons
 {
-	public class AddonDiagnosticCode
+	[Flags]
+	public enum AddonDiagnosticCode : ulong
 	{
-		protected AddonDiagnosticCode()
-		{
-		}
+		None = 0,
 
-		public static AddonDiagnosticCodeValue None => 0;
+		// ==============================
+		// === Common errors          ===
+		// ==============================
 
-		public static AddonDiagnosticCodeValue GeneralParsingError => 1 << 0;
+		GeneralParsingError = 1UL << 0,
 
-		public static AddonDiagnosticCodeValue MissingFrontmatter => 1 << 1;
+		MissingFrontmatter = 1UL << 1,
 
-		public static AddonDiagnosticCodeValue FrontmatterParsingError => 1 << 2;
+		FrontmatterParsingError = 1UL << 2,
 
-		public static AddonDiagnosticCodeValue FrontmatterDecodingError => 1 << 3;
+		FrontmatterDecodingError = 1UL << 3,
 
-		public static AddonDiagnosticCodeValue NameFSMismatch => 1 << 4;
+		NameFSMismatch = 1UL << 4,
 
-		public static AddonDiagnosticCodeValue NameFormatError => 1 << 5;
+		NameFormatError = 1UL << 5,
 
-		public static AddonDiagnosticCodeValue MissingName => 1 << 6;
+		MissingName = 1UL << 6,
 
-		public static AddonDiagnosticCodeValue MissingFrontmatterName => 1 << 7;
+		MissingFrontmatterName = 1UL << 7,
 
-		public static AddonDiagnosticCodeValue MissingDescription => 1 << 8;
+		MissingDescription = 1UL << 8,
 
-		public static AddonDiagnosticCodeValue MissingFrontmatterDescription => 1 << 9;
+		MissingFrontmatterDescription = 1UL << 9,
 
-		public static AddonDiagnosticCodeValue MissingFile => 1 << 10;
+		MissingFile = 1UL << 10,
 
-		public static AddonDiagnosticCodeValue FileAccessError => 1 << 11;
+		FileAccessError = 1UL << 11
 	}
 }

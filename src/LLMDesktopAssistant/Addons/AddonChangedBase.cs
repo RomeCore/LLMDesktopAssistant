@@ -3,7 +3,7 @@ using LLMDesktopAssistant.StructuredValues.Parameterization;
 
 namespace LLMDesktopAssistant.Addons
 {
-	public abstract class AddonChangedBase<Self, TChange> : AddonMetadata
+	public abstract class AddonChangedBase<Self, TChange> : AddonBase<Self>
 		where Self : AddonBase<Self>
 		where TChange : AddonChangeBase
 	{
@@ -39,5 +39,14 @@ namespace LLMDesktopAssistant.Addons
 			get;
 			set => SetProperty(ref field, value);
 		} = null;
+
+		/// <summary>
+		/// Gets the list of overriden addons during deduplication by name.
+		/// </summary>
+		public ImmutableList<Self> Overrides
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = [];
 	}
 }

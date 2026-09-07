@@ -92,7 +92,7 @@ namespace LLMDesktopAssistant.Addons.Parsers.Frontmatter
 		}
 
 		public T Request<T>(string key, ref AddonDiagnostic? diagnostic, T defaultValue = default!,
-			AddonDiagnosticCodeValue missingCode = default, AddonFrontmatterPropertyParser<T>? parser = null)
+			AddonDiagnosticCode missingCode = default, AddonFrontmatterPropertyParser<T>? parser = null)
 		{
 			parser ??= FindParser<T>();
 			if (_frontmatter.Items.TryGetValue(key, out var item))
@@ -113,7 +113,7 @@ namespace LLMDesktopAssistant.Addons.Parsers.Frontmatter
 		}
 
 		public T Require<T>(string key, ref AddonDiagnostic? diagnostic, T defaultValue = default!,
-			AddonDiagnosticCodeValue missingCode = default, AddonFrontmatterPropertyParser<T>? parser = null)
+			AddonDiagnosticCode missingCode = default, AddonFrontmatterPropertyParser<T>? parser = null)
 		{
 			parser ??= FindParser<T>();
 			if (_frontmatter.Items.TryGetValue(key, out var item))
@@ -229,7 +229,7 @@ namespace LLMDesktopAssistant.Addons.Parsers.Frontmatter
 		/// <summary>
 		/// Returns all additional properties that were not visited.
 		/// </summary>
-		public ImmutableDictionary<string, ConstNodeValue> GetAdditionaProperties()
+		public ImmutableDictionary<string, ConstNodeValue> GetAdditionalProperties()
 		{
 			var result = ImmutableDictionary.CreateBuilder<string, ConstNodeValue>();
 

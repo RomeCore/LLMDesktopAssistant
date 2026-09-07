@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
@@ -20,7 +21,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 [ViewModelFor(typeof(ChatSkillsSettingsView))]
 public class ChatSkillsSettingsViewModel : ViewModelBase
 {
-	private readonly ISkillsetBuildingService? _skillsetBuilder;
+	private readonly ISkillsetBuildingService _skillsetBuilder;
+	private readonly IAddonManagerInvalidator _addonInvalidator;
 	private readonly IExplorerOpener? _explorerOpener;
 	private ImmutableList<SkillCardViewModel> _allCards = [];
 
@@ -120,12 +122,12 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ChatSkillsSettingsViewModel"/> class.
 	/// </summary>
-	/// <param name="settings">The chat skill settings.</param>
-	/// <param name="skillsetBuilder">The service providing the available skills, or <see langword="null"/>.</param>
-	public ChatSkillsSettingsViewModel(ChatSkillSettings settings, ISkillsetBuildingService? skillsetBuilder = null)
+	public ChatSkillsSettingsViewModel(ChatSkillSettings settings, ISkillsetBuildingService skillsetBuilder,
+		IAddonManagerInvalidator addonInvalidator)
 	{
 		SkillSettings = settings;
 		_skillsetBuilder = skillsetBuilder;
+		_addonInvalidator = addonInvalidator;
 		_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
 
 		_selectedSourcesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.SourcesInheritance);
@@ -177,8 +179,10 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	/// </summary>
 	public void UpdateSkills()
 	{
+		_addonInvalidator.Reload();
+
 		_allCards.ForEach(c => c.Dispose());
-		_allCards = (_skillsetBuilder?.GetAvailableSkills() ?? [])
+		_allCards = _skillsetBuilder.GetAvailableSkills()
 			.Select(s => new SkillCardViewModel(
 				s,
 				canToggle: false,

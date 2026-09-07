@@ -4,7 +4,7 @@
 %namespace: addon
 
 // =====================================================
-// === Packs                                          ===
+// === Packs                                         ===
 // =====================================================
 pack.localappdata.name: %LOCALAPPDATA%
 pack.localappdata.description: Application data directory (%LOCALAPPDATA%\.llmassist)
@@ -20,7 +20,7 @@ pack.source.configuration: Configuration
 pack.source.scanned: Scanned
 
 // =====================================================
-// === Settings UI                                    ===
+// === Settings UI                                   ===
 // =====================================================
 settings.title: Addons
 settings.sources: Addon Sources
@@ -51,7 +51,7 @@ settings.directory.placeholder: Path...
 settings.file.placeholder: File path...
 
 // =====================================================
-// === Diagnostics                                    ===
+// === Diagnostics                                   ===
 // =====================================================
 diagnostic.fileaccesserror: File Access Error
 diagnostic.fileaccesserror.hint: Unable to read the addon file. Check file permissions.

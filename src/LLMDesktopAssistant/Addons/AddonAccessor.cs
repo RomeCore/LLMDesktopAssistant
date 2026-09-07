@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+using System.Collections.Specialized;
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Utils;
@@ -11,16 +12,27 @@ namespace LLMDesktopAssistant.Addons
 	{
 		private readonly RangeObservableCollection<T> _addons = [];
 		private readonly IReactiveAddonLoader<T>[] _loaders;
+		private readonly IAddonManagerInvalidator _invalidator;
 
-		public ReadOnlyObservableCollection<T> Addons => field ??= new(_addons);
+		public ReadOnlyObservableCollection<T> Addons
+		{
+			get
+			{
+				_invalidator.ReloadIfInvalid();
+				return field ??= new(_addons);
+			}
+		}
 
-		public AddonAccessor(IEnumerable<IReactiveAddonLoader<T>> loaders)
+		public AddonAccessor(IEnumerable<IReactiveAddonLoader<T>> loaders,
+			IAddonManagerInvalidator invalidator)
 		{
 			_loaders = [.. loaders];
+			_invalidator = invalidator;
 
 			foreach (var loader in _loaders)
 			{
 				loader.Addons.CollectionChanged += Addons_CollectionChanged;
+				Addons_CollectionChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, loader.Addons));
 			}
 		}
 
@@ -34,6 +46,7 @@ namespace LLMDesktopAssistant.Addons
 				{
 					loader.Addons.CollectionChanged -= Addons_CollectionChanged;
 				}
+				_addons.Clear();
 			}
 		}
 

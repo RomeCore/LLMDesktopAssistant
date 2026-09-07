@@ -1,4 +1,6 @@
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
@@ -11,8 +13,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 	[ChatService(typeof(ISkillsetBuildingService))]
 	public class SkillsetBuildingService(
 		IChatSettingsService chatSettings,
-		ISkillLocator skillLocator,
-		ISkillLoader skillLoader,
+		IAddonAccessor<SkillInfo> skillAddons,
 		IPromptSkillManager skillManager,
 		IEnumerable<IPromptSystemContextExpander> promptSystemContextExpanders,
 		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins
@@ -20,8 +21,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 	{
 		public IEnumerable<SkillInfo> GetAvailableSkills()
 		{
-			var skillFiles = skillLocator.LocateSkillFiles();
-
 			List<SkillInfo> skills = [];
 
 			var promptSkills = skillManager.GetAll().ToList();
@@ -55,13 +54,13 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 							}
 							return sp.EffectiveTemplate.Render(context, templateFunctions).ToString() ?? string.Empty;
 						}),
-						Source = SkillSource.Template,
+						Source = AddonSource.Template,
 						TemplateSource = sp.Source,
 						ParameterSchema = sp.ParameterSchema
 					};
 				}));
 			}
-			skills.AddRange(skillLoader.Load(skillFiles));
+			skills.AddRange(skillAddons.Addons);
 
 			return skills
 				.GroupBy(s => s.Name)
@@ -92,6 +91,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						Metadata = last.Metadata,
 						AdditionalMetadata = last.AdditionalMetadata,
 						AllowedTools = last.AllowedTools,
+						AvailableTools = last.AvailableTools,
+						DisallowedTools = last.DisallowedTools,
 						Tags = last.Tags,
 						AdditionalProperties = last.AdditionalProperties,
 						Enabled = last.Enabled,
@@ -116,7 +117,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			var skillset = settings.GetEffectiveSkillset(chatSettings.Settings);
 
-			var changes = skillset.SkillChanges.ToDictionary(c => c.SkillName, c => c);
+			var changes = skillset.SkillChanges.ToDictionary(c => c.Name, c => c);
 			foreach (var skillInfo in skills)
 			{
 				if (skillInfo.Diagnostic?.IsFatal == true)
@@ -137,6 +138,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 							Metadata = skillInfo.Metadata,
 							AdditionalMetadata = skillInfo.AdditionalMetadata,
 							AllowedTools = skillInfo.AllowedTools,
+							AvailableTools = skillInfo.AvailableTools,
+							DisallowedTools = skillInfo.DisallowedTools,
 							Tags = skillInfo.Tags,
 							AdditionalProperties = skillInfo.AdditionalProperties,
 							Enabled = true,

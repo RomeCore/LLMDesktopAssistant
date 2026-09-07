@@ -20,6 +20,7 @@ using LLMDesktopAssistant.Tools.Meta;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Prompting.Management;
+using LLMDesktopAssistant.Addons.Management;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -190,7 +191,8 @@ namespace LLMDesktopAssistant.LLM.Settings
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),
 				MaterialIconKind.Cards,
 				() => new ChatSkillsSettingsViewModel(Settings.Skills,
-					Chat.Services.GetRequiredService<ISkillsetBuildingService>())));
+					Chat.Services.GetRequiredService<ISkillsetBuildingService>(),
+					Chat.Services.GetRequiredService<IAddonManagerInvalidator>())));
 
 			SettingsTree.Add(
 				new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.sub_agents"),
@@ -274,6 +276,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 						() => new AgentSkillSettingsViewModel(
 							descriptor.Skills,
 							Chat.Services.GetRequiredService<ISkillsetBuildingService>(),
+							Chat.Services.GetRequiredService<IAddonManagerInvalidator>(),
 							Settings)),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.sub_agents"),

@@ -92,6 +92,9 @@ namespace LLMDesktopAssistant.Addons.Parsers
 		{
 			var builder = new ParserBuilder();
 
+			builder.Settings.Skip(b => b.Whitespaces(), ParserSkippingStrategy.TryParseThenSkip);
+			builder.Settings.IgnoreErrors();
+
 			var ruleBuilder = builder.CreateMainRule();
 
 			if (descriptor.RequiresFrontmatter)
@@ -126,7 +129,7 @@ namespace LLMDesktopAssistant.Addons.Parsers
 					.Optional(b => b
 						.OneOrMoreSeparated(b => b.TextUntil("\n", "\r", "\r\n"), s => s.Newline()).Optional(b => b.Whitespaces())
 						.Transform(v => v[0].Text)
-					).Label("desc");
+					).Label("description");
 			}
 
 			ruleBuilder
@@ -137,7 +140,7 @@ namespace LLMDesktopAssistant.Addons.Parsers
 					var frontmatter = v.TryGetValue<string>("frontmatter");
 					string body = v.Span[v["frontmatter"].EndIndex..].Trim().ToString();
 					var fallbackName = v.TryGetValue<string>("name");
-					var fallbackDesc = v.TryGetValue<string>("desc");
+					var fallbackDesc = v.TryGetValue<string>("description");
 
 					return new FrontmatteredAddonDocument
 					{
@@ -271,6 +274,8 @@ namespace LLMDesktopAssistant.Addons.Parsers
 					else
 						result.Description = string.Empty;
 				}
+
+				result.AdditionalProperties = frontmatterDocument.GetAdditionalProperties();
 			}
 			else
 			{

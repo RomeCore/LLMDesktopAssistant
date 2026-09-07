@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using LLMDesktopAssistant.Addons.Loading;
 using LLMDesktopAssistant.LLM.Services;
+using Serilog;
 
 namespace LLMDesktopAssistant.Addons.Management
 {
@@ -31,7 +32,14 @@ namespace LLMDesktopAssistant.Addons.Management
 					AddonFiles = additionalSources.AdditionalFiles.Select(f => new AddonPathInfo(f)).ToArray(),
 				};
 
-				LoadAddonsForType(descriptor.ClrType, locatorConfig);
+				try
+				{
+					LoadAddonsForType(descriptor.ClrType, locatorConfig);
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Failed to load addons for type {AddonType}: {Error}", descriptor.ClrType, ex);
+				}
 			}
 		}
 

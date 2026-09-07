@@ -1,5 +1,6 @@
-using LLMDesktopAssistant.LLM.Services.Prompting;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Prompting.Skills;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -10,7 +11,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	[ChatService(typeof(IWorkingDirectoryAccessService))]
 	public class WorkingDirectoryAccessService(
 		IChatSettingsService chatSettings,
-		ISkillLocator skillLocator
+		IAddonAccessor<SkillInfo> skillAddons
 	) : IWorkingDirectoryAccessService
 	{
 		public string GetWorkingDirectory()
@@ -53,9 +54,9 @@ namespace LLMDesktopAssistant.LLM.Services
 
 			// Skill folders are allowed to access.
 			if (!isAccessed)
-				foreach (var skillPath in skillLocator.LocateSkillFiles())
+				foreach (var skill in skillAddons.Addons)
 				{
-					var skillDir = Path.GetDirectoryName(skillPath.FileName);
+					var skillDir = skill.HomeDirectory ?? (skill.Path != null ? Path.GetDirectoryName(skill.Path) : null);
 					if (!string.IsNullOrEmpty(skillDir) && IsSubdirectoryOf(skillDir, fullPath))
 					{
 						isAccessed = true;

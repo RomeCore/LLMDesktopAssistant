@@ -134,7 +134,6 @@ namespace LLMDesktopAssistant.Addons.Loading
 									foreach (var addon in entry.Addons)
 										_addons.Remove(addon);
 								}
-
 							}
 							catch
 							{

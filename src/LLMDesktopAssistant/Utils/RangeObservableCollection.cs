@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Avalonia.Threading;
 using LiteDB;
+using Serilog;
 
 namespace LLMDesktopAssistant.Utils
 {
@@ -95,10 +96,21 @@ namespace LLMDesktopAssistant.Utils
 		/// </summary>
 		public bool RaiseInUIThread { get; set; } = false;
 
+		private NotifyCollectionChangedEventHandler? _collectionChanged;
 		/// <summary>
 		/// The event that is raised when the collection changes.
 		/// </summary>
-		public event NotifyCollectionChangedEventHandler? CollectionChanged;
+		public event NotifyCollectionChangedEventHandler? CollectionChanged
+		{
+			add
+			{
+				_collectionChanged += value;
+			}
+			remove
+			{
+				_collectionChanged -= value;
+			}
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RangeObservableCollection{T}"/> class.
@@ -129,7 +141,7 @@ namespace LLMDesktopAssistant.Utils
 		/// <param name="e">The event arguments.</param>
 		protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
-			CollectionChanged?.Invoke(this, e);
+			_collectionChanged?.Invoke(this, e);
 		}
 
 		/// <summary>

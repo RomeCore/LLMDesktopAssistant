@@ -216,7 +216,7 @@
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="local:SkillDiagnosticFlagInfo">
+						<DataTemplate x:DataType="local:AddonDiagnosticFlagInfo">
 							<Panel ToolTip.Tip="{Binding Description}">
 								<ico:MaterialIcon Kind="{Binding Icon}"
 												  Foreground="{Binding Color}"

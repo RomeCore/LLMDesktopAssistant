@@ -1,4 +1,6 @@
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Prompting.Skills;
+using LLMDesktopAssistant.StructuredValues;
 
 namespace LLMDesktopAssistant.Tests.Skills;
 
@@ -7,7 +9,7 @@ public class SkillParserTests
 	private static readonly SkillParser Parser = new();
 
 	private static SkillInfo Parse(string content, string? path = null)
-		=> Parser.Parse(path ?? "C:\\skills\\test-skill\\SKILL.md", content);
+		=> Parser.Parse(content, new AddonPathInfo(path ?? "C:\\skills\\test-skill\\SKILL.md", false)).First();
 
 	[Fact]
 	public void MinimalFrontmatter_ParsesNameAndDescription()
@@ -46,10 +48,10 @@ public class SkillParserTests
 
 		Assert.Equal("pdf-processing", skill.Name);
 		Assert.Equal("Extract text from PDFs, fill forms, merge documents.", skill.Description);
-		Assert.Equal("MIT", skill.Metadata[SkillMetadataType.License]);
-		Assert.Equal("Requires Python 3.14+", skill.Metadata[SkillMetadataType.Compatibility]);
-		Assert.Equal("example-org", skill.Metadata[SkillMetadataType.Author]);
-		Assert.Equal("2.1", skill.Metadata[SkillMetadataType.Version]);
+		Assert.Equal("MIT", skill.Metadata[AddonMetadataType.License]);
+		Assert.Equal("Requires Python 3.14+", skill.Metadata[AddonMetadataType.Compatibility]);
+		Assert.Equal("example-org", skill.Metadata[AddonMetadataType.Author]);
+		Assert.Equal("2.1", skill.Metadata[AddonMetadataType.Version]);
 		Assert.Equal([new("Bash", "python:*"), new("Read"), new("Write")], skill.AllowedTools);
 		Assert.Equal(["pdf", "document", "extraction"], skill.Tags);
 	}
@@ -174,8 +176,8 @@ public class SkillParserTests
 			---
 			""");
 
-		Assert.Equal("me", skill.Metadata[SkillMetadataType.Author]);
-		Assert.Equal("1.0", skill.Metadata[SkillMetadataType.Version]);
+		Assert.Equal("me", skill.Metadata[AddonMetadataType.Author]);
+		Assert.Equal("1.0", skill.Metadata[AddonMetadataType.Version]);
 		Assert.Equal("custom-value", skill.AdditionalMetadata["x-custom-field"]);
 		Assert.Equal("engineering", skill.AdditionalMetadata["department"]);
 	}
@@ -188,14 +190,12 @@ public class SkillParserTests
 			name: extra-fields
 			description: Skill with extra root fields.
 			priority: high
-			category: testing
 			x-my-field: hello
 			---
 			""");
 
-		Assert.Equal("high", (string)skill.AdditionalProperties["priority"]!);
-		Assert.Equal("testing", (string)skill.AdditionalProperties["category"]!);
-		Assert.Equal("hello", (string)skill.AdditionalProperties["x-my-field"]!);
+		Assert.Equal("high", skill.AdditionalProperties["priority"]!.AsString());
+		Assert.Equal("hello", skill.AdditionalProperties["x-my-field"]!.AsString());
 	}
 
 	[Fact]
@@ -377,7 +377,7 @@ public class SkillParserTests
 			---
 			""");
 
-		Assert.Equal("Apache-2.0", skill.Metadata[SkillMetadataType.License]);
+		Assert.Equal("Apache-2.0", skill.Metadata[AddonMetadataType.License]);
 	}
 
 	[Fact]

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.Localization;
@@ -118,7 +119,7 @@ public class SkillCardViewModel : ViewModelBase
 		_settings = settings;
 		_settings?.PropertyChanged += SkillsetSettings_PropertyChanged;
 
-		DiagnosticFlags = SkillDiagnosticFlagInfo.CreateFromDiagnostic(info.Diagnostic);
+		DiagnosticFlags = AddonDiagnosticFlagInfo.CreateFromDiagnostic(info.Diagnostic);
 
 		AllowedTools = info.AllowedTools.Select(FormatTool).ToImmutableList();
 		AvailableTools = info.AvailableTools.Select(FormatTool).ToImmutableList();
@@ -190,12 +191,12 @@ public class SkillCardViewModel : ViewModelBase
 	/// <summary>
 	/// Gets a value indicating whether the skill comes from a file that can be edited or deleted.
 	/// </summary>
-	public bool IsFileBased => _info.Source is SkillSource.UserProfile or SkillSource.WorkingDirectory or SkillSource.Custom;
+	public bool IsFileBased => _info.Path is not null;
 
 	/// <summary>
 	/// Gets the source of the skill.
 	/// </summary>
-	public SkillSource Source => _info.Source;
+	public AddonSource Source => _info.Source;
 
 	/// <summary>
 	/// Gets the localized display name of the source.
@@ -207,10 +208,10 @@ public class SkillCardViewModel : ViewModelBase
 	/// </summary>
 	public MaterialIconKind SourceIcon => _info.Source switch
 	{
-		SkillSource.UserProfile => MaterialIconKind.AccountCircle,
-		SkillSource.WorkingDirectory => MaterialIconKind.Folder,
-		SkillSource.Custom => MaterialIconKind.FolderStar,
-		SkillSource.Template => MaterialIconKind.FileCode,
+		AddonSource.Pack => _info.SourcePack?.Source is AddonPackSource.AgentsHome or AddonPackSource.UserAgentsHome
+			? MaterialIconKind.Folder
+			: MaterialIconKind.PackageVariant,
+		AddonSource.Template => MaterialIconKind.FileCode,
 		_ => MaterialIconKind.HelpCircle
 	};
 
@@ -250,12 +251,12 @@ public class SkillCardViewModel : ViewModelBase
 	/// <summary>
 	/// Gets the list of diagnostic flag infos for display in the UI.
 	/// </summary>
-	public ImmutableList<SkillDiagnosticFlagInfo> DiagnosticFlags { get; }
+	public ImmutableList<AddonDiagnosticFlagInfo> DiagnosticFlags { get; }
 
 	/// <summary>
 	/// Gets the tags of the skill.
 	/// </summary>
-	public ImmutableList<string> Tags => _info.Tags;
+	public ImmutableList<string> Tags => _info.Tags.Order().ToImmutableList();
 
 	/// <summary>
 	/// Gets the list of available injection modes for the ComboBox.
@@ -470,7 +471,7 @@ public class SkillCardViewModel : ViewModelBase
 		{
 			_change = new SkillChange
 			{
-				SkillName = Name,
+				Name = Name,
 				Enabled = null,
 				InjectionMode = null
 			};
@@ -544,7 +545,7 @@ public class SkillCardViewModel : ViewModelBase
 	private static string FormatTool(ToolNameWithSpecifier tool) =>
 		tool.Specifier == null ? tool.ToolName : $"{tool.ToolName}({tool.Specifier})";
 
-	private static string LocalizeMetadataKey(SkillMetadataType type)
+	private static string LocalizeMetadataKey(AddonMetadataType type)
 	{
 		var key = $"skill.metadata.{type.ToString().ToLower()}";
 		var localized = LocalizationManager.LocalizeStatic(key);
@@ -558,7 +559,7 @@ public class SkillCardViewModel : ViewModelBase
 		return localized == key ? mode.ToString() : localized;
 	}
 
-	private static string LocalizeSource(SkillSource source)
+	private static string LocalizeSource(AddonSource source)
 	{
 		var key = $"skill.source.{source.ToString().ToLower()}";
 		var localized = LocalizationManager.LocalizeStatic(key);

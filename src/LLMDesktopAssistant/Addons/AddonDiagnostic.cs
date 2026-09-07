@@ -4,7 +4,7 @@
 	{
 		public bool IsFatal { get; init; }
 
-		public AddonDiagnosticCodeValue Codes { get; init; }
+		public AddonDiagnosticCode Codes { get; init; }
 
 		public ImmutableList<string> Messages { get; init; } = [];
 
@@ -33,7 +33,7 @@
 		{
 			public AddonDiagnostic? Combine(AddonDiagnostic? other)
 			{
-				return Combine(diagnostic, other);
+				return AddonDiagnostic.Combine(diagnostic, other);
 			}
 		}
 	}
