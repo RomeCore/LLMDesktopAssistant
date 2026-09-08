@@ -19,3 +19,10 @@ parameterization.log.label: Лог валидации
 parameterization.errors.no_metadata: Метаданные 'params_schema' не найдены в шаблоне.
 parameterization.errors.no_service: Сервис IParameterSchemaParserManager не зарегистрирован.
 parameterization.log.empty: (пусто)
+
+highlight_textbox.title: Подсветка TextBox
+highlight_textbox.commands: Подсветка команд
+highlight_textbox.transform: Преобразование текста (1:1)
+highlight_textbox.reset: Сбросить пример
+highlight_textbox.spans.title: Спаны подсветки
+highlight_textbox.placeholder: Попробуй: /help text, /unknown cmd, "quotes"

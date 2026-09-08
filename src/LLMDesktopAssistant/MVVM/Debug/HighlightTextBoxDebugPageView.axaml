@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="using:LLMDesktopAssistant.MVVM.Debug"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="750"
+			 x:Class="LLMDesktopAssistant.MVVM.Debug.HighlightTextBoxDebugPageView"
+			 x:DataType="local:HighlightTextBoxDebugPageViewModel">
+
+	<Grid ColumnDefinitions="*,320">
+
+		<ctrl:HighlightTextBox Grid.Column="0"
+												   x:Name="Editor"
+												   Margin="6"
+												   Text="{Binding Text, Mode=TwoWay}"
+												   HighlightTransformProvider="{Binding TransformProvider}"
+												   AcceptsReturn="True"
+												   TextWrapping="Wrap"
+												   FontFamily="Consolas"
+												   FontSize="15"
+												   MinHeight="220"
+												   PlaceholderText="{loc:Loc debug.highlight_textbox.placeholder}"
+												   ScrollViewer.VerticalScrollBarVisibility="Auto"
+												   VerticalAlignment="Stretch"/>
+
+		<DockPanel Grid.Column="1"
+				   Margin="6">
+
+			<StackPanel DockPanel.Dock="Top" Spacing="6">
+
+				<CheckBox Content="{loc:Loc debug.highlight_textbox.commands}"
+						  IsChecked="{Binding EnableCommandHighlight}"/>
+
+				<CheckBox Content="{loc:Loc debug.highlight_textbox.transform}"
+						  IsChecked="{Binding EnableTransform}"/>
+				
+				<Button Content="{loc:Loc debug.highlight_textbox.reset}"
+						Command="{Binding ResetCommand}"
+						HorizontalAlignment="Left"
+						Margin="0,8,0,0"/>
+
+				<TextBlock Text="{loc:Loc debug.highlight_textbox.spans.title}"
+						   FontWeight="Bold"
+						   Margin="0,8,0,0"/>
+
+			</StackPanel>
+
+			<ListBox ItemsSource="{Binding Spans}">
+				<ListBox.ItemTemplate>
+					<DataTemplate x:DataType="local:HighlightSpanInfo">
+						<TextBlock Text="{Binding Display}"
+								   FontFamily="Consolas"
+								   FontSize="12"/>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+
+		</DockPanel>
+
+	</Grid>
+
+</UserControl>

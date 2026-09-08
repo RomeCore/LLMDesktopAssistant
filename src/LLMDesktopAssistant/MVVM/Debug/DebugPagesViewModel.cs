@@ -57,6 +57,11 @@ public class DebugPagesViewModel : ViewModelBase
 			new DebugLeafNode(LocalizationManager.LocalizeStatic("debug.parameterization.title"),
 				MaterialIconKind.Tune,
 				() => new ParameterizationDebugPageViewModel()));
+
+		DebugTree.Add(
+			new DebugLeafNode(LocalizationManager.LocalizeStatic("debug.highlight_textbox.title"),
+				MaterialIconKind.FormatColorText,
+				() => new HighlightTextBoxDebugPageViewModel()));
 	}
 
 	/// <inheritdoc/>

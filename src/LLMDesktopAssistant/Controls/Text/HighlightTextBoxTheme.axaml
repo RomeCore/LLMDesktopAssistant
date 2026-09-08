@@ -1,0 +1,126 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+					xmlns:txt="using:LLMDesktopAssistant.Controls.Text"
+					xmlns:conv="using:Avalonia.Data.Converters">
+
+	<!--
+		Theme for HighlightTextBox: a copy of the Fluent TextBox template structure
+		(Border#PART_BorderElement, ScrollViewer#PART_ScrollViewer, TextBlock#PART_Placeholder)
+		with TextPresenter replaced by ctrl:HighlightTextPresenter. States
+		(:disabled/:pointerover/:focus/:error) mirror the Fluent styles and target
+		Border#PART_BorderElement.
+	-->
+
+	<ControlTheme x:Key="{x:Type ctrl:HighlightTextBox}"
+							  TargetType="ctrl:HighlightTextBox">
+
+		<Setter Property="Foreground" Value="{DynamicResource TextControlForeground}"/>
+		<Setter Property="Background" Value="{DynamicResource TextControlBackground}"/>
+		<Setter Property="CaretBrush" Value="{DynamicResource TextControlForeground}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource TextControlBorderBrush}"/>
+		<Setter Property="SelectionBrush" Value="{DynamicResource TextControlSelectionHighlightColor}"/>
+		<Setter Property="PlaceholderForeground" Value="{DynamicResource TextControlPlaceholderForeground}"/>
+		<Setter Property="BorderThickness" Value="{DynamicResource TextControlBorderThemeThickness}"/>
+		<Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}"/>
+		<Setter Property="MinHeight" Value="{DynamicResource TextControlThemeMinHeight}"/>
+		<Setter Property="MinWidth" Value="{DynamicResource TextControlThemeMinWidth}"/>
+		<Setter Property="Padding" Value="{DynamicResource TextControlThemePadding}"/>
+		<Setter Property="FocusAdorner" Value="{x:Null}"/>
+		<Setter Property="ScrollViewer.IsScrollChainingEnabled" Value="True"/>
+
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border Name="PART_BorderElement"
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						CornerRadius="{TemplateBinding CornerRadius}"
+						MinWidth="{TemplateBinding MinWidth}"
+						MinHeight="{TemplateBinding MinHeight}">
+					<ScrollViewer Name="PART_ScrollViewer"
+								  Margin="{TemplateBinding Padding}"
+								  HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+								  VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}"
+								  IsScrollChainingEnabled="{TemplateBinding (ScrollViewer.IsScrollChainingEnabled)}"
+								  AllowAutoHide="{TemplateBinding (ScrollViewer.AllowAutoHide)}"
+								  BringIntoViewOnFocusChange="{TemplateBinding (ScrollViewer.BringIntoViewOnFocusChange)}">
+						<Panel>
+							<TextBlock Name="PART_Placeholder"
+									   Foreground="{TemplateBinding PlaceholderForeground}"
+									   Text="{TemplateBinding PlaceholderText}"
+									   TextAlignment="{TemplateBinding TextAlignment}"
+									   TextWrapping="{TemplateBinding TextWrapping}"
+									   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+									   VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+								<TextBlock.IsVisible>
+									<MultiBinding Converter="{x:Static conv:BoolConverters.And}">
+										<Binding ElementName="PART_TextPresenter" Path="PreeditText" Converter="{x:Static conv:StringConverters.IsNullOrEmpty}"/>
+										<Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Text" Converter="{x:Static conv:StringConverters.IsNullOrEmpty}"/>
+									</MultiBinding>
+								</TextBlock.IsVisible>
+							</TextBlock>
+
+							<txt:HighlightTextPresenter Name="PART_TextPresenter"
+														 Text="{TemplateBinding Text, Mode=TwoWay}"
+														 CaretBlinkInterval="{TemplateBinding CaretBlinkInterval}"
+														 CaretIndex="{TemplateBinding CaretIndex}"
+														 SelectionStart="{TemplateBinding SelectionStart}"
+														 SelectionEnd="{TemplateBinding SelectionEnd}"
+														 TextAlignment="{TemplateBinding TextAlignment}"
+														 TextWrapping="{TemplateBinding TextWrapping}"
+														 LineHeight="{TemplateBinding LineHeight}"
+														 LetterSpacing="{TemplateBinding LetterSpacing}"
+														 PasswordChar="{TemplateBinding PasswordChar}"
+														 RevealPassword="{TemplateBinding RevealPassword}"
+														 SelectionBrush="{TemplateBinding SelectionBrush}"
+														 SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+														 CaretBrush="{TemplateBinding CaretBrush}"
+														 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+														 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+						</Panel>
+						<ScrollViewer.Styles>
+							<Style Selector="ScrollContentPresenter#PART_ContentPresenter">
+								<Setter Property="Cursor" Value="IBeam"/>
+							</Style>
+						</ScrollViewer.Styles>
+					</ScrollViewer>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+
+		<!-- Disabled -->
+		<Style Selector="^:disabled">
+			<Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}"/>
+			<Style Selector="^ /template/ Border#PART_BorderElement">
+				<Setter Property="Background" Value="{DynamicResource TextControlBackgroundDisabled}"/>
+				<Setter Property="BorderBrush" Value="{DynamicResource TextControlBorderBrushDisabled}"/>
+			</Style>
+		</Style>
+
+		<!-- PointerOver -->
+		<Style Selector="^:pointerover">
+			<Setter Property="Foreground" Value="{DynamicResource TextControlForegroundPointerOver}"/>
+			<Style Selector="^ /template/ Border#PART_BorderElement">
+				<Setter Property="BorderBrush" Value="{DynamicResource TextControlBorderBrushPointerOver}"/>
+				<Setter Property="Background" Value="{DynamicResource TextControlBackgroundPointerOver}"/>
+			</Style>
+		</Style>
+
+		<!-- Focused -->
+		<Style Selector="^:focus">
+			<Setter Property="Foreground" Value="{DynamicResource TextControlForegroundFocused}"/>
+			<Style Selector="^ /template/ Border#PART_BorderElement">
+				<Setter Property="Background" Value="{DynamicResource TextControlBackgroundFocused}"/>
+				<Setter Property="BorderBrush" Value="{DynamicResource TextControlBorderBrushFocused}"/>
+				<Setter Property="BorderThickness" Value="{DynamicResource TextControlBorderThemeThicknessFocused}"/>
+			</Style>
+		</Style>
+
+		<!-- Error -->
+		<Style Selector="^:error /template/ Border#PART_BorderElement">
+			<Setter Property="BorderBrush" Value="{DynamicResource SystemControlErrorTextForegroundBrush}"/>
+		</Style>
+
+	</ControlTheme>
+</ResourceDictionary>
