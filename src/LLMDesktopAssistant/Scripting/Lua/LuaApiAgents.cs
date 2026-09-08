@@ -1,12 +1,14 @@
 using System.Text.Json.Nodes;
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Services.Tools;
+using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
@@ -395,13 +397,13 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		private readonly IAgentTaskExecutor _agentTaskExecutor;
 		private readonly IModelManager _modelManager;
 		private readonly IAgentManagementService _agentManager;
-		private readonly ISkillsetBuildingService _skillsetBuilder;
+		private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
 		private readonly ISubAgentSetBuildingService _subAgentSetBuilder;
 		private readonly IToolsetCacheService _toolsetCache;
 		private LuaService _luaService = null!;
 
 		public LuaApiAgents(IChatSettingsService chatSettings, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
-			IAgentManagementService agentManager, ISkillsetBuildingService skillsetBuilder,
+			IAgentManagementService agentManager, IAddonSetCollector<SkillInfo> skillsetBuilder,
 			ISubAgentSetBuildingService subAgentSetBuilder, IToolsetCacheService toolsetCache)
 		{
 			_chatSettings = chatSettings;
@@ -588,7 +590,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			if (skillsOption is LuaTable skillsOptionTable)
 			{
 				var skillMap = skillsOptionTable.Values.Any(v => v is LuaString) ?
-					_skillsetBuilder.GetAvailableSkills().ToImmutableDictionary(s => s.Name) :
+					_skillsetBuilder.GetAvailableAddons().ToImmutableDictionary(s => s.Name) :
 					null;
 
 				foreach (var skillValue in skillsOptionTable.Values)

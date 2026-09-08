@@ -1,7 +1,9 @@
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Services.Prompting;
+using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Settings;
 
 namespace LLMDesktopAssistant.LLM.Services.Agents
@@ -10,7 +12,7 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 	public class SubAgentTaskParamsResolver(
 		IChatSettingsService chatSettings,
 		ISubAgentToolResolver toolResolver,
-		ISkillsetBuildingService skillsetBuilder,
+		IAddonSetCollector<SkillInfo> skillsetBuilder,
 		ISubAgentSetBuildingService subAgentSetBuilder
 	) : ISubAgentTaskParamsResolver
 	{
@@ -59,7 +61,7 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 			var skills = ImmutableList.CreateBuilder<AgentSkill>();
 			if (info.Skills.Count > 0)
 			{
-				var skillMap = skillsetBuilder.GetAvailableSkills().ToDictionary(s => s.Name);
+				var skillMap = skillsetBuilder.GetAvailableAddons().ToDictionary(s => s.Name);
 
 				foreach (var allowedSkill in info.Skills.Distinct())
 				{

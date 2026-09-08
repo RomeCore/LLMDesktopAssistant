@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
@@ -33,7 +34,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		IPromptSlotElementManager slotElementManager,
 		IAgentManagementService agentManager,
 		IUserManagementService userManager,
-		ISkillsetBuildingService skillsetBuilder,
+		IAddonSetCollector<SkillInfo> skillsetBuilder,
 		ISubAgentSetBuildingService subAgentSetBuilder,
 		IEnumerable<IPromptBuildingHook> promptBuildingHooks,
 		IEnumerable<IPromptSystemContextExpander> promptSystemContextExpanders,
@@ -112,7 +113,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
 			generalContext["assistant_nickname"] = effectivePersona.Nickname;
-			generalContext["skills"] = skillsetBuilder.GetSkillsForAgent(agent).Select(s => new
+			generalContext["skills"] = skillsetBuilder.GetAddonsForAgent(agent).Select(s => new
 			{
 				name = s.Name,
 				description = s.Description,

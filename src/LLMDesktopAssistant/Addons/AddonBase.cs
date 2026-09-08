@@ -1,7 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Linq.Expressions;
+using System.Reflection;
+using System.Text.Json.Serialization;
+using LiteDB;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.StructuredValues.Const;
+using YamlDotNet.Serialization;
 
 namespace LLMDesktopAssistant.Addons
 {
@@ -27,18 +31,40 @@ namespace LLMDesktopAssistant.Addons
 		} = string.Empty;
 
 		/// <summary>
+		/// The addon file content getter, excluding the frontmatter.
+		/// </summary>
+		[JsonIgnore]
+		[BsonIgnore]
+		[YamlIgnore]
+		public Func<Self, string> DescriptionGetter
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = s => string.Empty;
+
+		/// <summary>
 		/// The short agent-readable description of the addon. Used by agent for understanding when to use this addon.
 		/// </summary>
 		public string Description
 		{
-			get;
-			set => SetProperty(ref field, value);
-		} = string.Empty;
+			get => DescriptionGetter((Self)this);
+			set
+			{
+				if (value != Body)
+				{
+					RaisePropertyChanging();
+					DescriptionGetter = s => value;
+					RaisePropertyChanged();
+				}
+			}
+		}
 
 		/// <summary>
 		/// The addon file content getter, excluding the frontmatter.
 		/// </summary>
 		[JsonIgnore]
+		[BsonIgnore]
+		[YamlIgnore]
 		public Func<Self, string> BodyGetter
 		{
 			get;
@@ -193,6 +219,63 @@ namespace LLMDesktopAssistant.Addons
 
 			if (errors.Count > 0)
 				throw new ArgumentException(string.Join(Environment.NewLine, errors));
+		}
+
+		// Interesting fact:
+		// In C#, static class fields are separated by generic arguments (the Self type in our case),
+		// so we can just put this field here without dictionaries!
+		private static readonly Func<Self, Self>? cloneDelegate = null;
+
+		static AddonBase()
+		{
+			var type = typeof(Self);
+
+			var constructor = type.GetConstructor(
+				BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance,
+				Type.EmptyTypes);
+
+			if (constructor is null)
+				return;
+
+			var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+				.Where(p => !p.IsSpecialName && p.GetMethod is not null && p.SetMethod is not null &&
+				p.Name is not nameof(Body) and not nameof(Description));
+
+			var sourceParam = Expression.Parameter(typeof(Self), "source");
+			var instanceVar = Expression.Variable(typeof(Self), "instance");
+
+			var expressions = new List<Expression>
+			{
+				// instance = new Self();
+				Expression.Assign(instanceVar, Expression.New(constructor))
+			};
+
+			foreach (var property in properties)
+			{
+				var getValue = Expression.Call(sourceParam, property.GetMethod!);
+				var setValue = Expression.Call(instanceVar, property.SetMethod!, getValue);
+				expressions.Add(setValue);
+			}
+
+			expressions.Add(instanceVar);
+
+			var body = Expression.Block([instanceVar], expressions);
+			var lambda = Expression.Lambda<Func<Self, Self>>(body, sourceParam);
+			var cloneDelegate = lambda.Compile();
+
+			AddonBase<Self>.cloneDelegate = cloneDelegate;
+		}
+
+		/// <summary>
+		/// Creates the shallow copy of the current instance of the addon, returning it unfrozen.
+		/// </summary>
+		public Self Clone()
+		{
+			if (cloneDelegate is null)
+				throw new InvalidOperationException("Clone is not supported for this type. " +
+					"Cloneable types must have a parameterless public constructor.");
+
+			return cloneDelegate((Self)this);
 		}
 	}
 }

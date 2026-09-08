@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
@@ -15,7 +16,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 [ViewModelFor(typeof(AgentSkillSettingsView))]
 public class AgentSkillSettingsViewModel : ViewModelBase
 {
-	private readonly ISkillsetBuildingService _skillsetBuilder;
+	private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
 	private readonly IAddonManagerInvalidator _addonsInvalidator;
 	private readonly ChatSettings _chatSettings;
 	private ImmutableList<SkillCardViewModel> _allCards = [];
@@ -80,7 +81,7 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 	/// <param name="skillsetBuilder">The service providing the available skills.</param>
 	/// <param name="chatSettings">The chat settings used to resolve inherited settings.</param>
 	public AgentSkillSettingsViewModel(AgentSkillSettings settings,
-		ISkillsetBuildingService skillsetBuilder, IAddonManagerInvalidator addonsInvalidator, ChatSettings chatSettings)
+		IAddonSetCollector<SkillInfo> skillsetBuilder, IAddonManagerInvalidator addonsInvalidator, ChatSettings chatSettings)
 	{
 		SkillSettings = settings;
 		_skillsetBuilder = skillsetBuilder;
@@ -113,7 +114,7 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 	{
 		_addonsInvalidator.Reload();
 
-		var allSkills = _skillsetBuilder.GetAvailableSkills();
+		var allSkills = _skillsetBuilder.GetAvailableAddons();
 		var changes = EffectiveSkillChanges.ToDictionary(c => c.Name, c => c);
 
 		_allCards.ForEach(c => c.Dispose());

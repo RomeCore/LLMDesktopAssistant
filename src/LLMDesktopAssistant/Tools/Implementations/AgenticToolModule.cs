@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics.Tracing;
 using System.Text;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
@@ -11,6 +12,7 @@ using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Providers;
 using Material.Icons;
 using RCLargeLanguageModels;
@@ -29,14 +31,14 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly IAgentTaskExecutor _agentTaskExecutor;
 		private readonly IModelManager _modelManager;
 		private readonly IToolsetBuildingService _toolsetBuildingService;
-		private readonly ISkillsetBuildingService _skillsetBuildingService;
+		private readonly IAddonSetCollector<SkillInfo> _skillsetBuildingService;
 		private readonly ISubAgentSetBuildingService _subAgentSetBuildingService;
 		private readonly ISubAgentTaskParamsResolver _subAgentParamsResolver;
 
 		public AgenticToolModule(Chat chat, IChatSettingsService chatSettings, ITemplateLibraryAccessor templates,
 			IWorkingDirectoryAccessService fileAccess,
 			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
-			IToolsetBuildingService toolsetBuildingService, ISkillsetBuildingService skillsetBuildingService,
+			IToolsetBuildingService toolsetBuildingService, IAddonSetCollector<SkillInfo> skillsetBuildingService,
 			ISubAgentSetBuildingService subAgentSetBuildingService, ISubAgentTaskParamsResolver subAgentParamsResolver)
 		{
 			_chat = chat;
@@ -166,7 +168,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			var skills = ImmutableList.CreateBuilder<AgentSkill>();
 			if (allowedSkills.Length > 0)
 			{
-				var skillMap = _skillsetBuildingService.GetSkillsForAgent(agentDescriptor).ToDictionary(s => s.Name);
+				var skillMap = _skillsetBuildingService.GetAddonsForAgent(agentDescriptor).ToDictionary(s => s.Name);
 
 				int notFound = 0;
 				foreach (var allowedSkill in allowedSkills.Distinct())

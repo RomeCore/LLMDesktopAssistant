@@ -1,5 +1,8 @@
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Loading;
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.ApiKeys;
 using LLMDesktopAssistant.Data.Connectors;
 using LLMDesktopAssistant.LLM.Domain;
@@ -7,20 +10,19 @@ using LLMDesktopAssistant.LLM.MVVM.Settings;
 using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
-using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.LLM.Services.Prompting;
+using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Prompting.Management;
+using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Providers;
-using LLMDesktopAssistant.Utils;
-using Material.Icons;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services.Instances;
-using LLMDesktopAssistant.Tools.Meta;
-using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.Prompting.Management;
-using LLMDesktopAssistant.Addons.Management;
+using LLMDesktopAssistant.Tools.Meta;
+using LLMDesktopAssistant.Utils;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -191,14 +193,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),
 						MaterialIconKind.Cards,
 						() => new ChatSkillsSettingsViewModel(Settings.Skills,
-							Chat.Services.GetRequiredService<ISkillsetBuildingService>(),
+							Chat.Services.GetRequiredService<IAddonSetCollector<SkillInfo>>(),
 							Chat.Services.GetRequiredService<IAddonManagerInvalidator>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.sub_agents"),
 						MaterialIconKind.RobotHappy,
 						() => new ChatSubAgentsSettingsViewModel(Settings.SubAgents,
 							Chat.Services.GetRequiredService<ISubAgentSetBuildingService>(),
-							Chat.Services.GetRequiredService<ISkillsetBuildingService>())),
+							Chat.Services.GetRequiredService<IAddonSetCollector<SkillInfo>>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.memory"),
 						MaterialIconKind.Database,
@@ -274,7 +276,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 						MaterialIconKind.Cards,
 						() => new AgentSkillSettingsViewModel(
 							descriptor.Skills,
-							Chat.Services.GetRequiredService<ISkillsetBuildingService>(),
+							Chat.Services.GetRequiredService<IAddonSetCollector<SkillInfo>>(),
 							Chat.Services.GetRequiredService<IAddonManagerInvalidator>(),
 							Settings)),
 
@@ -284,7 +286,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 							descriptor.SubAgents,
 							Settings,
 							Chat.Services.GetRequiredService<ISubAgentSetBuildingService>(),
-							Chat.Services.GetRequiredService<ISkillsetBuildingService>())),
+							Chat.Services.GetRequiredService<IAddonSetCollector<SkillInfo>>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.memory"),
 						MaterialIconKind.Database,

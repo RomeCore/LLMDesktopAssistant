@@ -1,9 +1,11 @@
 using System.ComponentModel;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 
@@ -17,7 +19,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 public class AgentSubAgentSettingsViewModel : ViewModelBase
 {
 	private readonly ISubAgentSetBuildingService _subAgentSetBuilder;
-	private readonly ISkillsetBuildingService _skillsetBuilder;
+	private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
 	private readonly ChatSettings _chatSettings;
 	private ImmutableList<SubAgentCardViewModel> _allCards = [];
 
@@ -82,7 +84,7 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 	/// <param name="subAgentSetBuilder">The service providing the available sub-agents.</param>
 	/// <param name="skillsetBuilder">The service providing the available skills for link checking.</param>
 	public AgentSubAgentSettingsViewModel(AgentSubAgentSettings settings, ChatSettings chatSettings,
-		ISubAgentSetBuildingService subAgentSetBuilder, ISkillsetBuildingService skillsetBuilder)
+		ISubAgentSetBuildingService subAgentSetBuilder, IAddonSetCollector<SkillInfo> skillsetBuilder)
 	{
 		SubAgentSettings = settings;
 		_chatSettings = chatSettings;
@@ -115,7 +117,7 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 	{
 		var subAgents = _subAgentSetBuilder.GetAvailableSubAgents().ToList();
 		var subAgentNames = subAgents.Select(s => s.Name).ToHashSet();
-		var skillNames = _skillsetBuilder.GetAvailableSkills().Select(s => s.Name).ToHashSet();
+		var skillNames = _skillsetBuilder.GetAvailableAddons().Select(s => s.Name).ToHashSet();
 		var memoryBlockNames = SettingsManager.GetCategory<MemoryBlock>().GetAll().Select(kvp => kvp.Value.Name).ToHashSet();
 		var changes = EffectiveSubAgentChanges.ToDictionary(c => c.SubAgentName, c => c);
 

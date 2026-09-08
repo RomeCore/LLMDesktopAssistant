@@ -1,6 +1,5 @@
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
@@ -10,16 +9,16 @@ using LLTSharp;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
-	[ChatService(typeof(ISkillsetBuildingService))]
+	[ChatService(typeof(IAddonSetCollector<SkillInfo>))]
 	public class SkillsetBuildingService(
 		IChatSettingsService chatSettings,
-		IAddonAccessor<SkillInfo> skillAddons,
 		IPromptSkillManager skillManager,
 		IEnumerable<IPromptSystemContextExpander> promptSystemContextExpanders,
-		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins
-	) : ISkillsetBuildingService
+		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins,
+		IServiceProvider services
+	) : AddonSetCollectorBase<SkillInfo, SkillChange>(services)
 	{
-		public IEnumerable<SkillInfo> GetAvailableSkills()
+		protected override IEnumerable<SkillInfo> GetAdditionalAddons()
 		{
 			List<SkillInfo> skills = [];
 
@@ -60,50 +59,17 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					};
 				}));
 			}
-			skills.AddRange(skillAddons.Addons);
 
-			return skills
-				.GroupBy(s => s.Name)
-				.Select(g =>
-				{
-					ImmutableList<SkillInfo>.Builder? overridesBuilder = null;
-					SkillInfo? last = null;
-					foreach (var skill in g)
-					{
-						if (last is not null)
-						{
-							overridesBuilder ??= ImmutableList.CreateBuilder<SkillInfo>();
-							overridesBuilder.Add(last);
-						}
-						last = skill;
-					}
-					if (overridesBuilder == null)
-						return last!;
-					return new SkillInfo
-					{
-						Name = last!.Name,
-						Description = last.Description,
-						BodyGetter = last.BodyGetter,
-						Source = last.Source,
-						TemplateSource = last.TemplateSource,
-						Path = last.Path,
-						HomeDirectory = last.HomeDirectory,
-						Metadata = last.Metadata,
-						AdditionalMetadata = last.AdditionalMetadata,
-						AllowedTools = last.AllowedTools,
-						AvailableTools = last.AvailableTools,
-						DisallowedTools = last.DisallowedTools,
-						Tags = last.Tags,
-						AdditionalProperties = last.AdditionalProperties,
-						Enabled = last.Enabled,
-						InjectionMode = last.InjectionMode,
-						ParameterSchema = last.ParameterSchema,
-						Overrides = overridesBuilder.ToImmutable()
-					};
-				});
+			return skills;
 		}
 
-		public IEnumerable<SkillInfo> GetSkillsForAgent(ChatAgentDescriptor agent)
+		protected override void ApplyChange(SkillInfo target, SkillChange change)
+		{
+			base.ApplyChange(target, change);
+			target.InjectionMode = change.InjectionMode ?? target.InjectionMode;
+		}
+
+		public override IEnumerable<SkillInfo> GetAddonsForAgent(ChatAgentDescriptor agent)
 		{
 			if (!chatSettings.Settings.Skills.EnableSkills)
 				return [];
@@ -112,51 +78,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			if (!settings.EnableSkills)
 				return [];
 
-			var skills = GetAvailableSkills();
-			var result = new List<SkillInfo>();
-
 			var skillset = settings.GetEffectiveSkillset(chatSettings.Settings);
-
-			var changes = skillset.SkillChanges.ToDictionary(c => c.Name, c => c);
-			foreach (var skillInfo in skills)
-			{
-				if (skillInfo.Diagnostic?.IsFatal == true)
-					continue;
-
-				if (changes.TryGetValue(skillInfo.Name, out var change))
-				{
-					if (change.Enabled ?? skillInfo.Enabled ?? skillset.SkillsEnabledByDefault)
-						result.Add(new SkillInfo
-						{
-							Name = skillInfo.Name,
-							Source = skillInfo.Source,
-							TemplateSource = skillInfo.TemplateSource,
-							Description = skillInfo.Description,
-							BodyGetter = skillInfo.BodyGetter,
-							Path = skillInfo.Path,
-							HomeDirectory = skillInfo.HomeDirectory,
-							Metadata = skillInfo.Metadata,
-							AdditionalMetadata = skillInfo.AdditionalMetadata,
-							AllowedTools = skillInfo.AllowedTools,
-							AvailableTools = skillInfo.AvailableTools,
-							DisallowedTools = skillInfo.DisallowedTools,
-							Tags = skillInfo.Tags,
-							AdditionalProperties = skillInfo.AdditionalProperties,
-							Enabled = true,
-							InjectionMode = change.InjectionMode ?? skillInfo.InjectionMode,
-							Change = change,
-							ParameterSchema = skillInfo.ParameterSchema,
-							Overrides = skillInfo.Overrides
-						});
-				}
-				else
-				{
-					if (skillInfo.Enabled ?? skillset.SkillsEnabledByDefault)
-						result.Add(skillInfo);
-				}
-			}
-
-			return result;
+			return GetAddonsWithChanges(skillset.SkillChanges, skillset.SkillsEnabledByDefault);
 		}
 	}
 }

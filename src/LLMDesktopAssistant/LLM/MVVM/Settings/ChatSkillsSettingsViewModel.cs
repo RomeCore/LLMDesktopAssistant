@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.LLM.Services.Prompting;
@@ -19,7 +20,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 [ViewModelFor(typeof(ChatSkillsSettingsView))]
 public class ChatSkillsSettingsViewModel : ViewModelBase
 {
-	private readonly ISkillsetBuildingService _skillsetBuilder;
+	private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
 	private readonly IAddonManagerInvalidator _addonInvalidator;
 	private ImmutableList<SkillCardViewModel> _allCards = [];
 
@@ -66,7 +67,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ChatSkillsSettingsViewModel"/> class.
 	/// </summary>
-	public ChatSkillsSettingsViewModel(ChatSkillSettings settings, ISkillsetBuildingService skillsetBuilder,
+	public ChatSkillsSettingsViewModel(ChatSkillSettings settings, IAddonSetCollector<SkillInfo> skillsetBuilder,
 		IAddonManagerInvalidator addonInvalidator)
 	{
 		SkillSettings = settings;
@@ -87,7 +88,7 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 		_addonInvalidator.Reload();
 
 		_allCards.ForEach(c => c.Dispose());
-		_allCards = _skillsetBuilder.GetAvailableSkills()
+		_allCards = _skillsetBuilder.GetAvailableAddons()
 			.Select(s => new SkillCardViewModel(
 				s,
 				canToggle: false,

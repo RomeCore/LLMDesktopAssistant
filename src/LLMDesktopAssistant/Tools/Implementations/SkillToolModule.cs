@@ -1,10 +1,10 @@
 using System.ComponentModel;
-using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
-using LLMDesktopAssistant.LLM.Services.Prompting;
-using Material.Icons;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting.Skills;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -13,10 +13,10 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	{
 		private readonly IChatSettingsService _chatSettings;
 		private readonly IAgentManagementService _agentManager;
-		private readonly ISkillsetBuildingService _skillsetBuilder;
+		private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
 
 		public SkillToolModule(IChatSettingsService chatSettings, IAgentManagementService agentManager,
-			ISkillsetBuildingService skillsetBuilder)
+			IAddonSetCollector<SkillInfo> skillsetBuilder)
 		{
 			_chatSettings = chatSettings;
 			_agentManager = agentManager;
@@ -47,7 +47,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			ToolExecutionContext ctx)
 		{
 			var senderAgent = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
-			var skills = _skillsetBuilder.GetSkillsForAgent(senderAgent);
+			var skills = _skillsetBuilder.GetAddonsForAgent(senderAgent);
 			var foundSkill = skills.FirstOrDefault(s => s.Name == name);
 
 			if (foundSkill == null)

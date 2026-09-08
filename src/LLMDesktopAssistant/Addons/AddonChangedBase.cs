@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
+using LiteDB;
 using LLMDesktopAssistant.StructuredValues.Parameterization;
+using YamlDotNet.Serialization;
 
 namespace LLMDesktopAssistant.Addons
 {
@@ -43,6 +45,9 @@ namespace LLMDesktopAssistant.Addons
 		/// <summary>
 		/// Gets the list of overriden addons during deduplication by name.
 		/// </summary>
+		[JsonIgnore]
+		[BsonIgnore]
+		[YamlIgnore]
 		public ImmutableList<Self> Overrides
 		{
 			get;

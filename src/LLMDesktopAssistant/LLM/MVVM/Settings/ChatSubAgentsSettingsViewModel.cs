@@ -2,12 +2,14 @@ using System.ComponentModel;
 using System.Diagnostics;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Settings;
@@ -23,7 +25,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 public class ChatSubAgentsSettingsViewModel : ViewModelBase
 {
 	private readonly ISubAgentSetBuildingService _subAgentSetBuilder;
-	private readonly ISkillsetBuildingService _skillsetBuilder;
+	private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
 	private readonly IExplorerOpener? _explorerOpener;
 	private ImmutableList<SubAgentCardViewModel> _allCards = [];
 
@@ -131,7 +133,7 @@ public class ChatSubAgentsSettingsViewModel : ViewModelBase
 	/// <param name="subAgentSetBuilder">The service providing the available sub-agents.</param>
 	/// <param name="skillsetBuilder">The service providing the available skills for link checking.</param>
 	public ChatSubAgentsSettingsViewModel(ChatSubAgentSettings settings,
-		ISubAgentSetBuildingService subAgentSetBuilder, ISkillsetBuildingService skillsetBuilder)
+		ISubAgentSetBuildingService subAgentSetBuilder, IAddonSetCollector<SkillInfo> skillsetBuilder)
 	{
 		SubAgentSettings = settings;
 		_subAgentSetBuilder = subAgentSetBuilder;
@@ -189,7 +191,7 @@ public class ChatSubAgentsSettingsViewModel : ViewModelBase
 	{
 		var subAgents = _subAgentSetBuilder.GetAvailableSubAgents().ToList();
 		var subAgentNames = subAgents.Select(s => s.Name).ToHashSet();
-		var skillNames = _skillsetBuilder.GetAvailableSkills().Select(s => s.Name).ToHashSet();
+		var skillNames = _skillsetBuilder.GetAvailableAddons().Select(s => s.Name).ToHashSet();
 		var memoryBlockNames = SettingsManager.GetCategory<MemoryBlock>().GetAll().Select(kvp => kvp.Value.Name).ToHashSet();
 
 		_allCards.ForEach(c => c.Dispose());
