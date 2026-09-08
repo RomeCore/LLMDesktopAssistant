@@ -12,7 +12,10 @@ pack.useragentshome.name: Дом агентов пользователя
 pack.useragentshome.description: Пользовательский дом агентов (например, ~/.agents)
 pack.agentshome.name: Дом агентов рабочей директории
 pack.agentshome.description: Дом агентов рабочей директории (например, .agents)
+pack.workdir.name: Рабочая директория
+pack.workdir.description: Сама рабочая директория, рассматриваемая как пак аддонов.
 pack.source.unknown: Неизвестно
+pack.source.workingdirectory: Рабочая директория
 pack.source.appdata: Данные приложения
 pack.source.useragentshome: Пользовательские агенты
 pack.source.agentshome: Агенты рабочей директории
@@ -23,12 +26,17 @@ pack.source.scanned: Найденные
 // === UI настроек                                     ===
 // =====================================================
 settings.title: Аддоны
-settings.sources: Источники аддонов
-settings.sources.hint: Настройте, откуда загружаются аддоны: рабочие директории, дополнительные пути паков и дополнительные источники по типам.
 settings.search_folders: Папки поиска
 settings.search_folders.hint: Эти папки ищутся на предмет паков аддонов внутри профиля пользователя и в каждой рабочей директории.
+settings.additional_search_folders: Дополнительные папки поиска
+settings.additional_search_folders.hint: Глобальная настройка, распространяется на ВСЕ чаты (все профили чатов): эти папки ищутся на предмет паков аддонов внутри профиля пользователя и в каждой рабочей директории дополнительно к стандартным.
+settings.search_folder.placeholder: Имя папки (например, .agents)...
+settings.workdirs: Рабочие директории
+settings.workdirs.hint: Настройте, как рабочие директории участвуют в загрузке аддонов.
 settings.fetch_all: Загружать аддоны из всех рабочих директорий
 settings.fetch_all.hint: При включении паки аддонов загружаются из всех включённых рабочих директорий. Иначе используется только текущая.
+settings.use_workdirs_as_packs: Использовать рабочие директории как паки
+settings.use_workdirs_as_packs.hint: При включении каждая рабочая директория сама рассматривается как пак аддонов.
 settings.additional_pack_paths: Дополнительные пути паков
 settings.additional_pack_paths.hint: Прямые пути к пакам аддонов, например '~/.agents/packs/my-pack/'.
 settings.additional_pack_paths.placeholder: Путь к паку аддонов...

@@ -7,6 +7,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
+using LLMDesktopAssistant.Settings.Application;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
@@ -20,6 +21,7 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 	private readonly IChatAddonPackLocator? _packLocator;
 	private readonly IExplorerOpener? _explorerOpener;
 	private readonly ImmutableList<IAddonTypeDescriptor> _addonTypeDescriptors = [];
+	private readonly RangeObservableCollection<string>? _additionalSearchFolders;
 
 	/// <summary>
 	/// Gets the underlying chat addon settings.
@@ -31,14 +33,52 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 	/// </summary>
 	public ImmutableArray<string> SearchFolders { get; }
 
+	/// <summary>
+	/// Gets the global additional search folders. These are stored in the application settings
+	/// and shared across ALL chats (all chat profiles).
+	/// </summary>
+	public RangeObservableCollection<string>? GlobalAdditionalSearchFolders => _additionalSearchFolders;
+
 	// ===================================
 	// === Effective values            ===
 	// ===================================
 
 	/// <summary>
-	/// Gets the effective value indicating whether addons are fetched from all working directories.
+	/// Gets the effective working directories group of the addon settings.
 	/// </summary>
-	public bool EffectiveFetchFromAllWorkingDirectories => Settings.GetEffectiveFetchFromAllWorkingDirectories();
+	public AddonWorkingDirectoriesSettings EffectiveWorkingDirectories => Settings.GetEffectiveWorkingDirectories();
+
+	/// <summary>
+	/// Gets or sets the effective value indicating whether addons are fetched from all working directories.
+	/// </summary>
+	public bool EffectiveFetchFromAllWorkingDirectories
+	{
+		get => EffectiveWorkingDirectories.FetchFromAllWorkingDirectories;
+		set
+		{
+			if (EffectiveWorkingDirectories.FetchFromAllWorkingDirectories != value)
+			{
+				EffectiveWorkingDirectories.FetchFromAllWorkingDirectories = value;
+				RaisePropertyChanged();
+			}
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the effective value indicating whether working directories are used as addon packs.
+	/// </summary>
+	public bool EffectiveUseWorkingDirectoriesAsPacks
+	{
+		get => EffectiveWorkingDirectories.UseWorkingDirectoriesAsPacks;
+		set
+		{
+			if (EffectiveWorkingDirectories.UseWorkingDirectoriesAsPacks != value)
+			{
+				EffectiveWorkingDirectories.UseWorkingDirectoriesAsPacks = value;
+				RaisePropertyChanged();
+			}
+		}
+	}
 
 	/// <summary>
 	/// Gets the effective additional pack paths collection.
@@ -59,19 +99,21 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 	// === Inheritance selectors       ===
 	// ===================================
 
-	private InheritanceLevelItem _selectedFetchInheritance;
+	private InheritanceLevelItem _selectedWorkingDirectoriesInheritance;
 	/// <summary>
-	/// Gets or sets the inheritance level for the 'fetch from all working directories' setting.
+	/// Gets or sets the inheritance level for the working directories group
+	/// ('fetch from all working directories' and 'use working directories as packs').
 	/// </summary>
-	public InheritanceLevelItem SelectedFetchInheritance
+	public InheritanceLevelItem SelectedWorkingDirectoriesInheritance
 	{
-		get => _selectedFetchInheritance;
+		get => _selectedWorkingDirectoriesInheritance;
 		set
 		{
-			if (SetProperty(ref _selectedFetchInheritance, value) && value != null)
+			if (SetProperty(ref _selectedWorkingDirectoriesInheritance, value) && value != null)
 			{
-				Settings.FetchFromAllWorkingDirectoriesInheritance = value.Value;
+				Settings.WorkingDirectoriesInheritance = value.Value;
 				RaisePropertyChanged(nameof(EffectiveFetchFromAllWorkingDirectories));
+				RaisePropertyChanged(nameof(EffectiveUseWorkingDirectoriesAsPacks));
 			}
 		}
 	}
@@ -187,6 +229,16 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 	public ICommand BrowsePackPathCommand { get; }
 
 	/// <summary>
+	/// Gets the command that adds a new global additional search folder.
+	/// </summary>
+	public ICommand AddGlobalSearchFolderCommand { get; }
+
+	/// <summary>
+	/// Gets the command that removes a global additional search folder.
+	/// </summary>
+	public ICommand RemoveGlobalSearchFolderCommand { get; }
+
+	/// <summary>
 	/// Gets the command that opens a path in the system file explorer.
 	/// </summary>
 	public ICommand OpenPathCommand { get; }
@@ -217,7 +269,9 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 
 		SearchFolders = foldersProvider?.GetSearchFolders().ToImmutableArray() ?? [];
 
-		_selectedFetchInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.FetchFromAllWorkingDirectoriesInheritance);
+		_additionalSearchFolders = ApplicationSettingsAccessor.ApplicationSettings.InheritedChatSettings.Addons.AdditionalSearchFolders;
+
+		_selectedWorkingDirectoriesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.WorkingDirectoriesInheritance);
 		_selectedPackPathsInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.AdditionalPackPathsInheritance);
 		_selectedAddonSourcesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.AddonSourcesInheritance);
 		_selectedPacksInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.PacksInheritance);
@@ -228,6 +282,13 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 		{
 			if (path != null)
 				EffectiveAdditionalPackPaths.Remove(path);
+		});
+
+		AddGlobalSearchFolderCommand = new RelayCommand(() => GlobalAdditionalSearchFolders?.Add(string.Empty));
+		RemoveGlobalSearchFolderCommand = new RelayCommand<string?>(path =>
+		{
+			if (path != null)
+				GlobalAdditionalSearchFolders?.Remove(path);
 		});
 
 		BrowsePackPathCommand = new AsyncRelayCommand<string?>(BrowsePackPathAsync);
@@ -242,10 +303,11 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 	{
 		switch (e.PropertyName)
 		{
-			case nameof(ChatAddonSettings.FetchFromAllWorkingDirectoriesInheritance):
-				_selectedFetchInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == Settings.FetchFromAllWorkingDirectoriesInheritance);
-				RaisePropertyChanged(nameof(SelectedFetchInheritance));
+			case nameof(ChatAddonSettings.WorkingDirectoriesInheritance):
+				_selectedWorkingDirectoriesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == Settings.WorkingDirectoriesInheritance);
+				RaisePropertyChanged(nameof(SelectedWorkingDirectoriesInheritance));
 				RaisePropertyChanged(nameof(EffectiveFetchFromAllWorkingDirectories));
+				RaisePropertyChanged(nameof(EffectiveUseWorkingDirectoriesAsPacks));
 				break;
 
 			case nameof(ChatAddonSettings.AdditionalPackPathsInheritance):

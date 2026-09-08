@@ -15,12 +15,18 @@ namespace LLMDesktopAssistant.Addons.Loading
 				Directories.WorkingHome, // .llmassist
 				".agents",
 				".claude",
+				".gemini",
 				".github",
 				".codex",
-				".gemini",
 				".cursor",
-				".claw",
-				".everywhere" // OLOLOLO MY COMPETITORRR
+				".openclaw",
+				".windsurf",
+				".roocode",
+				".cline",
+				".opencode",
+				".lmstudio",
+				".junie",
+				".everywhere"
 			];
 		}
 

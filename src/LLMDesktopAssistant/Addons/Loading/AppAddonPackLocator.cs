@@ -1,7 +1,6 @@
 ﻿using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Services;
-using LLMDesktopAssistant.Settings.Application;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Addons.Loading

@@ -51,18 +51,70 @@
 				   Margin="0,10"/>
 
 		<!-- ============================================================ -->
-		<!-- ADDON SOURCES                                                -->
+		<!-- ADDITIONAL SEARCH FOLDERS (GLOBAL)                           -->
 		<!-- ============================================================ -->
 		<Grid ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
-					   Text="{loc:Loc addon.settings.sources}"
+					   Text="{loc:Loc addon.settings.additional_search_folders}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
+
+			<Button Grid.Column="1"
+					Command="{Binding AddGlobalSearchFolderCommand}"
+					Classes="IconButton"
+					VerticalAlignment="Center"
+					ToolTip.Tip="{loc:Loc common.add}">
+				<ico:MaterialIcon Kind="Plus"/>
+			</Button>
+		</Grid>
+
+		<TextBlock Text="{loc:Loc addon.settings.additional_search_folders.hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"/>
+
+		<ItemsControl ItemsSource="{Binding GlobalAdditionalSearchFolders}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="x:String">
+					<Grid ColumnDefinitions="*,Auto" Margin="0,2">
+						<TextBox Grid.Column="0"
+								 Text="{Binding Mode=TwoWay}"
+								 PlaceholderText="{loc:Loc addon.settings.search_folder.placeholder}"
+								 FontFamily="Consolas"
+								 VerticalContentAlignment="Center"/>
+
+						<Button Grid.Column="1"
+								Command="{Binding #VMRoot.DataContext.RemoveGlobalSearchFolderCommand}"
+								CommandParameter="{Binding}"
+								Classes="IconButton"
+								Margin="4,0,0,0"
+								ToolTip.Tip="{loc:Loc common.remove}">
+							<ico:MaterialIcon Kind="Close"/>
+						</Button>
+					</Grid>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+				   Fill="{DynamicResource DefaultForeground}"
+				   Opacity="0.2"
+				   Margin="0,10"/>
+
+		<!-- ============================================================ -->
+		<!-- WORKING DIRECTORIES                                          -->
+		<!-- ============================================================ -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{loc:Loc addon.settings.workdirs}"
 					   FontSize="{DynamicResource FontSizeL}"
 					   FontWeight="Bold"
 					   VerticalAlignment="Center"/>
 
 			<ComboBox Grid.Column="1"
 					  ItemsSource="{x:Static settings:InheritanceLevelItem.AllProfile}"
-					  SelectedItem="{Binding SelectedFetchInheritance}"
+					  SelectedItem="{Binding SelectedWorkingDirectoriesInheritance}"
 					  VerticalAlignment="Center"
 					  MinWidth="120">
 				<ComboBox.ItemTemplate>
@@ -73,7 +125,7 @@
 			</ComboBox>
 		</Grid>
 
-		<TextBlock Text="{loc:Loc addon.settings.sources.hint}"
+		<TextBlock Text="{loc:Loc addon.settings.workdirs.hint}"
 				   Opacity="0.6"
 				   TextWrapping="Wrap"/>
 
@@ -81,6 +133,14 @@
 				  Content="{loc:Loc addon.settings.fetch_all}"/>
 
 		<TextBlock Text="{loc:Loc addon.settings.fetch_all.hint}"
+				   Opacity="0.6"
+				   TextWrapping="Wrap"
+				   Margin="24,0,0,0"/>
+
+		<CheckBox IsChecked="{Binding EffectiveUseWorkingDirectoriesAsPacks}"
+				  Content="{loc:Loc addon.settings.use_workdirs_as_packs}"/>
+
+		<TextBlock Text="{loc:Loc addon.settings.use_workdirs_as_packs.hint}"
 				   Opacity="0.6"
 				   TextWrapping="Wrap"
 				   Margin="24,0,0,0"/>

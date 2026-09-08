@@ -15,6 +15,11 @@
 		UserAgentsHome,
 
 		/// <summary>
+		/// An implicit workspace-scoped pack located exactly at active working directories.
+		/// </summary>
+		WorkingDirectory,
+
+		/// <summary>
 		/// An implicit workspace-scoped pack located exactly at '.agents/', or similar directories.
 		/// </summary>
 		AgentsHome,

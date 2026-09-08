@@ -31,7 +31,7 @@ namespace LLMDesktopAssistant.Addons
 		} = string.Empty;
 
 		/// <summary>
-		/// The addon file content getter, excluding the frontmatter.
+		/// The dynamic description getter for the addon.
 		/// </summary>
 		[JsonIgnore]
 		[BsonIgnore]

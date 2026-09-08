@@ -12,7 +12,10 @@ pack.useragentshome.name: User Agents Home
 pack.useragentshome.description: User-scoped agents home (e.g. ~/.agents)
 pack.agentshome.name: Workspace Agents Home
 pack.agentshome.description: Workspace-scoped agents home (e.g. .agents)
+pack.workdir.name: Working Directory
+pack.workdir.description: The working directory itself, treated as an addon pack.
 pack.source.unknown: Unknown
+pack.source.workingdirectory: Working Directory
 pack.source.appdata: App Data
 pack.source.useragentshome: User Agents
 pack.source.agentshome: Workspace Agents
@@ -23,12 +26,17 @@ pack.source.scanned: Scanned
 // === Settings UI                                   ===
 // =====================================================
 settings.title: Addons
-settings.sources: Addon Sources
-settings.sources.hint: Configure where addons are fetched from: working directories, additional pack paths and per-type additional sources.
 settings.search_folders: Search Folders
 settings.search_folders.hint: These folders are searched for addon packs inside the user profile and each working directory.
+settings.additional_search_folders: Additional Search Folders
+settings.additional_search_folders.hint: Global setting, applies to ALL chats (all chat profiles): these folders are searched for addon packs inside the user profile and each working directory, in addition to the default ones.
+settings.search_folder.placeholder: Folder name (e.g. .agents)...
+settings.workdirs: Working Directories
+settings.workdirs.hint: Configure how working directories participate in addon loading.
 settings.fetch_all: Fetch addons from all working directories
 settings.fetch_all.hint: When enabled, addon packs from all enabled working directories are loaded. Otherwise, only the current working directory is used.
+settings.use_workdirs_as_packs: Use working directories as packs
+settings.use_workdirs_as_packs.hint: When enabled, each working directory itself is treated as an addon pack.
 settings.additional_pack_paths: Additional Pack Paths
 settings.additional_pack_paths.hint: Direct paths to addon packs, similar to '~/.agents/packs/my-pack/'.
 settings.additional_pack_paths.placeholder: Path to an addon pack...

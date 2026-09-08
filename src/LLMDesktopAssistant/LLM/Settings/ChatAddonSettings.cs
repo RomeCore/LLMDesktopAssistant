@@ -1,6 +1,5 @@
 using LLMDesktopAssistant.SourceGenerators;
 using LLMDesktopAssistant.Utils;
-using LLMDesktopAssistant.Settings.Application;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -23,14 +22,16 @@ namespace LLMDesktopAssistant.LLM.Settings
 			set => (field ??= []).Reset(value);
 		}
 
+		private AddonWorkingDirectoriesSettings _workingDirectories = new();
 		/// <summary>
-		/// Whether to fetch addons from all enabled working directories.
+		/// The working directories group: whether to fetch addons from all enabled working
+		/// directories and whether to use working directories as packs.
 		/// </summary>
 		[InheritedChatSetting]
-		public bool FetchFromAllWorkingDirectories
+		public AddonWorkingDirectoriesSettings WorkingDirectories
 		{
-			get;
-			set => SetProperty(ref field, value);
+			get => _workingDirectories;
+			set => SetProperty(ref _workingDirectories, value);
 		}
 
 		/// <summary>

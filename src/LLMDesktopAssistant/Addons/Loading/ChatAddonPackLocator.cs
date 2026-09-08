@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Utils;
@@ -39,14 +39,30 @@ namespace LLMDesktopAssistant.Addons.Loading
 			}
 
 			var workdirSettings = chatSettings.Settings.Environment.GetEffectiveWorkingDirectories();
-			var fetchFromAllWorkdirs = chatSettings.Settings.Addons.GetEffectiveFetchFromAllWorkingDirectories();
+			var addonWorkdirSettings = chatSettings.Settings.Addons.GetEffectiveWorkingDirectories();
 
-			var workingDirectories = fetchFromAllWorkdirs
+			var workingDirectories = addonWorkdirSettings.FetchFromAllWorkingDirectories
 				? workdirSettings.GetEnabledWorkingDirectories()
 				: [workdirSettings.GetWorkingDirectory()];
 
 			foreach (var workdir in workingDirectories)
 			{
+				if (!Directory.Exists(workdir))
+					continue;
+
+				if (addonWorkdirSettings.UseWorkingDirectoriesAsPacks)
+				{
+					result.Add(new AddonPackInfo
+					{
+						Name = "workdir",
+						Path = workdir,
+						Source = AddonPackSource.WorkingDirectory,
+
+						NameKey = Locale.GetKey("addon.pack.workdir.name"),
+						DescriptionKey = Locale.GetKey("addon.pack.workdir.description")
+					});
+				}
+
 				foreach (var folder in searchFolders)
 				{
 					var combinedPath = Path.Combine(workdir, folder);
@@ -87,7 +103,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 
 		protected override bool IsPackConfigurable(AddonPackInfo pack)
 		{
-			return pack.Source is AddonPackSource.Scanned or AddonPackSource.Configuration;
+			return pack.Source is AddonPackSource.Scanned or AddonPackSource.Configuration or AddonPackSource.WorkingDirectory;
 		}
 
 		protected override AddonPacksSettings? GetEffectiveSettings()
