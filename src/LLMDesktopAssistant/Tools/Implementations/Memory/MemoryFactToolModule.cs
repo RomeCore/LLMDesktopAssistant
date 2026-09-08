@@ -129,7 +129,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					{
 						if (supersedeId == 0)
 						{
-							var storedFact = await _memoryFactStore.StoreAsync(targetBlock, fact, Chat.ChatId, messageId, importance, cancellationToken);
+							var storedFact = await _memoryFactStore.StoreAsync(targetBlock, fact, Chat.Id, messageId, importance, cancellationToken);
 							result.StatusIcon = MaterialIconKind.DatabaseCheck;
 							result.ResultContent = $"Fact stored successfully. ID: {storedFact.Id}";
 							result.CompleteWithSuccess();
@@ -137,7 +137,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 						}
 						else
 						{
-							var storedFact = await _memoryFactStore.SupersedeAsync(targetBlock, supersedeId.Value, fact, Chat.ChatId, messageId, importance, cancellationToken);
+							var storedFact = await _memoryFactStore.SupersedeAsync(targetBlock, supersedeId.Value, fact, Chat.Id, messageId, importance, cancellationToken);
 							result.StatusIcon = MaterialIconKind.DatabaseEdit;
 							if (supersedeId.Value == highestScore.Id)
 								result.ResultContent = $"Fact stored with supersede successfully. ID: {storedFact.Id}, supersed fact [id: {highestScore.Id}]: {highestScore.Text}";
@@ -150,7 +150,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 				}
 				else
 				{
-					var storedFact = await _memoryFactStore.StoreAsync(targetBlock, fact, Chat.ChatId, messageId, importance, cancellationToken);
+					var storedFact = await _memoryFactStore.StoreAsync(targetBlock, fact, Chat.Id, messageId, importance, cancellationToken);
 					result.StatusIcon = MaterialIconKind.DatabaseCheck;
 					result.ResultContent = $"Fact stored successfully. ID: {storedFact.Id}";
 					result.CompleteWithSuccess();

@@ -2,7 +2,6 @@ using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Consents;
-using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using RCLargeLanguageModels.Tasks;
 
@@ -11,7 +10,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 	/// <summary>
 	/// Represents a tool call within an assistant message.
 	/// </summary>
-	public class ToolCall : NotifyPropertyChanged
+	public class ToolCall : ChatObjectBase
 	{
 		/// <summary>
 		/// Gets or sets the name of the tool being called.
@@ -24,9 +23,10 @@ namespace LLMDesktopAssistant.LLM.Domain
 		public LocaleKeyBase? Title { get; init; }
 
 		/// <summary>
-		/// Gets or sets the ID of the tool call.
+		/// Gets or sets the LLM API-specific tool call ID that is used by the LLM
+		/// to correctly bind each tool call to the tool result message.
 		/// </summary>
-		public required string Id { get; init; }
+		public required string ToolCallId { get; init; }
 
 		private string _arguments = "{}";
 		/// <summary>
@@ -96,16 +96,6 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _structuredResult;
 			set => SetProperty(ref _structuredResult, value);
-		}
-
-		private RangeObservableCollection<Attachment> _attachments = [];
-		/// <summary>
-		/// Gets or sets the attachments associated with the tool call result.
-		/// </summary>
-		public RangeObservableCollection<Attachment> Attachments
-		{
-			get => _attachments;
-			set => _attachments.Reset(value);
 		}
 
 		private TaskCompletionSource<ToolConsentResult>? _userConfirmationSource;

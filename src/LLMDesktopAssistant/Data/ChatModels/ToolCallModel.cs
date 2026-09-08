@@ -17,7 +17,7 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		public int Id { get; set; }
 
 		/// <summary>
-		/// Gets or sets the message ID that this tool call belongs to. Valid when the message is assistant message.
+		/// Gets or sets the message ID that this tool call belongs to.
 		/// </summary>
 		public int MessageId { get; set; }
 

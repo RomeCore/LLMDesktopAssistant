@@ -1,4 +1,4 @@
-using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools
@@ -29,9 +29,10 @@ namespace LLMDesktopAssistant.Tools
 		public string? InterruptingContent { get; init; }
 
 		/// <summary>
-		/// Specifies the attachments to be put into result content of tool call. If specified, tool will not be executed and finished immediately.
+		/// Specifies the additional view models (parts) to be put into the tool call result.
+		/// If specified, tool will not be executed and finished immediately.
 		/// </summary>
-		public ImmutableList<Attachment> InterruptingAttachments { get; init; } = [];
+		public ImmutableList<AdditionalMessageViewModel> InterruptingAdditionalViewModels { get; init; } = [];
 
 		/// <summary>
 		/// Whether use markdown rendering for <see cref="InterruptingContent"/>.

@@ -1,6 +1,6 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using LLMDesktopAssistant.LLM.Domain;
+using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.MVVM;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 
 namespace LLMDesktopAssistant.LLM.Attachments
 {
@@ -8,11 +8,11 @@ namespace LLMDesktopAssistant.LLM.Attachments
 	public class AttachmentViewModel : ViewModelBase
 	{
 		public UserInputViewModel Parent { get; }
-		public Attachment Attachment { get; }
+		public AttachmentMessagePart Attachment { get; }
 
 		public ICommand RemoveAttachmentCommand { get; }
 
-		public AttachmentViewModel(UserInputViewModel parent, Attachment attachment)
+		public AttachmentViewModel(UserInputViewModel parent, AttachmentMessagePart attachment)
 		{
 			Parent = parent;
 			Attachment = attachment;

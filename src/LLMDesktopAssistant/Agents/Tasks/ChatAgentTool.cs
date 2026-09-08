@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Specifiers;
@@ -76,7 +77,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			var dummyToolCall = new ToolCall
 			{
 				CompletionToken = CompletionToken.Success,
-				Id = ToolCallId.Generate(),
+				ToolCallId = ToolCallId.Generate(),
 				ToolName = ChatToolInfo.Name
 			};
 			dummyMessage.ToolCalls.Add(dummyToolCall);
@@ -93,9 +94,9 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			};
 		}
 
-		private static AgentAttachment? TryConvertAttachment(Attachment? attachment)
+		private static AgentAttachment? TryConvertAttachment(AttachmentMessagePart? part)
 		{
-			return AgentAttachment.TryConvertFromNativeAttachment(attachment?.NativeAttachment);
+			return AgentAttachment.TryConvertFromNativeAttachment(part?.NativeAttachment);
 		}
 
 		public override async Task<AgentToolCallPreResult> PreExecuteAsync(JsonNode? arguments, CancellationToken cancellationToken = default)
@@ -115,7 +116,9 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			{
 				InterruptingSuccess = result.InterruptingSuccess,
 				InterruptingContent = result.InterruptingContent,
-				InterruptingAttachments = result.InterruptingAttachments.Select(TryConvertAttachment).Where(a => a != null).ToImmutableList()!,
+				InterruptingAttachments = result.InterruptingAdditionalViewModels
+					.OfType<AttachmentMessagePart>().Select(TryConvertAttachment)
+					.Where(a => a != null).ToImmutableList()!,
 				ExpectedBehaviour = result.ExpectedBehaviour ?? ChatToolInfo.DefaultExpectedBehaviour,
 				SharedContext = ctx
 			};
@@ -131,7 +134,9 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			{
 				Success = success,
 				Content = result.ResultContent,
-				Attachments = result.Attachments.Select(TryConvertAttachment).Where(a => a != null).ToImmutableList()!
+				Attachments = result.AdditionalViewModels
+					.OfType<AttachmentMessagePart>().Select(TryConvertAttachment)
+					.Where(a => a != null).ToImmutableList()!
 			};
 		}
 	}

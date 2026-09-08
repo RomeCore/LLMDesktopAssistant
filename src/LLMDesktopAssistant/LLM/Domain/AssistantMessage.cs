@@ -38,11 +38,6 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _reasoningContent, value);
 		}
 
-		/// <summary>
-		/// The collection of tool calls associated with this message. If no tool calls were made, this property is an empty collection.
-		/// </summary>
-		public ObservableCollection<ToolCall> ToolCalls { get; } = [];
-
 		private AssistantMessageStatus _status = AssistantMessageStatus.Pending;
 		/// <summary>
 		/// Gets or sets the status of the message.
@@ -64,11 +59,6 @@ namespace LLMDesktopAssistant.LLM.Domain
 		}
 
 		/// <summary>
-		/// Gets the collection of agent tasks associated with this message.
-		/// </summary>
-		public RangeObservableCollection<AgentTask> AgentTasks { get; } = [];
-
-		/// <summary>
 		/// Gets or sets the completion token associated with this message.
 		/// </summary>
 		public required CompletionToken CompletionToken { get; init; }
@@ -80,14 +70,5 @@ namespace LLMDesktopAssistant.LLM.Domain
 		public bool IsCompleted => CompletionToken.IsCompleted;
 
 		public CompletionToken GetAwaiter() => CompletionToken;
-
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-
-			if (disposing)
-				foreach (var toolCall in ToolCalls)
-					toolCall.Dispose();
-		}
 	}
 }

@@ -9,7 +9,15 @@ namespace LLMDesktopAssistant.LLM.Services
 		public static void AddChatServices(this IServiceCollection services)
 		{
 			services.AddSingleton<IChatManagementService, ChatManagementService>();
-			services.AddScoped<Chat>();
+			services.AddScoped(sp =>
+			{
+				var chatCreationConfig = sp.GetRequiredService<IChatCreationConfig>();
+				return new Chat(sp)
+				{
+					Id = chatCreationConfig.ChatId,
+					CreatedAt = chatCreationConfig.CreatedAt
+				};
+			});
 
 			foreach (var configurator in ReflectionUtility.GetTypesWithAttribute<ServiceConfigurator, ServiceConfiguratorAttribute>())
 			{

@@ -9,6 +9,7 @@ using LLMDesktopAssistant.Controls.Dialogs;
 using Material.Icons;
 using LLMDesktopAssistant.LLM.Attachments;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;
@@ -322,7 +323,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 		}
 
 		private readonly AvaloniaList<AttachmentViewModel> _attachments = [];
-		private ImmutableList<Attachment> _prevAttachments = [];
+		private ImmutableList<AttachmentMessagePart> _prevAttachments = [];
 		/// <summary>
 		/// Gets or sets the attachments or additional buttons to be displayed with the current message.
 		/// </summary>
@@ -493,7 +494,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				Content = _text,
 				SenderLogin = SelectedUser?.Login ?? userManager.GetLocalUsers().FirstOrDefault()?.Login ?? "user",
-				Attachments = _attachments.Select(a => a.Attachment).ToImmutableList(),
+				Parts = _attachments.Select(a => (AdditionalMessageViewModel)a.Attachment).ToImmutableList(),
 				Visibility = _selectedVisibility.Visibility,
 			};
 		}
@@ -510,7 +511,8 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			}
 			EditingMessage = branchedMessage;
 			Text = userMessage.Content;
-			Attachments = userMessage.Attachments.Select(a => new AttachmentViewModel(this, a)).ToList();
+			Attachments = userMessage.AdditionalViewModels.GetAll<AttachmentMessagePart>()
+				.Select(a => new AttachmentViewModel(this, a)).ToList();
 		}
 
 		public void Clear()

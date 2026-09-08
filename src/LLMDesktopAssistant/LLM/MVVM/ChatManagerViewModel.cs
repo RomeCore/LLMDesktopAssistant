@@ -489,7 +489,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			var chat = chatScope.ServiceProvider.GetRequiredService<Chat>();
 			var newAvailableChat = new AvailableChatViewModel
 			{
-				Id = chat.ChatId,
+				Id = chat.Id,
 				TemporaryScope = chatScope,
 				OpenInNewTabCommand = new RelayCommand(() => { }, () => false),
 				DeleteCommand = new RelayCommand(() => { }, () => false),

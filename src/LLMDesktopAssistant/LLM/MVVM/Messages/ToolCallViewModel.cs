@@ -232,7 +232,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 			ToolName = toolCall.ToolName;
 			ToolTitle = toolCall.Title ?? new ConstLocaleKey(toolCall.ToolName);
-			ToolCallId = toolCall.Id;
+			ToolCallId = toolCall.ToolCallId;
 			try
 			{
 				var parsedArgs = TolerantJsonParser.Parse(toolCall.Arguments);

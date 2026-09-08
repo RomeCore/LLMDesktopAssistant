@@ -1,4 +1,4 @@
-﻿using LiteDB;
+using LiteDB;
 using LLMDesktopAssistant.Data.ChatModels;
 
 namespace LLMDesktopAssistant.Data
@@ -12,9 +12,7 @@ namespace LLMDesktopAssistant.Data
 		public ILiteCollection<ChatModel> Chats { get; }
 		public ILiteCollection<MessageNodeModel> MessageNodes { get; }
 		public ILiteCollection<MessageModel> Messages { get; }
-		public ILiteCollection<AttachmentModel> Attachments { get; }
 		public ILiteCollection<ToolCallModel> ToolCalls { get; }
-		public ILiteCollection<ChatContextTabViewDataModel> ChatContextTabViewModels { get; }
 		public ILiteCollection<AdditionalMessageViewDataModel> AdditionalMessageViewModels { get; }
 
 		/// <summary>
@@ -30,18 +28,15 @@ namespace LLMDesktopAssistant.Data
 			Chats = Database.GetCollection<ChatModel>();
 			MessageNodes = Database.GetCollection<MessageNodeModel>();
 			Messages = Database.GetCollection<MessageModel>();
-			Attachments = Database.GetCollection<AttachmentModel>();
 			ToolCalls = Database.GetCollection<ToolCallModel>();
-			ChatContextTabViewModels = Database.GetCollection<ChatContextTabViewDataModel>();
 			AdditionalMessageViewModels = Database.GetCollection<AdditionalMessageViewDataModel>();
 
 			MessageNodes.EnsureIndex(x => x.ParentId);
 			MessageNodes.EnsureIndex(x => x.SelectedNodeId);
-			Attachments.EnsureIndex(x => x.ParentId);
 			ToolCalls.EnsureIndex(x => x.MessageId);
 			ToolCalls.EnsureIndex(x => x.ToolCallId);
-			ChatContextTabViewModels.EnsureIndex(x => x.ChatId);
-			AdditionalMessageViewModels.EnsureIndex(x => x.MessageId);
+			AdditionalMessageViewModels.EnsureIndex(x => x.ParentKind);
+			AdditionalMessageViewModels.EnsureIndex(x => x.ParentId);
 		}
 
 		/// <summary>

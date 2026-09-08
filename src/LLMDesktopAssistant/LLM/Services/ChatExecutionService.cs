@@ -227,7 +227,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						var domainToolCall = new Domain.ToolCall
 						{
 							Status = ToolStatus.None,
-							Id = toolCall.Id,
+							ToolCallId = toolCall.Id,
 							ToolName = toolInfo?.Name ?? toolCall.ToolName,
 							Title = toolInfo?.TitleKey,
 							Arguments = funtionCall.Args,

@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Prompting;
@@ -141,6 +142,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			return template!.Render(generalContext, functions);
 		}
 
+		/// <summary>
+		/// Gets the attachment parts stored in the additional view models of a chat object (message or tool call).
+		/// </summary>
+		private static IEnumerable<AttachmentMessagePart> GetAttachmentParts(ChatObjectBase chatObject) =>
+			chatObject.AdditionalViewModels.GetAll<AttachmentMessagePart>();
+
 		private RCLargeLanguageModels.Messages.UserMessage BuildUserMessage(BranchedMessage message,
 			TemplateFunctionSet functions)
 		{
@@ -157,12 +164,12 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			context["user_name"] = userName;
 			context["time_sent"] = userMessage.CreatedAt.ToString();
 			context["content"] = userMessage.Content;
-			context["attachments"] = userMessage.Attachments;
+			context["attachments"] = GetAttachmentParts(userMessage);
 			context["can_read_content"] = true;
 			context["can_read_attachments"] = true;
 
 			var result = template!.Render(context, functions);
-			var attachments = userMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!;
+			var attachments = GetAttachmentParts(userMessage).Select(a => a.NativeAttachment).Where(a => a != null)!;
 			return new RCLargeLanguageModels.Messages.UserMessage(userName, result, attachments!);
 		}
 
@@ -180,7 +187,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			context["user_name"] = userName;
 			context["time_sent"] = userMessage.CreatedAt.ToString();
 			context["content"] = userMessage.Content;
-			context["attachments"] = userMessage.Attachments;
+			context["attachments"] = GetAttachmentParts(userMessage);
 			context["can_read_content"] = true;
 			bool canReadAttachments = agent.Read.GetEffectiveReadPermissions(chatSettings.Settings).HasFlag(AgentReadPermissions.UserAttachments);
 			context["can_read_attachments"] = canReadAttachments;
@@ -188,7 +195,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var result = template!.Render(context, functions);
 			IEnumerable<IAttachment> attachments = [];
 			if (canReadAttachments)
-				attachments = userMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!;
+				attachments = GetAttachmentParts(userMessage).Select(a => a.NativeAttachment).Where(a => a != null)!;
 			return new RCLargeLanguageModels.Messages.UserMessage(userName, result, attachments);
 		}
 
@@ -212,7 +219,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				context["user_name"] = agentName;
 				context["time_sent"] = assistantMessage.CreatedAt.ToString();
 				context["content"] = assistantMessage.Content;
-				context["attachments"] = assistantMessage.Attachments;
+				context["attachments"] = GetAttachmentParts(assistantMessage);
 				// User-like messages are already gated by user read permissions and their content is always readable
 				context["can_read_content"] = assistantMessage.IsUserLike ||
 					(permissions.HasFlag(AgentReadPermissions.OtherAgentContent) &&
@@ -225,7 +232,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				var result = template!.Render(context, functions);
 				IEnumerable<IAttachment> attachments = [];
 				if (canReadAttachments)
-					attachments = assistantMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!;
+					attachments = GetAttachmentParts(assistantMessage).Select(a => a.NativeAttachment).Where(a => a != null)!;
 				return new RCLargeLanguageModels.Messages.UserMessage(agentName, result, attachments);
 			}
 			else
@@ -240,7 +247,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				context["time_sent"] = assistantMessage.CreatedAt.ToString();
 				context["reasoning_content"] = assistantMessage.ReasoningContent;
 				context["content"] = assistantMessage.Content;
-				context["attachments"] = assistantMessage.Attachments;
+				context["attachments"] = GetAttachmentParts(assistantMessage);
 				context["tool_calls"] = assistantMessage.ToolCalls.Select(tc => new
 					{
 						name = tc.ToolName,
@@ -265,7 +272,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				var result = template!.Render(context, functions);
 				IEnumerable<IAttachment> attachments = [];
 				if (canReadAttachments)
-					attachments = assistantMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!;
+					attachments = GetAttachmentParts(assistantMessage).Select(a => a.NativeAttachment).Where(a => a != null)!;
 				return new RCLargeLanguageModels.Messages.UserMessage(agentName, result, attachments);
 			}
 		}
@@ -294,7 +301,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			}
 			else if (message.Message is RawUserMessage rawUserMessage)
 			{
-				var attachments = rawUserMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null);
+				var attachments = GetAttachmentParts(rawUserMessage).Select(a => a.NativeAttachment).Where(a => a != null);
 				var userMessage = new RCLargeLanguageModels.Messages.UserMessage(Senders.User, rawUserMessage.Content, attachments!);
 				return [userMessage];
 			}
@@ -330,19 +337,19 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			foreach (var toolCall in assistantMessage.ToolCalls)
 			{
-				toolCalls.Add(new FunctionToolCall(toolCall.Id, toolCall.ToolName, toolCall.Arguments ?? string.Empty));
+				toolCalls.Add(new FunctionToolCall(toolCall.ToolCallId, toolCall.ToolName, toolCall.Arguments ?? string.Empty));
 				var status = ConvertToolStatus(toolCall.Status);
 				var resultContent = toolCall.ResultContent ?? string.Empty;
 				var toolResult = new ToolResult(status, resultContent,
-					toolCall.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!);
-				messages.Add(new ToolMessage(toolResult, toolCall.Id, toolCall.ToolName));
+					GetAttachmentParts(toolCall).Select(a => a.NativeAttachment).Where(a => a != null)!);
+				messages.Add(new ToolMessage(toolResult, toolCall.ToolCallId, toolCall.ToolName));
 			}
 
 			var result = new RCLargeLanguageModels.Messages.AssistantMessage(
 				assistantMessage.Content ?? "",
 				assistantMessage.ReasoningContent ?? "",
 				toolCalls: toolCalls,
-				attachments: assistantMessage.Attachments.Select(a => a.NativeAttachment).Where(a => a != null)!);
+				attachments: GetAttachmentParts(assistantMessage).Select(a => a.NativeAttachment).Where(a => a != null)!);
 			messages.Insert(0, result);
 
 			return messages;

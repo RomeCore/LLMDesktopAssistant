@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Consents;
@@ -24,6 +25,28 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	) : IToolExecutionService
 	{
 		private readonly ConcurrentDictionary<string, SemaphoreSlim> _synchronizationGroups = [];
+
+		/// <summary>
+		/// Mirrors the <paramref name="source"/> collection into the <paramref name="target"/> collection:
+		/// removes items that are not present in the source and adds items that are missing from the target.
+		/// Used to copy additional view models (parts) of a tool result into the executing tool call.
+		/// </summary>
+		private static void SyncAdditionalViewModels(AdditionalMessageViewModelCollection target, IEnumerable<AdditionalMessageViewModel> source)
+		{
+			var sourceList = source.ToList();
+
+			foreach (var existing in target.GetAll<AdditionalMessageViewModel>())
+			{
+				if (!sourceList.Contains(existing))
+					target.Remove(existing);
+			}
+
+			foreach (var item in sourceList)
+			{
+				if (!target.Contains(item))
+					target.Add(item);
+			}
+		}
 
 		public async Task ExecuteAsync(PartialFunctionToolCall? partialFunctionToolCall,
 			AssistantMessage message, ToolCall toolCall, ToolInfo? toolInfo, CancellationToken cancellationToken = default)
@@ -152,7 +175,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 								else
 									toolCall.ResultContent = "Tool failed with no result.";
 							}
-							toolCall.Attachments = [..preExecutionResult.InterruptingAttachments];
+							SyncAdditionalViewModels(toolCall.AdditionalViewModels, preExecutionResult.InterruptingAdditionalViewModels);
 							return;
 						}
 					}
@@ -306,7 +329,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				toolCall.StructuredResult = reactiveResult.StructuredResult;
 				toolCall.UseMarkdown = reactiveResult.UseMarkdown;
 				toolCall.ResultContent = reactiveResult.ResultContent;
-				toolCall.Attachments = reactiveResult.Attachments;
+				SyncAdditionalViewModels(toolCall.AdditionalViewModels, reactiveResult.AdditionalViewModels);
 
 				void OnReactiveResultChanged(object? sender, PropertyChangedEventArgs e)
 				{
@@ -330,13 +353,13 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				{
 					toolCall.ResultContent = reactiveResult.ResultContent;
 				}
-				void OnReactiveResultAttachmentsChanged(object? sender, object? e)
+				void OnReactiveResultAdditionalViewModelsChanged(object? sender, object? e)
 				{
-					toolCall.Attachments = reactiveResult.Attachments;
+					SyncAdditionalViewModels(toolCall.AdditionalViewModels, reactiveResult.AdditionalViewModels);
 				}
 				reactiveResult.PropertyChanged += OnReactiveResultChanged;
 				reactiveResult.ResultContentLines.CollectionChanged += OnReactiveResultContentChanged;
-				reactiveResult.Attachments.CollectionChanged += OnReactiveResultAttachmentsChanged;
+				reactiveResult.AdditionalViewModels.CollectionChanged += OnReactiveResultAdditionalViewModelsChanged;
 
 				bool success = false;
 				try
@@ -350,7 +373,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					// Update again, because tool can be TOO FAST
 					toolCall.StatusIcon = reactiveResult.StatusIcon;
 					toolCall.StatusTitle = reactiveResult.StatusTitle;
-					toolCall.Attachments = reactiveResult.Attachments;
+					SyncAdditionalViewModels(toolCall.AdditionalViewModels, reactiveResult.AdditionalViewModels);
 
 					if (string.IsNullOrEmpty(toolCall.ResultContent))
 					{
@@ -378,7 +401,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 					reactiveResult.PropertyChanged -= OnReactiveResultChanged;
 					reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultContentChanged;
-					reactiveResult.Attachments.CollectionChanged -= OnReactiveResultAttachmentsChanged;
+					reactiveResult.AdditionalViewModels.CollectionChanged -= OnReactiveResultAdditionalViewModelsChanged;
 				}
 
 				return;

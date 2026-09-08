@@ -128,7 +128,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					timeLineDetailsBegin: timeLineDetailsBegin,
 					timeLineOrdinalEnd: timeLineOrdinalEnd ?? timeLineOrdinalBegin,
 					timeLineDetailsEnd: string.IsNullOrEmpty(timeLineDetailsEnd) ? timeLineDetailsBegin : timeLineDetailsEnd,
-					sourceChatId: Chat.ChatId,
+					sourceChatId: Chat.Id,
 					sourceMessageId: messageId,
 					importance: importance,
 					cancellationToken: cancellationToken);

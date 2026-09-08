@@ -1,4 +1,4 @@
-using LLMDesktopAssistant.LLM.MVVM.Additional;
+using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Domain
@@ -6,39 +6,34 @@ namespace LLMDesktopAssistant.LLM.Domain
 	/// <summary>
 	/// Represents a base class for chat messages.
 	/// </summary>
-	public abstract class ChatMessage : NotifyPropertyChanged
+	public abstract class ChatMessage : ChatObjectBase
 	{
-		public required DateTime CreatedAt { get; init; }
-
-		private string _content = string.Empty;
 		/// <summary>
 		/// Gets or sets the content of the message.
 		/// </summary>
 		public string Content
 		{
-			get => _content;
-			set => SetProperty(ref _content, value);
+			get => field;
+			set => SetProperty(ref field, value);
+		} = string.Empty;
+
+		// Yeah, even the user can call tools!
+		/// <summary>
+		/// The collection of tool calls associated with this message.
+		/// </summary>
+		public RangeObservableCollection<ToolCall> ToolCalls
+		{
+			get => field ??= [];
+			set => (field ??= []).Reset(value);
 		}
 
-		private RangeObservableCollection<Attachment> _attachments = [];
 		/// <summary>
-		/// Gets or sets the attachments associated with the message.
+		/// Gets the collection of agent tasks associated with this message.
 		/// </summary>
-		public RangeObservableCollection<Attachment> Attachments
+		public RangeObservableCollection<AgentTask> AgentTasks
 		{
-			get => _attachments;
-			set => _attachments.Reset(value);
-		}
-
-		private AdditionalMessageViewModelCollection _additionalViewModels = [];
-		/// <summary>
-		/// The collection of additional view models associated with this chat message.
-		/// These can be used for displaying extra information in the UI or store additional data.
-		/// </summary>
-		public AdditionalMessageViewModelCollection AdditionalViewModels
-		{
-			get => _additionalViewModels;
-			set => _additionalViewModels.Reset(value);
+			get => field ??= [];
+			set => (field ??= []).Reset(value);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -46,8 +41,12 @@ namespace LLMDesktopAssistant.LLM.Domain
 			base.Dispose(disposing);
 
 			if (disposing)
+			{
 				foreach (var viewModel in AdditionalViewModels)
 					viewModel.Dispose();
+				foreach (var toolCall in ToolCalls)
+					toolCall.Dispose();
+			}
 		}
 	}
 }

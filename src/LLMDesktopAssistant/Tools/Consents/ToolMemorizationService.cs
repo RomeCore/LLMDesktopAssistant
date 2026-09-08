@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.Tools.Consents
 			}
 			else
 			{
-				_memorized[(chat.ChatId, toolName)] = new MemorizedDecision(consentResult.IsApproved, consentResult.Notes);
+				_memorized[(chat.Id, toolName)] = new MemorizedDecision(consentResult.IsApproved, consentResult.Notes);
 			}
 		}
 
@@ -36,13 +36,13 @@ namespace LLMDesktopAssistant.Tools.Consents
 				return [];
 
 			return _memorized
-				.Where(kv => kv.Key.ChatId == chat.ChatId)
+				.Where(kv => kv.Key.ChatId == chat.Id)
 				.Select(kv => new MemorizedConsentInfo(kv.Key.ToolName, kv.Value.Approved, kv.Value.Notes));
 		}
 
 		public bool ForgetConsent(Chat? chat, string toolName)
 		{
-			return chat != null && _memorized.TryRemove((chat.ChatId, toolName), out _);
+			return chat != null && _memorized.TryRemove((chat.Id, toolName), out _);
 		}
 
 		public void ClearConsents(Chat? chat)
@@ -50,7 +50,7 @@ namespace LLMDesktopAssistant.Tools.Consents
 			if (chat == null)
 				return;
 
-			foreach (var key in _memorized.Keys.Where(k => k.ChatId == chat.ChatId).ToList())
+			foreach (var key in _memorized.Keys.Where(k => k.ChatId == chat.Id).ToList())
 				_memorized.TryRemove(key, out _);
 		}
 
@@ -63,7 +63,7 @@ namespace LLMDesktopAssistant.Tools.Consents
 				if (currentScope.memorized.TryGetValue(toolName, out memorized))
 					hasDecision = true;
 
-			if (!hasDecision && chat != null && _memorized.TryGetValue((chat.ChatId, toolName), out memorized))
+			if (!hasDecision && chat != null && _memorized.TryGetValue((chat.Id, toolName), out memorized))
 				hasDecision = true;
 
 			if (hasDecision)

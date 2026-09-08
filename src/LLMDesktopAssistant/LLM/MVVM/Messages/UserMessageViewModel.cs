@@ -1,10 +1,12 @@
-﻿using Avalonia.Collections;
+using System.Collections.Specialized;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.UIExtensions.MessageExtensions;
 using LLMDesktopAssistant.Users;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.Messages
 {
@@ -25,15 +27,15 @@ namespace LLMDesktopAssistant.LLM.Messages
 			set => SetProperty(ref _text, value);
 		}
 
-		private readonly AvaloniaList<Attachment> _attachments = [];
-		public ICollection<Attachment> Attachments
+		private readonly RangeObservableCollection<AttachmentMessagePart> _attachments = [];
+		/// <summary>
+		/// The attachment parts of the user message, taken from <see cref="UserMessage.AdditionalViewModels"/>.
+		/// </summary>
+		public ICollection<AttachmentMessagePart> Attachments => _attachments;
+
+		private void RefreshAttachments()
 		{
-			get => _attachments;
-			set
-			{
-				_attachments.Clear();
-				_attachments.AddRange(value);
-			}
+			_attachments.Reset(UserMessage.AdditionalViewModels.GetAll<AttachmentMessagePart>());
 		}
 
 		public ImmutableList<MessageExtension> Extensions { get; }
@@ -73,7 +75,8 @@ namespace LLMDesktopAssistant.LLM.Messages
 			}
 
 			Text = userMessage.Content ?? string.Empty;
-			Attachments = userMessage.Attachments;
+			RefreshAttachments();
+			userMessage.AdditionalViewModels.CollectionChanged += AdditionalViewModels_CollectionChanged;
 			Extensions = MessageExtensionManager.CreateExtensions(this, chatVM.Chat);
 
 			EditCommand = new RelayCommand(() =>
@@ -82,12 +85,18 @@ namespace LLMDesktopAssistant.LLM.Messages
 			});
 		}
 
+		private void AdditionalViewModels_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			RefreshAttachments();
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
 
 			if (disposing)
 			{
+				_userMessage.AdditionalViewModels.CollectionChanged -= AdditionalViewModels_CollectionChanged;
 				foreach (var extension in Extensions)
 					extension.Dispose();
 			}

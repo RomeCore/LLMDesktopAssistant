@@ -1,6 +1,4 @@
 using LLMDesktopAssistant.Agents.Tasks;
-using LLMDesktopAssistant.Data;
-using LLMDesktopAssistant.LLM.MVVM.ContextTabs;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
@@ -10,42 +8,12 @@ namespace LLMDesktopAssistant.LLM.Domain
 	/// <summary>
 	/// Represents a chat session.
 	/// </summary>
-	public class Chat(IServiceProvider services) : NotifyPropertyChanged
+	public class Chat(IServiceProvider services) : ChatObjectBase
 	{
 		/// <summary>
 		/// Gets the service provider used to resolve dependencies.
 		/// </summary>
 		public IServiceProvider Services { get; } = services;
-
-		private ChatDatabase _database = null!;
-		/// <summary>
-		/// Gets the database used to store this chat session's data.
-		/// </summary>
-		public ChatDatabase ChatDatabase
-		{
-			get => _database;
-			set
-			{
-				if (_database != null)
-					throw new InvalidOperationException("ChatDatabase cannot be changed once set.");
-				_database = value;
-			}
-		}
-
-		private int _chatId = -1;
-		/// <summary>
-		/// Gets or sets the unique identifier for the chat session. Used mostly for database purposes.
-		/// </summary>
-		public int ChatId
-		{
-			get => _chatId;
-			set
-			{
-				if (_chatId != -1)
-					throw new InvalidOperationException("ChatId cannot be changed once set.");
-				_chatId = value;
-			}
-		}
 
 		private string _topic = string.Empty;
 		/// <summary>
@@ -75,6 +43,17 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// </summary>
 		public RangeObservableCollection<BranchedMessage> Messages { get; } = [];
 
+		private UserInputState _userInputState = new();
+		/// <summary>
+		/// Gets or sets the persisted input state of the chat (draft text and parts).
+		/// Managed by <see cref="IChatStorageService"/>.
+		/// </summary>
+		public UserInputState UserInputState
+		{
+			get => _userInputState;
+			set => SetProperty(ref _userInputState, value);
+		}
+
 		private CancellationTokenSource? _generationCts;
 		/// <summary>
 		/// Gets or sets the current message generation <see cref="CancellationTokenSource"/>.
@@ -84,16 +63,6 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _generationCts;
 			set => SetProperty(ref _generationCts, value);
-		}
-
-		private ChatContextTabViewModelCollection _contextTabs = [];
-		/// <summary>
-		/// Gets or sets the collection of context tabs associated with this chat session.
-		/// </summary>
-		public ChatContextTabViewModelCollection ContextTabs
-		{
-			get => _contextTabs;
-			set => _contextTabs.Reset(value);
 		}
 
 		/// <summary>

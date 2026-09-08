@@ -1,4 +1,5 @@
 using LiteDB;
+using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Settings;
 
 namespace LLMDesktopAssistant.Data.ChatModels
@@ -55,5 +56,11 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		/// The date and time when the conversation was last modified.
 		/// </summary>
 		public DateTime LastModifiedAt { get; set; } = DateTime.Now;
+
+		/// <summary>
+		/// Gets or sets the persisted user input state (draft text and parts) of this conversation.
+		/// Stored directly inside the chat document.
+		/// </summary>
+		public UserInputState? UserInputState { get; set; }
 	}
 }

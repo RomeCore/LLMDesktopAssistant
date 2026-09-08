@@ -1,4 +1,5 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 
 namespace LLMDesktopAssistant.LLM.Services.Attachments
 {
@@ -12,8 +13,8 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 		/// </summary>
 		/// <param name="parameters">The parameters for the attachment application.</param>
 		/// <param name="cancellationToken">Token to cancel operation.</param>
-		/// <returns>Ready-to-use attachment.</returns>
-		Task<Attachment> ApplyAttachmentAsync(AttachmentApplicationParameters parameters,
+		/// <returns>Ready-to-use attachment part.</returns>
+		Task<AttachmentMessagePart> ApplyAttachmentAsync(AttachmentApplicationParameters parameters,
 			CancellationToken cancellationToken = default);
 	}
 }

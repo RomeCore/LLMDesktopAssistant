@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Nodes;
-using LLMDesktopAssistant.LLM.Domain;
+using System.Text.Json.Nodes;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using RCLargeLanguageModels.Tools;
@@ -123,9 +123,10 @@ namespace LLMDesktopAssistant.Tools
 		}
 
 		/// <summary>
-		/// The collection of attachments (images, videos, audios) to be provided to LLM with the tool result.
+		/// The collection of additional view models (parts) of the tool result: attachments (images, videos, audios),
+		/// status chips and any other message parts. They are copied to the tool call that executed this result.
 		/// </summary>
-		public RangeObservableCollection<Attachment> Attachments { get; } = [];
+		public AdditionalMessageViewModelCollection AdditionalViewModels { get; } = [];
 
 		private JsonNode? _structuredResult = null;
 		/// <summary>

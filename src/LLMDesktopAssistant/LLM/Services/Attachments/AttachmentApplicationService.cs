@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.Utils;
 using LLMDesktopAssistant.Utils.Files;
 using RCLargeLanguageModels.Messages.Attachments;
@@ -105,7 +106,7 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 			return Path.Combine(Directories.TempFiles, $"{Guid.NewGuid():N}-{safeName}");
 		}
 
-		public async Task<Attachment> ApplyAttachmentAsync(
+		public async Task<AttachmentMessagePart> ApplyAttachmentAsync(
 			AttachmentApplicationParameters parameters,
 			CancellationToken cancellationToken = default)
 		{
@@ -154,13 +155,12 @@ namespace LLMDesktopAssistant.LLM.Services.Attachments
 				}
 			}
 
-			return new Attachment
+			return new AttachmentMessagePart
 			{
 				Title = Path.GetFileName(sourceUri.LocalPath),
 				SourceUrl = sourceUri.AbsoluteUri,
 				LocalPath = localPath,
-				Size = (int)metrics.Size,
-				Lines = metrics.LineCount,
+				Size = metrics.Size,
 				NativeAttachment = nativeAttachment
 			};
 		}

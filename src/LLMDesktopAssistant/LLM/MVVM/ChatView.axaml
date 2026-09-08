@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,28 +10,10 @@
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.ChatView"
 			 x:DataType="local:ChatViewModel">
 	
-	<Grid RowDefinitions="*,Auto" ColumnDefinitions="0.0*,2,*">
-
-		<!-- Left Sidebar -->
-		<TabControl Grid.Row="0" Grid.Column="0"
-								ItemsSource="{Binding Chat.ContextTabs}">
-			
-			<TabControl.ItemTemplate>
-				<DataTemplate>
-					<TabItem Header="{Binding Title}"
-									 IsVisible="{Binding IsVisible}"
-									 Content="{Binding}"/>
-				</DataTemplate>
-			</TabControl.ItemTemplate>
-			
-		</TabControl>
-
-		<!-- Splitter -->
-		<GridSplitter Grid.Row="0" Grid.Column="1"
-									ResizeDirection="Columns"/>
+	<Grid RowDefinitions="*,Auto">
 
 		<!-- Messages Area -->
-		<Panel Grid.Row="0" Grid.Column="2">
+		<Panel Grid.Row="0">
 
 			<!-- Agent Tasks button (top-right, mirrors ScrollToBottomButton) -->
 			<Button x:Name="AgentTasksButton"
@@ -113,7 +95,7 @@
 		</Panel>
 
 		<!-- Input Area -->
-		<Border Grid.Row="1" Grid.ColumnSpan="3"
+		<Border Grid.Row="1"
 						Padding="16,8"
 						BorderBrush="{DynamicResource PrimaryAccentBrush}"
 						BorderThickness="0,1,0,0">

@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.LLM.Services.Storage;
 using LLMDesktopAssistant.Services;
 
 namespace LLMDesktopAssistant.LLM.Services
@@ -31,9 +32,12 @@ namespace LLMDesktopAssistant.LLM.Services
 		{
 			var scope = services.CreateScope();
 
-			var chat = scope.ServiceProvider.GetRequiredService<Chat>();
-			chat.ChatDatabase = database;
-			chat.ChatId = chatId;
+			var existingChat = database.Chats.FindById(chatId);
+
+			var chatConfig = scope.ServiceProvider.GetRequiredService<IChatCreationConfig>();
+			chatConfig.ChatId = chatId;
+			chatConfig.CreatedAt = existingChat?.CreatedAt ?? DateTime.Now;
+			chatConfig.Database = database;
 
 			// Ensure at least one default agent exists for this chat
 			scope.ServiceProvider.GetRequiredService<IChatSettingsService>().Settings.Agents.EnsureDefaultAgent();
@@ -118,8 +122,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				nodesToCheck.AddRange(childNodes);
 			}
 
-			database.ChatContextTabViewModels.DeleteMany(c => c.ChatId == chatId);
-
+			
 			for (int i = 0; i < nodesToDelete.Count; i++)
 			{
 				DeleteNode(nodesToDelete[i]);
@@ -140,17 +143,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				return;
 			}
 
-			database.AdditionalMessageViewModels.DeleteMany(v => v.MessageId == message.Id);
-			database.Attachments.DeleteMany(v => !v.IsParentToolCall && v.ParentId == message.Id);
-
-			var toolCalls = database.ToolCalls.Find(m => m.MessageId == message.Id).ToList();
-			foreach (var toolCall in toolCalls)
-			{
-				database.Attachments.DeleteMany(v => v.IsParentToolCall && v.ParentId == toolCall.Id);
-			}
-			database.ToolCalls.DeleteMany(m => m.MessageId == message.Id);
-
-			database.Messages.Delete(message.Id);
+			MessageDatabaseSynchronizer.DeleteFromDatabase(database, message.Id);
 			database.MessageNodes.Delete(nodeId);
 		}
 	}

@@ -1,3 +1,5 @@
+using LLMDesktopAssistant.LLM.MVVM.Additional;
+
 namespace LLMDesktopAssistant.LLM.Domain
 {
 	/// <summary>
@@ -16,9 +18,11 @@ namespace LLMDesktopAssistant.LLM.Domain
 		public required string SenderLogin { get; init; }
 
 		/// <summary>
-		/// Gets or sets the collection of attachments associated with the user input. These can include images, files, or other types of data. If no attachments are present, this property is an empty collection.
+		/// Gets or sets the collection of message parts associated with the user input.
+		/// These can include attached files, images or any other additional view models.
+		/// If no parts are present, this property is an empty collection.
 		/// </summary>
-		public ImmutableList<Attachment> Attachments { get; init; } = [];
+		public ImmutableList<AdditionalMessageViewModel> Parts { get; init; } = [];
 
 		/// <summary>
 		/// Gets or sets the visibility of the user input. Determines who can see the message.

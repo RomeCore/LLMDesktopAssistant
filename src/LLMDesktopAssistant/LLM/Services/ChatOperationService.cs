@@ -61,16 +61,17 @@ namespace LLMDesktopAssistant.LLM.Services
 				cancellationToken = UpdateCTS(cancellationToken);
 				try
 				{
-					storage.AppendMessage(new UserMessage
+					var userMessage = new UserMessage
 					{
 						CreatedAt = DateTime.Now,
 						Content = userInput.Content,
 						SenderLogin = userInput.SenderLogin,
-						Attachments = [.. userInput.Attachments],
 						Visibility = userInput.Visibility,
 						VisibleTo = userInput.VisibleTo,
 						IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
-					});
+					};
+					userMessage.AdditionalViewModels.Reset(userInput.Parts);
+					storage.AppendMessage(userMessage);
 
 					await executor.GenerateResponseAsync(cancellationToken);
 				}
@@ -82,16 +83,17 @@ namespace LLMDesktopAssistant.LLM.Services
 			else
 			{
 				ClearCTS();
-				storage.AppendMessage(new UserMessage
+				var userMessage = new UserMessage
 				{
 					CreatedAt = DateTime.Now,
 					Content = userInput.Content,
 					SenderLogin = userInput.SenderLogin,
-					Attachments = [.. userInput.Attachments],
 					Visibility = userInput.Visibility,
 					VisibleTo = userInput.VisibleTo,
 					IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
-				});
+				};
+				userMessage.AdditionalViewModels.Reset(userInput.Parts);
+				storage.AppendMessage(userMessage);
 			}
 		}
 
@@ -105,16 +107,17 @@ namespace LLMDesktopAssistant.LLM.Services
 				cancellationToken = UpdateCTS(cancellationToken);
 				try
 				{
-					storage.EditMessage(messageIndex, new UserMessage
+					var userMessage = new UserMessage
 					{
 						CreatedAt = DateTime.Now,
 						Content = userInput.Content,
 						SenderLogin = userInput.SenderLogin,
-						Attachments = [.. userInput.Attachments],
 						Visibility = userInput.Visibility,
 						VisibleTo = userInput.VisibleTo,
 						IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
-					});
+					};
+					userMessage.AdditionalViewModels.Reset(userInput.Parts);
+					storage.EditMessage(messageIndex, userMessage);
 
 					await executor.GenerateResponseAsync(cancellationToken);
 				}
@@ -126,16 +129,17 @@ namespace LLMDesktopAssistant.LLM.Services
 			else
 			{
 				ClearCTS();
-				storage.EditMessage(messageIndex, new UserMessage
+				var userMessage = new UserMessage
 				{
 					CreatedAt = DateTime.Now,
 					Content = userInput.Content,
 					SenderLogin = userInput.SenderLogin,
-					Attachments = [.. userInput.Attachments],
 					Visibility = userInput.Visibility,
 					VisibleTo = userInput.VisibleTo,
 					IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
-				});
+				};
+				userMessage.AdditionalViewModels.Reset(userInput.Parts);
+				storage.EditMessage(messageIndex, userMessage);
 			}
 		}
 
