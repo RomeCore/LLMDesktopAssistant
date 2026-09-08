@@ -93,6 +93,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 		}
 
 		public IRelayCommand AddWorkingDirectoryCommand { get; }
+		public IRelayCommand AddWorkingDirectoryByDialogCommand { get; }
 		public IRelayCommand<WorkingDirectorySetting> RemoveWorkingDirectoryCommand { get; }
 		public IRelayCommand<WorkingDirectorySetting> MoveWorkingDirectoryUpCommand { get; }
 		public IRelayCommand<WorkingDirectorySetting> MoveWorkingDirectoryDownCommand { get; }
@@ -131,6 +132,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 			RebuildAdditionalEnvironmentSettings();
 
 			AddWorkingDirectoryCommand = new RelayCommand(AddWorkingDirectory);
+			AddWorkingDirectoryByDialogCommand = new AsyncRelayCommand(AddWorkingDirectoryByDialog);
 			RemoveWorkingDirectoryCommand = new RelayCommand<WorkingDirectorySetting>(RemoveWorkingDirectory);
 			MoveWorkingDirectoryUpCommand = new RelayCommand<WorkingDirectorySetting>(MoveWorkingDirectoryUp);
 			MoveWorkingDirectoryDownCommand = new RelayCommand<WorkingDirectorySetting>(MoveWorkingDirectoryDown);
@@ -221,6 +223,36 @@ namespace LLMDesktopAssistant.LLM.Settings
 				IsActive = !items.Any(w => w.IsActive && w.IsEnabled)
 			};
 			items.Add(wd);
+		}
+
+		private async Task AddWorkingDirectoryByDialog()
+		{
+			var result = await App.MainTopLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+			{
+				Title = LocalizationManager.LocalizeStatic("env.select_working_directory"),
+				AllowMultiple = false
+			});
+
+			if (result.Count == 0)
+				return;
+
+			var path = result[0].Path.LocalPath;
+			var items = EnvironmentSettings.GetEffectiveWorkingDirectories().Items;
+			var wd = new WorkingDirectorySetting
+			{
+				Name = GetWorkingDirectoryName(path),
+				Path = path,
+				IsEnabled = true,
+				IsActive = !items.Any(w => w.IsActive && w.IsEnabled)
+			};
+			items.Add(wd);
+		}
+
+		private static string GetWorkingDirectoryName(string path)
+		{
+			var trimmed = path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+			var name = Path.GetFileName(trimmed);
+			return string.IsNullOrEmpty(name) ? path : name;
 		}
 
 		private void RemoveWorkingDirectory(WorkingDirectorySetting? wd)
