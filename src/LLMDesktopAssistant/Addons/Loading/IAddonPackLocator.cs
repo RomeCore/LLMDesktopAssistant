@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Addons.Loading
+namespace LLMDesktopAssistant.Addons.Loading
 {
 	public interface IAddonPackLocator
 	{
@@ -7,11 +7,6 @@
 		/// Used mostly for UI purposes.
 		/// </summary>
 		IEnumerable<AddonPackInfo> GetAllPacks();
-
-		/// <summary>
-		/// Gets all configurable addon packs information. These packs can be enabled or disabled by the user.
-		/// </summary>
-		IEnumerable<AddonPackInfo> GetConfigurablePacks();
 
 		/// <summary>
 		/// Gets all effective addon packs information. These packs are currently enabled and can be used.

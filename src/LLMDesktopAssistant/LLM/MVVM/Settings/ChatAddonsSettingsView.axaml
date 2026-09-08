@@ -496,19 +496,36 @@
 			</Button>
 		</Grid>
 
+		<Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+			<TextBox Grid.Column="0"
+					 Text="{Binding SearchText, Mode=TwoWay}"
+					 PlaceholderText="{loc:Loc addon.settings.packs.search.placeholder}"/>
+			<ComboBox Grid.Column="1"
+					  ItemsSource="{Binding PackFilters}"
+					  SelectedItem="{Binding SelectedPackFilter}"
+					  Margin="8,0,0,0"
+					  MinWidth="170">
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="local:AddonPackFilterItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+		</Grid>
+
 		<TextBlock Text="{loc:Loc addon.settings.packs.empty}"
 				   Opacity="0.5"
 				   TextWrapping="Wrap"
 				   IsVisible="{Binding HasPacks, Converter={StaticResource InverseBooleanConverter}}"/>
 
-		<ItemsControl ItemsSource="{Binding ConfigurablePacks}">
+		<ItemsControl ItemsSource="{Binding Packs}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<StackPanel Orientation="Vertical" Spacing="6"/>
 				</ItemsPanelTemplate>
 			</ItemsControl.ItemsPanel>
 			<ItemsControl.ItemTemplate>
-				<DataTemplate x:DataType="local:AddonPackToggleItemViewModel">
+				<DataTemplate x:DataType="local:AddonPackItemViewModel">
 					<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
 							BorderThickness="1"
 							CornerRadius="4"
@@ -516,6 +533,7 @@
 						<Grid ColumnDefinitions="Auto,*,Auto">
 							<CheckBox Grid.Column="0"
 									  IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+									  IsVisible="{Binding IsConfigurable}"
 									  VerticalAlignment="Center"
 									  Margin="0,0,8,0"/>
 
@@ -523,11 +541,24 @@
 										Spacing="2">
 								<TextBlock Text="{Binding Name}"
 										   FontWeight="Bold"/>
-								<TextBlock Text="{Binding Path}"
-										   FontFamily="Consolas"
-										   FontSize="11"
-										   Opacity="0.7"
-										   TextWrapping="Wrap"/>
+								<Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="4">
+									<Button Grid.Column="0"
+											Command="{Binding #VMRoot.DataContext.OpenPathCommand}"
+											CommandParameter="{Binding Path}"
+											Classes="MiniIconButton"
+											VerticalAlignment="Center"
+											ToolTip.Tip="{loc:Loc env.open_in_explorer}">
+										<ico:MaterialIcon Kind="OpenInNew"/>
+									</Button>
+									<TextBlock Grid.Column="1"
+													   Text="{Binding Path}"
+													   FontFamily="Consolas"
+													   FontSize="11"
+													   Opacity="0.7"
+														 VerticalAlignment="Center"
+													   TextWrapping="Wrap"/>
+								</Grid>
+								
 								<TextBlock Text="{Binding Description}"
 										   Opacity="0.7"
 										   TextWrapping="Wrap"
@@ -538,9 +569,8 @@
 										Spacing="2"
 										HorizontalAlignment="Right">
 								<TextBlock Text="{Binding SourceDisplay}"
-										   Opacity="0.6"
-										   FontSize="11"
-										   HorizontalAlignment="Right"/>
+												   Opacity="0.6"
+												   FontSize="11"/>
 								<TextBlock Text="{loc:Loc addon.settings.pack.manifest_invalid}"
 										   Foreground="{DynamicResource DangerBrush}"
 										   FontSize="11"

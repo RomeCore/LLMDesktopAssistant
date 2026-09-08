@@ -207,9 +207,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 						() => new ChatMemorySettingsViewModel(Settings.Memory))
 				],
 				() => new ChatAddonsSettingsViewModel(Settings.Addons,
-					Chat.Services.GetRequiredService<IChatAddonPackLocator>(),
-					Chat.Services.GetRequiredService<IAddonPackSearchFoldersProvider>(),
-					Chat.Services.GetServices<LLMDesktopAssistant.Addons.IAddonTypeDescriptor>()))
+					Chat.Services.GetRequiredService<IAddonPackLocator>(),
+					Chat.Services.GetServices<IAddonTypeDescriptor>(),
+					Chat.Services.GetRequiredService<IAddonPackSearchFoldersProvider>()))
 			{
 				IsExpanded = true
 			});

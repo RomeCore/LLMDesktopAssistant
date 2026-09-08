@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 
 			foreach (var pack in Directory.GetDirectories(Directories.AddonPacks))
 			{
-				result.Add(ParsePack(pack, AddonPackSource.Scanned));
+				result.Add(ParsePack(pack, AddonPackSource.Scanned, isConfigurable: true));
 			}
 
 			var sharedRootFolder = Directories.UserProfile;
@@ -33,7 +33,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 				{
 					foreach (var pack in Directory.GetDirectories(combinedPacksPath))
 					{
-						result.Add(ParsePack(pack, AddonPackSource.Scanned));
+						result.Add(ParsePack(pack, AddonPackSource.Scanned, isConfigurable: true));
 					}
 				}
 			}
@@ -57,6 +57,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 						Name = "workdir",
 						Path = workdir,
 						Source = AddonPackSource.WorkingDirectory,
+						IsConfigurable = true,
 
 						NameKey = Locale.GetKey("addon.pack.workdir.name"),
 						DescriptionKey = Locale.GetKey("addon.pack.workdir.description")
@@ -73,8 +74,8 @@ namespace LLMDesktopAssistant.Addons.Loading
 							Name = folder,
 							Path = combinedPath,
 							Source = AddonPackSource.AgentsHome,
+							IsConfigurable = true,
 
-							NameKey = Locale.GetKey("addon.pack.agentshome.name"),
 							DescriptionKey = Locale.GetKey("addon.pack.agentshome.description")
 						});
 					}
@@ -84,7 +85,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 					{
 						foreach (var pack in Directory.GetDirectories(combinedPacksPath))
 						{
-							result.Add(ParsePack(pack, AddonPackSource.Scanned));
+							result.Add(ParsePack(pack, AddonPackSource.Scanned, isConfigurable: true));
 						}
 					}
 				}
@@ -94,16 +95,11 @@ namespace LLMDesktopAssistant.Addons.Loading
 			{
 				if (Directory.Exists(additionalPack))
 				{
-					result.Add(ParsePack(additionalPack, AddonPackSource.Configuration));
+					result.Add(ParsePack(additionalPack, AddonPackSource.Configuration, isConfigurable: true));
 				}
 			}
 
 			return result;
-		}
-
-		protected override bool IsPackConfigurable(AddonPackInfo pack)
-		{
-			return pack.Source is AddonPackSource.Scanned or AddonPackSource.Configuration or AddonPackSource.WorkingDirectory;
 		}
 
 		protected override AddonPacksSettings? GetEffectiveSettings()

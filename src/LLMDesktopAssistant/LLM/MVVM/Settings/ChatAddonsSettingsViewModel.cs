@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 [ViewModelFor(typeof(ChatAddonsSettingsView))]
 public class ChatAddonsSettingsViewModel : ViewModelBase
 {
-	private readonly IChatAddonPackLocator? _packLocator;
+	private readonly IAddonPackLocator _packLocator;
 	private readonly IExplorerOpener? _explorerOpener;
 	private readonly ImmutableList<IAddonTypeDescriptor> _addonTypeDescriptors = [];
 	private readonly RangeObservableCollection<string>? _additionalSearchFolders;
@@ -166,20 +166,56 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 			{
 				Settings.PacksInheritance = value.Value;
 				RaisePropertyChanged(nameof(EffectivePacks));
-				RefreshPacks();
+				RefreshPackItems();
 			}
 		}
 	}
 
 	// ===================================
-	// === Configurable packs          ===
+	// === Addon packs                 ===
 	// ===================================
 
-	private RangeObservableCollection<AddonPackToggleItemViewModel> _configurablePacks = [];
+	private RangeObservableCollection<AddonPackItemViewModel> _packs = [];
+	private ImmutableList<AddonPackInfo> _allPackInfos = [];
+	private ImmutableList<AddonPackItemViewModel> _allPackItems = [];
 	/// <summary>
-	/// Gets the list of configurable addon packs with their enabled state.
+	/// Gets the visible list of addon packs, filtered by <see cref="SelectedPackFilter"/> and <see cref="SearchText"/>.
 	/// </summary>
-	public RangeObservableCollection<AddonPackToggleItemViewModel> ConfigurablePacks => _configurablePacks;
+	public RangeObservableCollection<AddonPackItemViewModel> Packs => _packs;
+
+	private RangeObservableCollection<AddonPackFilterItem> _packFilters = [];
+	/// <summary>
+	/// Gets the available pack filters: 'All', 'Configurable' and one per each present pack source.
+	/// </summary>
+	public RangeObservableCollection<AddonPackFilterItem> PackFilters => _packFilters;
+
+	private AddonPackFilterItem _selectedPackFilter = AddonPackFilterItem.All;
+	/// <summary>
+	/// Gets or sets the active pack filter.
+	/// </summary>
+	public AddonPackFilterItem SelectedPackFilter
+	{
+		get => _selectedPackFilter;
+		set
+		{
+			if (SetProperty(ref _selectedPackFilter, value) && value != null)
+				RefreshPacksView();
+		}
+	}
+
+	private string _searchText = "";
+	/// <summary>
+	/// Gets or sets the pack search text, matching pack names and paths.
+	/// </summary>
+	public string SearchText
+	{
+		get => _searchText;
+		set
+		{
+			if (SetProperty(ref _searchText, value ?? ""))
+				RefreshPacksView();
+		}
+	}
 
 	/// <summary>
 	/// Gets or sets a value indicating whether packs are enabled by default.
@@ -193,7 +229,7 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 			{
 				EffectivePacks.EnablePacksByDefault = value;
 				RaisePropertyChanged();
-				RefreshPacks();
+				RefreshPackItems();
 			}
 		}
 	}
@@ -258,9 +294,9 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 	/// <param name="addonTypeDescriptors">The registered addon type descriptors, or <see langword="null"/> to use none.</param>
 	public ChatAddonsSettingsViewModel(
 		ChatAddonSettings settings,
-		IChatAddonPackLocator? packLocator = null,
-		IAddonPackSearchFoldersProvider? foldersProvider = null,
-		IEnumerable<IAddonTypeDescriptor>? addonTypeDescriptors = null)
+		IAddonPackLocator packLocator,
+		IEnumerable<IAddonTypeDescriptor> addonTypeDescriptors,
+		IAddonPackSearchFoldersProvider? foldersProvider = null)
 	{
 		Settings = settings;
 		_packLocator = packLocator;
@@ -327,29 +363,94 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 				_selectedPacksInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == Settings.PacksInheritance);
 				RaisePropertyChanged(nameof(SelectedPacksInheritance));
 				RaisePropertyChanged(nameof(EffectivePacks));
-				RefreshPacks();
+				RefreshPackItems();
 				break;
 		}
 	}
 
 	/// <summary>
-	/// Refreshes the list of configurable addon packs from the pack locator.
+	/// Refreshes the list of addon packs from the pack locator (rescans the disk).
 	/// </summary>
 	public void RefreshPacks()
 	{
-		var packs = (_packLocator?.GetConfigurablePacks() ?? [])
-			.OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
-			.Select(p => new AddonPackToggleItemViewModel(p, () => IsPackEnabled(p), enabled => SetPackEnabled(p, enabled)))
+		_allPackInfos = (_packLocator?.GetAllPacks() ?? [])
 			.ToImmutableList();
 
-		_configurablePacks.Reset(packs);
-		RaisePropertyChanged(nameof(HasPacks));
+		RefreshPackItems();
+		RefreshPackFilters();
 	}
 
 	/// <summary>
-	/// Gets a value indicating whether there are any configurable packs.
+	/// Rebuilds the pack item view models from the cached pack infos and reapplies the current filter.
 	/// </summary>
-	public bool HasPacks => _configurablePacks.Count > 0;
+	private void RefreshPackItems()
+	{
+		_allPackItems = _allPackInfos
+			.Select(p => new AddonPackItemViewModel(p, () => IsPackEnabled(p), enabled => SetPackEnabled(p, enabled)))
+			.ToImmutableList();
+
+		RefreshPacksView();
+	}
+
+	/// <summary>
+	/// Rebuilds the source-based filters from the cached pack infos.
+	/// </summary>
+	private void RefreshPackFilters()
+	{
+		var filters = new List<AddonPackFilterItem>
+		{
+			AddonPackFilterItem.All,
+			AddonPackFilterItem.Configurable
+		};
+
+		foreach (var source in _allPackInfos.Select(p => p.Source).Distinct().OrderBy(s => s))
+		{
+			var filter = AddonPackFilterItem.ForSource(source);
+			if (!filters.Contains(filter))
+				filters.Add(filter);
+		}
+
+		var previous = _selectedPackFilter;
+		_packFilters.Reset(filters);
+		_selectedPackFilter = filters.FirstOrDefault(f => f == previous) ?? AddonPackFilterItem.All;
+		RaisePropertyChanged(nameof(SelectedPackFilter));
+		RefreshPacksView();
+	}
+
+	/// <summary>
+	/// Reapplies the active filter and search text to the visible packs list.
+	/// </summary>
+	private void RefreshPacksView()
+	{
+		var filter = SelectedPackFilter;
+		var search = SearchText?.Trim() ?? "";
+
+		_packs.Reset(_allPackItems.Where(item => MatchesPack(item, filter, search)));
+		RaisePropertyChanged(nameof(HasPacks));
+	}
+
+	private static bool MatchesPack(AddonPackItemViewModel item, AddonPackFilterItem? filter, string search)
+	{
+		bool byFilter = filter?.Kind switch
+		{
+			AddonPackFilterKind.Configurable => item.IsConfigurable,
+			AddonPackFilterKind.Source => item.Pack.Source == filter.Source,
+			_ => true
+		};
+		if (!byFilter)
+			return false;
+
+		if (search.Length == 0)
+			return true;
+
+		return item.Name.Contains(search, StringComparison.OrdinalIgnoreCase)
+			|| item.Path.Contains(search, StringComparison.OrdinalIgnoreCase);
+	}
+
+	/// <summary>
+	/// Gets a value indicating whether there are any packs matching the current filter.
+	/// </summary>
+	public bool HasPacks => _packs.Count > 0;
 
 	private bool IsPackEnabled(AddonPackInfo pack)
 	{
@@ -435,9 +536,9 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 }
 
 /// <summary>
-/// ViewModel representing a single configurable addon pack with its enabled state.
+/// ViewModel representing a single addon pack with its enabled state.
 /// </summary>
-public class AddonPackToggleItemViewModel : NotifyPropertyChanged
+public class AddonPackItemViewModel : NotifyPropertyChanged
 {
 	private readonly Func<bool> _getEnabled;
 	private readonly Action<bool> _setEnabled;
@@ -446,6 +547,12 @@ public class AddonPackToggleItemViewModel : NotifyPropertyChanged
 	/// Gets the underlying addon pack information.
 	/// </summary>
 	public AddonPackInfo Pack { get; }
+
+	/// <summary>
+	/// Gets a value indicating whether this pack can be enabled or disabled by the user.
+	/// Non-configurable (implicit) packs are always enabled.
+	/// </summary>
+	public bool IsConfigurable => Pack.IsConfigurable;
 
 	/// <summary>
 	/// Gets the pack name.
@@ -480,6 +587,9 @@ public class AddonPackToggleItemViewModel : NotifyPropertyChanged
 		get => _getEnabled();
 		set
 		{
+			if (!IsConfigurable)
+				return;
+
 			if (_getEnabled() != value)
 			{
 				_setEnabled(value);
@@ -489,17 +599,69 @@ public class AddonPackToggleItemViewModel : NotifyPropertyChanged
 	}
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="AddonPackToggleItemViewModel"/> class.
+	/// Initializes a new instance of the <see cref="AddonPackItemViewModel"/> class.
 	/// </summary>
 	/// <param name="pack">The addon pack information.</param>
 	/// <param name="getEnabled">The function providing the current enabled state.</param>
 	/// <param name="setEnabled">The action setting the enabled state.</param>
-	public AddonPackToggleItemViewModel(AddonPackInfo pack, Func<bool> getEnabled, Action<bool> setEnabled)
+	public AddonPackItemViewModel(AddonPackInfo pack, Func<bool> getEnabled, Action<bool> setEnabled)
 	{
 		Pack = pack;
 		_getEnabled = getEnabled;
 		_setEnabled = setEnabled;
 	}
+}
+
+/// <summary>
+/// The kind of the pack list filter.
+/// </summary>
+public enum AddonPackFilterKind
+{
+	/// <summary>
+	/// No filtering - all packs are shown.
+	/// </summary>
+	All,
+
+	/// <summary>
+	/// Only configurable packs are shown.
+	/// </summary>
+	Configurable,
+
+	/// <summary>
+	/// Only packs with a specific source are shown.
+	/// </summary>
+	Source
+}
+
+/// <summary>
+/// Represents a pack list filter: 'All', 'Configurable' or a specific pack source.
+/// </summary>
+public sealed record AddonPackFilterItem(AddonPackFilterKind Kind, AddonPackSource? Source)
+{
+	/// <summary>
+	/// Gets the filter that shows all packs.
+	/// </summary>
+	public static AddonPackFilterItem All { get; } = new(AddonPackFilterKind.All, null);
+
+	/// <summary>
+	/// Gets the filter that shows only configurable packs.
+	/// </summary>
+	public static AddonPackFilterItem Configurable { get; } = new(AddonPackFilterKind.Configurable, null);
+
+	/// <summary>
+	/// Creates a filter that shows only packs with the given source.
+	/// </summary>
+	public static AddonPackFilterItem ForSource(AddonPackSource source) => new(AddonPackFilterKind.Source, source);
+
+	/// <summary>
+	/// Gets the localized display name of the filter.
+	/// </summary>
+	public string DisplayName => Kind switch
+	{
+		AddonPackFilterKind.Configurable => Locale.Get("addon.settings.packs.filter.configurable"),
+		AddonPackFilterKind.Source when Source != null => Locale.Get($"addon.pack.source.{Source.Value.ToString().ToLowerInvariant()}"),
+		_ => Locale.Get("addon.settings.packs.filter.all")
+	};
 }
 
 /// <summary>
@@ -614,7 +776,6 @@ public class AddonSourceItemViewModel : NotifyPropertyChanged
 			AllowMultiple = false,
 			FileTypeFilter =
 			[
-				new("Markdown (*.md, *.mdx)") { Patterns = ["*.md", "*.mdx"] },
 				new("All files (*.*)") { Patterns = ["*.*"] }
 			]
 		});

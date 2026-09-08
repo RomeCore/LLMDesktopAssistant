@@ -345,9 +345,7 @@ namespace LLMDesktopAssistant.Addons.Parsers
 		/// </summary>
 		protected virtual string GetFallbackName(AddonPathInfo fileInfo)
 		{
-			return fileInfo.IsShortForm ?? true
-				? Path.GetFileName(fileInfo.Path)
-				: Path.GetFileName(Path.GetDirectoryName(fileInfo.Path))!;
+			return fileInfo.FallbackName;
 		}
 
 		/// <summary>

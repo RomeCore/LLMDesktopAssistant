@@ -9,9 +9,9 @@
 pack.localappdata.name: %LOCALAPPDATA%
 pack.localappdata.description: Application data directory (%LOCALAPPDATA%\.llmassist)
 pack.useragentshome.name: User Agents Home
-pack.useragentshome.description: User-scoped agents home (e.g. ~/.agents)
+pack.useragentshome.description: User-scoped agents home
 pack.agentshome.name: Workspace Agents Home
-pack.agentshome.description: Workspace-scoped agents home (e.g. .agents)
+pack.agentshome.description: Workspace-scoped agents home
 pack.workdir.name: Working Directory
 pack.workdir.description: The working directory itself, treated as an addon pack.
 pack.source.unknown: Unknown
@@ -51,9 +51,12 @@ settings.addon_sources.directories.hint: Additional folders that will be scanned
 settings.addon_sources.files: Files
 settings.addon_sources.files.hint: Individual files that will be loaded as addons of this type.
 settings.packs: Addon Packs
-settings.packs.hint: Enable or disable configurable addon packs. Packs not listed here are always enabled.
-settings.packs.empty: No configurable addon packs found
+settings.packs.hint: Enable or disable configurable addon packs. Non-configurable (implicit) packs are always enabled and shown for reference.
+settings.packs.empty: No addon packs found
 settings.packs.refresh: Refresh
+settings.packs.search.placeholder: Search addon packs...
+settings.packs.filter.all: All
+settings.packs.filter.configurable: Configurable
 settings.enable_packs_by_default: Enable packs by default
 settings.enable_packs_by_default.hint: When checked, packs without an explicit override are enabled by default. Uncheck to disable all unchanged packs.
 settings.pack.enabled: Enabled

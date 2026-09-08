@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 		{
 			return new TAddon
 			{
-				Name = path.IsShortForm ?? true ? Path.GetFileName(path.Path) : Path.GetFileName(Path.GetDirectoryName(path.Path))!,
+				Name = path.FallbackName,
 				Description = string.Empty,
 				
 				Source = AddonSource.Unknown,

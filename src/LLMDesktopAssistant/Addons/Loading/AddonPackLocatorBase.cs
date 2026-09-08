@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Settings;
@@ -14,12 +14,6 @@ namespace LLMDesktopAssistant.Addons.Loading
 		public abstract IEnumerable<AddonPackInfo> GetAllPacks();
 
 		/// <inheritdoc/>
-		public IEnumerable<AddonPackInfo> GetConfigurablePacks()
-		{
-			return GetAllPacks().Where(IsPackConfigurable);
-		}
-
-		/// <inheritdoc/>
 		public IEnumerable<AddonPackInfo> GetEffectivePacks()
 		{
 			var appconfig = GetEffectiveSettings();
@@ -27,7 +21,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 
 			foreach (var pack in GetAllPacks())
 			{
-				if (IsPackConfigurable(pack) && appconfig != null)
+				if (pack.IsConfigurable && appconfig != null)
 				{
 					if (appconfig.EnabledPacks.TryGetValue(pack.Path, out var enabled))
 					{
@@ -49,7 +43,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 			return result;
 		}
 
-		protected AddonPackInfo ParsePack(string packDirectoryPath, AddonPackSource source)
+		protected AddonPackInfo ParsePack(string packDirectoryPath, AddonPackSource source, bool isConfigurable)
 		{
 			string defaultName = Path.GetFileName(packDirectoryPath.TrimEnd('\\', '/'));
 			string manifestPath = Path.Combine(packDirectoryPath, "pack.json");
@@ -132,6 +126,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 						Description = description,
 						Path = packDirectoryPath,
 						Source = source,
+						IsConfigurable = isConfigurable,
 
 						IsManifestValid = true,
 						Metadata = metadataBuilder.ToImmutable(),
@@ -146,6 +141,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 						Name = defaultName,
 						Path = packDirectoryPath,
 						Source = source,
+						IsConfigurable = isConfigurable,
 						IsManifestValid = false
 					};
 				}
@@ -156,14 +152,10 @@ namespace LLMDesktopAssistant.Addons.Loading
 				Name = defaultName,
 				Path = packDirectoryPath,
 				Source = source,
+				IsConfigurable = isConfigurable,
 				IsManifestValid = null
 			};
 		}
-
-		/// <summary>
-		/// Determines if a pack is configurable.
-		/// </summary>
-		protected abstract bool IsPackConfigurable(AddonPackInfo pack);
 
 		/// <summary>
 		/// Gets the effective settings for filtering effective enabled packs.

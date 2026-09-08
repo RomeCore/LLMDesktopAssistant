@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Addons
 {
@@ -30,6 +30,12 @@ namespace LLMDesktopAssistant.Addons
 		/// The source type of the addon pack.
 		/// </summary>
 		public required AddonPackSource Source { get; init; }
+
+		/// <summary>
+		/// Whether this pack can be enabled or disabled by the user via the settings UI.
+		/// Non-configurable (implicit) packs are always enabled and shown for informational purposes only.
+		/// </summary>
+		public required bool IsConfigurable { get; init; }
 
 		/// <summary>
 		/// The locale key for the name. If not set, it will be automatically generated from the name.

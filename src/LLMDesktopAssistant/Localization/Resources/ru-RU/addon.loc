@@ -9,14 +9,14 @@
 pack.localappdata.name: %LOCALAPPDATA%
 pack.localappdata.description: Каталог данных приложения (%LOCALAPPDATA%\.llmassist)
 pack.useragentshome.name: Дом агентов пользователя
-pack.useragentshome.description: Пользовательский дом агентов (например, ~/.agents)
+pack.useragentshome.description: Пользовательский дом агентов
 pack.agentshome.name: Дом агентов рабочей директории
-pack.agentshome.description: Дом агентов рабочей директории (например, .agents)
+pack.agentshome.description: Дом агентов рабочей директории
 pack.workdir.name: Рабочая директория
 pack.workdir.description: Сама рабочая директория, рассматриваемая как пак аддонов.
 pack.source.unknown: Неизвестно
-pack.source.workingdirectory: Рабочая директория
 pack.source.appdata: Данные приложения
+pack.source.workingdirectory: Рабочая директория
 pack.source.useragentshome: Пользовательские агенты
 pack.source.agentshome: Агенты рабочей директории
 pack.source.configuration: Конфигурация
@@ -51,9 +51,12 @@ settings.addon_sources.directories.hint: Дополнительные катал
 settings.addon_sources.files: Файлы
 settings.addon_sources.files.hint: Отдельные файлы, загружаемые как аддоны этого типа.
 settings.packs: Паки аддонов
-settings.packs.hint: Включайте и отключайте настраиваемые паки аддонов. Паки, не указанные здесь, всегда включены.
-settings.packs.empty: Настраиваемые паки аддонов не найдены
+settings.packs.hint: Включайте и отключайте настраиваемые паки аддонов. Ненастраиваемые (неявные) паки всегда включены и показаны для справки.
+settings.packs.empty: Паки аддонов не найдены
 settings.packs.refresh: Обновить
+settings.packs.search.placeholder: Поиск паков аддонов...
+settings.packs.filter.all: Все
+settings.packs.filter.configurable: Конфигурируемые
 settings.enable_packs_by_default: Включать паки по умолчанию
 settings.enable_packs_by_default.hint: При включении паки без явного переопределения включены по умолчанию. Снимите флажок, чтобы отключить все неизменённые паки.
 settings.pack.enabled: Включён
