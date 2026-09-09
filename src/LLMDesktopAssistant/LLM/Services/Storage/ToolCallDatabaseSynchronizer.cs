@@ -87,7 +87,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 
 		private void OnTargetPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			CopyToModel();
+			CopyToModel(_model, Target);
 			_database.ToolCalls.Update(_model);
 		}
 
@@ -108,13 +108,13 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 					_additionalViewModels[newVm] = CreateAdditionalViewModelSynchronizer(newVm);
 		}
 
-		private void CopyToModel()
+		private void CopyToModel(ToolCallModel model, ToolCall from)
 		{
-			_model.ToolCallId = Target.ToolCallId;
-			_model.ToolName = Target.ToolName;
-			_model.Title = Target.Title;
-			_model.FunctionArguments = Target.Arguments;
-			_model.Status = Target.Status switch
+			model.ToolCallId = Target.ToolCallId;
+			model.ToolName = Target.ToolName;
+			model.Title = Target.Title;
+			model.FunctionArguments = Target.Arguments;
+			model.Status = Target.Status switch
 			{
 				ToolStatus.None => ToolStatusModel.NotExecuted,
 				ToolStatus.Executing => ToolStatusModel.ExecutionBegin,
@@ -123,40 +123,21 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 				ToolStatus.Cancelled => ToolStatusModel.Cancelled,
 				_ => ToolStatusModel.NotExecuted,
 			};
-			_model.StatusIcon = Target.StatusIcon;
-			_model.StatusTitle = Target.StatusTitle;
-			_model.ExpectedBehaviour = Target.ExpectedBehaviour;
-			_model.ResultContent = Target.ResultContent;
-			_model.UseMarkdown = Target.UseMarkdown;
-			_model.StructuredResult = Target.StructuredResult?.ToJsonString();
+			model.StatusIcon = Target.StatusIcon;
+			model.StatusTitle = Target.StatusTitle;
+			model.ExpectedBehaviour = Target.ExpectedBehaviour;
+			model.ResultContent = Target.ResultContent;
+			model.UseMarkdown = Target.UseMarkdown;
+			model.StructuredResult = Target.StructuredResult?.ToJsonString();
 		}
 
 		private ToolCallModel CreateModelAndInsert(ToolCall toolCall, int messageId)
 		{
 			var model = new ToolCallModel
 			{
-				MessageId = messageId,
-				ToolCallId = toolCall.ToolCallId,
-				ToolName = toolCall.ToolName,
-				Title = toolCall.Title,
-				FunctionArguments = toolCall.Arguments,
-				Status = toolCall.Status switch
-				{
-					ToolStatus.None => ToolStatusModel.NotExecuted,
-					ToolStatus.Executing => ToolStatusModel.ExecutionBegin,
-					ToolStatus.Success => ToolStatusModel.Success,
-					ToolStatus.Error => ToolStatusModel.Error,
-					ToolStatus.Cancelled => ToolStatusModel.Cancelled,
-					_ => ToolStatusModel.NotExecuted,
-				},
-				StatusIcon = toolCall.StatusIcon,
-				StatusTitle = toolCall.StatusTitle,
-				ExpectedBehaviour = toolCall.ExpectedBehaviour,
-				ResultContent = toolCall.ResultContent,
-				UseMarkdown = toolCall.UseMarkdown,
-				StructuredResult = toolCall.StructuredResult?.ToJsonString()
+				MessageId = messageId
 			};
-
+			CopyToModel(model, toolCall);
 			_database.ToolCalls.Insert(model);
 			return model;
 		}

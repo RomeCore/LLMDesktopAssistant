@@ -27,7 +27,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 			_model = model ?? database.AdditionalMessageViewModels
 				.FindOne(avm => avm.ParentKind == parentKind && avm.ParentId == parentId && avm.ViewModel.Guid == target.Guid);
 
-			if (_model == null)
+			if (_model == null && !prevTemporary)
 			{
 				_model = new AdditionalMessageViewDataModel
 				{
@@ -42,8 +42,6 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 			{
 				if (prevTemporary != target.IsTemporary)
 				{
-					prevTemporary = target.IsTemporary;
-
 					if (prevTemporary) // Became persistent
 					{
 						_model = new AdditionalMessageViewDataModel
@@ -60,6 +58,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 							_database.AdditionalMessageViewModels.Delete(_model.Id);
 						_model = null;
 					}
+					prevTemporary = target.IsTemporary;
 				}
 				else if (_model != null)
 					_database.AdditionalMessageViewModels.Update(_model);
