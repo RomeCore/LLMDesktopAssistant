@@ -86,6 +86,22 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 		}
 
 		/// <summary>
+		/// Re-reads the committed tree state (root/leaf nodes and last modified date) from the database.
+		/// Must be called when a storage transaction has been rolled back: the cached model must not
+		/// keep values that were never committed.
+		/// </summary>
+		public void RestoreTreeState()
+		{
+			var model = _database.Chats.FindById(Model.Id);
+			if (model == null)
+				return;
+
+			Model.RootNodeId = model.RootNodeId;
+			Model.LeafNodeId = model.LeafNodeId;
+			Model.LastModifiedAt = model.LastModifiedAt;
+		}
+
+		/// <summary>
 		/// Called on every chat property change: copies the mutable chat values into the model.
 		/// </summary>
 		private void OnChatPropertyChanged(object? sender, PropertyChangedEventArgs e)
