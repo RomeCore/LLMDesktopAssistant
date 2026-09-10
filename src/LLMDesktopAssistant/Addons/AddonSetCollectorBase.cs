@@ -74,7 +74,7 @@ namespace LLMDesktopAssistant.Addons
 					{
 						var clone = addon.Clone();
 						ApplyChange(clone, change);
-						addon.Enabled = true;
+						clone.Enabled = true;
 						clone.Change = change;
 						clone.Freeze();
 						result.Add(clone);

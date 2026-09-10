@@ -139,7 +139,7 @@ public class SkillParserTests
 
 		Assert.Equal("fallback-name", skill.Name);
 		Assert.Equal("Just some plain text content.", skill.Description);
-		Assert.Equal("Just some plain text content.", skill.BodyGetter(skill));
+		Assert.Equal("Just some plain text content.", skill.Body);
 	}
 
 	[Fact]

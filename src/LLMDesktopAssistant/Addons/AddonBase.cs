@@ -50,7 +50,7 @@ namespace LLMDesktopAssistant.Addons
 			get => DescriptionGetter((Self)this);
 			set
 			{
-				if (value != Body)
+				if (value != Description)
 				{
 					RaisePropertyChanging();
 					DescriptionGetter = s => value;
