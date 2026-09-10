@@ -62,6 +62,19 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			};
 		}
 
+		/// <summary>
+		/// Formats a message timestamp with the local time zone offset, e.g. "2026-09-09 21:32:45 (UTC+03:00)".
+		/// The <see cref="DateTime"/> value itself does not carry the offset, so it is appended from the local time zone.
+		/// </summary>
+		private static string FormatSentTime(DateTime time)
+		{
+			if (time.Kind == DateTimeKind.Utc)
+				time = time.ToLocalTime();
+			var offset = TimeZoneInfo.Local.GetUtcOffset(time);
+			var sign = offset < TimeSpan.Zero ? "-" : "+";
+			return $"{time:yyyy-MM-dd HH:mm:ss} (UTC{sign}{offset.Duration():hh\\:mm})";
+		}
+
 		public string RenderSystemPrompt(ChatAgentDescriptor agent)
 		{
 			return BuildSystemPrompt(agent, GetTemplateFunctions());
@@ -162,7 +175,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			string userName = userManager.FindByLogin(userMessage.SenderLogin)?.GetAgentShownName() ?? userMessage.SenderLogin;
 			context["user_name"] = userName;
-			context["time_sent"] = userMessage.CreatedAt.ToString();
+			context["time_sent"] = FormatSentTime(userMessage.CreatedAt);
 			context["content"] = userMessage.Content;
 			context["attachments"] = GetAttachmentParts(userMessage);
 			context["can_read_content"] = true;
@@ -185,7 +198,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			string userName = userManager.FindByLogin(userMessage.SenderLogin)?.GetAgentShownName() ?? userMessage.SenderLogin;
 			context["user_name"] = userName;
-			context["time_sent"] = userMessage.CreatedAt.ToString();
+			context["time_sent"] = FormatSentTime(userMessage.CreatedAt);
 			context["content"] = userMessage.Content;
 			context["attachments"] = GetAttachmentParts(userMessage);
 			context["can_read_content"] = true;
@@ -217,7 +230,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					expander.ExpandPromptContext(message, agent, context);
 
 				context["user_name"] = agentName;
-				context["time_sent"] = assistantMessage.CreatedAt.ToString();
+				context["time_sent"] = FormatSentTime(assistantMessage.CreatedAt);
 				context["content"] = assistantMessage.Content;
 				context["attachments"] = GetAttachmentParts(assistantMessage);
 				// User-like messages are already gated by user read permissions and their content is always readable
@@ -244,7 +257,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					expander.ExpandPromptContext(message, agent, context);
 
 				context["agent_name"] = agentName;
-				context["time_sent"] = assistantMessage.CreatedAt.ToString();
+				context["time_sent"] = FormatSentTime(assistantMessage.CreatedAt);
 				context["reasoning_content"] = assistantMessage.ReasoningContent;
 				context["content"] = assistantMessage.Content;
 				context["attachments"] = GetAttachmentParts(assistantMessage);

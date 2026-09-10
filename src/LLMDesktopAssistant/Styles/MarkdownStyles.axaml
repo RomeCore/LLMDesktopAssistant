@@ -254,4 +254,28 @@
 		<Setter Property="Text" Value="{loc:Loc alert.title.caution}"/>
 	</Style>
 
+	<Style Selector="Border.AlertBlock.AlertBlockSuccess">
+		<Setter Property="Background" Value="{DynamicResource AlertSuccessBackgroundBrush}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource AlertSuccessBorderBrush}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockSuccess ico|MaterialIcon">
+		<Setter Property="Foreground" Value="{DynamicResource AlertSuccessColor}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockSuccess TextBlock.AlertBlockTitle">
+		<Setter Property="Foreground" Value="{DynamicResource AlertSuccessColor}"/>
+		<Setter Property="Text" Value="{loc:Loc alert.title.success}"/>
+	</Style>
+
+	<Style Selector="Border.AlertBlock.AlertBlockError">
+		<Setter Property="Background" Value="{DynamicResource AlertErrorBackgroundBrush}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource AlertErrorBorderBrush}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockError ico|MaterialIcon">
+		<Setter Property="Foreground" Value="{DynamicResource AlertErrorColor}"/>
+	</Style>
+	<Style Selector="Border.AlertBlock.AlertBlockError TextBlock.AlertBlockTitle">
+		<Setter Property="Foreground" Value="{DynamicResource AlertErrorColor}"/>
+		<Setter Property="Text" Value="{loc:Loc alert.title.error}"/>
+	</Style>
+
 </Styles>

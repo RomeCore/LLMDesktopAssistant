@@ -8,3 +8,5 @@ title.tip: Tip
 title.important: Important
 title.warning: Warning
 title.caution: Caution
+title.success: Success
+title.error: Error

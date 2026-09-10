@@ -15,6 +15,8 @@
 	<Color x:Key="AlertImportantColor">#6C5CE7</Color>
 	<Color x:Key="AlertWarningColor">#D4A017</Color>
 	<Color x:Key="AlertCautionColor">#FF4444</Color>
+	<Color x:Key="AlertSuccessColor">#00B894</Color>
+	<Color x:Key="AlertErrorColor">#FF5252</Color>
 
 	<SolidColorBrush x:Key="AlertNoteBackgroundBrush" Color="#1A4A9EFF"/>
 	<SolidColorBrush x:Key="AlertNoteBorderBrush" Color="#664A9EFF"/>
@@ -26,5 +28,9 @@
 	<SolidColorBrush x:Key="AlertWarningBorderBrush" Color="#66D4A017"/>
 	<SolidColorBrush x:Key="AlertCautionBackgroundBrush" Color="#1AFF4444"/>
 	<SolidColorBrush x:Key="AlertCautionBorderBrush" Color="#66FF4444"/>
+	<SolidColorBrush x:Key="AlertSuccessBackgroundBrush" Color="#1A00B894"/>
+	<SolidColorBrush x:Key="AlertSuccessBorderBrush" Color="#6600B894"/>
+	<SolidColorBrush x:Key="AlertErrorBackgroundBrush" Color="#1AFF5252"/>
+	<SolidColorBrush x:Key="AlertErrorBorderBrush" Color="#66FF5252"/>
 
 </ResourceDictionary>

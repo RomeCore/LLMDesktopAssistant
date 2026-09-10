@@ -11,9 +11,17 @@
 	- Tables, Codeblocks, Blockquotes, etc.
 	- Math formulas, via `$latex$` or `$$latex$$`
 	- Images, via `![alt text](url)`
-	- GFM alerts (NOTE, TIP, IMPORTANT, WARNING, CAUTION):
+	- GFM alerts (NOTE, TIP, IMPORTANT, WARNING, CAUTION, SUCCESS, ERROR) as
+	  color-coded boxes:
 	  > [!NOTE]
 	  > This is a note text!
+	- Alerts support custom titles and accent colors:
+	  > [!Custom title:#FF98D8]
+	  > Alert body with a custom title and a pink accent color.
+	- You can also combine a standard kind with a custom title and color:
+	  > [!WARNING:Be careful:#FFA500]
+	  > Alert body text.
+	  Kind color/icon presets are used when no color is specified.
 	When you writing markdown code blocks, user is provided with `copy`, `save` and `execute` buttons, meaning you can provide a code for direct execution.
 }
 
