@@ -15,6 +15,11 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// </summary>
 		public IServiceProvider Services { get; } = services;
 
+		/// <summary>
+		/// The ID of the chat.
+		/// </summary>
+		public int Id { get; internal set; }
+
 		private string _topic = string.Empty;
 		/// <summary>
 		/// Gets or sets the topic/category of the chat session.

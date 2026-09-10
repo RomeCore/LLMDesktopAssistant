@@ -61,7 +61,7 @@ public class InputField : NotifyPropertyChanged
 }
 
 [ViewModelFor(typeof(FormsInputView))]
-public class FormsInputViewModel : AdditionalMessageViewModel
+public class FormsInputViewModel : AdditionalChatData
 {
 	private readonly TaskCompletionSource<InputResult> _tcs = new();
 

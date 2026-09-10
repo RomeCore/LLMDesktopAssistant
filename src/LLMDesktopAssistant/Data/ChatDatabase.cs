@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.Data
 		public ILiteCollection<MessageNodeModel> MessageNodes { get; }
 		public ILiteCollection<MessageModel> Messages { get; }
 		public ILiteCollection<ToolCallModel> ToolCalls { get; }
-		public ILiteCollection<AdditionalMessageViewDataModel> AdditionalMessageViewModels { get; }
+		public ILiteCollection<AdditionalChatDataModel> AdditionalChatData { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ChatDatabase"/> class.
@@ -29,14 +29,14 @@ namespace LLMDesktopAssistant.Data
 			MessageNodes = Database.GetCollection<MessageNodeModel>();
 			Messages = Database.GetCollection<MessageModel>();
 			ToolCalls = Database.GetCollection<ToolCallModel>();
-			AdditionalMessageViewModels = Database.GetCollection<AdditionalMessageViewDataModel>();
+			AdditionalChatData = Database.GetCollection<AdditionalChatDataModel>();
 
 			MessageNodes.EnsureIndex(x => x.ParentId);
 			MessageNodes.EnsureIndex(x => x.SelectedNodeId);
 			ToolCalls.EnsureIndex(x => x.MessageId);
 			ToolCalls.EnsureIndex(x => x.ToolCallId);
-			AdditionalMessageViewModels.EnsureIndex(x => x.ParentKind);
-			AdditionalMessageViewModels.EnsureIndex(x => x.ParentId);
+			AdditionalChatData.EnsureIndex(x => x.ParentKind);
+			AdditionalChatData.EnsureIndex(x => x.ParentId);
 		}
 
 		/// <summary>

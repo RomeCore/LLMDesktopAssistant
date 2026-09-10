@@ -14,7 +14,7 @@ public class AttachedMessageInjectionHook : IPromptBuildingHook
 {
 	public IEnumerable<IMessage>? ModifyFinalContext(IEnumerable<IMessage> messages, BranchedMessage message, ChatAgentDescriptor agent)
 	{
-		foreach (var attachedMessage in message.Message.AdditionalViewModels.OfType<AttachedMessageAdditionalViewModel>())
+		foreach (var attachedMessage in message.Message.AdditionalData.OfType<AttachedMessageAdditionalViewModel>())
 		{
 			var attachedContent = attachedMessage.Content;
 			if (string.IsNullOrWhiteSpace(attachedContent))

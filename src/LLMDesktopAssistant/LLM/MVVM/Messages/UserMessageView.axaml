@@ -71,7 +71,7 @@
 
 		</Border>
 		
-		<ItemsControl ItemsSource="{Binding UserMessage.AdditionalViewModels}">
+		<ItemsControl ItemsSource="{Binding UserMessage.AdditionalData}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<StackPanel Orientation="Vertical" />

@@ -22,7 +22,7 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// These can include attached files, images or any other additional view models.
 		/// If no parts are present, this property is an empty collection.
 		/// </summary>
-		public ImmutableList<AdditionalMessageViewModel> Parts { get; init; } = [];
+		public ImmutableList<AdditionalChatData> Parts { get; init; } = [];
 
 		/// <summary>
 		/// Gets or sets the visibility of the user input. Determines who can see the message.

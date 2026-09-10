@@ -5,7 +5,7 @@ using LLMDesktopAssistant.LLM.MVVM.Additional;
 namespace LLMDesktopAssistant.Tools.MVVM;
 
 [ViewModelFor(typeof(FormsConfirmView))]
-public class FormsConfirmViewModel : AdditionalMessageViewModel
+public class FormsConfirmViewModel : AdditionalChatData
 {
 	private readonly TaskCompletionSource<bool> _tcs = new();
 

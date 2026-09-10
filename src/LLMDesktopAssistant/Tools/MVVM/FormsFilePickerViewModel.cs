@@ -15,7 +15,7 @@ public enum FilePickerMode
 }
 
 [ViewModelFor(typeof(FormsFilePickerView))]
-public class FormsFilePickerViewModel : AdditionalMessageViewModel
+public class FormsFilePickerViewModel : AdditionalChatData
 {
 	private readonly TaskCompletionSource<FilePickerResult> _tcs = new();
 

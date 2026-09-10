@@ -10,11 +10,11 @@ namespace LLMDesktopAssistant.Tools.MVVM.Diff
 	/// <summary>
 	/// ViewModel for displaying a diff with optional confirmation controls.
 	/// Supports two modes: read-only (just display) and confirmation (with checkboxes and accept/decline buttons).
-	/// BSON-serializable for persistence in LiteDB when <see cref="AdditionalMessageViewModel.IsTemporary"/> is <see langword="false"/>.
+	/// BSON-serializable for persistence in LiteDB when <see cref="AdditionalChatData.IsTemporary"/> is <see langword="false"/>.
 	/// Stores the diff as a list of <see cref="HunkGroup"/> chunks (compatible with <see cref="UnifiedDiff.Compute"/>).
 	/// </summary>
 	[ViewModelFor(typeof(TextDiffAdditionalView))]
-	public class TextDiffAdditionalViewModel : AdditionalMessageViewModel
+	public class TextDiffAdditionalViewModel : AdditionalChatData
 	{
 		private string _title = string.Empty;
 		/// <summary>

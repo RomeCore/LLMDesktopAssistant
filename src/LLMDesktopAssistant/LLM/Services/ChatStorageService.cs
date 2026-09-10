@@ -63,7 +63,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		private BranchedMessage LoadMessageFromNode(MessageNodeModel nodeModel, int messageIndex)
 		{
 			var messageModel = database.Messages.FindById(nodeModel.MessageId);
-			var sync = MessageDatabaseSynchronizer.CreateFromModel(database, messageModel);
+			var sync = MessageDatabaseSynchronizer.FromModel(database, messageModel);
 			_messageSyncs[sync.Target] = sync;
 			return CreateBranchedMessage(nodeModel, sync.Target, messageIndex);
 		}
@@ -90,8 +90,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
 
-			var sync = new MessageDatabaseSynchronizer(database, chatMessage);
-			int messageId = sync.Target.Id;
+			var sync = MessageDatabaseSynchronizer.FromTarget(database, chatMessage);
+			int messageId = sync.ModelId;
 			MessageNodeModel nodeModel;
 
 			try
@@ -267,8 +267,8 @@ namespace LLMDesktopAssistant.LLM.Services
 			if (!database.Database.BeginTrans())
 				throw new InvalidOperationException("Failed to begin transaction.");
 
-			var sync = new MessageDatabaseSynchronizer(database, newMessage);
-			int messageId = sync.Target.Id;
+			var sync = MessageDatabaseSynchronizer.FromTarget(database, newMessage);
+			int messageId = sync.ModelId;
 			MessageNodeModel newNode;
 
 			try

@@ -70,7 +70,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						VisibleTo = userInput.VisibleTo,
 						IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
 					};
-					userMessage.AdditionalViewModels.Reset(userInput.Parts);
+					userMessage.AdditionalData.Reset(userInput.Parts);
 					storage.AppendMessage(userMessage);
 
 					await executor.GenerateResponseAsync(cancellationToken);
@@ -92,7 +92,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					VisibleTo = userInput.VisibleTo,
 					IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
 				};
-				userMessage.AdditionalViewModels.Reset(userInput.Parts);
+				userMessage.AdditionalData.Reset(userInput.Parts);
 				storage.AppendMessage(userMessage);
 			}
 		}
@@ -116,7 +116,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						VisibleTo = userInput.VisibleTo,
 						IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
 					};
-					userMessage.AdditionalViewModels.Reset(userInput.Parts);
+					userMessage.AdditionalData.Reset(userInput.Parts);
 					storage.EditMessage(messageIndex, userMessage);
 
 					await executor.GenerateResponseAsync(cancellationToken);
@@ -138,7 +138,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					VisibleTo = userInput.VisibleTo,
 					IsVisibleToWhiteList = userInput.IsVisibleToWhiteList
 				};
-				userMessage.AdditionalViewModels.Reset(userInput.Parts);
+				userMessage.AdditionalData.Reset(userInput.Parts);
 				storage.EditMessage(messageIndex, userMessage);
 			}
 		}

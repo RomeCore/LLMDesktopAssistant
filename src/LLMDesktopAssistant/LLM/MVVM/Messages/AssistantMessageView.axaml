@@ -43,7 +43,7 @@
 					 Foreground="Red"
 					 IsVisible="{Binding Error, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
 
-		<ItemsControl ItemsSource="{Binding AssistantMessage.AdditionalViewModels}">
+		<ItemsControl ItemsSource="{Binding AssistantMessage.AdditionalData}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<StackPanel Orientation="Vertical" />

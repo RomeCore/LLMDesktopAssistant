@@ -5,7 +5,7 @@ using LLMDesktopAssistant.Localization;
 namespace LLMDesktopAssistant.LLM.MVVM.Additional.Context
 {
 	[ViewModelFor(typeof(TokenCostView))]
-	public class TokenCostViewModel : AdditionalMessageViewModel
+	public class TokenCostViewModel : AdditionalChatData
 	{
 		public override int Order => 10;
 

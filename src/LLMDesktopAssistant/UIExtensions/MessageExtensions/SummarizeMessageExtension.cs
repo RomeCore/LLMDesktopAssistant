@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 			{
 				try
 				{
-					var viewModels = viewModel.Message.AdditionalViewModels;
+					var viewModels = viewModel.Message.AdditionalData;
 					var existing = viewModels.TryGet<SummaryViewModel>();
 					if (existing != null)
 					{

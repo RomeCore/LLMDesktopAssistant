@@ -297,7 +297,7 @@ namespace LLMDesktopAssistant.LLM.Services
 							{
 								if (usageMetadata is IUsageCacheMetadata usageCacheMetadata)
 								{
-									domainResponseMessage.AdditionalViewModels.Add(new TokenCostViewModel
+									domainResponseMessage.AdditionalData.Add(new TokenCostViewModel
 									{
 										ModelName = modelName,
 										InputTokens = usageMetadata.InputTokens,
@@ -319,7 +319,7 @@ namespace LLMDesktopAssistant.LLM.Services
 								}
 								else
 								{
-									domainResponseMessage.AdditionalViewModels.Add(new TokenCostViewModel
+									domainResponseMessage.AdditionalData.Add(new TokenCostViewModel
 									{
 										ModelName = modelName,
 										InputTokens = usageMetadata.InputTokens,
@@ -350,7 +350,7 @@ namespace LLMDesktopAssistant.LLM.Services
 							}
 							else
 							{
-								domainResponseMessage.AdditionalViewModels.Add(new TokenCostViewModel
+								domainResponseMessage.AdditionalData.Add(new TokenCostViewModel
 								{
 									ModelName = modelName,
 									InputTokens = null,

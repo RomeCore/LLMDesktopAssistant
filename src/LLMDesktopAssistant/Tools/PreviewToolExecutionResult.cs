@@ -19,20 +19,20 @@ namespace LLMDesktopAssistant.Tools
 		public string? StatusTitle { get; init; }
 
 		/// <summary>
-		/// Specifies whether the tool preview execution was successful or not. If specified, tool will not be executed and finished immediately.
+		/// Specifies whether the tool preview execution was successful or not.
+		/// If specified, tool will not be executed and finished immediately.
 		/// </summary>
 		public bool? InterruptingSuccess { get; init; }
 
 		/// <summary>
-		/// Specifies the content to be put into result content of tool call. If specified, tool will not be executed and finished immediately.
+		/// Specifies the content to put into result content of tool call.
 		/// </summary>
 		public string? InterruptingContent { get; init; }
 
 		/// <summary>
-		/// Specifies the additional view models (parts) to be put into the tool call result.
-		/// If specified, tool will not be executed and finished immediately.
+		/// Specifies the additional data to put into the tool call result.
 		/// </summary>
-		public ImmutableList<AdditionalMessageViewModel> InterruptingAdditionalViewModels { get; init; } = [];
+		public ImmutableList<AdditionalChatData> InterruptingAdditionalData { get; init; } = [];
 
 		/// <summary>
 		/// Whether use markdown rendering for <see cref="InterruptingContent"/>.

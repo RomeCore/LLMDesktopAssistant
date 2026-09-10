@@ -126,7 +126,7 @@ namespace LLMDesktopAssistant.Tools
 		/// The collection of additional view models (parts) of the tool result: attachments (images, videos, audios),
 		/// status chips and any other message parts. They are copied to the tool call that executed this result.
 		/// </summary>
-		public AdditionalMessageViewModelCollection AdditionalViewModels { get; } = [];
+		public AdditionalChatDataCollection AdditionalData { get; } = [];
 
 		private JsonNode? _structuredResult = null;
 		/// <summary>

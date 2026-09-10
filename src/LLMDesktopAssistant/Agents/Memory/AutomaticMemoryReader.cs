@@ -120,7 +120,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 			if (string.IsNullOrWhiteSpace(digest))
 				return;
 
-			context.Response.AdditionalViewModels.Add(new AttachedMessageAdditionalViewModel
+			context.Response.AdditionalData.Add(new AttachedMessageAdditionalViewModel
 			{
 				Mode = AttachedMessageMode.AgentPrivate,
 				Content = $"""

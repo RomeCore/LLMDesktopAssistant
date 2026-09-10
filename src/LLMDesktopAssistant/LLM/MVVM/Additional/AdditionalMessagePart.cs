@@ -7,7 +7,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 	/// The base class for message parts - small additional view models that are rendered
 	/// as compact chips in a WrapPanel at the bottom of a message or a tool call.
 	/// </summary>
-	public abstract class AdditionalMessagePart : AdditionalMessageViewModel
+	public abstract class AdditionalMessagePart : AdditionalChatData
 	{
 		private MaterialIconKind? _badgeIcon;
 		/// <summary>

@@ -35,7 +35,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 		private void RefreshAttachments()
 		{
-			_attachments.Reset(UserMessage.AdditionalViewModels.GetAll<AttachmentMessagePart>());
+			_attachments.Reset(UserMessage.AdditionalData.GetAll<AttachmentMessagePart>());
 		}
 
 		public ImmutableList<MessageExtension> Extensions { get; }
@@ -76,7 +76,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 			Text = userMessage.Content ?? string.Empty;
 			RefreshAttachments();
-			userMessage.AdditionalViewModels.CollectionChanged += AdditionalViewModels_CollectionChanged;
+			userMessage.AdditionalData.CollectionChanged += AdditionalViewModels_CollectionChanged;
 			Extensions = MessageExtensionManager.CreateExtensions(this, chatVM.Chat);
 
 			EditCommand = new RelayCommand(() =>
@@ -96,7 +96,7 @@ namespace LLMDesktopAssistant.LLM.Messages
 
 			if (disposing)
 			{
-				_userMessage.AdditionalViewModels.CollectionChanged -= AdditionalViewModels_CollectionChanged;
+				_userMessage.AdditionalData.CollectionChanged -= AdditionalViewModels_CollectionChanged;
 				foreach (var extension in Extensions)
 					extension.Dispose();
 			}

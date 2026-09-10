@@ -40,7 +40,7 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 			{
 				TaskListViewModel = taskListVm
 			};
-			_message.AdditionalViewModels.Add(additional);
+			_message.AdditionalData.Add(additional);
 		}
 	}
 }

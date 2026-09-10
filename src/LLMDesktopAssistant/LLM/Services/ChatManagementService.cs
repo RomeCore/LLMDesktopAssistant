@@ -122,12 +122,12 @@ namespace LLMDesktopAssistant.LLM.Services
 				nodesToCheck.AddRange(childNodes);
 			}
 
-			
 			for (int i = 0; i < nodesToDelete.Count; i++)
 			{
 				DeleteNode(nodesToDelete[i]);
 			}
 
+			AdditionalChatDataCollectionSynchronizer.DeleteFromDatabase(database, ChatDataParentKind.Chat, chatId);
 			database.Chats.Delete(chatId);
 		}
 

@@ -39,11 +39,11 @@ namespace LLMDesktopAssistant.LLM.Domain
 			set => SetProperty(ref _visibility, value);
 		}
 
-		private readonly AdditionalMessageViewModelCollection _parts = new();
+		private readonly AdditionalChatDataCollection _parts = new();
 		/// <summary>
 		/// Gets or sets the reactive collection of message parts attached to the composed message.
 		/// </summary>
-		public AdditionalMessageViewModelCollection Parts
+		public AdditionalChatDataCollection Parts
 		{
 			get => _parts;
 			set => _parts.Reset(value);

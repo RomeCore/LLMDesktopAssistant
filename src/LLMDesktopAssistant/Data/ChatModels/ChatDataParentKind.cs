@@ -1,6 +1,6 @@
 namespace LLMDesktopAssistant.Data.ChatModels
 {
-	public enum VMParentKind
+	public enum ChatDataParentKind
 	{
 		Message,
 

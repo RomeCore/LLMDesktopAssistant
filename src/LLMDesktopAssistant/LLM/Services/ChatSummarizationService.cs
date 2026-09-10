@@ -151,7 +151,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					Summary = summarizationTask.LastGeneratedContent ?? string.Empty,
 					Completed = false
 				};
-				message.AdditionalViewModels.TryReplace(viewModel);
+				message.AdditionalData.TryReplace(viewModel);
 				PropertyChangedEventHandler summaryChanged = (s, e) =>
 				{
 					if (e.PropertyName is nameof(summarizationTask.LastGeneratedContent))
@@ -193,7 +193,7 @@ namespace LLMDesktopAssistant.LLM.Services
 						continue;
 				}
 
-				if (message.AdditionalViewModels.Has<ContextShieldViewModel>())
+				if (message.AdditionalData.Has<ContextShieldViewModel>())
 					break;
 
 				if (message is Domain.UserMessage userMessage)
@@ -207,7 +207,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				}
 
 				if (targetMessage != message &&
-					message.AdditionalViewModels.TryGet<SummaryViewModel>(out var summaryViewModel) &&
+					message.AdditionalData.TryGet<SummaryViewModel>(out var summaryViewModel) &&
 					summaryViewModel.Completed)
 				{
 					latestSummary = summaryViewModel.Summary;

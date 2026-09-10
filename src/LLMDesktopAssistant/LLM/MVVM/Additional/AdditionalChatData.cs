@@ -6,19 +6,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 	/// The base class for additional message view models.
 	/// This class is required to be BSON-serializable if not temporary.
 	/// </summary>
-	public class AdditionalMessageViewModel : NotifyPropertyChanged
+	public class AdditionalChatData : NotifyPropertyChanged
 	{
-		private Guid _guid = Guid.NewGuid();
-		/// <summary>
-		/// Gets or sets the GUID for this additional view model, used for persistence, especially for removing it from the database.
-		/// Do not change this GUID by itself.
-		/// </summary>
-		public Guid Guid
-		{
-			get => _guid;
-			set => SetProperty(ref _guid, value);
-		}
-
 		/// <summary>
 		/// Gets the order of this additional view model. Used for sorting in the UI. Lower values appear first.
 		/// </summary>
@@ -41,6 +30,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 		/// Gets or sets a value indicating whether the additional view model is temporary.
 		/// Temporary view models are not stored in the database, and are only used for short-lived operations.
 		/// </summary>
+		[BsonIgnore]
 		public bool IsTemporary
 		{
 			get => _isTemporary;

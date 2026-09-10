@@ -116,7 +116,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			{
 				InterruptingSuccess = result.InterruptingSuccess,
 				InterruptingContent = result.InterruptingContent,
-				InterruptingAttachments = result.InterruptingAdditionalViewModels
+				InterruptingAttachments = result.InterruptingAdditionalData
 					.OfType<AttachmentMessagePart>().Select(TryConvertAttachment)
 					.Where(a => a != null).ToImmutableList()!,
 				ExpectedBehaviour = result.ExpectedBehaviour ?? ChatToolInfo.DefaultExpectedBehaviour,
@@ -134,7 +134,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 			{
 				Success = success,
 				Content = result.ResultContent,
-				Attachments = result.AdditionalViewModels
+				Attachments = result.AdditionalData
 					.OfType<AttachmentMessagePart>().Select(TryConvertAttachment)
 					.Where(a => a != null).ToImmutableList()!
 			};

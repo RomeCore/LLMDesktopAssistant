@@ -6,7 +6,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional.Context
 	/// ViewModel for summarizing messages.
 	/// </summary>
 	[ViewModelFor(typeof(SummaryView))]
-	public class SummaryViewModel : AdditionalMessageViewModel
+	public class SummaryViewModel : AdditionalChatData
 	{
 		private string _summary = string.Empty;
 		public string Summary

@@ -159,7 +159,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		/// Gets the attachment parts stored in the additional view models of a chat object (message or tool call).
 		/// </summary>
 		private static IEnumerable<AttachmentMessagePart> GetAttachmentParts(ChatObjectBase chatObject) =>
-			chatObject.AdditionalViewModels.GetAll<AttachmentMessagePart>();
+			chatObject.AdditionalData.GetAll<AttachmentMessagePart>();
 
 		private RCLargeLanguageModels.Messages.UserMessage BuildUserMessage(BranchedMessage message,
 			TemplateFunctionSet functions)
@@ -414,7 +414,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				var branchedMessage = messagesToProcess[i];
 				var message = branchedMessage.Message;
 
-				if (readContext.AllowContextShields && message.AdditionalViewModels.Has<ContextShieldViewModel>())
+				if (readContext.AllowContextShields && message.AdditionalData.Has<ContextShieldViewModel>())
 				{
 					break;
 				}
@@ -447,7 +447,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				}
 
 				if (readContext.AllowSummaries &&
-					message.AdditionalViewModels.TryGet<SummaryViewModel>(out var summaryViewModel) &&
+					message.AdditionalData.TryGet<SummaryViewModel>(out var summaryViewModel) &&
 					summaryViewModel.Completed)
 				{
 					summaryOfPrevMessages = summaryViewModel.Summary;

@@ -2,7 +2,7 @@ using LLMDesktopAssistant.LLM.MVVM.Additional;
 
 namespace LLMDesktopAssistant.Prompting.Hooks;
 
-public class AttachedMessageAdditionalViewModel : AdditionalMessageViewModel
+public class AttachedMessageAdditionalViewModel : AdditionalChatData
 {
 	private AttachedMessageMode _mode = AttachedMessageMode.Prepend;
 	/// <summary>

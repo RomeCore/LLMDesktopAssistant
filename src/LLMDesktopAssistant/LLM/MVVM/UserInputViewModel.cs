@@ -494,7 +494,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			{
 				Content = _text,
 				SenderLogin = SelectedUser?.Login ?? userManager.GetLocalUsers().FirstOrDefault()?.Login ?? "user",
-				Parts = _attachments.Select(a => (AdditionalMessageViewModel)a.Attachment).ToImmutableList(),
+				Parts = _attachments.Select(a => (AdditionalChatData)a.Attachment).ToImmutableList(),
 				Visibility = _selectedVisibility.Visibility,
 			};
 		}
@@ -511,7 +511,7 @@ namespace LLMDesktopAssistant.LLM.MVVM
 			}
 			EditingMessage = branchedMessage;
 			Text = userMessage.Content;
-			Attachments = userMessage.AdditionalViewModels.GetAll<AttachmentMessagePart>()
+			Attachments = userMessage.AdditionalData.GetAll<AttachmentMessagePart>()
 				.Select(a => new AttachmentViewModel(this, a)).ToList();
 		}
 

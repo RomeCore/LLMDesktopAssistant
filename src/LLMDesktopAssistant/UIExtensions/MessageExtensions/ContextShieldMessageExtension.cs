@@ -22,7 +22,7 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 
 			Command = new RelayCommand(() =>
 			{
-				var viewModels = viewModel.Message.AdditionalViewModels;
+				var viewModels = viewModel.Message.AdditionalData;
 				var existing = viewModels.TryGet<ContextShieldViewModel>();
 				if (existing != null)
 				{

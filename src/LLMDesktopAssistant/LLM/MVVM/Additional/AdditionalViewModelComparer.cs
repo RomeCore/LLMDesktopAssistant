@@ -1,10 +1,10 @@
 namespace LLMDesktopAssistant.LLM.MVVM.Additional
 {
-	public class AdditionalViewModelComparer : IComparer<AdditionalMessageViewModel>
+	public class AdditionalViewModelComparer : IComparer<AdditionalChatData>
 	{
 		public static AdditionalViewModelComparer Instance { get; } = new();
 
-		public int Compare(AdditionalMessageViewModel? x, AdditionalMessageViewModel? y)
+		public int Compare(AdditionalChatData? x, AdditionalChatData? y)
 		{
 			if (x is null && y is null) return 0;
 			if (x is null) return -1;

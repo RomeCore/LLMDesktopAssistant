@@ -17,6 +17,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 	{
 		private readonly ChatDatabase _database;
 		private readonly IChatSettingsService _chatSettings;
+		private readonly AdditionalChatDataCollectionSynchronizer _additionalDataSynchronizer;
 		private ChangeTracker? _userInputTracker;
 
 		/// <summary>
@@ -55,6 +56,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 					LastModifiedAt = DateTime.Now
 				};
 				database.Chats.Insert(model);
+				target.Id = model.Id;
 			}
 			else
 			{
@@ -64,6 +66,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 				chatSettings.SetSettings(SettingsManager.Get<ChatSettings>(model.SettingsProfile));
 			}
 
+			_additionalDataSynchronizer = AdditionalChatDataCollectionSynchronizer.FromOwnerModels(database, target, ChatDataParentKind.Chat, target.Id);
 			Model = model;
 
 			// Attach the persisted input state: the same object lives in both the domain and the model,
@@ -123,6 +126,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 			if (disposing)
 			{
 				Target.PropertyChanged -= OnChatPropertyChanged;
+				_additionalDataSynchronizer.Dispose();
 				_userInputTracker?.Dispose();
 				_userInputTracker = null;
 			}

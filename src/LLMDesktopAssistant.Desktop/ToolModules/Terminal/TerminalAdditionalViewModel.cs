@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 	/// Uses Iciclecreek.Avalonia.Terminal to show live process output.
 	/// </summary>
 	[ViewModelFor(typeof(TerminalAdditionalView))]
-	public class TerminalAdditionalViewModel : AdditionalMessageViewModel
+	public class TerminalAdditionalViewModel : AdditionalChatData
 	{
 		private readonly TaskCompletionSource<int> _exitCodeTcs = new();
 

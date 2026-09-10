@@ -3,9 +3,9 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Additional
 {
-	public class AdditionalMessageViewModelCollection : RangeObservableOrderedCollection<AdditionalMessageViewModel>
+	public class AdditionalChatDataCollection : RangeObservableOrderedCollection<AdditionalChatData>
 	{ 
-		public AdditionalMessageViewModelCollection()
+		public AdditionalChatDataCollection()
 		{
 			RaiseInUIThread = true;
 			Comparer = AdditionalViewModelComparer.Instance;
@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 		/// </summary>
 		/// <typeparam name="T">The type of the additional view model to get.</typeparam>
 		/// <returns>The first additional view model of the specified type, or null if none is found.</returns>
-		public bool Has<T>() where T : AdditionalMessageViewModel
+		public bool Has<T>() where T : AdditionalChatData
 		{
 			lock (SyncRoot)
 				for (int i = 0; i < Items.Count; i++)
@@ -30,7 +30,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 		/// </summary>
 		/// <typeparam name="T">The type of the additional view model to get.</typeparam>
 		/// <returns>The first additional view model of the specified type, or null if none is found.</returns>
-		public T? TryGet<T>() where T : AdditionalMessageViewModel
+		public T? TryGet<T>() where T : AdditionalChatData
 		{
 			lock (SyncRoot)
 				for (int i = 0; i < Items.Count; i++)
@@ -45,7 +45,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 		/// <typeparam name="T">The type of the additional view model to get.</typeparam>
 		/// <param name="viewModel">The output parameter that will contain the first additional view model of the specified type, or null if none is found.</param>
 		/// <returns>True if the first additional view model of the specified type was found and assigned to the output parameter, otherwise false.</returns>
-		public bool TryGet<T>([NotNullWhen(true)] out T viewModel) where T : AdditionalMessageViewModel
+		public bool TryGet<T>([NotNullWhen(true)] out T viewModel) where T : AdditionalChatData
 		{
 			lock (SyncRoot)
 				for (int i = 0; i < Items.Count; i++)
@@ -63,7 +63,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 		/// </summary>
 		/// <typeparam name="T">The type of the additional view models to get.</typeparam>
 		/// <returns>A collection of all additional view models of the specified type.</returns>
-		public List<T> GetAll<T>() where T : AdditionalMessageViewModel
+		public List<T> GetAll<T>() where T : AdditionalChatData
 		{
 			var list = new List<T>();
 			lock (SyncRoot)
@@ -79,7 +79,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 		/// </summary>
 		/// <typeparam name="T">The type of the additional view model to replace.</typeparam>
 		/// <param name="viewModel">The new additional view model to replace the existing one with.</param>
-		public void TryReplace<T>(T viewModel) where T : AdditionalMessageViewModel
+		public void TryReplace<T>(T viewModel) where T : AdditionalChatData
 		{
 			int replaceIndex = -1;
 

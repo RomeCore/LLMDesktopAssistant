@@ -29,13 +29,13 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 		/// <summary>
 		/// Mirrors the <paramref name="source"/> collection into the <paramref name="target"/> collection:
 		/// removes items that are not present in the source and adds items that are missing from the target.
-		/// Used to copy additional view models (parts) of a tool result into the executing tool call.
+		/// Used to copy additional data of a tool result into the executing tool call.
 		/// </summary>
-		private static void SyncAdditionalViewModels(AdditionalMessageViewModelCollection target, IEnumerable<AdditionalMessageViewModel> source)
+		private static void SyncAdditionalData(AdditionalChatDataCollection target, IEnumerable<AdditionalChatData> source)
 		{
 			var sourceList = source.ToList();
 
-			foreach (var existing in target.GetAll<AdditionalMessageViewModel>())
+			foreach (var existing in target)
 			{
 				if (!sourceList.Contains(existing))
 					target.Remove(existing);
@@ -175,7 +175,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 								else
 									toolCall.ResultContent = "Tool failed with no result.";
 							}
-							SyncAdditionalViewModels(toolCall.AdditionalViewModels, preExecutionResult.InterruptingAdditionalViewModels);
+							toolCall.AdditionalData.Reset(preExecutionResult.InterruptingAdditionalData);
 							return;
 						}
 					}
@@ -329,7 +329,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				toolCall.StructuredResult = reactiveResult.StructuredResult;
 				toolCall.UseMarkdown = reactiveResult.UseMarkdown;
 				toolCall.ResultContent = reactiveResult.ResultContent;
-				SyncAdditionalViewModels(toolCall.AdditionalViewModels, reactiveResult.AdditionalViewModels);
+				toolCall.AdditionalData.Reset(reactiveResult.AdditionalData);
 
 				void OnReactiveResultChanged(object? sender, PropertyChangedEventArgs e)
 				{
@@ -353,13 +353,13 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				{
 					toolCall.ResultContent = reactiveResult.ResultContent;
 				}
-				void OnReactiveResultAdditionalViewModelsChanged(object? sender, object? e)
+				void OnReactiveResultAdditionalDataChanged(object? sender, object? e)
 				{
-					SyncAdditionalViewModels(toolCall.AdditionalViewModels, reactiveResult.AdditionalViewModels);
+					SyncAdditionalData(toolCall.AdditionalData, reactiveResult.AdditionalData);
 				}
 				reactiveResult.PropertyChanged += OnReactiveResultChanged;
 				reactiveResult.ResultContentLines.CollectionChanged += OnReactiveResultContentChanged;
-				reactiveResult.AdditionalViewModels.CollectionChanged += OnReactiveResultAdditionalViewModelsChanged;
+				reactiveResult.AdditionalData.CollectionChanged += OnReactiveResultAdditionalDataChanged;
 
 				bool success = false;
 				try
@@ -368,12 +368,16 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				}
 				finally
 				{
+					reactiveResult.PropertyChanged -= OnReactiveResultChanged;
+					reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultContentChanged;
+					reactiveResult.AdditionalData.CollectionChanged -= OnReactiveResultAdditionalDataChanged;
+
 					toolCall.ReactiveToolResult = null;
 
 					// Update again, because tool can be TOO FAST
 					toolCall.StatusIcon = reactiveResult.StatusIcon;
 					toolCall.StatusTitle = reactiveResult.StatusTitle;
-					SyncAdditionalViewModels(toolCall.AdditionalViewModels, reactiveResult.AdditionalViewModels);
+					SyncAdditionalData(toolCall.AdditionalData, reactiveResult.AdditionalData);
 
 					if (string.IsNullOrEmpty(toolCall.ResultContent))
 					{
@@ -398,10 +402,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 					toolCall.Status = cancellationToken.IsCancellationRequested ? ToolStatus.Cancelled :
 						(success ? ToolStatus.Success : ToolStatus.Error);
-
-					reactiveResult.PropertyChanged -= OnReactiveResultChanged;
-					reactiveResult.ResultContentLines.CollectionChanged -= OnReactiveResultContentChanged;
-					reactiveResult.AdditionalViewModels.CollectionChanged -= OnReactiveResultAdditionalViewModelsChanged;
 				}
 
 				return;

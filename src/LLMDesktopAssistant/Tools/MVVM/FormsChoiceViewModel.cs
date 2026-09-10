@@ -29,7 +29,7 @@ public class ChoiceOption : NotifyPropertyChanged
 }
 
 [ViewModelFor(typeof(FormsChoiceView))]
-public class FormsChoiceViewModel : AdditionalMessageViewModel
+public class FormsChoiceViewModel : AdditionalChatData
 {
 	private readonly TaskCompletionSource<ChoiceResult> _tcs = new();
 

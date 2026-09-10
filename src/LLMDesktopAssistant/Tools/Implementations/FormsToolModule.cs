@@ -94,7 +94,7 @@ public class FormsToolModule : ToolModule
 			IsDanger = isDanger ?? false
 		};
 
-		message.AdditionalViewModels.Add(viewModel);
+		message.AdditionalData.Add(viewModel);
 
 		bool confirmed;
 		try
@@ -104,7 +104,7 @@ public class FormsToolModule : ToolModule
 		}
 		catch (OperationCanceledException)
 		{
-			message.AdditionalViewModels.Remove(viewModel);
+			message.AdditionalData.Remove(viewModel);
 			return ReactiveToolResult.CreateError("User cancelled the operation or the request was interrupted.");
 		}
 
@@ -151,7 +151,7 @@ public class FormsToolModule : ToolModule
 			MaxSelect = maxSelect ?? (allowMultiple == true ? options.Length : 1)
 		};
 
-		message.AdditionalViewModels.Add(viewModel);
+		message.AdditionalData.Add(viewModel);
 
 		ChoiceResult result;
 		try
@@ -161,7 +161,7 @@ public class FormsToolModule : ToolModule
 		}
 		catch (OperationCanceledException)
 		{
-			message.AdditionalViewModels.Remove(viewModel);
+			message.AdditionalData.Remove(viewModel);
 			return ReactiveToolResult.CreateError("User cancelled the selection.");
 		}
 
@@ -216,7 +216,7 @@ public class FormsToolModule : ToolModule
 			Description = description ?? string.Empty
 		};
 
-		message.AdditionalViewModels.Add(viewModel);
+		message.AdditionalData.Add(viewModel);
 
 		InputResult result;
 		try
@@ -226,7 +226,7 @@ public class FormsToolModule : ToolModule
 		}
 		catch (OperationCanceledException)
 		{
-			message.AdditionalViewModels.Remove(viewModel);
+			message.AdditionalData.Remove(viewModel);
 			return ReactiveToolResult.CreateError("User cancelled data input.");
 		}
 
@@ -262,7 +262,7 @@ public class FormsToolModule : ToolModule
 			AllowMultiple = allowMultiple
 		};
 
-		message.AdditionalViewModels.Add(viewModel);
+		message.AdditionalData.Add(viewModel);
 
 		try
 		{
@@ -276,7 +276,7 @@ public class FormsToolModule : ToolModule
 		}
 		catch (OperationCanceledException)
 		{
-			message.AdditionalViewModels.Remove(viewModel);
+			message.AdditionalData.Remove(viewModel);
 			return ReactiveToolResult.CreateError("User cancelled file selection.");
 		}
 	}

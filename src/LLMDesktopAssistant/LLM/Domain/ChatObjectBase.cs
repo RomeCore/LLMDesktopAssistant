@@ -13,15 +13,10 @@ namespace LLMDesktopAssistant.LLM.Domain
 		public DateTime CreatedAt { get; internal set; }
 
 		/// <summary>
-		/// Gets or sets the ID of the chat object.
-		/// </summary>
-		public int Id { get; internal set; }
-
-		/// <summary>
 		/// The collection of additional view models associated with this chat message.
 		/// These can be used for displaying extra information in the UI or store additional data.
 		/// </summary>
-		public AdditionalMessageViewModelCollection AdditionalViewModels
+		public AdditionalChatDataCollection AdditionalData
 		{
 			get => field ??= [];
 			set => (field ??= []).Reset(value);
