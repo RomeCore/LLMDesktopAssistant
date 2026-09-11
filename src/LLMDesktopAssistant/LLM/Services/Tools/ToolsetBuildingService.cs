@@ -1,137 +1,52 @@
 using AngleSharp.Common;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Tools.Meta;
 
 namespace LLMDesktopAssistant.LLM.Services.Tools
 {
 	/// <summary>
 	/// The default implementation of the <see cref="IToolsetBuildingService"/> interface.
 	/// </summary>
-	[ChatService(typeof(IToolsetBuildingService))]
+	[ChatService(typeof(IAddonSetCollector<ToolInfo>))]
 	public class ToolsetBuildingService(
 		Chat chat,
 		IChatSettingsService chatSettings,
 		IMCPManagementService mcpManager,
 		IServiceProvider services
-		) : IToolsetBuildingService
+		) : AddonSetCollectorBase<ToolInfo, ToolChange>(services)
 	{
-		public IEnumerable<ToolInfo> GetAvailableTools()
+		private readonly IServiceProvider _services = services;
+
+		protected override IEnumerable<ToolInfo> GetAdditionalAddons()
 		{
-			var metatoolManager = services.GetService<IMetaToolManagementService>();
-
-			return services.GetServices<ToolModule>()
-
+			return _services.GetServices<ToolModule>()
 				.Concat(chat.AdditionalTools ?? [])
 				.Concat(mcpManager.GetMCPTools())
-
-				.SelectMany(m => m.GetTools())
-
-				.Concat(metatoolManager?.GetMetaTools() ?? [])
-
-				.GroupBy(t => t.Tool.Name)
-				.Select(g =>
-				{
-					ImmutableList<ToolInfo>.Builder? overridesBuilder = null;
-					ToolInfo? last = null;
-					foreach (var skill in g)
-					{
-						if (last is not null)
-						{
-							overridesBuilder ??= ImmutableList.CreateBuilder<ToolInfo>();
-							overridesBuilder.Add(last);
-						}
-						last = skill;
-					}
-					if (overridesBuilder == null)
-						return last!;
-					return new ToolInfo
-					{
-						Name = last!.Name,
-						Aliases = last.Aliases,
-						DescriptionGetter = last.DescriptionGetter,
-						ArgumentSchema = last.ArgumentSchema,
-						OutputSchema = last.OutputSchema,
-						StreamingArgumentsAnalyser = last.StreamingArgumentsAnalyser,
-						PreviewExecutor = last.PreviewExecutor,
-						DefaultExpectedBehaviour = last.DefaultExpectedBehaviour,
-						SpecifierAnalyzer = last.SpecifierAnalyzer,
-						DefaultSelfHandledDecisions = last.DefaultSelfHandledDecisions,
-						Executor = last.Executor,
-						SynchronizationGroup = last.SynchronizationGroup,
-						TitleKey = last.TitleKey,
-						DescriptionKey = last.DescriptionKey,
-						CategoryKey = last.CategoryKey,
-						Source = last.Source,
-						Enabled = last.Enabled,
-						IsFixed = last.IsFixed,
-						ApprovalLevel = last.ApprovalLevel,
-						PolicyMask = last.PolicyMask,
-						SpecifierUnionMode = last.SpecifierUnionMode,
-						SpecifierAggregationMode = last.SpecifierAggregationMode,
-						SpecifierParameters = last.SpecifierParameters,
-						Specifiers = last.Specifiers,
-						Overrides = overridesBuilder.ToImmutable()
-					};
-				});
+				.SelectMany(m => m.GetTools());
 		}
 
-		public IEnumerable<ToolInfo> GetToolsForAgent(ChatAgentDescriptor agent)
+		public override IEnumerable<ToolInfo> GetAddonsForAgent(ChatAgentDescriptor agent)
 		{
-			if (!chatSettings.Settings.Tools.EnableTools)
-				return [];
-
 			var settings = agent.Tools;
 			if (!settings.EnableTools)
 				return [];
 
-			var tools = GetAvailableTools();
-			var result = new List<ToolInfo>();
-
 			var toolset = settings.GetEffectiveToolset(chatSettings.Settings).GetEffectiveConfiguration();
-			var changes = toolset.ToolChanges.ToDictionary(c => c.ToolName, c => c);
-			foreach (var toolInfo in tools)
-			{
-				if (changes.TryGetValue(toolInfo.Tool.Name, out var change))
-				{
-					if (toolInfo.IsFixed || (change.Enabled ?? toolInfo.Enabled ?? toolset.ToolsEnabledByDefault))
-						result.Add(new ToolInfo
-						{
-							Name = toolInfo.Name,
-							Aliases = toolInfo.Aliases,
-							DescriptionGetter = toolInfo.DescriptionGetter,
-							ArgumentSchema = toolInfo.ArgumentSchema,
-							OutputSchema = toolInfo.OutputSchema,
-							StreamingArgumentsAnalyser = toolInfo.StreamingArgumentsAnalyser,
-							PreviewExecutor = toolInfo.PreviewExecutor,
-							DefaultExpectedBehaviour = toolInfo.DefaultExpectedBehaviour,
-							SpecifierAnalyzer = toolInfo.SpecifierAnalyzer,
-							DefaultSelfHandledDecisions = toolInfo.DefaultSelfHandledDecisions,
-							Executor = toolInfo.Executor,
-							SynchronizationGroup = toolInfo.SynchronizationGroup,
-							TitleKey = toolInfo.TitleKey,
-							DescriptionKey = toolInfo.DescriptionKey,
-							CategoryKey = toolInfo.CategoryKey,
-							Source = toolInfo.Source,
-							Enabled = true,
-							IsFixed = toolInfo.IsFixed,
-							ApprovalLevel = change.ApprovalLevel ?? toolInfo.ApprovalLevel ?? toolset.DefaultApprovalLevel,
-							PolicyMask = change.PolicyMask ?? toolInfo.PolicyMask,
-							SpecifierUnionMode = change.SpecifierUnionMode ?? toolInfo.SpecifierUnionMode,
-							SpecifierAggregationMode = change.SpecifierAggregationMode ?? toolInfo.SpecifierAggregationMode,
-							SpecifierParameters = toolInfo.SpecifierParameters,
-							Specifiers = [.. change.Specifiers]
-						});
-				}
-				else
-				{
-					if (toolInfo.Enabled ?? toolset.ToolsEnabledByDefault)
-						result.Add(toolInfo);
-				}
-			}
+			return GetAddonsWithChanges(toolset.ToolChanges, agent, toolset.ToolsEnabledByDefault, toolset.ToolsHiddenByDefault);
+		}
 
-			return result;
+		protected override void ApplyChange(ToolInfo target, ToolChange change, ChatAgentDescriptor agent)
+		{
+			base.ApplyChange(target, change, agent);
+			target.ApprovalLevel = change.ApprovalLevel ?? target.ApprovalLevel ??
+				agent.Tools.GetEffectiveToolset(chatSettings.Settings).GetEffectiveConfiguration().DefaultApprovalLevel;
+			target.PolicyMask = change.PolicyMask ?? target.PolicyMask;
+			target.SpecifierUnionMode = change.SpecifierUnionMode ?? target.SpecifierUnionMode;
+			target.SpecifierAggregationMode = change.SpecifierAggregationMode ?? target.SpecifierAggregationMode;
+			target.SpecifierParameters = target.SpecifierParameters;
+			target.Specifiers = [.. change.Specifiers];
 		}
 	}
 }

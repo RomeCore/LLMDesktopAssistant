@@ -2,11 +2,9 @@ using System.ComponentModel;
 using System.Text;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Data.Connectors;
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
-using LLMDesktopAssistant.Tools.Meta;
-using Material.Icons;
 using LLMDesktopAssistant.Localization;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
@@ -43,7 +41,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Lists the database connections configured in the chat settings (named connections and the custom one) and the currently active session connection.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.None,
-				TitleKey = Locale.GetKey("tool.name.db-list"),
+				NameKey = Locale.GetKey("tool.name.db-list"),
 				DescriptionKey = Locale.GetKey("tool.description.db-list"),
 				CategoryKey = Locale.GetKey("tool.category.database")
 			});
@@ -57,7 +55,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Activates a database connection for the current chat session: a named connection from the chat settings (pass its name, see db-list) or a custom database by a raw connection string with the specified connector type. Only switches the active connection string; the real connection is opened lazily on the first use (db-schema or db-execute).
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.DatabaseCustomConnect,
-				TitleKey = Locale.GetKey("tool.name.db-switch"),
+				NameKey = Locale.GetKey("tool.name.db-switch"),
 				DescriptionKey = Locale.GetKey("tool.description.db-switch"),
 				CategoryKey = Locale.GetKey("tool.category.database"),
 				ModifyArgumentSchema = schema =>
@@ -79,7 +77,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					Call db-connect first if no connection is active.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.DatabaseRead,
-				TitleKey = Locale.GetKey("tool.name.db-schema"),
+				NameKey = Locale.GetKey("tool.name.db-schema"),
 				DescriptionKey = Locale.GetKey("tool.description.db-schema"),
 				CategoryKey = Locale.GetKey("tool.category.database")
 			});
@@ -94,7 +92,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					SELECT-like statements return a markdown table of rows; modifying statements (INSERT, UPDATE, DELETE, DDL) return the number of affected rows.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.DatabaseRead | ToolBehaviour.DatabaseChange,
-				TitleKey = Locale.GetKey("tool.name.db-execute"),
+				NameKey = Locale.GetKey("tool.name.db-execute"),
 				DescriptionKey = Locale.GetKey("tool.description.db-execute"),
 				CategoryKey = Locale.GetKey("tool.category.database")
 			});

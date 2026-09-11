@@ -57,11 +57,6 @@ name.memory-retrieve_fact: Найти факты в памяти
 name.memory-search_log: Найти логи в памяти
 name.memory-store_fact: Сохранить факт в память
 name.memory-view_logs: Просмотреть логи памяти
-name.metatools-create_or_update: Создать или обновить мета-инструмент
-name.metatools-delete: Удалить мета-инструмент
-name.metatools-get_info: Получить информацию о мета-инструменте
-name.metatools-list: Получить список мета-инструментов
-name.metatools-rename: Переименовать мета-инструмент
 name.python-get_installed_packages_list: Получить список установленных пакетов Python
 name.random-check_chance: Проверка шанса
 name.random-coin_flip: Подкинуть монетку
@@ -140,11 +135,6 @@ description.memory-retrieve_fact: Находит факты в блоках па
 description.memory-search_log: Ищет записи в журнале событий блоков памяти по текстовому запросу.
 description.memory-store_fact: Сохраняет факт в указанном блоке памяти с заданной степенью важности.
 description.memory-view_logs: Показывает записи журнала событий блоков памяти, сначала самые новые; можно задать временной диапазон.
-description.metatools-create_or_update: Создаёт новый пользовательский инструмент или обновляет существующий: задаёт имя, описание, параметры и исполняемый код.
-description.metatools-delete: Удаляет существующий пользовательский инструмент.
-description.metatools-get_info: Возвращает полные сведения о пользовательском инструменте: описание, параметры, исполняемый код и другие настройки.
-description.metatools-list: Показывает все существующие пользовательские инструменты с их именами и названиями.
-description.metatools-rename: Переименовывает существующий пользовательский инструмент.
 description.python-get_installed_packages_list: Показывает список пакетов, установленных в текущем виртуальном окружении Python.
 description.random-GUID: Создаёт новый глобально уникальный идентификатор (GUID), пригодный для обозначения или идентификации объектов.
 description.random-check_chance: Проверяет, сработает ли указанный шанс (в процентах), и сообщает об успехе или неудаче.
@@ -178,7 +168,6 @@ category.forms: Формы
 category.general: Общие
 category.mathematics: Математика
 category.memory: Память
-category.metatools: Мета-инструменты
 category.random: Рандом
 category.scripting: Скриптинг
 category.skills: Навыки
@@ -238,8 +227,8 @@ behaviour.readsecrets: Чтение секретов и конфиденциал
 behaviour.readsecrets.hint: Инструмент может раскрыть пароли, API-ключи или токены.
 behaviour.runterminal: Запуск в терминале
 behaviour.runterminal.hint: Инструмент запускает команды во встроенном терминале с интерактивным вводом/выводом.
-behaviour.scriptaccess: Доступ к инструментам и скриптам
-behaviour.scriptaccess.hint: Инструмент создаёт, изменяет или удаляет другие инструменты и пользовательские скрипты во время выполнения.
+behaviour.scriptedit: Изменение скриптов
+behaviour.scriptedit.hint: Инструмент создаёт, изменяет или удаляет пользовательские скрипты и другие исполняемые файлы во время выполнения.
 behaviour.semanticmemoryclear: Очистка семантической памяти
 behaviour.semanticmemoryclear.hint: Инструмент очищает блоки семантической памяти и может привести к потере данных.
 behaviour.semanticmemorydelete: Удаление вхождений семантической памяти
@@ -248,6 +237,12 @@ behaviour.semanticmemoryread: Чтение семантической памят
 behaviour.semanticmemoryread.hint: Инструмент может читать факты и логи из семантической памяти.
 behaviour.semanticmemorywrite: Запись в семантическую память
 behaviour.semanticmemorywrite.hint: Инструмент может записывать факты и логи в семантическую память.
+behaviour.skilledit: Изменение навыков
+behaviour.skilledit.hint: Инструмент создаёт, изменяет или удаляет навыки во время выполнения.
+behaviour.subagentedit: Изменение субагентов
+behaviour.subagentedit.hint: Инструмент создаёт, изменяет или удаляет определения субагентов во время выполнения.
+behaviour.tooledit: Изменение инструментов
+behaviour.tooledit.hint: Инструмент создаёт, изменяет или удаляет определения инструментов во время выполнения.
 behaviour.userinteraction: Взаимодействие с пользователем
 behaviour.userinteraction.hint: Инструмент требует ввода от пользователя через формы, подтверждения, выбор файлов и т.д.
 behaviour.workdirchange: Смена рабочей директории

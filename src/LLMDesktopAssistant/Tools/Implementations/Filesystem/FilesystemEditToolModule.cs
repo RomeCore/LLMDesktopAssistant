@@ -61,7 +61,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 							{ match: "class (\\w+)", replace: "class C_$1", useRegex: true }
 						])
 					""",
-				TitleKey = Locale.GetKey("tool.name.fs-edit"),
+				NameKey = Locale.GetKey("tool.name.fs-edit"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-edit"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,

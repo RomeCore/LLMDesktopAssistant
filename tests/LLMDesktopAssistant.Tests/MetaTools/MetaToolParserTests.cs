@@ -2,12 +2,13 @@ using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
+using LLMDesktopAssistant.Tools.Scripting;
 
 namespace LLMDesktopAssistant.Tests.MetaTools;
 
 public class MetaToolParserTests
 {
-	private sealed class TestEngineDescriptor : IMetaToolEngineDescriptor
+	private sealed class TestEngineDescriptor : IScriptableToolEngineDescriptor
 	{
 		public required ScriptLanguageType Language { get; init; }
 		public string MainExtension => Extensions[0];
@@ -20,7 +21,7 @@ public class MetaToolParserTests
 
 	private static readonly MetaToolParser Parser = new();
 
-	private static readonly IMetaToolEngineDescriptor LuaDescriptor = new TestEngineDescriptor
+	private static readonly IScriptableToolEngineDescriptor LuaDescriptor = new TestEngineDescriptor
 	{
 		Language = ScriptLanguageType.Lua,
 		Extensions = [".lua"],
@@ -28,7 +29,7 @@ public class MetaToolParserTests
 		FrontmatterEnd = "]]"
 	};
 
-	private static readonly IMetaToolEngineDescriptor PythonDescriptor = new TestEngineDescriptor
+	private static readonly IScriptableToolEngineDescriptor PythonDescriptor = new TestEngineDescriptor
 	{
 		Language = ScriptLanguageType.Python,
 		Extensions = [".py"],
@@ -72,7 +73,7 @@ public class MetaToolParserTests
 	private static string BuildPythonFile(string yaml, string code) => $"\"\"\"\n{yaml}\n\"\"\"\n{code}";
 
 	private static MetaToolInfo Deserialize(string content, string name = "get_weather", MetaToolSource source = MetaToolSource.UserProfile,
-		IMetaToolEngineDescriptor? descriptor = null)
+		IScriptableToolEngineDescriptor? descriptor = null)
 	{
 		return Parser.Parse(name, content, source, descriptor ?? LuaDescriptor);
 	}

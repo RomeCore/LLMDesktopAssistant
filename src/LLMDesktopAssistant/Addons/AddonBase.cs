@@ -31,6 +31,15 @@ namespace LLMDesktopAssistant.Addons
 		} = string.Empty;
 
 		/// <summary>
+		/// The aliases for the addon. These are alternative names that can be used to invoke the addon.
+		/// </summary>
+		public ImmutableList<string> Aliases
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = [];
+
+		/// <summary>
 		/// The dynamic description getter for the addon.
 		/// </summary>
 		[JsonIgnore]
@@ -145,7 +154,7 @@ namespace LLMDesktopAssistant.Addons
 		/// <summary>
 		/// The source of the addon.
 		/// </summary>
-		public AddonSource Source
+		public AddonSource AddonSource
 		{
 			get;
 			set => SetProperty(ref field, value);

@@ -53,7 +53,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 							}
 							return sp.EffectiveTemplate.Render(context, templateFunctions).ToString() ?? string.Empty;
 						}),
-						Source = AddonSource.Template,
+						AddonSource = AddonSource.Template,
 						TemplateSource = sp.Source,
 						ParameterSchema = sp.ParameterSchema
 					};
@@ -63,9 +63,9 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			return skills;
 		}
 
-		protected override void ApplyChange(SkillInfo target, SkillChange change)
+		protected override void ApplyChange(SkillInfo target, SkillChange change, ChatAgentDescriptor agent)
 		{
-			base.ApplyChange(target, change);
+			base.ApplyChange(target, change, agent);
 			target.InjectionMode = change.InjectionMode ?? target.InjectionMode;
 		}
 
@@ -79,7 +79,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				return [];
 
 			var skillset = settings.GetEffectiveSkillset(chatSettings.Settings);
-			return GetAddonsWithChanges(skillset.SkillChanges, skillset.SkillsEnabledByDefault);
+			return GetAddonsWithChanges(skillset.SkillChanges, agent, skillset.SkillsEnabledByDefault, hiddenByDefault: false);
 		}
 	}
 }

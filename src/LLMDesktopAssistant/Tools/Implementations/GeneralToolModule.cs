@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Executor = ClipboardCopy,
 				Name = "clipboard-copy",
 				Description = "Copies a piece of text to the clipboard, use when neccessary.",
-				TitleKey = Locale.GetKey("tool.name.clipboard-copy"),
+				NameKey = Locale.GetKey("tool.name.clipboard-copy"),
 				DescriptionKey = Locale.GetKey("tool.description.clipboard-copy"),
 				CategoryKey = Locale.GetKey("tool.category.general"),
 				DefaultExpectedBehaviour = ToolBehaviour.ClipboardWrite
@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Executor = ClipboardRead,
 				Name = "clipboard-read",
 				Description = "Reads the current content of the clipboard.",
-				TitleKey = Locale.GetKey("tool.name.clipboard-read"),
+				NameKey = Locale.GetKey("tool.name.clipboard-read"),
 				DescriptionKey = Locale.GetKey("tool.description.clipboard-read"),
 				CategoryKey = Locale.GetKey("tool.category.general"),
 				DefaultExpectedBehaviour = ToolBehaviour.ClipboardRead

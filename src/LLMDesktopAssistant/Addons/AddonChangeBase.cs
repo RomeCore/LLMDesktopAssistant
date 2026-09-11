@@ -16,6 +16,12 @@ namespace LLMDesktopAssistant.Addons
 			set => SetProperty(ref field, value);
 		}
 
+		public bool? Hidden
+		{
+			get;
+			set => SetProperty(ref field, value);
+		}
+
 		public ReactiveNodeValue? Parameters
 		{
 			get;

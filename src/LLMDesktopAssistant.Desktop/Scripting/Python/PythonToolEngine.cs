@@ -2,40 +2,38 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Desktop.Execution;
-using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Tools.Meta;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Tools.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LLMDesktopAssistant.Desktop.Scripting.Python
 {
 	/// <summary>
-	/// Python implementation of <see cref="IMetaToolEngine"/>.
-	/// Handles meta tools written in Python with YAML frontmatter in `"""` docstring blocks.
+	/// Python implementation of <see cref="IScriptableToolEngine"/>.
+	/// Handles tools written in Python with YAML frontmatter in `"""` docstring blocks.
 	/// Requires Python runtime and optional virtual environment.
 	/// Only available on Desktop platform.
 	/// </summary>
-	[Service(typeof(IMetaToolEngine))]
-	public class PythonMetaToolEngine : IMetaToolEngine
+	[Service(typeof(IScriptableToolEngine))]
+	public class PythonToolEngine : IScriptableToolEngine
 	{
 		private readonly IProcessLauncher _processLauncher;
 		private readonly PythonHelperService _pythonHelperService;
 
 		public ScriptLanguageType Language => ScriptLanguageType.Python;
 
-		public IMetaToolEngineDescriptor Descriptor { get; } = new PythonMetaToolEngineDescriptor();
+		public IScriptableToolEngineDescriptor Descriptor { get; } = new PythonToolEngineDescriptor();
 
-		public PythonMetaToolEngine(IProcessLauncher processLauncher, PythonHelperService pythonHelperService)
+		public PythonToolEngine(IProcessLauncher processLauncher, PythonHelperService pythonHelperService)
 		{
 			_processLauncher = processLauncher;
 			_pythonHelperService = pythonHelperService;
 		}
 
-		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaToolInfo tool)
+		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(ToolInfo tool)
 		{
 			return async (JsonNode? args, ToolExecutionContext context, CancellationToken cancellationToken) =>
 			{
@@ -46,7 +44,7 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 						sys.stdout.reconfigure(encoding="utf-8")
 						sys.stderr.reconfigure(encoding="utf-8")
 						tool_args = {SerializeNodeToPython(args)}
-						{tool.ExecutionCode}
+						{tool.Body}
 						""";
 
 					var chatSettings = context.Chat.Services.GetRequiredService<IChatSettingsService>().Settings;
@@ -59,7 +57,7 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 					try
 					{
 						process = _processLauncher.Launch(_pythonHelperService.CreateLaunchParameters(
-							chatSettings.Environment, $"python \"{tempPyFile}\"", "Python Meta", false, true), cancellationToken);
+							chatSettings.Environment, $"python \"{tempPyFile}\"", "Python Tool", false, true), cancellationToken);
 
 						int exitCode = await process;
 						return ReactiveToolResult.Create(exitCode == 0, process.Output + $"\nProcess exited with code {exitCode}. Check terminal output above for details.");

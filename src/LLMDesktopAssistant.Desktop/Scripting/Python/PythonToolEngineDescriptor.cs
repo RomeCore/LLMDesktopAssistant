@@ -1,13 +1,11 @@
 using LLMDesktopAssistant.Scripting;
-using LLMDesktopAssistant.Tools.Meta;
+using LLMDesktopAssistant.Tools.Scripting;
 
 namespace LLMDesktopAssistant.Desktop.Scripting.Python
 {
-	public class PythonMetaToolEngineDescriptor : IMetaToolEngineDescriptor
+	public class PythonToolEngineDescriptor : IScriptableToolEngineDescriptor
 	{
 		public ScriptLanguageType Language => ScriptLanguageType.Python;
-
-		public string MainExtension => ".py";
 
 		public string[] Extensions => [".py"];
 
@@ -37,10 +35,10 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 			title: My Tool
 			description: Describe what this tool does and when to use it.
 			category: general
-			approval_level: policy-based
+			approval-level: policy-based
 			behaviours:
 			  - file_read
-			argument_schema: |
+			argument-schema: |
 			  {
 			    "type": "object",
 			    "properties": {

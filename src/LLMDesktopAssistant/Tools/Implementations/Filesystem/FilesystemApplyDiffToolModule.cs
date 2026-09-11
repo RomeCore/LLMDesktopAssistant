@@ -36,7 +36,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					4: third line
 					Note: Works best if you know line numbers when looking file with fs-explore(showLineNumbers = true)
 					""",
-				TitleKey = Locale.GetKey("tool.name.fs-apply_diff"),
+				NameKey = Locale.GetKey("tool.name.fs-apply_diff"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-apply_diff"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,

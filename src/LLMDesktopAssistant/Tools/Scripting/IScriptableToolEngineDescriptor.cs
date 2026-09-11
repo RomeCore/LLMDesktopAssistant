@@ -1,12 +1,10 @@
 using LLMDesktopAssistant.Scripting;
 
-namespace LLMDesktopAssistant.Tools.Meta
+namespace LLMDesktopAssistant.Tools.Scripting
 {
-	public interface IMetaToolEngineDescriptor
+	public interface IScriptableToolEngineDescriptor
 	{
 		ScriptLanguageType Language { get; }
-
-		string MainExtension { get; }
 
 		string[] Extensions { get; }
 

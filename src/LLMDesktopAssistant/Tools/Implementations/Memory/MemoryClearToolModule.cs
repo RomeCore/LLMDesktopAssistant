@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					The block itself and its configuration are preserved.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryClear,
-				TitleKey = Locale.GetKey("tool.name.memory-clear"),
+				NameKey = Locale.GetKey("tool.name.memory-clear"),
 				DescriptionKey = Locale.GetKey("tool.description.memory-clear"),
 				CategoryKey = Locale.GetKey("tool.category.memory")
 			});

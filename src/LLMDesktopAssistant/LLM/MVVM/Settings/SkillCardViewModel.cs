@@ -196,17 +196,17 @@ public class SkillCardViewModel : ViewModelBase
 	/// <summary>
 	/// Gets the source of the skill.
 	/// </summary>
-	public AddonSource Source => _info.Source;
+	public AddonSource Source => _info.AddonSource;
 
 	/// <summary>
 	/// Gets the localized display name of the source.
 	/// </summary>
-	public string SourceDisplayName => LocalizeSource(_info.Source);
+	public string SourceDisplayName => LocalizeSource(_info.AddonSource);
 
 	/// <summary>
 	/// Gets the icon of the source.
 	/// </summary>
-	public MaterialIconKind SourceIcon => _info.Source switch
+	public MaterialIconKind SourceIcon => _info.AddonSource switch
 	{
 		AddonSource.Pack => _info.SourcePack?.Source is AddonPackSource.AgentsHome or AddonPackSource.UserAgentsHome
 			? MaterialIconKind.Folder

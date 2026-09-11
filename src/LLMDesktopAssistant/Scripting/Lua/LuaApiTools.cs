@@ -2,10 +2,9 @@ using System.Text.Json.Nodes;
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Tools.Meta;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
@@ -166,13 +165,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		{
 			var result = new LuaTable();
 			result["name"] = new LuaString(tool.Name);
-			result["description"] = new LuaString(tool.DescriptionGetter());
+			result["description"] = new LuaString(tool.Description);
 			result["category"] = new LuaString(tool.CategoryKey?.Key ?? string.Empty);
-			if (tool.TitleKey != null)
-				result["display_name"] = new LuaString(tool.TitleKey.Key);
+			if (tool.NameKey != null)
+				result["display_name"] = new LuaString(tool.NameKey.Key);
 			result["enabled"] = tool.Enabled is null ? LuaNil.Instance : LuaBoolean.FromBoolean(tool.Enabled.Value);
-			result["approval_level"] = tool.ApprovalLevel is null ? new LuaString("default") : new LuaString(MetaToolHumanizedEnumNames.SerializeApprovalLevel(tool.ApprovalLevel.Value));
-			result["source"] = new LuaString(tool.Source.ToString().ToLower());
+			result["approval_level"] = tool.ApprovalLevel is null ? new LuaString("default") :
+				new LuaString(KebabEnumNames<ToolApprovalLevel>.Serialize(tool.ApprovalLevel.Value) ?? "policy-based");
+			result["source"] = new LuaString(tool.ToolSource.ToString().ToLower());
 			result["arguments"] = StructuredLuaConverter.JsonNodeToLuaValue(tool.ArgumentSchema);
 			return result;
 		}

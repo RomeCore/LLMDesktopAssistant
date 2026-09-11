@@ -1,15 +1,14 @@
 using System.ComponentModel;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Specifiers;
 using LLMDesktopAssistant.Utils;
-using static AvaloniaEdit.Document.TextDocumentWeakEventManager;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
@@ -55,11 +54,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		{
 			_toolset = toolset;
 			_toolInfo = tool;
-			_change = _toolset.ToolChanges.FirstOrDefault(x => x.ToolName == tool.Name);
+			_change = _toolset.ToolChanges.FirstOrDefault(x => x.Name == tool.Name);
 
 			_toolset.PropertyChanged += Toolset_PropertyChanged;
 
-			switch (tool.Source)
+			switch (tool.ToolSource)
 			{
 				case ToolSource.MCP:
 					TitlePrefix = Locale.GetKey("tool.source.mcp");
@@ -73,8 +72,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			}
 
 			Name = tool.Name;
-			Title = tool.TitleKey ?? Locale.GetConstKey(tool.Name);
-			Description = tool.DescriptionKey ?? Locale.GetConstKey(tool.DescriptionGetter());
+			Title = tool.NameKey;
+			Description = tool.DescriptionKey;
 			Category = tool.CategoryKey ?? Locale.GetKey("tool.category.unknown");
 			ResetCommand = new RelayCommand(Reset);
 			AddSpecifierCommand = new RelayCommand(AddSpecifier);
@@ -131,7 +130,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				_change = new ToolChange
 				{
-					ToolName = Name,
+					Name = Name,
 					Enabled = null,
 					ApprovalLevel = null
 				};
@@ -397,7 +396,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			Title = title;
 			TitleSuffix = string.Format(Locale.Get("tool.name_suffix.hint"), ToolCount);
 
-			if (Tools.Select(t => t.Info.Source).GetAllEqualOrDefault() is ToolSource equalSource)
+			if (Tools.Select(t => t.Info.ToolSource).GetAllEqualOrDefault() is ToolSource equalSource)
 			{
 				switch (equalSource)
 				{
@@ -477,7 +476,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			Rename
 		}
 
-		private readonly IToolsetBuildingService _toolsetBuildingService;
+		private readonly IAddonSetCollector<ToolInfo> _toolsetBuildingService;
 		private readonly ChatSettings _chatSettings;
 		private IdEditMode _mode = IdEditMode.Create;
 
@@ -641,7 +640,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// <param name="settings">The agent tool settings to edit.</param>
 		/// <param name="toolsetBuildingService">The toolset building service used to enumerate available tools.</param>
 		/// <param name="chatSettings">The chat settings used to resolve inherited settings.</param>
-		public AgentToolSettingsViewModel(AgentToolSettings settings, IToolsetBuildingService toolsetBuildingService, ChatSettings chatSettings)
+		public AgentToolSettingsViewModel(AgentToolSettings settings, IAddonSetCollector<ToolInfo> toolsetBuildingService, ChatSettings chatSettings)
 		{
 			_toolsetBuildingService = toolsetBuildingService;
 			_chatSettings = chatSettings;
@@ -755,7 +754,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// </summary>
 		public void UpdateTools()
 		{
-			var tools = _toolsetBuildingService.GetAvailableTools();
+			var tools = _toolsetBuildingService.GetAvailableAddons();
 			var toolVMs = tools.Select(t => new ToolItemViewModel(t, EffectiveToolsetConfiguration));
 
 			foreach (var category in ToolCategories)

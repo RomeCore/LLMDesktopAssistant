@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
+using DocumentFormat.OpenXml.EMMA;
 using LLMDesktopAssistant.Addons.Parsers.Frontmatter;
 using LLMDesktopAssistant.StructuredValues.Converters;
 using RCParsing;
+using RCParsing.Building;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 
@@ -100,12 +102,13 @@ namespace LLMDesktopAssistant.Addons.Parsers
 			if (descriptor.RequiresFrontmatter)
 			{
 				ruleBuilder
-					.Rule(b => b
+					.Repeat(b => b
 						.Literal(descriptor.FrontmatterStart)
 						.TextUntil(descriptor.FrontmatterEnd).Label("frontmatter")
 						.Literal(descriptor.FrontmatterEnd)
-						.Transform(v => v["frontmatter"].Text)
-					).Label("frontmatter");
+						.Transform(v => v["frontmatter"].Text),
+					1, 1).Label("frontmatter")
+					.TransformLast(v => v[0].Value);
 			}
 			else
 			{

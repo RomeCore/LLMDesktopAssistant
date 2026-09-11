@@ -81,13 +81,13 @@ namespace LLMDesktopAssistant.MCP
 			var toolInfo = new ToolInfo
 			{
 				Name = name,
-				DescriptionGetter = () => description,
+				DescriptionGetter = _ => description,
 				ArgumentSchema = argSchema,
 				OutputSchema = mcpTool.ReturnJsonSchema?.ToNodeSafe() as JsonObject,
 				Executor = CreateExecutor(connection, mcpTool),
-				Source = ToolSource.MCP,
+				ToolSource = ToolSource.MCP,
 				DefaultExpectedBehaviour = ToolBehaviour.MCP,
-				TitleKey = Locale.GetConstKey(mcpTool.Title ?? mcpTool.Name),
+				NameKey = Locale.GetConstKey(mcpTool.Title ?? mcpTool.Name),
 				CategoryKey = Locale.GetConstKey(connection.Info.Name)
 			};
 			return toolInfo;

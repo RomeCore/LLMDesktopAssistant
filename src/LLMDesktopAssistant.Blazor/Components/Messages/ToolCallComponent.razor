@@ -83,7 +83,7 @@
 	protected override void OnInitialized()
 	{
 		_title = ToolsetCache.AvailableTools.GetValueOrDefault(ToolCall.ToolName)
-			?.TitleKey?.Value ?? LocalizationManager.LocalizeStatic(ToolCall.ToolName);
+			?.NameKey.Value ?? LocalizationManager.LocalizeStatic(ToolCall.ToolName);
 
 		ToolCall.PropertyChanged += OnToolCallPropertyChanged;
 	}

@@ -23,9 +23,9 @@ namespace LLMDesktopAssistant.Agents.Tasks
 
 		public override string Name => ChatToolInfo.Name;
 
-		public override string DisplayName => ChatToolInfo.TitleKey?.RawValue ?? ChatToolInfo.Name;
+		public override string DisplayName => ChatToolInfo.NameKey.RawValue ?? ChatToolInfo.Name;
 
-		public override string Description => ChatToolInfo.DescriptionGetter();
+		public override string Description => ChatToolInfo.Description;
 
 		public override JsonObject ArgumentSchema => ChatToolInfo.ArgumentSchema;
 

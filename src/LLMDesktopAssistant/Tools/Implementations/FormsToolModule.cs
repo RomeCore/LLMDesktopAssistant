@@ -26,7 +26,7 @@ public class FormsToolModule : ToolModule
 			Description = "Requests the user to confirm an action. " +
 				"Shows a message with 'Confirm' and 'Cancel' buttons. " +
 				"Use this tool when you need to ask the user for permission before performing an important or dangerous action.",
-			TitleKey = Locale.GetKey("tool.name.forms-confirm"),
+			NameKey = Locale.GetKey("tool.name.forms-confirm"),
 			DescriptionKey = Locale.GetKey("tool.description.forms-confirm"),
 			CategoryKey = Locale.GetKey("tool.category.forms"),
 			DefaultExpectedBehaviour = ToolBehaviour.UserInteraction
@@ -39,7 +39,7 @@ public class FormsToolModule : ToolModule
 			Description = "Offers the user to choose one or more options from a list. " +
 				"Can allow custom input (allowCustom). " +
 				"Use when the user needs to make a selection from the provided options.",
-			TitleKey = Locale.GetKey("tool.name.forms-choice"),
+			NameKey = Locale.GetKey("tool.name.forms-choice"),
 			DescriptionKey = Locale.GetKey("tool.description.forms-choice"),
 			CategoryKey = Locale.GetKey("tool.category.forms"),
 			DefaultExpectedBehaviour = ToolBehaviour.UserInteraction
@@ -52,7 +52,7 @@ public class FormsToolModule : ToolModule
 			Description = "Requests data input from the user via a form with one or more fields. " +
 				"Supports field types: text, number, password, multiline. " +
 				"Use when you need structured data from the user.",
-			TitleKey = Locale.GetKey("tool.name.forms-input"),
+			NameKey = Locale.GetKey("tool.name.forms-input"),
 			DescriptionKey = Locale.GetKey("tool.description.forms-input"),
 			CategoryKey = Locale.GetKey("tool.category.forms"),
 			DefaultExpectedBehaviour = ToolBehaviour.UserInteraction
@@ -65,7 +65,7 @@ public class FormsToolModule : ToolModule
 			Description = "Opens a file selection dialog for the user. " +
 				"Can filter by extensions and allow multiple file selection. " +
 				"Use when the user needs to specify a file path on their system.",
-			TitleKey = Locale.GetKey("tool.name.forms-file_picker"),
+			NameKey = Locale.GetKey("tool.name.forms-file_picker"),
 			DescriptionKey = Locale.GetKey("tool.description.forms-file_picker"),
 			CategoryKey = Locale.GetKey("tool.category.forms"),
 			DefaultExpectedBehaviour = ToolBehaviour.UserInteraction | ToolBehaviour.DirectoryRead

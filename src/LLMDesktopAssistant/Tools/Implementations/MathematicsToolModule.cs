@@ -47,7 +47,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					ln, log, log2, log10, logb, exp, pow, sqrt,
 					abs, min, max
 					""",
-				TitleKey = Locale.GetKey("tool.name.math-calculate"),
+				NameKey = Locale.GetKey("tool.name.math-calculate"),
 				DescriptionKey = Locale.GetKey("tool.description.math-calculate"),
 				CategoryKey = Locale.GetKey("tool.category.mathematics")
 			});
@@ -71,7 +71,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 					For complex roots, use 'math-solve-complex'.
 					""",
-				TitleKey = Locale.GetKey("tool.name.math-solve"),
+				NameKey = Locale.GetKey("tool.name.math-solve"),
 				DescriptionKey = Locale.GetKey("tool.description.math-solve"),
 				CategoryKey = Locale.GetKey("tool.category.mathematics")
 			});
@@ -93,7 +93,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 					The equation can be written as 'expression = 0' or 'expression'.
 					Scans the region [-reRange, reRange] x [-imRange, imRange] with given grid step.
 					""",
-				TitleKey = Locale.GetKey("tool.name.math-solve_complex"),
+				NameKey = Locale.GetKey("tool.name.math-solve_complex"),
 				DescriptionKey = Locale.GetKey("tool.description.math-solve_complex"),
 				CategoryKey = Locale.GetKey("tool.category.mathematics")
 			});

@@ -31,7 +31,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				StreamingAnalyzer = CheckWebsiteStatusStreaming,
 				Name = "web-status",
 				Description = "Check if a website is accessible and return status code.",
-				TitleKey = Locale.GetKey("tool.name.web-status"),
+				NameKey = Locale.GetKey("tool.name.web-status"),
 				DescriptionKey = Locale.GetKey("tool.description.web-status"),
 				CategoryKey = Locale.GetKey("tool.category.web"),
 				DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
@@ -43,7 +43,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				StreamingAnalyzer = WebRequestStreaming,
 				Name = "web-request",
 				Description = "Perform a request to a specified URL and method.",
-				TitleKey = Locale.GetKey("tool.name.web-request"),
+				NameKey = Locale.GetKey("tool.name.web-request"),
 				DescriptionKey = Locale.GetKey("tool.description.web-request"),
 				CategoryKey = Locale.GetKey("tool.category.web"),
 				DefaultExpectedBehaviour = ToolBehaviour.InternetAccess
@@ -56,7 +56,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				PreviewExecutor = DownloadFilePreview,
 				Name = "web-download",
 				Description = "Download a file from a specified URL into the working directory.",
-				TitleKey = Locale.GetKey("tool.name.web-download"),
+				NameKey = Locale.GetKey("tool.name.web-download"),
 				DescriptionKey = Locale.GetKey("tool.description.web-download"),
 				CategoryKey = Locale.GetKey("tool.category.web"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.InternetAccess

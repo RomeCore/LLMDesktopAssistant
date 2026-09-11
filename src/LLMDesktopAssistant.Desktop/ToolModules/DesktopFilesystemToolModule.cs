@@ -27,7 +27,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				PreviewExecutor = OpenFilePreview,
 				Name = "fs-open_file",
 				Description = "Opens a file from the working directory with its default application.",
-				TitleKey = Locale.GetKey("tool.name.fs-open_file"),
+				NameKey = Locale.GetKey("tool.name.fs-open_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-open_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.FileRead |
@@ -43,7 +43,7 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 				Description = "Opens a file or directory in the system file explorer. " +
 					"Files are revealed and selected, directories are opened, and non-existent paths " +
 					"fall back to opening their parent directory.",
-				TitleKey = Locale.GetKey("tool.name.fs-open_in_explorer"),
+				NameKey = Locale.GetKey("tool.name.fs-open_in_explorer"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-open_in_explorer"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.ExecuteExternalProcess | ToolBehaviour.AccessOutsideWorkdir

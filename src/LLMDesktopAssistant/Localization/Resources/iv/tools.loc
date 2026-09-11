@@ -57,11 +57,6 @@ name.memory-retrieve_fact: Retrieve memory facts
 name.memory-search_log: Search memory logs
 name.memory-store_fact: Store memory fact
 name.memory-view_logs: View memory logs
-name.metatools-create_or_update: Create or update meta-tool
-name.metatools-delete: Delete meta-tool
-name.metatools-get_info: Get information about meta-tool
-name.metatools-list: List meta-tools
-name.metatools-rename: Rename meta-tool
 name.python-get_installed_packages_list: Get Python installed packages
 name.random-check_chance: Check chance
 name.random-coin_flip: Flip a coin
@@ -140,11 +135,6 @@ description.memory-retrieve_fact: Finds facts in memory blocks matching the quer
 description.memory-search_log: Searches the event logs of memory blocks for entries matching a text query.
 description.memory-store_fact: Stores a fact in a memory block with a given importance rating.
 description.memory-view_logs: Shows event log entries from memory blocks, newest first, with optional time filtering.
-description.metatools-create_or_update: Creates a new custom tool or updates an existing one, defining its name, description, parameters, and execution script.
-description.metatools-delete: Deletes an existing custom tool.
-description.metatools-get_info: Returns full details about a custom tool: description, parameters, execution script, and other settings.
-description.metatools-list: Lists all existing custom tools with their names and titles.
-description.metatools-rename: Renames an existing custom tool to a new name.
 description.python-get_installed_packages_list: Lists the packages installed in the current Python virtual environment.
 description.random-GUID: Generates a new globally unique identifier (GUID) that can be used to label or identify objects.
 description.random-check_chance: Checks whether a given probability (as a percentage) comes true and returns success or failure.
@@ -178,7 +168,6 @@ category.forms: Forms
 category.general: General
 category.mathematics: Mathematics
 category.memory: Memory
-category.metatools: Meta-tools
 category.random: Random
 category.scripting: Scripting
 category.skills: Skills
@@ -238,8 +227,8 @@ behaviour.readsecrets: Read secrets and sensitive data
 behaviour.readsecrets.hint: The tool may expose sensitive information such as passwords, API keys or tokens.
 behaviour.runterminal: Run in terminal
 behaviour.runterminal.hint: The tool runs commands in an embedded terminal emulator with interactive I/O.
-behaviour.scriptaccess: Tool and script access
-behaviour.scriptaccess.hint: The tool creates, modifies, or deletes other tools and user scripts at runtime.
+behaviour.scriptedit: Edit scripts
+behaviour.scriptedit.hint: The tool creates, modifies, or deletes user scripts and other executable files at runtime.
 behaviour.semanticmemoryclear: Semantic memory clear
 behaviour.semanticmemoryclear.hint: The tool clears semantic memory blocks and may cause data loss.
 behaviour.semanticmemorydelete: Semantic memory delete entry
@@ -248,6 +237,12 @@ behaviour.semanticmemoryread: Semantic memory read
 behaviour.semanticmemoryread.hint: Tool can read facts and logs from semantic memory.
 behaviour.semanticmemorywrite: Semantic memory write
 behaviour.semanticmemorywrite.hint: Tool can write facts and logs to semantic memory.
+behaviour.skilledit: Edit skills
+behaviour.skilledit.hint: The tool creates, modifies, or deletes skills at runtime.
+behaviour.subagentedit: Edit sub-agents
+behaviour.subagentedit.hint: The tool creates, modifies, or deletes sub-agent definitions at runtime.
+behaviour.tooledit: Edit tools
+behaviour.tooledit.hint: The tool creates, modifies, or deletes tool definitions at runtime.
 behaviour.userinteraction: User interaction (forms, confirmations)
 behaviour.userinteraction.hint: The tool requires user input via forms, confirmations, file pickers, etc.
 behaviour.workdirchange: Change working directory

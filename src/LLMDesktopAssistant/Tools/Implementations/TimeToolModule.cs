@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Executor = TimeGet,
 				Name = "time-get",
 				Description = "Gets the current time in the specified timezone.",
-				TitleKey = Locale.GetKey("tool.name.time-get"),
+				NameKey = Locale.GetKey("tool.name.time-get"),
 				DescriptionKey = Locale.GetKey("tool.description.time-get"),
 				CategoryKey = Locale.GetKey("tool.category.time")
 			});
@@ -24,7 +24,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Executor = TimeWait,
 				Name = "time-wait",
 				Description = "Waits for a specified duration with real-time progress updates.",
-				TitleKey = Locale.GetKey("tool.name.time-wait"),
+				NameKey = Locale.GetKey("tool.name.time-wait"),
 				DescriptionKey = Locale.GetKey("tool.description.time-wait"),
 				CategoryKey = Locale.GetKey("tool.category.time"),
 				DefaultExpectedBehaviour = ToolBehaviour.LongRunningTask

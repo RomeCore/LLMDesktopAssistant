@@ -3,14 +3,15 @@ using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Scripting.CSX;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Meta;
+using LLMDesktopAssistant.Tools.Scripting;
 
 namespace LLMDesktopAssistant.Tests.MetaTools;
 
 public class CSharpScriptMetaToolEngineTests
 {
 	private static readonly MetaToolParser Parser = new();
-	private static readonly IMetaToolEngineDescriptor Descriptor = new CSharpScriptMetaToolEngineDescriptor();
-	private static readonly CSharpScriptMetaToolEngine Engine = new(new CSharpScriptService());
+	private static readonly IScriptableToolEngineDescriptor Descriptor = new CSharpScriptToolEngineDescriptor();
+	private static readonly CSharpScriptToolEngine Engine = new(new CSharpScriptService());
 
 	private static MetaToolInfo CreateTool(string executionCode) => new()
 	{

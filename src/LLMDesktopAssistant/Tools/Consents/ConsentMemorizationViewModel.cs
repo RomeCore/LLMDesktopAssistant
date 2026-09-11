@@ -107,7 +107,7 @@ public class MemorizedAlwaysItemViewModel : ViewModelBase
 		AgentName = agentName;
 		_change = change;
 		_onForgotten = onForgotten;
-		ToolName = change.ToolName;
+		ToolName = change.Name;
 		Approved = change.ApprovalLevel == ToolApprovalLevel.AlwaysApprove;
 
 		ForgetCommand = new RelayCommand(Forget);

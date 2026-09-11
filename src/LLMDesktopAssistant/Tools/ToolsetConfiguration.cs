@@ -21,6 +21,16 @@ namespace LLMDesktopAssistant.Tools
 			set => SetProperty(ref _toolsEnabledByDefault, value);
 		}
 
+		private bool _toolsHiddenByDefault = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether unchanged tools are hidden by default.
+		/// </summary>
+		public bool ToolsHiddenByDefault
+		{
+			get => _toolsHiddenByDefault;
+			set => SetProperty(ref _toolsHiddenByDefault, value);
+		}
+
 		private ToolApprovalLevel _defaultApprovalLevel = ToolApprovalLevel.PolicyBased;
 		/// <summary>
 		/// Gets or sets the default approval level for unchanged tools.

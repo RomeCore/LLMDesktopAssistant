@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 				Name = path.FallbackName,
 				Description = string.Empty,
 				
-				Source = AddonSource.Unknown,
+				AddonSource = AddonSource.Unknown,
 				SourcePack = path.SourcePack,
 
 				Diagnostic = diagnostic

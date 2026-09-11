@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Tools;
 
@@ -9,7 +10,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 	[ChatService(typeof(IToolsetCacheService))]
 	public class ToolsetCacheService : IToolsetCacheService
 	{
-		private readonly IToolsetBuildingService _builder;
+		private readonly IAddonSetCollector<ToolInfo> _builder;
 		private ImmutableDictionary<string, ToolInfo> _availableTools = [], _aliasedTools = [], _validTools = [], _validAliasedTools = [];
 
 		public ImmutableDictionary<string, ToolInfo> AvailableTools => _availableTools;
@@ -20,15 +21,15 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 		public ImmutableDictionary<string, ToolInfo> ValidAliasedTools => _validAliasedTools;
 
-		public ToolsetCacheService(IToolsetBuildingService builder)
+		public ToolsetCacheService(IAddonSetCollector<ToolInfo> builder)
 		{
 			_builder = builder;
 		}
 
 		public void Invalidate(ChatAgentDescriptor agent)
 		{
-			_availableTools = _builder.GetAvailableTools().ToImmutableDictionary(t => t.Name);
-			_validTools = _builder.GetToolsForAgent(agent).ToImmutableDictionary(t => t.Name);
+			_availableTools = _builder.GetAvailableAddons().ToImmutableDictionary(t => t.Name);
+			_validTools = _builder.GetAddonsForAgent(agent).ToImmutableDictionary(t => t.Name);
 			_aliasedTools = BuildDictionaryWithAliases(_availableTools.Values);
 			_validAliasedTools = BuildDictionaryWithAliases(_validTools.Values);
 		}

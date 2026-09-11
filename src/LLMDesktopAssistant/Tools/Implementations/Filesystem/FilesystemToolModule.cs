@@ -26,7 +26,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewGetFileInfo,
 				Name = "fs-get_file_info",
 				Description = "Returns file information including type classification.",
-				TitleKey = Locale.GetKey("tool.name.fs-get_file_info"),
+				NameKey = Locale.GetKey("tool.name.fs-get_file_info"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-get_file_info"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewReadBinaryFile,
 				Name = "fs-read_binary_file",
 				Description = "Reads binary file content as hex dump from the working directory.",
-				TitleKey = Locale.GetKey("tool.name.fs-read_binary_file"),
+				NameKey = Locale.GetKey("tool.name.fs-read_binary_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-read_binary_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
@@ -50,7 +50,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewReadDocumentFile,
 				Name = "fs-read_document_file",
 				Description = "Reads complex documents (DOCX, PPTX, PDF) by pages from the working directory. Supported extensions: .pdf, .docx, .pptx. This is not suitable for general text or code files, such as .txt, .py, .md, .cs, .js, etc.",
-				TitleKey = Locale.GetKey("tool.name.fs-read_document_file"),
+				NameKey = Locale.GetKey("tool.name.fs-read_document_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-read_document_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileRead | ToolBehaviour.AccessOutsideWorkdir
@@ -62,7 +62,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewWriteBinaryFile,
 				Name = "fs-write_binary_file",
 				Description = "Writes binary content to a file inside working directory.",
-				TitleKey = Locale.GetKey("tool.name.fs-write_binary_file"),
+				NameKey = Locale.GetKey("tool.name.fs-write_binary_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-write_binary_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
@@ -74,7 +74,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewCreateDirectory,
 				Name = "fs-create_directory",
 				Description = "Creates a new directory inside working directory path.",
-				TitleKey = Locale.GetKey("tool.name.fs-create_directory"),
+				NameKey = Locale.GetKey("tool.name.fs-create_directory"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-create_directory"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
@@ -86,7 +86,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewDeleteFile,
 				Name = "fs-delete_file",
 				Description = "Deletes a file inside working directory.",
-				TitleKey = Locale.GetKey("tool.name.fs-delete_file"),
+				NameKey = Locale.GetKey("tool.name.fs-delete_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-delete_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir
@@ -98,7 +98,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewDeleteDirectory,
 				Name = "fs-delete_directory",
 				Description = "Deletes a directory (empty or with contents) from the working directory.",
-				TitleKey = Locale.GetKey("tool.name.fs-delete_directory"),
+				NameKey = Locale.GetKey("tool.name.fs-delete_directory"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-delete_directory"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir
@@ -110,7 +110,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewCopyFile,
 				Name = "fs-copy_file",
 				Description = "Copies a file within the working directory.",
-				TitleKey = Locale.GetKey("tool.name.fs-copy_file"),
+				NameKey = Locale.GetKey("tool.name.fs-copy_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-copy_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
@@ -122,7 +122,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewCopyDirectory,
 				Name = "fs-copy_directory",
 				Description = "Copies a directory and all its contents to a new location within the working directory.",
-				TitleKey = Locale.GetKey("tool.name.fs-copy_directory"),
+				NameKey = Locale.GetKey("tool.name.fs-copy_directory"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-copy_directory"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
@@ -134,7 +134,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewRenameFile,
 				Name = "fs-rename_file",
 				Description = "Renames or moves a file within the working directory.",
-				TitleKey = Locale.GetKey("tool.name.fs-rename_file"),
+				NameKey = Locale.GetKey("tool.name.fs-rename_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-rename_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
@@ -146,7 +146,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				PreviewExecutor = PreviewMoveDirectory,
 				Name = "fs-move_directory",
 				Description = "Moves a directory and all its contents to a new location within the working directory.",
-				TitleKey = Locale.GetKey("tool.name.fs-move_directory"),
+				NameKey = Locale.GetKey("tool.name.fs-move_directory"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-move_directory"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
 				DefaultExpectedBehaviour = ToolBehaviour.DirectoryEdit | ToolBehaviour.AccessOutsideWorkdir

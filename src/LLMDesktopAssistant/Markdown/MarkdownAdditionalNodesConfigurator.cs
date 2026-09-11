@@ -24,6 +24,8 @@ public class MarkdownAdditionalNodesConfigurator
 		MarkdownNode.Edit(builder => builder
 			.Unregister<AlertBlockNode>()
 			.Register<AlertBlockUiNode>());
+
+		AsyncImageLoader.DefaultCache = new RamBasedAsyncImageLoaderCache();
 	}
 
 	private static void ConfigurePipeline(Markdig.MarkdownPipelineBuilder pipeline)

@@ -4,6 +4,7 @@ using LLMDesktopAssistant.StructuredValues;
 using LLMDesktopAssistant.StructuredValues.Const;
 using LLMDesktopAssistant.StructuredValues.Converters;
 using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Addons.Parsers.Frontmatter
 {
@@ -17,6 +18,11 @@ namespace LLMDesktopAssistant.Addons.Parsers.Frontmatter
 		{
 			_frontmatter = (frontmatter.ToConstNodeValue() ?? throw new ArgumentNullException(nameof(frontmatter)))
 				as ConstNodeDictionaryValue ?? throw new ArgumentException("Frontmatter must be a dictionary", nameof(frontmatter));
+
+			_frontmatter = new ConstNodeDictionaryValue
+			{
+				Items = _frontmatter.Items.ToImmutableDictionary(k => k.Key, v => v.Value, IdentifierIgnoreCaseComparer.Instance)
+			};
 		}
 
 		public static AddonFrontmatterPropertyParser<T> FindParser<T>()
@@ -56,6 +62,17 @@ namespace LLMDesktopAssistant.Addons.Parsers.Frontmatter
 				return (AddonFrontmatterPropertyParser<T>)(object)AddonFrontmatterJsonObjectPropertyParser.Instance;
 			}
 
+			if (typeof(T).IsEnum)
+			{
+				// Flags enums (e.g. metatool's 'behaviours') are read as a list of flags, plain enums
+				// (e.g. 'approval-level') as a single value. Both accept kebab-case and snake_case names.
+				var parserType = typeof(T).IsDefined(typeof(FlagsAttribute), inherit: false)
+					? typeof(AddonFrontmatterFlagsEnumListPropertyParser<>)
+					: typeof(AddonFrontmatterEnumPropertyParser<>);
+
+				return (AddonFrontmatterPropertyParser<T>)Activator.CreateInstance(parserType.MakeGenericType(typeof(T)))!;
+			}
+
 			if (typeof(T).IsAssignableTo(typeof(INodeValue)))
 			{
 				return new AddonFrontmatterPropertyNodeParser<T>();
@@ -91,6 +108,25 @@ namespace LLMDesktopAssistant.Addons.Parsers.Frontmatter
 			return defaultValue;
 		}
 
+		/// <summary>
+		/// Tries to read an optional frontmatter property.
+		/// If the key is present, it is parsed and any parsing failure is reported through <paramref name="diagnostic"/>.
+		/// If the key is absent, no diagnostic is added and the method returns <see langword="false"/>.
+		/// </summary>
+		public bool TryRequest<T>(string key, ref AddonDiagnostic? diagnostic, [NotNullWhen(true)] out T result,
+			AddonFrontmatterPropertyParser<T>? parser = null)
+		{
+			parser ??= FindParser<T>();
+			if (_frontmatter.Items.TryGetValue(key, out var item))
+			{
+				_visitedKeys.Add(key);
+				return parser.TryParse(item, ref diagnostic, false, out result);
+			}
+
+			result = default!;
+			return false;
+		}
+
 		public T Request<T>(string key, ref AddonDiagnostic? diagnostic, T defaultValue = default!,
 			AddonDiagnosticCode missingCode = default, AddonFrontmatterPropertyParser<T>? parser = null)
 		{
@@ -101,7 +137,7 @@ namespace LLMDesktopAssistant.Addons.Parsers.Frontmatter
 				if (parser.TryParse(item, ref diagnostic, false, out var result))
 					return result;
 			}
-			else
+			else if (missingCode != AddonDiagnosticCode.None)
 			{
 				diagnostic = diagnostic.Combine(new AddonDiagnostic
 				{

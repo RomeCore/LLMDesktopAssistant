@@ -9,13 +9,13 @@ namespace LLMDesktopAssistant.Addons.Parsers.Frontmatter
 		public static bool TryParseEnum<TEnum>(string text, out TEnum result)
 			where TEnum : struct, Enum
 		{
-			var normalized = text.Trim().ToLowerInvariant().Replace('_', '-');
+			var normalized = text.Trim().ToLowerInvariant().Replace("-", "").Replace("_", "");
 
 			foreach (var name in Enum.GetNames<TEnum>())
 			{
-				if (name.ToLowerInvariant().Replace('_', '-') == normalized)
+				if (name.ToLowerInvariant().Replace("_", "") == normalized)
 				{
-					result = (TEnum)Enum.Parse(typeof(TEnum), name);
+					result = Enum.Parse<TEnum>(name);
 					return true;
 				}
 			}

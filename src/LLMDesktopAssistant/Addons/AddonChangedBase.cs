@@ -14,9 +14,32 @@ namespace LLMDesktopAssistant.Addons
 		// ===================================
 
 		/// <summary>
+		/// Gets a value indicating whether the addon is fixed (always enabled and visible).
+		/// If set, <see cref="Enabled"/> will be always set to <see langword="true"/> and
+		/// <see cref="Hidden"/> will be always set to <see langword="false"/> in
+		/// the <see cref="IAddonSetCollector{T}"/>.
+		/// </summary>
+		public bool IsFixed
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = false;
+
+		/// <summary>
 		/// Gets a value indicating whether the addon is enabled. Defaults to <see langword="null"/>.
 		/// </summary>
 		public bool? Enabled
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = null;
+
+		/// <summary>
+		/// Gets a value indicating whether the addon is hidden (not visible in
+		/// system prompt for agents, but still available for agents to search and use).
+		/// Defaults to <see langword="null"/>.
+		/// </summary>
+		public bool? Hidden
 		{
 			get;
 			set => SetProperty(ref field, value);

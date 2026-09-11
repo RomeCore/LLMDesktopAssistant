@@ -30,7 +30,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly IAgentManagementService _agentManager;
 		private readonly IAgentTaskExecutor _agentTaskExecutor;
 		private readonly IModelManager _modelManager;
-		private readonly IToolsetBuildingService _toolsetBuildingService;
+		private readonly IAddonSetCollector<ToolInfo> _toolsetBuildingService;
 		private readonly IAddonSetCollector<SkillInfo> _skillsetBuildingService;
 		private readonly ISubAgentSetBuildingService _subAgentSetBuildingService;
 		private readonly ISubAgentTaskParamsResolver _subAgentParamsResolver;
@@ -38,7 +38,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		public AgenticToolModule(Chat chat, IChatSettingsService chatSettings, ITemplateLibraryAccessor templates,
 			IWorkingDirectoryAccessService fileAccess,
 			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
-			IToolsetBuildingService toolsetBuildingService, IAddonSetCollector<SkillInfo> skillsetBuildingService,
+			IAddonSetCollector<ToolInfo> toolsetBuildingService, IAddonSetCollector<SkillInfo> skillsetBuildingService,
 			ISubAgentSetBuildingService subAgentSetBuildingService, ISubAgentTaskParamsResolver subAgentParamsResolver)
 		{
 			_chat = chat;
@@ -58,7 +58,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Executor = CallAgent,
 				Name = "agent-call",
 				Description = "Calls another AI agent with provided system message and user message with set of allowed tools.",
-				TitleKey = Locale.GetKey("tool.name.agent-call"),
+				NameKey = Locale.GetKey("tool.name.agent-call"),
 				DescriptionKey = Locale.GetKey("tool.description.agent-call"),
 				CategoryKey = Locale.GetKey("tool.category.agents"),
 				DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
@@ -69,7 +69,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Executor = CallSubAgent,
 				Name = "agent-callsub",
 				Description = "Calls another predefined AI agent with provided input.",
-				TitleKey = Locale.GetKey("tool.name.agent-callsub"),
+				NameKey = Locale.GetKey("tool.name.agent-callsub"),
 				DescriptionKey = Locale.GetKey("tool.description.agent-callsub"),
 				CategoryKey = Locale.GetKey("tool.category.agents"),
 				DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask
@@ -82,7 +82,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				PreviewExecutor = DescribeImagePreview,
 				Name = "agent-describe_image",
 				Description = "Describes an image using another LLM agent.",
-				TitleKey = Locale.GetKey("tool.name.agent-describe_image"),
+				NameKey = Locale.GetKey("tool.name.agent-describe_image"),
 				DescriptionKey = Locale.GetKey("tool.description.agent-describe_image"),
 				CategoryKey = Locale.GetKey("tool.category.agents"),
 				DefaultExpectedBehaviour = ToolBehaviour.AgentExecution | ToolBehaviour.LongRunningTask |
@@ -145,7 +145,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			var tools = ImmutableList.CreateBuilder<AgentTool>();
 			if (allowedTools.Length > 0)
 			{
-				var toolMap = _toolsetBuildingService.GetToolsForAgent(agentDescriptor).ToDictionary(t => t.Name);
+				var toolMap = _toolsetBuildingService.GetAddonsForAgent(agentDescriptor).ToDictionary(t => t.Name);
 
 				int notFound = 0;
 				foreach (var allowedTool in allowedTools.Distinct())

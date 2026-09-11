@@ -4,7 +4,7 @@ using LLMDesktopAssistant.Tools;
 namespace LLMDesktopAssistant.Scripting.CSX
 {
 	/// <summary>
-	/// The globals object passed to C# scripts executed by <see cref="CSharpScriptMetaToolEngine"/>.
+	/// The globals object passed to C# scripts executed by <see cref="CSharpScriptToolEngine"/>.
 	/// Provides access to tool arguments, the execution context and the reactive result.
 	/// </summary>
 	public sealed class CSharpScriptGlobals

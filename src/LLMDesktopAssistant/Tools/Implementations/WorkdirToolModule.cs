@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				Executor = ListWorkingDirectories,
 				Name = "wd-list",
 				Description = "Lists all working directories configured for the current chat session.",
-				TitleKey = Locale.GetKey("tool.name.wd-list"),
+				NameKey = Locale.GetKey("tool.name.wd-list"),
 				DescriptionKey = Locale.GetKey("tool.description.wd-list"),
 				CategoryKey = Locale.GetKey("tool.category.workdir")
 			});
@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				PreviewExecutor = SwitchWorkingDirectoryPreview,
 				Name = "wd-switch",
 				Description = "Switches the working directory for the current chat session.",
-				TitleKey = Locale.GetKey("tool.name.wd-switch"),
+				NameKey = Locale.GetKey("tool.name.wd-switch"),
 				DescriptionKey = Locale.GetKey("tool.description.wd-switch"),
 				CategoryKey = Locale.GetKey("tool.category.workdir"),
 				DefaultExpectedBehaviour = ToolBehaviour.WorkdirChange,

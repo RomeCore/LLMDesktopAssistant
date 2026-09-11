@@ -1,17 +1,14 @@
-using LLMDesktopAssistant.Tools.Meta;
+using LLMDesktopAssistant.Tools.Scripting;
 
 namespace LLMDesktopAssistant.Scripting.CSX
 {
 	/// <summary>
 	/// Descriptor for C# Script (.csx) meta tools with YAML frontmatter in <c>/* ... */</c> comment blocks.
 	/// </summary>
-	public class CSharpScriptMetaToolEngineDescriptor : IMetaToolEngineDescriptor
+	public class CSharpScriptToolEngineDescriptor : IScriptableToolEngineDescriptor
 	{
 		/// <inheritdoc/>
 		public ScriptLanguageType Language => ScriptLanguageType.CSharpScript;
-
-		/// <inheritdoc/>
-		public string MainExtension => ".csx";
 
 		/// <inheritdoc/>
 		public string[] Extensions => [ ".csx" ];
@@ -54,10 +51,10 @@ namespace LLMDesktopAssistant.Scripting.CSX
 			title: My Tool
 			description: Describe what this tool does and when to use it.
 			category: general
-			approval_level: policy-based
+			approval-level: policy-based
 			behaviours:
 			  - file_read
-			argument_schema: |
+			argument-schema: |
 			  {
 			    "type": "object",
 			    "properties": {

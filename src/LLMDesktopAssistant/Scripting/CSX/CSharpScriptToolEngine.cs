@@ -1,20 +1,21 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Tools.Meta;
+using LLMDesktopAssistant.Tools.Scripting;
 using LLMDesktopAssistant.Utils;
 using Microsoft.CodeAnalysis.Scripting;
 
 namespace LLMDesktopAssistant.Scripting.CSX
 {
 	/// <summary>
-	/// C# Script implementation of <see cref="IMetaToolEngine"/>.
+	/// C# Script implementation of <see cref="IScriptableToolEngine"/>.
 	/// Handles meta tools written in C# (.csx) with YAML frontmatter in <c>/* ... */</c> comment blocks.
 	/// Scripts are compiled with Roslyn and have full access to all loaded assemblies.
 	/// </summary>
-	[ChatService(typeof(IMetaToolEngine))]
-	public class CSharpScriptMetaToolEngine : IMetaToolEngine
+	[Service(typeof(IScriptableToolEngine))]
+	public class CSharpScriptToolEngine : IScriptableToolEngine
 	{
 		private readonly CSharpScriptService _scriptService;
 
@@ -22,19 +23,19 @@ namespace LLMDesktopAssistant.Scripting.CSX
 		public ScriptLanguageType Language => ScriptLanguageType.CSharpScript;
 
 		/// <inheritdoc/>
-		public IMetaToolEngineDescriptor Descriptor { get; } = new CSharpScriptMetaToolEngineDescriptor();
+		public IScriptableToolEngineDescriptor Descriptor { get; } = new CSharpScriptToolEngineDescriptor();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSharpScriptMetaToolEngine"/> class.
+		/// Initializes a new instance of the <see cref="CSharpScriptToolEngine"/> class.
 		/// </summary>
 		/// <param name="scriptService">The service used to run C# scripts.</param>
-		public CSharpScriptMetaToolEngine(CSharpScriptService scriptService)
+		public CSharpScriptToolEngine(CSharpScriptService scriptService)
 		{
 			_scriptService = scriptService;
 		}
 
 		/// <inheritdoc/>
-		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaToolInfo tool)
+		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(ToolInfo tool)
 		{
 			return (JsonNode? args, ToolExecutionContext context, CancellationToken cancellationToken) =>
 			{
@@ -54,7 +55,7 @@ namespace LLMDesktopAssistant.Scripting.CSX
 							Workdir = workdir ?? Directories.DefaultWorkingDirectory,
 						};
 
-						var returnValue = await _scriptService.RunAsync(tool.ExecutionCode, globals, cancellationToken);
+						var returnValue = await _scriptService.RunAsync(tool.Body, globals, cancellationToken);
 
 						if (reactiveResult.StructuredResult == null && returnValue != null)
 						{

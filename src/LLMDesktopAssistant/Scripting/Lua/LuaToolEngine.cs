@@ -1,31 +1,24 @@
 using System.Text.Json.Nodes;
 using AsyncLua;
 using AsyncLua.Values;
-using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Tools.Meta;
+using LLMDesktopAssistant.Tools.Scripting;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
 	/// <summary>
-	/// Lua implementation of <see cref="IMetaToolEngine"/>.
-	/// Handles meta tools written in Lua with YAML frontmatter in `--[[ ... ]]` blocks.
+	/// Lua implementation of <see cref="IScriptableToolEngine"/>.
+	/// Handles tools written in Lua with YAML frontmatter in `--[[ ... ]]` blocks.
 	/// </summary>
-	[ChatService(typeof(IMetaToolEngine))]
-	public class LuaMetaToolEngine : IMetaToolEngine
+	[Service(typeof(IScriptableToolEngine))]
+	public class LuaToolEngine : IScriptableToolEngine
 	{
-		private readonly LuaService _luaService;
-
 		public ScriptLanguageType Language => ScriptLanguageType.Lua;
 
-		public IMetaToolEngineDescriptor Descriptor { get; } = new LuaMetaToolEngineDescriptor();
+		public IScriptableToolEngineDescriptor Descriptor { get; } = new LuaToolEngineDescriptor();
 
-		public LuaMetaToolEngine(LuaService luaService)
-		{
-			_luaService = luaService;
-		}
-
-		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(MetaToolInfo tool)
+		public Func<JsonNode?, ToolExecutionContext, CancellationToken, Task<ReactiveToolResult>> CreateExecutor(ToolInfo tool)
 		{
 			return (JsonNode? args, ToolExecutionContext context, CancellationToken cancellationToken) =>
 			{
@@ -35,14 +28,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				{
 					try
 					{
-						var scriptResult = await _luaService.ExecuteAsync(tool.ExecutionCode, print => reactiveResult.ResultContentLines.Add(print), g =>
+						var luaService = context.Chat.Services.GetRequiredService<LuaService>();
+						var scriptResult = await luaService.ExecuteAsync(tool.Body, print => reactiveResult.ResultContentLines.Add(print), g =>
 						{
 							g["tool_args"] = StructuredLuaConverter.JsonNodeToLuaValue(args);
 							g[LuaVariables.ToolExecutionContext] = LuaValueConverter.ToLuaValue(context);
 							g[LuaVariables.ToolReactiveResult] = LuaValueConverter.ToLuaValue(reactiveResult);
 						});
-						if (reactiveResult.StructuredResult == null)
-							reactiveResult.StructuredResult = StructuredLuaConverter.LuaValueToJsonNode(scriptResult);
+						reactiveResult.StructuredResult ??= StructuredLuaConverter.LuaValueToJsonNode(scriptResult);
 						reactiveResult.ResultContentLines.Add($"Script returned: " + scriptResult.ToString());
 						reactiveResult.TryCompleteWithSuccess();
 					}

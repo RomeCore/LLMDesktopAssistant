@@ -20,7 +20,7 @@ namespace LLMDesktopAssistant.Addons
 			return [];
 		}
 
-		protected virtual void ApplyChange(TAddon target, TChange change)
+		protected virtual void ApplyChange(TAddon target, TChange change, ChatAgentDescriptor agent)
 		{
 		}
 
@@ -57,10 +57,13 @@ namespace LLMDesktopAssistant.Addons
 
 		public abstract IEnumerable<TAddon> GetAddonsForAgent(ChatAgentDescriptor agent);
 
-		protected IEnumerable<TAddon> GetAddonsWithChanges(IEnumerable<TChange> changes, bool enabledByDefault)
+		protected IEnumerable<TAddon> GetAddonsWithChanges(IEnumerable<TChange> changes,
+			ChatAgentDescriptor agent, bool enabledByDefault, bool hiddenByDefault)
 		{
 			var addons = GetAvailableAddons();
-			var changesMap = changes.ToDictionary(c => c.Name);
+			var changesMap = new Dictionary<string, TChange>();
+			foreach (var change in changes)
+				changesMap[change.Name] = change;
 			var result = new List<TAddon>();
 
 			foreach (var addon in addons)
@@ -70,11 +73,15 @@ namespace LLMDesktopAssistant.Addons
 
 				if (changesMap.TryGetValue(addon.Name, out var change))
 				{
-					if (change.Enabled ?? addon.Enabled ?? enabledByDefault)
+					if (addon.IsFixed || (change.Enabled ?? addon.Enabled ?? enabledByDefault))
 					{
 						var clone = addon.Clone();
-						ApplyChange(clone, change);
+						ApplyChange(clone, change, agent);
 						clone.Enabled = true;
+						if (addon.IsFixed)
+							clone.Hidden = false;
+						else
+							clone.Hidden = change.Hidden ?? addon.Hidden ?? hiddenByDefault;
 						clone.Change = change;
 						clone.Freeze();
 						result.Add(clone);

@@ -19,10 +19,10 @@ namespace LLMDesktopAssistant.Tools.Consents
 		public static void MemorizeAlways(ChatAgentDescriptor agent, IChatSettingsService chatSettings, string toolName, bool approved)
 		{
 			var toolset = agent.Tools.GetEffectiveToolset(chatSettings.Settings).GetEffectiveConfiguration();
-			var change = toolset.ToolChanges.FirstOrDefault(c => c.ToolName == toolName);
+			var change = toolset.ToolChanges.FirstOrDefault(c => c.Name == toolName);
 			if (change == null)
 			{
-				change = new ToolChange { ToolName = toolName };
+				change = new ToolChange { Name = toolName };
 				toolset.ToolChanges.Add(change);
 			}
 

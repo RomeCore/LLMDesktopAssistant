@@ -206,13 +206,16 @@ public enum ToolBehaviour : ulong
 	// ────────────────────────────── Meta ───────────────────────────────────
 
 	/// <summary>
-	/// The tool creates, modifies, or deletes other tools and scripts at runtime.
-	/// This includes meta-tools, Lua/Python user script registration,
-	/// and dynamic tool definitions. Potentially dangerous because
-	/// it can alter the assistant's capabilities on the fly.
-	/// Examples: <c>metatools-create_or_update</c>, <c>metatools-delete</c>, <c>lua-register_or_update_script</c>.
+	/// The tool creates, modifies, or deletes other tools at runtime.
+	/// Potentially dangerous becaus it can alter the assistant's capabilities on the fly.
 	/// </summary>
-	ScriptAccess = 1 << 26,
+	SkillEdit = 1 << 26,
+
+	SubAgentEdit = 1 << 27,
+
+	ToolEdit = 1 << 28,
+
+	ScriptEdit = 1 << 29,
 
 	// ────────────────────────────── Source ─────────────────────────────────
 

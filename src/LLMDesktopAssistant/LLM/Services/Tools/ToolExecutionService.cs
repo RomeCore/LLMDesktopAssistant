@@ -57,7 +57,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 			{
 				toolCall.Status = ToolStatus.Pending;
 				Func<JsonNode, ToolExecutionContext, StreamingToolArgumentsAnalysisResult>?
-					streamingArgumentsAnalyser = toolInfo?.StreamingArgumentsAnalyser;
+					streamingArgumentsAnalyser = toolInfo?.StreamingAnalyzer;
 
 				var streamingToolExecutionContext = new ToolExecutionContext
 				{

@@ -1,5 +1,6 @@
-using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.Utils
 {

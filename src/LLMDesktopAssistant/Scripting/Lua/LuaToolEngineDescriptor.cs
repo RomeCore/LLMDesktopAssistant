@@ -1,12 +1,10 @@
-using LLMDesktopAssistant.Tools.Meta;
+using LLMDesktopAssistant.Tools.Scripting;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
-	public class LuaMetaToolEngineDescriptor : IMetaToolEngineDescriptor
+	public class LuaToolEngineDescriptor : IScriptableToolEngineDescriptor
 	{
 		public ScriptLanguageType Language => ScriptLanguageType.Lua;
-
-		public string MainExtension => ".lua";
 
 		public string[] Extensions => [ ".lua", ".alua" ];
 
@@ -30,10 +28,10 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			title: My Tool
 			description: Describe what this tool does and when to use it.
 			category: general
-			approval_level: policy-based
+			approval-level: policy-based
 			behaviours:
 			  - file_read
-			argument_schema: |
+			argument-schema: |
 			  {
 			    "type": "object",
 			    "properties": {

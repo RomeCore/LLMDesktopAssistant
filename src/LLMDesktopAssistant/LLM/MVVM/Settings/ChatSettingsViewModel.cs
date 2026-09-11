@@ -11,16 +11,14 @@ using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
-using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Localization;
-using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Skills;
-using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.Tools.Meta;
+using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.Tools.Scripting;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
 
@@ -185,10 +183,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 				[
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.tools"),
 						MaterialIconKind.Wrench,
-						() => new ChatToolsSettingsViewModel(Settings.Tools,
-							Chat.Services.GetRequiredService<IMetaToolManagementService>(),
-							Chat.Services.GetRequiredService<IMetaToolParser>(),
-							Chat.Services.GetServices<IMetaToolEngine>())),
+						() => new ChatToolsSettingsViewModel(Settings.Tools)),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),
 						MaterialIconKind.Cards,
@@ -270,7 +265,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 						MaterialIconKind.Wrench,
 						() => new AgentToolSettingsViewModel(
 							descriptor.Tools,
-							Chat.Services.GetRequiredService<IToolsetBuildingService>(),
+							Chat.Services.GetRequiredService<IAddonSetCollector<ToolInfo>>(),
 							Settings)),
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),
 						MaterialIconKind.Cards,

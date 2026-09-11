@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Scripting.CSX;
@@ -87,7 +86,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 					// The return value is used as the structured result when `Result.SetStructured` was not called.
 					return "done";
 					""",
-				TitleKey = Locale.GetKey("tool.name.csx-execute"),
+				NameKey = Locale.GetKey("tool.name.csx-execute"),
 				DescriptionKey = Locale.GetKey("tool.description.csx-execute"),
 				CategoryKey = Locale.GetConstKey("C#"),
 				DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected

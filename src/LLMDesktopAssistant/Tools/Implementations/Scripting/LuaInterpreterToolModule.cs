@@ -21,7 +21,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 				StreamingAnalyzer = ExecuteStreaming,
 				PreviewExecutor = ExecutePreview,
 				Name = "lua-execute",
-				DescriptionGetter = () => $"""
+				DescriptionGetter = _ => $"""
 					# MAIN INFO
 					Lua is executing using AsyncLua 5.5+{typeof(LuaState).Assembly.GetName().Version?.ToString() ?? ""}.
 					Executes Lua and returns the script result along with messages printed by 'print' function
@@ -81,7 +81,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 					Use `manuals(...)` function to get the documentation for a specific namespace, `print(manuals(_G))`
 					or `print(manuals(dass.agents, dass.tool, dass.tool.result))` for example.
 					""",
-				TitleKey = Locale.GetKey("tool.name.lua-execute"),
+				NameKey = Locale.GetKey("tool.name.lua-execute"),
 				DescriptionKey = Locale.GetKey("tool.description.lua-execute"),
 				CategoryKey = Locale.GetConstKey("Lua"),
 				DefaultExpectedBehaviour = ToolBehaviour.PossiblyUnexpected

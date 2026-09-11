@@ -198,7 +198,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				var inputMessages = promptBuilder.Build(agent);
 				toolsetCache.Invalidate(agent);
 				// Lul, provider caching is fixed now!
-				var toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
+				var toolset = toolsetCache.ValidTools.Values.Select(t => t.NativeTool).OrderBy(t => t.Name);
 				// Reveal messages that are marked with 'RevealAfterSend' visibility
 				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				var responseMessage = response.Message;
@@ -229,7 +229,7 @@ namespace LLMDesktopAssistant.LLM.Services
 							Status = ToolStatus.None,
 							ToolCallId = toolCall.Id,
 							ToolName = toolInfo?.Name ?? toolCall.ToolName,
-							Title = toolInfo?.TitleKey,
+							Title = toolInfo?.NameKey,
 							Arguments = funtionCall.Args,
 							CompletionToken = toolCallCompletionSource.Token
 						};
@@ -448,7 +448,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 					inputMessages = promptBuilder.Build(agent);
 					toolsetCache.Invalidate(agent);
-					toolset = toolsetCache.ValidTools.Values.Select(t => t.Tool).OrderBy(t => t.Name);
+					toolset = toolsetCache.ValidTools.Values.Select(t => t.NativeTool).OrderBy(t => t.Name);
 					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 					responseMessage = response.Message;
 				}

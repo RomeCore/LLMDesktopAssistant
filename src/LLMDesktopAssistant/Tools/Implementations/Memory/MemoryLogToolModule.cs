@@ -40,7 +40,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					Logs are immutable: they cannot be edited, only deleted. The log text is added to the keyword search index.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryWrite,
-				TitleKey = Locale.GetKey("tool.name.memory-append_log"),
+				NameKey = Locale.GetKey("tool.name.memory-append_log"),
 				DescriptionKey = Locale.GetKey("tool.description.memory-append_log"),
 				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
@@ -54,7 +54,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					Transient, consolidated and ignored logs are excluded from search results.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryRead,
-				TitleKey = Locale.GetKey("tool.name.memory-search_log"),
+				NameKey = Locale.GetKey("tool.name.memory-search_log"),
 				DescriptionKey = Locale.GetKey("tool.description.memory-search_log"),
 				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
@@ -70,7 +70,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					When no window is specified, the most recent logs are returned. Logs are ordered by their begin time, newest first.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryRead,
-				TitleKey = Locale.GetKey("tool.name.memory-view_logs"),
+				NameKey = Locale.GetKey("tool.name.memory-view_logs"),
 				DescriptionKey = Locale.GetKey("tool.description.memory-view_logs"),
 				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
@@ -84,7 +84,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Memory
 					The log is removed from the database and the keyword index and cannot be restored.
 					""",
 				DefaultExpectedBehaviour = ToolBehaviour.SemanticMemoryDelete,
-				TitleKey = Locale.GetKey("tool.name.memory-delete_log"),
+				NameKey = Locale.GetKey("tool.name.memory-delete_log"),
 				DescriptionKey = Locale.GetKey("tool.description.memory-delete_log"),
 				CategoryKey = Locale.GetKey("tool.category.memory")
 			});
