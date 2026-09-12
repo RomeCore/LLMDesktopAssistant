@@ -41,11 +41,6 @@ name.fs-rename_file: Переименовать файл
 name.fs-write_binary_file: Записать в бинарный файл
 name.fs-write_file: Записать в файл
 name.lua-execute: Выполнить Lua скрипт
-name.lua-get_script_info: Получить информацию о Lua-скрипте
-name.lua-list_scripts: Получить список Lua-скриптов
-name.lua-move_script: Переместить Lua-скрипт
-name.lua-register_or_update_script: Зарегистрировать или обновить Lua-скрипт
-name.lua-remove_script: Удалить Lua-скрипт
 name.math-calculate: Вычислить
 name.math-solve: Решить математическое уравнение
 name.math-solve_complex: Решить комплексное уравнение
@@ -119,11 +114,6 @@ description.fs-rename_file: Переименовывает или перемещ
 description.fs-write_binary_file: Записывает бинарные данные, заданные hex-строкой, в файл либо дописывает их к существующему.
 description.fs-write_file: Записывает текстовое содержимое в файл, при необходимости создавая недостающие папки.
 description.lua-execute: Выполняет скрипт на языке Lua с доступом к встроенному API приложения и возвращает результат вместе с выведенными сообщениями.
-description.lua-get_script_info: Показывает подробную информацию о зарегистрированном Lua-скрипте, включая полный код скрипта.
-description.lua-list_scripts: Выводит список всех зарегистрированных Lua-скриптов с их пространствами имён, путями и документацией.
-description.lua-move_script: Перемещает или переименовывает зарегистрированный Lua-скрипт.
-description.lua-register_or_update_script: Регистрирует новый Lua-скрипт или обновляет существующий, делая его доступным в среде Lua под указанным пространством имён.
-description.lua-remove_script: Удаляет зарегистрированный Lua-скрипт по указанному пути.
 description.math-calculate: Вычисляет математическое выражение: поддерживает константы, функции, интегралы, производные и комплексные числа.
 description.math-solve: Находит вещественные корни уравнения численным методом в указанном диапазоне поиска.
 description.math-solve_complex: Находит комплексные корни уравнения численным методом в заданной области комплексной плоскости.

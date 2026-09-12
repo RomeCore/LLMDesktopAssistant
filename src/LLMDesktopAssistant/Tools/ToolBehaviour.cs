@@ -1,5 +1,5 @@
 using LLMDesktopAssistant.Agents.Tasks;
-using LLMDesktopAssistant.Scripting.Lua;
+using LLMDesktopAssistant.Scripting.Lua.API;
 
 namespace LLMDesktopAssistant.Tools;
 

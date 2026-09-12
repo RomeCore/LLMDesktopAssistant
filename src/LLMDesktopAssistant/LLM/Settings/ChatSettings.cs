@@ -47,27 +47,9 @@ namespace LLMDesktopAssistant.LLM.Settings
 		}
 
 		/// <summary>
-		/// Settings for memory management in chat sessions.
-		/// </summary>
-		public ChatMemorySettings Memory
-		{
-			get => field ??= new();
-			set => SetProperty(ref field, value);
-		}
-
-		/// <summary>
 		/// Environment and working directory settings.
 		/// </summary>
 		public ChatEnvironmentSettings Environment
-		{
-			get => field ??= new();
-			set => SetProperty(ref field, value);
-		}
-
-		/// <summary>
-		/// Addons and their packs loading settings.
-		/// </summary>
-		public ChatAddonSettings Addons
 		{
 			get => field ??= new();
 			set => SetProperty(ref field, value);
@@ -83,18 +65,27 @@ namespace LLMDesktopAssistant.LLM.Settings
 		}
 
 		/// <summary>
-		/// Settings for tools and plugins used in the chat.
+		/// Settings for MCP (Model Context Protocol) servers.
 		/// </summary>
-		public ChatToolSettings Tools
+		public ChatMcpSettings Mcp
 		{
 			get => field ??= new();
 			set => SetProperty(ref field, value);
 		}
 
 		/// <summary>
-		/// Settings for MCP (Model Context Protocol) servers.
+		/// Addons and their packs loading settings.
 		/// </summary>
-		public ChatMcpSettings Mcp
+		public ChatAddonSettings Addons
+		{
+			get => field ??= new();
+			set => SetProperty(ref field, value);
+		}
+
+		/// <summary>
+		/// Settings for tools and plugins used in the chat.
+		/// </summary>
+		public ChatToolSettings Tools
 		{
 			get => field ??= new();
 			set => SetProperty(ref field, value);
@@ -113,6 +104,24 @@ namespace LLMDesktopAssistant.LLM.Settings
 		/// Settings related to sub-agents.
 		/// </summary>
 		public ChatSubAgentSettings SubAgents
+		{
+			get => field ??= new();
+			set => SetProperty(ref field, value);
+		}
+
+		/// <summary>
+		/// Settings related to scripts (Lua, for example).
+		/// </summary>
+		public ChatScriptSettings Scripts
+		{
+			get => field ??= new();
+			set => SetProperty(ref field, value);
+		}
+
+		/// <summary>
+		/// Settings for memory management in chat sessions.
+		/// </summary>
+		public ChatMemorySettings Memory
 		{
 			get => field ??= new();
 			set => SetProperty(ref field, value);

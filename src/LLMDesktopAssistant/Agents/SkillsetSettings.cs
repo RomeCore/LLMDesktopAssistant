@@ -15,14 +15,23 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _skillsEnabledByDefault, value);
 		}
 
-		private readonly RangeObservableCollection<SkillChange> _skillChanges = [];
+		private bool _skillsHiddenByDefault = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether unchanged skills are hidden by default.
+		/// </summary>
+		public bool SkillsHiddenByDefault
+		{
+			get => _skillsHiddenByDefault;
+			set => SetProperty(ref _skillsHiddenByDefault, value);
+		}
+
 		/// <summary>
 		/// Gets or sets the skill changes compared to all available skills.
 		/// </summary>
 		public RangeObservableCollection<SkillChange> SkillChanges
 		{
-			get => _skillChanges;
-			set => _skillChanges.Reset(value);
+			get => field ??= [];
+			set => (field ??= []).Reset(value);
 		}
 	}
 }

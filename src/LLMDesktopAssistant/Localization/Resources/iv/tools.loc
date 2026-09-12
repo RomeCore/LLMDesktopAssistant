@@ -41,11 +41,6 @@ name.fs-rename_file: Rename file
 name.fs-write_binary_file: Write binary file
 name.fs-write_file: Write file
 name.lua-execute: Execute Lua script
-name.lua-get_script_info: Get Lua script info
-name.lua-list_scripts: List Lua scripts
-name.lua-move_script: Move Lua script
-name.lua-register_or_update_script: Register or update Lua script
-name.lua-remove_script: Remove Lua script
 name.math-calculate: Calculate
 name.math-solve: Solve math equation
 name.math-solve_complex: Solve complex equation
@@ -119,11 +114,6 @@ description.fs-rename_file: Renames or moves a file, replacing the destination f
 description.fs-write_binary_file: Writes binary data provided as a hexadecimal string to a file, or appends it to an existing one.
 description.fs-write_file: Writes text content to a file, creating missing directories as needed.
 description.lua-execute: Runs a Lua script with access to the application's built-in API and returns the result along with printed messages.
-description.lua-get_script_info: Shows detailed information about a registered Lua script, including its full content.
-description.lua-list_scripts: Lists all registered Lua scripts with their namespaces, paths, and documentation.
-description.lua-move_script: Moves or renames a registered Lua script from one path to another.
-description.lua-register_or_update_script: Registers a new Lua script or updates an existing one, making it available in the Lua environment under a given namespace.
-description.lua-remove_script: Removes a registered Lua script by its relative path.
 description.math-calculate: Evaluates a mathematical expression, supporting constants, functions, integrals, derivatives, and complex numbers.
 description.math-solve: Finds real roots of an equation numerically within a specified search range.
 description.math-solve_complex: Finds complex roots of an equation numerically across a region of the complex plane.

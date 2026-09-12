@@ -15,20 +15,31 @@ namespace LLMDesktopAssistant.Addons
 			_accessor = _services.GetRequiredService<IAddonAccessor<TAddon>>();
 		}
 
+		protected virtual bool AdditionalGoingFirst => false;
+
 		protected virtual IEnumerable<TAddon> GetAdditionalAddons()
 		{
 			return [];
 		}
 
-		protected virtual void ApplyChange(TAddon target, TChange change, ChatAgentDescriptor agent)
+		protected virtual void ApplyChange(TAddon target, TChange change, ChatAgentDescriptor? agent)
 		{
 		}
 
 		public IEnumerable<TAddon> GetAvailableAddons()
 		{
 			List<TAddon> addons = [];
-			addons.AddRange(_accessor.Addons);
-			addons.AddRange(GetAdditionalAddons());
+
+			if (AdditionalGoingFirst)
+			{
+				addons.AddRange(GetAdditionalAddons());
+				addons.AddRange(_accessor.Addons);
+			}
+			else
+			{
+				addons.AddRange(_accessor.Addons);
+				addons.AddRange(GetAdditionalAddons());
+			}
 
 			return addons
 				.GroupBy(s => s.Name)
@@ -55,10 +66,12 @@ namespace LLMDesktopAssistant.Addons
 				});
 		}
 
+		public abstract IEnumerable<TAddon> GetAddonsForChat();
+
 		public abstract IEnumerable<TAddon> GetAddonsForAgent(ChatAgentDescriptor agent);
 
 		protected IEnumerable<TAddon> GetAddonsWithChanges(IEnumerable<TChange> changes,
-			ChatAgentDescriptor agent, bool enabledByDefault, bool hiddenByDefault)
+			bool enabledByDefault, bool hiddenByDefault, ChatAgentDescriptor? agent)
 		{
 			var addons = GetAvailableAddons();
 			var changesMap = new Dictionary<string, TChange>();

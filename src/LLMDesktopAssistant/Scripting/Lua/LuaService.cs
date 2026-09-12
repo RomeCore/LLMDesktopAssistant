@@ -1,72 +1,105 @@
 ﻿using System.Text;
 using AsyncLua;
 using AsyncLua.Values;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.Settings.Application;
 using Serilog;
 
 namespace LLMDesktopAssistant.Scripting.Lua
 {
 	[ChatService]
-	public class LuaService
+	public class LuaService : Disposable
 	{
 		private readonly LuaState _lua;
 		private readonly List<string?> _namespaces;
 
+		private readonly Lock _lock = new();
+		private readonly ILuaScriptsetStateWatcher _scriptsetStateWatcher;
 		private readonly LuaTable _globalTableSnapshot;
 		private readonly Dictionary<LuaType, LuaMetatable> _typeMetatablesSnapshot;
 		private readonly List<string?> _namespacesSnapshot;
-		private readonly ILuaUserScriptManager _scriptManager;
+		private readonly Stack<Action> _cleanups;
 
 		/// <summary>
 		/// Gets the list of namespaces available in Lua.
 		/// </summary>
 		public IReadOnlyList<string?> Namespaces { get; }
 
-		public LuaService(IEnumerable<LuaApiBaseAsync> apis, ILuaUserScriptManager scriptManager)
+		public LuaService(ILuaScriptsetStateWatcher scriptsetStateWatcher)
 		{
+			_scriptsetStateWatcher = scriptsetStateWatcher;
+
 			_lua = new LuaState().LoadDefaultLibraries();
 			_namespaces = [ null ];
-			_scriptManager = scriptManager;
+			_cleanups = [];
+
 			Namespaces = _namespaces.AsReadOnly();
 
 			_lua.Globals.Set(LuaVariables.NamespaceApiMarker, LuaBoolean.True);
 			_lua.Globals.Set(LuaVariables.NamespacePartPath, new LuaString(LuaVariables.GlobalTable));
 			_lua.Globals.Set(LuaVariables.NamespaceFullPath, new LuaString(LuaVariables.GlobalTable));
 
-			foreach (var api in apis)
-				RegisterApi(api);
-
 			_globalTableSnapshot = _lua.Globals.DeepClone();
 			_namespacesSnapshot = [.. _namespaces];
 			_typeMetatablesSnapshot = _lua.TypeMetatables.ToDictionary();
-			RefreshUserScripts();
 
-			_scriptManager.ScriptsChanged += (s, e) =>
-			{
-				ResetGlobalTable();
-				RefreshUserScripts();
-			};
+			RefreshScripts();
+			_scriptsetStateWatcher.OnStateChanged += RefreshScripts;
 		}
 
-		private void RegisterApi(LuaApiBaseAsync api)
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				Cleanup();
+				_scriptsetStateWatcher.OnStateChanged -= RefreshScripts;
+			}
+		}
+
+		private void LoadScript(LuaScriptInfo script)
 		{
 			var globals = _lua.Globals;
-			var ns = api.Namespace != null ? ResolveNamespace(api.Namespace) : globals;
-			api.Populate(globals, ns, this);
+			var ns = script.Namespace != null ? ResolveNamespace(script.Namespace) : null;
+			var cleanup = script.Loader(globals, ns, this);
+			if (cleanup is not null)
+				_cleanups.Push(cleanup);
 
-			var manuals = ns.Get(LuaVariables.NamespaceManuals);
-			if (manuals is not LuaTable manualsTable)
+			if (ns is not null)
 			{
-				manualsTable = new LuaTable();
-				ns.Set(LuaVariables.NamespaceManuals, manualsTable);
+				var manuals = ns.Get(LuaVariables.NamespaceManuals);
+				if (manuals is not LuaTable manualsTable)
+				{
+					manualsTable = new LuaTable();
+					ns.Set(LuaVariables.NamespaceManuals, manualsTable);
+				}
+				var apiManuals = script.Manuals;
+				if (apiManuals != null)
+					manualsTable.Append(new LuaString(apiManuals));
 			}
-			var apiManuals = api.Manuals;
-			if (apiManuals != null)
-				manualsTable.Append(new LuaString(apiManuals));
 		}
 
-		private void ResetGlobalTable()
+		private void Cleanup()
 		{
+			while (_cleanups.TryPop(out var cleanup))
+			{
+				try
+				{
+					cleanup();
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Error during script cleanup: {Error}", ex);
+				}
+			}
+		}
+
+		private void ResetEnvironment()
+		{
+			Cleanup();
+
 			_lua.Globals.Clear();
 			foreach (var kvp in _globalTableSnapshot.Entries)
 			{
@@ -74,6 +107,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				var value = kvp.Value;
 				_lua.Globals.Set(key, value);
 			}
+			_lua.Globals.Set(LuaVariables.GlobalTable, _lua.Globals);
 			_lua.TypeMetatables.Clear();
 			foreach (var kvp in _typeMetatablesSnapshot)
 			{
@@ -83,28 +117,35 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			_namespaces.AddRange(_namespacesSnapshot);
 		}
 
-		private void RefreshUserScripts()
+		private void RefreshScripts()
 		{
+			if (!_lock.TryEnter())
+				return;
+
 			try
 			{
-				var scripts = _scriptManager.GetScripts();
+				ResetEnvironment();
+				var scripts = _scriptsetStateWatcher.GetEffectiveScripts();
 
 				foreach (var script in scripts)
 				{
 					try
 					{
-						RegisterApi(script);
+						LoadScript(script);
 					}
 					catch (Exception ex)
 					{
-						Log.Error(ex, "Failed to execute user script: {ScriptPath} (namespace: {Namespace}), Error: {ErrorMessage}",
-							script.Path, script.Namespace ?? LuaVariables.GlobalTable, ex.Message);
+						Log.Error(ex, "Failed to load script '{Script}': {Error}", script.Name, ex);
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, "Failed to refresh user scripts: {Error}", ex.Message);
+				Log.Error(ex, "Failed to refresh scripts: {Error}", ex);
+			}
+			finally
+			{
+				_lock.Exit();
 			}
 		}
 
@@ -172,8 +213,12 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		}
 
 		/// <summary>
+		/// Gets the current Lua runtime state.
+		/// </summary>
+		public LuaState GetState() => _lua;
+
+		/// <summary>
 		/// Creates a snapshot of the current Lua runtime.
-		/// Used for running concurrent scripts without interfering with each other.
 		/// </summary>
 		/// <returns>A new Lua runtime with a copy of the current global table.</returns>
 		public LuaState CreateSnapshotRuntime()
@@ -195,6 +240,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			{
 				globals = globals.ShallowClone();
 				modifyGlobals(globals);
+				globals.Set(LuaVariables.GlobalTable, globals);
 			}
 			return _lua.Execute(lua, editContext: ctx =>
 			{
@@ -217,6 +263,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			{
 				globals = globals.ShallowClone();
 				modifyGlobals(globals);
+				globals.Set(LuaVariables.GlobalTable, globals);
 			}
 			return _lua.Execute(lua, editContext: ctx =>
 			{
@@ -239,6 +286,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			{
 				globals = globals.ShallowClone();
 				modifyGlobals(globals);
+				globals.Set(LuaVariables.GlobalTable, globals);
 			}
 			return _lua.ExecuteAsync(lua, editContext: ctx =>
 			{
@@ -261,12 +309,13 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			{
 				globals = globals.ShallowClone();
 				modifyGlobals(globals);
+				globals.Set(LuaVariables.GlobalTable, globals);
 			}
 			return _lua.ExecuteAsync(lua, editContext: ctx =>
 			{
 				ctx.Globals = globals;
 				ctx.Print = printOutput;
-			});
+			}, cancellationToken: cancellationToken);
 		}
 	}
 }

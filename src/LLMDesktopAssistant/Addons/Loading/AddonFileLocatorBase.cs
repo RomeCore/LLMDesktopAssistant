@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Runtime.InteropServices;
 
 namespace LLMDesktopAssistant.Addons.Loading
@@ -135,6 +136,8 @@ namespace LLMDesktopAssistant.Addons.Loading
 			}
 			else
 			{
+				var extensions = Extensions.Select(e => e.TrimStart('.')).Distinct().ToHashSet();
+
 				foreach (var folder in folders)
 				{
 					if (FullFormatName != null)
@@ -143,7 +146,9 @@ namespace LLMDesktopAssistant.Addons.Loading
 						{
 							foreach (var file in Directory.GetFiles(directory, $"{FullFormatName}.*", SearchOption.TopDirectoryOnly))
 							{
-								files.Add(new AddonPathInfo(file, false, folder.SourcePack));
+								var ext = Path.GetExtension(file)?.TrimStart('.') ?? string.Empty;
+								if (extensions.Contains(ext))
+									files.Add(new AddonPathInfo(file, false, folder.SourcePack));
 							}
 						}
 					}
@@ -151,7 +156,9 @@ namespace LLMDesktopAssistant.Addons.Loading
 					{
 						foreach (var file in Directory.GetFiles(folder.Path))
 						{
-							files.Add(new AddonPathInfo(file, true, folder.SourcePack));
+							var ext = Path.GetExtension(file)?.TrimStart('.') ?? string.Empty;
+							if (extensions.Contains(ext))
+								files.Add(new AddonPathInfo(file, true, folder.SourcePack));
 						}
 					}
 				}

@@ -18,10 +18,14 @@ namespace LLMDesktopAssistant.Addons.Management
 		}
 
 		/// <inheritdoc/>
-		public void ReloadIfInvalid()
+		public bool ReloadIfInvalid()
 		{
 			if (_invalid)
+			{
 				Reload();
+				return true;
+			}
+			return false;
 		}
 
 		protected abstract void ReloadCore();

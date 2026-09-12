@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Controls.Toasts;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.LLM.Domain;
@@ -26,6 +27,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	public class ChatExecutionService(
 		Chat chat,
 		IChatSettingsService chatSettings,
+		IAddonManagerInvalidator addonInvalidator,
 		IAgentOrderingService agentOrderer,
 		IAgentManagementService agentManager,
 		IChatStorageService storage,
@@ -123,6 +125,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 				_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 				cancellationToken = _cts.Token;
+
+				addonInvalidator.ReloadIfInvalid();
 
 				var agent = agentManager.GetAgentDescriptor(agentId);
 				toolMemorizer.PushTaskAsyncScope();

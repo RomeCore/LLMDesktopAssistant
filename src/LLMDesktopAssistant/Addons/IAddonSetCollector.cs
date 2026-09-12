@@ -6,6 +6,8 @@ namespace LLMDesktopAssistant.Addons
 	{
 		IEnumerable<T> GetAvailableAddons();
 
+		IEnumerable<T> GetAddonsForChat();
+
 		IEnumerable<T> GetAddonsForAgent(ChatAgentDescriptor agent);
 	}
 }

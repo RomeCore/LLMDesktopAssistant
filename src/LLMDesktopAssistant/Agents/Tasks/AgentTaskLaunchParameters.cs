@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.Providers;
-using LLMDesktopAssistant.Scripting.Lua;
+using LLMDesktopAssistant.Scripting.Lua.API;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Implementations;
 using RCLargeLanguageModels;

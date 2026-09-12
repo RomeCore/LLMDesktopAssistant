@@ -19,15 +19,14 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _enableSkills, value);
 		}
 
-		private SkillsetSettings _skillset = new();
 		/// <summary>
 		/// Gets or sets the skillset settings for the agent.
 		/// </summary>
 		[InheritedChatAgentSetting]
 		public SkillsetSettings Skillset
 		{
-			get => _skillset;
-			set => SetProperty(ref _skillset, value);
+			get => field ??= new();
+			set => SetProperty(ref field, value);
 		}
 	}
 }

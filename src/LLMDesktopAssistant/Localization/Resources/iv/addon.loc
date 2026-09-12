@@ -75,6 +75,8 @@ type.templates.name: Prompt Templates
 type.templates.description: Reusable prompt templates (LLT files) that define prompt parts for chats and agents: system prompts, personas, specializations, components, skills and sub-agents.
 type.tools.name: Tools
 type.tools.description: Scriptable tool definitions (Lua, Python and C# scripts) that are exposed to the LLM as callable tools.
+type.scripts.lua.name: Lua-scripts
+type.scripts.lua.description: Scripts written in Lua, used for Lua-based tools and used for hooks registration.
 
 // =====================================================
 // === Diagnostics                                   ===

@@ -21,18 +21,17 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 				StreamingAnalyzer = ExecuteStreaming,
 				PreviewExecutor = ExecutePreview,
 				Name = "lua-execute",
-				DescriptionGetter = _ => $"""
+				Description = $"""
 					# MAIN INFO
 					Lua is executing using AsyncLua 5.5+{typeof(LuaState).Assembly.GetName().Version?.ToString() ?? ""}.
 					Executes Lua and returns the script result along with messages printed by 'print' function
 					(the `dass.tool.result.write` works in a similar way).
-					Lua has the API to interact with the application (called dASS) with these namespaces:
-					{string.Join(", ", lua.Namespaces.Select(ns => ns != null ? $"**{ns}**" : "_G").Order())}
+					Lua has the API to interact with the application (called dASS).
 
 					# AsyncLua changes
 					You can use `async/await` in your scripts, for example:
 					local async function doWork()
-						await delay(100)
+						await task.delay(100)
 						return 'done'
 					end
 					print(await doWork())
@@ -78,8 +77,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Scripting
 					dass.tool.result.complete_with_success()
 					
 					# SEE MANUALS BEFORE USING THE API
-					Use `manuals(...)` function to get the documentation for a specific namespace, `print(manuals(_G))`
-					or `print(manuals(dass.agents, dass.tool, dass.tool.result))` for example.
+					Use `manuals(...)` function to get the documentation for a specific namespace:
+					`print(manuals(_G, dass.agents, dass.tool, dass.tool.result))` for example.
+					To get list of all available namespaces, use `print(namespaces())`
 					""",
 				NameKey = Locale.GetKey("tool.name.lua-execute"),
 				DescriptionKey = Locale.GetKey("tool.description.lua-execute"),

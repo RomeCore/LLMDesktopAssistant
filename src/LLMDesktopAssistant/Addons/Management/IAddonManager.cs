@@ -18,6 +18,7 @@ namespace LLMDesktopAssistant.Addons.Management
 		/// <summary>
 		/// Reloads all addons if manager state is invalid (i.e., needs to reload) without forcing a reload.
 		/// </summary>
-		void ReloadIfInvalid();
+		/// <returns><see langword="true"/> if the manager state was invalid and a reload was performed; <see langword="false"/> otherwise.</returns>
+		bool ReloadIfInvalid();
 	}
 }
