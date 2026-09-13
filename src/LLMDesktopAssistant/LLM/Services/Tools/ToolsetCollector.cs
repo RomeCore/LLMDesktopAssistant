@@ -25,11 +25,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				.SelectMany(m => m.GetTools());
 		}
 
-		public override IEnumerable<ToolInfo> GetAddonsForChat()
-		{
-			return GetAvailableAddons();
-		}
-
 		public override IEnumerable<ToolInfo> GetAddonsForAgent(ChatAgentDescriptor agent)
 		{
 			var settings = agent.Tools;

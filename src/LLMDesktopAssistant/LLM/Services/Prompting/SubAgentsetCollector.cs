@@ -79,11 +79,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			target.Model = change.Model ?? target.Model;
 		}
 
-		public override IEnumerable<SubAgentInfo> GetAddonsForChat()
-		{
-			return GetAvailableAddons();
-		}
-
 		public override IEnumerable<SubAgentInfo> GetAddonsForAgent(ChatAgentDescriptor agent)
 		{
 			if (!chatSettings.Settings.SubAgents.EnableSubAgents)

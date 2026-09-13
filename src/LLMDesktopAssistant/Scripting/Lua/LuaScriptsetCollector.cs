@@ -1,5 +1,4 @@
 ﻿using LLMDesktopAssistant.Addons;
-using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting.Lua.API;
 
@@ -32,11 +31,6 @@ namespace LLMDesktopAssistant.Scripting.Lua
 					}
 				};
 			});
-		}
-
-		public override IEnumerable<LuaScriptInfo> GetAddonsForAgent(ChatAgentDescriptor agent)
-		{
-			return GetAddonsForChat();
 		}
 
 		public override IEnumerable<LuaScriptInfo> GetAddonsForChat()

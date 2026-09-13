@@ -69,11 +69,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			target.InjectionMode = change.InjectionMode ?? target.InjectionMode;
 		}
 
-		public override IEnumerable<SkillInfo> GetAddonsForChat()
-		{
-			return GetAvailableAddons();
-		}
-
 		public override IEnumerable<SkillInfo> GetAddonsForAgent(ChatAgentDescriptor agent)
 		{
 			if (!chatSettings.Settings.Skills.EnableSkills)

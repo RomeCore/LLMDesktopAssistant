@@ -1,4 +1,5 @@
 ﻿using LLMDesktopAssistant.Agents;
+using Serilog;
 
 namespace LLMDesktopAssistant.Addons
 {
@@ -66,9 +67,17 @@ namespace LLMDesktopAssistant.Addons
 				});
 		}
 
-		public abstract IEnumerable<TAddon> GetAddonsForChat();
+		public virtual IEnumerable<TAddon> GetAddonsForChat()
+		{
+			Log.Warning("GetAddonsForChat not implemented for {0}! Returning all addons. Override if necessary.", GetType());
+			return GetAvailableAddons();
+		}
 
-		public abstract IEnumerable<TAddon> GetAddonsForAgent(ChatAgentDescriptor agent);
+		public virtual IEnumerable<TAddon> GetAddonsForAgent(ChatAgentDescriptor agent)
+		{
+			Log.Warning("GetAddonsForAgent not implemented for {0}! Returning all addons. Override if necessary.", GetType());
+			return GetAvailableAddons();
+		}
 
 		protected IEnumerable<TAddon> GetAddonsWithChanges(IEnumerable<TChange> changes,
 			bool enabledByDefault, bool hiddenByDefault, ChatAgentDescriptor? agent)

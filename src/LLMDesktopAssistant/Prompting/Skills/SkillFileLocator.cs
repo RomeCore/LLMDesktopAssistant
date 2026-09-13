@@ -1,6 +1,4 @@
-using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Loading;
-using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Services;
 
 namespace LLMDesktopAssistant.Prompting.Skills
@@ -13,7 +11,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 	{
 		protected override string[] Folders => ["skills"];
 
-		protected override string[] Extensions => [".md", ".mdx", ".txt"];
+		protected override string[] Extensions => [".md", ".mdx"];
 
 		protected override bool AllowShortFormat => true;
 
