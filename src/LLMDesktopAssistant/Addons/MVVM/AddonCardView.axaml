@@ -1,0 +1,250 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="220"
+						 xmlns:cards="using:LLMDesktopAssistant.Addons.MVVM"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 x:Class="LLMDesktopAssistant.Addons.MVVM.AddonCardView"
+						 x:DataType="cards:AddonCardViewModel">
+
+	<!-- ================================================================ -->
+	<!-- Styles                                                           -->
+	<!-- ================================================================ -->
+	<UserControl.Styles>
+
+		<Style Selector="Border.addonCard">
+			<Setter Property="BorderBrush" Value="{DynamicResource SecondaryAccentBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="Padding" Value="8"/>
+		</Style>
+
+		<Style Selector="Border.cardChip">
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="6,2"/>
+			<Setter Property="Margin" Value="0,0,4,2"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+		<!-- HasBorder == false → no outline at all -->
+		<Style Selector="Border.cardChip.noBorder">
+			<Setter Property="BorderThickness" Value="0"/>
+		</Style>
+
+		<Style Selector="TextBlock.cardChipText">
+			<Setter Property="FontSize" Value="11"/>
+			<Setter Property="Opacity" Value="0.8"/>
+		</Style>
+
+	</UserControl.Styles>
+
+	<!-- ================================================================ -->
+	<!-- Templates                                                        -->
+	<!-- ================================================================ -->
+	<UserControl.Resources>
+
+		<!-- One chip: optional icon + optional label, outline/color controlled by the element. -->
+		<DataTemplate x:Key="AddonCardChipTemplate" x:DataType="cards:IAddonCardChip">
+			<Border Classes="cardChip"
+							Classes.noBorder="{Binding !HasBorder}"
+							BorderBrush="{Binding Color, Converter={StaticResource ColorToBrushConverter}, TargetNullValue={DynamicResource SecondaryAccentBrush}}"
+							ToolTip.Tip="{loc:Loc {Binding ToolTip}}">
+				<StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center">
+
+					<ico:MaterialIcon Kind="{Binding Icon}"
+													  IsVisible="{Binding Icon, Converter={StaticResource NotnullToBooleanConverter}}"
+													  Width="12" Height="12"
+													  VerticalAlignment="Center"
+													  Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}, TargetNullValue={DynamicResource SecondaryAccentBrush}}"/>
+
+					<TextBlock Classes="cardChipText"
+									   Text="{loc:Loc {Binding Label}}"
+									   IsVisible="{Binding Label, Converter={StaticResource NotnullToBooleanConverter}}"
+									   VerticalAlignment="Center"/>
+				</StackPanel>
+			</Border>
+		</DataTemplate>
+
+		<!-- Action button. IsEnabled is driven by Command.CanExecute. -->
+		<DataTemplate x:Key="AddonCardActionTemplate" x:DataType="cards:IAddonCardAction">
+			<Button Classes="SmallIconButton"
+							Command="{Binding Command}"
+							ToolTip.Tip="{loc:Loc {Binding ToolTip}}">
+				<ico:MaterialIcon Kind="{Binding Icon}"/>
+			</Button>
+		</DataTemplate>
+
+		<!-- Detail / plain block: optional title + content + optional chips below. -->
+		<DataTemplate x:Key="AddonCardBlockTemplate" x:DataType="cards:IAddonCardBlock">
+			<StackPanel Orientation="Vertical" Spacing="2">
+
+				<TextBlock Text="{loc:Loc {Binding Title}}"
+								   FontWeight="SemiBold"
+								   FontSize="12"
+								   Opacity="0.8"
+								   IsVisible="{Binding Title, Converter={StaticResource NotnullToBooleanConverter}}"/>
+
+				<ContentControl Content="{Binding Content}"
+												IsVisible="{Binding Content, Converter={StaticResource NotnullToBooleanConverter}}"/>
+
+				<ItemsControl ItemsSource="{Binding Chips}"
+										  ItemTemplate="{StaticResource AddonCardChipTemplate}"
+										  IsVisible="{Binding Chips.Count}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<WrapPanel/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+				</ItemsControl>
+
+			</StackPanel>
+		</DataTemplate>
+
+	</UserControl.Resources>
+
+	<!-- ================================================================ -->
+	<!-- Card                                                             -->
+	<!-- ================================================================ -->
+	<Border Classes="addonCard">
+		<StackPanel Orientation="Vertical" Spacing="4">
+
+			<!-- ============================================================ -->
+			<!-- Row 0: header                                                -->
+			<!-- ============================================================ -->
+			<Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center" ColumnSpacing="4">
+				
+				<!-- Left side changes, if any -->
+				<ItemsControl Grid.Column="0"
+										  ItemsSource="{Binding LeftChanges}"
+										  ItemTemplate="{StaticResource AddonCardChangeLeftTemplate}"
+											IsVisible="{Binding !LeftChanges.IsEmpty}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" Spacing="4"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+				</ItemsControl>
+				
+				<!-- Name -->
+				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+					<ico:MaterialIcon Kind="{Binding Icon}"
+													  Foreground="{DynamicResource PrimaryAccentBrush}"
+													  Width="20" Height="20"
+													  VerticalAlignment="Center"/>
+					<TextBlock Text="{Binding Name}"
+									   FontWeight="Bold"
+									   VerticalAlignment="Center"
+									   TextTrimming="CharacterEllipsis"/>
+				</StackPanel>
+
+				<!-- Right side changes, if any -->
+				<ItemsControl Grid.Column="2"
+										  ItemsSource="{Binding RightChanges}"
+										  ItemTemplate="{StaticResource AddonCardChangeRightTemplate}"
+											IsVisible="{Binding !RightChanges.IsEmpty}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" Spacing="4"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+				</ItemsControl>
+				
+				<!-- Reset button -->
+				<Button Grid.Column="3"
+								Command="{Binding ResetCommand}"
+								HorizontalAlignment="Center"
+								Classes="IconButton"
+								Margin="4,0,0,0"
+								ToolTip.Tip="{loc:Loc common.reset}"
+								IsVisible="{Binding !Changes.IsEmpty}">
+					<ico:MaterialIcon Kind="Refresh"/>
+				</Button>
+
+			</Grid>
+
+			<!-- ============================================================ -->
+			<!-- Row 1: description                                           -->
+			<!-- ============================================================ -->
+
+			<TextBlock Text="{Binding Description}"
+							   Opacity="0.7"
+							   FontSize="12"
+							   TextWrapping="Wrap"
+							   Margin="28,0,0,0"
+							   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+
+			<!-- ============================================================ -->
+			<!-- Row 2: chips                                                 -->
+			<!-- ============================================================ -->
+			<ItemsControl ItemsSource="{Binding Chips}"
+										ItemTemplate="{StaticResource AddonCardChipTemplate}"
+										IsVisible="{Binding !Chips.IsEmpty}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<WrapPanel/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+			</ItemsControl>
+			
+			<!-- ============================================================ -->
+			<!-- Row 3: plain blocks                                          -->
+			<!-- ============================================================ -->
+			<ItemsControl ItemsSource="{Binding Blocks}"
+									  ItemTemplate="{StaticResource AddonCardBlockTemplate}"/>
+
+			<!-- ============================================================ -->
+			<!-- Row 4: action row (left content | right actions)             -->
+			<!-- ============================================================ -->
+			<Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+
+				<ItemsControl Grid.Column="0"
+											ItemsSource="{Binding ActionRowElements}"
+											IsVisible="{Binding !ActionRowElements.IsEmpty}"
+											VerticalAlignment="Center">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" Spacing="6"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<ContentControl Content="{Binding Content}"/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+
+					<ItemsControl ItemsSource="{Binding Actions}"
+											  ItemTemplate="{StaticResource AddonCardActionTemplate}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Horizontal" Spacing="2"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
+
+					<!-- Details toggle (shown only when there are detail blocks). -->
+					<ToggleButton Classes="SmallIconButton"
+											  IsVisible="{Binding !DetailBlocks.IsEmpty}"
+											  IsChecked="{Binding IsDetailsVisible, Mode=TwoWay}"
+											  ToolTip.Tip="{loc:Loc addon.card.details}">
+						<ico:MaterialIcon Kind="CardAccountDetailsOutline" Width="14" Height="14"/>
+					</ToggleButton>
+
+				</StackPanel>
+			</Grid>
+
+			<!-- ============================================================ -->
+			<!-- Row 5: detail blocks                                         -->
+			<!-- ============================================================ -->
+			<ItemsControl ItemsSource="{Binding DetailBlocks}"
+									  ItemTemplate="{StaticResource AddonCardBlockTemplate}"
+									  IsVisible="{Binding IsDetailsVisible}"/>
+
+		</StackPanel>
+	</Border>
+</UserControl>
