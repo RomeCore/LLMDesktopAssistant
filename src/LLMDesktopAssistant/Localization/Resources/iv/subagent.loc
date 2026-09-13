@@ -32,6 +32,7 @@ metadata.compatibility: Compatibility
 metadata.license: License
 metadata.version: Version
 source.custom: Custom
+source.pack: Pack
 source.template: Template
 source.unknown: Unknown
 source.userprofile: User Profile

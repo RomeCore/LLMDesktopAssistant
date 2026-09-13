@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.Tools.Scripting
 	/// <see cref="IScriptableToolEngineDescriptor.Template"/>.
 	/// </remarks>
 	[Service(typeof(IAddonFileParser<ToolInfo>))]
-	public class ScriptableToolParser : FrontmatterBasedAddonParser<ToolInfo>
+	public class ScriptableToolParser : FrontmatterBasedAddonParser<ToolInfo, ToolChange>
 	{
 		private static readonly StringComparer _extensionComparer =
 			OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
@@ -104,6 +104,8 @@ namespace LLMDesktopAssistant.Tools.Scripting
 		/// <inheritdoc/>
 		protected override void Populate(ToolInfo addon, AddonFrontmatterDocument frontmatter, ref AddonDiagnostic? diagnostic)
 		{
+			base.Populate(addon, frontmatter, ref diagnostic);
+
 			IScriptableToolEngine engine;
 			try
 			{
@@ -120,24 +122,7 @@ namespace LLMDesktopAssistant.Tools.Scripting
 				return;
 			}
 
-			// === Display metadata (Name and Description are filled by the base class) ===
-
-			if (frontmatter.TryRequest("title", ref diagnostic, out string title) && !string.IsNullOrWhiteSpace(title))
-				addon.NameKey = Locale.GetConstKey(title.Trim());
-
-			if (frontmatter.TryRequest("category", ref diagnostic, out string category) && !string.IsNullOrWhiteSpace(category))
-				addon.CategoryKey = Locale.GetConstKey(category.Trim());
-
-			if (frontmatter.TryRequest("aliases", ref diagnostic, out ImmutableList<string> aliases))
-				addon.Aliases = aliases;
-
-			// === Variable state ===
-
-			if (frontmatter.TryRequest("enabled", ref diagnostic, out bool enabled))
-				addon.Enabled = enabled;
-
-			if (frontmatter.TryRequest("hidden", ref diagnostic, out bool hidden))
-				addon.Hidden = hidden;
+			addon.ScriptLanguage = engine.Language;
 
 			// === Tool-specific metadata ===
 

@@ -1,129 +1,80 @@
-using LLMDesktopAssistant.Prompting;
-using LLMDesktopAssistant.StructuredValues.Parameterization;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Tools;
-using YamlDotNet.RepresentationModel;
 
 namespace LLMDesktopAssistant.Agents.SubAgents
 {
-	public class SubAgentInfo
+	/// <summary>
+	/// Represents information about a sub-agent (an <c>agent</c> addon file), including its name,
+	/// description, system prompt body and the resources available to the sub-agent.
+	/// The <see cref="AddonBase{Self}.Body"/> of the addon is used as the sub-agent's system prompt.
+	/// </summary>
+	public class SubAgentInfo : AddonChangedBase<SubAgentInfo, SubAgentChange>
 	{
-		/// <summary>
-		/// The name of the sub-agent. Used for identification and display purposes.
-		/// </summary>
-		public required string Name { get; init; }
-
-		/// <summary>
-		/// The description of the sub-agent. Used to understand the purpose of the sub-agent and when it should be used.
-		/// </summary>
-		public required string Description { get; init; }
-
-		/// <summary>
-		/// The sub-agent file content getter, excluding the YAML frontmatter.
-		/// </summary>
-		public required Func<SubAgentInfo, string> SystemPromptGetter { get; init; }
-
-		/// <summary>
-		/// The source of the sub-agent.
-		/// </summary>
-		public required SubAgentSource Source { get; init; }
-
-		/// <summary>
-		/// The source of the prompt template used to import the sub-agent.
-		/// </summary>
-		public PromptPartSource TemplateSource { get; init; } = PromptPartSource.Unknown;
-
-		/// <summary>
-		/// The absolute path to the sub-agent file, if applicable. Null otherwise.
-		/// </summary>
-		public string? Path { get; init; } = null;
-
-		/// <summary>
-		/// The metadata associated with the sub-agent.
-		/// This dictionary can be used to store additional information about the sub-agent, such as its version number or author.
-		/// </summary>
-		public ImmutableDictionary<SubAgentMetadataType, string> Metadata { get; init; } = [];
-
-		/// <summary>
-		/// The additional metadata associated with the sub-agent.
-		/// Used for metadata values that are not covered by <see cref="SubAgentMetadataType"/>.
-		/// </summary>
-		public ImmutableDictionary<string, string> AdditionalMetadata { get; init; } = [];
-
 		/// <summary>
 		/// The list of tools that would be used for this sub-agent without approval.
 		/// Examples: 'Read', 'Bash(git:*)'.
 		/// </summary>
-		public ImmutableList<ToolNameWithSpecifier> AllowedTools { get; init; } = [];
+		public ImmutableList<ToolNameWithSpecifier> AllowedTools
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = [];
 
 		/// <summary>
 		/// The list of tools that would be used for this sub-agent.
 		/// Also used for setting tool approval policy to ask for these tools.
 		/// Examples: 'Read', 'Bash(git:*)'.
 		/// </summary>
-		public ImmutableList<ToolNameWithSpecifier> AvailableTools { get; init; } = [];
+		public ImmutableList<ToolNameWithSpecifier> AvailableTools
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = [];
 
 		/// <summary>
 		/// The list of tools that would be disallowed for this sub-agent.
 		/// Examples: 'Read', 'Bash(git:*)'.
 		/// </summary>
-		public ImmutableList<ToolNameWithSpecifier> DisallowedTools { get; init; } = [];
+		public ImmutableList<ToolNameWithSpecifier> DisallowedTools
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = [];
 
 		/// <summary>
 		/// The list of skill names that the sub-agent can use.
 		/// </summary>
-		public ImmutableList<string> Skills { get; init; } = [];
+		public ImmutableList<string> Skills
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = [];
 
 		/// <summary>
 		/// The list of inner sub-agent names that the sub-agent can use.
 		/// </summary>
-		public ImmutableList<string> SubAgents { get; init; } = [];
+		public ImmutableList<string> SubAgents
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = [];
 
 		/// <summary>
 		/// The list of memory blocks that the sub-agent can use.
 		/// </summary>
-		public ImmutableDictionary<string, MemoryBlockAttachmentMode> MemoryBlocks { get; init; } = [];
-
-		/// <summary>
-		/// The tags associated with the sub-agent. Used for UI display and search.
-		/// Examples: 'development', 'code-quality', 'refactoring'.
-		/// </summary>
-		public ImmutableList<string> Tags { get; init; } = [];
-
-		/// <summary>
-		/// The additional properties associated with the sub-agent.
-		/// Used for root properties that are not covered by other properties of this class.
-		/// </summary>
-		public ImmutableDictionary<string, YamlNode> AdditionalProperties { get; init; } = [];
-
-		/// <summary>
-		/// The diagnostic containing specific warnings and errors that was occured during sub-agent parsing.
-		/// </summary>
-		public SubAgentDiagnostic? Diagnostic { get; init; } = null;
-
-		/// <summary>
-		/// Whether or not this sub-agent is enabled. Defaults to null, meaning it is not explicitly enabled or disabled.
-		/// </summary>
-		public bool? Enabled { get; init; } = null;
+		public ImmutableDictionary<string, MemoryBlockAttachmentMode> MemoryBlocks
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = [];
 
 		/// <summary>
 		/// The model used for this sub-agent. Can be overriden in the sub-agent configuration.
 		/// </summary>
-		public string? Model { get; init; } = null;
-
-		/// <summary>
-		/// The change confiuration object that been used to make some changes to this sub-agent instance.
-		/// </summary>
-		public SubAgentChange? Change { get; init; } = null;
-
-		/// <summary>
-		/// The parameter schema of the sub-agent template, if the system prompt is an LLT template with @params metadata.
-		/// Null for plain-text sub-agents without parameters.
-		/// </summary>
-		public ParameterSchema? ParameterSchema { get; init; } = null;
-
-		/// <summary>
-		/// Gets the list of overriden sub-agents during deduplication by name.
-		/// </summary>
-		public ImmutableList<SubAgentInfo> Overrides { get; init; } = [];
+		public string? Model
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = null;
 	}
 }

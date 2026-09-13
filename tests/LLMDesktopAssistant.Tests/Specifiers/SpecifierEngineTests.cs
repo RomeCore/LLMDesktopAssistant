@@ -11,7 +11,7 @@ public class SpecifierEngineTests
 		var tool = ToolInfo.Create(new ToolInitializationInfo
 		{
 			Name = "test",
-			DescriptionGetter = () => "test",
+			Description = "test",
 			Executor = (JsonNode? _, ToolExecutionContext _, CancellationToken _) => Task.FromResult(new ReactiveToolResult())
 		});
 		return ToolExecutionContext.CreateDummy(tool, null, null);

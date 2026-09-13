@@ -10,7 +10,7 @@ namespace LLMDesktopAssistant.Prompting.Skills
 	/// The parser for <c>SKILL.md</c> / <c>SKILL.mdx</c> addon files.
 	/// </summary>
 	[Service(typeof(IAddonFileParser<SkillInfo>))]
-	public class SkillParser : FrontmatterBasedAddonParser<SkillInfo>
+	public class SkillParser : FrontmatterBasedAddonParser<SkillInfo, SkillChange>
 	{
 		protected override AddonParserDescriptor GetDescriptorFor(string content, AddonPathInfo fileInfo)
 		{
@@ -25,6 +25,8 @@ namespace LLMDesktopAssistant.Prompting.Skills
 
 		protected override void Populate(SkillInfo addon, AddonFrontmatterDocument frontmatter, ref AddonDiagnostic? diagnostic)
 		{
+			base.Populate(addon, frontmatter, ref diagnostic);
+
 			addon.AllowedTools = frontmatter.Get<ImmutableList<ToolNameWithSpecifier>>("allowed-tools", []);
 			addon.AvailableTools = frontmatter.Get<ImmutableList<ToolNameWithSpecifier>>("available-tools", []);
 			addon.DisallowedTools = frontmatter.Get<ImmutableList<ToolNameWithSpecifier>>("disallowed-tools", []);

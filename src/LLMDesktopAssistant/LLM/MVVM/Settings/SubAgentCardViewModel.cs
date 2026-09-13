@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Controls.Dialogs;
@@ -126,7 +127,7 @@ public class SubAgentCardViewModel : ViewModelBase
 		_settings = settings;
 		_settings?.PropertyChanged += SubAgentsetSettings_PropertyChanged;
 
-		DiagnosticFlags = SubAgentDiagnosticFlagInfo.CreateFromDiagnostic(info.Diagnostic);
+		DiagnosticFlags = AddonDiagnosticFlagInfo.CreateFromDiagnostic(info.Diagnostic);
 		LinkIssues = linkIssues?.ToImmutableList() ?? [];
 		LinkIssueItems = LinkIssues.Select(i => new SubAgentLinkIssueItem(i)).ToImmutableList();
 
@@ -205,27 +206,27 @@ public class SubAgentCardViewModel : ViewModelBase
 	/// <summary>
 	/// Gets a value indicating whether the sub-agent comes from a file that can be edited or deleted.
 	/// </summary>
-	public bool IsFileBased => _info.Source is SubAgentSource.UserProfile or SubAgentSource.WorkingDirectory or SubAgentSource.Custom;
+	public bool IsFileBased => _info.Path is not null;
 
 	/// <summary>
 	/// Gets the source of the sub-agent.
 	/// </summary>
-	public SubAgentSource Source => _info.Source;
+	public AddonSource Source => _info.AddonSource;
 
 	/// <summary>
 	/// Gets the localized display name of the source.
 	/// </summary>
-	public string SourceDisplayName => LocalizeSource(_info.Source);
+	public string SourceDisplayName => LocalizeSource(_info.AddonSource);
 
 	/// <summary>
 	/// Gets the icon of the source.
 	/// </summary>
-	public MaterialIconKind SourceIcon => _info.Source switch
+	public MaterialIconKind SourceIcon => _info.AddonSource switch
 	{
-		SubAgentSource.UserProfile => MaterialIconKind.AccountCircle,
-		SubAgentSource.WorkingDirectory => MaterialIconKind.Folder,
-		SubAgentSource.Custom => MaterialIconKind.FolderStar,
-		SubAgentSource.Template => MaterialIconKind.FileCode,
+		AddonSource.Pack => _info.SourcePack?.Source is AddonPackSource.AgentsHome or AddonPackSource.UserAgentsHome
+			? MaterialIconKind.Folder
+			: MaterialIconKind.PackageVariant,
+		AddonSource.Template => MaterialIconKind.FileCode,
 		_ => MaterialIconKind.HelpCircle
 	};
 
@@ -265,7 +266,7 @@ public class SubAgentCardViewModel : ViewModelBase
 	/// <summary>
 	/// Gets the list of diagnostic flag infos for display in the UI.
 	/// </summary>
-	public ImmutableList<SubAgentDiagnosticFlagInfo> DiagnosticFlags { get; }
+	public ImmutableList<AddonDiagnosticFlagInfo> DiagnosticFlags { get; }
 
 	/// <summary>
 	/// Gets the list of broken dependency issues found for this sub-agent.
@@ -280,7 +281,7 @@ public class SubAgentCardViewModel : ViewModelBase
 	/// <summary>
 	/// Gets the tags of the sub-agent.
 	/// </summary>
-	public ImmutableList<string> Tags => _info.Tags;
+	public ImmutableList<string> Tags => _info.Tags.Order().ToImmutableList();
 
 	/// <summary>
 	/// Gets the localized text of a link issue.
@@ -379,7 +380,7 @@ public class SubAgentCardViewModel : ViewModelBase
 	/// <summary>
 	/// Gets the system prompt of the sub-agent.
 	/// </summary>
-	public string SystemPrompt => _systemPrompt ??= _info.SystemPromptGetter(_info);
+	public string SystemPrompt => _systemPrompt ??= _info.Body;
 
 	/// <summary>
 	/// Gets a value indicating whether the sub-agent template has a parameter schema that can be edited.
@@ -562,7 +563,7 @@ public class SubAgentCardViewModel : ViewModelBase
 		{
 			_change = new SubAgentChange
 			{
-				SubAgentName = Name,
+				Name = Name,
 				Enabled = null,
 				Model = null
 			};
@@ -628,14 +629,14 @@ public class SubAgentCardViewModel : ViewModelBase
 	private static string FormatTool(ToolNameWithSpecifier tool) =>
 		tool.Specifier == null ? tool.ToolName : $"{tool.ToolName}({tool.Specifier})";
 
-	private static string LocalizeMetadataKey(SubAgentMetadataType type)
+	private static string LocalizeMetadataKey(AddonMetadataType type)
 	{
 		var key = $"subagent.metadata.{type.ToString().ToLower()}";
 		var localized = LocalizationManager.LocalizeStatic(key);
 		return localized == key ? type.ToString() : localized;
 	}
 
-	private static string LocalizeSource(SubAgentSource source)
+	private static string LocalizeSource(AddonSource source)
 	{
 		var key = $"subagent.source.{source.ToString().ToLower()}";
 		var localized = LocalizationManager.LocalizeStatic(key);

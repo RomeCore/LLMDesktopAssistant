@@ -1,5 +1,6 @@
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
@@ -36,7 +37,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		IAgentManagementService agentManager,
 		IUserManagementService userManager,
 		IAddonSetCollector<SkillInfo> skillsetBuilder,
-		ISubAgentSetBuildingService subAgentSetBuilder,
+		IAddonSetCollector<SubAgentInfo> subAgentsetCollector,
 		IEnumerable<IPromptBuildingHook> promptBuildingHooks,
 		IEnumerable<IPromptSystemContextExpander> promptSystemContextExpanders,
 		IEnumerable<IPromptMessageContextExpander> promptMessageContextExpanders,
@@ -134,7 +135,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				path = s.Path,
 				body = s.InjectionMode is SkillInjectionMode.Full ? s.BodyGetter(s) : null
 			});
-			generalContext["sub_agents"] = subAgentSetBuilder.GetSubAgentsForAgent(agent).Select(s => new
+			generalContext["sub_agents"] = subAgentsetCollector.GetAddonsForAgent(agent).Select(s => new
 			{
 				name = s.Name,
 				description = s.Description

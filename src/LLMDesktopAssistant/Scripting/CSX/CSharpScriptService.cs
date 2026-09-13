@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.Scripting.CSX
 				"System.Threading.Tasks",
 				"LLMDesktopAssistant",
 				"LLMDesktopAssistant.Tools",
-				"LLMDesktopAssistant.Tools.Meta",
+				"LLMDesktopAssistant.Tools.Scripting",
 				"LLMDesktopAssistant.Scripting",
 				"LLMDesktopAssistant.Utils");
 

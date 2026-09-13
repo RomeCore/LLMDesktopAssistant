@@ -1,9 +1,8 @@
 using System.Collections.Concurrent;
-using DocumentFormat.OpenXml.EMMA;
 using LLMDesktopAssistant.Addons.Parsers.Frontmatter;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.StructuredValues.Converters;
 using RCParsing;
-using RCParsing.Building;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 
@@ -165,6 +164,8 @@ namespace LLMDesktopAssistant.Addons.Parsers
 
 			result.Path ??= fileInfo.Path;
 			result.SourcePack ??= fileInfo.SourcePack;
+			if (result.SourcePack is not null)
+				result.AddonSource = AddonSource.Pack;
 
 			var fallbackName = GetFallbackName(fileInfo);
 
@@ -278,6 +279,17 @@ namespace LLMDesktopAssistant.Addons.Parsers
 						result.Description = string.Empty;
 				}
 
+				// === Display metadata ===
+
+				if (frontmatterDocument.TryRequest("title", ref diagnostic, out string title) && !string.IsNullOrWhiteSpace(title))
+					result.NameKey = Locale.GetConstKey(title.Trim());
+
+				if (frontmatterDocument.TryRequest("category", ref diagnostic, out string category) && !string.IsNullOrWhiteSpace(category))
+					result.CategoryKey = Locale.GetConstKey(category.Trim());
+
+				if (frontmatterDocument.TryRequest("aliases", ref diagnostic, out ImmutableList<string> aliases))
+					result.Aliases = aliases;
+
 				result.AdditionalProperties = frontmatterDocument.GetAdditionalProperties();
 			}
 			else
@@ -389,5 +401,19 @@ namespace LLMDesktopAssistant.Addons.Parsers
 		/// and <see cref="AddonMetadata.Tags"/>.
 		/// </summary>
 		protected abstract void Populate(T addon, AddonFrontmatterDocument frontmatter, ref AddonDiagnostic? diagnostic);
+	}
+
+	public abstract class FrontmatterBasedAddonParser<TAddon, TChange> : FrontmatterBasedAddonParser<TAddon>
+		where TAddon : AddonChangedBase<TAddon, TChange>, new()
+		where TChange : AddonChangeBase
+	{
+		protected override void Populate(TAddon addon, AddonFrontmatterDocument frontmatter, ref AddonDiagnostic? diagnostic)
+		{
+			if (frontmatter.TryRequest("enabled", ref diagnostic, out bool enabled))
+				addon.Enabled = enabled;
+
+			if (frontmatter.TryRequest("hidden", ref diagnostic, out bool hidden))
+				addon.Hidden = hidden;
+		}
 	}
 }

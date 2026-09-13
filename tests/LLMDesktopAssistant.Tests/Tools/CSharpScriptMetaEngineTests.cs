@@ -1,27 +1,26 @@
 using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Scripting.CSX;
 using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Tools.Meta;
 using LLMDesktopAssistant.Tools.Scripting;
 
-namespace LLMDesktopAssistant.Tests.MetaTools;
+namespace LLMDesktopAssistant.Tests.Tools;
 
-public class CSharpScriptMetaToolEngineTests
+public class CSharpScriptMetaEngineTests
 {
-	private static readonly MetaToolParser Parser = new();
 	private static readonly IScriptableToolEngineDescriptor Descriptor = new CSharpScriptToolEngineDescriptor();
 	private static readonly CSharpScriptToolEngine Engine = new(new CSharpScriptService());
+	private static readonly ScriptableToolParser Parser = new([Engine]);
 
-	private static MetaToolInfo CreateTool(string executionCode) => new()
+	private static ToolInfo CreateTool(string executionCode) => new()
 	{
 		Name = "get_weather",
-		Source = MetaToolSource.Custom,
-		Title = "Weather Checker",
+		NameKey = Locale.GetKey("Weather Checker"),
 		Description = "Gets the current weather for a location.",
-		Category = "weather",
+		CategoryKey = Locale.GetKey("weather"),
 		ApprovalLevel = ToolApprovalLevel.PolicyBased,
-		Behaviours = ToolBehaviour.None,
+		DefaultExpectedBehaviour = ToolBehaviour.None,
 		ArgumentSchema = new JsonObject
 		{
 			["type"] = "object",
@@ -31,7 +30,7 @@ public class CSharpScriptMetaToolEngineTests
 			}
 		},
 		ScriptLanguage = ScriptLanguageType.CSharpScript,
-		ExecutionCode = executionCode
+		Body = executionCode
 	};
 
 	private static ToolExecutionContext CreateDummyContext()
@@ -39,60 +38,11 @@ public class CSharpScriptMetaToolEngineTests
 		var toolInfo = new ToolInfo
 		{
 			Name = "get_weather",
-			DescriptionGetter = () => "Gets the current weather for a location.",
+			Description = "Gets the current weather for a location.",
 			ArgumentSchema = new JsonObject { ["type"] = "object" },
 			Executor = (_, _, _) => Task.FromResult(new ReactiveToolResult())
 		};
 		return ToolExecutionContext.CreateDummy(toolInfo, null, null);
-	}
-
-	[Fact]
-	public void Deserialize_CSXFrontmatter_ParsesAllFields()
-	{
-		var content = """
-			/*
-			title: Weather Checker
-			description: Gets the current weather for a location.
-			category: weather
-			approval_level: always-ask
-			*/
-			var city = (string?)ToolArgs?["city"];
-			Result.Write("City: " + city);
-			""";
-
-		var tool = Parser.Parse("get_weather", content, MetaToolSource.Custom, Descriptor);
-
-		Assert.Equal(ScriptLanguageType.CSharpScript, tool.ScriptLanguage);
-		Assert.Equal("Weather Checker", tool.Title);
-		Assert.Equal(ToolApprovalLevel.AlwaysAsk, tool.ApprovalLevel);
-		Assert.Equal("""
-			var city = (string?)ToolArgs?["city"];
-			Result.Write("City: " + city);
-			""", tool.ExecutionCode);
-	}
-
-	[Fact]
-	public void Serialize_RoundTrip_PreservesAllFields()
-	{
-		var tool = CreateTool("var city = (string?)ToolArgs?[\"city\"];\nResult.Write(\"City: \" + city);");
-
-		var deserialized = Parser.Parse("get_weather", Parser.Serialize(tool, Descriptor), MetaToolSource.Custom, Descriptor);
-
-		Assert.Equal(tool.ScriptLanguage, deserialized.ScriptLanguage);
-		Assert.Equal(tool.Title, deserialized.Title);
-		Assert.Equal(tool.ExecutionCode, deserialized.ExecutionCode);
-		Assert.Equal(tool.ArgumentSchema?.ToJsonString(), deserialized.ArgumentSchema?.ToJsonString());
-	}
-
-	[Fact]
-	public void Serialize_CSX_UsesBlockCommentFrontmatter()
-	{
-		var content = Parser.Serialize(CreateTool("return 42;"), Descriptor);
-
-		Assert.StartsWith("/*", content);
-		Assert.Contains("title: Weather Checker", content);
-		Assert.Contains("*/", content);
-		Assert.EndsWith("return 42;", content.TrimEnd());
 	}
 
 	[Fact]

@@ -1,4 +1,7 @@
+using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.SubAgents;
+using LLMDesktopAssistant.StructuredValues;
 
 namespace LLMDesktopAssistant.Tests.SubAgents;
 
@@ -7,7 +10,7 @@ public class SubAgentParserTests
 	private static readonly SubAgentParser Parser = new();
 
 	private static SubAgentInfo Parse(string content, string? path = null)
-		=> Parser.Parse(path ?? "C:\\agents\\test-agent.md", content);
+		=> Parser.Parse(content, new AddonPathInfo(path ?? "C:\\agents\\test-agent.md", true)).First();
 
 	[Fact]
 	public void MinimalFrontmatter_ParsesNameAndDescription()
@@ -21,7 +24,7 @@ public class SubAgentParserTests
 
 		Assert.Equal("test-agent", subAgent.Name);
 		Assert.Equal("A test sub-agent for unit testing.", subAgent.Description);
-		Assert.Empty(subAgent.SystemPromptGetter(subAgent));
+		Assert.Empty(subAgent.BodyGetter(subAgent));
 	}
 
 	[Fact]
@@ -48,12 +51,12 @@ public class SubAgentParserTests
 		Assert.Equal("pdf-processor", subAgent.Name);
 		Assert.Equal("Extract text from PDFs, fill forms, merge documents.", subAgent.Description);
 		Assert.Equal("gpt-4o", subAgent.Model);
-		Assert.Equal("MIT", subAgent.Metadata[SubAgentMetadataType.License]);
-		Assert.Equal("Requires Python 3.14+", subAgent.Metadata[SubAgentMetadataType.Compatibility]);
-		Assert.Equal("example-org", subAgent.Metadata[SubAgentMetadataType.Author]);
-		Assert.Equal("2.1", subAgent.Metadata[SubAgentMetadataType.Version]);
+		Assert.Equal("MIT", subAgent.Metadata[AddonMetadataType.License]);
+		Assert.Equal("Requires Python 3.14+", subAgent.Metadata[AddonMetadataType.Compatibility]);
+		Assert.Equal("example-org", subAgent.Metadata[AddonMetadataType.Author]);
+		Assert.Equal("2.1", subAgent.Metadata[AddonMetadataType.Version]);
 		Assert.Equal([new("Bash", "python:*"), new("Read"), new("Write")], subAgent.AllowedTools);
-		Assert.Equal(["pdf", "document", "extraction"], subAgent.Tags);
+		Assert.True(subAgent.Tags.SetEquals(["pdf", "document", "extraction"]));
 	}
 
 	[Fact]
@@ -93,6 +96,74 @@ public class SubAgentParserTests
 	}
 
 	[Fact]
+	public void SkillsAndSubAgents_ParseCorrectly()
+	{
+		var subAgent = Parse("""
+			---
+			name: orchestrator
+			description: Sub-agent with nested resources.
+			skills:
+			  - code-review
+			  - refactoring
+			sub-agents:
+			  - researcher
+			  - writer
+			---
+			""");
+
+		Assert.Equal(["code-review", "refactoring"], subAgent.Skills);
+		Assert.Equal(["researcher", "writer"], subAgent.SubAgents);
+	}
+
+	[Fact]
+	public void SkillsAsString_ParsesAsSingleItem()
+	{
+		var subAgent = Parse("""
+			---
+			name: single-skill
+			description: Sub-agent with a scalar skill list.
+			skills: code-review
+			---
+			""");
+
+		Assert.Equal(["code-review"], subAgent.Skills);
+	}
+
+	[Fact]
+	public void MemoryBlocksAsMapping_ParsesModes()
+	{
+		var subAgent = Parse("""
+			---
+			name: memory-agent
+			description: Sub-agent with memory blocks.
+			memory-blocks:
+			  notes: read-only
+			  scratch: standard
+			---
+			""");
+
+		Assert.Equal(MemoryBlockAttachmentMode.ReadOnly, subAgent.MemoryBlocks["notes"]);
+		Assert.Equal(MemoryBlockAttachmentMode.Standard, subAgent.MemoryBlocks["scratch"]);
+	}
+
+	[Fact]
+	public void MemoryBlocksAsList_UsesDefaultMode()
+	{
+		var subAgent = Parse("""
+			---
+			name: memory-list-agent
+			description: Sub-agent with a memory block list.
+			memory-blocks:
+			  - notes
+			  - scratch
+			---
+			""");
+
+		Assert.Equal(MemoryBlockAttachmentMode.Standard, subAgent.MemoryBlocks["notes"]);
+		Assert.Equal(MemoryBlockAttachmentMode.Standard, subAgent.MemoryBlocks["scratch"]);
+	}
+
+	[Fact]
 	public void BodyAfterFrontmatter_IsPreserved()
 	{
 		var subAgent = Parse("""
@@ -109,9 +180,9 @@ public class SubAgentParserTests
 			Some notes here.
 			""");
 
-		Assert.Contains("Step 1: Do something.", subAgent.SystemPromptGetter(subAgent));
-		Assert.Contains("Step 2: Do another thing.", subAgent.SystemPromptGetter(subAgent));
-		Assert.Contains("## Notes", subAgent.SystemPromptGetter(subAgent));
+		Assert.Contains("Step 1: Do something.", subAgent.BodyGetter(subAgent));
+		Assert.Contains("Step 2: Do another thing.", subAgent.BodyGetter(subAgent));
+		Assert.Contains("## Notes", subAgent.BodyGetter(subAgent));
 	}
 
 	[Fact]
@@ -131,7 +202,7 @@ public class SubAgentParserTests
 			This sub-agent does something useful.
 			Use this sub-agent when you need to do X.
 			""", subAgent.Description);
-		Assert.Contains("Detailed instructions go here.", subAgent.SystemPromptGetter(subAgent));
+		Assert.Contains("Detailed instructions go here.", subAgent.BodyGetter(subAgent));
 	}
 
 	[Fact]
@@ -141,7 +212,7 @@ public class SubAgentParserTests
 
 		Assert.Equal("fallback-name", subAgent.Name);
 		Assert.Equal("Just some plain text content.", subAgent.Description);
-		Assert.Equal("Just some plain text content.", subAgent.SystemPromptGetter(subAgent));
+		Assert.Equal("Just some plain text content.", subAgent.BodyGetter(subAgent));
 	}
 
 	[Fact]
@@ -156,7 +227,7 @@ public class SubAgentParserTests
 
 		Assert.Equal("different-name", subAgent.Name);
 		Assert.NotNull(subAgent.Diagnostic);
-		Assert.True(subAgent.Diagnostic.Codes.HasFlag(SubAgentDiagnosticCode.NameFileMismatch));
+		Assert.True(subAgent.Diagnostic.Codes.HasFlag(AddonDiagnosticCode.NameFSMismatch));
 	}
 
 	[Fact]
@@ -174,31 +245,6 @@ public class SubAgentParserTests
 	}
 
 	[Fact]
-	public void Source_IsPassedThrough()
-	{
-		var subAgent = Parse("""
-			---
-			name: sourced-agent
-			description: Sub-agent with a source.
-			---
-			""");
-
-		Assert.Equal(SubAgentSource.Unknown, subAgent.Source);
-
-		var sourcedSubAgent = Parser.Parse(
-			"C:\\agents\\sourced-agent.md",
-			"""
-			---
-			name: sourced-agent
-			description: Sub-agent with a source.
-			---
-			""",
-			SubAgentSource.WorkingDirectory);
-
-		Assert.Equal(SubAgentSource.WorkingDirectory, sourcedSubAgent.Source);
-	}
-
-	[Fact]
 	public void AdditionalMetadata_PreservesUnknownKeys()
 	{
 		var subAgent = Parse("""
@@ -213,8 +259,8 @@ public class SubAgentParserTests
 			---
 			""");
 
-		Assert.Equal("me", subAgent.Metadata[SubAgentMetadataType.Author]);
-		Assert.Equal("1.0", subAgent.Metadata[SubAgentMetadataType.Version]);
+		Assert.Equal("me", subAgent.Metadata[AddonMetadataType.Author]);
+		Assert.Equal("1.0", subAgent.Metadata[AddonMetadataType.Version]);
 		Assert.Equal("custom-value", subAgent.AdditionalMetadata["x-custom-field"]);
 		Assert.Equal("engineering", subAgent.AdditionalMetadata["department"]);
 	}
@@ -232,9 +278,8 @@ public class SubAgentParserTests
 			---
 			""");
 
-		Assert.Equal("high", (string)subAgent.AdditionalProperties["priority"]!);
-		Assert.Equal("testing", (string)subAgent.AdditionalProperties["category"]!);
-		Assert.Equal("hello", (string)subAgent.AdditionalProperties["x-my-field"]!);
+		Assert.Equal("high", subAgent.AdditionalProperties["priority"]!.AsString());
+		Assert.Equal("hello", subAgent.AdditionalProperties["x-my-field"]!.AsString());
 	}
 
 	[Fact]
@@ -249,5 +294,18 @@ public class SubAgentParserTests
 			""", path);
 
 		Assert.Equal(path, subAgent.Path);
+	}
+
+	[Fact]
+	public void HomeDirectory_IsParentOfSubAgentFile()
+	{
+		var subAgent = Parse("""
+			---
+			name: home-dir-test
+			description: Testing home directory.
+			---
+			""", "C:\\agents\\my-agent.md");
+
+		Assert.Equal("C:\\agents", subAgent.HomeDirectory);
 	}
 }

@@ -77,6 +77,8 @@ type.tools.name: Tools
 type.tools.description: Scriptable tool definitions (Lua, Python and C# scripts) that are exposed to the LLM as callable tools.
 type.scripts.lua.name: Lua-scripts
 type.scripts.lua.description: Scripts written in Lua, used for Lua-based tools and used for hooks registration.
+type.agents.name: Sub-agents
+type.agents.description: Reusable sub-agents (agent.md files) that define specialist personas with their own tools, skills, sub-agents and memory blocks.
 
 // =====================================================
 // === Diagnostics                                   ===

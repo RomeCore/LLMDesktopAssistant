@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Scripting;
 using LLMDesktopAssistant.Tools.Specifiers;
 using RCLargeLanguageModels.Tools;
 
@@ -150,6 +151,15 @@ namespace LLMDesktopAssistant.Tools
 			get => field;
 			set => SetProperty(ref field, value);
 		} = ToolSource.Native;
+
+		/// <summary>
+		/// The language of the script if the tool based on script.
+		/// </summary>
+		public ScriptLanguageType? ScriptLanguage
+		{
+			get;
+			set => SetProperty(ref field, value);
+		}
 
 		/// <summary>
 		/// A value indicating whether the tool requires user confirmation before execution. By default, uses agent's default approval level.

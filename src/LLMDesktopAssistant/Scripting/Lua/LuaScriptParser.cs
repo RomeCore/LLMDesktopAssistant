@@ -7,7 +7,7 @@ using LLMDesktopAssistant.Services;
 namespace LLMDesktopAssistant.Scripting.Lua
 {
 	[Service(typeof(IAddonFileParser<LuaScriptInfo>))]
-	public class LuaScriptParser : FrontmatterBasedAddonParser<LuaScriptInfo>
+	public class LuaScriptParser : FrontmatterBasedAddonParser<LuaScriptInfo, LuaScriptChange>
 	{
 		protected override AddonParserDescriptor GetDescriptorFor(string content, AddonPathInfo fileInfo)
 		{
@@ -22,6 +22,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 
 		protected override void Populate(LuaScriptInfo addon, AddonFrontmatterDocument frontmatter, ref AddonDiagnostic? diagnostic)
 		{
+			base.Populate(addon, frontmatter, ref diagnostic);
+
 			addon.IsNative = false;
 			addon.Namespace = frontmatter.Get<string?>("namespace");
 			addon.Manuals = frontmatter.Get<string?>("manuals");

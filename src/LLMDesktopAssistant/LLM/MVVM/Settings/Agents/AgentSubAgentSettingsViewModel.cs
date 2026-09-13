@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.SubAgents;
@@ -18,7 +19,8 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 [ViewModelFor(typeof(AgentSubAgentSettingsView))]
 public class AgentSubAgentSettingsViewModel : ViewModelBase
 {
-	private readonly ISubAgentSetBuildingService _subAgentSetBuilder;
+	private readonly IAddonSetCollector<SubAgentInfo> _subAgentsetCollector;
+	private readonly IAddonManagerInvalidator _addonsInvalidator;
 	private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
 	private readonly ChatSettings _chatSettings;
 	private ImmutableList<SubAgentCardViewModel> _allCards = [];
@@ -81,15 +83,18 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 	/// </summary>
 	/// <param name="settings">The agent sub-agent settings.</param>
 	/// <param name="chatSettings">The chat settings used to resolve inherited settings.</param>
-	/// <param name="subAgentSetBuilder">The service providing the available sub-agents.</param>
+	/// <param name="subAgentsetCollector">The service providing the available sub-agents.</param>
 	/// <param name="skillsetBuilder">The service providing the available skills for link checking.</param>
+	/// <param name="addonsInvalidator">The invalidator used to reload addons before building the list.</param>
 	public AgentSubAgentSettingsViewModel(AgentSubAgentSettings settings, ChatSettings chatSettings,
-		ISubAgentSetBuildingService subAgentSetBuilder, IAddonSetCollector<SkillInfo> skillsetBuilder)
+		IAddonSetCollector<SubAgentInfo> subAgentsetCollector, IAddonSetCollector<SkillInfo> skillsetBuilder,
+		IAddonManagerInvalidator addonsInvalidator)
 	{
 		SubAgentSettings = settings;
 		_chatSettings = chatSettings;
-		_subAgentSetBuilder = subAgentSetBuilder;
+		_subAgentsetCollector = subAgentsetCollector;
 		_skillsetBuilder = skillsetBuilder;
+		_addonsInvalidator = addonsInvalidator;
 
 		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SubAgentsetInheritance);
 		settings.PropertyChanged += SubAgentSettings_PropertyChanged;
@@ -115,11 +120,13 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 	/// </summary>
 	public void UpdateSubAgents()
 	{
-		var subAgents = _subAgentSetBuilder.GetAvailableSubAgents().ToList();
+		_addonsInvalidator.Reload();
+
+		var subAgents = _subAgentsetCollector.GetAvailableAddons().ToList();
 		var subAgentNames = subAgents.Select(s => s.Name).ToHashSet();
 		var skillNames = _skillsetBuilder.GetAvailableAddons().Select(s => s.Name).ToHashSet();
 		var memoryBlockNames = SettingsManager.GetCategory<MemoryBlock>().GetAll().Select(kvp => kvp.Value.Name).ToHashSet();
-		var changes = EffectiveSubAgentChanges.ToDictionary(c => c.SubAgentName, c => c);
+		var changes = EffectiveSubAgentChanges.ToDictionary(c => c.Name, c => c);
 
 		_allCards.ForEach(c => c.Dispose());
 		_allCards = subAgents

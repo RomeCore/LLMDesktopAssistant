@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Prompting.Skills;
@@ -13,7 +14,7 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 		IChatSettingsService chatSettings,
 		ISubAgentToolResolver toolResolver,
 		IAddonSetCollector<SkillInfo> skillsetBuilder,
-		ISubAgentSetBuildingService subAgentSetBuilder
+		IAddonSetCollector<SubAgentInfo> subAgentsetCollector
 	) : ISubAgentTaskParamsResolver
 	{
 		public AgentTaskLaunchParameters Resolve(AgentTaskLaunchParameters sourceParameters,
@@ -51,7 +52,7 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 				};
 			}
 
-			var subAgentsMap = subAgentSetBuilder.GetAvailableSubAgents().ToDictionary(s => s.Name);
+			var subAgentsMap = subAgentsetCollector.GetAvailableAddons().ToDictionary(s => s.Name);
 
 			var info = subAgentsMap.GetValueOrDefault(descriptor.Name)
 				?? throw new KeyNotFoundException($"Sub-agent '{descriptor.Name}' not found.");
@@ -128,7 +129,7 @@ namespace LLMDesktopAssistant.LLM.Services.Agents
 				ModelName = info.Model ?? chatSettingsObj.Models.GetEffectiveSelection().AgenticToolsModel,
 				Behaviour = AgentTaskExecutionBehaviour.Normal,
 				InitialMessages = [
-					new AgentSystemMessage { Content = info.SystemPromptGetter(info) },
+					new AgentSystemMessage { Content = info.Body },
 						..additionalMessages ],
 
 				AutoApproveBehaviours = sourceParameters.AutoApproveBehaviours,

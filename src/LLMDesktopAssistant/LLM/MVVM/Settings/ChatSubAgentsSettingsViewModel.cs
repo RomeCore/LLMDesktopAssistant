@@ -1,12 +1,10 @@
-using System.ComponentModel;
 using System.Diagnostics;
-using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Controls.Dialogs;
-using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Skills;
@@ -19,39 +17,21 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
 /// <summary>
 /// ViewModel for the chat-level sub-agent settings: the list of available sub-agents with
-/// search, creation and file actions, plus the sub-agent sources group.
+/// search, creation and file actions. The sub-agent addon sources (packs, directories, files)
+/// are configured on the shared addons settings page.
 /// </summary>
 [ViewModelFor(typeof(ChatSubAgentsSettingsView))]
 public class ChatSubAgentsSettingsViewModel : ViewModelBase
 {
-	private readonly ISubAgentSetBuildingService _subAgentSetBuilder;
+	private readonly IAddonSetCollector<SubAgentInfo> _subAgentsetCollector;
 	private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
-	private readonly IExplorerOpener? _explorerOpener;
+	private readonly IAddonManagerInvalidator _addonsInvalidator;
 	private ImmutableList<SubAgentCardViewModel> _allCards = [];
 
 	/// <summary>
 	/// Gets the underlying chat sub-agent settings.
 	/// </summary>
 	public ChatSubAgentSettings SubAgentSettings { get; }
-
-	/// <summary>
-	/// Gets the effective sub-agent sources resolved by the current inheritance level.
-	/// </summary>
-	public SubAgentSourcesSettings EffectiveSources => SubAgentSettings.GetEffectiveSources();
-
-	private InheritanceLevelItem _selectedSourcesInheritance;
-	/// <summary>
-	/// Gets or sets the inheritance level for the sub-agent sources group.
-	/// </summary>
-	public InheritanceLevelItem SelectedSourcesInheritance
-	{
-		get => _selectedSourcesInheritance;
-		set
-		{
-			if (SetProperty(ref _selectedSourcesInheritance, value) && value != null)
-				SubAgentSettings.SourcesInheritance = value.Value;
-		}
-	}
 
 	private string _searchText = string.Empty;
 	/// <summary>
@@ -74,47 +54,8 @@ public class ChatSubAgentsSettingsViewModel : ViewModelBase
 	public ICollection<SubAgentCardViewModel> AvailableSubAgents
 	{
 		get => _availableSubAgents;
-		set
-		{
-			_availableSubAgents.Reset(value);
-			RaisePropertyChanged(nameof(AvailableSubAgents));
-		}
+		set => _availableSubAgents.Reset(value);
 	}
-
-	/// <summary>
-	/// Gets the command that adds a new additional sub-agent directory path.
-	/// </summary>
-	public ICommand AddDirectoryCommand { get; }
-
-	/// <summary>
-	/// Gets the command that removes an additional sub-agent directory path.
-	/// </summary>
-	public ICommand RemoveDirectoryCommand { get; }
-
-	/// <summary>
-	/// Gets the command that adds a new additional sub-agent file path.
-	/// </summary>
-	public ICommand AddFileCommand { get; }
-
-	/// <summary>
-	/// Gets the command that removes an additional sub-agent file path.
-	/// </summary>
-	public ICommand RemoveFileCommand { get; }
-
-	/// <summary>
-	/// Gets the command that opens a folder picker for selecting a sub-agent directory.
-	/// </summary>
-	public ICommand BrowseDirectoryCommand { get; }
-
-	/// <summary>
-	/// Gets the command that opens a file picker for selecting a sub-agent file.
-	/// </summary>
-	public ICommand BrowseFileCommand { get; }
-
-	/// <summary>
-	/// Gets the command that opens a path in the system file explorer.
-	/// </summary>
-	public ICommand OpenPathCommand { get; }
 
 	/// <summary>
 	/// Gets the command that refreshes the list of available sub-agents from disk.
@@ -130,66 +71,32 @@ public class ChatSubAgentsSettingsViewModel : ViewModelBase
 	/// Initializes a new instance of the <see cref="ChatSubAgentsSettingsViewModel"/> class.
 	/// </summary>
 	/// <param name="settings">The chat sub-agent settings.</param>
-	/// <param name="subAgentSetBuilder">The service providing the available sub-agents.</param>
+	/// <param name="subAgentsetCollector">The service providing the available sub-agents.</param>
 	/// <param name="skillsetBuilder">The service providing the available skills for link checking.</param>
+	/// <param name="addonsInvalidator">The invalidator used to reload addons before building the list.</param>
 	public ChatSubAgentsSettingsViewModel(ChatSubAgentSettings settings,
-		ISubAgentSetBuildingService subAgentSetBuilder, IAddonSetCollector<SkillInfo> skillsetBuilder)
+		IAddonSetCollector<SubAgentInfo> subAgentsetCollector, IAddonSetCollector<SkillInfo> skillsetBuilder,
+		IAddonManagerInvalidator addonsInvalidator)
 	{
 		SubAgentSettings = settings;
-		_subAgentSetBuilder = subAgentSetBuilder;
+		_subAgentsetCollector = subAgentsetCollector;
 		_skillsetBuilder = skillsetBuilder;
-		_explorerOpener = ServiceRegistry.Provider.GetService<IExplorerOpener>();
+		_addonsInvalidator = addonsInvalidator;
 
-		_selectedSourcesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == settings.SourcesInheritance);
-		settings.PropertyChanged += SubAgentSettings_PropertyChanged;
-
-		AddDirectoryCommand = new RelayCommand(() =>
-		{
-			EffectiveSources.AdditionalSubAgentDirectories.Add(string.Empty);
-		});
-
-		RemoveDirectoryCommand = new RelayCommand<string?>(path =>
-		{
-			if (path != null)
-				EffectiveSources.AdditionalSubAgentDirectories.Remove(path);
-		});
-
-		AddFileCommand = new RelayCommand(() =>
-		{
-			EffectiveSources.AdditionalSubAgentFiles.Add(string.Empty);
-		});
-
-		RemoveFileCommand = new RelayCommand<string?>(path =>
-		{
-			if (path != null)
-				EffectiveSources.AdditionalSubAgentFiles.Remove(path);
-		});
-
-		BrowseDirectoryCommand = new AsyncRelayCommand<string?>(BrowseDirectoryAsync);
-		BrowseFileCommand = new AsyncRelayCommand<string?>(BrowseFileAsync);
-		OpenPathCommand = new RelayCommand<string?>(OpenPath);
 		RefreshSubAgentsCommand = new RelayCommand(UpdateSubAgents);
 		CreateSubAgentCommand = new AsyncRelayCommand(CreateSubAgentAsync);
 
 		UpdateSubAgents();
 	}
 
-	private void SubAgentSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		if (e.PropertyName != nameof(ChatSubAgentSettings.SourcesInheritance))
-			return;
-
-		_selectedSourcesInheritance = InheritanceLevelItem.AllProfile.First(i => i.Value == SubAgentSettings.SourcesInheritance);
-		RaisePropertyChanged(nameof(SelectedSourcesInheritance));
-		RaisePropertyChanged(nameof(EffectiveSources));
-	}
-
 	/// <summary>
-	/// Refreshes the list of available sub-agents from the <see cref="ISubAgentSetBuildingService"/>.
+	/// Refreshes the list of available sub-agents from the sub-agent addon set.
 	/// </summary>
 	public void UpdateSubAgents()
 	{
-		var subAgents = _subAgentSetBuilder.GetAvailableSubAgents().ToList();
+		_addonsInvalidator.Reload();
+
+		var subAgents = _subAgentsetCollector.GetAvailableAddons().ToList();
 		var subAgentNames = subAgents.Select(s => s.Name).ToHashSet();
 		var skillNames = _skillsetBuilder.GetAvailableAddons().Select(s => s.Name).ToHashSet();
 		var memoryBlockNames = SettingsManager.GetCategory<MemoryBlock>().GetAll().Select(kvp => kvp.Value.Name).ToHashSet();
@@ -281,73 +188,6 @@ public class ChatSubAgentsSettingsViewModel : ViewModelBase
 		Write the instructions for this sub-agent here.
 		""";
 
-	private async Task BrowseDirectoryAsync(string? currentPath)
-	{
-		var result = await App.MainTopLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-		{
-			Title = LocalizationManager.LocalizeStatic("settings.sub_agents.select_directory"),
-			AllowMultiple = false
-		});
-
-		if (result.Count > 0)
-		{
-			var newPath = result[0].Path.LocalPath;
-			ReplaceOrSetPath(EffectiveSources.AdditionalSubAgentDirectories, currentPath, newPath);
-		}
-	}
-
-	private async Task BrowseFileAsync(string? currentPath)
-	{
-		var result = await App.MainTopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-		{
-			Title = LocalizationManager.LocalizeStatic("settings.sub_agents.select_file"),
-			AllowMultiple = false,
-			FileTypeFilter =
-			[
-				new("Sub-agent files (*.md, *.mdx)") { Patterns = ["*.md", "*.mdx"] },
-				new("All files (*.*)") { Patterns = ["*.*"] }
-			]
-		});
-
-		if (result.Count > 0)
-		{
-			var newPath = result[0].Path.LocalPath;
-			ReplaceOrSetPath(EffectiveSources.AdditionalSubAgentFiles, currentPath, newPath);
-		}
-	}
-
-	private static void ReplaceOrSetPath(RangeObservableCollection<string> collection, string? oldValue, string newValue)
-	{
-		if (string.IsNullOrEmpty(oldValue))
-		{
-			for (int i = 0; i < collection.Count; i++)
-			{
-				if (string.IsNullOrEmpty(collection[i]))
-				{
-					collection[i] = newValue;
-					return;
-				}
-			}
-			collection.Add(newValue);
-		}
-		else
-		{
-			var index = collection.IndexOf(oldValue);
-			if (index >= 0)
-				collection[index] = newValue;
-			else
-				collection.Add(newValue);
-		}
-	}
-
-	private void OpenPath(string? path)
-	{
-		if (string.IsNullOrWhiteSpace(path))
-			return;
-
-		_explorerOpener?.OpenPath(path);
-	}
-
 	/// <inheritdoc/>
 	protected override void Dispose(bool disposing)
 	{
@@ -355,7 +195,6 @@ public class ChatSubAgentsSettingsViewModel : ViewModelBase
 
 		if (disposing)
 		{
-			SubAgentSettings.PropertyChanged -= SubAgentSettings_PropertyChanged;
 			_allCards.ForEach(c => c.Dispose());
 		}
 	}

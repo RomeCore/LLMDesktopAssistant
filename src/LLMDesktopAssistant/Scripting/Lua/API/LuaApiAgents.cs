@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using AsyncLua;
 using AsyncLua.Values;
 using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
@@ -398,20 +399,20 @@ namespace LLMDesktopAssistant.Scripting.Lua.API
 		private readonly IModelManager _modelManager;
 		private readonly IAgentManagementService _agentManager;
 		private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
-		private readonly ISubAgentSetBuildingService _subAgentSetBuilder;
+		private readonly IAddonSetCollector<SubAgentInfo> _subAgentsetCollector;
 		private readonly IToolsetCacheService _toolsetCache;
 		private LuaService _luaService = null!;
 
 		public LuaApiAgents(IChatSettingsService chatSettings, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
 			IAgentManagementService agentManager, IAddonSetCollector<SkillInfo> skillsetBuilder,
-			ISubAgentSetBuildingService subAgentSetBuilder, IToolsetCacheService toolsetCache)
+			IAddonSetCollector<SubAgentInfo> subAgentsetCollector, IToolsetCacheService toolsetCache)
 		{
 			_chatSettings = chatSettings;
 			_agentTaskExecutor = agentTaskExecutor;
 			_modelManager = modelManager;
 			_agentManager = agentManager;
 			_skillsetBuilder = skillsetBuilder;
-			_subAgentSetBuilder = subAgentSetBuilder;
+			_subAgentsetCollector = subAgentsetCollector;
 			_toolsetCache = toolsetCache;
 		}
 
@@ -644,7 +645,7 @@ namespace LLMDesktopAssistant.Scripting.Lua.API
 			if (subAgentsOption is LuaTable subAgentsOptionTable)
 			{
 				var subAgentMap = subAgentsOptionTable.Values.Any(v => v is LuaString) ?
-					_subAgentSetBuilder.GetAvailableSubAgents().ToImmutableDictionary(s => s.Name) :
+					_subAgentsetCollector.GetAvailableAddons().ToImmutableDictionary(s => s.Name) :
 					null;
 
 				foreach (var subAgentValue in subAgentsOptionTable.Values)

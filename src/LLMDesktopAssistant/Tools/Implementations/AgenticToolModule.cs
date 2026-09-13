@@ -3,6 +3,7 @@ using System.Diagnostics.Tracing;
 using System.Text;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
@@ -32,14 +33,14 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly IModelManager _modelManager;
 		private readonly IAddonSetCollector<ToolInfo> _toolsetBuildingService;
 		private readonly IAddonSetCollector<SkillInfo> _skillsetBuildingService;
-		private readonly ISubAgentSetBuildingService _subAgentSetBuildingService;
+		private readonly IAddonSetCollector<SubAgentInfo> _subAgentsetCollector;
 		private readonly ISubAgentTaskParamsResolver _subAgentParamsResolver;
 
 		public AgenticToolModule(Chat chat, IChatSettingsService chatSettings, ITemplateLibraryAccessor templates,
 			IWorkingDirectoryAccessService fileAccess,
 			IAgentManagementService agentManager, IAgentTaskExecutor agentTaskExecutor, IModelManager modelManager,
 			IAddonSetCollector<ToolInfo> toolsetBuildingService, IAddonSetCollector<SkillInfo> skillsetBuildingService,
-			ISubAgentSetBuildingService subAgentSetBuildingService, ISubAgentTaskParamsResolver subAgentParamsResolver)
+			IAddonSetCollector<SubAgentInfo> subAgentsetCollector, ISubAgentTaskParamsResolver subAgentParamsResolver)
 		{
 			_chat = chat;
 			_chatSettings = chatSettings;
@@ -50,7 +51,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			_modelManager = modelManager;
 			_toolsetBuildingService = toolsetBuildingService;
 			_skillsetBuildingService = skillsetBuildingService;
-			_subAgentSetBuildingService = subAgentSetBuildingService;
+			_subAgentsetCollector = subAgentsetCollector;
 			_subAgentParamsResolver = subAgentParamsResolver;
 
 			AddTool(new ToolInitializationInfo
@@ -191,7 +192,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			var subAgents = ImmutableList.CreateBuilder<TaskSubAgentDescriptor>();
 			if (allowedSubAgents.Length > 0)
 			{
-				var subAgentMap = _subAgentSetBuildingService.GetSubAgentsForAgent(agentDescriptor).ToDictionary(s => s.Name);
+				var subAgentMap = _subAgentsetCollector.GetAddonsForAgent(agentDescriptor).ToDictionary(s => s.Name);
 
 				int notFound = 0;
 				foreach (var allowedSubAgent in allowedSubAgents.Distinct())
@@ -313,7 +314,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		{
 			var agentDescriptor = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
 
-			var subAgent = _subAgentSetBuildingService.GetSubAgentsForAgent(agentDescriptor).FirstOrDefault(a => a.Name == agentName);
+			var subAgent = _subAgentsetCollector.GetAddonsForAgent(agentDescriptor).FirstOrDefault(a => a.Name == agentName);
 			if (subAgent is null)
 			{
 				result.StatusIcon = MaterialIconKind.RobotDead;

@@ -32,6 +32,7 @@ metadata.compatibility: Совместимость
 metadata.license: Лицензия
 metadata.version: Версия
 source.custom: Пользовательский
+source.pack: Пак
 source.template: Шаблон
 source.unknown: Неизвестно
 source.userprofile: Профиль пользователя

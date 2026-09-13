@@ -3,7 +3,9 @@ using LLMDesktopAssistant.SourceGenerators;
 namespace LLMDesktopAssistant.LLM.Settings
 {
 	/// <summary>
-	/// Chat-level sub-agent settings: the local enable flag and the inheritable sub-agent sources group.
+	/// Chat-level sub-agent settings.
+	/// The sub-agent addon sources are configured by the shared addons settings
+	/// (<see cref="ChatAddonSettings"/>, the 'agents' addon type).
 	/// </summary>
 	[SettingsRoute(nameof(ChatSettings.SubAgents))]
 	public partial class ChatSubAgentSettings : ChatSettingsCategoryBase
@@ -16,18 +18,6 @@ namespace LLMDesktopAssistant.LLM.Settings
 		{
 			get => _enableSubAgents;
 			set => SetProperty(ref _enableSubAgents, value);
-		}
-
-		private SubAgentSourcesSettings _sources = new();
-		/// <summary>
-		/// Gets or sets the sub-agent sources group: the working directories search flag and the
-		/// additional sub-agent directories and files.
-		/// </summary>
-		[InheritedChatSetting]
-		public SubAgentSourcesSettings Sources
-		{
-			get => _sources;
-			set => SetProperty(ref _sources, value);
 		}
 	}
 }
