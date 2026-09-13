@@ -21,6 +21,7 @@
 			<Setter Property="Padding" Value="8"/>
 		</Style>
 
+		<!-- Display chip: a plain bordered label with an optional icon. -->
 		<Style Selector="Border.cardChip">
 			<Setter Property="CornerRadius" Value="8"/>
 			<Setter Property="Padding" Value="6,2"/>
@@ -29,9 +30,28 @@
 			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
 
-		<!-- HasBorder == false → no outline at all -->
+		<!-- HasBorder == false → no outline at all (used by the source indicator). -->
 		<Style Selector="Border.cardChip.noBorder">
 			<Setter Property="BorderThickness" Value="0"/>
+		</Style>
+
+		<!-- Tag chip: the same look, but clickable. -->
+		<Style Selector="Button.cardChip">
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="6,2"/>
+			<Setter Property="Margin" Value="0,0,4,2"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="FontSize" Value="11"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="Button.cardChip.noBorder">
+			<Setter Property="BorderThickness" Value="0"/>
+		</Style>
+
+		<Style Selector="Button.cardChip:pointerover">
+			<Setter Property="Opacity" Value="0.7"/>
 		</Style>
 
 		<Style Selector="TextBlock.cardChipText">
@@ -42,57 +62,55 @@
 	</UserControl.Styles>
 
 	<!-- ================================================================ -->
-	<!-- Templates                                                        -->
+	<!-- Reusable templates                                               -->
 	<!-- ================================================================ -->
 	<UserControl.Resources>
 
-		<!-- One chip: optional icon + optional label, outline/color controlled by the element. -->
-		<DataTemplate x:Key="AddonCardChipTemplate" x:DataType="cards:IAddonCardChip">
-			<Border Classes="cardChip"
-							Classes.noBorder="{Binding !HasBorder}"
-							BorderBrush="{Binding Color, Converter={StaticResource ColorToBrushConverter}, TargetNullValue={DynamicResource SecondaryAccentBrush}}"
-							ToolTip.Tip="{loc:Loc {Binding ToolTip}}">
-				<StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center">
+		<!-- Common chip body, shared by the display and tag chip templates. -->
+		<DataTemplate x:Key="AddonCardChipBodyTemplate" x:DataType="cards:IAddonCardChip">
+			<StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center">
 
-					<ico:MaterialIcon Kind="{Binding Icon}"
-													  IsVisible="{Binding Icon, Converter={StaticResource NotnullToBooleanConverter}}"
-													  Width="12" Height="12"
-													  VerticalAlignment="Center"
-													  Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}, TargetNullValue={DynamicResource SecondaryAccentBrush}}"/>
+				<ContentControl Content="{Binding Content}"
+												IsVisible="{Binding Content, Converter={StaticResource NotnullToBooleanConverter}}"/>
 
-					<TextBlock Classes="cardChipText"
+				<ico:MaterialIcon Kind="{Binding Icon}"
+												  IsVisible="{Binding Icon, Converter={StaticResource NotnullToBooleanConverter}}"
+												  Width="12" Height="12"
+												  VerticalAlignment="Center"
+												  Foreground="{Binding Color, Converter={StaticResource ColorToBrushConverter}, TargetNullValue={DynamicResource SecondaryAccentBrush}}"/>
+
+				<TextBlock Classes="cardChipText"
 									   Text="{loc:Loc {Binding Label}}"
 									   IsVisible="{Binding Label, Converter={StaticResource NotnullToBooleanConverter}}"
 									   VerticalAlignment="Center"/>
-				</StackPanel>
-			</Border>
+			</StackPanel>
 		</DataTemplate>
 
-		<!-- Action button. IsEnabled is driven by Command.CanExecute. -->
-		<DataTemplate x:Key="AddonCardActionTemplate" x:DataType="cards:IAddonCardAction">
-			<Button Classes="SmallIconButton"
-							Command="{Binding Command}"
-							ToolTip.Tip="{loc:Loc {Binding ToolTip}}">
-				<ico:MaterialIcon Kind="{Binding Icon}"/>
-			</Button>
+		<!-- Toggle button of a collapsible block, rendered in the card action row. -->
+		<DataTemplate x:Key="AddonCardCollapsibleToggleTemplate" x:DataType="cards:IAddonCardBlock">
+			<ToggleButton Classes="SmallIconButton"
+										IsChecked="{Binding IsExpanded, Mode=TwoWay}"
+										ToolTip.Tip="{loc:Loc {Binding ToggleToolTip}}"
+										IsVisible="{Binding ToggleIcon, Converter={StaticResource NotnullToBooleanConverter}}">
+				<ico:MaterialIcon Kind="{Binding ToggleIcon}" Width="14" Height="14"/>
+			</ToggleButton>
 		</DataTemplate>
 
-		<!-- Detail / plain block: optional title + content + optional chips below. -->
-		<DataTemplate x:Key="AddonCardBlockTemplate" x:DataType="cards:IAddonCardBlock">
+		<!-- Common block body, shared by the inline, collapsible and details blocks. -->
+		<DataTemplate x:Key="AddonCardBlockBodyTemplate" x:DataType="cards:IAddonCardBlock">
 			<StackPanel Orientation="Vertical" Spacing="2">
 
 				<TextBlock Text="{loc:Loc {Binding Title}}"
-								   FontWeight="SemiBold"
-								   FontSize="12"
-								   Opacity="0.8"
-								   IsVisible="{Binding Title, Converter={StaticResource NotnullToBooleanConverter}}"/>
+									 FontWeight="SemiBold"
+									 FontSize="12"
+									 Opacity="0.8"
+									 IsVisible="{Binding Title, Converter={StaticResource NotnullToBooleanConverter}}"/>
 
 				<ContentControl Content="{Binding Content}"
 												IsVisible="{Binding Content, Converter={StaticResource NotnullToBooleanConverter}}"/>
 
 				<ItemsControl ItemsSource="{Binding Chips}"
-										  ItemTemplate="{StaticResource AddonCardChipTemplate}"
-										  IsVisible="{Binding Chips.Count}">
+											IsVisible="{Binding Chips, Converter={StaticResource NotnullToBooleanConverter}}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
 							<WrapPanel/>
@@ -103,7 +121,76 @@
 			</StackPanel>
 		</DataTemplate>
 
+		<!-- A collapsible block renders its content only while expanded. -->
+		<DataTemplate x:Key="AddonCardCollapsibleBlockTemplate" x:DataType="cards:IAddonCardBlock">
+			<ContentControl IsVisible="{Binding IsExpanded}"
+											Content="{Binding}"
+											ContentTemplate="{StaticResource AddonCardBlockBodyTemplate}"/>
+		</DataTemplate>
+
 	</UserControl.Resources>
+
+	<!-- ================================================================ -->
+	<!-- Element templates (resolved implicitly by element type)          -->
+	<!-- ================================================================ -->
+	<UserControl.DataTemplates>
+
+		<!-- Header slot: an accent marker when the value is overridden, then the slot content. -->
+		<DataTemplate x:DataType="cards:IAddonCardHeaderElement">
+			<Grid ColumnDefinitions="2,Auto" ColumnSpacing="2" VerticalAlignment="Center">
+				<Rectangle Grid.Column="0"
+									 Fill="{DynamicResource PrimaryAccentBrush}"
+									 IsVisible="{Binding IsChanged}"/>
+				<ContentControl Grid.Column="1"
+												Content="{Binding Content}"
+												VerticalAlignment="Center"/>
+			</Grid>
+		</DataTemplate>
+
+		<!-- Clickable chip (tags). Must be listed BEFORE the plain chip so that the tag shape wins. -->
+		<DataTemplate x:DataType="cards:IAddonCardTagChip">
+			<Button Classes="cardChip"
+							Classes.noBorder="{Binding !HasBorder}"
+							Opacity="{Binding Opacity}"
+							Command="{Binding Command}"
+							CommandParameter="{Binding CommandParameter}"
+							BorderBrush="{Binding Color, Converter={StaticResource ColorToBrushConverter}, TargetNullValue={DynamicResource SecondaryAccentBrush}}"
+							ToolTip.Tip="{loc:Loc {Binding ToolTip}}">
+				<ContentControl Content="{Binding}" ContentTemplate="{StaticResource AddonCardChipBodyTemplate}"/>
+			</Button>
+		</DataTemplate>
+
+		<!-- Plain chip. -->
+		<DataTemplate x:DataType="cards:IAddonCardChip">
+			<Border Classes="cardChip"
+							Classes.noBorder="{Binding !HasBorder}"
+							Opacity="{Binding Opacity}"
+							BorderBrush="{Binding Color, Converter={StaticResource ColorToBrushConverter}, TargetNullValue={DynamicResource SecondaryAccentBrush}}"
+							ToolTip.Tip="{loc:Loc {Binding ToolTip}}">
+				<ContentControl Content="{Binding}" ContentTemplate="{StaticResource AddonCardChipBodyTemplate}"/>
+			</Border>
+		</DataTemplate>
+
+		<!-- Action row left side. -->
+		<DataTemplate x:DataType="cards:IAddonCardActionRowElement">
+			<ContentControl Content="{Binding Content}" VerticalAlignment="Center"/>
+		</DataTemplate>
+
+		<!-- Block: the shared body is rendered by the template below. -->
+		<DataTemplate x:DataType="cards:IAddonCardBlock">
+			<ContentControl Content="{Binding}" ContentTemplate="{StaticResource AddonCardBlockBodyTemplate}"/>
+		</DataTemplate>
+
+		<!-- Action button. IsEnabled is driven by Command.CanExecute. -->
+		<DataTemplate x:DataType="cards:IAddonCardAction">
+			<Button Classes="SmallIconButton"
+							Command="{Binding Command}"
+							ToolTip.Tip="{loc:Loc {Binding ToolTip}}">
+				<ico:MaterialIcon Kind="{Binding Icon}"/>
+			</Button>
+		</DataTemplate>
+
+	</UserControl.DataTemplates>
 
 	<!-- ================================================================ -->
 	<!-- Card                                                             -->
@@ -112,54 +199,58 @@
 		<StackPanel Orientation="Vertical" Spacing="4">
 
 			<!-- ============================================================ -->
-			<!-- Row 0: header                                                -->
+			<!-- Row 0: header (left slots | icon + name | right slots | reset) -->
 			<!-- ============================================================ -->
-			<Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center" ColumnSpacing="4">
-				
-				<!-- Left side changes, if any -->
+			<Grid ColumnDefinitions="Auto,*,Auto,Auto" VerticalAlignment="Center" ColumnSpacing="4">
+
 				<ItemsControl Grid.Column="0"
-										  ItemsSource="{Binding LeftChanges}"
-										  ItemTemplate="{StaticResource AddonCardChangeLeftTemplate}"
-											IsVisible="{Binding !LeftChanges.IsEmpty}">
+											ItemsSource="{Binding LeftHeaderElements}"
+											IsVisible="{Binding LeftHeaderElements.Count}"
+											VerticalAlignment="Center">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
 							<StackPanel Orientation="Horizontal" Spacing="4"/>
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
 				</ItemsControl>
-				
-				<!-- Name -->
+
+				<!-- Name + optional subtitle -->
 				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
 					<ico:MaterialIcon Kind="{Binding Icon}"
 													  Foreground="{DynamicResource PrimaryAccentBrush}"
 													  Width="20" Height="20"
 													  VerticalAlignment="Center"/>
-					<TextBlock Text="{Binding Name}"
+					<TextBlock Text="{loc:Loc {Binding Name}}"
 									   FontWeight="Bold"
 									   VerticalAlignment="Center"
 									   TextTrimming="CharacterEllipsis"/>
+					<TextBlock Text="{loc:Loc {Binding Subtitle}}"
+									   FontSize="11"
+									   Opacity="0.6"
+									   VerticalAlignment="Center"
+									   TextTrimming="CharacterEllipsis"
+									   IsVisible="{Binding HasSubtitle}"/>
 				</StackPanel>
 
-				<!-- Right side changes, if any -->
 				<ItemsControl Grid.Column="2"
-										  ItemsSource="{Binding RightChanges}"
-										  ItemTemplate="{StaticResource AddonCardChangeRightTemplate}"
-											IsVisible="{Binding !RightChanges.IsEmpty}">
+											ItemsSource="{Binding RightHeaderElements}"
+											IsVisible="{Binding RightHeaderElements.Count}"
+											VerticalAlignment="Center">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
 							<StackPanel Orientation="Horizontal" Spacing="4"/>
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
 				</ItemsControl>
-				
-				<!-- Reset button -->
+
+				<!-- Reset override button -->
 				<Button Grid.Column="3"
 								Command="{Binding ResetCommand}"
 								HorizontalAlignment="Center"
 								Classes="IconButton"
 								Margin="4,0,0,0"
 								ToolTip.Tip="{loc:Loc common.reset}"
-								IsVisible="{Binding !Changes.IsEmpty}">
+								IsVisible="{Binding HasChanges}">
 					<ico:MaterialIcon Kind="Refresh"/>
 				</Button>
 
@@ -168,58 +259,62 @@
 			<!-- ============================================================ -->
 			<!-- Row 1: description                                           -->
 			<!-- ============================================================ -->
-
-			<TextBlock Text="{Binding Description}"
+			<TextBlock Text="{loc:Loc {Binding Description}}"
 							   Opacity="0.7"
 							   FontSize="12"
 							   TextWrapping="Wrap"
 							   Margin="28,0,0,0"
-							   IsVisible="{Binding Description, Converter={StaticResource StringNonEmptyToBooleanConverter}}"/>
+							   IsVisible="{Binding HasDescription}"/>
 
 			<!-- ============================================================ -->
 			<!-- Row 2: chips                                                 -->
 			<!-- ============================================================ -->
 			<ItemsControl ItemsSource="{Binding Chips}"
-										ItemTemplate="{StaticResource AddonCardChipTemplate}"
-										IsVisible="{Binding !Chips.IsEmpty}">
+										IsVisible="{Binding Chips.Count}"
+										Margin="28,0,0,0">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
 						<WrapPanel/>
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 			</ItemsControl>
-			
+
 			<!-- ============================================================ -->
-			<!-- Row 3: plain blocks                                          -->
+			<!-- Row 3: inline blocks                                         -->
 			<!-- ============================================================ -->
 			<ItemsControl ItemsSource="{Binding Blocks}"
-									  ItemTemplate="{StaticResource AddonCardBlockTemplate}"/>
+										Margin="28,0,0,0"/>
 
 			<!-- ============================================================ -->
 			<!-- Row 4: action row (left content | right actions)             -->
 			<!-- ============================================================ -->
-			<Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+			<Grid ColumnDefinitions="*,Auto" ColumnSpacing="8"
+										Margin="28,0,0,0">
 
 				<ItemsControl Grid.Column="0"
 											ItemsSource="{Binding ActionRowElements}"
-											IsVisible="{Binding !ActionRowElements.IsEmpty}"
+											IsVisible="{Binding ActionRowElements.Count}"
 											VerticalAlignment="Center">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
 							<StackPanel Orientation="Horizontal" Spacing="6"/>
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-							<ContentControl Content="{Binding Content}"/>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 
 				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
 
-					<ItemsControl ItemsSource="{Binding Actions}"
-											  ItemTemplate="{StaticResource AddonCardActionTemplate}">
+					<ItemsControl ItemsSource="{Binding Actions}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Horizontal" Spacing="2"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
+
+					<!-- One toggle button per collapsible block (e.g. parameters). -->
+					<ItemsControl ItemsSource="{Binding CollapsibleBlocks}"
+												ItemTemplate="{StaticResource AddonCardCollapsibleToggleTemplate}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
 								<StackPanel Orientation="Horizontal" Spacing="2"/>
@@ -229,9 +324,9 @@
 
 					<!-- Details toggle (shown only when there are detail blocks). -->
 					<ToggleButton Classes="SmallIconButton"
-											  IsVisible="{Binding !DetailBlocks.IsEmpty}"
-											  IsChecked="{Binding IsDetailsVisible, Mode=TwoWay}"
-											  ToolTip.Tip="{loc:Loc addon.card.details}">
+												IsVisible="{Binding HasDetails}"
+												IsChecked="{Binding IsDetailsVisible, Mode=TwoWay}"
+												ToolTip.Tip="{loc:Loc addon.card.details}">
 						<ico:MaterialIcon Kind="CardAccountDetailsOutline" Width="14" Height="14"/>
 					</ToggleButton>
 
@@ -239,11 +334,18 @@
 			</Grid>
 
 			<!-- ============================================================ -->
-			<!-- Row 5: detail blocks                                         -->
+			<!-- Row 5: collapsible block contents                            -->
+			<!-- ============================================================ -->
+			<ItemsControl ItemsSource="{Binding CollapsibleBlocks}"
+										ItemTemplate="{StaticResource AddonCardCollapsibleBlockTemplate}"
+										Margin="28,0,0,0"/>
+
+			<!-- ============================================================ -->
+			<!-- Row 6: detail blocks                                         -->
 			<!-- ============================================================ -->
 			<ItemsControl ItemsSource="{Binding DetailBlocks}"
-									  ItemTemplate="{StaticResource AddonCardBlockTemplate}"
-									  IsVisible="{Binding IsDetailsVisible}"/>
+										IsVisible="{Binding IsDetailsVisible}"
+										Margin="28,0,0,0"/>
 
 		</StackPanel>
 	</Border>

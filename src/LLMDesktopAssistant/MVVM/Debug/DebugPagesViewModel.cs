@@ -54,6 +54,11 @@ public class DebugPagesViewModel : ViewModelBase
 				() => new LLTEditorDebugPageViewModel()));
 
 		DebugTree.Add(
+			new DebugLeafNode(LocalizationManager.LocalizeStatic("debug.addon_cards.title"),
+				MaterialIconKind.Cards,
+				() => new AddonCardsDebugPageViewModel()));
+
+		DebugTree.Add(
 			new DebugLeafNode(LocalizationManager.LocalizeStatic("debug.parameterization.title"),
 				MaterialIconKind.Tune,
 				() => new ParameterizationDebugPageViewModel()));

@@ -1,7 +1,12 @@
-﻿using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Localization;
+using Material.Icons;
 
 namespace LLMDesktopAssistant.Addons.MVVM
 {
+	/// <summary>
+	/// A block of the addon card: an optional title, an arbitrary content and optional chips below it.
+	/// The <see cref="Visibility"/> determines whether the block is inline, collapsible or a details section part.
+	/// </summary>
 	public interface IAddonCardBlock : IAddonCardElement
 	{
 		/// <summary>
@@ -10,9 +15,9 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		LocaleKeyBase? Title { get; }
 
 		/// <summary>
-		/// Whether to show this block in the 'details' section.
+		/// Where and when this block is rendered.
 		/// </summary>
-		public bool IsDetail { get; }
+		AddonCardBlockVisibility Visibility { get; }
 
 		/// <summary>
 		/// The content that will be shown inside this block.
@@ -22,6 +27,24 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// <summary>
 		/// The chips that will be shown below the content of this block.
 		/// </summary>
-		ImmutableList<AddonCardChip>? Chips { get; }
+		ImmutableList<IAddonCardChip>? Chips { get; }
+
+		/// <summary>
+		/// The icon of the toggle button that expands this block.
+		/// Only used by <see cref="AddonCardBlockVisibility.Collapsible"/> blocks.
+		/// </summary>
+		MaterialIconKind? ToggleIcon { get; }
+
+		/// <summary>
+		/// The tooltip of the toggle button that expands this block.
+		/// Only used by <see cref="AddonCardBlockVisibility.Collapsible"/> blocks.
+		/// </summary>
+		LocaleKeyBase? ToggleToolTip { get; }
+
+		/// <summary>
+		/// Whether a <see cref="AddonCardBlockVisibility.Collapsible"/> block is currently expanded.
+		/// Ignored by other block kinds.
+		/// </summary>
+		bool IsExpanded { get; set; }
 	}
 }

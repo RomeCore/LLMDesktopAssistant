@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="750"
+						 xmlns:local="using:LLMDesktopAssistant.MVVM.Debug"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 x:Class="LLMDesktopAssistant.MVVM.Debug.AddonCardsDebugPageView"
+						 x:DataType="local:AddonCardsDebugPageViewModel">
+
+	<DockPanel Margin="8">
+
+		<Border DockPanel.Dock="Top"
+						BorderBrush="{DynamicResource SecondaryAccentBrush}"
+						BorderThickness="0,0,0,1"
+						Padding="0,0,0,6"
+						Margin="0,0,0,8">
+			<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+
+				<ico:MaterialIcon Grid.Column="0"
+												  Kind="Cards"
+												  Width="18" Height="18"
+												  VerticalAlignment="Center"/>
+
+				<TextBlock Grid.Column="1"
+									 Text="{Binding Status}"
+									 VerticalAlignment="Center"
+									 TextWrapping="Wrap"/>
+
+				<Button Grid.Column="2"
+								Command="{Binding ResetAllCommand}"
+								VerticalAlignment="Center">
+					<StackPanel Orientation="Horizontal" Spacing="6">
+						<ico:MaterialIcon Kind="Refresh" Width="16" Height="16" VerticalAlignment="Center"/>
+						<TextBlock Text="{loc:Loc debug.addon_cards.reset_all}" VerticalAlignment="Center"/>
+					</StackPanel>
+				</Button>
+
+			</Grid>
+		</Border>
+
+		<ScrollViewer VerticalScrollBarVisibility="Auto">
+			<ItemsControl ItemsSource="{Binding Cards}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Vertical" Spacing="8"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+			</ItemsControl>
+		</ScrollViewer>
+
+	</DockPanel>
+
+</UserControl>

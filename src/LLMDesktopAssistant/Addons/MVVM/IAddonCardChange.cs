@@ -1,20 +1,14 @@
-﻿namespace LLMDesktopAssistant.Addons.MVVM
+namespace LLMDesktopAssistant.Addons.MVVM
 {
-	public interface IAddonCardChange : IAddonCardElement
+	/// <summary>
+	/// A header element that edits (or indicates) an override of the addon configuration, and therefore
+	/// can be reset back to the addon definition value. All changes of a card are reset at once by the
+	/// card's reset command.
+	/// </summary>
+	public interface IAddonCardChange : IAddonCardHeaderElement
 	{
 		/// <summary>
-		/// Gets the content to show in the header of the addon card.
-		/// This is typically a view model that represents the element in header used to apply change.
-		/// </summary>
-		object? Content { get; }
-
-		/// <summary>
-		/// Gets a value indicating whether the <see cref="Content"/> should be shown on the left side of the header of the addon card.
-		/// </summary>
-		bool IsShownLeft { get; }
-
-		/// <summary>
-		/// Removes the change of the addon config instance.
+		/// Removes the override from the addon configuration, restoring the definition value.
 		/// </summary>
 		void Reset();
 	}

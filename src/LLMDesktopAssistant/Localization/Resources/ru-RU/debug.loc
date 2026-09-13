@@ -26,3 +26,7 @@ highlight_textbox.transform: Преобразование текста (1:1)
 highlight_textbox.reset: Сбросить пример
 highlight_textbox.spans.title: Спаны подсветки
 highlight_textbox.placeholder: Попробуй: /help text, /unknown cmd, "quotes"
+
+addon_cards.title: Карточки аддонов
+addon_cards.reset_all: Сбросить всё
+addon_cards.hint: Переключай контролы в шапке, кликай по тегам, разворачивай блоки и детали — карточка живая.

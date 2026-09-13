@@ -1,9 +1,10 @@
-﻿using Avalonia.Media;
+using Avalonia.Media;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Addons.MVVM
 {
+	/// <inheritdoc cref="IAddonCardChip"/>
 	public class AddonCardChip : AddonCardElementBase, IAddonCardChip
 	{
 		/// <inheritdoc/>
@@ -13,6 +14,9 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public Color? Color { get; init; }
 
 		/// <inheritdoc/>
+		public double Opacity { get; init; } = 1;
+
+		/// <inheritdoc/>
 		public MaterialIconKind? Icon { get; init; }
 
 		/// <inheritdoc/>
@@ -20,5 +24,8 @@ namespace LLMDesktopAssistant.Addons.MVVM
 
 		/// <inheritdoc/>
 		public LocaleKeyBase? ToolTip { get; init; }
+
+		/// <inheritdoc/>
+		public object? Content { get; init; }
 	}
 }

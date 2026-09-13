@@ -1,54 +1,183 @@
-﻿using CommunityToolkit.Mvvm.Input;
+using System.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Addons.MVVM
 {
+	/// <summary>
+	/// The single view model of an addon card. It knows nothing about concrete addon types:
+	/// everything type-specific is expressed as <see cref="IAddonCardElement"/> instances
+	/// produced by an addon card factory.
+	/// </summary>
 	[ViewModelFor(typeof(AddonCardView))]
 	public class AddonCardViewModel : ViewModelBase
 	{
+		/// <summary>
+		/// Gets all elements of the card, in their original order (not grouped by kind).
+		/// </summary>
 		public ImmutableList<IAddonCardElement> Elements { get; }
 
+		/// <summary>
+		/// Gets the icon of the card, usually taken from the addon type descriptor.
+		/// </summary>
 		public MaterialIconKind Icon { get; }
+
+		/// <summary>
+		/// Gets the display name of the addon.
+		/// </summary>
 		public LocaleKeyBase Name { get; }
+
+		/// <summary>
+		/// Gets the optional secondary name shown next to the name (for example, the identifier
+		/// of an addon whose display name differs from it).
+		/// </summary>
+		public LocaleKeyBase? Subtitle { get; }
+
+		/// <summary>
+		/// Gets the description of the addon.
+		/// </summary>
 		public LocaleKeyBase Description { get; }
 
+		/// <summary>
+		/// Gets the header elements placed to the left of the name.
+		/// </summary>
+		public ImmutableList<IAddonCardHeaderElement> LeftHeaderElements { get; }
+
+		/// <summary>
+		/// Gets the header elements placed to the right of the name.
+		/// </summary>
+		public ImmutableList<IAddonCardHeaderElement> RightHeaderElements { get; }
+
+		/// <summary>
+		/// Gets the overrides edited by the card. Used by the reset command and for its visibility.
+		/// </summary>
 		public ImmutableList<IAddonCardChange> Changes { get; }
-		public ImmutableList<IAddonCardChange> LeftChanges { get; }
-		public ImmutableList<IAddonCardChange> RightChanges { get; }
+
+		/// <summary>
+		/// Gets the top-level chips of the card.
+		/// </summary>
 		public ImmutableList<IAddonCardChip> Chips { get; }
+
+		/// <summary>
+		/// Gets the always-visible blocks of the card.
+		/// </summary>
 		public ImmutableList<IAddonCardBlock> Blocks { get; }
-		public ImmutableList<IAddonCardActionRowElement> ActionRowElements { get; }
-		public ImmutableList<IAddonCardAction> Actions { get; }
+
+		/// <summary>
+		/// Gets the blocks toggled by their own buttons in the action row.
+		/// </summary>
+		public ImmutableList<IAddonCardBlock> CollapsibleBlocks { get; }
+
+		/// <summary>
+		/// Gets the blocks shown when the details section is expanded.
+		/// </summary>
 		public ImmutableList<IAddonCardBlock> DetailBlocks { get; }
 
+		/// <summary>
+		/// Gets the elements shown on the left side of the action row (path, tags, selectors, etc).
+		/// </summary>
+		public ImmutableList<IAddonCardActionRowElement> ActionRowElements { get; }
+
+		/// <summary>
+		/// Gets the action buttons of the card.
+		/// </summary>
+		public ImmutableList<IAddonCardAction> Actions { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether the card has a subtitle.
+		/// </summary>
+		public bool HasSubtitle => Subtitle is not null;
+
+		/// <summary>
+		/// Gets a value indicating whether the card has a non-empty description.
+		/// </summary>
+		public bool HasDescription => !string.IsNullOrWhiteSpace(Description.Value);
+
+		/// <summary>
+		/// Gets a value indicating whether the addon has any overridden values, and therefore whether
+		/// the reset button makes sense. Updated live as long as the changes implement change notification.
+		/// </summary>
+		public bool HasChanges => Changes.Any(c => c.IsChanged);
+
+		/// <summary>
+		/// Gets a value indicating whether the card has a details section.
+		/// </summary>
+		public bool HasDetails => DetailBlocks.Count > 0;
+
+		/// <summary>
+		/// Gets the command that resets all overrides of this addon back to the definition values.
+		/// </summary>
 		public ICommand ResetCommand { get; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the details section is expanded.
+		/// </summary>
 		public bool IsDetailsVisible
 		{
 			get;
 			set => SetProperty(ref field, value);
 		}
 
-		public AddonCardViewModel(MaterialIconKind icon, LocaleKeyBase name,
-			LocaleKeyBase description, IEnumerable<IAddonCardElement> elements)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AddonCardViewModel"/> class.
+		/// </summary>
+		/// <param name="icon">The icon of the card.</param>
+		/// <param name="name">The display name of the addon.</param>
+		/// <param name="description">The description of the addon.</param>
+		/// <param name="elements">All elements of the card, in any order (they are grouped by kind).</param>
+		/// <param name="subtitle">The optional secondary name of the addon.</param>
+		public AddonCardViewModel(MaterialIconKind icon, LocaleKeyBase name, LocaleKeyBase description,
+			IEnumerable<IAddonCardElement> elements, LocaleKeyBase? subtitle = null)
 		{
 			Icon = icon;
 			Name = name;
+			Subtitle = subtitle;
 			Description = description;
 
 			Elements = [.. elements];
 
+			LeftHeaderElements = [.. Elements.OfType<IAddonCardHeaderElement>().Where(e => e.IsShownLeft).OrderBy(e => e.Order)];
+			RightHeaderElements = [.. Elements.OfType<IAddonCardHeaderElement>().Where(e => !e.IsShownLeft).OrderBy(e => e.Order)];
+
 			Changes = [.. Elements.OfType<IAddonCardChange>().OrderBy(e => e.Order)];
-			LeftChanges = [.. Changes.Where(c => c.IsShownLeft)];
-			RightChanges = [.. Changes.Where(c => !c.IsShownLeft)];
 			Chips = [.. Elements.OfType<IAddonCardChip>().OrderBy(e => e.Order)];
-			Blocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => !b.IsDetail).OrderBy(e => e.Order)];
+
+			Blocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.Visibility == AddonCardBlockVisibility.Inline).OrderBy(e => e.Order)];
+			CollapsibleBlocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.Visibility == AddonCardBlockVisibility.Collapsible).OrderBy(e => e.Order)];
+			DetailBlocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.Visibility == AddonCardBlockVisibility.Details).OrderBy(e => e.Order)];
+
 			ActionRowElements = [.. Elements.OfType<IAddonCardActionRowElement>().OrderBy(e => e.Order)];
 			Actions = [.. Elements.OfType<IAddonCardAction>().OrderBy(e => e.Order)];
-			DetailBlocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.IsDetail).OrderBy(e => e.Order)];
 
 			ResetCommand = new RelayCommand(Reset);
+
+			foreach (var change in Changes)
+			{
+				if (change is INotifyPropertyChanged notifier)
+					notifier.PropertyChanged += OnChangePropertyChanged;
+			}
+		}
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				foreach (var change in Changes)
+				{
+					if (change is INotifyPropertyChanged notifier)
+						notifier.PropertyChanged -= OnChangePropertyChanged;
+				}
+			}
+		}
+
+		private void OnChangePropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof(IAddonCardHeaderElement.IsChanged))
+				RaisePropertyChanged(nameof(HasChanges));
 		}
 
 		private void Reset()
