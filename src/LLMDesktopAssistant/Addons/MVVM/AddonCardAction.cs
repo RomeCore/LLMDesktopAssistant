@@ -12,6 +12,9 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public required ICommand Command { get; init; }
 
 		/// <inheritdoc/>
+		public object? CommandParameter { get; init; }
+
+		/// <inheritdoc/>
 		public LocaleKeyBase? ToolTip { get; init; }
 	}
 }

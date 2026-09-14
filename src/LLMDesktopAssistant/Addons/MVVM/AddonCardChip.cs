@@ -11,7 +11,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public bool HasBorder { get; init; } = true;
 
 		/// <inheritdoc/>
-		public Color? Color { get; init; }
+		public IBrush? Brush { get; init; }
 
 		/// <inheritdoc/>
 		public double Opacity { get; init; } = 1;

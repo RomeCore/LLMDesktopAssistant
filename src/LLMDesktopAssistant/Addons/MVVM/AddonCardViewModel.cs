@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
@@ -21,23 +22,33 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// <summary>
 		/// Gets the icon of the card, usually taken from the addon type descriptor.
 		/// </summary>
-		public MaterialIconKind Icon { get; }
+		public MaterialIconKind? Icon { get; init; }
+
+		/// <summary>
+		/// Gets the brush used to paint the name prefix of the addon.
+		/// </summary>
+		public IBrush? NamePrefixBrush { get; init; }
+
+		/// <summary>
+		/// Gets the name prefix of the addon.
+		/// </summary>
+		public LocaleKeyBase? NamePrefix { get; init; }
 
 		/// <summary>
 		/// Gets the display name of the addon.
 		/// </summary>
-		public LocaleKeyBase Name { get; }
+		public required LocaleKeyBase Name { get; init; }
 
 		/// <summary>
 		/// Gets the optional secondary name shown next to the name (for example, the identifier
 		/// of an addon whose display name differs from it).
 		/// </summary>
-		public LocaleKeyBase? Subtitle { get; }
+		public LocaleKeyBase? Subtitle { get; init; }
 
 		/// <summary>
 		/// Gets the description of the addon.
 		/// </summary>
-		public LocaleKeyBase Description { get; }
+		public LocaleKeyBase? Description { get; init; }
 
 		/// <summary>
 		/// Gets the header elements placed to the left of the name.
@@ -85,14 +96,19 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public ImmutableList<IAddonCardAction> Actions { get; }
 
 		/// <summary>
+		/// Gets a value indicating whether the card has a name prefix.
+		/// </summary>
+		public bool HasNamePrefix => !string.IsNullOrWhiteSpace(NamePrefix?.Value);
+
+		/// <summary>
 		/// Gets a value indicating whether the card has a subtitle.
 		/// </summary>
-		public bool HasSubtitle => Subtitle is not null;
+		public bool HasSubtitle => !string.IsNullOrWhiteSpace(Subtitle?.Value);
 
 		/// <summary>
 		/// Gets a value indicating whether the card has a non-empty description.
 		/// </summary>
-		public bool HasDescription => !string.IsNullOrWhiteSpace(Description.Value);
+		public bool HasDescription => !string.IsNullOrWhiteSpace(Description?.Value);
 
 		/// <summary>
 		/// Gets a value indicating whether the addon has any overridden values, and therefore whether
@@ -122,19 +138,9 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AddonCardViewModel"/> class.
 		/// </summary>
-		/// <param name="icon">The icon of the card.</param>
-		/// <param name="name">The display name of the addon.</param>
-		/// <param name="description">The description of the addon.</param>
 		/// <param name="elements">All elements of the card, in any order (they are grouped by kind).</param>
-		/// <param name="subtitle">The optional secondary name of the addon.</param>
-		public AddonCardViewModel(MaterialIconKind icon, LocaleKeyBase name, LocaleKeyBase description,
-			IEnumerable<IAddonCardElement> elements, LocaleKeyBase? subtitle = null)
+		public AddonCardViewModel(IEnumerable<IAddonCardElement> elements)
 		{
-			Icon = icon;
-			Name = name;
-			Subtitle = subtitle;
-			Description = description;
-
 			Elements = [.. elements];
 
 			LeftHeaderElements = [.. Elements.OfType<IAddonCardHeaderElement>().Where(e => e.IsShownLeft).OrderBy(e => e.Order)];

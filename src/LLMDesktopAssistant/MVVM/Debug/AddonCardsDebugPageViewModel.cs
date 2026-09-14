@@ -94,7 +94,7 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 			new AddonCardChip { Order = 0, Icon = MaterialIconKind.Wrench, Label = T("3 tools"), ToolTip = T("Tools provided by this skill") },
 			new AddonCardChip { Order = 1, Icon = MaterialIconKind.Tune, Label = T("Manual injection") },
 			new AddonCardChip { Order = 2, HasBorder = false, Opacity = 0.5, Icon = MaterialIconKind.FolderOutline, Label = T("~/.dass/skills") },
-			new AddonCardChip { Order = 3, Color = Colors.OrangeRed, Icon = MaterialIconKind.AlertCircle, Label = T("Bad parameter default"), ToolTip = T("The 'formatting' parameter has an invalid default value") },
+			new AddonCardChip { Order = 3, Brush = Brushes.OrangeRed, Icon = MaterialIconKind.AlertCircle, Label = T("Bad parameter default"), ToolTip = T("The 'formatting' parameter has an invalid default value") },
 
 			new AddonCardTagChip { Order = 10, Icon = MaterialIconKind.Tag, Label = T("code"), Command = TagClickCommand, CommandParameter = "code" },
 			new AddonCardTagChip { Order = 11, Icon = MaterialIconKind.Tag, Label = T("formatting"), Command = TagClickCommand, CommandParameter = "formatting" },
@@ -129,9 +129,13 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 			new AddonCardAction { Order = 2, Icon = MaterialIconKind.Delete, ToolTip = T("Delete file"), Command = Action("delete file") }
 		};
 
-		return new AddonCardViewModel(MaterialIconKind.Cards, T("Demo skill (everything on)"),
-			T("Every element kind: overridden header slots, colored chips, tags, collapsible parameters, details and file actions."),
-			elements, T("demo-skill"));
+		return new AddonCardViewModel(elements)
+		{
+			Icon = MaterialIconKind.Cards,
+			Name = T("demo-skill"),
+			Subtitle = T("Demo skill (everything on)"),
+			Description = T("Every element kind: overridden header slots, colored chips, tags, collapsible parameters, details and file actions.")
+		};
 	}
 
 	/// <summary>
@@ -152,9 +156,12 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 			new AddonCardBlock { Order = 0, Title = T("Body"), Visibility = AddonCardBlockVisibility.Details, Content = MonoText("A chat-level skill has a definition only, it cannot be overridden.") }
 		};
 
-		return new AddonCardViewModel(MaterialIconKind.Cards, T("Chat-level skill"),
-			T("No IAddonCardChange elements: the reset button must not be shown even when the details are expanded."),
-			elements);
+		return new AddonCardViewModel(elements)
+		{
+			Icon = MaterialIconKind.Cards,
+			Name = T("Chat-level skill"),
+			Description = T("No IAddonCardChange elements: the reset button must not be shown even when the details are expanded.")
+		};
 	}
 
 	/// <summary>
@@ -188,9 +195,14 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 			new AddonCardBlock { Order = 10, Title = T("System prompt"), Visibility = AddonCardBlockVisibility.Details, Content = MonoText("You are a sub-agent responsible for reviewing code.") }
 		};
 
-		return new AddonCardViewModel(MaterialIconKind.RobotHappy, T("Agent-level sub-agent"),
-			T("Override slots are present but untouched: no accent markers, the reset button appears only after you change something."),
-			elements);
+		return new AddonCardViewModel(elements)
+		{
+			Icon = MaterialIconKind.RobotHappy,
+			NamePrefix = T("Meta"),
+			NamePrefixBrush = Brushes.MediumPurple,
+			Name = T("Agent-level sub-agent"),
+			Description = T("Override slots are present but untouched: no accent markers, the reset button appears only after you change something.")
+		};
 	}
 
 	/// <summary>
@@ -206,11 +218,11 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 			new AddonCardChip { Order = 3, HasBorder = false, Label = T("no border") },
 			new AddonCardChip { Order = 4, HasBorder = false, Opacity = 0.5, Icon = MaterialIconKind.FolderOutline, Label = T("no border + dimmed") },
 			new AddonCardChip { Order = 5, Opacity = 0.5, Label = T("bordered + dimmed") },
-			new AddonCardChip { Order = 6, Color = Colors.LimeGreen, Icon = MaterialIconKind.Check, Label = T("valid") },
-			new AddonCardChip { Order = 7, Color = Colors.Orange, Icon = MaterialIconKind.AlertCircle, Label = T("warning") },
-			new AddonCardChip { Order = 8, Color = Colors.OrangeRed, Icon = MaterialIconKind.Close, Label = T("error") },
-			new AddonCardChip { Order = 9, Color = Colors.DeepSkyBlue, Icon = MaterialIconKind.Information, Label = T("info") },
-			new AddonCardChip { Order = 10, Color = Colors.MediumPurple, Label = T("colored label only") },
+			new AddonCardChip { Order = 6, Brush = Brushes.LimeGreen, Icon = MaterialIconKind.Check, Label = T("valid") },
+			new AddonCardChip { Order = 7, Brush = Brushes.Orange, Icon = MaterialIconKind.AlertCircle, Label = T("warning") },
+			new AddonCardChip { Order = 8, Brush = Brushes.OrangeRed, Icon = MaterialIconKind.Close, Label = T("error") },
+			new AddonCardChip { Order = 9, Brush = Brushes.DeepSkyBlue, Icon = MaterialIconKind.Information, Label = T("info") },
+			new AddonCardChip { Order = 10, Brush = Brushes.MediumPurple, Label = T("colored label only") },
 			new AddonCardChip
 			{
 				Order = 11,
@@ -225,7 +237,12 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 			new AddonCardTagChip { Order = 23, HasBorder = false, Icon = MaterialIconKind.Tag, Label = T("borderless tag"), Command = TagClickCommand, CommandParameter = "borderless tag" }
 		};
 
-		return new AddonCardViewModel(MaterialIconKind.Tag, T("Chip zoo"), T("All supported chip and tag shapes."), elements);
+		return new AddonCardViewModel(elements)
+		{
+			Icon = MaterialIconKind.Tag,
+			Name = T("Chip zoo"),
+			Description = T("All supported chip and tag shapes.")
+		};
 	}
 
 	/// <summary>
@@ -289,17 +306,25 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 		for (var i = 0; i < 5; i++)
 			elements.Add(new AddonCardAction { Order = i, Icon = ActionIcons[i], ToolTip = T($"Action #{i + 1}"), Command = Action($"action #{i + 1}") });
 
-		return new AddonCardViewModel(MaterialIconKind.Wrench, T("Kitchen sink"),
-			T("A long description that should wrap across multiple lines without breaking the card layout, followed by 24 chips that should wrap into several rows, three collapsible blocks, four detail blocks, one inline block and five action buttons."),
-			elements);
+		return new AddonCardViewModel(elements)
+		{
+			Icon = MaterialIconKind.Tag,
+			Name = T("Kitchen sink"),
+			Description = T("A long description that should wrap across multiple lines without breaking the card layout, followed by 24 chips that should wrap into several rows, three collapsible blocks, four detail blocks, one inline block and five action buttons.")
+		};
 	}
 
 	/// <summary>
 	/// A card with no elements at all and an empty description: nothing but the header must be rendered.
 	/// </summary>
 	private AddonCardViewModel BuildMinimalCard()
-		=> new(MaterialIconKind.Cards, T("Minimal card"), T(""),
-			[]);
+	{
+		return new AddonCardViewModel([])
+		{
+			Icon = MaterialIconKind.Cards,
+			Name = T("Minimal card")
+		};
+	}
 
 	/// <summary>
 	/// A card with a subtitle and a long name, to check trimming.
@@ -311,10 +336,13 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 			new AddonCardChip { Order = 0, Icon = MaterialIconKind.Information, Label = T("subtitle + trimming") }
 		};
 
-		return new AddonCardViewModel(MaterialIconKind.Cards,
-			T("A card with an extremely long display name that must be trimmed instead of pushing the header slots away"),
-			T("The subtitle is shown next to the name and is also trimmed."),
-			elements, T("very-long-addon-identifier.without-any-spaces.in-the-name"));
+		return new AddonCardViewModel(elements)
+		{
+			Icon = MaterialIconKind.Tag,
+			Name = T("A card with an extremely long display name that must be trimmed instead of pushing the header slots away"),
+			Subtitle = T("very-long-addon-identifier.without-any-spaces.in-the-name"),
+			Description = T("The subtitle is shown next to the name and is also trimmed.")
+		};
 	}
 
 	#endregion

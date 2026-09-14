@@ -16,9 +16,9 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		bool HasBorder { get; }
 
 		/// <summary>
-		/// The color of the border and the icon. If null, the default color will be used.
+		/// The brush of the border and the icon. If null, the default accent color will be used.
 		/// </summary>
-		Color? Color { get; }
+		IBrush? Brush { get; }
 
 		/// <summary>
 		/// The opacity of the whole chip. Useful for muted elements, such as the source indicator.

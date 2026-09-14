@@ -16,6 +16,11 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		ICommand Command { get; }
 
 		/// <summary>
+		/// The parameter passed to <see cref="Command"/>.
+		/// </summary>
+		object? CommandParameter { get; }
+
+		/// <summary>
 		/// Tooltip that will be shown on hover over the action button.
 		/// </summary>
 		LocaleKeyBase? ToolTip { get; }
