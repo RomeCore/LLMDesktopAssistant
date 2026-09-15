@@ -15,6 +15,8 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 
 		public bool UseDefaultDiagnosticFactory => true;
 
+		public bool UseDefaultSearchService => true;
+
 		public LocaleKeyBase NameKey => Locale.GetKey("addon.type.agents.name");
 
 		public LocaleKeyBase? DescriptionKey => Locale.GetKey("addon.type.agents.description");

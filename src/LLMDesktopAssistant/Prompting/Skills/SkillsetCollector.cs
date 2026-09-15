@@ -1,13 +1,13 @@
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
-using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.StructuredValues.Converters;
 using LLTSharp;
 
-namespace LLMDesktopAssistant.LLM.Services.Prompting
+namespace LLMDesktopAssistant.Prompting.Skills
 {
 	[ChatService(typeof(IAddonSetCollector<SkillInfo>))]
 	public class SkillsetCollector(
@@ -71,9 +71,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 		public override IEnumerable<SkillInfo> GetAddonsForAgent(ChatAgentDescriptor agent)
 		{
-			if (!chatSettings.Settings.Skills.EnableSkills)
-				return [];
-
 			var settings = agent.Skills;
 			if (!settings.EnableSkills)
 				return [];

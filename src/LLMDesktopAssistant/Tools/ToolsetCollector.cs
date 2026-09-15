@@ -2,10 +2,9 @@ using AngleSharp.Common;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Prompting.Skills;
-using LLMDesktopAssistant.Tools;
+using LLMDesktopAssistant.LLM.Services;
 
-namespace LLMDesktopAssistant.LLM.Services.Tools
+namespace LLMDesktopAssistant.Tools
 {
 	[ChatService(typeof(IAddonSetCollector<ToolInfo>))]
 	public class ToolsetCollector(

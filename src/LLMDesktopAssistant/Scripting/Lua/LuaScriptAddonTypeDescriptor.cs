@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Scripting.Lua
@@ -14,6 +14,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		public Type ClrType => typeof(LuaScriptInfo);
 
 		public bool UseDefaultDiagnosticFactory => true;
+
+		public bool UseDefaultSearchService => true;
 
 		public LocaleKeyBase NameKey => Locale.GetKey("addon.type.scripts.lua.name");
 

@@ -1,5 +1,6 @@
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Loading;
+using LLMDesktopAssistant.Addons.Search;
 using LLMDesktopAssistant.Utils;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,8 +8,8 @@ namespace LLMDesktopAssistant.Services.Configurators
 {
 	/// <summary>
 	/// Registers closed generic addon services for every <see cref="IAddonTypeDescriptor"/> as app singletons:
-	/// <see cref="IAddonAccessor{T}"/>, <see cref="IReactiveAddonLoader{T}"/> and
-	/// <see cref="IDiagnosticAddonFactory{T}"/> per addon CLR type.
+	/// <see cref="IAddonAccessor{T}"/>, <see cref="IReactiveAddonLoader{T}"/>,
+	/// <see cref="IDiagnosticAddonFactory{T}"/> and <see cref="IAddonSearchService{T}"/> per addon CLR type.
 	/// </summary>
 	/// <remarks>
 	/// The app-level services are a separate set from the chat-level ones: app services are populated
@@ -66,6 +67,8 @@ namespace LLMDesktopAssistant.Services.Configurators
 			Register(typeof(IReactiveAddonLoader<>), typeof(AddonFileCachedLoader<>));
 			if (descriptor.UseDefaultDiagnosticFactory)
 				Register(typeof(IDiagnosticAddonFactory<>), typeof(DiagnosticAddonFactory<>));
+			if (descriptor.UseDefaultSearchService)
+				Register(typeof(IAddonSearchService<>), typeof(AddonSearchService<>));
 
 			void Register(Type openServiceType, Type openImplementationType)
 			{

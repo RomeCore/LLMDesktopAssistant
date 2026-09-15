@@ -91,13 +91,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			});
 		}
 
-		public override IEnumerable<ToolInfo> GetTools()
-		{
-			if (!_chatSettings.Settings.SubAgents.EnableSubAgents)
-				return base.GetTools().Where(t => t.Name != "agent-callsub");
-			return base.GetTools();
-		}
-
 		private async Task CallAgent(
 			[Description("The title of the agent call to be visible in UI")] string? callTitle,
 			[Description("The system prompt to use in the agent's context")] string systemPrompt,

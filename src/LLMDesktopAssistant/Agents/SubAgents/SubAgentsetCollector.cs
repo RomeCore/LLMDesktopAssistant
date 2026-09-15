@@ -1,13 +1,12 @@
 using LLMDesktopAssistant.Addons;
-using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.Agents.SubAgents;
+using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
 using LLMDesktopAssistant.StructuredValues.Converters;
 using LLTSharp;
 
-namespace LLMDesktopAssistant.LLM.Services.Prompting
+namespace LLMDesktopAssistant.Agents.SubAgents
 {
 	/// <summary>
 	/// The collector that builds the effective sub-agent addon set for the chat and its agents:
@@ -81,9 +80,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 		public override IEnumerable<SubAgentInfo> GetAddonsForAgent(ChatAgentDescriptor agent)
 		{
-			if (!chatSettings.Settings.SubAgents.EnableSubAgents)
-				return [];
-
 			var settings = agent.SubAgents;
 			if (!settings.EnableSubAgents)
 				return [];

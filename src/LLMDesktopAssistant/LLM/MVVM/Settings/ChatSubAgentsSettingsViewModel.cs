@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Addons.MVVM;
+using LLMDesktopAssistant.Addons.Search;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.LLM.Settings;
@@ -14,16 +15,21 @@ using LLMDesktopAssistant.Utils;
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
 /// <summary>
-/// ViewModel for the chat-level sub-agent settings: the available sub-agents rendered with the addon cards,
-/// the search box and the sub-agent file actions.
+/// ViewModel for the chat-level sub-agent settings: the available sub-agents rendered by the reusable
+/// addon list (with the search box) and the sub-agent file actions.
 /// </summary>
 [ViewModelFor(typeof(ChatSubAgentsSettingsView))]
-public class ChatSubAgentsSettingsViewModel : AddonListViewModel<SubAgentInfo, SubAgentChange>
+public class ChatSubAgentsSettingsViewModel : ViewModelBase
 {
 	/// <summary>
 	/// Gets the underlying chat sub-agent settings.
 	/// </summary>
 	public ChatSubAgentSettings SubAgentSettings { get; }
+
+	/// <summary>
+	/// Gets the addon list that renders the available sub-agents and searches over them.
+	/// </summary>
+	public AddonListViewModel List { get; }
 
 	/// <summary>
 	/// Gets the command that creates a new sub-agent file from a template.
@@ -37,25 +43,23 @@ public class ChatSubAgentsSettingsViewModel : AddonListViewModel<SubAgentInfo, S
 	/// <param name="subAgentsetCollector">The collector that provides the available sub-agents.</param>
 	/// <param name="cardFactory">The factory that builds the sub-agent cards.</param>
 	/// <param name="addonInvalidator">The invalidator used to reload the addons before building the list.</param>
+	/// <param name="searchService">The search service used to filter the list by the search query.</param>
 	public ChatSubAgentsSettingsViewModel(ChatSubAgentSettings settings,
 		IAddonSetCollector<SubAgentInfo> subAgentsetCollector,
 		IAddonCardFactory<SubAgentInfo, SubAgentChange> cardFactory,
-		IAddonManagerInvalidator addonInvalidator)
-		: base(subAgentsetCollector, cardFactory, addonInvalidator)
+		IAddonManagerInvalidator addonInvalidator,
+		IAddonSearchService<SubAgentInfo> searchService)
 	{
 		SubAgentSettings = settings;
 		CreateSubAgentCommand = new AsyncRelayCommand(CreateSubAgentAsync);
 
-		Update();
+		List = new AddonListViewModel<SubAgentInfo, SubAgentChange>(subAgentsetCollector, cardFactory, addonInvalidator, searchService)
+		{
+			SearchPlaceholderKey = Locale.GetKey("settings.sub_agents.search.placeholder"),
+			EmptyTextKey = Locale.GetKey("settings.sub_agents.empty")
+		};
+		List.Update();
 	}
-
-	/// <inheritdoc/>
-	protected override AddonCardContext<SubAgentInfo, SubAgentChange> CreateContext(SubAgentInfo addon) => new()
-	{
-		Addon = addon,
-		TagClickCommand = TagClickCommand,
-		OnDeleted = Update
-	};
 
 	private async Task CreateSubAgentAsync()
 	{
@@ -92,7 +96,7 @@ public class ChatSubAgentsSettingsViewModel : AddonListViewModel<SubAgentInfo, S
 		{
 			Directory.CreateDirectory(Directories.Agents);
 			File.WriteAllText(path, BuildTemplate(name));
-			Update();
+			List.Update();
 
 			toast.ShowSuccess(Locale.Get("settings.sub_agents.create.success"));
 			Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
@@ -113,4 +117,13 @@ public class ChatSubAgentsSettingsViewModel : AddonListViewModel<SubAgentInfo, S
 
 		Write the instructions for this sub-agent here.
 		""";
+
+	/// <inheritdoc/>
+	protected override void Dispose(bool disposing)
+	{
+		base.Dispose(disposing);
+
+		if (disposing)
+			List.Dispose();
+	}
 }

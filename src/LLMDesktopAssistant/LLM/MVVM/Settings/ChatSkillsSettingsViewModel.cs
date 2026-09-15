@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Addons.MVVM;
+using LLMDesktopAssistant.Addons.Search;
 using LLMDesktopAssistant.Controls.Dialogs;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
@@ -14,16 +15,21 @@ using LLMDesktopAssistant.Utils;
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
 /// <summary>
-/// ViewModel for the chat-level skill settings: the available skills rendered with the addon cards,
-/// the search box and the skill file actions.
+/// ViewModel for the chat-level skill settings: the available skills rendered by the reusable addon list
+/// (with the search box) and the skill file actions.
 /// </summary>
 [ViewModelFor(typeof(ChatSkillsSettingsView))]
-public class ChatSkillsSettingsViewModel : AddonListViewModel<SkillInfo, SkillChange>
+public class ChatSkillsSettingsViewModel : ViewModelBase
 {
 	/// <summary>
 	/// Gets the underlying chat skill settings.
 	/// </summary>
 	public ChatSkillSettings SkillSettings { get; }
+
+	/// <summary>
+	/// Gets the addon list that renders the available skills and searches over them.
+	/// </summary>
+	public AddonListViewModel List { get; }
 
 	/// <summary>
 	/// Gets the command that creates a new skill file from a template.
@@ -37,25 +43,23 @@ public class ChatSkillsSettingsViewModel : AddonListViewModel<SkillInfo, SkillCh
 	/// <param name="skillsetCollector">The collector that provides the available skills.</param>
 	/// <param name="cardFactory">The factory that builds the skill cards.</param>
 	/// <param name="addonInvalidator">The invalidator used to reload the addons before building the list.</param>
+	/// <param name="searchService">The search service used to filter the list by the search query.</param>
 	public ChatSkillsSettingsViewModel(ChatSkillSettings settings,
 		IAddonSetCollector<SkillInfo> skillsetCollector,
 		IAddonCardFactory<SkillInfo, SkillChange> cardFactory,
-		IAddonManagerInvalidator addonInvalidator)
-		: base(skillsetCollector, cardFactory, addonInvalidator)
+		IAddonManagerInvalidator addonInvalidator,
+		IAddonSearchService<SkillInfo> searchService)
 	{
 		SkillSettings = settings;
 		CreateSkillCommand = new AsyncRelayCommand(CreateSkillAsync);
 
-		Update();
+		List = new AddonListViewModel<SkillInfo, SkillChange>(skillsetCollector, cardFactory, addonInvalidator, searchService)
+		{
+			SearchPlaceholderKey = Locale.GetKey("settings.skills.search.placeholder"),
+			EmptyTextKey = Locale.GetKey("settings.skills.empty")
+		};
+		List.Update();
 	}
-
-	/// <inheritdoc/>
-	protected override AddonCardContext<SkillInfo, SkillChange> CreateContext(SkillInfo addon) => new()
-	{
-		Addon = addon,
-		TagClickCommand = TagClickCommand,
-		OnDeleted = Update
-	};
 
 	private async Task CreateSkillAsync()
 	{
@@ -93,7 +97,7 @@ public class ChatSkillsSettingsViewModel : AddonListViewModel<SkillInfo, SkillCh
 		{
 			Directory.CreateDirectory(directory);
 			File.WriteAllText(path, BuildTemplate(name));
-			Update();
+			List.Update();
 
 			toast.ShowSuccess(Locale.Get("settings.skills.create.success"));
 			Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
@@ -114,4 +118,13 @@ public class ChatSkillsSettingsViewModel : AddonListViewModel<SkillInfo, SkillCh
 
 		Write the instructions for this skill here.
 		""";
+
+	/// <inheritdoc/>
+	protected override void Dispose(bool disposing)
+	{
+		base.Dispose(disposing);
+
+		if (disposing)
+			List.Dispose();
+	}
 }

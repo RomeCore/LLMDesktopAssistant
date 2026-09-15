@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using LLMDesktopAssistant.Addons;
-using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Skills;
@@ -11,14 +10,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 	[ToolModule]
 	public class SkillToolModule : ToolModule
 	{
-		private readonly IChatSettingsService _chatSettings;
 		private readonly IAgentManagementService _agentManager;
 		private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
 
-		public SkillToolModule(IChatSettingsService chatSettings, IAgentManagementService agentManager,
+		public SkillToolModule(IAgentManagementService agentManager,
 			IAddonSetCollector<SkillInfo> skillsetBuilder)
 		{
-			_chatSettings = chatSettings;
 			_agentManager = agentManager;
 			_skillsetBuilder = skillsetBuilder;
 
@@ -33,13 +30,6 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				CategoryKey = Locale.GetKey("tool.category.skills"),
 				DefaultExpectedBehaviour = ToolBehaviour.None
 			});
-		}
-
-		public override IEnumerable<ToolInfo> GetTools()
-		{
-			if (!_chatSettings.Settings.Skills.EnableSkills)
-				return [];
-			return base.GetTools();
 		}
 
 		private ReactiveToolResult LoadSkill(

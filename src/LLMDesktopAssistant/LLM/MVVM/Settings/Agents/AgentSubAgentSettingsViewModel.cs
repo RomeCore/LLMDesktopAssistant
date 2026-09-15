@@ -2,18 +2,21 @@ using System.ComponentModel;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Addons.MVVM;
+using LLMDesktopAssistant.Addons.Search;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 
 /// <summary>
-/// ViewModel for the per-agent sub-agent settings: the available sub-agents rendered with the addon cards,
-/// where every card edits the sub-agent overrides of the effective sub-agentset.
+/// ViewModel for the per-agent sub-agent settings: the effective sub-agentset selection and the available
+/// sub-agents rendered by the reusable addon list, where every card edits the sub-agent overrides of the
+/// effective sub-agentset.
 /// </summary>
 [ViewModelFor(typeof(AgentSubAgentSettingsView))]
-public class AgentSubAgentSettingsViewModel : AddonListViewModel<SubAgentInfo, SubAgentChange>
+public class AgentSubAgentSettingsViewModel : ViewModelBase
 {
 	private readonly ChatSettings _chatSettings;
 
@@ -23,6 +26,12 @@ public class AgentSubAgentSettingsViewModel : AddonListViewModel<SubAgentInfo, S
 	/// Gets the underlying agent sub-agent settings.
 	/// </summary>
 	public AgentSubAgentSettings SubAgentSettings { get; }
+
+	/// <summary>
+	/// Gets the addon list that renders the available sub-agents and searches over them. The cards of the
+	/// list edit the changes of <see cref="EffectiveSubAgentset"/>.
+	/// </summary>
+	public AddonListViewModel List { get; }
 
 	/// <summary>
 	/// Gets the sub-agentset resolved by the current inheritance level. The cards edit the changes of this set.
@@ -50,28 +59,32 @@ public class AgentSubAgentSettingsViewModel : AddonListViewModel<SubAgentInfo, S
 	/// <param name="subAgentsetCollector">The collector that provides the available sub-agents.</param>
 	/// <param name="cardFactory">The factory that builds the sub-agent cards.</param>
 	/// <param name="addonInvalidator">The invalidator used to reload the addons before building the list.</param>
+	/// <param name="searchService">The search service used to filter the list by the search query.</param>
 	public AgentSubAgentSettingsViewModel(AgentSubAgentSettings settings, ChatSettings chatSettings,
 		IAddonSetCollector<SubAgentInfo> subAgentsetCollector,
 		IAddonCardFactory<SubAgentInfo, SubAgentChange> cardFactory,
-		IAddonManagerInvalidator addonInvalidator)
-		: base(subAgentsetCollector, cardFactory, addonInvalidator)
+		IAddonManagerInvalidator addonInvalidator,
+		IAddonSearchService<SubAgentInfo> searchService)
 	{
 		SubAgentSettings = settings;
 		_chatSettings = chatSettings;
 		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(item => item.Value == settings.SubAgentsetInheritance);
 		settings.PropertyChanged += SubAgentSettings_PropertyChanged;
 
-		Update();
+		List = new AddonListViewModel<SubAgentInfo, SubAgentChange>(subAgentsetCollector, cardFactory, addonInvalidator, searchService,
+			(list, addon) => new AddonCardContext<SubAgentInfo, SubAgentChange>
+			{
+				Addon = addon,
+				SetConfig = EffectiveSubAgentset,
+				TagClickCommand = list.TagClickCommand,
+				OnDeleted = list.Update
+			})
+		{
+			SearchPlaceholderKey = Locale.GetKey("settings.sub_agents.search.placeholder"),
+			EmptyTextKey = Locale.GetKey("settings.sub_agents.empty")
+		};
+		List.Update();
 	}
-
-	/// <inheritdoc/>
-	protected override AddonCardContext<SubAgentInfo, SubAgentChange> CreateContext(SubAgentInfo addon) => new()
-	{
-		Addon = addon,
-		SetConfig = EffectiveSubAgentset,
-		TagClickCommand = TagClickCommand,
-		OnDeleted = Update
-	};
 
 	private void SubAgentSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
@@ -81,7 +94,7 @@ public class AgentSubAgentSettingsViewModel : AddonListViewModel<SubAgentInfo, S
 		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(item => item.Value == SubAgentSettings.SubAgentsetInheritance);
 		RaisePropertyChanged(nameof(SelectedSubAgentChangesInheritance));
 		RaisePropertyChanged(nameof(EffectiveSubAgentset));
-		Update();
+		List.Update();
 	}
 
 	/// <inheritdoc/>
@@ -90,6 +103,9 @@ public class AgentSubAgentSettingsViewModel : AddonListViewModel<SubAgentInfo, S
 		base.Dispose(disposing);
 
 		if (disposing)
+		{
 			SubAgentSettings.PropertyChanged -= SubAgentSettings_PropertyChanged;
+			List.Dispose();
+		}
 	}
 }

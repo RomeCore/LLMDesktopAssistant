@@ -23,6 +23,11 @@ namespace LLMDesktopAssistant.Addons
 		bool UseDefaultDiagnosticFactory { get; }
 
 		/// <summary>
+		/// Gets a value indicating whether to use the default (BM25-based) search service.
+		/// </summary>
+		bool UseDefaultSearchService { get; }
+
+		/// <summary>
 		/// Gets the localized display name of the addon type. Used in the addon settings UI.
 		/// </summary>
 		LocaleKeyBase NameKey { get; }

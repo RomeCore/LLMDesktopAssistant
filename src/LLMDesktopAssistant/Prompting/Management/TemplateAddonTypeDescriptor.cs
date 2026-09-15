@@ -1,4 +1,4 @@
-﻿using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Localization;
 using LLTSharp;
 
@@ -12,6 +12,8 @@ namespace LLMDesktopAssistant.Prompting.Management
 		public Type ClrType => typeof(ITemplate);
 
 		public bool UseDefaultDiagnosticFactory => false;
+
+		public bool UseDefaultSearchService => false;
 
 		public LocaleKeyBase NameKey => Locale.GetKey("addon.type.templates.name");
 

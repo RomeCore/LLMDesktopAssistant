@@ -2,18 +2,20 @@ using System.ComponentModel;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Addons.MVVM;
+using LLMDesktopAssistant.Addons.Search;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Skills;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 
 /// <summary>
-/// ViewModel for the per-agent skill settings: the available skills rendered with the addon cards,
-/// where every card edits the skill overrides of the effective skillset.
+/// ViewModel for the per-agent skill settings: the effective skillset selection and the available skills
+/// rendered by the reusable addon list, where every card edits the skill overrides of the effective skillset.
 /// </summary>
 [ViewModelFor(typeof(AgentSkillSettingsView))]
-public class AgentSkillSettingsViewModel : AddonListViewModel<SkillInfo, SkillChange>
+public class AgentSkillSettingsViewModel : ViewModelBase
 {
 	private readonly ChatSettings _chatSettings;
 
@@ -23,6 +25,12 @@ public class AgentSkillSettingsViewModel : AddonListViewModel<SkillInfo, SkillCh
 	/// Gets the underlying agent skill settings.
 	/// </summary>
 	public AgentSkillSettings SkillSettings { get; }
+
+	/// <summary>
+	/// Gets the addon list that renders the available skills and searches over them. The cards of the list
+	/// edit the changes of <see cref="EffectiveSkillset"/>.
+	/// </summary>
+	public AddonListViewModel List { get; }
 
 	/// <summary>
 	/// Gets the skillset resolved by the current inheritance level. The cards edit the changes of this set.
@@ -50,28 +58,32 @@ public class AgentSkillSettingsViewModel : AddonListViewModel<SkillInfo, SkillCh
 	/// <param name="skillsetCollector">The collector that provides the available skills.</param>
 	/// <param name="cardFactory">The factory that builds the skill cards.</param>
 	/// <param name="addonInvalidator">The invalidator used to reload the addons before building the list.</param>
+	/// <param name="searchService">The search service used to filter the list by the search query.</param>
 	public AgentSkillSettingsViewModel(AgentSkillSettings settings, ChatSettings chatSettings,
 		IAddonSetCollector<SkillInfo> skillsetCollector,
 		IAddonCardFactory<SkillInfo, SkillChange> cardFactory,
-		IAddonManagerInvalidator addonInvalidator)
-		: base(skillsetCollector, cardFactory, addonInvalidator)
+		IAddonManagerInvalidator addonInvalidator,
+		IAddonSearchService<SkillInfo> searchService)
 	{
 		SkillSettings = settings;
 		_chatSettings = chatSettings;
 		_selectedSkillChangesInheritance = InheritanceLevelItem.AllAgent.First(item => item.Value == settings.SkillsetInheritance);
 		settings.PropertyChanged += SkillSettings_PropertyChanged;
 
-		Update();
+		List = new AddonListViewModel<SkillInfo, SkillChange>(skillsetCollector, cardFactory, addonInvalidator, searchService,
+			(list, addon) => new AddonCardContext<SkillInfo, SkillChange>
+			{
+				Addon = addon,
+				SetConfig = EffectiveSkillset,
+				TagClickCommand = list.TagClickCommand,
+				OnDeleted = list.Update
+			})
+		{
+			SearchPlaceholderKey = Locale.GetKey("settings.skills.search.placeholder"),
+			EmptyTextKey = Locale.GetKey("settings.skills.empty")
+		};
+		List.Update();
 	}
-
-	/// <inheritdoc/>
-	protected override AddonCardContext<SkillInfo, SkillChange> CreateContext(SkillInfo addon) => new()
-	{
-		Addon = addon,
-		SetConfig = EffectiveSkillset,
-		TagClickCommand = TagClickCommand,
-		OnDeleted = Update
-	};
 
 	private void SkillSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
@@ -81,7 +93,7 @@ public class AgentSkillSettingsViewModel : AddonListViewModel<SkillInfo, SkillCh
 		_selectedSkillChangesInheritance = InheritanceLevelItem.AllAgent.First(item => item.Value == SkillSettings.SkillsetInheritance);
 		RaisePropertyChanged(nameof(SelectedSkillChangesInheritance));
 		RaisePropertyChanged(nameof(EffectiveSkillset));
-		Update();
+		List.Update();
 	}
 
 	/// <inheritdoc/>
@@ -90,6 +102,9 @@ public class AgentSkillSettingsViewModel : AddonListViewModel<SkillInfo, SkillCh
 		base.Dispose(disposing);
 
 		if (disposing)
+		{
 			SkillSettings.PropertyChanged -= SkillSettings_PropertyChanged;
+			List.Dispose();
+		}
 	}
 }

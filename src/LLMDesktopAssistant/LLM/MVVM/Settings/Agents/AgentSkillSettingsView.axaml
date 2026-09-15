@@ -61,37 +61,10 @@
 				   Margin="24,0,0,4"
 				   TextWrapping="Wrap"/>
 
-		<!-- Search -->
-		<TextBox Text="{Binding SearchText, Mode=TwoWay}"
-				 PlaceholderText="{loc:Loc settings.skills.search.placeholder}"
-				 IsEnabled="{Binding SkillSettings.EnableSkills}">
-			<TextBox.InnerLeftContent>
-				<ico:MaterialIcon Kind="TextBoxSearch" Width="16" Height="16" Margin="6,0" VerticalAlignment="Center" Opacity="0.5"/>
-			</TextBox.InnerLeftContent>
-		</TextBox>
-
-		<!-- Empty state -->
-		<TextBlock Text="{loc:Loc settings.skills.empty}"
-				   Opacity="0.5"
-				   TextWrapping="Wrap"
-				   IsVisible="{Binding Items.Count, Converter={StaticResource InverseBooleanConverter}}"/>
-
-		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-				BorderThickness="1"
-				CornerRadius="4">
-			<ScrollViewer MaxHeight="500"
-						  VerticalScrollBarVisibility="Auto"
-						  HorizontalScrollBarVisibility="Disabled">
-				<ItemsControl ItemsSource="{Binding Items}"
-							  IsEnabled="{Binding SkillSettings.EnableSkills}">
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<StackPanel Orientation="Vertical" Spacing="8"/>
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-				</ItemsControl>
-			</ScrollViewer>
-		</Border>
+		<!-- Search + list -->
+		<ContentControl IsEnabled="{Binding SkillSettings.EnableSkills}">
+					 <cards:AddonListPanelView DataContext="{Binding List}"/>
+		</ContentControl>
 
 	</StackPanel>
 
