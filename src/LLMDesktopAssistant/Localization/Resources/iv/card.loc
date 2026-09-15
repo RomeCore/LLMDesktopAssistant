@@ -1,0 +1,56 @@
+// The unified addon card UI: everything the cards render.
+// The 'card.*' keys are shared by the cards of every addon type, the per-type labels live under
+// 'card.<addon type>.*' (see the 'card.skills.*' section below).
+
+%locale: 
+%namespace: card
+
+// =====================================================
+// === Shared                                       ===
+// =====================================================
+details: Details
+category: Category
+parameters: Parameters
+parameters.toggle: Show parameters
+body: Content
+metadata: Metadata
+metadata.author: Author
+metadata.compatibility: Compatibility
+metadata.license: License
+metadata.version: Version
+tag.filter: Filter by this tag
+source.unknown: Unknown
+source.template: Template
+source.pack: Addon pack
+actions.open: Open file
+actions.explorer: Show in explorer
+actions.delete: Delete file
+delete.title: Delete addon file?
+delete.confirm: The file {0} will be permanently deleted. This action cannot be undone.
+
+// =====================================================
+// === Skills                                       ===
+// =====================================================
+skills.injection_mode.default: Name and description
+skills.injection_mode.full: Full body
+skills.tools.badge: {0} tools
+skills.tools.allowed: Used without approval
+skills.tools.available: Available while the skill is active
+skills.tools.disallowed: Disallowed while the skill is active
+
+// =====================================================
+// === Sub-agents                                   ===
+// =====================================================
+sub_agents.tools.badge: {0} tools
+sub_agents.skills.badge: {0} skills
+sub_agents.sub_agents.badge: {0} sub-agents
+sub_agents.memory_blocks.badge: {0} memory blocks
+sub_agents.tools.allowed: Used without approval
+sub_agents.tools.available: Available for the sub-agent
+sub_agents.tools.disallowed: Disallowed for the sub-agent
+sub_agents.skills: Available skills
+sub_agents.sub_agents: Available sub-agents
+sub_agents.memory_blocks: Memory blocks
+sub_agents.links.skill: Skill {0} does not exist
+sub_agents.links.sub_agent: Sub-agent {0} does not exist
+sub_agents.links.memory_block: Memory block {0} does not exist

@@ -4,7 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
-			 xmlns:card="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:cards="using:LLMDesktopAssistant.Addons.MVVM"
 			 xmlns:settings="using:LLMDesktopAssistant.LLM.Settings"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
@@ -17,7 +17,6 @@
 		<CheckBox IsChecked="{Binding SkillSettings.EnableSkills}"
 				  Content="{loc:Loc settings.skills.enable}"/>
 
-		<!-- Separator -->
 		<Rectangle Height="1"
 				   Fill="{DynamicResource DefaultForeground}"
 				   Opacity="0.2"
@@ -49,12 +48,11 @@
 				   Opacity="0.6"
 				   TextWrapping="Wrap"/>
 
-		<!-- Separator -->
 		<Rectangle Height="1"
 				   Fill="{DynamicResource DefaultForeground}"
 				   Opacity="0.2"/>
 
-		<CheckBox IsChecked="{Binding EffectiveSkillset.SkillsEnabledByDefault, Mode=TwoWay}"
+		<CheckBox IsChecked="{Binding EffectiveSkillset.EnabledByDefault, Mode=TwoWay}"
 				  Content="{loc:Loc skill.skills_enabled_by_default}"/>
 
 		<TextBlock Text="{loc:Loc skill.skills_enabled_by_default.hint}"
@@ -76,26 +74,21 @@
 		<TextBlock Text="{loc:Loc settings.skills.empty}"
 				   Opacity="0.5"
 				   TextWrapping="Wrap"
-				   IsVisible="{Binding SkillItems.Count, Converter={StaticResource InverseBooleanConverter}}"/>
-		
+				   IsVisible="{Binding Items.Count, Converter={StaticResource InverseBooleanConverter}}"/>
+
 		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
 				BorderThickness="1"
 				CornerRadius="4">
 			<ScrollViewer MaxHeight="500"
-									  VerticalScrollBarVisibility="Auto"
-									  HorizontalScrollBarVisibility="Disabled">
-				<ItemsControl ItemsSource="{Binding SkillItems}"
-										  IsEnabled="{Binding SkillSettings.EnableSkills}">
+						  VerticalScrollBarVisibility="Auto"
+						  HorizontalScrollBarVisibility="Disabled">
+				<ItemsControl ItemsSource="{Binding Items}"
+							  IsEnabled="{Binding SkillSettings.EnableSkills}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
 							<StackPanel Orientation="Vertical" Spacing="8"/>
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="card:SkillCardViewModel">
-							<card:SkillCardView/>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 			</ScrollViewer>
 		</Border>

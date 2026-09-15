@@ -37,7 +37,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		{
 			var settings = chatSettings.Settings.Scripts;
 			var scriptset = settings.GetEffectiveScriptset();
-			return GetAddonsWithChanges(scriptset.ScriptChanges, enabledByDefault: scriptset.EnabledByDefault, hiddenByDefault: false, agent: null);
+			return GetAddonsWithChanges(scriptset, agent: null);
 		}
 	}
 }

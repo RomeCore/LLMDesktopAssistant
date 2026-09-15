@@ -159,10 +159,8 @@ namespace LLMDesktopAssistant.Addons.MVVM
 			ResetCommand = new RelayCommand(Reset);
 
 			foreach (var change in Changes)
-			{
 				if (change is INotifyPropertyChanged notifier)
 					notifier.PropertyChanged += OnChangePropertyChanged;
-			}
 		}
 
 		/// <inheritdoc/>
@@ -173,10 +171,11 @@ namespace LLMDesktopAssistant.Addons.MVVM
 			if (disposing)
 			{
 				foreach (var change in Changes)
-				{
 					if (change is INotifyPropertyChanged notifier)
 						notifier.PropertyChanged -= OnChangePropertyChanged;
-				}
+				foreach (var element in Elements)
+					if (element is IDisposable disposableElement)
+						disposableElement.Dispose();
 			}
 		}
 

@@ -89,8 +89,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				return [];
 
 			var subAgentset = settings.GetEffectiveSubAgentset(chatSettings.Settings);
-			return GetAddonsWithChanges(subAgentset.SubAgentChanges, subAgentset.SubAgentsEnabledByDefault,
-				subAgentset.SubAgentsHiddenByDefault, agent);
+			return GetAddonsWithChanges(subAgentset, agent);
 		}
 	}
 }

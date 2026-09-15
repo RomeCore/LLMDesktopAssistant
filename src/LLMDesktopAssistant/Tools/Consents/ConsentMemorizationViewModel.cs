@@ -102,12 +102,12 @@ public class MemorizedAlwaysItemViewModel : ViewModelBase
 	/// <param name="agentName">The display name of the agent owning the decision.</param>
 	/// <param name="change">The tool change carrying the "always" approval level.</param>
 	/// <param name="onForgotten">The callback invoked after the decision is forgotten.</param>
-	public MemorizedAlwaysItemViewModel(string agentName, ToolChange change, Action onForgotten)
+	public MemorizedAlwaysItemViewModel(string agentName, string toolName, ToolChange change, Action onForgotten)
 	{
 		AgentName = agentName;
 		_change = change;
 		_onForgotten = onForgotten;
-		ToolName = change.Name;
+		ToolName = toolName;
 		Approved = change.ApprovalLevel == ToolApprovalLevel.AlwaysApprove;
 
 		ForgetCommand = new RelayCommand(Forget);
@@ -229,8 +229,8 @@ public class ConsentMemorizationViewModel : ViewModelBase
 
 		AlwaysItems.Clear();
 		foreach (var (agent, _) in _agentManager.ListAgents())
-			foreach (var change in ToolConsentPersister.GetAlwaysChanges(agent, _chatSettings))
-				AlwaysItems.Add(new MemorizedAlwaysItemViewModel(agent.Info.Name, change, Refresh));
+			foreach (var (toolName, change) in ToolConsentPersister.GetAlwaysChanges(agent, _chatSettings))
+				AlwaysItems.Add(new MemorizedAlwaysItemViewModel(agent.Info.Name, toolName, change, Refresh));
 
 		RaisePropertyChanged(nameof(HasSessionItems));
 		RaisePropertyChanged(nameof(HasAlwaysItems));

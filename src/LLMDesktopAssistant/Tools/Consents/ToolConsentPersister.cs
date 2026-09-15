@@ -19,11 +19,11 @@ namespace LLMDesktopAssistant.Tools.Consents
 		public static void MemorizeAlways(ChatAgentDescriptor agent, IChatSettingsService chatSettings, string toolName, bool approved)
 		{
 			var toolset = agent.Tools.GetEffectiveToolset(chatSettings.Settings).GetEffectiveConfiguration();
-			var change = toolset.ToolChanges.FirstOrDefault(c => c.Name == toolName);
+			var change = toolset.Changes.GetValueOrDefault(toolName);
 			if (change == null)
 			{
-				change = new ToolChange { Name = toolName };
-				toolset.ToolChanges.Add(change);
+				change = new ToolChange();
+				toolset.Changes.Add(toolName, change);
 			}
 
 			change.ApprovalLevel = approved ? ToolApprovalLevel.AlwaysApprove : ToolApprovalLevel.AlwaysDisallow;
@@ -37,11 +37,11 @@ namespace LLMDesktopAssistant.Tools.Consents
 		/// <param name="agent">The agent whose toolset is inspected.</param>
 		/// <param name="chatSettings">The chat settings service used to resolve the effective toolset.</param>
 		/// <returns>The "always" tool changes of the agent.</returns>
-		public static IEnumerable<ToolChange> GetAlwaysChanges(ChatAgentDescriptor agent, IChatSettingsService chatSettings)
+		public static IEnumerable<KeyValuePair<string, ToolChange>> GetAlwaysChanges(ChatAgentDescriptor agent, IChatSettingsService chatSettings)
 		{
 			var toolset = agent.Tools.GetEffectiveToolset(chatSettings.Settings).GetEffectiveConfiguration();
-			return toolset.ToolChanges.Where(c =>
-				c.ApprovalLevel is ToolApprovalLevel.AlwaysApprove or ToolApprovalLevel.AlwaysDisallow);
+			return toolset.Changes.Where(c =>
+				c.Value.ApprovalLevel is ToolApprovalLevel.AlwaysApprove or ToolApprovalLevel.AlwaysDisallow);
 		}
 
 		/// <summary>

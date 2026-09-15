@@ -1,9 +1,9 @@
 using Avalonia.Media;
-using LLMDesktopAssistant.Addons;
+
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings;
+namespace LLMDesktopAssistant.Addons.MVVM;
 
 /// <summary>
 /// Represents a single <see cref="AddonDiagnosticCode"/> flag for display in the UI.

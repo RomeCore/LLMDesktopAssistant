@@ -1,5 +1,6 @@
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Loading;
+using LLMDesktopAssistant.Addons.MVVM;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Memory;
@@ -190,13 +191,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 						MaterialIconKind.Cards,
 						() => new ChatSkillsSettingsViewModel(Settings.Skills,
 							Chat.Services.GetRequiredService<IAddonSetCollector<SkillInfo>>(),
+							Chat.Services.GetRequiredService<IAddonCardFactory<SkillInfo, SkillChange>>(),
 							Chat.Services.GetRequiredService<IAddonManagerInvalidator>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.sub_agents"),
 						MaterialIconKind.RobotHappy,
 						() => new ChatSubAgentsSettingsViewModel(Settings.SubAgents,
 							Chat.Services.GetRequiredService<IAddonSetCollector<SubAgentInfo>>(),
-							Chat.Services.GetRequiredService<IAddonSetCollector<SkillInfo>>(),
+							Chat.Services.GetRequiredService<IAddonCardFactory<SubAgentInfo, SubAgentChange>>(),
 							Chat.Services.GetRequiredService<IAddonManagerInvalidator>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.memory"),
@@ -273,9 +275,10 @@ namespace LLMDesktopAssistant.LLM.Settings
 						MaterialIconKind.Cards,
 						() => new AgentSkillSettingsViewModel(
 							descriptor.Skills,
+							Settings,
 							Chat.Services.GetRequiredService<IAddonSetCollector<SkillInfo>>(),
-							Chat.Services.GetRequiredService<IAddonManagerInvalidator>(),
-							Settings)),
+							Chat.Services.GetRequiredService<IAddonCardFactory<SkillInfo, SkillChange>>(),
+							Chat.Services.GetRequiredService<IAddonManagerInvalidator>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.sub_agents"),
 						MaterialIconKind.RobotHappy,
@@ -283,7 +286,7 @@ namespace LLMDesktopAssistant.LLM.Settings
 							descriptor.SubAgents,
 							Settings,
 							Chat.Services.GetRequiredService<IAddonSetCollector<SubAgentInfo>>(),
-							Chat.Services.GetRequiredService<IAddonSetCollector<SkillInfo>>(),
+							Chat.Services.GetRequiredService<IAddonCardFactory<SubAgentInfo, SubAgentChange>>(),
 							Chat.Services.GetRequiredService<IAddonManagerInvalidator>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.memory"),

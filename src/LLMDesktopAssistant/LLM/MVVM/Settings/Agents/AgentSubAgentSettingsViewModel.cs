@@ -1,29 +1,23 @@
 using System.ComponentModel;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
+using LLMDesktopAssistant.Addons.MVVM;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.SubAgents;
-using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
-using LLMDesktopAssistant.Prompting.Skills;
-using LLMDesktopAssistant.Settings;
-using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 
 /// <summary>
-/// ViewModel for the per-agent sub-agent settings: the list of available sub-agents with
-/// per-agent overrides (enabled + model) built on reusable <see cref="SubAgentCardViewModel"/> cards.
+/// ViewModel for the per-agent sub-agent settings: the available sub-agents rendered with the addon cards,
+/// where every card edits the sub-agent overrides of the effective sub-agentset.
 /// </summary>
 [ViewModelFor(typeof(AgentSubAgentSettingsView))]
-public class AgentSubAgentSettingsViewModel : ViewModelBase
+public class AgentSubAgentSettingsViewModel : AddonListViewModel<SubAgentInfo, SubAgentChange>
 {
-	private readonly IAddonSetCollector<SubAgentInfo> _subAgentsetCollector;
-	private readonly IAddonManagerInvalidator _addonsInvalidator;
-	private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
 	private readonly ChatSettings _chatSettings;
-	private ImmutableList<SubAgentCardViewModel> _allCards = [];
+
+	private InheritanceLevelItem _selectedSubAgentChangesInheritance;
 
 	/// <summary>
 	/// Gets the underlying agent sub-agent settings.
@@ -31,137 +25,63 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 	public AgentSubAgentSettings SubAgentSettings { get; }
 
 	/// <summary>
-	/// Gets the effective sub-agentset resolved by the current inheritance level.
+	/// Gets the sub-agentset resolved by the current inheritance level. The cards edit the changes of this set.
 	/// </summary>
 	public SubAgentsetSettings EffectiveSubAgentset => SubAgentSettings.GetEffectiveSubAgentset(_chatSettings);
 
 	/// <summary>
-	/// Gets the effective sub-agent changes resolved by the current inheritance level.
-	/// </summary>
-	public RangeObservableCollection<SubAgentChange> EffectiveSubAgentChanges => EffectiveSubAgentset.SubAgentChanges;
-
-	private InheritanceLevelItem _selectedSubAgentChangesInheritance;
-	/// <summary>
-	/// Gets or sets the inheritance level for the sub-agent changes group.
+	/// Gets or sets the inheritance level of the sub-agentset.
 	/// </summary>
 	public InheritanceLevelItem SelectedSubAgentChangesInheritance
 	{
 		get => _selectedSubAgentChangesInheritance;
 		set
 		{
-			if (SetProperty(ref _selectedSubAgentChangesInheritance, value) && value != null)
+			if (SetProperty(ref _selectedSubAgentChangesInheritance, value) && value is not null)
 				SubAgentSettings.SubAgentsetInheritance = value.Value;
 		}
-	}
-
-	private string _searchText = string.Empty;
-	/// <summary>
-	/// Gets or sets the search text filtering the sub-agents by name, description and tags.
-	/// </summary>
-	public string SearchText
-	{
-		get => _searchText;
-		set
-		{
-			if (SetProperty(ref _searchText, value))
-				ApplyFilter();
-		}
-	}
-
-	private readonly RangeObservableCollection<SubAgentCardViewModel> _subAgentItems = [];
-	/// <summary>
-	/// Gets or sets the filtered list of sub-agent cards with per-agent override settings.
-	/// </summary>
-	public ICollection<SubAgentCardViewModel> SubAgentItems
-	{
-		get => _subAgentItems;
-		set => _subAgentItems.Reset(value);
 	}
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="AgentSubAgentSettingsViewModel"/> class.
 	/// </summary>
 	/// <param name="settings">The agent sub-agent settings.</param>
-	/// <param name="chatSettings">The chat settings used to resolve inherited settings.</param>
-	/// <param name="subAgentsetCollector">The service providing the available sub-agents.</param>
-	/// <param name="skillsetBuilder">The service providing the available skills for link checking.</param>
-	/// <param name="addonsInvalidator">The invalidator used to reload addons before building the list.</param>
+	/// <param name="chatSettings">The chat settings used to resolve the inherited sub-agentset.</param>
+	/// <param name="subAgentsetCollector">The collector that provides the available sub-agents.</param>
+	/// <param name="cardFactory">The factory that builds the sub-agent cards.</param>
+	/// <param name="addonInvalidator">The invalidator used to reload the addons before building the list.</param>
 	public AgentSubAgentSettingsViewModel(AgentSubAgentSettings settings, ChatSettings chatSettings,
-		IAddonSetCollector<SubAgentInfo> subAgentsetCollector, IAddonSetCollector<SkillInfo> skillsetBuilder,
-		IAddonManagerInvalidator addonsInvalidator)
+		IAddonSetCollector<SubAgentInfo> subAgentsetCollector,
+		IAddonCardFactory<SubAgentInfo, SubAgentChange> cardFactory,
+		IAddonManagerInvalidator addonInvalidator)
+		: base(subAgentsetCollector, cardFactory, addonInvalidator)
 	{
 		SubAgentSettings = settings;
 		_chatSettings = chatSettings;
-		_subAgentsetCollector = subAgentsetCollector;
-		_skillsetBuilder = skillsetBuilder;
-		_addonsInvalidator = addonsInvalidator;
-
-		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SubAgentsetInheritance);
+		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(item => item.Value == settings.SubAgentsetInheritance);
 		settings.PropertyChanged += SubAgentSettings_PropertyChanged;
 
-		UpdateSubAgents();
+		Update();
 	}
+
+	/// <inheritdoc/>
+	protected override AddonCardContext<SubAgentInfo, SubAgentChange> CreateContext(SubAgentInfo addon) => new()
+	{
+		Addon = addon,
+		SetConfig = EffectiveSubAgentset,
+		TagClickCommand = TagClickCommand,
+		OnDeleted = Update
+	};
 
 	private void SubAgentSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName != nameof(AgentSubAgentSettings.SubAgentsetInheritance))
 			return;
 
-		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == SubAgentSettings.SubAgentsetInheritance);
+		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(item => item.Value == SubAgentSettings.SubAgentsetInheritance);
 		RaisePropertyChanged(nameof(SelectedSubAgentChangesInheritance));
 		RaisePropertyChanged(nameof(EffectiveSubAgentset));
-		RaisePropertyChanged(nameof(EffectiveSubAgentChanges));
-		UpdateSubAgents();
-	}
-
-	/// <summary>
-	/// Refreshes the list of available sub-agents and rebuilds the cards
-	/// with current per-agent overrides.
-	/// </summary>
-	public void UpdateSubAgents()
-	{
-		_addonsInvalidator.Reload();
-
-		var subAgents = _subAgentsetCollector.GetAvailableAddons().ToList();
-		var subAgentNames = subAgents.Select(s => s.Name).ToHashSet();
-		var skillNames = _skillsetBuilder.GetAvailableAddons().Select(s => s.Name).ToHashSet();
-		var memoryBlockNames = SettingsManager.GetCategory<MemoryBlock>().GetAll().Select(kvp => kvp.Value.Name).ToHashSet();
-		var changes = EffectiveSubAgentChanges.ToDictionary(c => c.Name, c => c);
-
-		_allCards.ForEach(c => c.Dispose());
-		_allCards = subAgents
-			.Where(s => s.Diagnostic?.IsFatal != true)
-			.Select(s =>
-			{
-				changes.TryGetValue(s.Name, out var existingChange);
-				return new SubAgentCardViewModel(
-					s,
-					canToggle: true,
-					change: existingChange,
-					changes: EffectiveSubAgentChanges,
-					settings: EffectiveSubAgentset,
-					linkIssues: SubAgentLinkChecker.Check(s, skillNames, subAgentNames, memoryBlockNames),
-					onTagClick: tag => SearchText = tag,
-					onDeleted: UpdateSubAgents);
-			})
-			.ToImmutableList();
-
-		ApplyFilter();
-	}
-
-	private void ApplyFilter()
-	{
-		var query = SearchText?.Trim() ?? string.Empty;
-		IEnumerable<SubAgentCardViewModel> filtered = _allCards;
-		if (query.Length > 0)
-		{
-			filtered = _allCards.Where(c =>
-				c.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-				c.Description.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-				c.Tags.Any(t => t.Contains(query, StringComparison.OrdinalIgnoreCase)));
-		}
-
-		SubAgentItems = filtered.ToImmutableList();
+		Update();
 	}
 
 	/// <inheritdoc/>
@@ -170,9 +90,6 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 		base.Dispose(disposing);
 
 		if (disposing)
-		{
 			SubAgentSettings.PropertyChanged -= SubAgentSettings_PropertyChanged;
-			_allCards.ForEach(c => c.Dispose());
-		}
 	}
 }

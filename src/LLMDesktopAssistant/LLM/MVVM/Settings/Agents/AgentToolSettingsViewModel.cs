@@ -54,7 +54,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		{
 			_toolset = toolset;
 			_toolInfo = tool;
-			_change = _toolset.ToolChanges.FirstOrDefault(x => x.Name == tool.Name);
+			_change = _toolset.Changes.GetValueOrDefault(tool.Name);
 
 			_toolset.PropertyChanged += Toolset_PropertyChanged;
 
@@ -98,7 +98,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		private void Toolset_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName is nameof(ToolsetConfiguration.ToolsEnabledByDefault) && !EnabledChanged)
+			if (e.PropertyName is nameof(ToolsetConfiguration.EnabledByDefault) && !EnabledChanged)
 				RaisePropertyChanged(nameof(Enabled));
 			if (e.PropertyName is nameof(ToolsetConfiguration.DefaultApprovalLevel) && !ApprovalLevelChanged)
 				RaisePropertyChanged(nameof(ApprovalLevel));
@@ -108,7 +108,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		{
 			if (_change != null)
 			{
-				_toolset.ToolChanges.Remove(_change);
+				_toolset.Changes.Remove(_toolInfo.Name);
 				_change = null;
 				RaisePropertyChanged(nameof(Enabled));
 				RaisePropertyChanged(nameof(EnabledChanged));
@@ -130,11 +130,10 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				_change = new ToolChange
 				{
-					Name = Name,
 					Enabled = null,
 					ApprovalLevel = null
 				};
-				_toolset.ToolChanges.Add(_change);
+				_toolset.Changes.Add(_toolInfo.Name, _change);
 			}
 			return _change;
 		}
@@ -143,7 +142,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		public bool? Enabled
 		{
-			get => IsFixed ? true : (_change?.Enabled ?? _toolInfo.Enabled ?? _toolset.ToolsEnabledByDefault);
+			get => IsFixed ? true : (_change?.Enabled ?? _toolInfo.Enabled ?? _toolset.EnabledByDefault);
 			set
 			{
 				if (IsFixed)

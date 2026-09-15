@@ -1,0 +1,56 @@
+// Универсальная карточка аддона: всё, что рисуют карточки.
+// Ключи 'card.*' — общие для карточек всех типов аддонов, подписи конкретного типа лежат под
+// 'card.<тип аддона>.*' (см. раздел 'card.skills.*' ниже).
+
+%locale: ru-RU
+%namespace: card
+
+// =====================================================
+// === Общее                                        ===
+// =====================================================
+details: Подробнее
+category: Категория
+parameters: Параметры
+parameters.toggle: Показать параметры
+body: Содержимое
+metadata: Метаданные
+metadata.author: Автор
+metadata.compatibility: Совместимость
+metadata.license: Лицензия
+metadata.version: Версия
+tag.filter: Фильтровать по этому тегу
+source.unknown: Неизвестно
+source.template: Шаблон
+source.pack: Пакет аддонов
+actions.open: Открыть файл
+actions.explorer: Показать в проводнике
+actions.delete: Удалить файл
+delete.title: Удалить файл аддона?
+delete.confirm: Файл {0} будет удалён безвозвратно. Это действие нельзя отменить.
+
+// =====================================================
+// === Навыки                                       ===
+// =====================================================
+skills.injection_mode.default: Имя и описание
+skills.injection_mode.full: Полный текст
+skills.tools.badge: {0} инструментов
+skills.tools.allowed: Используются без подтверждения
+skills.tools.available: Доступны, пока навык активен
+skills.tools.disallowed: Запрещены, пока навык активен
+
+// =====================================================
+// === Субагенты                                    ===
+// =====================================================
+sub_agents.tools.badge: {0} инструментов
+sub_agents.skills.badge: {0} навыков
+sub_agents.sub_agents.badge: {0} субагентов
+sub_agents.memory_blocks.badge: {0} блоков памяти
+sub_agents.tools.allowed: Используются без подтверждения
+sub_agents.tools.available: Доступны субагенту
+sub_agents.tools.disallowed: Запрещены субагенту
+sub_agents.skills: Доступные навыки
+sub_agents.sub_agents: Доступные субагенты
+sub_agents.memory_blocks: Блоки памяти
+sub_agents.links.skill: Навык {0} не найден
+sub_agents.links.sub_agent: Субагент {0} не найден
+sub_agents.links.memory_block: Блок памяти {0} не найден

@@ -1,6 +1,5 @@
-using LLMDesktopAssistant.Agents.SubAgents;
 
-namespace LLMDesktopAssistant.LLM.MVVM.Settings;
+namespace LLMDesktopAssistant.Agents.SubAgents;
 
 /// <summary>
 /// The kind of a broken sub-agent dependency.

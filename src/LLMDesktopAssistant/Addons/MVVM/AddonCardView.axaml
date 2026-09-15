@@ -334,7 +334,7 @@
 					<ToggleButton Classes="SmallIconButton"
 												IsVisible="{Binding HasDetails}"
 												IsChecked="{Binding IsDetailsVisible, Mode=TwoWay}"
-												ToolTip.Tip="{loc:Loc addon.card.details}">
+												ToolTip.Tip="{loc:Loc card.details}">
 						<ico:MaterialIcon Kind="CardAccountDetailsOutline" Width="14" Height="14"/>
 					</ToggleButton>
 

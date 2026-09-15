@@ -25,7 +25,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public LocaleKeyBase? ToggleToolTip { get; init; }
 
 		/// <inheritdoc/>
-		public bool IsExpanded
+		public virtual bool IsExpanded
 		{
 			get;
 			set => SetProperty(ref field, value);

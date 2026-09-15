@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				return [];
 
 			var toolset = settings.GetEffectiveToolset(chatSettings.Settings).GetEffectiveConfiguration();
-			return GetAddonsWithChanges(toolset.ToolChanges, toolset.ToolsEnabledByDefault, toolset.ToolsHiddenByDefault, agent);
+			return GetAddonsWithChanges(toolset, agent);
 		}
 
 		protected override void ApplyChange(ToolInfo target, ToolChange change, ChatAgentDescriptor? agent)

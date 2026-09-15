@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
+			 xmlns:cards="using:LLMDesktopAssistant.Addons.MVVM"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ChatSkillsSettingsView"
@@ -16,46 +17,43 @@
 		<CheckBox IsChecked="{Binding SkillSettings.EnableSkills}"
 				  Content="{loc:Loc settings.skills.enable}"/>
 
-		<!-- Separator -->
 		<Rectangle Height="1"
 				   Fill="{DynamicResource DefaultForeground}"
 				   Opacity="0.2"
 				   Margin="0,10"/>
 
-		<!-- ============================================================ -->
-		<!-- AVAILABLE SKILLS                                             -->
-		<!-- ============================================================ -->
+		<!-- Available skills header -->
 		<Grid ColumnDefinitions="*,Auto,Auto">
 			<TextBlock Grid.Column="0"
-							   Text="{loc:Loc settings.skills.available}"
-							   FontSize="{DynamicResource FontSizeL}"
-							   FontWeight="Bold"
-							   VerticalAlignment="Center"/>
+					   Text="{loc:Loc settings.skills.available}"
+					   FontSize="{DynamicResource FontSizeL}"
+					   FontWeight="Bold"
+					   VerticalAlignment="Center"/>
 
 			<Button Grid.Column="1"
-							Command="{Binding CreateSkillCommand}"
-							Classes="IconButton"
-							Margin="0,0,4,0"
-							ToolTip.Tip="{loc:Loc settings.skills.create}">
+					Command="{Binding CreateSkillCommand}"
+					Classes="IconButton"
+					Margin="0,0,4,0"
+					ToolTip.Tip="{loc:Loc settings.skills.create}">
 				<ico:MaterialIcon Kind="FilePlusOutline"/>
 			</Button>
 
 			<Button Grid.Column="2"
-							Command="{Binding RefreshSkillsCommand}"
-							Classes="IconButton"
-							ToolTip.Tip="{loc:Loc settings.skills.refresh}">
+					Command="{Binding RefreshCommand}"
+					Classes="IconButton"
+					ToolTip.Tip="{loc:Loc settings.skills.refresh}">
 				<ico:MaterialIcon Kind="Refresh"/>
 			</Button>
 		</Grid>
 
 		<TextBlock Text="{loc:Loc settings.skills.available.hint}"
-						   Opacity="0.6"
-						   TextWrapping="Wrap"/>
+				   Opacity="0.6"
+				   TextWrapping="Wrap"/>
 
 		<!-- Search -->
 		<TextBox Text="{Binding SearchText, Mode=TwoWay}"
-						 PlaceholderText="{loc:Loc settings.skills.search.placeholder}"
-						 IsEnabled="{Binding SkillSettings.EnableSkills}">
+				 PlaceholderText="{loc:Loc settings.skills.search.placeholder}"
+				 IsEnabled="{Binding SkillSettings.EnableSkills}">
 			<TextBox.InnerLeftContent>
 				<ico:MaterialIcon Kind="TextBoxSearch" Width="16" Height="16" Margin="6,0" VerticalAlignment="Center" Opacity="0.5"/>
 			</TextBox.InnerLeftContent>
@@ -63,38 +61,26 @@
 
 		<!-- Empty state -->
 		<TextBlock Text="{loc:Loc settings.skills.empty}"
-						   Opacity="0.5"
-						   TextWrapping="Wrap"
-						   IsVisible="{Binding AvailableSkills.Count, Converter={StaticResource InverseBooleanConverter}}"/>
-		
+				   Opacity="0.5"
+				   TextWrapping="Wrap"
+				   IsVisible="{Binding Items.Count, Converter={StaticResource InverseBooleanConverter}}"/>
+
 		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-						BorderThickness="1"
-						CornerRadius="4">
+				BorderThickness="1"
+				CornerRadius="4">
 			<ScrollViewer MaxHeight="600"
-									  VerticalScrollBarVisibility="Auto"
-									  HorizontalScrollBarVisibility="Disabled">
-				<ItemsControl ItemsSource="{Binding AvailableSkills}"
+						  VerticalScrollBarVisibility="Auto"
+						  HorizontalScrollBarVisibility="Disabled">
+				<ItemsControl ItemsSource="{Binding Items}"
 							  IsEnabled="{Binding SkillSettings.EnableSkills}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
 							<StackPanel Orientation="Vertical" Spacing="8"/>
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="local:SkillCardViewModel">
-							<local:SkillCardView/>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 			</ScrollViewer>
 		</Border>
-
-		<!-- Separator -->
-		<Rectangle Height="1"
-						   Fill="{DynamicResource DefaultForeground}"
-						   Opacity="0.2"
-						   Margin="0,10"/>
-
 
 	</StackPanel>
 

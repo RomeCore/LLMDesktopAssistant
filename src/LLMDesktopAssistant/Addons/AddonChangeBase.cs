@@ -4,12 +4,6 @@ namespace LLMDesktopAssistant.Addons
 {
 	public class AddonChangeBase : NotifyPropertyChanged
 	{
-		public string Name
-		{
-			get;
-			set => SetProperty(ref field, value);
-		} = string.Empty;
-
 		public bool? Enabled
 		{
 			get;

@@ -79,7 +79,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				return [];
 
 			var skillset = settings.GetEffectiveSkillset(chatSettings.Settings);
-			return GetAddonsWithChanges(skillset.SkillChanges, skillset.SkillsEnabledByDefault, skillset.SkillsHiddenByDefault, agent);
+			return GetAddonsWithChanges(skillset, agent);
 		}
 	}
 }

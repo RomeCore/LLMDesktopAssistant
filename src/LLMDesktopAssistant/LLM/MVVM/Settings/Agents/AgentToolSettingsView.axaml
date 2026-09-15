@@ -279,10 +279,19 @@
 							 Fill="{DynamicResource DefaultForeground}"
 							 Opacity="0.2"/>
 
-		<CheckBox IsChecked="{Binding EffectiveToolsetConfiguration.ToolsEnabledByDefault, Mode=TwoWay}"
+		<CheckBox IsChecked="{Binding EffectiveToolsetConfiguration.EnabledByDefault, Mode=TwoWay}"
 							Content="{loc:Loc toolset.tools_enabled_by_default}"/>
 
 		<TextBlock Text="{loc:Loc toolset.tools_enabled_by_default.hint}"
+							 Opacity="0.5"
+							 FontSize="11"
+							 Margin="24,0,0,4"
+							 TextWrapping="Wrap"/>
+		
+		<CheckBox IsChecked="{Binding EffectiveToolsetConfiguration.HiddenByDefault, Mode=TwoWay}"
+							Content="{loc:Loc toolset.tools_hidden_by_default}"/>
+
+		<TextBlock Text="{loc:Loc toolset.tools_hidden_by_default.hint}"
 							 Opacity="0.5"
 							 FontSize="11"
 							 Margin="24,0,0,4"

@@ -1,25 +1,23 @@
 using System.ComponentModel;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
+using LLMDesktopAssistant.Addons.MVVM;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Prompting.Skills;
-using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 
 /// <summary>
-/// ViewModel for the per-agent skill settings: the list of available skills with
-/// per-agent overrides (enabled + injection mode) built on reusable <see cref="SkillCardViewModel"/> cards.
+/// ViewModel for the per-agent skill settings: the available skills rendered with the addon cards,
+/// where every card edits the skill overrides of the effective skillset.
 /// </summary>
 [ViewModelFor(typeof(AgentSkillSettingsView))]
-public class AgentSkillSettingsViewModel : ViewModelBase
+public class AgentSkillSettingsViewModel : AddonListViewModel<SkillInfo, SkillChange>
 {
-	private readonly IAddonSetCollector<SkillInfo> _skillsetBuilder;
-	private readonly IAddonManagerInvalidator _addonsInvalidator;
 	private readonly ChatSettings _chatSettings;
-	private ImmutableList<SkillCardViewModel> _allCards = [];
+
+	private InheritanceLevelItem _selectedSkillChangesInheritance;
 
 	/// <summary>
 	/// Gets the underlying agent skill settings.
@@ -27,129 +25,63 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 	public AgentSkillSettings SkillSettings { get; }
 
 	/// <summary>
-	/// Gets the effective skillset resolved by the current inheritance level.
+	/// Gets the skillset resolved by the current inheritance level. The cards edit the changes of this set.
 	/// </summary>
 	public SkillsetSettings EffectiveSkillset => SkillSettings.GetEffectiveSkillset(_chatSettings);
 
 	/// <summary>
-	/// Gets the effective skill changes resolved by the current inheritance level.
-	/// </summary>
-	public RangeObservableCollection<SkillChange> EffectiveSkillChanges => EffectiveSkillset.SkillChanges;
-
-	private InheritanceLevelItem _selectedSkillChangesInheritance;
-	/// <summary>
-	/// Gets or sets the inheritance level for the skill changes group.
+	/// Gets or sets the inheritance level of the skillset.
 	/// </summary>
 	public InheritanceLevelItem SelectedSkillChangesInheritance
 	{
 		get => _selectedSkillChangesInheritance;
 		set
 		{
-			if (SetProperty(ref _selectedSkillChangesInheritance, value) && value != null)
+			if (SetProperty(ref _selectedSkillChangesInheritance, value) && value is not null)
 				SkillSettings.SkillsetInheritance = value.Value;
 		}
-	}
-
-	private string _searchText = string.Empty;
-	/// <summary>
-	/// Gets or sets the search text filtering the skills by name, description and tags.
-	/// </summary>
-	public string SearchText
-	{
-		get => _searchText;
-		set
-		{
-			if (SetProperty(ref _searchText, value))
-				ApplyFilter();
-		}
-	}
-
-	private RangeObservableCollection<SkillCardViewModel> _skillItems = [];
-	/// <summary>
-	/// Gets or sets the filtered list of skill cards with per-agent override settings.
-	/// </summary>
-	public ICollection<SkillCardViewModel> SkillItems
-	{
-		get => _skillItems;
-		set => _skillItems.Reset(value);
 	}
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="AgentSkillSettingsViewModel"/> class.
 	/// </summary>
 	/// <param name="settings">The agent skill settings.</param>
-	/// <param name="skillsetBuilder">The service providing the available skills.</param>
-	/// <param name="chatSettings">The chat settings used to resolve inherited settings.</param>
-	public AgentSkillSettingsViewModel(AgentSkillSettings settings,
-		IAddonSetCollector<SkillInfo> skillsetBuilder, IAddonManagerInvalidator addonsInvalidator, ChatSettings chatSettings)
+	/// <param name="chatSettings">The chat settings used to resolve the inherited skillset.</param>
+	/// <param name="skillsetCollector">The collector that provides the available skills.</param>
+	/// <param name="cardFactory">The factory that builds the skill cards.</param>
+	/// <param name="addonInvalidator">The invalidator used to reload the addons before building the list.</param>
+	public AgentSkillSettingsViewModel(AgentSkillSettings settings, ChatSettings chatSettings,
+		IAddonSetCollector<SkillInfo> skillsetCollector,
+		IAddonCardFactory<SkillInfo, SkillChange> cardFactory,
+		IAddonManagerInvalidator addonInvalidator)
+		: base(skillsetCollector, cardFactory, addonInvalidator)
 	{
 		SkillSettings = settings;
-		_skillsetBuilder = skillsetBuilder;
-		_addonsInvalidator = addonsInvalidator;
 		_chatSettings = chatSettings;
-
-		_selectedSkillChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.SkillsetInheritance);
+		_selectedSkillChangesInheritance = InheritanceLevelItem.AllAgent.First(item => item.Value == settings.SkillsetInheritance);
 		settings.PropertyChanged += SkillSettings_PropertyChanged;
 
-		UpdateSkills();
+		Update();
 	}
+
+	/// <inheritdoc/>
+	protected override AddonCardContext<SkillInfo, SkillChange> CreateContext(SkillInfo addon) => new()
+	{
+		Addon = addon,
+		SetConfig = EffectiveSkillset,
+		TagClickCommand = TagClickCommand,
+		OnDeleted = Update
+	};
 
 	private void SkillSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName != nameof(AgentSkillSettings.SkillsetInheritance))
 			return;
 
-		_selectedSkillChangesInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == SkillSettings.SkillsetInheritance);
+		_selectedSkillChangesInheritance = InheritanceLevelItem.AllAgent.First(item => item.Value == SkillSettings.SkillsetInheritance);
 		RaisePropertyChanged(nameof(SelectedSkillChangesInheritance));
 		RaisePropertyChanged(nameof(EffectiveSkillset));
-		RaisePropertyChanged(nameof(EffectiveSkillChanges));
-		UpdateSkills();
-	}
-
-	/// <summary>
-	/// Refreshes the list of available skills and rebuilds the cards
-	/// with current per-agent overrides.
-	/// </summary>
-	public void UpdateSkills()
-	{
-		_addonsInvalidator.Reload();
-
-		var allSkills = _skillsetBuilder.GetAvailableAddons();
-		var changes = EffectiveSkillChanges.ToDictionary(c => c.Name, c => c);
-
-		_allCards.ForEach(c => c.Dispose());
-		_allCards = allSkills
-			.Where(s => s.Diagnostic?.IsFatal != true)
-			.Select(s =>
-			{
-				changes.TryGetValue(s.Name, out var existingChange);
-				return new SkillCardViewModel(
-					s,
-					canToggle: true,
-					change: existingChange,
-					changes: EffectiveSkillChanges,
-					settings: EffectiveSkillset,
-					onTagClick: tag => SearchText = tag,
-					onDeleted: UpdateSkills);
-			})
-			.ToImmutableList();
-
-		ApplyFilter();
-	}
-
-	private void ApplyFilter()
-	{
-		var query = SearchText?.Trim() ?? string.Empty;
-		IEnumerable<SkillCardViewModel> filtered = _allCards;
-		if (query.Length > 0)
-		{
-			filtered = _allCards.Where(c =>
-				c.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-				c.Description.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-				c.Tags.Any(t => t.Contains(query, StringComparison.OrdinalIgnoreCase)));
-		}
-
-		SkillItems = filtered.ToImmutableList();
+		Update();
 	}
 
 	/// <inheritdoc/>
@@ -158,9 +90,6 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 		base.Dispose(disposing);
 
 		if (disposing)
-		{
 			SkillSettings.PropertyChanged -= SkillSettings_PropertyChanged;
-			_allCards.ForEach(c => c.Dispose());
-		}
 	}
 }

@@ -13,7 +13,11 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public bool IsShownLeft { get; init; }
 
 		/// <inheritdoc/>
-		public bool IsChanged { get; init; }
+		public virtual bool IsChanged
+		{
+			get;
+			set => SetProperty(ref field, value);
+		}
 
 		/// <summary>
 		/// The callback that removes the override from the addon configuration.
@@ -22,6 +26,6 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public Action? ResetAction { get; init; }
 
 		/// <inheritdoc/>
-		public void Reset() => ResetAction?.Invoke();
+		public virtual void Reset() => ResetAction?.Invoke();
 	}
 }

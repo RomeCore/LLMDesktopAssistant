@@ -4,7 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings"
-			 xmlns:settings="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:cards="using:LLMDesktopAssistant.Addons.MVVM"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.ChatSubAgentsSettingsView"
@@ -17,15 +17,12 @@
 		<CheckBox IsChecked="{Binding SubAgentSettings.EnableSubAgents}"
 				  Content="{loc:Loc settings.sub_agents.enable}"/>
 
-		<!-- Separator -->
 		<Rectangle Height="1"
 				   Fill="{DynamicResource DefaultForeground}"
 				   Opacity="0.2"
 				   Margin="0,10"/>
 
-		<!-- ============================================================ -->
-		<!-- AVAILABLE SUB-AGENTS                                         -->
-		<!-- ============================================================ -->
+		<!-- Available sub-agents header -->
 		<Grid ColumnDefinitions="*,Auto,Auto">
 			<TextBlock Grid.Column="0"
 					   Text="{loc:Loc settings.sub_agents.available}"
@@ -42,9 +39,9 @@
 			</Button>
 
 			<Button Grid.Column="2"
-					Command="{Binding RefreshSubAgentsCommand}"
+					Command="{Binding RefreshCommand}"
 					Classes="IconButton"
-					ToolTip.Tip="{loc:Loc settings.skills.refresh}">
+					ToolTip.Tip="{loc:Loc settings.sub_agents.refresh}">
 				<ico:MaterialIcon Kind="Refresh"/>
 			</Button>
 		</Grid>
@@ -66,26 +63,21 @@
 		<TextBlock Text="{loc:Loc settings.sub_agents.empty}"
 				   Opacity="0.5"
 				   TextWrapping="Wrap"
-				   IsVisible="{Binding AvailableSubAgents.Count, Converter={StaticResource InverseBooleanConverter}}"/>
-		
+				   IsVisible="{Binding Items.Count, Converter={StaticResource InverseBooleanConverter}}"/>
+
 		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
-						BorderThickness="1"
-						CornerRadius="4">
+				BorderThickness="1"
+				CornerRadius="4">
 			<ScrollViewer MaxHeight="600"
-									  VerticalScrollBarVisibility="Auto"
-									  HorizontalScrollBarVisibility="Disabled">
-				<ItemsControl ItemsSource="{Binding AvailableSubAgents}"
-										  IsEnabled="{Binding SubAgentSettings.EnableSubAgents}">
+						  VerticalScrollBarVisibility="Auto"
+						  HorizontalScrollBarVisibility="Disabled">
+				<ItemsControl ItemsSource="{Binding Items}"
+							  IsEnabled="{Binding SubAgentSettings.EnableSubAgents}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
 							<StackPanel Orientation="Vertical" Spacing="8"/>
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="local:SubAgentCardViewModel">
-							<local:SubAgentCardView/>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 			</ScrollViewer>
 		</Border>
