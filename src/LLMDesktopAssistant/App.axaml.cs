@@ -13,6 +13,9 @@ namespace LLMDesktopAssistant
 {
 	public partial class App : Application
 	{
+		private static Action? _onFWIC; // Framework init completed
+		private static bool _FWIC = false;
+
 		/// <summary>
 		/// Gets the current version of the application.
 		/// </summary>
@@ -90,6 +93,21 @@ namespace LLMDesktopAssistant
 			}
 
 			base.OnFrameworkInitializationCompleted();
+
+			_FWIC = true;
+			_onFWIC?.Invoke();
+			_onFWIC = null;
+		}
+
+		public static void OnFrameworkInitializationCompleted(Action action)
+		{
+			if (_FWIC)
+			{
+				action();
+				return;
+			}
+
+			_onFWIC += action;
 		}
 	}
 }
