@@ -9,12 +9,12 @@ namespace LLMDesktopAssistant.Prompting.Skills
 	[Service(typeof(IAddonFileLocator<SkillInfo>))]
 	public class SkillFileLocator : AddonFileLocatorBase<SkillInfo>
 	{
-		protected override string[] Folders => ["skills"];
+		public override string[] Folders => ["skills"];
 
-		protected override string[] Extensions => [".md", ".mdx"];
+		public override string[] Extensions => [".md", ".mdx"];
 
-		protected override bool AllowShortFormat => true;
+		public override bool AllowShortFormat => true;
 
-		protected override string? FullFormatName => "SKILL";
+		public override string? FullFormatName => "SKILL";
 	}
 }

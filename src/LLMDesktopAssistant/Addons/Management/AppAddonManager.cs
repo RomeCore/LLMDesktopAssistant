@@ -15,13 +15,16 @@ namespace LLMDesktopAssistant.Addons.Management
 	{
 		private readonly ConcurrentDictionary<Type, MethodInfo> _genericLoadMethods = [];
 
-		protected override void ReloadCore()
+		protected override void ReloadCore(AddonKind kinds)
 		{
 			var appPacks = appPackLocator.GetEffectivePacks();
 			var packPaths = appPacks.Select(p => new AddonPathInfo(p.Path, null, p)).ToArray();
 
 			foreach (var descriptor in addonTypeDescriptors)
 			{
+				if ((kinds & descriptor.Kind) == 0)
+					continue;
+
 				try
 				{
 					LoadAddonsForType(descriptor.ClrType, new AddonFileLocatorConfiguration

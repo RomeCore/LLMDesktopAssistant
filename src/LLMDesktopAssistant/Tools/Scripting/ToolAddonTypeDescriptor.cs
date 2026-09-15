@@ -7,10 +7,17 @@ namespace LLMDesktopAssistant.Tools.Scripting
 	public class ToolAddonTypeDescriptor : IAddonTypeDescriptor
 	{
 		public string Type => "tools";
+
+		public AddonKind Kind => AddonKind.Tool;
+
 		public Type ClrType => typeof(ToolInfo);
+
 		public bool UseDefaultDiagnosticFactory => true;
+
 		public bool UseDefaultSearchService => true;
+
 		public LocaleKeyBase NameKey => Locale.GetKey("addon.type.tools.name");
+
 		public LocaleKeyBase? DescriptionKey => Locale.GetKey("addon.type.tools.description");
 	}
 }

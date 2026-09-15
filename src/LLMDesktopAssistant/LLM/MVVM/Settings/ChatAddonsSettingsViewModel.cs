@@ -373,8 +373,8 @@ public class ChatAddonsSettingsViewModel : ViewModelBase
 	/// </summary>
 	public void RefreshPacks()
 	{
-		_allPackInfos = (_packLocator?.GetAllPacks() ?? [])
-			.ToImmutableList();
+		_packLocator.Invalidate();
+		_allPackInfos = _packLocator.GetAllPacks().ToImmutableList();
 
 		RefreshPackItems();
 		RefreshPackFilters();

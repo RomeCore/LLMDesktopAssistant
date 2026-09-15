@@ -322,6 +322,7 @@
 
 					<!-- One toggle button per collapsible block (e.g. parameters). -->
 					<ItemsControl ItemsSource="{Binding CollapsibleBlocks}"
+												IsVisible="{Binding CollapsibleBlocks.Count}"
 												ItemTemplate="{StaticResource AddonCardCollapsibleToggleTemplate}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>

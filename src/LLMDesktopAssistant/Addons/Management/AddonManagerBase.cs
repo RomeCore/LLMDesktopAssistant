@@ -2,32 +2,31 @@ namespace LLMDesktopAssistant.Addons.Management
 {
 	public abstract class AddonManagerBase : IAddonManager
 	{
-		private volatile bool _invalid = true;
+		private volatile AddonKind _invalid = AddonKind.All;
 
 		/// <inheritdoc/>
-		public void Reload()
+		public void Reload(AddonKind kinds)
 		{
-			ReloadCore();
-			_invalid = false;
+			ReloadCore(kinds);
+			_invalid &= ~kinds;
 		}
 
 		/// <inheritdoc/>
-		public void Invalidate()
+		public void Invalidate(AddonKind kinds)
 		{
-			_invalid = true;
+			_invalid |= kinds;
 		}
 
 		/// <inheritdoc/>
-		public bool ReloadIfInvalid()
+		public bool ReloadIfInvalid(AddonKind kinds)
 		{
-			if (_invalid)
-			{
-				Reload();
-				return true;
-			}
-			return false;
+			var dirty = _invalid & kinds;
+			if (dirty == 0)
+				return false;
+			Reload(dirty);
+			return true;
 		}
 
-		protected abstract void ReloadCore();
+		protected abstract void ReloadCore(AddonKind kinds);
 	}
 }

@@ -5,21 +5,17 @@ namespace LLMDesktopAssistant.Addons.Loading
 {
 	public abstract class AddonFileLocatorBase<T> : IAddonFileLocator<T>
 	{
-		/// <summary>
-		/// Gets the folder names to search for addons.
-		/// Examples: 'skills', 'agents', 'tools'.
-		/// </summary>
-		protected abstract string[] Folders { get; }
+		/// <inheritdoc/>
+		public abstract string[] Folders { get; }
 
-		/// <summary>
-		/// Gets the file extensions to search for addons (with or without a dot).
-		/// Examples: '.md', '.txt', '.llt', '.hbs', '.lua', '.py'.
-		/// </summary>
-		/// <remarks>
-		/// IMPORTANT: These extensions should be placed in a specific order based on their priority.
-		/// First extensions have higher priority than later ones.
-		/// </remarks>
-		protected abstract string[] Extensions { get; }
+		/// <inheritdoc/>
+		public abstract string[] Extensions { get; }
+
+		/// <inheritdoc/>
+		public abstract bool AllowShortFormat { get; }
+
+		/// <inheritdoc/>
+		public abstract string? FullFormatName { get; }
 
 		/// <summary>
 		/// Whether use a name deduplication mechanism to avoid loading duplicate addons.
@@ -29,19 +25,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 		/// </summary>
 		protected virtual bool UseNameDeduplication => true;
 
-		/// <summary>
-		/// Gets whether to allow short format names for addons.
-		/// </summary>
-		protected abstract bool AllowShortFormat { get; }
-
-		/// <summary>
-		/// Gets the full format name of the addon file without extension.
-		/// If provided, the locator will try to search for '.agents/folder_name/addon_name/FORMAT_NAME.ext'.
-		/// If not provided, the locator won't search for a full format.
-		/// Examples: 'SKILL' (for SKILL.md or SKILL.mdx), 'AGENT', 'BLOCK'
-		/// </summary>
-		protected abstract string? FullFormatName { get; }
-
+		/// <inheritdoc/>
 		public IEnumerable<AddonPathInfo> LocateFiles(AddonFileLocatorConfiguration config)
 		{
 			var folders = new List<AddonPathInfo>();

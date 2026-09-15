@@ -128,14 +128,14 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToArray();
 			generalContext["assistant_nickname"] = effectivePersona.Nickname;
-			generalContext["skills"] = skillsetBuilder.GetAddonsForAgent(agent).Select(s => new
+			generalContext["skills"] = skillsetBuilder.GetAddonsForAgent(agent).Where(s => !(s.Hidden ?? false)).Select(s => new
 			{
 				name = s.Name,
 				description = s.Description,
 				path = s.Path,
 				body = s.InjectionMode is SkillInjectionMode.Full ? s.BodyGetter(s) : null
 			});
-			generalContext["sub_agents"] = subAgentsetCollector.GetAddonsForAgent(agent).Select(s => new
+			generalContext["sub_agents"] = subAgentsetCollector.GetAddonsForAgent(agent).Where(s => !(s.Hidden ?? false)).Select(s => new
 			{
 				name = s.Name,
 				description = s.Description

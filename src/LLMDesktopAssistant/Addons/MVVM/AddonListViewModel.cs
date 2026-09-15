@@ -119,6 +119,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		private readonly IAddonSetCollector<TAddon> _collector;
 		private readonly IAddonCardFactory<TAddon, TChange> _factory;
 		private readonly IAddonManagerInvalidator _invalidator;
+		private readonly AddonKind _kind;
 		private readonly IAddonSearchService<TAddon>? _searchService;
 		private readonly Func<AddonListViewModel<TAddon, TChange>, TAddon, AddonCardContext<TAddon, TChange>>? _contextBuilder;
 
@@ -128,17 +129,19 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// <param name="collector">The collector that provides the addons of the list.</param>
 		/// <param name="factory">The factory that builds the card of an addon.</param>
 		/// <param name="invalidator">The invalidator used to reload the addons before building the list.</param>
+		/// <param name="kind">The kind of addon to list.</param>
 		/// <param name="searchService">The search service used to filter the list by the search query, or
 		/// <see langword="null"/> to fall back to the plain substring match.</param>
 		/// <param name="contextBuilder">The optional builder of the card context, used when the cards need
 		/// a context other than the default one (for example, when they edit the overrides of a set).</param>
 		public AddonListViewModel(IAddonSetCollector<TAddon> collector, IAddonCardFactory<TAddon, TChange> factory,
-			IAddonManagerInvalidator invalidator, IAddonSearchService<TAddon>? searchService = null,
+			IAddonManagerInvalidator invalidator, AddonKind kind, IAddonSearchService<TAddon>? searchService = null,
 			Func<AddonListViewModel<TAddon, TChange>, TAddon, AddonCardContext<TAddon, TChange>>? contextBuilder = null)
 		{
 			_collector = collector;
 			_factory = factory;
 			_invalidator = invalidator;
+			_kind = kind;
 			_searchService = searchService;
 			_contextBuilder = contextBuilder;
 		}
@@ -146,7 +149,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// <inheritdoc/>
 		public override void Update()
 		{
-			_invalidator.Reload();
+			_invalidator.Reload(_kind);
 
 			foreach (var card in Items)
 				card.Card.Dispose();

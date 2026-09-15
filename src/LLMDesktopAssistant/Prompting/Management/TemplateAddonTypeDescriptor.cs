@@ -9,6 +9,8 @@ namespace LLMDesktopAssistant.Prompting.Management
 	{
 		public string Type => "templates";
 
+		public AddonKind Kind => AddonKind.Template;
+
 		public Type ClrType => typeof(ITemplate);
 
 		public bool UseDefaultDiagnosticFactory => false;

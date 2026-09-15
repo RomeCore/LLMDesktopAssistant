@@ -6,19 +6,19 @@ namespace LLMDesktopAssistant.Addons.Management
 	public interface IAddonManager
 	{
 		/// <summary>
-		/// Forces the manager to reload all addons.
+		/// Forces the manager to reload all addons of specified kinds.
 		/// </summary>
-		void Reload();
+		void Reload(AddonKind kinds);
 
 		/// <summary>
-		/// Marks the manager state as invalid (dirty), indicating that it needs to reload all addons.
+		/// Marks the manager state as invalid (dirty), indicating that it needs to reload all addons of specified kinds.
 		/// </summary>
-		void Invalidate();
+		void Invalidate(AddonKind kinds);
 
 		/// <summary>
-		/// Reloads all addons if manager state is invalid (i.e., needs to reload) without forcing a reload.
+		/// Reloads all addons of specified kinds if manager state is invalid (i.e., needs to reload) without forcing a reload.
 		/// </summary>
 		/// <returns><see langword="true"/> if the manager state was invalid and a reload was performed; <see langword="false"/> otherwise.</returns>
-		bool ReloadIfInvalid();
+		bool ReloadIfInvalid(AddonKind kinds);
 	}
 }

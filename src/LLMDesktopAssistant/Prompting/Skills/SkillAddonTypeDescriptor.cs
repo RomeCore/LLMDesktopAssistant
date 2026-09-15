@@ -11,6 +11,8 @@ namespace LLMDesktopAssistant.Prompting.Skills
 	{
 		public string Type => "skills";
 
+		public AddonKind Kind => AddonKind.Skill;
+
 		public Type ClrType => typeof(SkillInfo);
 
 		public bool UseDefaultDiagnosticFactory => true;

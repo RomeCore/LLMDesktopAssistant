@@ -53,7 +53,8 @@ public class ChatSkillsSettingsViewModel : ViewModelBase
 		SkillSettings = settings;
 		CreateSkillCommand = new AsyncRelayCommand(CreateSkillAsync);
 
-		List = new AddonListViewModel<SkillInfo, SkillChange>(skillsetCollector, cardFactory, addonInvalidator, searchService)
+		List = new AddonListViewModel<SkillInfo, SkillChange>(skillsetCollector, cardFactory, addonInvalidator,
+			AddonKind.Skill, searchService)
 		{
 			SearchPlaceholderKey = Locale.GetKey("settings.skills.search.placeholder"),
 			EmptyTextKey = Locale.GetKey("settings.skills.empty")

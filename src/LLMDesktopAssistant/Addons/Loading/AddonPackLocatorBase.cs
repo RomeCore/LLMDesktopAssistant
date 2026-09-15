@@ -10,8 +10,22 @@ namespace LLMDesktopAssistant.Addons.Loading
 	/// </summary>
 	public abstract class AddonPackLocatorBase : IAddonPackLocator
 	{
+		private List<AddonPackInfo>? _cache;
+
 		/// <inheritdoc/>
-		public abstract IEnumerable<AddonPackInfo> GetAllPacks();
+		protected abstract IEnumerable<AddonPackInfo> GetAllPacksCore();
+
+		/// <inheritdoc/>
+		public void Invalidate()
+		{
+			_cache = null;
+		}
+
+		/// <inheritdoc/>
+		public IEnumerable<AddonPackInfo> GetAllPacks()
+		{
+			return _cache ??= [..GetAllPacksCore()];
+		}
 
 		/// <inheritdoc/>
 		public IEnumerable<AddonPackInfo> GetEffectivePacks()

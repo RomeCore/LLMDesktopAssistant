@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Controls.Toasts;
 using LLMDesktopAssistant.Data;
@@ -126,7 +127,7 @@ namespace LLMDesktopAssistant.LLM.Services
 				_cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 				cancellationToken = _cts.Token;
 
-				addonInvalidator.ReloadIfInvalid();
+				addonInvalidator.ReloadIfInvalid(AddonKind.All);
 
 				var agent = agentManager.GetAgentDescriptor(agentId);
 				toolMemorizer.PushTaskAsyncScope();
@@ -202,7 +203,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				var inputMessages = promptBuilder.Build(agent);
 				toolsetCache.Invalidate(agent);
 				// Lul, provider caching is fixed now!
-				var toolset = toolsetCache.ValidTools.Values.Select(t => t.NativeTool).OrderBy(t => t.Name);
+				var toolset = toolsetCache.ValidTools.Values.Where(t => !(t.Hidden ?? false))
+					.Select(t => t.NativeTool).OrderBy(t => t.Name);
 				// Reveal messages that are marked with 'RevealAfterSend' visibility
 				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				var responseMessage = response.Message;

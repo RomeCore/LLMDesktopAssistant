@@ -31,7 +31,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 			OnStateChanged?.Invoke();
 		}
 
-		private void AddonHook_OnReloaded(bool obj)
+		private void AddonHook_OnReloaded(AddonKind kinds, bool obj)
 		{
 			OnStateChanged?.Invoke();
 		}

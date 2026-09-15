@@ -10,10 +10,12 @@ namespace LLMDesktopAssistant.Tools.Scripting
 
 		public ToolFileLocator(IEnumerable<IScriptableToolEngine> engines) => _engines = [.. engines];
 
-		protected override string[] Folders => ["tools"];
+		public override string[] Folders => ["tools"];
 
-		protected override string[] Extensions => field ??= [.. _engines.SelectMany(e => e.Descriptor.Extensions).Distinct()];
-		protected override bool AllowShortFormat => true;
-		protected override string? FullFormatName => null;
+		public override string[] Extensions => field ??= [.. _engines.SelectMany(e => e.Descriptor.Extensions).Distinct()];
+
+		public override bool AllowShortFormat => true;
+
+		public override string? FullFormatName => null;
 	}
 }

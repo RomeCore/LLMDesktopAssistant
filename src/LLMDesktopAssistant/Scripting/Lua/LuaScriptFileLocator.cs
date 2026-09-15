@@ -6,14 +6,14 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	[Service(typeof(IAddonFileLocator<LuaScriptInfo>))]
 	public class LuaScriptFileLocator : AddonFileLocatorBase<LuaScriptInfo>
 	{
-		protected override string[] Extensions => [ ".alua", ".lua" ];
+		public override string[] Extensions => [ ".alua", ".lua" ];
 
-		protected override string[] Folders => [ Path.Combine("scripts", "lua") ];
+		public override string[] Folders => [ Path.Combine("scripts", "lua") ];
 
-		protected override bool AllowShortFormat => true;
+		public override bool AllowShortFormat => true;
+
+		public override string? FullFormatName => null; // Disallow full format
 
 		protected override bool UseNameDeduplication => false;
-
-		protected override string? FullFormatName => null; // Disallow full format
 	}
 }

@@ -10,14 +10,14 @@ namespace LLMDesktopAssistant.Prompting.Management
 	[Service(typeof(IAddonFileLocator<ITemplate>))]
 	public class TemplateFileLocator(ITemplateParser parser) : AddonFileLocatorBase<ITemplate>
 	{
-		protected override string[] Folders => ["templates"];
+		public override string[] Folders => ["templates"];
 
-		protected override string[] Extensions => parser.SupportedExtensions;
+		public override string[] Extensions => parser.SupportedExtensions;
+
+		public override bool AllowShortFormat => true;
+
+		public override string? FullFormatName => null;
 
 		protected override bool UseNameDeduplication => false;
-
-		protected override bool AllowShortFormat => true;
-
-		protected override string? FullFormatName => null;
 	}
 }

@@ -71,8 +71,8 @@ public class AgentSubAgentSettingsViewModel : ViewModelBase
 		_selectedSubAgentChangesInheritance = InheritanceLevelItem.AllAgent.First(item => item.Value == settings.SubAgentsetInheritance);
 		settings.PropertyChanged += SubAgentSettings_PropertyChanged;
 
-		List = new AddonListViewModel<SubAgentInfo, SubAgentChange>(subAgentsetCollector, cardFactory, addonInvalidator, searchService,
-			(list, addon) => new AddonCardContext<SubAgentInfo, SubAgentChange>
+		List = new AddonListViewModel<SubAgentInfo, SubAgentChange>(subAgentsetCollector, cardFactory, addonInvalidator,
+			AddonKind.SubAgent, searchService, (list, addon) => new AddonCardContext<SubAgentInfo, SubAgentChange>
 			{
 				Addon = addon,
 				SetConfig = EffectiveSubAgentset,

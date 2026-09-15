@@ -13,6 +13,11 @@ namespace LLMDesktopAssistant.Addons
 		string Type { get; }
 
 		/// <summary>
+		/// Gets the addon kind value.
+		/// </summary>
+		AddonKind Kind { get; }
+
+		/// <summary>
 		/// Gets the addon CLR type.
 		/// </summary>
 		Type ClrType { get; }

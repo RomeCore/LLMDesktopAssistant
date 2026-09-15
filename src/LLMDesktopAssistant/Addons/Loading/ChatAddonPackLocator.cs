@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 		IChatSettingsService chatSettings
 	) : AddonPackLocatorBase, IChatAddonPackLocator
 	{
-		public override IEnumerable<AddonPackInfo> GetAllPacks()
+		protected override IEnumerable<AddonPackInfo> GetAllPacksCore()
 		{
 			var result = new List<AddonPackInfo>();
 

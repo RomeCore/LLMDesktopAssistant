@@ -3,7 +3,12 @@ namespace LLMDesktopAssistant.Addons.Loading
 	public interface IAddonPackLocator
 	{
 		/// <summary>
-		/// Gets all addon packs information, even not configurable (implicit) packs.
+		/// Invalidates the internal pack cache, causing to recompute for next retrieval.
+		/// </summary>
+		void Invalidate();
+
+		/// <summary>
+		/// Gets all addon packs information, even not configurable packs.
 		/// Used mostly for UI purposes.
 		/// </summary>
 		IEnumerable<AddonPackInfo> GetAllPacks();

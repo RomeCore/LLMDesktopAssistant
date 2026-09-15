@@ -11,6 +11,8 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 	{
 		public string Type => "agents";
 
+		public AddonKind Kind => AddonKind.SubAgent;
+
 		public Type ClrType => typeof(SubAgentInfo);
 
 		public bool UseDefaultDiagnosticFactory => true;

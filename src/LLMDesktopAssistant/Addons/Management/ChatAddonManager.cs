@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.Addons.Management
 	{
 		private readonly ConcurrentDictionary<Type, MethodInfo> _genericLoadMethods = [];
 
-		protected override void ReloadCore()
+		protected override void ReloadCore(AddonKind kinds)
 		{
 			var chatPacks = chatPackLocator.GetEffectivePacks();
 			var packPaths = chatPacks.Select(p => new AddonPathInfo(p.Path, null, p)).ToArray();
@@ -24,6 +24,9 @@ namespace LLMDesktopAssistant.Addons.Management
 			var allAdditionalSources = chatSettings.Settings.Addons.GetEffectiveAddonSources();
 			foreach (var descriptor in addonTypeDescriptors)
 			{
+				if ((kinds & descriptor.Kind) == 0)
+					continue;
+
 				var additionalSources = allAdditionalSources.GetOrAdd(descriptor.Type, type => new());
 				var locatorConfig = new AddonFileLocatorConfiguration
 				{

@@ -53,7 +53,8 @@ public class ChatSubAgentsSettingsViewModel : ViewModelBase
 		SubAgentSettings = settings;
 		CreateSubAgentCommand = new AsyncRelayCommand(CreateSubAgentAsync);
 
-		List = new AddonListViewModel<SubAgentInfo, SubAgentChange>(subAgentsetCollector, cardFactory, addonInvalidator, searchService)
+		List = new AddonListViewModel<SubAgentInfo, SubAgentChange>(subAgentsetCollector, cardFactory, addonInvalidator,
+			AddonKind.SubAgent, searchService)
 		{
 			SearchPlaceholderKey = Locale.GetKey("settings.sub_agents.search.placeholder"),
 			EmptyTextKey = Locale.GetKey("settings.sub_agents.empty")

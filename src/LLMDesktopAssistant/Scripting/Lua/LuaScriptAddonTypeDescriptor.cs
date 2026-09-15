@@ -11,6 +11,8 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	{
 		public string Type => "scripts/lua";
 
+		public AddonKind Kind => AddonKind.LuaScript;
+
 		public Type ClrType => typeof(LuaScriptInfo);
 
 		public bool UseDefaultDiagnosticFactory => true;

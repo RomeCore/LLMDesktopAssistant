@@ -70,8 +70,8 @@ public class AgentSkillSettingsViewModel : ViewModelBase
 		_selectedSkillChangesInheritance = InheritanceLevelItem.AllAgent.First(item => item.Value == settings.SkillsetInheritance);
 		settings.PropertyChanged += SkillSettings_PropertyChanged;
 
-		List = new AddonListViewModel<SkillInfo, SkillChange>(skillsetCollector, cardFactory, addonInvalidator, searchService,
-			(list, addon) => new AddonCardContext<SkillInfo, SkillChange>
+		List = new AddonListViewModel<SkillInfo, SkillChange>(skillsetCollector, cardFactory, addonInvalidator,
+			AddonKind.Skill, searchService, (list, addon) => new AddonCardContext<SkillInfo, SkillChange>
 			{
 				Addon = addon,
 				SetConfig = EffectiveSkillset,

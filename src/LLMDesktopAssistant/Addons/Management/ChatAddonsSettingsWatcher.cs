@@ -13,7 +13,8 @@ namespace LLMDesktopAssistant.Addons.Management
 
 			void AddonsSettings_DeepChanged(object? sender, EventArgs e)
 			{
-				invalidator.Invalidate();
+				// TODO: Invalidate only kinds that changed, but it's too complex for now
+				invalidator.Invalidate(AddonKind.All);
 			}
 
 			appAddonsSettings.DeepChanged += AddonsSettings_DeepChanged;

@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Addons.MVVM;
+using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Services.Configurators
 {
@@ -19,7 +20,7 @@ namespace LLMDesktopAssistant.Services.Configurators
 		{
 			var openFactoryType = typeof(IAddonCardFactory<,>);
 
-			foreach (var implementation in typeof(AddonCardFactoriesConfigurator).Assembly.GetTypes())
+			foreach (var implementation in ReflectionUtility.ObservedTypes)
 			{
 				if (implementation.IsInterface || implementation.IsAbstract || implementation.IsGenericTypeDefinition)
 					continue;

@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.Addons.Loading
 		IAddonPackSearchFoldersProvider foldersProvider
 	) : AddonPackLocatorBase, IAppAddonPackLocator
 	{
-		public override IEnumerable<AddonPackInfo> GetAllPacks()
+		protected override IEnumerable<AddonPackInfo> GetAllPacksCore()
 		{
 			var result = new List<AddonPackInfo>
 			{

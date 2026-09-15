@@ -9,21 +9,23 @@ namespace LLMDesktopAssistant.Addons
 		private readonly RangeObservableCollection<T> _addons = [];
 		private readonly IReactiveAddonLoader<T>[] _loaders;
 		private readonly IAddonManagerInvalidator _invalidator;
+		private readonly AddonKind _kind;
 
 		public ReadOnlyObservableCollection<T> Addons
 		{
 			get
 			{
-				_invalidator.ReloadIfInvalid();
+				_invalidator.ReloadIfInvalid(_kind);
 				return field ??= new(_addons);
 			}
 		}
 
 		public AddonAccessor(IEnumerable<IReactiveAddonLoader<T>> loaders,
-			IAddonManagerInvalidator invalidator)
+			IAddonManagerInvalidator invalidator, IEnumerable<IAddonTypeDescriptor> descriptors)
 		{
 			_loaders = [.. loaders];
 			_invalidator = invalidator;
+			_kind = descriptors.First(d => d.ClrType == typeof(T)).Kind;
 
 			foreach (var loader in _loaders)
 			{

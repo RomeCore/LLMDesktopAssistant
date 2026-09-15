@@ -27,6 +27,8 @@ namespace LLMDesktopAssistant.Services.Configurators
 			{
 				var descriptor = descriptorType.Type.Instantiate<IAddonTypeDescriptor>();
 				services.AddSingleton(descriptor);
+				var fileLocatorType = typeof(IAddonFileLocator<>).MakeGenericType(descriptor.ClrType);
+				services.AddSingleton(typeof(IAddonFileLocator), sp => sp.GetRequiredService(fileLocatorType));
 				AddonServiceRegistration.Register(services, descriptor, isAppScope: true);
 			}
 		}

@@ -8,6 +8,12 @@ namespace LLMDesktopAssistant.Addons.Loading
 		IChatAddonPackLocator chatLocator
 	) : IAddonPackLocator
 	{
+		public void Invalidate()
+		{
+			appLocator.Invalidate();
+			chatLocator.Invalidate();
+		}
+
 		public IEnumerable<AddonPackInfo> GetAllPacks()
 		{
 			return appLocator.GetAllPacks().Concat(chatLocator.GetAllPacks());

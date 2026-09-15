@@ -10,12 +10,12 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 	[Service(typeof(IAddonFileLocator<SubAgentInfo>))]
 	public class SubAgentFileLocator : AddonFileLocatorBase<SubAgentInfo>
 	{
-		protected override string[] Folders => ["agents"];
+		public override string[] Folders => ["agents"];
 
-		protected override string[] Extensions => [".md", ".mdx"];
+		public override string[] Extensions => [".md", ".mdx"];
 
-		protected override bool AllowShortFormat => true;
+		public override bool AllowShortFormat => true;
 
-		protected override string? FullFormatName => "AGENT";
+		public override string? FullFormatName => "AGENT";
 	}
 }
