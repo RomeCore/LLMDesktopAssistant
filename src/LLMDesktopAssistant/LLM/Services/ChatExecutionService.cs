@@ -454,7 +454,8 @@ namespace LLMDesktopAssistant.LLM.Services
 
 					inputMessages = promptBuilder.Build(agent);
 					toolsetCache.Invalidate(agent);
-					toolset = toolsetCache.ValidTools.Values.Select(t => t.NativeTool).OrderBy(t => t.Name);
+					toolset = toolsetCache.ValidTools.Values.Where(t => !(t.Hidden ?? false))
+						.Select(t => t.NativeTool).OrderBy(t => t.Name);
 					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 					responseMessage = response.Message;
 				}

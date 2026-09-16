@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Layout;
+using LLMDesktopAssistant.Converters;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
 using Material.Icons.Avalonia;
@@ -151,7 +152,11 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 				DataContext = this,
 				VerticalAlignment = VerticalAlignment.Center,
 			};
-			toggle.Bind(ToggleSwitch.IsCheckedProperty, new Binding(propertyPath) { Mode = BindingMode.TwoWay });
+			toggle.Bind(ToggleSwitch.IsCheckedProperty, new Binding(propertyPath)
+			{
+				Mode = BindingMode.TwoWay,
+				Converter = isEnabledSwitch ? null : InverseBooleanConverter.Instance
+			});
 			toggle.Bind(InputElement.IsEnabledProperty, new Binding(nameof(CanEdit)));
 
 			if (isEnabledSwitch)
@@ -169,11 +174,11 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			{
 				toggle.OffContent = new MaterialIcon
 				{
-					Kind = MaterialIconKind.Eye
+					Kind = MaterialIconKind.EyeOff
 				};
 				toggle.OnContent = new MaterialIcon
 				{
-					Kind = MaterialIconKind.EyeOff
+					Kind = MaterialIconKind.Eye
 				};
 			}
 			return toggle;

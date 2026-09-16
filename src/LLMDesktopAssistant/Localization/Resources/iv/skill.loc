@@ -40,3 +40,5 @@ source.userprofile: User Profile
 source.workingdirectory: Working Directory
 skills_enabled_by_default: Enable unchanged skills by default
 skills_enabled_by_default.hint: When checked, skills without an explicit per-agent override are enabled by default. Uncheck to disable all unchanged skills.
+skills_hidden_by_default: Hide unchanged skills by default
+skills_hidden_by_default.hint: When checked, skills without an explicit per-agent override are hidden by default.

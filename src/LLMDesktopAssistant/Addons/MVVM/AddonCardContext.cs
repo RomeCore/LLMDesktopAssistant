@@ -30,7 +30,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 
 		public TChange? Change
 		{
-			get;
+			get => field ??= SetConfig?.Changes.GetValueOrDefault(Addon.Name);
 			private set => SetProperty(ref field, value);
 		}
 

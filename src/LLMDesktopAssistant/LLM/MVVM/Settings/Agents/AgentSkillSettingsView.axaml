@@ -61,6 +61,15 @@
 				   Margin="24,0,0,4"
 				   TextWrapping="Wrap"/>
 
+		<CheckBox IsChecked="{Binding EffectiveSkillset.HiddenByDefault, Mode=TwoWay}"
+				  Content="{loc:Loc skill.skills_hidden_by_default}"/>
+
+		<TextBlock Text="{loc:Loc skill.skills_hidden_by_default.hint}"
+				   Opacity="0.5"
+				   FontSize="11"
+				   Margin="24,0,0,4"
+				   TextWrapping="Wrap"/>
+
 		<!-- Search + list -->
 		<ContentControl IsEnabled="{Binding SkillSettings.EnableSkills}">
 					 <cards:AddonListPanelView DataContext="{Binding List}"/>

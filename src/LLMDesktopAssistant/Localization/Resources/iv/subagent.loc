@@ -39,3 +39,5 @@ source.userprofile: User Profile
 source.workingdirectory: Working Directory
 sub_agents_enabled_by_default: Enable unchanged sub-agents by default
 sub_agents_enabled_by_default.hint: When checked, sub-agents without an explicit per-agent override are enabled by default. Uncheck to disable all unchanged sub-agents.
+sub_agents_hidden_by_default: Hide unchanged sub-agents by default
+sub_agents_hidden_by_default.hint: When checked, sub-agents without an explicit per-agent override are hidden by default.

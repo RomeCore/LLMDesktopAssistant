@@ -2,8 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Layout;
-using DocumentFormat.OpenXml.InkML;
-using LLMDesktopAssistant.Utils;
+using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Addons.MVVM.Elements
 {
@@ -29,7 +28,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		public AddonCardEnabledChange(AddonCardContext<TAddon, TChange> context)
 		{
 			_context = context;
-
+			
 			var toggle = new ToggleSwitch
 			{
 				DataContext = this,
@@ -37,6 +36,14 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			};
 			toggle.Bind(ToggleSwitch.IsCheckedProperty, new Binding(nameof(IsEnabled)) { Mode = BindingMode.TwoWay });
 			toggle.Bind(InputElement.IsEnabledProperty, new Binding(nameof(CanEdit)));
+			toggle.Bind(ToggleSwitch.OffContentProperty, new Binding(nameof(LocaleKeyBase.Value))
+			{
+				Source = Locale.GetKey("common.off")
+			});
+			toggle.Bind(ToggleSwitch.OnContentProperty, new Binding(nameof(LocaleKeyBase.Value))
+			{
+				Source = Locale.GetKey("common.on")
+			});
 			Content = toggle;
 
 			if (CanEdit)

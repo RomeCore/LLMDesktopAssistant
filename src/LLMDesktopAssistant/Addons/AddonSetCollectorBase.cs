@@ -69,14 +69,13 @@ namespace LLMDesktopAssistant.Addons
 
 		public virtual IEnumerable<TAddon> GetAddonsForChat()
 		{
-			Log.Warning("GetAddonsForChat not implemented for {0}! Returning all addons. Override if necessary.", GetType());
+			Log.Warning("GetAddons* not implemented for {0}! Returning all addons. Override if necessary.", GetType());
 			return GetAvailableAddons();
 		}
 
 		public virtual IEnumerable<TAddon> GetAddonsForAgent(ChatAgentDescriptor agent)
 		{
-			Log.Warning("GetAddonsForAgent not implemented for {0}! Returning all addons. Override if necessary.", GetType());
-			return GetAvailableAddons();
+			return GetAddonsForChat();
 		}
 
 		protected IEnumerable<TAddon> GetAddonsWithChanges(AddonSetConfigurationBase<TChange> setConfig,
@@ -108,8 +107,17 @@ namespace LLMDesktopAssistant.Addons
 				}
 				else
 				{
-					if (addon.Enabled ?? setConfig.EnabledByDefault)
-						result.Add(addon);
+					if (addon.IsFixed || (addon.Enabled ?? setConfig.EnabledByDefault))
+					{
+						var clone = addon.Clone();
+						clone.Enabled = true;
+						if (addon.IsFixed)
+							clone.Hidden = false;
+						else
+							clone.Hidden = addon.Hidden ?? setConfig.HiddenByDefault;
+						clone.Freeze();
+						result.Add(clone);
+					}
 				}
 			}
 

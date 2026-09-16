@@ -5,6 +5,7 @@
 %namespace: tool
 
 // Tool names
+name.addon-search: Search addons
 name.agent-call: Call agent
 name.agent-callsub: Call sub-agent
 name.agent-describe_image: Describe image
@@ -78,6 +79,7 @@ name.web-search_get_engines: Get avaliable web-search engines
 name.web-status: Check web status
 
 // Tool descriptions
+description.addon-search: Searches the available addons (skills, sub-agents, tools and Lua scripts) by a free-form query and returns the best matches with usage hints.
 description.agent-call: Runs another AI agent with a custom instruction, user message and a set of allowed tools, skills, sub-agents and memory blocks.
 description.agent-callsub: Runs a predefined sub-agent using its name and input.
 description.agent-describe_image: Describes the content of an image using a separate vision-capable AI agent.
@@ -151,6 +153,7 @@ description.web-search_get_engines: Lists available search engines with their su
 description.web-status: Checks whether a website is reachable and reports its HTTP status code, response time, and server details.
 
 // Tool categories
+category.addons: Addons
 category.agents: Agents
 category.database: Database
 category.filesystem: File system

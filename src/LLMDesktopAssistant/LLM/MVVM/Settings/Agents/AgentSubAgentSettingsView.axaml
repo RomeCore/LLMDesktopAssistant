@@ -61,6 +61,15 @@
 				   Margin="24,0,0,4"
 				   TextWrapping="Wrap"/>
 
+		<CheckBox IsChecked="{Binding EffectiveSubAgentset.HiddenByDefault, Mode=TwoWay}"
+				  Content="{loc:Loc subagent.sub_agents_hidden_by_default}"/>
+
+		<TextBlock Text="{loc:Loc subagent.sub_agents_hidden_by_default.hint}"
+				   Opacity="0.5"
+				   FontSize="11"
+				   Margin="24,0,0,4"
+				   TextWrapping="Wrap"/>
+
 		<!-- Search + list -->
 		<ContentControl IsEnabled="{Binding SubAgentSettings.EnableSubAgents}">
 					 <cards:AddonListPanelView DataContext="{Binding List}"/>

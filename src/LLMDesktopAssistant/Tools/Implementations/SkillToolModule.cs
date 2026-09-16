@@ -7,7 +7,7 @@ using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools.Implementations
 {
-	[ToolModule]
+	[ToolModule(chatScoped: true)]
 	public class SkillToolModule : ToolModule
 	{
 		private readonly IAgentManagementService _agentManager;

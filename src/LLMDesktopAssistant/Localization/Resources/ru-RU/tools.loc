@@ -5,6 +5,7 @@
 %namespace: tool
 
 // Tool names
+name.addon-search: Поиск аддонов
 name.agent-call: Вызвать агента
 name.agent-callsub: Вызвать суб-агента
 name.agent-describe_image: Описать изображение
@@ -78,6 +79,7 @@ name.web-search_get_engines: Получить список доступных д
 name.web-status: Проверить веб-статус
 
 // Tool descriptions
+description.addon-search: Ищет доступные аддоны (скиллы, субагенты, инструменты и Lua-скрипты) по произвольному запросу и возвращает лучшие совпадения с подсказками по использованию.
 description.agent-call: Запускает другого ИИ-агента с заданными инструкциями, сообщением пользователя и набором разрешённых инструментов, навыков, субагентов и блоков памяти.
 description.agent-callsub: Запускает другого предварительно сконфигурированного ИИ-агента с заданным сообщением пользователя.
 description.agent-describe_image: Описывает содержимое изображения с помощью отдельного ИИ-агента, способного работать с изображениями.
@@ -151,6 +153,7 @@ description.web-search_get_engines: Показывает список досту
 description.web-status: Проверяет доступность сайта и сообщает код HTTP-статуса, время отклика и сведения о сервере.
 
 // Tool categories
+category.addons: Аддоны
 category.agents: Агенты
 category.database: Базы данных
 category.filesystem: Файловая система
