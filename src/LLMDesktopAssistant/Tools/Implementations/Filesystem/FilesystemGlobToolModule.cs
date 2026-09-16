@@ -32,23 +32,19 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				Name = "fs-glob",
 				Description = """
 					Finds files and directories matching a glob pattern.
-					Glob patterns are file matching patterns similar to those used in bash and .gitignore files.
 
 					Supported pattern syntax:
 					- `*`       Matches any characters except directory separator
 					- `**`      Matches any characters including directory separators (recursive)
-					- `?`       Matches any single character except directory separator
-					- `[abc]`   Matches any character in the set
-					- `[!abc]`  Matches any character not in the set
-					- `{a,b}`   Matches either pattern 'a' or pattern 'b'
+
+					Differences from bash's `glob`:
+					- NO one-character matching like [Aa]
+					- NO one-word matching like {abc,def}
 
 					Examples:
 					- `**/*.cs`               - all C# files recursively
 					- `*.txt`                 - all text files in root only
 					- `src/**/test*`          - files starting with 'test' in any subdirectory of 'src'
-					- `*.{cs,py,js}`          - C#, Python or JavaScript files
-					- `[!A-Z]*.md`            - Markdown files not starting with uppercase letter
-					- `{include,src}/**/*.h`  - header files in 'include' or 'src' directories
 					""",
 				NameKey = Locale.GetKey("tool.name.fs-glob"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-glob"),
