@@ -5,16 +5,21 @@
 	{
 		None = 0,
 
-		All = Skill | SubAgent | Tool | Template | LuaScript,
+		All = Pack | Skill | SubAgent | Tool | Template | LuaScript,
 
-		Skill = 1 << 0,
+		/// <summary>
+		/// The addon pack itself, used in the invalidation methods to invalidate packs along with other addon types.
+		/// </summary>
+		Pack = 1 << 0,
 
-		SubAgent = 1 << 1,
+		Skill = 1 << 1,
 
-		Tool = 1 << 2,
+		SubAgent = 1 << 2,
 
-		Template = 1 << 3,
+		Tool = 1 << 3,
 
-		LuaScript = 1 << 4
+		Template = 1 << 4,
+
+		LuaScript = 1 << 5
 	}
 }

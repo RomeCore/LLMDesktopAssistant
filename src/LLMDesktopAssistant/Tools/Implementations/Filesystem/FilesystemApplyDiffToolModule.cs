@@ -3,6 +3,9 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Utils.Files;
+using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Loading;
+using LLMDesktopAssistant.Addons.Management;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
@@ -11,10 +14,15 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	public class FilesystemApplyDiffToolModule : FileSystemEditBaseToolModule
 	{
 		private readonly IWorkingDirectoryAccessService _fileAccess;
+		private readonly IAddonPathImpactDetector _addonDetector;
+		private readonly IAddonManagerInvalidator _addonInvalidator;
 
-		public FilesystemApplyDiffToolModule(IWorkingDirectoryAccessService fileAccess)
+		public FilesystemApplyDiffToolModule(IWorkingDirectoryAccessService fileAccess,
+			IAddonPathImpactDetector addonDetector, IAddonManagerInvalidator addonInvalidator)
 		{
 			_fileAccess = fileAccess;
+			_addonDetector = addonDetector;
+			_addonInvalidator = addonInvalidator;
 
 			AddTool(new ToolInitializationInfo
 			{
@@ -39,7 +47,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				NameKey = Locale.GetKey("tool.name.fs-apply_diff"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-apply_diff"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
-				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir,
+				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir |
+					ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit,
 				DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
 				SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
 			});
@@ -48,6 +57,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		private class FSApplyDiffSharedContext
 		{
 			public required string Path { get; init; }
+			public required AddonKind AddonKind { get; init; }
 			public required string NewContent { get; init; }
 		}
 
@@ -67,6 +77,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			string path, string? deleteLines = null, string? insertBeforeLine = null, string? insertText = null)
 		{
 			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.ReadWrite, out var isAccessed);
+			var addonKind = _addonDetector.Detect(path, isFile: true, FileOperation.Edit);
 
 			if (!File.Exists(fullPath))
 			{
@@ -77,7 +88,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					StatusIcon = MaterialIconKind.FileDocumentEdit,
 					StatusTitle = $"**{path}**",
 					ExpectedBehaviour = ToolBehaviour.None |
-						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind)
 				};
 			}
 			
@@ -89,6 +101,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				sharedCtx = new FSApplyDiffSharedContext
 				{
 					Path = fullPath,
+					AddonKind = addonKind,
 					NewContent = originalContent
 				};
 
@@ -99,13 +112,15 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					StatusIcon = MaterialIconKind.FileQuestion,
 					StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.fs-edit.changes_none", $"**{path}**"),
 					ExpectedBehaviour = ToolBehaviour.None |
-						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None),
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 				};
 			}
 
 			sharedCtx = new FSApplyDiffSharedContext
 			{
 				Path = fullPath,
+				AddonKind = addonKind,
 				NewContent = newContent
 			};
 
@@ -114,7 +129,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				StatusIcon = MaterialIconKind.FileDocumentEdit,
 				StatusTitle = $"**{path}**",
 				ExpectedBehaviour = ToolBehaviour.FileEdit |
-					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+					AddonKindToolBehaviourConverter.Convert(addonKind)
 			};
 		}
 
@@ -134,6 +150,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			try
 			{
 				var fullPath = sharedCtx?.Path ?? _fileAccess.AccessPath(path, DirectoryAccessMode.ReadWrite);
+				var addonKind = sharedCtx?.AddonKind ?? _addonDetector.Detect(path, isFile: true, FileOperation.Edit);
 
 				if (!File.Exists(fullPath))
 				{
@@ -204,6 +221,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				}
 
 				File.WriteAllText(fullPath!, postProcessResult.NewContent);
+				_addonInvalidator.Invalidate(addonKind);
 
 				var diff = postProcessResult.AppliedDiff;
 				var (removed, added) = diff.GetChangeCounts();

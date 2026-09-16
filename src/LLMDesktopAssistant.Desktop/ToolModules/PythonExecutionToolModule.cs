@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Desktop.Scripting.Python;
 using LLMDesktopAssistant.Desktop.ToolModules.Terminal;
@@ -26,8 +27,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		private readonly PythonHelperService _pythonHelperService;
 
 		public PythonExecutionToolModule(IChatSettingsService chatSettings, IWorkingDirectoryAccessService fileAccess,
-			PythonHelperService pythonHelperService, IProcessLauncher processLauncher)
-			: base(processLauncher)
+			PythonHelperService pythonHelperService, IProcessLauncher processLauncher, IAddonManagerInvalidator addonInvalidator)
+			: base(processLauncher, addonInvalidator)
 		{
 			_chatSettings = chatSettings;
 			_fileAccess = fileAccess;

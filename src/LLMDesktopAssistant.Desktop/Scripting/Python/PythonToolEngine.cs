@@ -1,6 +1,8 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.Scripting;
@@ -47,6 +49,7 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 						{tool.Body}
 						""";
 
+					var addonInvalidator = context.Chat.Services.GetRequiredService<IAddonManagerInvalidator>();
 					var chatSettings = context.Chat.Services.GetRequiredService<IChatSettingsService>().Settings;
 					var workDir = chatSettings.Environment.GetEffectiveWorkingDirectories().GetWorkingDirectory();
 
@@ -58,6 +61,7 @@ namespace LLMDesktopAssistant.Desktop.Scripting.Python
 					{
 						process = _processLauncher.Launch(_pythonHelperService.CreateLaunchParameters(
 							chatSettings.Environment, $"python \"{tempPyFile}\"", "Python Tool", false, true), cancellationToken);
+						addonInvalidator.Invalidate(AddonKind.All);
 
 						int exitCode = await process;
 						return ReactiveToolResult.Create(exitCode == 0, process.Output + $"\nProcess exited with code {exitCode}. Check terminal output above for details.");

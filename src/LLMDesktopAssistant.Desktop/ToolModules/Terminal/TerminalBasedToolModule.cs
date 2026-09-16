@@ -1,5 +1,7 @@
 using System.Collections.Immutable;
 using System.Runtime.InteropServices;
+using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Tools;
 using Serilog;
@@ -13,14 +15,16 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 	public abstract class TerminalBasedToolModule : ToolModule
 	{
 		private readonly IProcessLauncher _processLauncher;
+		private readonly IAddonManagerInvalidator _addonInvalidator;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TerminalBasedToolModule"/> class.
 		/// </summary>
 		/// <param name="processLauncher">The process launcher used to start child processes.</param>
-		protected TerminalBasedToolModule(IProcessLauncher processLauncher)
+		protected TerminalBasedToolModule(IProcessLauncher processLauncher, IAddonManagerInvalidator addonInvalidator)
 		{
 			_processLauncher = processLauncher;
+			_addonInvalidator = addonInvalidator;
 		}
 
 		/// <summary>
@@ -52,6 +56,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules.Terminal
 			try
 			{
 				descriptor = _processLauncher.Launch(parameters.ProcessParameters, cancellationToken);
+				// External process can affect addons potentially
+				_addonInvalidator.Invalidate(AddonKind.All);
 			}
 			catch (Exception ex)
 			{

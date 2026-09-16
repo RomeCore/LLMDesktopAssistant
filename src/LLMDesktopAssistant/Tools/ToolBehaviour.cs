@@ -206,16 +206,22 @@ public enum ToolBehaviour : ulong
 	// ────────────────────────────── Meta ───────────────────────────────────
 
 	/// <summary>
-	/// The tool creates, modifies, or deletes other tools at runtime.
+	/// The tool creates, modifies, or deletes addon packs at runtime.
 	/// Potentially dangerous becaus it can alter the assistant's capabilities on the fly.
 	/// </summary>
-	SkillEdit = 1 << 26,
+	AddonPackEdit = 1 << 26,
 
-	SubAgentEdit = 1 << 27,
+	/// <summary>
+	/// The tool creates, modifies, or deletes prompt-related things (skills, sub-agents, templates) at runtime.
+	/// Potentially dangerous becaus it can alter the assistant's capabilities on the fly.
+	/// </summary>
+	PromptEdit = 1 << 27,
 
-	ToolEdit = 1 << 28,
-
-	ScriptEdit = 1 << 29,
+	/// <summary>
+	/// The tool creates, modifies, or deletes other scripts (including scripted tools) at runtime.
+	/// Potentially dangerous becaus it can alter the assistant's capabilities on the fly.
+	/// </summary>
+	ScriptEdit = 1 << 28,
 
 	// ────────────────────────────── Source ─────────────────────────────────
 
@@ -225,19 +231,19 @@ public enum ToolBehaviour : ulong
 	/// unpredictable behaviour. Treat MCP tools with caution as they
 	/// may access external systems or resources outside this application's control.
 	/// </summary>
-	MCP = (ulong)1 << 61,
+	MCP = 1UL << 61,
 
 	/// <summary>
 	/// The tool is a meta-tool created at runtime by the LLM itself
 	/// (via Lua/Python scripting). Such tools can have arbitrary behaviour
 	/// defined by the LLM and should be carefully monitored.
 	/// </summary>
-	Meta = (ulong)1 << 62,
+	Meta = 1UL << 62,
 
 	/// <summary>
 	/// The tool is an ad-hoc/specifically created tool for concrete task (for example, by ad-hoc
 	/// functions in <see cref="LuaApiAgents"/>). Mostly used for <see cref="IAgentTaskExecutor"/>
 	/// pipeline.
 	/// </summary>
-	AdHoc = (ulong)1 << 63
+	AdHoc = 1UL << 63
 }

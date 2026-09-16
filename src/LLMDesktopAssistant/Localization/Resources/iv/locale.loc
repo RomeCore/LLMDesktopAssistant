@@ -32,4 +32,6 @@ settings: Settings
 help: Help
 create: Create
 error: Error
+on: On
+off: Off
 

@@ -15,7 +15,8 @@ namespace LLMDesktopAssistant.Addons.Management
 			foreach (var hook in hooks)
 				hook.ReloadRequested(kinds, force: true);
 
-			appAddonPackLocator.Invalidate();
+			if (kinds.HasFlag(AddonKind.Pack))
+				appAddonPackLocator.Invalidate();
 			appAddonManager.Reload(kinds);
 
 			foreach (var hook in hooks)
@@ -27,7 +28,8 @@ namespace LLMDesktopAssistant.Addons.Management
 			foreach (var hook in hooks)
 				hook.InvalidationRequested(kinds);
 
-			appAddonPackLocator.Invalidate();
+			if (kinds.HasFlag(AddonKind.Pack))
+				appAddonPackLocator.Invalidate();
 			appAddonManager.Invalidate(kinds);
 		}
 
@@ -39,13 +41,6 @@ namespace LLMDesktopAssistant.Addons.Management
 			if (appAddonManager.ReloadIfInvalid(kinds))
 				foreach (var hook in hooks)
 					hook.Reloaded(kinds, force: false);
-		}
-
-		public void InvalidateOnFileChange(string path)
-		{
-			// TODO: Implement logic to check if the path touches addon files.
-			// For now, just invalidate.
-			Invalidate(AddonKind.All);
 		}
 	}
 }

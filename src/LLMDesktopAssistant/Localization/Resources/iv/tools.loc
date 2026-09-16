@@ -217,8 +217,6 @@ behaviour.readsecrets: Read secrets and sensitive data
 behaviour.readsecrets.hint: The tool may expose sensitive information such as passwords, API keys or tokens.
 behaviour.runterminal: Run in terminal
 behaviour.runterminal.hint: The tool runs commands in an embedded terminal emulator with interactive I/O.
-behaviour.scriptedit: Edit scripts
-behaviour.scriptedit.hint: The tool creates, modifies, or deletes user scripts and other executable files at runtime.
 behaviour.semanticmemoryclear: Semantic memory clear
 behaviour.semanticmemoryclear.hint: The tool clears semantic memory blocks and may cause data loss.
 behaviour.semanticmemorydelete: Semantic memory delete entry
@@ -227,12 +225,12 @@ behaviour.semanticmemoryread: Semantic memory read
 behaviour.semanticmemoryread.hint: Tool can read facts and logs from semantic memory.
 behaviour.semanticmemorywrite: Semantic memory write
 behaviour.semanticmemorywrite.hint: Tool can write facts and logs to semantic memory.
-behaviour.skilledit: Edit skills
-behaviour.skilledit.hint: The tool creates, modifies, or deletes skills at runtime.
-behaviour.subagentedit: Edit sub-agents
-behaviour.subagentedit.hint: The tool creates, modifies, or deletes sub-agent definitions at runtime.
-behaviour.tooledit: Edit tools
-behaviour.tooledit.hint: The tool creates, modifies, or deletes tool definitions at runtime.
+behaviour.addonpackedit: Edit addon packs
+behaviour.addonpackedit.hint: The tool touches, creates, modifies, or deletes addon packs at runtime.
+behaviour.promptedit: Edit prompts
+behaviour.promptedit.hint: The tool creates, modifies, or deletes prompt definitions (skills, sub-agents, templates) at runtime.
+behaviour.scriptedit: Edit scripts
+behaviour.scriptedit.hint: The tool creates, modifies, or deletes scripts and other executable files (including tools) at runtime.
 behaviour.userinteraction: User interaction (forms, confirmations)
 behaviour.userinteraction.hint: The tool requires user input via forms, confirmations, file pickers, etc.
 behaviour.workdirchange: Change working directory

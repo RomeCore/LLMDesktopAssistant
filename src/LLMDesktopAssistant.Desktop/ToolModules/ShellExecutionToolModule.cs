@@ -8,6 +8,7 @@ using LLMDesktopAssistant.Tools.Specifiers;
 
 using Material.Icons;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Addons.Management;
 
 namespace LLMDesktopAssistant.Desktop.ToolModules
 {
@@ -17,7 +18,8 @@ namespace LLMDesktopAssistant.Desktop.ToolModules
 		private readonly IWorkingDirectoryAccessService _wdAccess;
 
 		public ShellExecutionToolModule(IWorkingDirectoryAccessService wdAccess,
-			IProcessLauncher processLauncher) : base(processLauncher)
+			IProcessLauncher processLauncher, IAddonManagerInvalidator addonInvalidator)
+			: base(processLauncher, addonInvalidator)
 		{
 			_wdAccess = wdAccess;
 

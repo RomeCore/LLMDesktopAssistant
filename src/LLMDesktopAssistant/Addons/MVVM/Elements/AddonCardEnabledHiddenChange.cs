@@ -2,6 +2,9 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Layout;
+using LLMDesktopAssistant.Localization;
+using Material.Icons;
+using Material.Icons.Avalonia;
 
 namespace LLMDesktopAssistant.Addons.MVVM.Elements
 {
@@ -33,8 +36,8 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 				Spacing = 4,
 				Children =
 				{
-					CreateSwitch(nameof(IsEnabled)),
-					CreateSwitch(nameof(IsHidden)),
+					CreateSwitch(nameof(IsEnabled), true),
+					CreateSwitch(nameof(IsHidden), false),
 				},
 			};
 
@@ -141,7 +144,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			SyncIsChanged();
 		}
 
-		private ToggleSwitch CreateSwitch(string propertyPath)
+		private ToggleSwitch CreateSwitch(string propertyPath, bool isEnabledSwitch)
 		{
 			var toggle = new ToggleSwitch
 			{
@@ -150,6 +153,29 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			};
 			toggle.Bind(ToggleSwitch.IsCheckedProperty, new Binding(propertyPath) { Mode = BindingMode.TwoWay });
 			toggle.Bind(InputElement.IsEnabledProperty, new Binding(nameof(CanEdit)));
+
+			if (isEnabledSwitch)
+			{
+				toggle.Bind(ToggleSwitch.OffContentProperty, new Binding(nameof(LocaleKeyBase.Value))
+				{
+					Source = Locale.GetKey("common.off")
+				});
+				toggle.Bind(ToggleSwitch.OnContentProperty, new Binding(nameof(LocaleKeyBase.Value))
+				{
+					Source = Locale.GetKey("common.on")
+				});
+			}
+			else
+			{
+				toggle.OffContent = new MaterialIcon
+				{
+					Kind = MaterialIconKind.Eye
+				};
+				toggle.OnContent = new MaterialIcon
+				{
+					Kind = MaterialIconKind.EyeOff
+				};
+			}
 			return toggle;
 		}
 	}

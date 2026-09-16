@@ -217,8 +217,6 @@ behaviour.readsecrets: Чтение секретов и конфиденциал
 behaviour.readsecrets.hint: Инструмент может раскрыть пароли, API-ключи или токены.
 behaviour.runterminal: Запуск в терминале
 behaviour.runterminal.hint: Инструмент запускает команды во встроенном терминале с интерактивным вводом/выводом.
-behaviour.scriptedit: Изменение скриптов
-behaviour.scriptedit.hint: Инструмент создаёт, изменяет или удаляет пользовательские скрипты и другие исполняемые файлы во время выполнения.
 behaviour.semanticmemoryclear: Очистка семантической памяти
 behaviour.semanticmemoryclear.hint: Инструмент очищает блоки семантической памяти и может привести к потере данных.
 behaviour.semanticmemorydelete: Удаление вхождений семантической памяти
@@ -227,12 +225,12 @@ behaviour.semanticmemoryread: Чтение семантической памят
 behaviour.semanticmemoryread.hint: Инструмент может читать факты и логи из семантической памяти.
 behaviour.semanticmemorywrite: Запись в семантическую память
 behaviour.semanticmemorywrite.hint: Инструмент может записывать факты и логи в семантическую память.
-behaviour.skilledit: Изменение навыков
-behaviour.skilledit.hint: Инструмент создаёт, изменяет или удаляет навыки во время выполнения.
-behaviour.subagentedit: Изменение субагентов
-behaviour.subagentedit.hint: Инструмент создаёт, изменяет или удаляет определения субагентов во время выполнения.
-behaviour.tooledit: Изменение инструментов
-behaviour.tooledit.hint: Инструмент создаёт, изменяет или удаляет определения инструментов во время выполнения.
+behaviour.addonpackedit: Изменение паков аддонов
+behaviour.addonpackedit.hint: Инструмент касается, создаёт, изменяет или удаляет паки аддонов во время выполнения.
+behaviour.promptedit: Изменение промптов
+behaviour.promptedit.hint: Инструмент создаёт, изменяет или удаляет определения промптов (скиллы, суб-агенты, шаблоны) во время выполнения.
+behaviour.scriptedit: Изменение скриптов
+behaviour.scriptedit.hint: Инструмент создаёт, изменяет или удаляет скрипты и другие исполняемые файлы (в том числе инструменты) во время выполнения.
 behaviour.userinteraction: Взаимодействие с пользователем
 behaviour.userinteraction.hint: Инструмент требует ввода от пользователя через формы, подтверждения, выбор файлов и т.д.
 behaviour.workdirchange: Смена рабочей директории

@@ -17,8 +17,11 @@ namespace LLMDesktopAssistant.Addons.Management
 			foreach (var hook in hooks)
 				hook.ReloadRequested(kinds, force: true);
 
-			appAddonPackLocator.Invalidate();
-			chatAddonPackLocator.Invalidate();
+			if (kinds.HasFlag(AddonKind.Pack))
+			{
+				appAddonPackLocator.Invalidate();
+				chatAddonPackLocator.Invalidate();
+			}
 			appAddonManager.Reload(kinds);
 			chatAddonManager.Reload(kinds);
 
@@ -31,8 +34,11 @@ namespace LLMDesktopAssistant.Addons.Management
 			foreach (var hook in hooks)
 				hook.InvalidationRequested(kinds);
 
-			appAddonPackLocator.Invalidate();
-			chatAddonPackLocator.Invalidate();
+			if (kinds.HasFlag(AddonKind.Pack))
+			{
+				appAddonPackLocator.Invalidate();
+				chatAddonPackLocator.Invalidate();
+			}
 			appAddonManager.Invalidate(kinds);
 			chatAddonManager.Invalidate(kinds);
 		}
@@ -48,13 +54,6 @@ namespace LLMDesktopAssistant.Addons.Management
 			if (appReloaded || chatReloaded)
 				foreach (var hook in hooks)
 					hook.Reloaded(kinds, force: false);
-		}
-
-		public void InvalidateOnFileChange(string path)
-		{
-			// TODO: Implement logic to check if the path touches addon files.
-			// For now, just invalidate.
-			Invalidate(AddonKind.All);
 		}
 	}
 }

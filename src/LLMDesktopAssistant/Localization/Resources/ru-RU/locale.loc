@@ -27,4 +27,5 @@ settings: Настройки
 help: Справка
 create: Создать
 error: Ошибка
-
+on: Вкл.
+off: Выкл.

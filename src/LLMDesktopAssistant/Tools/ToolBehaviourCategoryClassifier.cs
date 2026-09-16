@@ -42,8 +42,7 @@ public static class ToolBehaviourCategoryClassifier
 
 			ToolBehaviour.AgentExecution => ToolBehaviourCategory.Agents,
 
-			ToolBehaviour.SkillEdit or ToolBehaviour.SubAgentEdit or ToolBehaviour.ToolEdit
-				or ToolBehaviour.ScriptEdit => ToolBehaviourCategory.Meta,
+			ToolBehaviour.AddonPackEdit or ToolBehaviour.PromptEdit or ToolBehaviour.ScriptEdit => ToolBehaviourCategory.Meta,
 
 			ToolBehaviour.MCP or ToolBehaviour.Meta or ToolBehaviour.AdHoc => ToolBehaviourCategory.Source,
 

@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Utils.Files
+namespace LLMDesktopAssistant.Utils.Files
 {
 	public static class FileUtils
 	{
@@ -229,6 +229,26 @@
 			}
 
 			return (lines, bytesRead);
+		}
+
+		/// <summary>
+		/// Gets the closest existing ancestor directory of the specified path (walking up from its parent directory),
+		/// or <see langword="null"/> when nothing exists. Used as the point of trust for the addon impact detection
+		/// (see <c>IAddonPathImpactDetector</c>): every directory below the existing ancestor is considered as created
+		/// by the operation.
+		/// </summary>
+		public static string? GetExistingAncestorDirectory(string fullPath)
+		{
+			var directory = Path.GetDirectoryName(fullPath);
+			while (!string.IsNullOrEmpty(directory))
+			{
+				if (Directory.Exists(directory))
+					return directory;
+
+				directory = Path.GetDirectoryName(directory);
+			}
+
+			return null;
 		}
 	}
 }

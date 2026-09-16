@@ -16,10 +16,5 @@
 		/// Reloads the managers if they are currently invalid.
 		/// </summary>
 		void ReloadIfInvalid(AddonKind kinds);
-
-		/// <summary>
-		/// Invalidates the managers if the specified path potentially touches addon files.
-		/// </summary>
-		void InvalidateOnFileChange(string path);
 	}
 }

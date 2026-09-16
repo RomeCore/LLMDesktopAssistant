@@ -6,6 +6,9 @@ using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Utils.Files;
 using Material.Icons;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Addons.Loading;
+using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Management;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -13,11 +16,17 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	public class FilesystemToolModule : ToolModule
 	{
 		private readonly IWorkingDirectoryAccessService _fileAccess;
+		private readonly IAddonPathImpactDetector _addonDetector;
+		private readonly IAddonManagerInvalidator _addonInvalidator;
 		private readonly IDocumentReadingService _documentReader;
 
-		public FilesystemToolModule(IWorkingDirectoryAccessService fileAccess, IDocumentReadingService documentReader)
+		public FilesystemToolModule(IWorkingDirectoryAccessService fileAccess,
+			IAddonPathImpactDetector addonDetector, IAddonManagerInvalidator addonInvalidator,
+			IDocumentReadingService documentReader)
 		{
 			_fileAccess = fileAccess;
+			_addonDetector = addonDetector;
+			_addonInvalidator = addonInvalidator;
 			_documentReader = documentReader;
 
 			AddTool(new ToolInitializationInfo
@@ -65,7 +74,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				NameKey = Locale.GetKey("tool.name.fs-write_binary_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-write_binary_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
-				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
+				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit |
+					ToolBehaviour.AccessOutsideWorkdir | ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit
 			});
 
 			AddTool(new ToolInitializationInfo
@@ -77,7 +87,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				NameKey = Locale.GetKey("tool.name.fs-create_directory"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-create_directory"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
-				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
+				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir |
+					ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit
 			});
 
 			AddTool(new ToolInitializationInfo
@@ -89,7 +100,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				NameKey = Locale.GetKey("tool.name.fs-delete_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-delete_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
-				DefaultExpectedBehaviour = ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir
+				DefaultExpectedBehaviour = ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir |
+					ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit
 			});
 
 			AddTool(new ToolInitializationInfo
@@ -101,7 +113,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				NameKey = Locale.GetKey("tool.name.fs-delete_directory"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-delete_directory"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
-				DefaultExpectedBehaviour = ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir
+				DefaultExpectedBehaviour = ToolBehaviour.DirectoryDelete | ToolBehaviour.FileDelete | ToolBehaviour.AccessOutsideWorkdir |
+					ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit
 			});
 
 			AddTool(new ToolInitializationInfo
@@ -113,7 +126,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				NameKey = Locale.GetKey("tool.name.fs-copy_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-copy_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
-				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
+				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir |
+					ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit
 			});
 
 			AddTool(new ToolInitializationInfo
@@ -125,7 +139,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				NameKey = Locale.GetKey("tool.name.fs-copy_directory"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-copy_directory"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
-				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir
+				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir |
+					ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit
 			});
 
 			AddTool(new ToolInitializationInfo
@@ -137,7 +152,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				NameKey = Locale.GetKey("tool.name.fs-rename_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-rename_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
-				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir
+				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.AccessOutsideWorkdir |
+					ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit
 			});
 
 			AddTool(new ToolInitializationInfo
@@ -149,7 +165,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				NameKey = Locale.GetKey("tool.name.fs-move_directory"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-move_directory"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
-				DefaultExpectedBehaviour = ToolBehaviour.DirectoryEdit | ToolBehaviour.AccessOutsideWorkdir
+				DefaultExpectedBehaviour = ToolBehaviour.DirectoryEdit | ToolBehaviour.AccessOutsideWorkdir |
+					ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit
 			});
 		}
 
@@ -457,6 +474,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			public required string FullPath { get; init; }
 			public required byte[] Bytes { get; init; }
+			public required AddonKind AddonKind { get; init; }
 		}
 
 		private PreviewToolExecutionResult PreviewWriteBinaryFile(string path, string hex,
@@ -464,6 +482,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
 			bool fileExisted = File.Exists(fullPath);
+			var addonKind = _addonDetector.Detect(path, isFile: true,
+				fileExisted ? FileOperation.Edit : FileOperation.Create,
+				fileExisted ? null : FileUtils.GetExistingAncestorDirectory(fullPath));
 
 			try
 			{
@@ -471,7 +492,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				ctx = new WriteBinaryFileContext
 				{
 					FullPath = fullPath,
-					Bytes = bytes
+					Bytes = bytes,
+					AddonKind = addonKind
 				};
 				return new PreviewToolExecutionResult
 				{
@@ -480,7 +502,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 						MaterialIconKind.FilePlus,
 					StatusTitle = $"**{path}**",
 					ExpectedBehaviour = (fileExisted ? ToolBehaviour.FileEdit : ToolBehaviour.FileDirectoryCreate) |
-						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind)
 				};
 			}
 			catch (Exception ex)
@@ -490,7 +513,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.FileDocumentError,
 					StatusTitle = $"**{path}**",
-					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = $"Error writing binary file: {ex.Message}"
 				};
@@ -508,15 +532,21 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				string fullPath;
 				byte[] bytes;
+				AddonKind addonKind;
 				if (ctx != null)
 				{
 					fullPath = ctx.FullPath;
 					bytes = ctx.Bytes;
+					addonKind = ctx.AddonKind;
 				}
 				else
 				{
 					fullPath = _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
 					bytes = ParseHex(hex);
+					var fileExistedBeforeWrite = File.Exists(fullPath);
+					addonKind = _addonDetector.Detect(path, isFile: true,
+						fileExistedBeforeWrite ? FileOperation.Edit : FileOperation.Create,
+						fileExistedBeforeWrite ? null : FileUtils.GetExistingAncestorDirectory(fullPath));
 				}
 
 				var dir = Path.GetDirectoryName(fullPath);
@@ -533,6 +563,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					File.WriteAllBytes(fullPath, bytes);
 				}
+				_addonInvalidator.Invalidate(addonKind);
 
 				var fileInfo = new FileInfo(fullPath);
 				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
@@ -562,9 +593,18 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		private PreviewToolExecutionResult PreviewCreateDirectory(string path, [SharedContext] out string fullPath)
+		private class CreateDirectoryContext
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
+			public required string FullPath { get; init; }
+			public required AddonKind AddonKind { get; init; }
+		}
+
+		private PreviewToolExecutionResult PreviewCreateDirectory(string path, [SharedContext] out CreateDirectoryContext? ctx)
+		{
+			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
+			var addonKind = _addonDetector.Detect(path, isFile: false, FileOperation.Create,
+				FileUtils.GetExistingAncestorDirectory(fullPath));
+			ctx = new CreateDirectoryContext { FullPath = fullPath, AddonKind = addonKind };
 
 			if (Directory.Exists(fullPath))
 			{
@@ -582,16 +622,19 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				StatusIcon = MaterialIconKind.FolderPlus,
 				StatusTitle = $"**{path}**",
-				ExpectedBehaviour = (!Directory.Exists(fullPath) ? ToolBehaviour.FileDirectoryCreate : ToolBehaviour.None) |
-					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+				ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate |
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+					AddonKindToolBehaviourConverter.Convert(addonKind)
 			};
 		}
 
-		private ReactiveToolResult CreateDirectory(string path, [SharedContext] string? fullPath = null)
+		private ReactiveToolResult CreateDirectory(string path, [SharedContext] CreateDirectoryContext? ctx = null)
 		{
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
+				var fullPath = ctx?.FullPath ?? _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
+				var addonKind = ctx?.AddonKind ?? _addonDetector.Detect(path, isFile: false, FileOperation.Create,
+					FileUtils.GetExistingAncestorDirectory(fullPath));
 
 				if (Directory.Exists(fullPath))
 				{
@@ -604,6 +647,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				}
 
 				Directory.CreateDirectory(fullPath);
+				_addonInvalidator.Invalidate(addonKind);
 
 				return new ReactiveToolResult
 				{
@@ -623,9 +667,17 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			}
 		}
 
-		private PreviewToolExecutionResult PreviewDeleteFile(string path, [SharedContext] out string? fullPath)
+		private class DeleteFileContext
 		{
-			fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
+			public required string FullPath { get; init; }
+			public required AddonKind AddonKind { get; init; }
+		}
+
+		private PreviewToolExecutionResult PreviewDeleteFile(string path, [SharedContext] out DeleteFileContext? ctx)
+		{
+			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
+			var addonKind = _addonDetector.Detect(path, isFile: true, FileOperation.Delete);
+			ctx = new DeleteFileContext { FullPath = fullPath, AddonKind = addonKind };
 
 			if (!File.Exists(fullPath))
 			{
@@ -644,15 +696,17 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				StatusIcon = MaterialIconKind.Delete,
 				StatusTitle = $"**{path}**",
 				ExpectedBehaviour = ToolBehaviour.FileDelete |
-					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+					AddonKindToolBehaviourConverter.Convert(addonKind)
 			};
 		}
 
-		private ReactiveToolResult DeleteFile(string path, [SharedContext] string? fullPath = null)
+		private ReactiveToolResult DeleteFile(string path, [SharedContext] DeleteFileContext? ctx = null)
 		{
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
+				var fullPath = ctx?.FullPath ?? _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
+				var addonKind = ctx?.AddonKind ?? _addonDetector.Detect(path, isFile: true, FileOperation.Delete);
 
 				if (!File.Exists(fullPath))
 				{
@@ -664,10 +718,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					}.CompleteWithSuccess();
 				}
 
-				var fileInfo = new FileInfo(fullPath);
-				var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
-
 				File.Delete(fullPath);
+				_addonInvalidator.Invalidate(addonKind);
 
 				return new ReactiveToolResult
 				{
@@ -690,12 +742,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		private class DeleteDirectoryContext
 		{
 			public required string FullPath { get; init; }
+			public required AddonKind AddonKind { get; init; }
 		}
 
 		private PreviewToolExecutionResult PreviewDeleteDirectory(string path, [SharedContext] out DeleteDirectoryContext? ctx)
 		{
 			var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.Write, out var isAccessed);
-			ctx = new DeleteDirectoryContext { FullPath = fullPath };
+			var addonKind = _addonDetector.Detect(path, isFile: false, FileOperation.Delete);
+			ctx = new DeleteDirectoryContext { FullPath = fullPath, AddonKind = addonKind };
 
 			if (path == "." || path == "" || path == "/")
 			{
@@ -703,7 +757,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.FolderRemove,
 					StatusTitle = $"**{path}**",
-					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = "Cannot delete the root working directory."
 				};
@@ -715,7 +770,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.FolderQuestion,
 					StatusTitle = $"**{path}**",
-					ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = $"Directory not found: {path}"
 				};
@@ -727,7 +783,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				StatusTitle = $"**{path}**",
 				ExpectedBehaviour = ToolBehaviour.DirectoryDelete |
 					(Directory.GetFileSystemEntries(fullPath).Length > 0 ? ToolBehaviour.FileDelete : ToolBehaviour.None) |
-					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+					(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+					AddonKindToolBehaviourConverter.Convert(addonKind)
 			};
 		}
 
@@ -747,6 +804,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				}
 
 				var fullPath = ctx?.FullPath ?? _fileAccess.AccessPath(path, DirectoryAccessMode.Write);
+				var addonKind = ctx?.AddonKind ?? _addonDetector.Detect(path, isFile: false, FileOperation.Delete);
 
 				if (!Directory.Exists(fullPath))
 				{
@@ -758,9 +816,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					}.CompleteWithSuccess();
 				}
 
-				var dirInfo = new DirectoryInfo(fullPath);
-
 				Directory.Delete(fullPath, recursive: true);
+				_addonInvalidator.Invalidate(addonKind);
 
 				return new ReactiveToolResult
 				{
@@ -784,6 +841,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			public required string FullOldPath { get; init; }
 			public required string FullNewPath { get; init; }
+			public required AddonKind AddonKind { get; init; }
 		}
 
 		private PreviewToolExecutionResult PreviewRenameFile(
@@ -794,7 +852,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, DirectoryAccessMode.Write, out var isOldAccessed);
 			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, DirectoryAccessMode.Write, out var isNewAccessed);
-			ctx = new RenameFileContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
+			var addonKind = _addonDetector.Detect(oldPath, isFile: true, FileOperation.Delete) |
+				_addonDetector.Detect(newPath, isFile: true, FileOperation.Create,
+					FileUtils.GetExistingAncestorDirectory(fullNewPath));
+			ctx = new RenameFileContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath, AddonKind = addonKind };
 
 			if (!File.Exists(fullOldPath))
 			{
@@ -802,7 +863,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.FileQuestion,
 					StatusTitle = $"**{oldPath}**",
-					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = "Source file not found."
 				};
@@ -814,7 +876,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.PencilRemove,
 					StatusTitle = $"**{oldPath}** → **{newPath}**",
-					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = "Destination file already exists."
 				};
@@ -825,7 +888,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				StatusIcon = MaterialIconKind.Pencil,
 				StatusTitle = $"**{oldPath}** → **{newPath}**",
 				ExpectedBehaviour = ToolBehaviour.FileEdit |
-					(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+					(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+					AddonKindToolBehaviourConverter.Convert(addonKind)
 			};
 		}
 
@@ -839,6 +903,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath, DirectoryAccessMode.Write);
 				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath, DirectoryAccessMode.Write);
+				var addonKind = ctx?.AddonKind ??
+					(_addonDetector.Detect(oldPath, isFile: true, FileOperation.Delete) |
+					_addonDetector.Detect(newPath, isFile: true, FileOperation.Create,
+						FileUtils.GetExistingAncestorDirectory(fullNewPath)));
 
 				if (!File.Exists(fullOldPath))
 				{
@@ -864,6 +932,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Directory.CreateDirectory(dir);
 
 				File.Move(fullOldPath, fullNewPath, overwrite);
+				_addonInvalidator.Invalidate(addonKind);
 
 				return new ReactiveToolResult
 				{
@@ -887,6 +956,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			public required string FullOldPath { get; init; }
 			public required string FullNewPath { get; init; }
+			public required AddonKind AddonKind { get; init; }
 		}
 
 		private PreviewToolExecutionResult PreviewMoveDirectory(
@@ -897,7 +967,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, DirectoryAccessMode.Write, out var isOldAccessed);
 			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, DirectoryAccessMode.Write, out var isNewAccessed);
-			ctx = new MoveDirectoryContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
+			var addonKind = _addonDetector.Detect(oldPath, isFile: false, FileOperation.Delete) |
+				_addonDetector.Detect(newPath, isFile: false, FileOperation.Create,
+					FileUtils.GetExistingAncestorDirectory(fullNewPath));
+			ctx = new MoveDirectoryContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath, AddonKind = addonKind };
 
 			if (!Directory.Exists(fullOldPath))
 			{
@@ -905,7 +978,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.FolderQuestion,
 					StatusTitle = $"**{oldPath}**",
-					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = "Source directory not found."
 				};
@@ -917,7 +991,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.PencilRemove,
 					StatusTitle = $"**{oldPath}** → **{newPath}**",
-					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = "Destination directory already exists."
 				};
@@ -928,7 +1003,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				StatusIcon = MaterialIconKind.Folder,
 				StatusTitle = $"**{oldPath}** → **{newPath}**",
 				ExpectedBehaviour = ToolBehaviour.DirectoryEdit |
-				(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+					(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+					AddonKindToolBehaviourConverter.Convert(addonKind)
 			};
 		}
 
@@ -942,6 +1018,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath, DirectoryAccessMode.Write);
 				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath, DirectoryAccessMode.Write);
+				var addonKind = ctx?.AddonKind ??
+					(_addonDetector.Detect(oldPath, isFile: false, FileOperation.Delete) |
+					_addonDetector.Detect(newPath, isFile: false, FileOperation.Create,
+						FileUtils.GetExistingAncestorDirectory(fullNewPath)));
 
 				if (!Directory.Exists(fullOldPath))
 				{
@@ -965,6 +1045,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 
 				Directory.CreateDirectory(Path.GetDirectoryName(fullNewPath)!);
 				Directory.Move(fullOldPath, fullNewPath);
+				_addonInvalidator.Invalidate(addonKind);
 
 				return new ReactiveToolResult
 				{
@@ -988,6 +1069,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			public required string FullOldPath { get; init; }
 			public required string FullNewPath { get; init; }
+			public required AddonKind AddonKind { get; init; }
 		}
 
 		private PreviewToolExecutionResult PreviewCopyFile(
@@ -998,7 +1080,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, DirectoryAccessMode.Write, out var isOldAccessed);
 			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, DirectoryAccessMode.Write, out var isNewAccessed);
-			ctx = new CopyFileContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
+			var destExisted = File.Exists(fullNewPath);
+			var addonKind = _addonDetector.Detect(newPath, isFile: true,
+				destExisted ? FileOperation.Edit : FileOperation.Create,
+				destExisted ? null : FileUtils.GetExistingAncestorDirectory(fullNewPath));
+			ctx = new CopyFileContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath, AddonKind = addonKind };
 
 			if (!File.Exists(fullOldPath))
 			{
@@ -1006,19 +1092,21 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.FileQuestion,
 					StatusTitle = $"**{oldPath}**",
-					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = "Source file not found."
 				};
 			}
 
-			if (File.Exists(fullNewPath) && !overwrite)
+			if (destExisted && !overwrite)
 			{
 				return new PreviewToolExecutionResult
 				{
 					StatusIcon = MaterialIconKind.ContentCopy,
 					StatusTitle = $"**{oldPath}** → **{newPath}**",
-					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = "Destination file already exists."
 				};
@@ -1029,7 +1117,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				StatusIcon = MaterialIconKind.ContentCopy,
 				StatusTitle = $"**{oldPath}** → **{newPath}**",
 				ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate |
-					(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+					(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+					AddonKindToolBehaviourConverter.Convert(addonKind)
 			};
 		}
 
@@ -1043,6 +1132,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath, DirectoryAccessMode.Write);
 				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath, DirectoryAccessMode.Write);
+				var fileExisted = File.Exists(fullNewPath);
+				var addonKind = ctx?.AddonKind ?? _addonDetector.Detect(newPath, isFile: true,
+					fileExisted ? FileOperation.Edit : FileOperation.Create,
+					fileExisted ? null : FileUtils.GetExistingAncestorDirectory(fullNewPath));
 
 				if (!File.Exists(fullOldPath))
 				{
@@ -1054,7 +1147,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					}.CompleteWithError();
 				}
 
-				if (File.Exists(fullNewPath) && !overwrite)
+				if (fileExisted && !overwrite)
 				{
 					return new ReactiveToolResult
 					{
@@ -1068,6 +1161,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Directory.CreateDirectory(dir);
 
 				File.Copy(fullOldPath, fullNewPath, overwrite);
+				_addonInvalidator.Invalidate(addonKind);
 
 				return new ReactiveToolResult
 				{
@@ -1091,6 +1185,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			public required string FullOldPath { get; init; }
 			public required string FullNewPath { get; init; }
+			public required AddonKind AddonKind { get; init; }
 		}
 
 		private PreviewToolExecutionResult PreviewCopyDirectory(
@@ -1101,7 +1196,11 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			var fullOldPath = _fileAccess.CheckedAccessPath(oldPath, DirectoryAccessMode.Write, out var isOldAccessed);
 			var fullNewPath = _fileAccess.CheckedAccessPath(newPath, DirectoryAccessMode.Write, out var isNewAccessed);
-			ctx = new CopyDirectoryContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath };
+			var destExisted = Directory.Exists(fullNewPath);
+			var addonKind = _addonDetector.Detect(newPath, isFile: false,
+				destExisted ? FileOperation.Edit : FileOperation.Create,
+				destExisted ? null : FileUtils.GetExistingAncestorDirectory(fullNewPath));
+			ctx = new CopyDirectoryContext { FullOldPath = fullOldPath, FullNewPath = fullNewPath, AddonKind = addonKind };
 
 			if (!Directory.Exists(fullOldPath))
 			{
@@ -1109,19 +1208,21 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				{
 					StatusIcon = MaterialIconKind.FolderQuestion,
 					StatusTitle = $"**{oldPath}**",
-					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = "Source directory not found."
 				};
 			}
 
-			if (Directory.Exists(fullNewPath) && !overwrite)
+			if (destExisted && !overwrite)
 			{
 				return new PreviewToolExecutionResult
 				{
 					StatusIcon = MaterialIconKind.ContentCopy,
 					StatusTitle = $"**{oldPath}** → **{newPath}**",
-					ExpectedBehaviour = !isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+					ExpectedBehaviour = (!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					InterruptingSuccess = false,
 					InterruptingContent = "Destination directory already exists."
 				};
@@ -1132,7 +1233,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				StatusIcon = MaterialIconKind.ContentCopy,
 				StatusTitle = $"**{oldPath}** → **{newPath}**",
 				ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate |
-					(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+					(!isOldAccessed || !isNewAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+					AddonKindToolBehaviourConverter.Convert(addonKind)
 			};
 		}
 
@@ -1146,6 +1248,10 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			{
 				var fullOldPath = ctx?.FullOldPath ?? _fileAccess.AccessPath(oldPath, DirectoryAccessMode.Write);
 				var fullNewPath = ctx?.FullNewPath ?? _fileAccess.AccessPath(newPath, DirectoryAccessMode.Write);
+				var destExisted = Directory.Exists(fullNewPath);
+				var addonKind = ctx?.AddonKind ?? _addonDetector.Detect(newPath, isFile: false,
+					destExisted ? FileOperation.Edit : FileOperation.Create,
+					destExisted ? null : FileUtils.GetExistingAncestorDirectory(fullNewPath));
 
 				if (!Directory.Exists(fullOldPath))
 				{
@@ -1157,7 +1263,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					}.CompleteWithError();
 				}
 
-				if (Directory.Exists(fullNewPath) && !overwrite)
+				if (destExisted && !overwrite)
 				{
 					return new ReactiveToolResult
 					{
@@ -1176,6 +1282,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					Directory.CreateDirectory(Path.GetDirectoryName(destFile)!);
 					File.Copy(file, destFile, overwrite);
 				}
+
+				_addonInvalidator.Invalidate(addonKind);
 
 				return new ReactiveToolResult
 				{

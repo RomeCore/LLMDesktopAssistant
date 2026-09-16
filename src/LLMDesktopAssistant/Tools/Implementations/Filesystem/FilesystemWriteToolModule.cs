@@ -3,6 +3,9 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Utils.Files;
+using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Loading;
+using LLMDesktopAssistant.Addons.Management;
 
 namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 {
@@ -15,10 +18,15 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 	public class FilesystemWriteToolModule : FileSystemEditBaseToolModule
 	{
 		private readonly IWorkingDirectoryAccessService _fileAccess;
+		private readonly IAddonPathImpactDetector _addonDetector;
+		private readonly IAddonManagerInvalidator _addonInvalidator;
 
-		public FilesystemWriteToolModule(IWorkingDirectoryAccessService fileAccess)
+		public FilesystemWriteToolModule(IWorkingDirectoryAccessService fileAccess,
+			IAddonPathImpactDetector addonDetector, IAddonManagerInvalidator addonInvalidator)
 		{
 			_fileAccess = fileAccess;
+			_addonDetector = addonDetector;
+			_addonInvalidator = addonInvalidator;
 
 			AddTool(new ToolInitializationInfo
 			{
@@ -30,7 +38,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				NameKey = Locale.GetKey("tool.name.fs-write_file"),
 				DescriptionKey = Locale.GetKey("tool.description.fs-write_file"),
 				CategoryKey = Locale.GetKey("tool.category.filesystem"),
-				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir,
+				DefaultExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.FileDirectoryCreate | ToolBehaviour.AccessOutsideWorkdir |
+					ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit,
 				DefaultSelfHandledDecisions = ToolPolicyDecision.Approve | ToolPolicyDecision.Ask,
 				SynchronizationGroup = FileSystemEditBaseToolModule.SyncGroup
 			});
@@ -56,16 +65,26 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 			};
 		}
 
+		private class WriteFileContext
+		{
+			public required string FullPath { get; init; }
+			public required AddonKind AddonKind { get; init; }
+		}
+
 		private PreviewToolExecutionResult? WriteFilePreview(
-			[SharedContext] out string? fullPath,
+			[SharedContext] out WriteFileContext? sharedCtx,
 			string path,
 			string content,
 			bool append = false)
 		{
 			try
 			{
-				fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.ReadWrite, out var isAccessed);
+				var fullPath = _fileAccess.CheckedAccessPath(path, DirectoryAccessMode.ReadWrite, out var isAccessed);
 				var fileExisted = File.Exists(fullPath);
+				var addonKind = _addonDetector.Detect(path, isFile: true,
+					fileExisted ? FileOperation.Edit : FileOperation.Create,
+					fileExisted ? null : FileUtils.GetExistingAncestorDirectory(fullPath));
+				sharedCtx = new WriteFileContext { FullPath = fullPath, AddonKind = addonKind };
 
 				if (fileExisted)
 				{
@@ -78,7 +97,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 							{
 								StatusIcon = Material.Icons.MaterialIconKind.FileQuestion,
 								StatusTitle = LocalizationManager.LocalizeStaticFormat("tool.status.fs-edit.changes_none", $"**{path}**"),
-								ExpectedBehaviour = !isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None,
+								ExpectedBehaviour = (!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+									AddonKindToolBehaviourConverter.Convert(addonKind),
 								InterruptingSuccess = true,
 								InterruptingContent = $"File **{path}** already contains the same content."
 							};
@@ -89,7 +109,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 							StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
 							StatusTitle = $"**{path}**",
 							ExpectedBehaviour = ToolBehaviour.FileEdit |
-								(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None)
+								(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+								AddonKindToolBehaviourConverter.Convert(addonKind)
 						};
 					}
 					catch
@@ -103,13 +124,14 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					StatusIcon = Material.Icons.MaterialIconKind.FilePlus,
 					StatusTitle = $"**{path}**",
 					ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate |
-						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None),
+						(!isAccessed ? ToolBehaviour.AccessOutsideWorkdir : ToolBehaviour.None) |
+						AddonKindToolBehaviourConverter.Convert(addonKind),
 					SelfHandledDecisions = ToolPolicyDecision.None
 				};
 			}
 			catch (Exception ex)
 			{
-				fullPath = null;
+				sharedCtx = null;
 				return new PreviewToolExecutionResult
 				{
 					InterruptingContent = $"Error writing file: {ex.Message}",
@@ -119,7 +141,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		}
 
 		private async Task WriteFile(
-			[SharedContext] string? fullPath,
+			[SharedContext] WriteFileContext? sharedCtx,
 			ReactiveToolResult result,
 			ToolExecutionContext ctx,
 			CancellationToken cancellationToken,
@@ -129,13 +151,16 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 		{
 			try
 			{
-				fullPath ??= _fileAccess.AccessPath(path, DirectoryAccessMode.ReadWrite);
+				var fullPath = sharedCtx?.FullPath ?? _fileAccess.AccessPath(path, DirectoryAccessMode.ReadWrite);
+				var fileExisted = File.Exists(fullPath);
+				var addonKind = sharedCtx?.AddonKind ?? _addonDetector.Detect(path, isFile: true,
+					fileExisted ? FileOperation.Edit : FileOperation.Create,
+					fileExisted ? null : FileUtils.GetExistingAncestorDirectory(fullPath));
 				var dir = Path.GetDirectoryName(fullPath);
 
 				if (!Directory.Exists(dir))
 					Directory.CreateDirectory(dir!);
 
-				var fileExisted = File.Exists(fullPath);
 				string oldContent = string.Empty;
 
 				if (fileExisted)
@@ -165,6 +190,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 					}
 
 					File.WriteAllText(fullPath, postProcessResult.NewContent);
+					_addonInvalidator.Invalidate(addonKind);
 
 					var fileInfo = new FileInfo(fullPath);
 					var size = FileUtils.BytesToDisplaySize(fileInfo.Length);
@@ -208,6 +234,7 @@ namespace LLMDesktopAssistant.Tools.Implementations.Filesystem
 				else
 				{
 					File.WriteAllText(fullPath, content);
+					_addonInvalidator.Invalidate(addonKind);
 
 					var fileInfo = new FileInfo(fullPath);
 					var size = FileUtils.BytesToDisplaySize(fileInfo.Length);

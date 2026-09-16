@@ -5,6 +5,9 @@ using System.Text.Json.Nodes;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Utils.Files;
+using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Loading;
+using LLMDesktopAssistant.Addons.Management;
 using Material.Icons;
 using RCLargeLanguageModels.Json.Schema;
 using LLMDesktopAssistant.Localization;
@@ -16,14 +19,19 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 	{
 		private readonly HttpClient _httpClient, _httpInfiniteTimeoutClient;
 		private readonly IWorkingDirectoryAccessService _fileAccess;
+		private readonly IAddonPathImpactDetector _addonDetector;
+		private readonly IAddonManagerInvalidator _addonInvalidator;
 
-		public WebRequestToolModule(IWorkingDirectoryAccessService fileAccess)
+		public WebRequestToolModule(IWorkingDirectoryAccessService fileAccess,
+			IAddonPathImpactDetector addonDetector, IAddonManagerInvalidator addonInvalidator)
 		{
 			_httpClient = CreateClient();
 			_httpInfiniteTimeoutClient = CreateClient();
 			_httpInfiniteTimeoutClient.Timeout = Timeout.InfiniteTimeSpan;
 
 			_fileAccess = fileAccess;
+			_addonDetector = addonDetector;
+			_addonInvalidator = addonInvalidator;
 
 			AddTool(new ToolInitializationInfo
 			{
@@ -59,7 +67,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				NameKey = Locale.GetKey("tool.name.web-download"),
 				DescriptionKey = Locale.GetKey("tool.description.web-download"),
 				CategoryKey = Locale.GetKey("tool.category.web"),
-				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.InternetAccess
+				DefaultExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.FileEdit | ToolBehaviour.InternetAccess |
+					ToolBehaviour.AddonPackEdit | ToolBehaviour.PromptEdit | ToolBehaviour.ScriptEdit
 			});
 		}
 
@@ -231,6 +240,9 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 			{
 				var fullPath = _fileAccess.AccessPath(savePath, DirectoryAccessMode.Write);
 				var fileExisted = File.Exists(fullPath);
+				var addonKind = _addonDetector.Detect(savePath, isFile: true,
+					fileExisted ? FileOperation.Edit : FileOperation.Create,
+					fileExisted ? null : FileUtils.GetExistingAncestorDirectory(fullPath));
 
 				if (fileExisted)
 				{
@@ -238,7 +250,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 					{
 						StatusIcon = MaterialIconKind.Download,
 						StatusTitle = savePath != null ? $"`{url}` → `{savePath}`" : $"`{url}`",
-						ExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.InternetAccess
+						ExpectedBehaviour = ToolBehaviour.FileEdit | ToolBehaviour.InternetAccess |
+							AddonKindToolBehaviourConverter.Convert(addonKind)
 					};
 				}
 
@@ -246,7 +259,8 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				{
 					StatusIcon = MaterialIconKind.Download,
 					StatusTitle = savePath != null ? $"`{url}` → `{savePath}`" : $"`{url}`",
-					ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.InternetAccess
+					ExpectedBehaviour = ToolBehaviour.FileDirectoryCreate | ToolBehaviour.InternetAccess |
+						AddonKindToolBehaviourConverter.Convert(addonKind)
 				};
 			}
 			catch (Exception ex)
@@ -278,10 +292,15 @@ namespace LLMDesktopAssistant.Tools.Implementations.Web
 				try
 				{
 					var fullSavePath = _fileAccess.AccessPath(savePath, DirectoryAccessMode.Write);
+					var fileExisted = File.Exists(fullSavePath);
+					var addonKind = _addonDetector.Detect(savePath, isFile: true,
+						fileExisted ? FileOperation.Edit : FileOperation.Create,
+						fileExisted ? null : FileUtils.GetExistingAncestorDirectory(fullSavePath));
 					var dir = Path.GetDirectoryName(fullSavePath);
 					if (!Directory.Exists(dir))
 						Directory.CreateDirectory(dir!);
 					using var fileStream = File.Create(fullSavePath);
+					_addonInvalidator.Invalidate(addonKind);
 					using var request = new HttpRequestMessage(HttpMethod.Get, url);
 
 					if (headersJson != null)
