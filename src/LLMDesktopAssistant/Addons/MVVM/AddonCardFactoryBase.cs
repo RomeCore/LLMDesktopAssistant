@@ -85,7 +85,8 @@ namespace LLMDesktopAssistant.Addons.MVVM
 				NamePrefix = namePrefix,
 				NamePrefixBrush = namePrefixBrush,
 				Subtitle = GetSubtitle(context),
-				Description = context.Addon.DescriptionKey
+				Description = context.Addon.DescriptionKey,
+				ResetCommand = new RelayCommand(() => context.Reset())
 			};
 		}
 

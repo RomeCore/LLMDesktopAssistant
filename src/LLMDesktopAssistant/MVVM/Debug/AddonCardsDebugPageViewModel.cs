@@ -86,6 +86,14 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 		var injection = DemoAddonChange.Selector(["Auto", "Manual", "Never"], "Auto", isShownLeft: false);
 		injection.Value = "Manual";
 
+		var emojis = DemoAddonBlockChange.Toggle(definitionValue: true, order: 0);
+		emojis.Title = T("enable_emojis");
+
+		var resetBlock = DemoAddonBlockChange.Toggle(definitionValue: false, order: 1, visibility: AddonCardBlockVisibility.Collapsible);
+		resetBlock.Title = T("Resettable block");
+		resetBlock.ToggleIcon = MaterialIconKind.Restore;
+		resetBlock.ToggleToolTip = T("Toggle the resettable block");
+
 		var elements = new List<IAddonCardElement>
 		{
 			enabled,
@@ -124,6 +132,9 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 				]
 			},
 
+			emojis,
+			resetBlock,
+
 			new AddonCardAction { Order = 0, Icon = MaterialIconKind.Pencil, ToolTip = T("Open file"), Command = Action("open file") },
 			new AddonCardAction { Order = 1, Icon = MaterialIconKind.FolderOpen, ToolTip = T("Show in explorer"), Command = Action("show in explorer") },
 			new AddonCardAction { Order = 2, Icon = MaterialIconKind.Delete, ToolTip = T("Delete file"), Command = Action("delete file") }
@@ -134,7 +145,7 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 			Icon = MaterialIconKind.Cards,
 			Name = T("demo-skill"),
 			Subtitle = T("Demo skill (everything on)"),
-			Description = T("Every element kind: overridden header slots, colored chips, tags, collapsible parameters, details and file actions.")
+			Description = T("Every element kind: overridden header slots and blocks with reset markers, colored chips, tags, collapsible parameters, details and file actions.")
 		};
 	}
 

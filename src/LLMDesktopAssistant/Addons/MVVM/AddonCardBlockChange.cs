@@ -3,17 +3,11 @@ using CommunityToolkit.Mvvm.Input;
 namespace LLMDesktopAssistant.Addons.MVVM
 {
 	/// <summary>
-	/// A simple <see cref="IAddonCardHeaderChange"/> implementation that delegates the reset to a callback.
+	/// A simple <see cref="IAddonCardBlockChange"/> implementation that delegates the reset to a callback.
 	/// Factories may derive from this class to expose additional bound state.
 	/// </summary>
-	public class AddonCardChange : AddonCardElementBase, IAddonCardHeaderChange
+	public class AddonCardBlockChange : AddonCardBlock, IAddonCardBlockChange
 	{
-		/// <inheritdoc/>
-		public object? Content { get; init; }
-
-		/// <inheritdoc/>
-		public bool IsShownLeft { get; init; }
-
 		/// <inheritdoc/>
 		public virtual bool IsChanged
 		{

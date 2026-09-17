@@ -16,12 +16,5 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// Whether the element is placed to the left of the addon name. Otherwise it is placed to the right.
 		/// </summary>
 		bool IsShownLeft { get; }
-
-		/// <summary>
-		/// Whether the element holds an overridden (non-definition) value. When <see langword="true"/>,
-		/// the card draws an accent marker next to the content. Always <see langword="false"/> for
-		/// plain header elements.
-		/// </summary>
-		bool IsChanged { get; }
 	}
 }

@@ -155,13 +155,13 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		}
 
 		/// <inheritdoc/>
-		public override void Reset()
+		protected override void ResetCore()
 		{
-			base.Reset();
+			base.ResetCore();
 
 			if (_context.Change != null)
 			{
-				_context.Reset();
+				_setOverride(_context.Change, default!);
 				RaisePropertyChanged(nameof(SelectedOption));
 			}
 

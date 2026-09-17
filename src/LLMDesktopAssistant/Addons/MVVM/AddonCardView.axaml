@@ -121,7 +121,8 @@
 			</StackPanel>
 		</DataTemplate>
 
-		<!-- A collapsible block renders its content only while expanded. -->
+		<!-- A collapsible block renders its content only while expanded. The template of the block itself
+			 is resolved implicitly, so that block changes keep their reset marker. -->
 		<DataTemplate x:Key="AddonCardCollapsibleBlockTemplate" x:DataType="cards:IAddonCardBlock">
 			<ContentControl IsVisible="{Binding IsExpanded}"
 											Content="{Binding}"
@@ -134,17 +135,26 @@
 	<!-- Element templates (resolved implicitly by element type)          -->
 	<!-- ================================================================ -->
 	<UserControl.DataTemplates>
-
+		
 		<!-- Header slot: an accent marker when the value is overridden, then the slot content. -->
-		<DataTemplate x:DataType="cards:IAddonCardHeaderElement">
-			<Grid ColumnDefinitions="2,Auto" ColumnSpacing="2" VerticalAlignment="Center">
-				<Rectangle Grid.Column="0"
-									 Fill="{DynamicResource PrimaryAccentBrush}"
-									 IsVisible="{Binding IsChanged}"/>
+		<DataTemplate x:DataType="cards:IAddonCardHeaderChange">
+			<Grid ColumnDefinitions="3,Auto" ColumnSpacing="2" VerticalAlignment="Center">
+				<Button Grid.Column="0"
+									 BorderBrush="{DynamicResource PrimaryAccentBrush}"
+									 Background="{DynamicResource PrimaryAccentBrush}"
+									 CornerRadius="1"
+									 Command="{Binding ResetCommand}"
+									 IsEnabled="{Binding IsChanged}"/>
 				<ContentControl Grid.Column="1"
 												Content="{Binding Content}"
 												VerticalAlignment="Center"/>
 			</Grid>
+		</DataTemplate>
+
+		<!-- Header slot: an accent marker when the value is overridden, then the slot content. -->
+		<DataTemplate x:DataType="cards:IAddonCardHeaderElement">
+				<ContentControl Content="{Binding Content}"
+												VerticalAlignment="Center"/>
 		</DataTemplate>
 
 		<!-- Clickable chip (tags). Must be listed BEFORE the plain chip so that the tag shape wins. -->
@@ -174,6 +184,24 @@
 		<!-- Action row left side. -->
 		<DataTemplate x:DataType="cards:IAddonCardActionRowElement">
 			<ContentControl Content="{Binding Content}" VerticalAlignment="Center"/>
+		</DataTemplate>
+
+		<!-- Block that edits an override: the accent marker on the left resets the override when clicked. -->
+		<DataTemplate x:DataType="cards:IAddonCardBlockChange">
+			<Grid ColumnDefinitions="3,Auto" ColumnSpacing="6">
+				<Button Grid.Column="0"
+								BorderBrush="{DynamicResource PrimaryAccentBrush}"
+								Background="{DynamicResource PrimaryAccentBrush}"
+								CornerRadius="1"
+								VerticalAlignment="Stretch"
+								Margin="0,2"
+								Command="{Binding ResetCommand}"
+								IsEnabled="{Binding IsChanged}"
+								ToolTip.Tip="{loc:Loc common.reset}"/>
+				<ContentControl Grid.Column="1"
+											Content="{Binding}"
+											ContentTemplate="{StaticResource AddonCardBlockBodyTemplate}"/>
+			</Grid>
 		</DataTemplate>
 
 		<!-- Block: the shared body is rendered by the template below. -->
@@ -257,7 +285,7 @@
 								Classes="IconButton"
 								Margin="4,0,0,0"
 								ToolTip.Tip="{loc:Loc common.reset}"
-								IsVisible="{Binding HasChanges}">
+								IsEnabled="{Binding HasChanges}">
 					<ico:MaterialIcon Kind="Refresh"/>
 				</Button>
 

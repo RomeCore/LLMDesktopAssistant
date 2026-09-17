@@ -61,7 +61,8 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public ImmutableList<IAddonCardHeaderElement> RightHeaderElements { get; }
 
 		/// <summary>
-		/// Gets the overrides edited by the card. Used by the reset command and for its visibility.
+		/// Gets the elements of the card that edit (or indicate) overrides: header changes and block changes.
+		/// Used by the reset command.
 		/// </summary>
 		public ImmutableList<IAddonCardChange> Changes { get; }
 
@@ -124,7 +125,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// <summary>
 		/// Gets the command that resets all overrides of this addon back to the definition values.
 		/// </summary>
-		public ICommand ResetCommand { get; }
+		public ICommand? ResetCommand { get; init; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the details section is expanded.
@@ -156,8 +157,6 @@ namespace LLMDesktopAssistant.Addons.MVVM
 			ActionRowElements = [.. Elements.OfType<IAddonCardActionRowElement>().OrderBy(e => e.Order)];
 			Actions = [.. Elements.OfType<IAddonCardAction>().OrderBy(e => e.Order)];
 
-			ResetCommand = new RelayCommand(Reset);
-
 			foreach (var change in Changes)
 				if (change is INotifyPropertyChanged notifier)
 					notifier.PropertyChanged += OnChangePropertyChanged;
@@ -181,14 +180,8 @@ namespace LLMDesktopAssistant.Addons.MVVM
 
 		private void OnChangePropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == nameof(IAddonCardHeaderElement.IsChanged))
+			if (e.PropertyName == nameof(IAddonCardChange.IsChanged))
 				RaisePropertyChanged(nameof(HasChanges));
-		}
-
-		private void Reset()
-		{
-			foreach (var change in Changes)
-				change.Reset();
 		}
 	}
 }

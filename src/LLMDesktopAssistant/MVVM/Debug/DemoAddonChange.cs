@@ -1,16 +1,17 @@
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Layout;
+using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Addons.MVVM;
 
 namespace LLMDesktopAssistant.MVVM.Debug;
 
 /// <summary>
-/// A fully interactive <see cref="IAddonCardChange"/> used by the addon cards debug page.
+/// A fully interactive <see cref="IAddonCardHeaderChange"/> used by the addon cards debug page.
 /// It holds a mutable value, reports itself as changed while the value differs from the definition
 /// value (so the card draws the accent marker) and resets itself back to that value.
 /// </summary>
-public class DemoAddonChange : ViewModelBase, IAddonCardChange
+public class DemoAddonChange : ViewModelBase, IAddonCardHeaderChange
 {
 	private readonly object? _definitionValue;
 	private object? _value;
@@ -55,7 +56,8 @@ public class DemoAddonChange : ViewModelBase, IAddonCardChange
 		}
 	}
 
-	/// <inheritdoc/>
+	public ICommand? ResetCommand => field ??= new RelayCommand(Reset);
+
 	public void Reset() => Value = _definitionValue;
 
 	/// <summary>

@@ -131,13 +131,14 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		}
 
 		/// <inheritdoc/>
-		public override void Reset()
+		protected override void ResetCore()
 		{
-			base.Reset();
+			base.ResetCore();
 
 			if (_context.Change != null)
 			{
-				_context.Reset();
+				_context.Change.Enabled = null;
+				_context.Change.Hidden = null;
 				RaisePropertyChanged(nameof(IsEnabled));
 				RaisePropertyChanged(nameof(IsHidden));
 			}
