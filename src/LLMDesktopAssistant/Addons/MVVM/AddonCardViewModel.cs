@@ -20,6 +20,12 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public ImmutableList<IAddonCardElement> Elements { get; }
 
 		/// <summary>
+		/// Gets the elements of the card that edit (or indicate) overrides: header changes and block changes.
+		/// Used by the reset command.
+		/// </summary>
+		public ImmutableList<IAddonCardChange> Changes { get; }
+
+		/// <summary>
 		/// Gets the icon of the card, usually taken from the addon type descriptor.
 		/// </summary>
 		public MaterialIconKind? Icon { get; init; }
@@ -59,12 +65,6 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// Gets the header elements placed to the right of the name.
 		/// </summary>
 		public ImmutableList<IAddonCardHeaderElement> RightHeaderElements { get; }
-
-		/// <summary>
-		/// Gets the elements of the card that edit (or indicate) overrides: header changes and block changes.
-		/// Used by the reset command.
-		/// </summary>
-		public ImmutableList<IAddonCardChange> Changes { get; }
 
 		/// <summary>
 		/// Gets the top-level chips of the card.
@@ -143,11 +143,11 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public AddonCardViewModel(IEnumerable<IAddonCardElement> elements)
 		{
 			Elements = [.. elements];
+			Changes = [.. Elements.OfType<IAddonCardChange>()];
 
 			LeftHeaderElements = [.. Elements.OfType<IAddonCardHeaderElement>().Where(e => e.IsShownLeft).OrderBy(e => e.Order)];
 			RightHeaderElements = [.. Elements.OfType<IAddonCardHeaderElement>().Where(e => !e.IsShownLeft).OrderBy(e => e.Order)];
 
-			Changes = [.. Elements.OfType<IAddonCardChange>().OrderBy(e => e.Order)];
 			Chips = [.. Elements.OfType<IAddonCardChip>().OrderBy(e => e.Order)];
 
 			Blocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.Visibility == AddonCardBlockVisibility.Inline).OrderBy(e => e.Order)];
