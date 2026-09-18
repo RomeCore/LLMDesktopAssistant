@@ -90,6 +90,57 @@ namespace LLMDesktopAssistant.Addons.MVVM
 			};
 		}
 
+		/// <inheritdoc/>
+		public AddonCardViewModel CreateGroup(AddonGroupCardContext<TAddon, TChange> context)
+		{
+			ArgumentNullException.ThrowIfNull(context);
+
+			var elements = new List<IAddonCardElement>();
+
+			AddGroupHeaderChanges(context, elements);
+			AddGroupChips(context, elements);
+
+			return new AddonCardViewModel(elements)
+			{
+				Icon = context.Key.Icon ?? TypeIcon,
+				Name = context.Key.Title,
+				NamePrefixBrush = context.Key.Brush,
+				Children = context.Children,
+				ResetCommand = new RelayCommand(() => ResetVisibleChildren(context.Children))
+			};
+		}
+
+		/// <summary>
+		/// Adds the aggregate change elements of the group card. Only header change elements are
+		/// aggregated: by default the group gets the aggregate enabled/hidden toggles, while the
+		/// type-specific aggregates (an approval level selector of the tools, a model selector of the
+		/// sub-agents) are added by the derived factories.
+		/// </summary>
+		protected virtual void AddGroupHeaderChanges(AddonGroupCardContext<TAddon, TChange> context, List<IAddonCardElement> elements)
+		{
+			elements.Add(new AddonCardGroupEnabledHiddenChange(context.Children) { Order = HeaderOrder });
+		}
+
+		/// <summary>
+		/// Adds the chips of the group card: by default the live count of the children.
+		/// </summary>
+		protected virtual void AddGroupChips(AddonGroupCardContext<TAddon, TChange> context, List<IAddonCardElement> elements)
+		{
+			elements.Add(new AddonCardGroupCountChip(context.Children) { Order = ChipOrder });
+		}
+
+		/// <summary>
+		/// Resets all overrides of the visible children of the group.
+		/// </summary>
+		private static void ResetVisibleChildren(ImmutableList<AddonCardViewModel> children)
+		{
+			foreach (var child in children)
+			{
+				if (child.IsVisible && child.HasChanges)
+					child.ResetCommand?.Execute(null);
+			}
+		}
+
 		// =====================================================
 		// === Header                                        ===
 		// =====================================================

@@ -60,6 +60,49 @@
 			<Setter Property="Opacity" Value="0.8"/>
 		</Style>
 
+		<!-- A card that holds child cards: the border is emphasized. -->
+		<Style Selector="Border.addonCard.group">
+			<Setter Property="BorderBrush" Value="{DynamicResource PrimaryAccentBrush}"/>
+		</Style>
+
+		<!-- The borderless chevron that toggles the children of a group card. -->
+		<Style Selector="ToggleButton.cardExpander">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Padding" Value="0"/>
+			<Setter Property="Width" Value="20"/>
+			<Setter Property="Height" Value="20"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="ToggleButton.cardExpander:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#22FFFFFF"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+
+		<Style Selector="ToggleButton.cardExpander:checked /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+
+		<!-- The aggregate toggles of a group card. -->
+		<Style Selector="ToggleButton.groupStateToggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#22FFFFFF"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+
+		<Style Selector="ToggleButton.groupStateToggle:checked /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+
+		<Style Selector="ToggleButton.groupStateToggle:indeterminate /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+
 	</UserControl.Styles>
 
 	<!-- ================================================================ -->
@@ -225,15 +268,31 @@
 	<!-- ================================================================ -->
 	<!-- Card                                                             -->
 	<!-- ================================================================ -->
-	<Border Classes="addonCard">
+	<Border Classes="addonCard" Classes.group="{Binding HasChildren}">
 		<StackPanel Orientation="Vertical" Spacing="4">
 
 			<!-- ============================================================== -->
 			<!-- Row 0: header (left slots | icon + name | right slots | reset) -->
 			<!-- ============================================================== -->
-			<Grid ColumnDefinitions="Auto,*,Auto,Auto" VerticalAlignment="Center" ColumnSpacing="4">
+			<Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" VerticalAlignment="Center" ColumnSpacing="4"
+									PointerPressed="Header_PointerPressed">
 
-				<ItemsControl Grid.Column="0"
+				<!-- Group expander -->
+				<ToggleButton Grid.Column="0"
+											Classes="cardExpander"
+											IsVisible="{Binding HasChildren}"
+											IsChecked="{Binding IsChildrenExpanded, Mode=TwoWay}"
+											VerticalAlignment="Center"
+											ToolTip.Tip="{loc:Loc card.group.expand}">
+					<Panel>
+						<ico:MaterialIcon Kind="ChevronRight" Width="16" Height="16"
+												  IsVisible="{Binding !IsChildrenExpanded}"/>
+						<ico:MaterialIcon Kind="ChevronDown" Width="16" Height="16"
+												  IsVisible="{Binding IsChildrenExpanded}"/>
+					</Panel>
+				</ToggleButton>
+
+				<ItemsControl Grid.Column="1"
 											ItemsSource="{Binding LeftHeaderElements}"
 											IsVisible="{Binding LeftHeaderElements.Count}"
 											VerticalAlignment="Center">
@@ -245,7 +304,7 @@
 				</ItemsControl>
 
 				<!-- Name + optional subtitle -->
-				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+				<StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
 					<ico:MaterialIcon Kind="{Binding Icon}"
 													  Foreground="{DynamicResource PrimaryAccentBrush}"
 													  Width="20" Height="20"
@@ -268,7 +327,7 @@
 									   IsVisible="{Binding HasSubtitle}"/>
 				</StackPanel>
 
-				<ItemsControl Grid.Column="2"
+				<ItemsControl Grid.Column="3"
 											ItemsSource="{Binding RightHeaderElements}"
 											IsVisible="{Binding RightHeaderElements.Count}"
 											VerticalAlignment="Center">
@@ -280,7 +339,7 @@
 				</ItemsControl>
 
 				<!-- Reset override button -->
-				<Button Grid.Column="3"
+				<Button Grid.Column="4"
 								Command="{Binding ResetCommand}"
 								HorizontalAlignment="Center"
 								Classes="IconButton"
@@ -387,11 +446,26 @@
 										Margin="28,0,0,0"/>
 			
 			<!-- ============================================================ -->
-			<!-- Row 7: Children                                              -->
+			<!-- Row 7: Children (group cards only)                           -->
 			<!-- ============================================================ -->
-			<ItemsControl ItemsSource="{Binding Children}"
-										IsVisible="{Binding IsChildrenExpanded}"
-										Margin="28,0,0,0"/>
+			<Border IsVisible="{Binding IsChildrenExpanded}"
+							Margin="28,4,0,0"
+							Padding="10,2,0,2"
+							BorderThickness="2,0,0,0"
+							BorderBrush="{DynamicResource SecondaryAccentBrush}">
+				<ItemsControl ItemsSource="{Binding Children}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Vertical" Spacing="8"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<ContentControl Content="{Binding}"/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</Border>
 
 		</StackPanel>
 	</Border>

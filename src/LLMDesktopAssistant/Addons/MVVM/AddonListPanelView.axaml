@@ -11,19 +11,44 @@
 
 	<StackPanel Spacing="8">
 
-		<!-- Search -->
-		<TextBox Text="{Binding SearchText, Mode=TwoWay}"
-				 PlaceholderText="{loc:Loc {Binding SearchPlaceholderKey}}">
-			<TextBox.InnerLeftContent>
-				<ico:MaterialIcon Kind="TextBoxSearch" Width="16" Height="16" Margin="6,0" VerticalAlignment="Center" Opacity="0.5"/>
-			</TextBox.InnerLeftContent>
-		</TextBox>
+		<!-- Grouping mode + search -->
+		<Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+
+			<!-- Grouping mode selector (shown only when the list provides more than one mode) -->
+			<ComboBox Grid.Column="0"
+					  IsVisible="{Binding HasGroupingModes}"
+					  ItemsSource="{Binding GroupingModes}"
+					  SelectedItem="{Binding SelectedGroupingMode}"
+					  VerticalAlignment="Center"
+					  MinWidth="150">
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="cards:GroupingMode">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<ico:MaterialIcon Kind="{Binding Icon}"
+											  IsVisible="{Binding Icon, Converter={StaticResource NotnullToBooleanConverter}}"
+											  Width="14" Height="14"
+											  VerticalAlignment="Center"/>
+							<TextBlock Text="{loc:Loc {Binding Title}}" VerticalAlignment="Center"/>
+						</StackPanel>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+
+			<TextBox Grid.Column="1"
+					 Text="{Binding SearchText, Mode=TwoWay}"
+					 PlaceholderText="{loc:Loc {Binding SearchPlaceholderKey}}"
+					 VerticalAlignment="Center">
+				<TextBox.InnerLeftContent>
+					<ico:MaterialIcon Kind="TextBoxSearch" Width="16" Height="16" Margin="6,0" VerticalAlignment="Center" Opacity="0.5"/>
+				</TextBox.InnerLeftContent>
+			</TextBox>
+		</Grid>
 
 		<!-- Empty state -->
 		<TextBlock Text="{loc:Loc {Binding EmptyTextKey}}"
 				   Opacity="0.5"
 				   TextWrapping="Wrap"
-				   IsVisible="{Binding !Items.Count}"/>
+				   IsVisible="{Binding !HasVisibleItems}"/>
 
 		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
 				BorderThickness="1"
@@ -39,8 +64,8 @@
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
-							<ContentControl Content="{Binding Card}"/>	
-						</DataTemplate>	
+							<ContentControl Content="{Binding}"/>
+						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 			</ScrollViewer>

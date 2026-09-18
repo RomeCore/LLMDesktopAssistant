@@ -29,6 +29,20 @@ delete.title: Delete addon file?
 delete.confirm: The file {0} will be permanently deleted. This action cannot be undone.
 
 // =====================================================
+// === Groups                                       ===
+// =====================================================
+grouping.flat: Flat list
+grouping.category: By category
+grouping.pack: By addon pack
+group.count: {0} addons
+group.visible_count: {0} of {1}
+group.uncategorized: Uncategorized
+group.builtin: Built-in
+group.enabled: Toggle the enabled state of the visible items
+group.hidden: Toggle the hidden state of the visible items
+group.expand: Expand or collapse the group
+
+// =====================================================
 // === Skills                                       ===
 // =====================================================
 skills.injection_mode.default: Name and description

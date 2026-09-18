@@ -21,5 +21,13 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// <param name="context">The addon, its change set and the page that owns the card.</param>
 		/// <returns>The card view model.</returns>
 		AddonCardViewModel Create(AddonCardContext<TAddon, TChange> context);
+
+		/// <summary>
+		/// Creates the card of the group of addons of the given context. The group card holds the cards
+		/// of its children and aggregates only their header changes.
+		/// </summary>
+		/// <param name="context">The group, its addons and the cards of the children.</param>
+		/// <returns>The group card view model.</returns>
+		AddonCardViewModel CreateGroup(AddonGroupCardContext<TAddon, TChange> context);
 	}
 }

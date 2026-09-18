@@ -112,10 +112,11 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		public bool HasDescription => !string.IsNullOrWhiteSpace(Description?.Value);
 
 		/// <summary>
-		/// Gets a value indicating whether the addon has any overridden values, and therefore whether
-		/// the reset button makes sense. Updated live as long as the changes implement change notification.
+		/// Gets a value indicating whether the addon (or, for a group card, any of its visible children)
+		/// has any overridden values, and therefore whether the reset button makes sense. Updated live
+		/// as long as the changes implement change notification.
 		/// </summary>
-		public bool HasChanges => Changes.Any(c => c.IsChanged);
+		public bool HasChanges => Changes.Any(c => c.IsChanged) || Children.Any(c => c.IsVisible && c.HasChanges);
 
 		/// <summary>
 		/// Gets a value indicating whether the card has a details section.
@@ -148,7 +149,28 @@ namespace LLMDesktopAssistant.Addons.MVVM
 			set => SetProperty(ref field, value);
 		}
 
-		public ImmutableList<AddonCardViewModel> Children { get; init; } = [];
+		/// <summary>
+		/// Gets a value indicating whether the card holds child cards (i.e. whether it is a group card).
+		/// </summary>
+		public bool HasChildren => Children.Count > 0;
+
+		private ImmutableList<AddonCardViewModel> _children = [];
+
+		/// <summary>
+		/// Gets the child cards of the group card. The children are owned by the list: the group card only
+		/// observes them, so that <see cref="HasChanges"/> covers the visible children.
+		/// </summary>
+		public ImmutableList<AddonCardViewModel> Children
+		{
+			get => _children;
+			init
+			{
+				_children = value;
+
+				foreach (var child in _children)
+					child.PropertyChanged += OnChildPropertyChanged;
+			}
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AddonCardViewModel"/> class.
@@ -186,6 +208,8 @@ namespace LLMDesktopAssistant.Addons.MVVM
 				foreach (var change in Changes)
 					if (change is INotifyPropertyChanged notifier)
 						notifier.PropertyChanged -= OnChangePropertyChanged;
+				foreach (var child in Children)
+					child.PropertyChanged -= OnChildPropertyChanged;
 				foreach (var element in Elements)
 					if (element is IDisposable disposableElement)
 						disposableElement.Dispose();
@@ -195,6 +219,12 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		private void OnChangePropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == nameof(IAddonCardChange.IsChanged))
+				RaisePropertyChanged(nameof(HasChanges));
+		}
+
+		private void OnChildPropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName is nameof(HasChanges) or nameof(IsVisible))
 				RaisePropertyChanged(nameof(HasChanges));
 		}
 	}

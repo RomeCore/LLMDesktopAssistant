@@ -16,7 +16,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 	/// </summary>
 	/// <typeparam name="TAddon">The type of the addon the element is bound to.</typeparam>
 	/// <typeparam name="TChange">The type of the change object created by the element.</typeparam>
-	public class AddonCardEnabledHiddenChange<TAddon, TChange> : AddonCardChange
+	public class AddonCardEnabledHiddenChange<TAddon, TChange> : AddonCardChange, IAddonCardEnabledHiddenChange
 		where TAddon : AddonChangedBase<TAddon, TChange>
 		where TChange : AddonChangeBase, new()
 	{
