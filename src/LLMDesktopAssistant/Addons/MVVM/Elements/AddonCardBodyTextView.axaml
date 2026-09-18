@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="60"
+						 xmlns:vm="using:LLMDesktopAssistant.Addons.MVVM.Elements"
+						 x:Class="LLMDesktopAssistant.Addons.MVVM.Elements.AddonCardBodyTextView"
+						 x:DataType="vm:AddonCardBodyTextViewModel">
+
+	<SelectableTextBlock Text="{Binding Text}"
+											 TextWrapping="Wrap"
+											 FontFamily="Cascadia Mono, Consolas, monospace"
+											 FontSize="12"
+											 Opacity="0.85"/>
+
+</UserControl>

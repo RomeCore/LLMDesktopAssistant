@@ -1,11 +1,4 @@
-using Avalonia.Controls;
-using Avalonia.Data;
-using Avalonia.Input;
-using Avalonia.Layout;
-using LLMDesktopAssistant.Converters;
 using LLMDesktopAssistant.Localization;
-using Material.Icons;
-using Material.Icons.Avalonia;
 
 namespace LLMDesktopAssistant.Addons.MVVM.Elements
 {
@@ -30,17 +23,17 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		{
 			_context = context;
 
-			Content = new StackPanel
-			{
-				DataContext = this,
-				Orientation = Orientation.Horizontal,
-				Spacing = 4,
-				Children =
-				{
-					CreateSwitch(nameof(IsEnabled), true),
-					CreateSwitch(nameof(IsHidden), false),
-				},
-			};
+			Content = new AddonCardStateTogglesViewModel(this,
+				new AddonCardStateToggleViewModel(AddonCardStateToggleKind.Enabled,
+					Locale.GetKey("card.state.enabled"), isThreeState: false,
+					get: () => IsEnabled,
+					set: value => { if (value is bool enabled) IsEnabled = enabled; },
+					canEdit: () => CanEdit),
+				new AddonCardStateToggleViewModel(AddonCardStateToggleKind.Shown,
+					Locale.GetKey("card.state.hidden"), isThreeState: false,
+					get: () => !IsHidden,
+					set: value => { if (value is bool shown) IsHidden = !shown; },
+					canEdit: () => CanEdit));
 
 			if (CanEdit)
 			{
@@ -55,10 +48,15 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		{
 			base.Dispose(disposing);
 
-			if (disposing && CanEdit)
+			if (disposing)
 			{
-				_context.PropertyChanged -= Context_PropertyChanged;
-				_context.SetConfig!.PropertyChanged -= SetConfig_PropertyChanged;
+				(Content as IDisposable)?.Dispose();
+
+				if (CanEdit)
+				{
+					_context.PropertyChanged -= Context_PropertyChanged;
+					_context.SetConfig!.PropertyChanged -= SetConfig_PropertyChanged;
+				}
 			}
 		}
 
@@ -146,43 +144,5 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			SyncIsChanged();
 		}
 
-		private ToggleSwitch CreateSwitch(string propertyPath, bool isEnabledSwitch)
-		{
-			var toggle = new ToggleSwitch
-			{
-				DataContext = this,
-				VerticalAlignment = VerticalAlignment.Center,
-			};
-			toggle.Bind(ToggleSwitch.IsCheckedProperty, new Binding(propertyPath)
-			{
-				Mode = BindingMode.TwoWay,
-				Converter = isEnabledSwitch ? null : InverseBooleanConverter.Instance
-			});
-			toggle.Bind(InputElement.IsEnabledProperty, new Binding(nameof(CanEdit)));
-
-			if (isEnabledSwitch)
-			{
-				toggle.Bind(ToggleSwitch.OffContentProperty, new Binding(nameof(LocaleKeyBase.Value))
-				{
-					Source = Locale.GetKey("common.off")
-				});
-				toggle.Bind(ToggleSwitch.OnContentProperty, new Binding(nameof(LocaleKeyBase.Value))
-				{
-					Source = Locale.GetKey("common.on")
-				});
-			}
-			else
-			{
-				toggle.OffContent = new MaterialIcon
-				{
-					Kind = MaterialIconKind.EyeOff
-				};
-				toggle.OnContent = new MaterialIcon
-				{
-					Kind = MaterialIconKind.Eye
-				};
-			}
-			return toggle;
-		}
 	}
 }

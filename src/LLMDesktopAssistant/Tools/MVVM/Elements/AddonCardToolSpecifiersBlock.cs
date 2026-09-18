@@ -1,12 +1,4 @@
 using System.ComponentModel;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Controls.Templates;
-using Avalonia.Data;
-using Avalonia.Input;
-using Avalonia.Layout;
-using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Addons.MVVM;
 using LLMDesktopAssistant.Localization;
@@ -14,7 +6,6 @@ using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
 using LLMDesktopAssistant.Tools.Specifiers;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
-using Material.Icons.Avalonia;
 
 namespace LLMDesktopAssistant.Tools.MVVM.Elements
 {
@@ -46,7 +37,7 @@ namespace LLMDesktopAssistant.Tools.MVVM.Elements
 			Title = Locale.GetKey("card.tools.specifiers");
 			ToggleIcon = MaterialIconKind.FormatListBulleted;
 			ToggleToolTip = Locale.GetKey("card.tools.specifiers.toggle");
-			Content = BuildContent();
+			Content = new AddonCardToolSpecifiersViewModel(this);
 
 			_context.PropertyChanged += Context_PropertyChanged;
 			SubscribeChange();
@@ -147,6 +138,8 @@ namespace LLMDesktopAssistant.Tools.MVVM.Elements
 
 			if (disposing)
 			{
+				(Content as IDisposable)?.Dispose();
+
 				_context.PropertyChanged -= Context_PropertyChanged;
 
 				if (_subscribedChange is not null)
@@ -274,169 +267,6 @@ namespace LLMDesktopAssistant.Tools.MVVM.Elements
 				&& (change.SpecifierUnionMode is not null
 					|| change.SpecifierAggregationMode is not null
 					|| change.Specifiers.Count > 0);
-		}
-
-		private Control BuildContent()
-		{
-			var panel = new StackPanel
-			{
-				DataContext = this,
-				Orientation = Orientation.Vertical,
-				Spacing = 6
-			};
-
-			panel.Children.Add(BuildRow(Locale.GetKey("card.tools.specifiers.union_mode"), BuildUnionModeSelector()));
-			panel.Children.Add(BuildRow(Locale.GetKey("card.tools.specifiers.aggregation_mode"), BuildAggregationModeSelector()));
-
-			var hint = new TextBlock
-			{
-				TextWrapping = TextWrapping.Wrap,
-				Opacity = 0.6,
-				FontSize = 11
-			};
-			hint.Bind(TextBlock.TextProperty, new Binding(nameof(SpecifierParametersHint)));
-			hint.Bind(Visual.IsVisibleProperty, new Binding(nameof(HasParametersHint)));
-			panel.Children.Add(hint);
-
-			var rules = new ItemsControl
-			{
-				ItemsSource = Rules,
-				ItemTemplate = new FuncDataTemplate<ToolSpecifierRuleRowViewModel>((row, _) => BuildRuleRow(row)),
-			};
-			rules.Bind(InputElement.IsEnabledProperty, new Binding(nameof(IsRulesEnabled)));
-			panel.Children.Add(rules);
-
-			var add = new Button
-			{
-				Command = AddCommand,
-				HorizontalAlignment = HorizontalAlignment.Left,
-				Background = Brushes.Transparent,
-				BorderThickness = new Thickness(0),
-				Content = new MaterialIcon { Kind = MaterialIconKind.Plus },
-			};
-			ToolTip.SetTip(add, Locale.Get("tool.specifier.add"));
-			panel.Children.Add(add);
-
-			return panel;
-		}
-
-		private Control BuildUnionModeSelector()
-		{
-			var combo = new ComboBox
-			{
-				ItemsSource = SpecifierUnionModeItem.All,
-				MinWidth = 180,
-				FontSize = 12,
-				VerticalAlignment = VerticalAlignment.Center,
-				ItemTemplate = new FuncDataTemplate<SpecifierUnionModeItem>((item, _) => new TextBlock
-				{
-					[!TextBlock.TextProperty] = new Binding(nameof(SpecifierUnionModeItem.DisplayName)) { Source = item },
-					VerticalAlignment = VerticalAlignment.Center,
-				}),
-			};
-			combo.Bind(SelectingItemsControl.SelectedItemProperty, new Binding(nameof(UnionMode)) { Mode = BindingMode.TwoWay });
-			combo.Bind(InputElement.IsEnabledProperty, new Binding(nameof(IsSectionEnabled)));
-
-			return combo;
-		}
-
-		private Control BuildAggregationModeSelector()
-		{
-			var combo = new ComboBox
-			{
-				ItemsSource = SpecifierAggregationModeItem.All,
-				MinWidth = 180,
-				FontSize = 12,
-				VerticalAlignment = VerticalAlignment.Center,
-				ItemTemplate = new FuncDataTemplate<SpecifierAggregationModeItem>((item, _) => new TextBlock
-				{
-					[!TextBlock.TextProperty] = new Binding(nameof(SpecifierAggregationModeItem.DisplayName)) { Source = item },
-					VerticalAlignment = VerticalAlignment.Center,
-				}),
-			};
-			combo.Bind(SelectingItemsControl.SelectedItemProperty, new Binding(nameof(AggregationMode)) { Mode = BindingMode.TwoWay });
-			combo.Bind(InputElement.IsEnabledProperty, new Binding(nameof(IsSectionEnabled)));
-
-			return combo;
-		}
-
-		private Control BuildRuleRow(ToolSpecifierRuleRowViewModel row)
-		{
-			var grid = new Grid
-			{
-				ColumnDefinitions = new ColumnDefinitions("*,160,Auto"),
-				ColumnSpacing = 4,
-				Margin = new Thickness(0, 2, 0, 2)
-			};
-
-			var pattern = new TextBox
-			{
-				PlaceholderText = Locale.Get("card.tools.specifiers.pattern"),
-				FontSize = 12
-			};
-			pattern.Bind(TextBox.TextProperty, new Binding(nameof(ToolSpecifierRuleRowViewModel.Pattern))
-			{
-				Mode = BindingMode.TwoWay,
-				Source = row
-			});
-			grid.Children.Add(pattern);
-
-			var decision = new ComboBox
-			{
-				ItemsSource = row.Decisions,
-				MinWidth = 120,
-				FontSize = 12,
-				VerticalAlignment = VerticalAlignment.Center,
-				ItemTemplate = new FuncDataTemplate<SpecifierDecisionItem>((item, _) => new TextBlock
-				{
-					[!TextBlock.TextProperty] = new Binding(nameof(SpecifierDecisionItem.DisplayName)) { Source = item },
-					VerticalAlignment = VerticalAlignment.Center,
-				}),
-			};
-			decision.Bind(SelectingItemsControl.SelectedItemProperty, new Binding(nameof(ToolSpecifierRuleRowViewModel.Decision))
-			{
-				Mode = BindingMode.TwoWay,
-				Source = row
-			});
-			Grid.SetColumn(decision, 1);
-			grid.Children.Add(decision);
-
-			var remove = new Button
-			{
-				Command = row.RemoveCommand,
-				HorizontalAlignment = HorizontalAlignment.Left,
-				VerticalAlignment = VerticalAlignment.Center,
-				Background = Brushes.Transparent,
-				BorderThickness = new Thickness(0),
-				Content = new MaterialIcon { Kind = MaterialIconKind.Close, Width = 14, Height = 14 },
-			};
-			ToolTip.SetTip(remove, Locale.Get("common.delete"));
-			Grid.SetColumn(remove, 2);
-			grid.Children.Add(remove);
-
-			return grid;
-		}
-
-		private static Control BuildRow(LocaleKeyBase label, Control control)
-		{
-			var grid = new Grid
-			{
-				ColumnDefinitions = new ColumnDefinitions("Auto,*"),
-				ColumnSpacing = 8
-			};
-
-			grid.Children.Add(new TextBlock
-			{
-				Text = label.Value,
-				VerticalAlignment = VerticalAlignment.Center,
-				Opacity = 0.8,
-				FontSize = 12
-			});
-
-			Grid.SetColumn(control, 1);
-			grid.Children.Add(control);
-
-			return grid;
 		}
 	}
 

@@ -1,14 +1,5 @@
 using System.ComponentModel;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Data;
-using Avalonia.Input;
-using Avalonia.Layout;
-using Avalonia.Media;
 using LLMDesktopAssistant.Localization;
-using Material.Icons;
-using Material.Icons.Avalonia;
 
 namespace LLMDesktopAssistant.Addons.MVVM.Elements
 {
@@ -24,10 +15,6 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 	/// </remarks>
 	public class AddonCardGroupEnabledHiddenChange : AddonCardChange
 	{
-		private static readonly IBrush _positiveBrush = Brushes.LightGreen;
-		private static readonly IBrush _negativeBrush = Brushes.OrangeRed;
-		private static readonly IBrush _mixedBrush = Brushes.Gray;
-
 		private readonly ImmutableList<(AddonCardViewModel Child, IAddonCardEnabledHiddenChange State)> _states;
 		private bool _syncing;
 
@@ -42,17 +29,17 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 				.Where(pair => pair.State is not null)
 				.Select(pair => (pair.Child, pair.State!))];
 
-			Content = new StackPanel
-			{
-				DataContext = this,
-				Orientation = Orientation.Horizontal,
-				Spacing = 4,
-				Children =
-				{
-					CreateToggle(nameof(EnabledState), nameof(EnabledIcon), nameof(EnabledBrush), "card.group.enabled"),
-					CreateToggle(nameof(ShownState), nameof(ShownIcon), nameof(ShownBrush), "card.group.hidden"),
-				},
-			};
+			Content = new AddonCardStateTogglesViewModel(this,
+				new AddonCardStateToggleViewModel(AddonCardStateToggleKind.Enabled,
+					Locale.GetKey("card.group.enabled"), isThreeState: true,
+					get: () => EnabledState,
+					set: value => EnabledState = value,
+					canEdit: () => CanToggle),
+				new AddonCardStateToggleViewModel(AddonCardStateToggleKind.Shown,
+					Locale.GetKey("card.group.hidden"), isThreeState: true,
+					get: () => ShownState,
+					set: value => ShownState = value,
+					canEdit: () => CanToggle));
 
 			foreach (var (child, state) in _states)
 			{
@@ -107,46 +94,6 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			}
 		}
 
-		/// <summary>
-		/// Gets the icon of the enabled toggle for the current aggregate state.
-		/// </summary>
-		public MaterialIconKind EnabledIcon => EnabledState switch
-		{
-			true => MaterialIconKind.Check,
-			false => MaterialIconKind.Close,
-			_ => MaterialIconKind.MinusCircle
-		};
-
-		/// <summary>
-		/// Gets the brush of the enabled toggle for the current aggregate state.
-		/// </summary>
-		public IBrush EnabledBrush => EnabledState switch
-		{
-			true => _positiveBrush,
-			false => _negativeBrush,
-			_ => _mixedBrush
-		};
-
-		/// <summary>
-		/// Gets the icon of the shown toggle for the current aggregate state.
-		/// </summary>
-		public MaterialIconKind ShownIcon => ShownState switch
-		{
-			true => MaterialIconKind.Eye,
-			false => MaterialIconKind.EyeOff,
-			_ => MaterialIconKind.MinusCircle
-		};
-
-		/// <summary>
-		/// Gets the brush of the shown toggle for the current aggregate state.
-		/// </summary>
-		public IBrush ShownBrush => ShownState switch
-		{
-			true => _positiveBrush,
-			false => _negativeBrush,
-			_ => _mixedBrush
-		};
-
 		/// <inheritdoc/>
 		protected override void Dispose(bool disposing)
 		{
@@ -154,6 +101,8 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 
 			if (disposing)
 			{
+				(Content as IDisposable)?.Dispose();
+
 				foreach (var (child, state) in _states)
 				{
 					child.PropertyChanged -= Child_PropertyChanged;
@@ -227,10 +176,6 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			RaisePropertyChanged(nameof(CanToggle));
 			RaisePropertyChanged(nameof(EnabledState));
 			RaisePropertyChanged(nameof(ShownState));
-			RaisePropertyChanged(nameof(EnabledIcon));
-			RaisePropertyChanged(nameof(EnabledBrush));
-			RaisePropertyChanged(nameof(ShownIcon));
-			RaisePropertyChanged(nameof(ShownBrush));
 			SyncIsChanged();
 		}
 
@@ -251,38 +196,6 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		private void SyncIsChanged()
 		{
 			IsChanged = _states.Any(pair => pair.Child.IsVisible && pair.State.IsChanged);
-		}
-
-		private ToggleButton CreateToggle(string statePath, string iconPath, string brushPath, string toolTipKey)
-		{
-			var icon = new MaterialIcon
-			{
-				Width = 16,
-				Height = 16,
-				VerticalAlignment = VerticalAlignment.Center
-			};
-			icon.Bind(MaterialIcon.KindProperty, new Binding(iconPath));
-			icon.Bind(MaterialIcon.ForegroundProperty, new Binding(brushPath));
-
-			var toggle = new ToggleButton
-			{
-				IsThreeState = true,
-				VerticalAlignment = VerticalAlignment.Center,
-				Padding = new Thickness(2),
-				Background = Brushes.Transparent,
-				BorderThickness = new Thickness(0),
-				Content = icon,
-			};
-			toggle.Classes.Add("groupStateToggle");
-
-			toggle.Bind(ToggleButton.IsCheckedProperty, new Binding(statePath) { Mode = BindingMode.TwoWay });
-			toggle.Bind(InputElement.IsEnabledProperty, new Binding(nameof(CanToggle)));
-			toggle.Bind(ToolTip.TipProperty, new Binding(nameof(LocaleKeyBase.Value))
-			{
-				Source = Locale.GetKey(toolTipKey)
-			});
-
-			return toggle;
 		}
 	}
 }

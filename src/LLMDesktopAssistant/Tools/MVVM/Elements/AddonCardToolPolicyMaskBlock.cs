@@ -1,23 +1,12 @@
 using System.ComponentModel;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Data;
-using Avalonia.Input;
-using Avalonia.Layout;
-using Avalonia.Media;
 using LLMDesktopAssistant.Addons.MVVM;
-using LLMDesktopAssistant.Converters;
-using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.LLM.MVVM.Settings;
 using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
-using Material.Icons;
-using Material.Icons.Avalonia;
 
 namespace LLMDesktopAssistant.Tools.MVVM.Elements
 {
 	/// <summary>
-	/// The details block of a tool card that edits the policy mask of the tool: one three-state toggle per
+	/// The inline block of a tool card that edits the policy mask of the tool: one three-state toggle per
 	/// behaviour flag declared by the tool. The block is active only while the effective approval level of
 	/// the tool is policy-based.
 	/// </summary>
@@ -38,25 +27,13 @@ namespace LLMDesktopAssistant.Tools.MVVM.Elements
 
 			_context = context;
 
-			Visibility = AddonCardBlockVisibility.Details;
-			Title = Locale.GetKey("card.tools.policy_mask");
+			Visibility = AddonCardBlockVisibility.Inline;
 
 			var mask = EffectiveMask;
 			_items = [.. ToolBehaviourFlagInfo.CreateForFlags(context.Addon.DefaultExpectedBehaviour)
 				.Select(info => new ToolBehaviourMaskItem(this, info, GetMaskState(mask, info.Flag), false))];
 
-			var panel = new WrapPanel
-			{
-				DataContext = this,
-				ItemSpacing = 8,
-				LineSpacing = 8
-			};
-			panel.Bind(InputElement.IsEnabledProperty, new Binding(nameof(IsPolicyBased)));
-
-			foreach (var item in _items)
-				panel.Children.Add(CreateToggle(item));
-
-			Content = panel;
+			Content = new AddonCardToolPolicyMaskViewModel(this, _items, () => IsPolicyBased);
 
 			_context.PropertyChanged += Context_PropertyChanged;
 			SubscribeChange();
@@ -118,6 +95,8 @@ namespace LLMDesktopAssistant.Tools.MVVM.Elements
 
 			if (disposing)
 			{
+				(Content as IDisposable)?.Dispose();
+
 				_context.PropertyChanged -= Context_PropertyChanged;
 
 				if (_subscribedChange is not null)
@@ -206,70 +185,6 @@ namespace LLMDesktopAssistant.Tools.MVVM.Elements
 			if (mask.DisallowedBehaviours.HasFlag(flag))
 				return false;
 			return null;
-		}
-
-		private static ToggleButton CreateToggle(ToolBehaviourMaskItem item)
-		{
-			var icon = new MaterialIcon
-			{
-				Kind = item.Icon,
-				Width = 24,
-				Height = 24,
-				Foreground = item.Color
-			};
-
-			var toggle = new ToggleButton
-			{
-				IsThreeState = true,
-				Width = 32,
-				Height = 32,
-				Padding = new Thickness(0),
-				CornerRadius = new CornerRadius(4),
-				Background = Brushes.Transparent,
-				BorderThickness = new Thickness(0),
-				Content = icon,
-			};
-			toggle.Classes.Add("groupStateToggle");
-
-			toggle.Bind(ToggleButton.IsCheckedProperty, new Binding(nameof(ToolBehaviourMaskItem.IsChecked))
-			{
-				Mode = BindingMode.TwoWay,
-				Source = item
-			});
-			toggle.Bind(InputElement.IsEnabledProperty, new Binding(nameof(ToolBehaviourMaskItem.IsNone))
-			{
-				Converter = InverseBooleanConverter.Instance,
-				Source = item
-			});
-
-			ToolTip.SetTip(toggle, new StackPanel
-			{
-				Spacing = 4,
-				Children =
-				{
-					CreateToolTipLine(item, $"{nameof(ToolBehaviourMaskItem.DisplayName)}.{nameof(LocaleKeyBase.Value)}", bold: true),
-					CreateToolTipLine(item, $"{nameof(ToolBehaviourMaskItem.Description)}.{nameof(LocaleKeyBase.Value)}"),
-					CreateToolTipLine(item, $"{nameof(ToolBehaviourMaskItem.StateName)}.{nameof(LocaleKeyBase.Value)}",
-						brushPath: nameof(ToolBehaviourMaskItem.StateColor))
-				}
-			});
-
-			return toggle;
-		}
-
-		private static TextBlock CreateToolTipLine(object source, string path, bool bold = false, string? brushPath = null)
-		{
-			var text = new TextBlock { TextWrapping = TextWrapping.Wrap };
-
-			if (bold)
-				text.FontWeight = FontWeight.SemiBold;
-
-			text.Bind(TextBlock.TextProperty, new Binding(path) { Source = source });
-
-			if (brushPath is not null)
-				text.Bind(TextBlock.ForegroundProperty, new Binding(brushPath) { Source = source });
-
-			return text;
 		}
 	}
 }

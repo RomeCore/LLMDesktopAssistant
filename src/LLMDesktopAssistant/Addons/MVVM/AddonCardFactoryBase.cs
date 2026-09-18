@@ -338,14 +338,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 				Order = order,
 				Title = title,
 				Visibility = AddonCardBlockVisibility.Details,
-				Content = new SelectableTextBlock
-				{
-					Text = text.Trim(),
-					TextWrapping = TextWrapping.Wrap,
-					FontFamily = new FontFamily("Cascadia Mono, Consolas, monospace"),
-					FontSize = 12,
-					Opacity = 0.85
-				}
+				Content = new AddonCardBodyTextViewModel(text.Trim())
 			});
 		}
 
@@ -426,7 +419,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 			elements.Add(new AddonCardActionRowElement
 			{
 				Order = ActionRowOrder,
-				Content = BuildPathLabel(context.Addon.Path)
+				Content = new AddonCardPathViewModel(context.Addon.Path)
 			});
 		}
 
@@ -577,19 +570,5 @@ namespace LLMDesktopAssistant.Addons.MVVM
 			_ => MaterialIconKind.Information
 		};
 
-		private static Control BuildPathLabel(string path)
-		{
-			var label = new TextBlock
-			{
-				Text = path,
-				Opacity = 0.5,
-				FontSize = 11,
-				TextTrimming = TextTrimming.CharacterEllipsis,
-				VerticalAlignment = VerticalAlignment.Center
-			};
-
-			ToolTip.SetTip(label, path);
-			return label;
-		}
 	}
 }

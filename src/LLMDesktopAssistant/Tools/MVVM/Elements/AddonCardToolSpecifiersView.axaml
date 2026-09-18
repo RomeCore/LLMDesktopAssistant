@@ -1,0 +1,131 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="160"
+						 xmlns:vm="using:LLMDesktopAssistant.Tools.MVVM.Elements"
+						 xmlns:ag="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 x:Class="LLMDesktopAssistant.Tools.MVVM.Elements.AddonCardToolSpecifiersView"
+						 x:DataType="vm:AddonCardToolSpecifiersViewModel">
+
+	<StackPanel Orientation="Vertical" Spacing="6">
+
+		<Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc card.tools.specifiers.union_mode}"
+								 VerticalAlignment="Center"
+								 Opacity="0.8"
+								 FontSize="12"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{Binding UnionModes}"
+								SelectedItem="{Binding UnionMode, Mode=TwoWay}"
+								IsEnabled="{Binding IsSectionEnabled}"
+								MinWidth="180"
+								FontSize="12"
+								VerticalAlignment="Center">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="ag:SpecifierUnionModeItem">
+						<TextBlock Text="{Binding DisplayName}"
+											 VerticalAlignment="Center"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
+
+		<Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc card.tools.specifiers.aggregation_mode}"
+								 VerticalAlignment="Center"
+								 Opacity="0.8"
+								 FontSize="12"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{Binding AggregationModes}"
+								SelectedItem="{Binding AggregationMode, Mode=TwoWay}"
+								IsEnabled="{Binding IsSectionEnabled}"
+								MinWidth="180"
+								FontSize="12"
+								VerticalAlignment="Center">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="ag:SpecifierAggregationModeItem">
+						<TextBlock Text="{Binding DisplayName}"
+											 VerticalAlignment="Center"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+
+		</Grid>
+
+		<TextBlock Text="{Binding SpecifierParametersHint}"
+							 TextWrapping="Wrap"
+							 Opacity="0.6"
+							 FontSize="11"
+							 IsVisible="{Binding HasParametersHint}"/>
+
+		<ItemsControl ItemsSource="{Binding Rules}"
+									IsEnabled="{Binding IsRulesEnabled}">
+
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="vm:ToolSpecifierRuleRowViewModel">
+					<Grid ColumnDefinitions="*,160,Auto" ColumnSpacing="4" Margin="0,2,0,2">
+
+						<TextBox Grid.Column="0"
+										 Text="{Binding Pattern, Mode=TwoWay}"
+										 PlaceholderText="{loc:Loc card.tools.specifiers.pattern}"
+										 FontSize="12"/>
+
+						<ComboBox Grid.Column="1"
+											ItemsSource="{Binding Decisions}"
+											SelectedItem="{Binding Decision, Mode=TwoWay}"
+											MinWidth="120"
+											FontSize="12"
+											VerticalAlignment="Center">
+
+							<ComboBox.ItemTemplate>
+								<DataTemplate x:DataType="ag:SpecifierDecisionItem">
+									<TextBlock Text="{Binding DisplayName}"
+														 VerticalAlignment="Center"/>
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+
+						</ComboBox>
+
+						<Button Grid.Column="2"
+										Command="{Binding RemoveCommand}"
+										HorizontalAlignment="Left"
+										VerticalAlignment="Center"
+										Background="Transparent"
+										BorderThickness="0"
+										ToolTip.Tip="{loc:Loc common.delete}">
+
+							<ico:MaterialIcon Kind="Close" Width="14" Height="14"/>
+						</Button>
+
+					</Grid>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+
+		</ItemsControl>
+
+		<Button Command="{Binding AddCommand}"
+						HorizontalAlignment="Left"
+						Background="Transparent"
+						BorderThickness="0"
+						ToolTip.Tip="{loc:Loc tool.specifier.add}">
+
+			<ico:MaterialIcon Kind="Plus"/>
+		</Button>
+
+	</StackPanel>
+
+</UserControl>

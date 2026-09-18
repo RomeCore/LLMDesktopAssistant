@@ -1,7 +1,3 @@
-using Avalonia.Controls;
-using Avalonia.Data;
-using Avalonia.Input;
-using Avalonia.Layout;
 using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Addons.MVVM.Elements
@@ -29,22 +25,11 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		{
 			_context = context;
 			
-			var toggle = new ToggleSwitch
-			{
-				DataContext = this,
-				VerticalAlignment = VerticalAlignment.Center,
-			};
-			toggle.Bind(ToggleSwitch.IsCheckedProperty, new Binding(nameof(IsEnabled)) { Mode = BindingMode.TwoWay });
-			toggle.Bind(InputElement.IsEnabledProperty, new Binding(nameof(CanEdit)));
-			toggle.Bind(ToggleSwitch.OffContentProperty, new Binding(nameof(LocaleKeyBase.Value))
-			{
-				Source = Locale.GetKey("common.off")
-			});
-			toggle.Bind(ToggleSwitch.OnContentProperty, new Binding(nameof(LocaleKeyBase.Value))
-			{
-				Source = Locale.GetKey("common.on")
-			});
-			Content = toggle;
+			Content = new AddonCardStateToggleViewModel(AddonCardStateToggleKind.Enabled,
+				Locale.GetKey("card.state.enabled"), isThreeState: false,
+				get: () => IsEnabled,
+				set: value => IsEnabled = value,
+				canEdit: () => CanEdit);
 
 			if (CanEdit)
 			{
@@ -59,10 +44,15 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		{
 			base.Dispose(disposing);
 
-			if (disposing && CanEdit)
+			if (disposing)
 			{
-				_context.PropertyChanged -= Context_PropertyChanged;
-				_context.SetConfig!.PropertyChanged -= SetConfig_PropertyChanged;
+				(Content as IDisposable)?.Dispose();
+
+				if (CanEdit)
+				{
+					_context.PropertyChanged -= Context_PropertyChanged;
+					_context.SetConfig!.PropertyChanged -= SetConfig_PropertyChanged;
+				}
 			}
 		}
 

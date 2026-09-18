@@ -1,10 +1,3 @@
-using Avalonia.Controls;
-using Avalonia.Controls.Templates;
-using Avalonia.Data;
-using Avalonia.Input;
-using Avalonia.Layout;
-using LLMDesktopAssistant.Localization;
-
 namespace LLMDesktopAssistant.Addons.MVVM.Elements
 {
 	/// <summary>
@@ -47,25 +40,12 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 
 			Options = [.. options];
 
-			var combo = new ComboBox
-			{
-				DataContext = this,
-				ItemsSource = Options,
-				MinWidth = 110,
-				FontSize = 12,
-				VerticalAlignment = VerticalAlignment.Center,
-				ItemTemplate = new FuncDataTemplate<AddonCardSelectorOption<TValue>>((item, _) => new TextBlock
-				{
-					[!TextBlock.TextProperty] = new Binding(nameof(LocaleKeyBase.Value))
-					{
-						Source = item.DisplayName
-					},
-					VerticalAlignment = VerticalAlignment.Center,
-				}),
-			};
-			combo.Bind(ComboBox.SelectedItemProperty, new Binding(nameof(SelectedOption)) { Mode = BindingMode.TwoWay });
-			combo.Bind(InputElement.IsEnabledProperty, new Binding(nameof(CanEdit)));
-			Content = combo;
+			Content = new AddonCardSelectorViewModel(this,
+				[.. Options.Cast<IAddonCardSelectorOption>()],
+				placeholder: null,
+				get: () => SelectedOption,
+				set: value => SelectedOption = (AddonCardSelectorOption<TValue>?)value,
+				canEdit: () => CanEdit);
 
 			if (CanEdit)
 			{
@@ -80,10 +60,15 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		{
 			base.Dispose(disposing);
 
-			if (disposing && CanEdit)
+			if (disposing)
 			{
-				_context.PropertyChanged -= Context_PropertyChanged;
-				_context.SetConfig!.PropertyChanged -= SetConfig_PropertyChanged;
+				(Content as IDisposable)?.Dispose();
+
+				if (CanEdit)
+				{
+					_context.PropertyChanged -= Context_PropertyChanged;
+					_context.SetConfig!.PropertyChanged -= SetConfig_PropertyChanged;
+				}
 			}
 		}
 

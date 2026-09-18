@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="60" d:DesignHeight="24"
+						 xmlns:vm="using:LLMDesktopAssistant.Addons.MVVM.Elements"
+						 xmlns:loc="using:LLMDesktopAssistant.Localization"
+						 xmlns:ico="using:Material.Icons.Avalonia"
+						 x:Class="LLMDesktopAssistant.Addons.MVVM.Elements.AddonCardStateToggleView"
+						 x:DataType="vm:AddonCardStateToggleViewModel">
+
+	<!-- The toggle brings its own styles: the view stays self-contained, wherever the card is hosted. -->
+	<UserControl.Styles>
+
+		<Style Selector="ToggleButton.stateToggle">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Width" Value="20"/>
+			<Setter Property="Height" Value="20"/>
+			<Setter Property="Padding" Value="0"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Style Selector="^ > ico|MaterialIcon">
+				<Setter Property="Width" Value="16"/>
+				<Setter Property="Height" Value="16"/>
+			</Style>
+		</Style>
+
+		<Style Selector="ToggleButton.stateToggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#22FFFFFF"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+
+		<Style Selector="ToggleButton.stateToggle:checked /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+
+		<Style Selector="ToggleButton.stateToggle:indeterminate /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+
+	</UserControl.Styles>
+
+	<ToggleButton Classes="stateToggle"
+								VerticalAlignment="Center"
+								IsThreeState="{Binding IsThreeState}"
+								IsChecked="{Binding IsOn, Mode=TwoWay}"
+								IsEnabled="{Binding CanEdit}"
+								ToolTip.Tip="{loc:Loc {Binding ToolTip}}">
+
+		<ico:MaterialIcon Kind="{Binding Icon}"
+											Foreground="{Binding Brush}"/>
+	</ToggleButton>
+
+</UserControl>

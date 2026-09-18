@@ -19,6 +19,8 @@ metadata.compatibility: Совместимость
 metadata.license: Лицензия
 metadata.version: Версия
 tag.filter: Фильтровать по этому тегу
+state.enabled: Включить или выключить
+state.hidden: Показать или скрыть
 source.unknown: Неизвестно
 source.template: Шаблон
 source.pack: Пакет аддонов
@@ -79,3 +81,5 @@ tools.specifiers.toggle: Показать правила спецификато�
 tools.specifiers.union_mode: Режим объединения
 tools.specifiers.aggregation_mode: Режим агрегации
 tools.specifiers.pattern: Шаблон
+tools.arguments: Аргументы инструмента
+tools.arguments.toggle: Показать аргументы инструмента

@@ -19,6 +19,8 @@ metadata.compatibility: Compatibility
 metadata.license: License
 metadata.version: Version
 tag.filter: Filter by this tag
+state.enabled: Toggle the enabled state
+state.hidden: Toggle the shown state
 source.unknown: Unknown
 source.template: Template
 source.pack: Addon pack
@@ -79,3 +81,5 @@ tools.specifiers.toggle: Show specifier rules
 tools.specifiers.union_mode: Union mode
 tools.specifiers.aggregation_mode: Aggregation mode
 tools.specifiers.pattern: Pattern
+tools.arguments: Tool arguments
+tools.arguments.toggle: Show tool arguments

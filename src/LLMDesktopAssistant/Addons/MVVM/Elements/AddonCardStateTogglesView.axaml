@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d" d:DesignWidth="60" d:DesignHeight="24"
+						 xmlns:vm="using:LLMDesktopAssistant.Addons.MVVM.Elements"
+						 x:Class="LLMDesktopAssistant.Addons.MVVM.Elements.AddonCardStateTogglesView"
+						 x:DataType="vm:AddonCardStateTogglesViewModel">
+
+	<StackPanel Orientation="Horizontal" Spacing="4">
+
+		<ContentControl Content="{Binding Enabled}"
+										VerticalAlignment="Center"/>
+
+		<ContentControl Content="{Binding Shown}"
+										VerticalAlignment="Center"/>
+
+	</StackPanel>
+
+</UserControl>

@@ -1,8 +1,3 @@
-using Avalonia.Data;
-using Avalonia.Input;
-using Avalonia.Layout;
-using LLMDesktopAssistant.Controls;
-
 namespace LLMDesktopAssistant.Addons.MVVM.Elements
 {
 	/// <summary>
@@ -38,14 +33,10 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			_getModelOverride = getModelOverride;
 			_setModelOverride = setModelOverride;
 
-			var selector = new ModelSelectorControl
-			{
-				DataContext = this,
-				VerticalAlignment = VerticalAlignment.Center,
-			};
-			selector.Bind(ModelSelectorControl.SelectedModelProperty, new Binding(nameof(SelectedModel)) { Mode = BindingMode.TwoWay });
-			selector.Bind(InputElement.IsEnabledProperty, new Binding(nameof(CanEdit)));
-			Content = selector;
+			Content = new AddonCardModelSelectorViewModel(this,
+				get: () => SelectedModel,
+				set: value => SelectedModel = value,
+				canEdit: () => CanEdit);
 
 			if (CanEdit)
 			{
@@ -60,10 +51,15 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		{
 			base.Dispose(disposing);
 
-			if (disposing && CanEdit)
+			if (disposing)
 			{
-				_context.PropertyChanged -= Context_PropertyChanged;
-				_context.SetConfig!.PropertyChanged -= SetConfig_PropertyChanged;
+				(Content as IDisposable)?.Dispose();
+
+				if (CanEdit)
+				{
+					_context.PropertyChanged -= Context_PropertyChanged;
+					_context.SetConfig!.PropertyChanged -= SetConfig_PropertyChanged;
+				}
 			}
 		}
 

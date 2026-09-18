@@ -87,22 +87,6 @@
 			<Setter Property="BorderBrush" Value="Transparent"/>
 		</Style>
 
-		<!-- The aggregate toggles of a group card. -->
-		<Style Selector="ToggleButton.groupStateToggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="Background" Value="#22FFFFFF"/>
-			<Setter Property="BorderBrush" Value="Transparent"/>
-		</Style>
-
-		<Style Selector="ToggleButton.groupStateToggle:checked /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="Background" Value="Transparent"/>
-			<Setter Property="BorderBrush" Value="Transparent"/>
-		</Style>
-
-		<Style Selector="ToggleButton.groupStateToggle:indeterminate /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="Background" Value="Transparent"/>
-			<Setter Property="BorderBrush" Value="Transparent"/>
-		</Style>
-
 	</UserControl.Styles>
 
 	<!-- ================================================================ -->

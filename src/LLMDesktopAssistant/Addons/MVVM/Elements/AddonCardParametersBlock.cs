@@ -1,5 +1,3 @@
-using Avalonia.Controls;
-using LLMDesktopAssistant.Controls;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.StructuredValues.Reactive;
 using Material.Icons;
@@ -21,7 +19,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		where TChange : AddonChangeBase, new()
 	{
 		private readonly AddonCardContext<TAddon, TChange> _context;
-		private readonly ContentControl _host = new();
+		private readonly AddonCardParametersViewModel _content = new();
 
 		private ReactiveNodeValue? _readOnlyValue;
 
@@ -39,7 +37,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			Title = Locale.GetKey("card.parameters");
 			ToggleIcon = MaterialIconKind.Tune;
 			ToggleToolTip = Locale.GetKey("card.parameters.toggle");
-			Content = _host;
+			Content = _content;
 		}
 
 		/// <inheritdoc/>
@@ -57,7 +55,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 
 		private void EnsureEditor()
 		{
-			if (_host.Content is not null)
+			if (_content.Schema is not null)
 				return;
 
 			var schema = _context.Addon.ParameterSchema;
@@ -71,11 +69,8 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			else
 				_readOnlyValue = value;
 
-			_host.Content = new ParameterEditorControl
-			{
-				Schema = schema,
-				Value = value
-			};
+			_content.Schema = schema;
+			_content.Value = value;
 		}
 	}
 }

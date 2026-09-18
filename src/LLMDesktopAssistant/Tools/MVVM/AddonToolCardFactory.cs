@@ -1,3 +1,5 @@
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using Avalonia.Media;
 using LLMDesktopAssistant.Addons.MVVM;
 using LLMDesktopAssistant.Addons.MVVM.Elements;
@@ -6,6 +8,7 @@ using LLMDesktopAssistant.LLM.MVVM.Settings;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools.MVVM.Elements;
 using Material.Icons;
+using System.Text.Json.Serialization.Metadata;
 
 namespace LLMDesktopAssistant.Tools.MVVM
 {
@@ -16,6 +19,13 @@ namespace LLMDesktopAssistant.Tools.MVVM
 	/// </summary>
 	public class AddonToolCardFactory : AddonCardFactoryBase<ToolInfo, ToolChange>
 	{
+		private static readonly JsonSerializerOptions _argumentSchemaSerializationOptions = new()
+		{
+			Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+			TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
+			WriteIndented = true
+		};
+
 		private static readonly ImmutableList<AddonCardSelectorOption<ToolApprovalLevel?>> _approvalOptions =
 			[.. ToolApprovalLevelItem.All.Select(item =>
 				new AddonCardSelectorOption<ToolApprovalLevel?>(item.Value, Locale.GetConstKey(item.DisplayName)))];
@@ -54,6 +64,16 @@ namespace LLMDesktopAssistant.Tools.MVVM
 			AddParametersBlock(context, elements);
 
 			elements.Add(new AddonCardToolPolicyMaskBlock(context) { Order = BlockOrder + 10 });
+
+			elements.Add(new AddonCardBlock
+			{
+				Order = BlockOrder + 15,
+				Title = Locale.GetKey("card.tools.arguments"),
+				Visibility = AddonCardBlockVisibility.Collapsible,
+				ToggleIcon = MaterialIconKind.CodeBraces,
+				ToggleToolTip = Locale.GetKey("card.tools.arguments.toggle"),
+				Content = new AddonCardBodyTextViewModel(context.Addon.ArgumentSchema.ToJsonString(_argumentSchemaSerializationOptions))
+			});
 
 			if (context.Addon.SpecifierAnalyzer is not null)
 				elements.Add(new AddonCardToolSpecifiersBlock(context) { Order = BlockOrder + 20 });
