@@ -6,17 +6,11 @@ using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Addons.MVVM
 {
-	public class ToggleableAddonCardViewModel : NotifyPropertyChanged
+	public class AddonCardItemViewModel : NotifyPropertyChanged
 	{
 		public required object Addon { get; init; }
 
 		public required AddonCardViewModel Card { get; init; }
-
-		public bool IsVisible
-		{
-			get;
-			set => SetProperty(ref field, value);
-		}
 	}
 
 	/// <summary>
@@ -26,8 +20,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 	/// <remarks>
 	/// The class is intentionally non-generic and abstract: it is used as the <c>x:DataType</c> of the
 	/// addon list panel view (generic types cannot be used in compiled bindings), while the list itself
-	/// is built by <see cref="AddonListViewModel{TAddon, TChange}"/>. Every page that owns an addon list
-	/// view model can embed the panel, no inheritance from the settings view models is required anymore.
+	/// is built by <see cref="AddonListViewModel{TAddon, TChange}"/>.
 	/// </remarks>
 	public abstract class AddonListViewModel : ViewModelBase
 	{
@@ -82,7 +75,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// <summary>
 		/// Gets the cards of the addons that match the current search query.
 		/// </summary>
-		public RangeObservableCollection<ToggleableAddonCardViewModel> Items
+		public RangeObservableCollection<AddonCardItemViewModel> Items
 		{
 			get => field ??= [];
 			protected set => (field ??= []).Reset(value);
@@ -153,11 +146,10 @@ namespace LLMDesktopAssistant.Addons.MVVM
 
 			foreach (var card in Items)
 				card.Card.Dispose();
-			Items.Reset(GetAddons().Select(a => new ToggleableAddonCardViewModel
+			Items.Reset(GetAddons().Select(a => new AddonCardItemViewModel
 			{
 				Addon = a,
-				Card = _factory.Create(CreateContext(a)),
-				IsVisible = true
+				Card = _factory.Create(CreateContext(a))
 			}));
 			ApplyFilter();
 		}
@@ -199,20 +191,20 @@ namespace LLMDesktopAssistant.Addons.MVVM
 
 			if (query.Length == 0)
 			{
-				foreach (var card in Items)
-					card.IsVisible = true;
+				foreach (var item in Items)
+					item.Card.IsVisible = true;
 			}
 			else if (_searchService is not null)
 			{
 				var matching = _searchService.Search(query, Items.Select(i => (TAddon)i.Addon), maxResults: 0)
 					.Select(result => result.Addon).ToHashSet();
-				foreach (var card in Items)
-					card.IsVisible = matching.Contains((TAddon)card.Addon);
+				foreach (var item in Items)
+					item.Card.IsVisible = matching.Contains((TAddon)item.Addon);
 			}
 			else
 			{
-				foreach (var card in Items)
-					card.IsVisible = Matches((TAddon)card.Addon, query);
+				foreach (var item in Items)
+					item.Card.IsVisible = Matches((TAddon)item.Addon, query);
 			}
 		}
 

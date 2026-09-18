@@ -6,7 +6,7 @@ using LLMDesktopAssistant.LLM.Services;
 namespace LLMDesktopAssistant.Prompting.Skills
 {
 	/// <summary>
-	/// The 'addon-search' provider for skills: renders the skill name, description and, in the detailed
+	/// The addon tools provider for skills: renders the skill name, description and, in the detailed
 	/// mode, the common addon metadata. The parameter schema of template skills is intentionally not
 	/// rendered — it is a UI concern and is not usable by the model.
 	/// </summary>
@@ -30,8 +30,10 @@ namespace LLMDesktopAssistant.Prompting.Skills
 		{
 			AddonSearchFormatting.AppendItem(builder, skill.Name, skill.Description);
 
-			if (detailed)
-				AddonSearchFormatting.AppendMetadata(builder, skill.Tags, skill.SourcePack?.Name, skill.HomeDirectory);
+			if (!detailed)
+				return;
+
+			AddonSearchFormatting.AppendMetadata(builder, skill.Tags, skill.SourcePack?.Name, skill.Path);
 		}
 	}
 }

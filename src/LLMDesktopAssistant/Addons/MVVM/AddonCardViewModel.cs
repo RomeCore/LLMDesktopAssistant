@@ -136,26 +136,40 @@ namespace LLMDesktopAssistant.Addons.MVVM
 			set => SetProperty(ref field, value);
 		}
 
+		public bool IsVisible
+		{
+			get;
+			set => SetProperty(ref field, value);
+		}
+
+		public bool IsChildrenExpanded
+		{
+			get;
+			set => SetProperty(ref field, value);
+		}
+
+		public ImmutableList<AddonCardViewModel> Children { get; init; } = [];
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AddonCardViewModel"/> class.
 		/// </summary>
 		/// <param name="elements">All elements of the card, in any order (they are grouped by kind).</param>
 		public AddonCardViewModel(IEnumerable<IAddonCardElement> elements)
 		{
-			Elements = [.. elements];
+			Elements = [.. elements.OrderBy(e => e.Order)];
 			Changes = [.. Elements.OfType<IAddonCardChange>()];
 
-			LeftHeaderElements = [.. Elements.OfType<IAddonCardHeaderElement>().Where(e => e.IsShownLeft).OrderBy(e => e.Order)];
-			RightHeaderElements = [.. Elements.OfType<IAddonCardHeaderElement>().Where(e => !e.IsShownLeft).OrderBy(e => e.Order)];
+			LeftHeaderElements = [.. Elements.OfType<IAddonCardHeaderElement>().Where(e => e.IsShownLeft)];
+			RightHeaderElements = [.. Elements.OfType<IAddonCardHeaderElement>().Where(e => !e.IsShownLeft)];
 
-			Chips = [.. Elements.OfType<IAddonCardChip>().OrderBy(e => e.Order)];
+			Chips = [.. Elements.OfType<IAddonCardChip>()];
 
-			Blocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.Visibility == AddonCardBlockVisibility.Inline).OrderBy(e => e.Order)];
-			CollapsibleBlocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.Visibility == AddonCardBlockVisibility.Collapsible).OrderBy(e => e.Order)];
-			DetailBlocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.Visibility == AddonCardBlockVisibility.Details).OrderBy(e => e.Order)];
+			Blocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.Visibility == AddonCardBlockVisibility.Inline)];
+			CollapsibleBlocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.Visibility == AddonCardBlockVisibility.Collapsible)];
+			DetailBlocks = [.. Elements.OfType<IAddonCardBlock>().Where(b => b.Visibility == AddonCardBlockVisibility.Details)];
 
-			ActionRowElements = [.. Elements.OfType<IAddonCardActionRowElement>().OrderBy(e => e.Order)];
-			Actions = [.. Elements.OfType<IAddonCardAction>().OrderBy(e => e.Order)];
+			ActionRowElements = [.. Elements.OfType<IAddonCardActionRowElement>()];
+			Actions = [.. Elements.OfType<IAddonCardAction>()];
 
 			foreach (var change in Changes)
 				if (change is INotifyPropertyChanged notifier)

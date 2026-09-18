@@ -6,7 +6,7 @@ using LLMDesktopAssistant.LLM.Services;
 namespace LLMDesktopAssistant.Agents.SubAgents
 {
 	/// <summary>
-	/// The 'addon-search' provider for sub-agents: renders the sub-agent name, description and, in the
+	/// The addon tools provider for sub-agents: renders the sub-agent name, description and, in the
 	/// detailed mode, the model override and the common addon metadata.
 	/// </summary>
 	[ChatService(typeof(IAddonAgenticSearchProvider))]
@@ -35,7 +35,7 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 			if (!string.IsNullOrEmpty(subAgent.Model))
 				builder.Append("  - model: ").AppendLine(subAgent.Model);
 
-			AddonSearchFormatting.AppendMetadata(builder, subAgent.Tags, subAgent.SourcePack?.Name, subAgent.HomeDirectory);
+			AddonSearchFormatting.AppendMetadata(builder, subAgent.Tags, subAgent.SourcePack?.Name, subAgent.Path);
 		}
 	}
 }

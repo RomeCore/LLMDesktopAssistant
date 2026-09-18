@@ -11,29 +11,30 @@ using Material.Icons;
 namespace LLMDesktopAssistant.Tools.Implementations
 {
 	/// <summary>
-	/// The 'addon-search' tool: searches the addons available to the calling agent (skills, sub-agents,
-	/// tools and Lua scripts) through the per-kind <see cref="IAddonAgenticSearchProvider"/> instances.
+	/// The addon tools ('addon-search', 'addon-list_available' and 'addon-info') that search, list and
+	/// inspect the addons available to the calling agent (skills, sub-agents, tools and Lua scripts)
+	/// through the per-kind <see cref="IAddonAgenticSearchProvider"/> instances.
 	/// </summary>
 	/// <remarks>
 	/// <para>
 	/// Hidden addons are included: they are intentionally excluded from the agent prompt and toolset
 	/// (see <c>ChatExecutionService</c> and <c>ChatPromptBuilder</c>), exactly as
-	/// <c>AddonChangedBase.Hidden</c> documents it, so the search is the only way to discover them.
+	/// <c>AddonChangedBase.Hidden</c> documents it, so the addon tools are the only way to discover them.
 	/// Disabled addons are not returned by the collectors and therefore are not searchable.
 	/// </para>
 	/// <para>
 	/// Every provider renders its own body (tools render the argument schema, skills render the loading
-	/// hint, etc.), while the group header ('Title — UsageHint') is rendered by the tool itself.
+	/// hint, etc.), while the group header ('Title — UsageHint') is rendered by the tools themselves.
 	/// </para>
 	/// <para>
 	/// The valid 'kinds' filter values are the <see cref="IAddonTypeDescriptor.Type"/> strings of the
-	/// descriptors that have a search provider: nothing is hardcoded, the argument schema and the error
+	/// descriptors that have a provider: nothing is hardcoded, the argument schemas and the error
 	/// messages stay in sync with the registered addon types automatically. A new addon type with a
-	/// provider becomes searchable and filterable without touching this module.
+	/// provider becomes available to all three tools without touching this module.
 	/// </para>
 	/// </remarks>
 	[ToolModule]
-	public class AddonSearchToolModule : ToolModule
+	public class AddonToolModule : ToolModule
 	{
 		private const int DefaultMaxResults = 5;
 		private const int MaxResultsLimit = 25;
@@ -45,9 +46,9 @@ namespace LLMDesktopAssistant.Tools.Implementations
 		private readonly AddonKind _allSearchableKinds;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AddonSearchToolModule"/> class.
+		/// Initializes a new instance of the <see cref="AddonToolModule"/> class.
 		/// </summary>
-		public AddonSearchToolModule(IAgentManagementService agentManager,
+		public AddonToolModule(IAgentManagementService agentManager,
 			IEnumerable<IAddonAgenticSearchProvider> providers,
 			IEnumerable<IAddonTypeDescriptor> addonTypeDescriptors)
 		{
@@ -59,7 +60,7 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			var allSearchableKinds = AddonKind.None;
 
 			// The filter values are the addon type strings (for example, 'skills', 'agents' or
-			// 'scripts/lua') of the descriptors that have a search provider — the same source
+			// 'scripts/lua') of the descriptors that have a provider — the same source
 			// the addon system itself uses.
 			foreach (var provider in _providers)
 			{
@@ -91,13 +92,40 @@ namespace LLMDesktopAssistant.Tools.Implementations
 				DefaultExpectedBehaviour = ToolBehaviour.None,
 				ModifyArgumentSchema = ModifyArgumentSchema
 			});
+
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = ListAvailableAddons,
+				IsFixed = true,
+				Name = "addon-list_available",
+				Description = "Lists the names of every addon available to you (skills, sub-agents, tools and " +
+					"Lua scripts), grouped by kind. Hidden addons are included.",
+				NameKey = Locale.GetKey("tool.name.addon-list_available"),
+				DescriptionKey = Locale.GetKey("tool.description.addon-list_available"),
+				CategoryKey = Locale.GetKey("tool.category.addons"),
+				DefaultExpectedBehaviour = ToolBehaviour.None,
+				ModifyArgumentSchema = ModifyArgumentSchema
+			});
+
+			AddTool(new ToolInitializationInfo
+			{
+				Executor = GetAddonInfo,
+				IsFixed = true,
+				Name = "addon-info",
+				Description = "Shows the detailed information about a single addon available to you, " +
+					"looked up by its exact name. Hidden addons are included.",
+				NameKey = Locale.GetKey("tool.name.addon-info"),
+				DescriptionKey = Locale.GetKey("tool.description.addon-info"),
+				CategoryKey = Locale.GetKey("tool.category.addons"),
+				DefaultExpectedBehaviour = ToolBehaviour.None
+			});
 		}
 
 		private ReactiveToolResult SearchAddons(
 			[Description("The free-form search query, for example 'code review' or 'postgres migrations'.")]
 			string query,
 			ToolExecutionContext ctx,
-			[Description("Optional filters by addon type. Omit the parameter to search all available kinds.")]
+			[Description("Optional filters by addon type. Omit the parameter to use all available kinds.")]
 			string[]? kinds = null,
 			[Description("The maximum number of matches per addon kind.")]
 			[Range(1, MaxResultsLimit)]
@@ -155,10 +183,106 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			}.CompleteWithSuccess();
 		}
 
+		private ReactiveToolResult ListAvailableAddons(
+			ToolExecutionContext ctx,
+			[Description("Optional filters by addon type. Omit the parameter to use all available kinds.")]
+			string[]? kinds = null)
+		{
+			var kindsError = TryParseKinds(kinds, out var kindsFilter);
+			if (kindsError is not null)
+				return CreateError(kindsError, MaterialIconKind.FormatListBulleted);
+
+			var agent = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
+
+			var builder = new StringBuilder();
+			foreach (var provider in _providers)
+			{
+				if ((kindsFilter & provider.Kind) == 0)
+					continue;
+
+				var body = provider.List(agent);
+				if (string.IsNullOrWhiteSpace(body))
+					continue;
+
+				if (builder.Length > 0)
+					builder.AppendLine();
+
+				builder.Append("**").Append(provider.Title).Append("** — ")
+					.Append(provider.UsageHint).AppendLine(":");
+				builder.AppendLine(body);
+			}
+
+			if (builder.Length == 0)
+			{
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.FormatListBulleted,
+					ResultContent = kindsFilter == _allSearchableKinds
+						? "No addons are available to you."
+						: "No addons are available for the specified kinds.",
+					UseMarkdown = true
+				}.CompleteWithSuccess();
+			}
+
+			return new ReactiveToolResult
+			{
+				StatusIcon = MaterialIconKind.FormatListBulleted,
+				ResultContent = builder.ToString(),
+				UseMarkdown = true
+			}.CompleteWithSuccess();
+		}
+
+		private ReactiveToolResult GetAddonInfo(
+			[Description("The exact addon name, for example 'addon-search' or 'script-tool-editing'.")]
+			string name,
+			ToolExecutionContext ctx)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+				return CreateError("The addon name must not be empty.", MaterialIconKind.Information);
+
+			name = name.Trim();
+			var agent = _agentManager.GetAgentDescriptor(ctx.Message.SenderAgentId);
+
+			var builder = new StringBuilder();
+			foreach (var provider in _providers)
+			{
+				var body = provider.Info(name, agent);
+				if (string.IsNullOrWhiteSpace(body))
+					continue;
+
+				if (builder.Length > 0)
+					builder.AppendLine();
+
+				builder.Append("**").Append(provider.Title).Append("** — ")
+					.Append(provider.UsageHint).AppendLine(":");
+				builder.AppendLine(body);
+			}
+
+			if (builder.Length == 0)
+			{
+				return new ReactiveToolResult
+				{
+					StatusIcon = MaterialIconKind.Information,
+					StatusTitle = $"**{name}**",
+					ResultContent = $"No addon with the exact name \"{name}\" is available to you. " +
+						"Use `addon-list_available` to see the exact available names.",
+					UseMarkdown = true
+				}.CompleteWithError();
+			}
+
+			return new ReactiveToolResult
+			{
+				StatusIcon = MaterialIconKind.Information,
+				StatusTitle = $"**{name}**",
+				ResultContent = builder.ToString(),
+				UseMarkdown = true
+			}.CompleteWithSuccess();
+		}
+
 		/// <summary>
-		/// Fills the argument schema of the tool with the actual addon type strings accepted by the
+		/// Fills the argument schema of the tools with the actual addon type strings accepted by the
 		/// 'kinds' parameter: the values are the <see cref="IAddonTypeDescriptor.Type"/> strings of the
-		/// descriptors that have a search provider, so the model always sees the real list.
+		/// descriptors that have a provider, so the model always sees the real list.
 		/// </summary>
 		private void ModifyArgumentSchema(JsonObject schema)
 		{
@@ -177,12 +301,12 @@ namespace LLMDesktopAssistant.Tools.Implementations
 
 			kindsProperty["description"] =
 				$"Optional filters by addon type: {string.Join(", ", _searchableTypes.Select(type => $"'{type}'"))}. " +
-				"Omit the parameter to search all available kinds.";
+				"Omit the parameter to use all available kinds.";
 		}
 
 		/// <summary>
 		/// Converts the specified addon type filters into <see cref="AddonKind"/> flags. An omitted or
-		/// empty filter selects every searchable kind.
+		/// empty filter selects every available kind.
 		/// </summary>
 		/// <returns>The error message of the unknown filter values, or <see langword="null"/> when the filters are valid.</returns>
 		private string? TryParseKinds(IEnumerable<string>? values, out AddonKind kinds)
@@ -215,11 +339,11 @@ namespace LLMDesktopAssistant.Tools.Implementations
 			return type.Replace('\\', '/').Trim().Trim('/');
 		}
 
-		private static ReactiveToolResult CreateError(string message)
+		private static ReactiveToolResult CreateError(string message, MaterialIconKind icon = MaterialIconKind.Search)
 		{
 			return new ReactiveToolResult
 			{
-				StatusIcon = MaterialIconKind.Search,
+				StatusIcon = icon,
 				ResultContent = message,
 				UseMarkdown = true
 			}.CompleteWithError();

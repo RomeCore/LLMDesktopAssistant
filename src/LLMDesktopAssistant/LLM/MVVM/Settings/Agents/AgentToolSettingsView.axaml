@@ -102,7 +102,7 @@
 
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
-					<StackPanel Spacing="8"/>
+					<WrapPanel ItemSpacing="8" LineSpacing="8"/>
 				</ItemsPanelTemplate>
 			</ItemsControl.ItemsPanel>
 

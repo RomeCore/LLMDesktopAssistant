@@ -54,7 +54,7 @@ namespace LLMDesktopAssistant.Addons.Search
 		/// providers in the detailed mode.
 		/// </summary>
 		public static void AppendMetadata(StringBuilder builder,
-			IEnumerable<string> tags, string? sourcePackName, string? homeDirectory)
+			IEnumerable<string> tags, string? sourcePackName, string? path)
 		{
 			var tagList = tags.ToList();
 			if (tagList.Count > 0)
@@ -63,8 +63,8 @@ namespace LLMDesktopAssistant.Addons.Search
 			if (!string.IsNullOrEmpty(sourcePackName))
 				builder.Append("  - pack: ").AppendLine(sourcePackName);
 
-			if (!string.IsNullOrEmpty(homeDirectory))
-				builder.Append("  - path: ").AppendLine(homeDirectory);
+			if (!string.IsNullOrEmpty(path))
+				builder.Append("  - path: ").AppendLine(path);
 		}
 	}
 }

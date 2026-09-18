@@ -7,7 +7,8 @@
 						 xmlns:loc="using:LLMDesktopAssistant.Localization"
 						 xmlns:ico="using:Material.Icons.Avalonia"
 						 x:Class="LLMDesktopAssistant.Addons.MVVM.AddonCardView"
-						 x:DataType="cards:AddonCardViewModel">
+						 x:DataType="cards:AddonCardViewModel"
+						 IsVisible="{Binding IsVisible}">
 
 	<!-- ================================================================ -->
 	<!-- Styles                                                           -->
@@ -227,9 +228,9 @@
 	<Border Classes="addonCard">
 		<StackPanel Orientation="Vertical" Spacing="4">
 
-			<!-- ============================================================ -->
+			<!-- ============================================================== -->
 			<!-- Row 0: header (left slots | icon + name | right slots | reset) -->
-			<!-- ============================================================ -->
+			<!-- ============================================================== -->
 			<Grid ColumnDefinitions="Auto,*,Auto,Auto" VerticalAlignment="Center" ColumnSpacing="4">
 
 				<ItemsControl Grid.Column="0"
@@ -383,6 +384,13 @@
 			<!-- ============================================================ -->
 			<ItemsControl ItemsSource="{Binding DetailBlocks}"
 										IsVisible="{Binding IsDetailsVisible}"
+										Margin="28,0,0,0"/>
+			
+			<!-- ============================================================ -->
+			<!-- Row 7: Children                                              -->
+			<!-- ============================================================ -->
+			<ItemsControl ItemsSource="{Binding Children}"
+										IsVisible="{Binding IsChildrenExpanded}"
 										Margin="28,0,0,0"/>
 
 		</StackPanel>

@@ -7,11 +7,11 @@ using LLMDesktopAssistant.LLM.Services;
 namespace LLMDesktopAssistant.Tools
 {
 	/// <summary>
-	/// The 'addon-search' provider for tools of every source (native, MCP and scripted).
+	/// The addon tools provider for tools of every source (native, MCP and scripted).
 	/// </summary>
 	/// <remarks>
 	/// Tools can be hidden (just like any other addon): a hidden tool is excluded from the toolset sent
-	/// to the model, but stays callable by name or alias once discovered — so the search is the only
+	/// to the model, but stays callable by name or alias once discovered — so the addon tools are the only
 	/// way to find it. The argument schema is rendered in the detailed mode, because it is the schema
 	/// actually used by the model.
 	/// </remarks>
@@ -50,6 +50,8 @@ namespace LLMDesktopAssistant.Tools
 				return;
 
 			builder.Append("  - source: ").AppendLine(tool.ToolSource.ToString().ToLowerInvariant());
+
+			AddonSearchFormatting.AppendMetadata(builder, tool.Tags, tool.SourcePack?.Name, tool.Path);
 		}
 	}
 }

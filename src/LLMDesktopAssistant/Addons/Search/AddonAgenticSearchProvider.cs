@@ -62,6 +62,35 @@ namespace LLMDesktopAssistant.Addons.Search
 		protected abstract void AppendAddon(StringBuilder builder, TAddon addon, bool detailed);
 
 		/// <inheritdoc/>
+		public string? List(ChatAgentDescriptor agent)
+		{
+			var builder = new StringBuilder();
+			foreach (var addon in GetCandidates(agent).Where(Include))
+				builder.Append("- `").Append(addon.Name).AppendLine("`");
+
+			var body = builder.ToString().TrimEnd();
+			return body.Length == 0 ? null : body;
+		}
+
+		/// <inheritdoc/>
+		public string? Info(string name, ChatAgentDescriptor agent)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+				return null;
+
+			var addon = GetCandidates(agent)
+				.FirstOrDefault(candidate => string.Equals(candidate.Name, name, StringComparison.OrdinalIgnoreCase));
+
+			if (addon is null)
+				return null;
+
+			var builder = new StringBuilder();
+			AppendAddon(builder, addon, detailed: true);
+
+			return builder.ToString().TrimEnd();
+		}
+
+		/// <inheritdoc/>
 		public string? Search(string query, ChatAgentDescriptor agent, int maxResults, bool detailed)
 		{
 			var matches = _searchService.Search(query, GetCandidates(agent).Where(Include), maxResults);

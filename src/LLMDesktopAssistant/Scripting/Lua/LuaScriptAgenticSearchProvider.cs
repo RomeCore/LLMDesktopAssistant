@@ -7,7 +7,7 @@ using LLMDesktopAssistant.LLM.Services;
 namespace LLMDesktopAssistant.Scripting.Lua
 {
 	/// <summary>
-	/// The 'addon-search' provider for Lua scripts: renders the script name, description and, in the
+	/// The addon tools provider for Lua scripts: renders the script name, description and, in the
 	/// detailed mode, the namespace, the manuals and the common addon metadata.
 	/// </summary>
 	/// <remarks>
