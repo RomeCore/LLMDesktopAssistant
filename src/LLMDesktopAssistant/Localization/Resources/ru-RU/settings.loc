@@ -299,6 +299,8 @@ tool.behaviour_policy.auto_approve: Авто-одобрение
 tool.behaviour_policy.ask: Спрашивать
 tool.behaviour_policy.disallowed: Запрещено
 tools.enable: Включить инструменты
+tools.empty: Инструменты не найдены. Настройте источники аддонов.
+tools.search.placeholder: Поиск по имени, описанию или тегам...
 user.add.title: Добавить пользователя
 user.clear_image: Очистить
 user.description: Описание

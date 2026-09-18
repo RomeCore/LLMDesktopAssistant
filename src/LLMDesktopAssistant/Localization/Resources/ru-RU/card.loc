@@ -36,6 +36,7 @@ grouping.category: По категориям
 grouping.pack: По пакетам аддонов
 group.count: {0} аддонов
 group.visible_count: {0} из {1}
+group.mixed: Смешанно
 group.uncategorized: Без категории
 group.builtin: Встроенные
 group.enabled: Переключить состояние включённости видимых элементов
@@ -68,3 +69,13 @@ sub_agents.memory_blocks: Блоки памяти
 sub_agents.links.skill: Навык {0} не найден
 sub_agents.links.sub_agent: Субагент {0} не найден
 sub_agents.links.memory_block: Блок памяти {0} не найден
+
+// =====================================================
+// === Инструменты                                   ===
+// =====================================================
+tools.policy_mask: Маска политик
+tools.specifiers: Спецификаторы
+tools.specifiers.toggle: Показать правила спецификаторов
+tools.specifiers.union_mode: Режим объединения
+tools.specifiers.aggregation_mode: Режим агрегации
+tools.specifiers.pattern: Шаблон

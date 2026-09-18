@@ -2,6 +2,9 @@ using System.ComponentModel;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Management;
+using LLMDesktopAssistant.Addons.MVVM;
+using LLMDesktopAssistant.Addons.Search;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
@@ -29,442 +32,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public required ImmutableList<ToolBehaviourMaskItem> Toggles { get; init; }
 	}
 
-	public class ToolItemViewModel : NotifyPropertyChanged, ISetPolicyMaskFlag
-	{
-		private readonly ToolsetConfiguration _toolset;
-		private readonly ToolInfo _toolInfo;
-		private ToolChange? _change;
-
-		public ToolInfo Info => _toolInfo;
-		public string Name { get; }
-
-		public bool IsCategory => false;
-		public LocaleKeyBase Category { get; }
-
-		public IBrush? TitlePrefixForeground { get; }
-		public LocaleKeyBase? TitlePrefix { get; }
-
-		public LocaleKeyBase Description { get; }
-		public LocaleKeyBase Title { get; }
-
-		public bool IsFixed => _toolInfo.IsFixed;
-		public ICommand ResetCommand { get; }
-
-		public ToolItemViewModel(ToolInfo tool, ToolsetConfiguration toolset)
-		{
-			_toolset = toolset;
-			_toolInfo = tool;
-			_change = _toolset.Changes.GetValueOrDefault(tool.Name);
-
-			_toolset.PropertyChanged += Toolset_PropertyChanged;
-
-			switch (tool.ToolSource)
-			{
-				case ToolSource.MCP:
-					TitlePrefix = Locale.GetKey("tool.source.mcp");
-					TitlePrefixForeground = Brushes.LightGreen;
-					break;
-
-				case ToolSource.Meta:
-					TitlePrefix = Locale.GetKey("tool.source.meta");
-					TitlePrefixForeground = Brushes.Magenta;
-					break;
-			}
-
-			Name = tool.Name;
-			Title = tool.NameKey;
-			Description = tool.DescriptionKey;
-			Category = tool.CategoryKey ?? Locale.GetKey("tool.category.unknown");
-			ResetCommand = new RelayCommand(Reset);
-			AddSpecifierCommand = new RelayCommand(AddSpecifier);
-
-			var mask = EffectivePolicyMask;
-			PolicyMaskItems = ToolBehaviourFlagInfo.CreateForFlags(tool.DefaultExpectedBehaviour)
-				.Select(i => new ToolBehaviourMaskItem(this, i, GetMaskState(mask, i.Flag), false))
-				.ToImmutableList();
-
-			RebuildSpecifiers();
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-
-			if (disposing)
-			{
-				_toolset.PropertyChanged -= Toolset_PropertyChanged;
-			}
-		}
-
-		private void Toolset_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName is nameof(ToolsetConfiguration.EnabledByDefault) && !EnabledChanged)
-				RaisePropertyChanged(nameof(Enabled));
-			if (e.PropertyName is nameof(ToolsetConfiguration.DefaultApprovalLevel) && !ApprovalLevelChanged)
-				RaisePropertyChanged(nameof(ApprovalLevel));
-		}
-
-		private void Reset()
-		{
-			if (_change != null)
-			{
-				_toolset.Changes.Remove(_toolInfo.Name);
-				_change = null;
-				RaisePropertyChanged(nameof(Enabled));
-				RaisePropertyChanged(nameof(EnabledChanged));
-				RaisePropertyChanged(nameof(ApprovalLevel));
-				RaisePropertyChanged(nameof(ApprovalLevelChanged));
-				RaisePropertyChanged(nameof(SpecifierUnionMode));
-				RaisePropertyChanged(nameof(SpecifierAggregationMode));
-				RaisePropertyChanged(nameof(IsSpecifierSectionEnabled));
-				RaisePropertyChanged(nameof(IsSpecifierListEnabled));
-				RaisePropertyChanged(nameof(IsPolicyMaskEnabled));
-				RebuildSpecifiers();
-				RefreshPolicyMaskItems();
-			}
-		}
-
-		private ToolChange EnsureChange()
-		{
-			if (_change == null)
-			{
-				_change = new ToolChange
-				{
-					Enabled = null,
-					ApprovalLevel = null
-				};
-				_toolset.Changes.Add(_toolInfo.Name, _change);
-			}
-			return _change;
-		}
-
-		public bool EnabledChanged => _change != null && _change.Enabled != null;
-
-		public bool? Enabled
-		{
-			get => IsFixed ? true : (_change?.Enabled ?? _toolInfo.Enabled ?? _toolset.EnabledByDefault);
-			set
-			{
-				if (IsFixed)
-					return;
-				if (Enabled != value)
-				{
-					EnsureChange().Enabled = value;
-					RaisePropertyChanged(nameof(Enabled));
-					RaisePropertyChanged(nameof(EnabledChanged));
-				}
-			}
-		}
-
-		public ImmutableList<ToolApprovalLevelItem> ApprovalLevelList { get; } = ToolApprovalLevelItem.All;
-
-		public bool ApprovalLevelChanged => _change != null && _change.ApprovalLevel != null;
-		
-		public ToolApprovalLevelItem? ApprovalLevel
-		{
-			get => ApprovalLevelList.FirstOrDefault(i => i.Value == EffectiveApprovalLevel);
-			set
-			{
-				if (ApprovalLevel != value)
-				{
-					EnsureChange().ApprovalLevel = value?.Value;
-					RaisePropertyChanged(nameof(ApprovalLevel));
-					RaisePropertyChanged(nameof(ApprovalLevelChanged));
-					RaisePropertyChanged(nameof(IsSpecifierSectionEnabled));
-					RaisePropertyChanged(nameof(IsSpecifierListEnabled));
-					RaisePropertyChanged(nameof(IsPolicyMaskEnabled));
-				}
-			}
-		}
-
-		/// <summary>
-		/// Gets the effective approval level of the tool (the change overrides the tool info).
-		/// </summary>
-		public ToolApprovalLevel EffectiveApprovalLevel => _change?.ApprovalLevel ?? _toolInfo.ApprovalLevel ?? _toolset.DefaultApprovalLevel;
-
-		/// <summary>
-		/// Gets a value indicating whether the tool supports specifiers.
-		/// </summary>
-		public bool IsSpecifierSectionVisible => _toolInfo.SpecifierAnalyzer != null;
-
-		/// <summary>
-		/// Gets a value indicating whether specifiers are active for the tool.
-		/// Specifiers are evaluated only for policy-based approval levels.
-		/// </summary>
-		public bool IsSpecifierSectionEnabled => EffectiveApprovalLevel.IsPolicyBased();
-
-		/// <summary>
-		/// Gets a value indicating whether the specifier rules list is editable.
-		/// The list is disabled when specifiers are turned off by the union mode.
-		/// </summary>
-		public bool IsSpecifierListEnabled => IsSpecifierSectionEnabled && EffectiveUnionMode != SpecifierBehaviourUnionMode.Disabled;
-
-		/// <summary>
-		/// Gets a value indicating whether the policy mask is active for the tool.
-		/// The mask is applied only for policy-based approval levels.
-		/// </summary>
-		public bool IsPolicyMaskEnabled => EffectiveApprovalLevel.IsPolicyBased();
-
-		/// <summary>
-		/// Gets the per-behaviour policy mask toggles of the tool.
-		/// </summary>
-		public IReadOnlyList<ToolBehaviourMaskItem> PolicyMaskItems { get; }
-
-		/// <summary>
-		/// Gets all available specifier union modes with localized display names.
-		/// </summary>
-		public ImmutableList<SpecifierUnionModeItem> SpecifierUnionModes { get; } = SpecifierUnionModeItem.All;
-
-		/// <summary>
-		/// Gets all available specifier aggregation modes with localized display names.
-		/// </summary>
-		public ImmutableList<SpecifierAggregationModeItem> SpecifierAggregationModes { get; } = SpecifierAggregationModeItem.All;
-
-		/// <summary>
-		/// Gets or sets the specifier behaviour union mode of the tool.
-		/// </summary>
-		public SpecifierUnionModeItem? SpecifierUnionMode
-		{
-			get => SpecifierUnionModes.FirstOrDefault(i => i.Value == EffectiveUnionMode);
-			set
-			{
-				if (value != null && SpecifierUnionMode != value)
-				{
-					EnsureChange().SpecifierUnionMode = value.Value;
-					RaisePropertyChanged();
-					RaisePropertyChanged(nameof(IsSpecifierListEnabled));
-				}
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the specifier aggregation mode of the tool.
-		/// </summary>
-		public SpecifierAggregationModeItem? SpecifierAggregationMode
-		{
-			get => SpecifierAggregationModes.FirstOrDefault(i => i.Value == EffectiveAggregationMode);
-			set
-			{
-				if (value != null && SpecifierAggregationMode != value)
-				{
-					EnsureChange().SpecifierAggregationMode = value.Value;
-					RaisePropertyChanged();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Gets the localized hint with the names of the specifier parameters supported by the tool,
-		/// or <see langword="null"/> when the tool has no specifier parameters.
-		/// </summary>
-		public string? SpecifierParametersHint =>
-			_toolInfo.SpecifierParameters.Count > 0
-				? Locale.Format("tool.specifier.parameters", string.Join(", ", _toolInfo.SpecifierParameters))
-				: null;
-
-		/// <summary>
-		/// Gets the specifier rules of the tool.
-		/// </summary>
-		public RangeObservableCollection<ToolSpecifierRuleViewModel> Specifiers { get; } = [];
-
-		/// <summary>
-		/// Gets the command that adds a new specifier rule to the tool.
-		/// </summary>
-		public ICommand AddSpecifierCommand { get; }
-
-		private SpecifierBehaviourUnionMode EffectiveUnionMode =>
-			_change?.SpecifierUnionMode ?? _toolInfo.SpecifierUnionMode ?? SpecifierBehaviourUnionMode.CombineSoft;
-
-		private SpecifierAggregationMode EffectiveAggregationMode =>
-			_change?.SpecifierAggregationMode ?? _toolInfo.SpecifierAggregationMode;
-
-		private ToolPolicyMask EffectivePolicyMask => _change?.PolicyMask ?? _toolInfo.PolicyMask ?? default;
-
-		private static bool? GetMaskState(ToolPolicyMask mask, ToolBehaviour flag)
-		{
-			if (mask.AutoApproveBehaviours.HasFlag(flag))
-				return true;
-			if (mask.DisallowedBehaviours.HasFlag(flag))
-				return false;
-			return null;
-		}
-
-		/// <summary>
-		/// Sets the policy mask override for the specified behaviour flag of the tool.
-		/// </summary>
-		/// <param name="flag">The behaviour flag to override.</param>
-		/// <param name="state"><see langword="true"/> - auto-approve, <see langword="false"/> - disallowed, <see langword="null"/> - default.</param>
-		public void SetPolicyMaskFlag(ToolBehaviour flag, bool? state)
-		{
-			var mask = EffectivePolicyMask;
-			mask = state switch
-			{
-				true => new ToolPolicyMask
-				{
-					AutoApproveBehaviours = mask.AutoApproveBehaviours | flag,
-					DisallowedBehaviours = mask.DisallowedBehaviours & ~flag
-				},
-				false => new ToolPolicyMask
-				{
-					AutoApproveBehaviours = mask.AutoApproveBehaviours & ~flag,
-					DisallowedBehaviours = mask.DisallowedBehaviours | flag
-				},
-				_ => new ToolPolicyMask
-				{
-					AutoApproveBehaviours = mask.AutoApproveBehaviours & ~flag,
-					DisallowedBehaviours = mask.DisallowedBehaviours & ~flag
-				}
-			};
-			EnsureChange().PolicyMask = mask;
-		}
-
-		private void RefreshPolicyMaskItems()
-		{
-			var mask = EffectivePolicyMask;
-			foreach (var item in PolicyMaskItems)
-				item.Refresh(GetMaskState(mask, item.Flag));
-		}
-
-		/// <summary>
-		/// Persists the current specifier rules to the tool change.
-		/// </summary>
-		public void SyncSpecifiers()
-		{
-			EnsureChange().Specifiers.Reset(Specifiers.Select(r => new ToolSpecifierRule
-			{
-				Pattern = r.Pattern,
-				Decision = r.Decision?.Value ?? SpecifierDecision.Allow
-			}));
-		}
-
-		private void RebuildSpecifiers()
-		{
-			IEnumerable<ToolSpecifierRule> source = _change != null ? _change.Specifiers : _toolInfo.Specifiers;
-			Specifiers.Reset(source.Select(r => new ToolSpecifierRuleViewModel(this, r)));
-		}
-
-		private void AddSpecifier()
-		{
-			var rule = new ToolSpecifierRuleViewModel(this, new ToolSpecifierRule
-			{
-				Pattern = string.Empty,
-				Decision = SpecifierDecision.Allow
-			});
-			Specifiers.Add(rule);
-			SyncSpecifiers();
-		}
-
-		/// <summary>
-		/// Removes the specified specifier rule from the tool.
-		/// </summary>
-		/// <param name="rule">The rule view model to remove.</param>
-		public void RemoveSpecifier(ToolSpecifierRuleViewModel rule)
-		{
-			if (!Specifiers.Remove(rule))
-				return;
-			SyncSpecifiers();
-		}
-	}
-
-	public class ToolCategoryViewModel : NotifyPropertyChanged
-	{
-		public bool IsCategory => true;
-
-		public IBrush? TitlePrefixForeground { get; }
-		public string? TitlePrefix { get; }
-		public LocaleKeyBase Title { get; }
-		public string? TitleSuffix { get; }
-
-		public int ToolCount => Tools.Count;
-
-		public bool CanToggleEnabled => Tools.Any(t => !t.IsFixed);
-
-		/// <summary>
-		/// Gets the list of approval levels from the first tool (all tools share the same static list).
-		/// </summary>
-		public IList<ToolApprovalLevelItem>? ApprovalLevelList => Tools.Count > 0 ? Tools[0].ApprovalLevelList : null;
-
-		public ImmutableList<ToolItemViewModel> Tools { get; }
-		public ICommand ResetCommand { get; }
-
-		public ToolCategoryViewModel(LocaleKeyBase title, IEnumerable<ToolItemViewModel> tools)
-		{
-			Tools = tools.ToImmutableList();
-			ResetCommand = new RelayCommand(ResetAllTools);
-
-			Title = title;
-			TitleSuffix = string.Format(Locale.Get("tool.name_suffix.hint"), ToolCount);
-
-			if (Tools.Select(t => t.Info.ToolSource).GetAllEqualOrDefault() is ToolSource equalSource)
-			{
-				switch (equalSource)
-				{
-					case ToolSource.MCP:
-						TitlePrefix = Locale.Get("tool.source.mcp");
-						TitlePrefixForeground = Brushes.LightGreen;
-						break;
-
-					case ToolSource.Meta:
-						TitlePrefix = Locale.Get("tool.source.meta");
-						TitlePrefixForeground = Brushes.Magenta;
-						break;
-				}
-			}
-
-			foreach (var tool in Tools)
-				tool.PropertyChanged += Tool_PropertyChanged;
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-
-			foreach (var tool in Tools)
-			{
-				tool.PropertyChanged -= Tool_PropertyChanged;
-				tool.Dispose();
-			}
-		}
-
-		private void ResetAllTools()
-		{
-			foreach (var tool in Tools)
-				tool.ResetCommand.Execute(null);
-		}
-
-		private void Tool_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName is nameof(Enabled) or nameof(EnabledChanged) or nameof(ApprovalLevel) or nameof(ApprovalLevelChanged))
-				RaisePropertyChanged(e.PropertyName);
-		}
-
-		public bool EnabledChanged => Tools.Any(t => t.EnabledChanged);
-
-		public bool? Enabled
-		{
-			get => Tools.All(t => t.IsFixed) || Tools.Where(t => !t.IsFixed).All(t => t.Enabled == true) ? true : Tools.Where(t => !t.IsFixed).All(t => t.Enabled == false) ? false : null;
-			set
-			{
-				if (Enabled != value)
-					foreach (var tool in Tools)
-						if (!tool.IsFixed)
-							tool.Enabled = value;
-			}
-		}
-
-		public bool ApprovalLevelChanged => Tools.Any(t => t.ApprovalLevelChanged);
-
-		public ToolApprovalLevelItem? ApprovalLevel
-		{
-			get => Tools.All(t => t.ApprovalLevel == Tools[0].ApprovalLevel) ? Tools[0].ApprovalLevel : null;
-			set
-			{
-				if (ApprovalLevel != value && value != null)
-					foreach (var tool in Tools)
-						tool.ApprovalLevel = value;
-			}
-		}
-	}
 
 	[ViewModelFor(typeof(AgentToolSettingsView))]
 	public class AgentToolSettingsViewModel : ViewModelBase, ISetPolicyMaskFlag
@@ -475,7 +42,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			Rename
 		}
 
-		private readonly IAddonSetCollector<ToolInfo> _toolsetBuildingService;
 		private readonly ChatSettings _chatSettings;
 		private IdEditMode _mode = IdEditMode.Create;
 
@@ -574,7 +140,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					EffectiveToolset.Reference.Id = value.Id;
 					RaisePropertyChanged(nameof(EffectiveToolsetConfiguration));
 					RaisePropertyChanged(nameof(DefaultApprovalLevel));
-					UpdateTools();
+					List.Update();
 				}
 			}
 		}
@@ -612,7 +178,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					EffectiveToolset.UseCustomToolset = value;
 					RaisePropertyChanged(nameof(EffectiveToolsetConfiguration));
 					RaisePropertyChanged(nameof(DefaultApprovalLevel));
-					UpdateTools();
+					List.Update();
 				}
 			}
 		}
@@ -623,15 +189,11 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		public ICommand ConfirmEditIdCommand { get; }
 		public ICommand CancelEditIdCommand { get; }
 
-		private readonly RangeObservableCollection<ToolCategoryViewModel> _toolCategories = [];
 		/// <summary>
-		/// Gets the tool list grouped by categories for the effective toolset.
+		/// Gets the addon list that renders the available tools, searches over them and groups them by the
+		/// selected grouping mode. The cards of the list edit the changes of <see cref="EffectiveToolsetConfiguration"/>.
 		/// </summary>
-		public RangeObservableCollection<ToolCategoryViewModel> ToolCategories
-		{
-			get => _toolCategories;
-			set => _toolCategories.Reset(value);
-		}
+		public AddonListViewModel List { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AgentToolSettingsViewModel"/> class.
@@ -639,9 +201,13 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// <param name="settings">The agent tool settings to edit.</param>
 		/// <param name="toolsetBuildingService">The toolset building service used to enumerate available tools.</param>
 		/// <param name="chatSettings">The chat settings used to resolve inherited settings.</param>
-		public AgentToolSettingsViewModel(AgentToolSettings settings, IAddonSetCollector<ToolInfo> toolsetBuildingService, ChatSettings chatSettings)
+		/// <param name="cardFactory">The factory that builds the tool cards.</param>
+		/// <param name="addonInvalidator">The invalidator used to reload the addons before building the list.</param>
+		/// <param name="searchService">The search service used to filter the list by the search query.</param>
+		public AgentToolSettingsViewModel(AgentToolSettings settings, IAddonSetCollector<ToolInfo> toolsetBuildingService,
+			ChatSettings chatSettings, IAddonCardFactory<ToolInfo, ToolChange> cardFactory,
+			IAddonManagerInvalidator addonInvalidator, IAddonSearchService<ToolInfo> searchService)
 		{
-			_toolsetBuildingService = toolsetBuildingService;
 			_chatSettings = chatSettings;
 			ToolSettings = settings;
 
@@ -652,7 +218,22 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			settings.PropertyChanged += ToolSettings_PropertyChanged;
 
 			PolicyMaskCategoryItems = InitializePolicyMaskItems();
-			UpdateTools();
+
+			List = new AddonListViewModel<ToolInfo, ToolChange>(toolsetBuildingService, cardFactory, addonInvalidator,
+				AddonKind.Tool, searchService, (list, addon) => new AddonCardContext<ToolInfo, ToolChange>
+				{
+					Addon = addon,
+					SetConfig = EffectiveToolsetConfiguration,
+					TagClickCommand = list.TagClickCommand,
+					OnDeleted = list.Update
+				})
+			{
+				GroupingModes = StandardGroupingModes.CreateDefault<ToolInfo>(),
+				SearchPlaceholderKey = Locale.GetKey("settings.tools.search.placeholder"),
+				EmptyTextKey = Locale.GetKey("settings.tools.empty")
+			};
+			List.SelectedGroupingMode = List.GroupingModes.First(mode => mode is CategoryGroupingMode<ToolInfo>);
+			List.Update();
 
 			CreateNewIdCommand = new RelayCommand(CreateNewId);
 			RenameIdCommand = new RelayCommand(RenameId);
@@ -680,7 +261,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					RaisePropertyChanged(nameof(DefaultApprovalLevel));
 					RaisePropertyChanged(nameof(SelectedToolsetId));
 					RaisePropertyChanged(nameof(UseCustomToolset));
-					UpdateTools();
+					List.Update();
 					break;
 			}
 		}
@@ -746,22 +327,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			foreach (var category in PolicyMaskCategoryItems)
 				foreach (var item in category.Toggles)
 					item.Refresh(GetPolicyMaskState(mask, item.Flag));
-		}
-
-		/// <summary>
-		/// Rebuilds the tool list from the effective toolset configuration.
-		/// </summary>
-		public void UpdateTools()
-		{
-			var tools = _toolsetBuildingService.GetAvailableAddons();
-			var toolVMs = tools.Select(t => new ToolItemViewModel(t, EffectiveToolsetConfiguration));
-
-			foreach (var category in ToolCategories)
-				category.Dispose();
-
-			ToolCategories.Reset(toolVMs
-				.GroupBy(t => t.Category)
-				.Select(g => new ToolCategoryViewModel(g.Key, g)));
 		}
 
 		private void CreateNewId()
@@ -838,10 +403,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			if (disposing)
 			{
 				ToolSettings.PropertyChanged -= ToolSettings_PropertyChanged;
-
-				foreach (var category in ToolCategories)
-					category.Dispose();
-				_toolCategories.Clear();
+				List.Dispose();
 			}
 		}
 	}

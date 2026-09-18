@@ -273,7 +273,10 @@ namespace LLMDesktopAssistant.LLM.Settings
 						() => new AgentToolSettingsViewModel(
 							descriptor.Tools,
 							Chat.Services.GetRequiredService<IAddonSetCollector<ToolInfo>>(),
-							Settings)),
+							Settings,
+							Chat.Services.GetRequiredService<IAddonCardFactory<ToolInfo, ToolChange>>(),
+							Chat.Services.GetRequiredService<IAddonManagerInvalidator>(),
+							Chat.Services.GetRequiredService<IAddonSearchService<ToolInfo>>())),
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),
 						MaterialIconKind.Cards,
 						() => new AgentSkillSettingsViewModel(

@@ -299,6 +299,8 @@ tool.behaviour_policy.auto_approve: Auto-approve
 tool.behaviour_policy.ask: Ask
 tool.behaviour_policy.disallowed: Disallowed
 tools.enable: Enable tools
+tools.empty: No tools found. Configure the addon sources.
+tools.search.placeholder: Search by name, description or tags...
 user.add.title: Add user
 user.clear_image: Clear
 user.description: Description

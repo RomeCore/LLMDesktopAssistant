@@ -15,7 +15,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 	/// <typeparam name="TAddon">The type of the addon the element is bound to.</typeparam>
 	/// <typeparam name="TChange">The type of the change object created by the element.</typeparam>
 	/// <typeparam name="TValue">The type of the edited field itself (the nullable field type, e.g. <c>SkillInjectionMode?</c> or <c>string</c>).</typeparam>
-	public class AddonCardSelectorChange<TAddon, TChange, TValue> : AddonCardChange
+	public class AddonCardSelectorChange<TAddon, TChange, TValue> : AddonCardChange, IAddonCardSelectorChange<TValue>
 		where TAddon : AddonChangedBase<TAddon, TChange>
 		where TChange : AddonChangeBase, new()
 	{
@@ -92,6 +92,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			if (e.PropertyName is nameof(AddonCardContext<,>.Change))
 			{
 				RaisePropertyChanged(nameof(SelectedOption));
+				RaisePropertyChanged(nameof(EffectiveValue));
 				SyncIsChanged();
 			}
 		}
@@ -99,6 +100,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		private void SetConfig_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			RaisePropertyChanged(nameof(SelectedOption));
+			RaisePropertyChanged(nameof(EffectiveValue));
 		}
 
 		/// <summary>
@@ -145,8 +147,21 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 
 				_setOverride(_context.EnsureChange(), value.Value);
 				RaisePropertyChanged(nameof(SelectedOption));
+				RaisePropertyChanged(nameof(EffectiveValue));
 				SyncIsChanged();
 			}
+		}
+
+		/// <inheritdoc/>
+		public void SetEffectiveValue(TValue value)
+		{
+			if (!CanEdit || _comparer.Equals(value, EffectiveValue))
+				return;
+
+			_setOverride(_context.EnsureChange(), value);
+			RaisePropertyChanged(nameof(SelectedOption));
+			RaisePropertyChanged(nameof(EffectiveValue));
+			SyncIsChanged();
 		}
 
 		protected void SyncIsChanged()
@@ -163,6 +178,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			{
 				_setOverride(_context.Change, default!);
 				RaisePropertyChanged(nameof(SelectedOption));
+				RaisePropertyChanged(nameof(EffectiveValue));
 			}
 
 			SyncIsChanged();

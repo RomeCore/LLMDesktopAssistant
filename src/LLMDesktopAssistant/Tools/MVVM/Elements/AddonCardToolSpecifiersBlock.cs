@@ -1,0 +1,512 @@
+using System.ComponentModel;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
+using Avalonia.Data;
+using Avalonia.Input;
+using Avalonia.Layout;
+using Avalonia.Media;
+using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Addons.MVVM;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
+using LLMDesktopAssistant.Tools.Specifiers;
+using LLMDesktopAssistant.Utils;
+using Material.Icons;
+using Material.Icons.Avalonia;
+
+namespace LLMDesktopAssistant.Tools.MVVM.Elements
+{
+	/// <summary>
+	/// The collapsible block of a tool card that edits the specifier rules of the tool: the union and
+	/// aggregation modes, the hint of the supported specifier parameters and the rule list. The block is
+	/// shown only for tools that declare a specifier analyzer; the editor is active only while the
+	/// effective approval level of the tool is policy-based.
+	/// </summary>
+	public class AddonCardToolSpecifiersBlock : AddonCardBlockChange
+	{
+		private readonly AddonCardContext<ToolInfo, ToolChange> _context;
+
+		private ToolChange? _subscribedChange;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AddonCardToolSpecifiersBlock"/> class.
+		/// </summary>
+		/// <param name="context">The addon, its change set and the page that owns the card.</param>
+		public AddonCardToolSpecifiersBlock(AddonCardContext<ToolInfo, ToolChange> context)
+		{
+			ArgumentNullException.ThrowIfNull(context);
+
+			_context = context;
+
+			AddCommand = new RelayCommand(AddRule);
+
+			Visibility = AddonCardBlockVisibility.Collapsible;
+			Title = Locale.GetKey("card.tools.specifiers");
+			ToggleIcon = MaterialIconKind.FormatListBulleted;
+			ToggleToolTip = Locale.GetKey("card.tools.specifiers.toggle");
+			Content = BuildContent();
+
+			_context.PropertyChanged += Context_PropertyChanged;
+			SubscribeChange();
+
+			RebuildRules();
+			SyncIsChanged();
+		}
+
+		/// <summary>
+		/// Gets the specifier rules of the tool.
+		/// </summary>
+		public RangeObservableCollection<ToolSpecifierRuleRowViewModel> Rules { get; } = [];
+
+		/// <summary>
+		/// Gets the command that adds a new specifier rule.
+		/// </summary>
+		public ICommand AddCommand { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether the specifier editor is applied by the current approval level.
+		/// </summary>
+		public bool IsSectionEnabled => EffectiveApprovalLevel.IsPolicyBased();
+
+		/// <summary>
+		/// Gets a value indicating whether the rule list is editable: the list is disabled when the
+		/// specifiers are turned off by the union mode.
+		/// </summary>
+		public bool IsRulesEnabled => IsSectionEnabled && EffectiveUnionMode != SpecifierBehaviourUnionMode.Disabled;
+
+		/// <summary>
+		/// Gets the localized hint with the names of the specifier parameters supported by the tool,
+		/// or <see langword="null"/> when the tool has no specifier parameters.
+		/// </summary>
+		public string? SpecifierParametersHint =>
+			_context.Addon.SpecifierParameters.Count > 0
+				? Locale.Format("tool.specifier.parameters", string.Join(", ", _context.Addon.SpecifierParameters))
+				: null;
+
+		/// <summary>
+		/// Gets a value indicating whether the tool declares specifier parameters.
+		/// </summary>
+		public bool HasParametersHint => SpecifierParametersHint is not null;
+
+		/// <summary>
+		/// Gets or sets the specifier behaviour union mode of the tool.
+		/// </summary>
+		public SpecifierUnionModeItem? UnionMode
+		{
+			get => SpecifierUnionModeItem.All.FirstOrDefault(item => item.Value == EffectiveUnionMode);
+			set
+			{
+				if (value is null || UnionMode?.Value == value.Value)
+					return;
+
+				_context.EnsureChange().SpecifierUnionMode = value.Value;
+				RaisePropertyChanged();
+				RaisePropertyChanged(nameof(IsRulesEnabled));
+				SyncIsChanged();
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the specifier aggregation mode of the tool.
+		/// </summary>
+		public SpecifierAggregationModeItem? AggregationMode
+		{
+			get => SpecifierAggregationModeItem.All.FirstOrDefault(item => item.Value == EffectiveAggregationMode);
+			set
+			{
+				if (value is null || AggregationMode?.Value == value.Value)
+					return;
+
+				_context.EnsureChange().SpecifierAggregationMode = value.Value;
+				RaisePropertyChanged();
+				SyncIsChanged();
+			}
+		}
+
+		private ToolApprovalLevel EffectiveApprovalLevel =>
+			_context.Change?.ApprovalLevel
+			?? _context.Addon.ApprovalLevel
+			?? (_context.SetConfig as ToolsetConfiguration)?.DefaultApprovalLevel
+			?? ToolApprovalLevel.PolicyBased;
+
+		private SpecifierBehaviourUnionMode EffectiveUnionMode =>
+			_context.Change?.SpecifierUnionMode
+			?? _context.Addon.SpecifierUnionMode
+			?? SpecifierBehaviourUnionMode.CombineSoft;
+
+		private SpecifierAggregationMode EffectiveAggregationMode =>
+			_context.Change?.SpecifierAggregationMode
+			?? _context.Addon.SpecifierAggregationMode;
+
+		/// <inheritdoc/>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				_context.PropertyChanged -= Context_PropertyChanged;
+
+				if (_subscribedChange is not null)
+					_subscribedChange.PropertyChanged -= Change_PropertyChanged;
+			}
+		}
+
+		/// <inheritdoc/>
+		protected override void ResetCore()
+		{
+			base.ResetCore();
+
+			if (_context.Change is { } change)
+			{
+				change.SpecifierUnionMode = null;
+				change.SpecifierAggregationMode = null;
+				change.Specifiers.Clear();
+			}
+
+			RebuildRules();
+			RaiseDerived();
+			SyncIsChanged();
+		}
+
+		/// <summary>
+		/// Persists the current rule list to the tool change.
+		/// </summary>
+		internal void SyncSpecifiers()
+		{
+			_context.EnsureChange().Specifiers.Reset(Rules.Select(row => new ToolSpecifierRule
+			{
+				Pattern = row.Pattern,
+				Decision = row.Decision?.Value ?? SpecifierDecision.Allow
+			}));
+
+			SyncIsChanged();
+		}
+
+		/// <summary>
+		/// Removes the specified rule from the tool.
+		/// </summary>
+		/// <param name="row">The rule row to remove.</param>
+		internal void RemoveRule(ToolSpecifierRuleRowViewModel row)
+		{
+			if (!Rules.Remove(row))
+				return;
+
+			SyncSpecifiers();
+		}
+
+		private void AddRule()
+		{
+			Rules.Add(new ToolSpecifierRuleRowViewModel(this, string.Empty, SpecifierDecision.Allow));
+			SyncSpecifiers();
+		}
+
+		private void RebuildRules()
+		{
+			IEnumerable<ToolSpecifierRule> source = _context.Change is { } change
+				? change.Specifiers
+				: _context.Addon.Specifiers;
+
+			Rules.Reset(source.Select(rule => new ToolSpecifierRuleRowViewModel(this, rule.Pattern, rule.Decision)));
+		}
+
+		private void SubscribeChange()
+		{
+			if (ReferenceEquals(_subscribedChange, _context.Change))
+				return;
+
+			if (_subscribedChange is not null)
+				_subscribedChange.PropertyChanged -= Change_PropertyChanged;
+
+			_subscribedChange = _context.Change;
+
+			if (_subscribedChange is not null)
+				_subscribedChange.PropertyChanged += Change_PropertyChanged;
+		}
+
+		private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName is not nameof(AddonCardContext<,>.Change))
+				return;
+
+			SubscribeChange();
+
+			if (_context.Change is null)
+				RebuildRules();
+
+			RaiseDerived();
+			SyncIsChanged();
+		}
+
+		private void Change_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(ToolChange.ApprovalLevel):
+					RaisePropertyChanged(nameof(IsSectionEnabled));
+					RaisePropertyChanged(nameof(IsRulesEnabled));
+					break;
+
+				case nameof(ToolChange.SpecifierUnionMode):
+					RaisePropertyChanged(nameof(UnionMode));
+					RaisePropertyChanged(nameof(IsRulesEnabled));
+					break;
+
+				case nameof(ToolChange.SpecifierAggregationMode):
+					RaisePropertyChanged(nameof(AggregationMode));
+					break;
+			}
+		}
+
+		private void RaiseDerived()
+		{
+			RaisePropertyChanged(nameof(IsSectionEnabled));
+			RaisePropertyChanged(nameof(IsRulesEnabled));
+			RaisePropertyChanged(nameof(UnionMode));
+			RaisePropertyChanged(nameof(AggregationMode));
+		}
+
+		private void SyncIsChanged()
+		{
+			IsChanged = _context.Change is { } change
+				&& (change.SpecifierUnionMode is not null
+					|| change.SpecifierAggregationMode is not null
+					|| change.Specifiers.Count > 0);
+		}
+
+		private Control BuildContent()
+		{
+			var panel = new StackPanel
+			{
+				DataContext = this,
+				Orientation = Orientation.Vertical,
+				Spacing = 6
+			};
+
+			panel.Children.Add(BuildRow(Locale.GetKey("card.tools.specifiers.union_mode"), BuildUnionModeSelector()));
+			panel.Children.Add(BuildRow(Locale.GetKey("card.tools.specifiers.aggregation_mode"), BuildAggregationModeSelector()));
+
+			var hint = new TextBlock
+			{
+				TextWrapping = TextWrapping.Wrap,
+				Opacity = 0.6,
+				FontSize = 11
+			};
+			hint.Bind(TextBlock.TextProperty, new Binding(nameof(SpecifierParametersHint)));
+			hint.Bind(Visual.IsVisibleProperty, new Binding(nameof(HasParametersHint)));
+			panel.Children.Add(hint);
+
+			var rules = new ItemsControl
+			{
+				ItemsSource = Rules,
+				ItemTemplate = new FuncDataTemplate<ToolSpecifierRuleRowViewModel>((row, _) => BuildRuleRow(row)),
+			};
+			rules.Bind(InputElement.IsEnabledProperty, new Binding(nameof(IsRulesEnabled)));
+			panel.Children.Add(rules);
+
+			var add = new Button
+			{
+				Command = AddCommand,
+				HorizontalAlignment = HorizontalAlignment.Left,
+				Background = Brushes.Transparent,
+				BorderThickness = new Thickness(0),
+				Content = new MaterialIcon { Kind = MaterialIconKind.Plus },
+			};
+			ToolTip.SetTip(add, Locale.Get("tool.specifier.add"));
+			panel.Children.Add(add);
+
+			return panel;
+		}
+
+		private Control BuildUnionModeSelector()
+		{
+			var combo = new ComboBox
+			{
+				ItemsSource = SpecifierUnionModeItem.All,
+				MinWidth = 180,
+				FontSize = 12,
+				VerticalAlignment = VerticalAlignment.Center,
+				ItemTemplate = new FuncDataTemplate<SpecifierUnionModeItem>((item, _) => new TextBlock
+				{
+					[!TextBlock.TextProperty] = new Binding(nameof(SpecifierUnionModeItem.DisplayName)) { Source = item },
+					VerticalAlignment = VerticalAlignment.Center,
+				}),
+			};
+			combo.Bind(SelectingItemsControl.SelectedItemProperty, new Binding(nameof(UnionMode)) { Mode = BindingMode.TwoWay });
+			combo.Bind(InputElement.IsEnabledProperty, new Binding(nameof(IsSectionEnabled)));
+
+			return combo;
+		}
+
+		private Control BuildAggregationModeSelector()
+		{
+			var combo = new ComboBox
+			{
+				ItemsSource = SpecifierAggregationModeItem.All,
+				MinWidth = 180,
+				FontSize = 12,
+				VerticalAlignment = VerticalAlignment.Center,
+				ItemTemplate = new FuncDataTemplate<SpecifierAggregationModeItem>((item, _) => new TextBlock
+				{
+					[!TextBlock.TextProperty] = new Binding(nameof(SpecifierAggregationModeItem.DisplayName)) { Source = item },
+					VerticalAlignment = VerticalAlignment.Center,
+				}),
+			};
+			combo.Bind(SelectingItemsControl.SelectedItemProperty, new Binding(nameof(AggregationMode)) { Mode = BindingMode.TwoWay });
+			combo.Bind(InputElement.IsEnabledProperty, new Binding(nameof(IsSectionEnabled)));
+
+			return combo;
+		}
+
+		private Control BuildRuleRow(ToolSpecifierRuleRowViewModel row)
+		{
+			var grid = new Grid
+			{
+				ColumnDefinitions = new ColumnDefinitions("*,160,Auto"),
+				ColumnSpacing = 4,
+				Margin = new Thickness(0, 2, 0, 2)
+			};
+
+			var pattern = new TextBox
+			{
+				PlaceholderText = Locale.Get("card.tools.specifiers.pattern"),
+				FontSize = 12
+			};
+			pattern.Bind(TextBox.TextProperty, new Binding(nameof(ToolSpecifierRuleRowViewModel.Pattern))
+			{
+				Mode = BindingMode.TwoWay,
+				Source = row
+			});
+			grid.Children.Add(pattern);
+
+			var decision = new ComboBox
+			{
+				ItemsSource = row.Decisions,
+				MinWidth = 120,
+				FontSize = 12,
+				VerticalAlignment = VerticalAlignment.Center,
+				ItemTemplate = new FuncDataTemplate<SpecifierDecisionItem>((item, _) => new TextBlock
+				{
+					[!TextBlock.TextProperty] = new Binding(nameof(SpecifierDecisionItem.DisplayName)) { Source = item },
+					VerticalAlignment = VerticalAlignment.Center,
+				}),
+			};
+			decision.Bind(SelectingItemsControl.SelectedItemProperty, new Binding(nameof(ToolSpecifierRuleRowViewModel.Decision))
+			{
+				Mode = BindingMode.TwoWay,
+				Source = row
+			});
+			Grid.SetColumn(decision, 1);
+			grid.Children.Add(decision);
+
+			var remove = new Button
+			{
+				Command = row.RemoveCommand,
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Center,
+				Background = Brushes.Transparent,
+				BorderThickness = new Thickness(0),
+				Content = new MaterialIcon { Kind = MaterialIconKind.Close, Width = 14, Height = 14 },
+			};
+			ToolTip.SetTip(remove, Locale.Get("common.delete"));
+			Grid.SetColumn(remove, 2);
+			grid.Children.Add(remove);
+
+			return grid;
+		}
+
+		private static Control BuildRow(LocaleKeyBase label, Control control)
+		{
+			var grid = new Grid
+			{
+				ColumnDefinitions = new ColumnDefinitions("Auto,*"),
+				ColumnSpacing = 8
+			};
+
+			grid.Children.Add(new TextBlock
+			{
+				Text = label.Value,
+				VerticalAlignment = VerticalAlignment.Center,
+				Opacity = 0.8,
+				FontSize = 12
+			});
+
+			Grid.SetColumn(control, 1);
+			grid.Children.Add(control);
+
+			return grid;
+		}
+	}
+
+	/// <summary>
+	/// The view model of a single specifier rule row of a tool card: the pattern, the decision and the
+	/// remove command. Every change is persisted to the tool change immediately.
+	/// </summary>
+	public class ToolSpecifierRuleRowViewModel : NotifyPropertyChanged
+	{
+		private readonly AddonCardToolSpecifiersBlock _owner;
+		private string _pattern;
+		private SpecifierDecisionItem? _decision;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ToolSpecifierRuleRowViewModel"/> class.
+		/// </summary>
+		/// <param name="owner">The block the row belongs to.</param>
+		/// <param name="pattern">The specifier pattern of the rule.</param>
+		/// <param name="decision">The decision applied when the pattern matches.</param>
+		public ToolSpecifierRuleRowViewModel(AddonCardToolSpecifiersBlock owner, string pattern, SpecifierDecision decision)
+		{
+			_owner = owner;
+			_pattern = pattern;
+			_decision = Decisions.FirstOrDefault(item => item.Value == decision) ?? Decisions.FirstOrDefault();
+
+			RemoveCommand = new RelayCommand(() => owner.RemoveRule(this));
+		}
+
+		/// <summary>
+		/// Gets or sets the specifier pattern. Changes are persisted to the tool change immediately.
+		/// </summary>
+		public string Pattern
+		{
+			get => _pattern;
+			set
+			{
+				if (_pattern == value)
+					return;
+
+				_pattern = value;
+				_owner.SyncSpecifiers();
+				RaisePropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// Gets all available specifier decisions with localized display names.
+		/// </summary>
+		public ImmutableList<SpecifierDecisionItem> Decisions { get; } = SpecifierDecisionItem.All;
+
+		/// <summary>
+		/// Gets or sets the decision applied when the pattern matches. Changes are persisted to the tool change immediately.
+		/// </summary>
+		public SpecifierDecisionItem? Decision
+		{
+			get => _decision;
+			set
+			{
+				if (value is null || _decision?.Value == value.Value)
+					return;
+
+				_decision = value;
+				_owner.SyncSpecifiers();
+				RaisePropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// Gets the command that removes this specifier rule from the tool.
+		/// </summary>
+		public ICommand RemoveCommand { get; }
+	}
+}
