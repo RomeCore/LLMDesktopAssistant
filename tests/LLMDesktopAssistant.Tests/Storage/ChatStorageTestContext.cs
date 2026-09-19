@@ -79,6 +79,8 @@ internal sealed class FakeChatSettingsService : IChatSettingsService
 	public event EventHandler? SettingsChanged { add { } remove { } }
 
 	public void SetSettings(ChatSettings settings) => Settings = settings;
+
+	public void LoadFromProfile(string profileName = "-default") { }
 }
 
 /// <summary>

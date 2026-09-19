@@ -2,6 +2,7 @@ using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Storage;
+using LLMDesktopAssistant.Settings;
 using RCLargeLanguageModels.Tasks;
 
 namespace LLMDesktopAssistant.Tests.Storage;
@@ -311,6 +312,113 @@ public class ChatStorageServiceTests
 		Assert.Empty(ctx.Nodes);
 		Assert.Empty(ctx.Messages);
 		Assert.Equal(0, ctx.Database.ToolCalls.Count());
+	}
+
+	[Fact]
+	public void DeleteMessageWithDescendants_Simple_ReloadsCorrectlyAfter()
+	{
+		using var ctx = CreateContext();
+
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("one"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("two"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("three"));
+
+		ctx.Service.DeleteMessageWithDescendants(2);
+
+		Assert.Equal(2, ctx.Chat.Messages.Count);
+		Assert.Equal("one", ctx.Chat.Messages[0].Message.Content);
+		Assert.Equal("two", ctx.Chat.Messages[1].Message.Content);
+
+		ctx.Service.Reload();
+
+		Assert.Equal(2, ctx.Chat.Messages.Count);
+		Assert.Equal("one", ctx.Chat.Messages[0].Message.Content);
+		Assert.Equal("two", ctx.Chat.Messages[1].Message.Content);
+	}
+
+	[Fact]
+	public void DeleteMessageWithDescendants_MultipleFromTail_ReloadsCorrectlyAfter()
+	{
+		using var ctx = CreateContext();
+
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("one"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("two"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("three"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("four"));
+
+		ctx.Service.DeleteMessageWithDescendants(3);
+		ctx.Service.DeleteMessageWithDescendants(2);
+
+		Assert.Equal(2, ctx.Chat.Messages.Count);
+		Assert.Equal("one", ctx.Chat.Messages[0].Message.Content);
+		Assert.Equal("two", ctx.Chat.Messages[1].Message.Content);
+		Assert.Equal(2, ctx.Nodes.Count);
+		Assert.Equal(2, ctx.Messages.Count);
+
+		var twoNode = ctx.NodeByMessageId(ctx.Chat.Messages[1].MessageId);
+		Assert.Equal(-1, twoNode.SelectedNodeId);
+		Assert.Equal(twoNode.Id, ctx.Model.LeafNodeId);
+
+		ctx.Service.Reload();
+
+		Assert.Equal(2, ctx.Chat.Messages.Count);
+		Assert.Equal("one", ctx.Chat.Messages[0].Message.Content);
+		Assert.Equal("two", ctx.Chat.Messages[1].Message.Content);
+	}
+
+	[Fact]
+	public void DeleteMessageWithDescendants_WithBranches_ReloadsCorrectlyAfter_Var1()
+	{
+		using var ctx = CreateContext();
+
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("one"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("two"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("three-1"));
+		ctx.Service.EditMessage(2, ChatStorageTestContext.CreateMessage("three-2"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("four"));
+
+		ctx.Service.DeleteMessageWithDescendants(2);
+
+		Assert.Equal(3, ctx.Chat.Messages.Count);
+		Assert.Equal("one", ctx.Chat.Messages[0].Message.Content);
+		Assert.Equal("two", ctx.Chat.Messages[1].Message.Content);
+		Assert.Equal("three-1", ctx.Chat.Messages[2].Message.Content);
+
+		ctx.Service.Reload();
+
+		Assert.Equal(3, ctx.Chat.Messages.Count);
+		Assert.Equal("one", ctx.Chat.Messages[0].Message.Content);
+		Assert.Equal("two", ctx.Chat.Messages[1].Message.Content);
+		Assert.Equal("three-1", ctx.Chat.Messages[2].Message.Content);
+	}
+
+	[Fact]
+	public void DeleteMessageWithDescendants_WithBranches_ReloadsCorrectlyAfter_Var2()
+	{
+		using var ctx = CreateContext();
+
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("one"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("two"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("three-1"));
+		ctx.Service.EditMessage(2, ChatStorageTestContext.CreateMessage("three-2"));
+		ctx.Service.AppendMessage(ChatStorageTestContext.CreateMessage("four"));
+		ctx.Service.SwitchBranch(2, 0);
+
+		ctx.Service.DeleteMessageWithDescendants(2);
+
+		Assert.Equal(4, ctx.Chat.Messages.Count);
+		Assert.Equal("one", ctx.Chat.Messages[0].Message.Content);
+		Assert.Equal("two", ctx.Chat.Messages[1].Message.Content);
+		Assert.Equal("three-2", ctx.Chat.Messages[2].Message.Content);
+		Assert.Equal("four", ctx.Chat.Messages[3].Message.Content);
+
+		ctx.Service.Reload();
+
+		Assert.Equal(4, ctx.Chat.Messages.Count);
+		Assert.Equal("one", ctx.Chat.Messages[0].Message.Content);
+		Assert.Equal("two", ctx.Chat.Messages[1].Message.Content);
+		Assert.Equal("three-2", ctx.Chat.Messages[2].Message.Content);
+		Assert.Equal("four", ctx.Chat.Messages[3].Message.Content);
 	}
 
 	// ========== Transaction failures ==========

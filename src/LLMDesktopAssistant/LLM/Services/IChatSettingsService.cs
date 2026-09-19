@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Settings;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -24,5 +25,11 @@ namespace LLMDesktopAssistant.LLM.Services
 		/// </summary>
 		/// <param name="settings">The new settings instance.</param>
 		void SetSettings(ChatSettings settings);
+
+		/// <summary>
+		/// Loads the settings from the given profile.
+		/// </summary>
+		/// <param name="profileName">The name of the profile to load. If null, the default profile is loaded.</param>
+		void LoadFromProfile(string profileName = SettingsObject.DefaultId);
 	}
 }

@@ -63,7 +63,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 				// Load stored values into the domain.
 				target.Title = model.Title;
 				target.Topic = model.Topic;
-				chatSettings.SetSettings(SettingsManager.Get<ChatSettings>(model.SettingsProfile));
+				chatSettings.LoadFromProfile(model.SettingsProfile);
 			}
 
 			_additionalDataSynchronizer = AdditionalChatDataCollectionSynchronizer.FromOwnerModels(database, target, ChatDataParentKind.Chat, target.Id);

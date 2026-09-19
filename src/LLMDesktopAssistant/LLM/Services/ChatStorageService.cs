@@ -3,6 +3,7 @@ using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Storage;
 using LLMDesktopAssistant.Utils;
+using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -53,6 +54,12 @@ namespace LLMDesktopAssistant.LLM.Services
 			while (currentNodeId != -1)
 			{
 				var nodeModel = database.MessageNodes.FindById(currentNodeId);
+				if (nodeModel is null)
+				{
+					Log.Warning("Node {NodeId} not found in database, stopping loading here.", currentNodeId);
+					break;
+				}
+
 				messages.Add(LoadMessageFromNode(nodeModel, messages.Count));
 				currentNodeId = nodeModel.SelectedNodeId;
 			}
@@ -450,9 +457,21 @@ namespace LLMDesktopAssistant.LLM.Services
 					}
 					else
 					{
-						chatModel.LeafNodeId = currentNode.IsRootNode ? -1 : currentNode.ParentId;
 						if (currentNode.IsRootNode)
+						{
 							chatModel.RootNodeId = -1;
+							chatModel.LeafNodeId = -1;
+						}
+						else
+						{
+							// The deleted node was the last child: the parent must stop pointing at it,
+							// otherwise the selected chain references a missing node and Reload() crashes.
+							var parent = database.MessageNodes.FindById(currentNode.ParentId);
+							parent.SelectedNodeId = -1;
+							database.MessageNodes.Update(parent);
+
+							chatModel.LeafNodeId = currentNode.ParentId;
+						}
 						chatModel.LastModifiedAt = DateTime.Now;
 					}
 					chatSync.UpdateModel();

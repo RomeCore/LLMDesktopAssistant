@@ -28,5 +28,11 @@ namespace LLMDesktopAssistant.LLM.Services
 			_settings = settings;
 			SettingsChanged?.Invoke(this, EventArgs.Empty);
 		}
+
+		/// <inheritdoc/>
+		public void LoadFromProfile(string profileName = "-default")
+		{
+			SetSettings(SettingsManager.Get<ChatSettings>(profileName));
+		}
 	}
 }
