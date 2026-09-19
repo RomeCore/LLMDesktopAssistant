@@ -72,7 +72,7 @@
 
 		<!-- Search + list -->
 		<ContentControl IsEnabled="{Binding SubAgentSettings.EnableSubAgents}">
-					 <cards:AddonListPanelView DataContext="{Binding List}"/>
+			<cards:AddonListView DataContext="{Binding List}"/>
 		</ContentControl>
 
 	</StackPanel>

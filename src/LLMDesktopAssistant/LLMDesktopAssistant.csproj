@@ -83,6 +83,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Update="Addons\MVVM\AddonListView.axaml.cs">
+		  <DependentUpon>AddonListView.axaml</DependentUpon>
+		</Compile>
 		<Compile Update="App.axaml.cs">
 		  <SubType>Code</SubType>
 		  <DependentUpon>%(Filename)</DependentUpon>

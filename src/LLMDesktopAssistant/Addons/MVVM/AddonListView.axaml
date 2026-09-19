@@ -7,7 +7,7 @@
 			 xmlns:group="using:LLMDesktopAssistant.Addons.MVVM.Grouping"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
-			 x:Class="LLMDesktopAssistant.Addons.MVVM.AddonListPanelView"
+			 x:Class="LLMDesktopAssistant.Addons.MVVM.AddonListView"
 			 x:DataType="cards:AddonListViewModel">
 
 	<StackPanel Spacing="8">

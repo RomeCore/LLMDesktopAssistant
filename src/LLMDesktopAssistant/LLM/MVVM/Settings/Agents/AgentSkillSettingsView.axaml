@@ -72,7 +72,7 @@
 
 		<!-- Search + list -->
 		<ContentControl IsEnabled="{Binding SkillSettings.EnableSkills}">
-					 <cards:AddonListPanelView DataContext="{Binding List}"/>
+			<cards:AddonListView DataContext="{Binding List}"/>
 		</ContentControl>
 
 	</StackPanel>

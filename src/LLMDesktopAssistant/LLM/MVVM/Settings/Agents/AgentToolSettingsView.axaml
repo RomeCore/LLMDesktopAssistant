@@ -313,7 +313,7 @@
 
 		<!-- Tool list (the unified addon list: search, grouping modes and cards) -->
 		<ContentControl IsEnabled="{Binding ToolSettings.EnableTools}">
-			<cards:AddonListPanelView DataContext="{Binding List}"/>
+			<cards:AddonListView DataContext="{Binding List}"/>
 		</ContentControl>
 
 	</StackPanel>

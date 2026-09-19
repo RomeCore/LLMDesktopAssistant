@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace LLMDesktopAssistant.Addons.MVVM;
 
-public partial class AddonListPanelView : UserControl
+public partial class AddonListView : UserControl
 {
-	public AddonListPanelView()
+	public AddonListView()
 	{
 		InitializeComponent();
 	}

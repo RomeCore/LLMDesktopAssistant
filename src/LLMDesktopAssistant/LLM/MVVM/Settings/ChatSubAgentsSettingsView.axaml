@@ -42,7 +42,7 @@
 				   TextWrapping="Wrap"/>
 
 		<!-- Search + list -->
-		<cards:AddonListPanelView DataContext="{Binding List}"/>
+		<cards:AddonListView DataContext="{Binding List}"/>
 
 	</StackPanel>
 
