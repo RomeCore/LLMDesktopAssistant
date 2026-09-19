@@ -13,7 +13,7 @@ namespace LLMDesktopAssistant.Tools
 	/// </summary>
 	public class ReactiveToolResult : NotifyPropertyChanged
 	{
-		private readonly TaskCompletionSource<bool> _completionSource = new();
+		private readonly TaskCompletionSource<bool> _completionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
 		private readonly Lock _lock = new();
 
 		/// <summary>

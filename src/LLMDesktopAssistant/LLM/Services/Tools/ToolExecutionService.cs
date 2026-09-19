@@ -323,14 +323,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				};
 				var reactiveResult = await toolInfo.Executor.Invoke(parsedArgs, toolExecutionContext, cancellationToken);
 
-				toolCall.ReactiveToolResult = reactiveResult;
-				toolCall.StatusIcon = reactiveResult.StatusIcon ?? toolCall.StatusIcon;
-				toolCall.StatusTitle = reactiveResult.StatusTitle ?? toolCall.StatusTitle;
-				toolCall.StructuredResult = reactiveResult.StructuredResult;
-				toolCall.UseMarkdown = reactiveResult.UseMarkdown;
-				toolCall.ResultContent = reactiveResult.ResultContent;
-				toolCall.AdditionalData.Reset(reactiveResult.AdditionalData);
-
 				void OnReactiveResultChanged(object? sender, PropertyChangedEventArgs e)
 				{
 					switch (e.PropertyName)
@@ -361,6 +353,14 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				reactiveResult.ResultContentLines.CollectionChanged += OnReactiveResultContentChanged;
 				reactiveResult.AdditionalData.CollectionChanged += OnReactiveResultAdditionalDataChanged;
 
+				toolCall.ReactiveToolResult = reactiveResult;
+				toolCall.StatusIcon = reactiveResult.StatusIcon ?? toolCall.StatusIcon;
+				toolCall.StatusTitle = reactiveResult.StatusTitle ?? toolCall.StatusTitle;
+				toolCall.StructuredResult = reactiveResult.StructuredResult;
+				toolCall.UseMarkdown = reactiveResult.UseMarkdown;
+				toolCall.ResultContent = reactiveResult.ResultContent;
+				toolCall.AdditionalData.Reset(reactiveResult.AdditionalData);
+
 				bool success = false;
 				try
 				{
@@ -373,11 +373,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 					reactiveResult.AdditionalData.CollectionChanged -= OnReactiveResultAdditionalDataChanged;
 
 					toolCall.ReactiveToolResult = null;
-
-					// Update again, because tool can be TOO FAST
-					toolCall.StatusIcon = reactiveResult.StatusIcon;
-					toolCall.StatusTitle = reactiveResult.StatusTitle;
-					SyncAdditionalData(toolCall.AdditionalData, reactiveResult.AdditionalData);
 
 					if (string.IsNullOrEmpty(toolCall.ResultContent))
 					{
@@ -397,8 +392,6 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 
 					if (additionalNotes != null)
 						toolCall.ResultContent = $"{reactiveResult.ResultContent}\n\nAdditional notes from user: {additionalNotes}";
-					toolCall.UseMarkdown = reactiveResult.UseMarkdown;
-					toolCall.StructuredResult = reactiveResult.StructuredResult;
 
 					toolCall.Status = cancellationToken.IsCancellationRequested ? ToolStatus.Cancelled :
 						(success ? ToolStatus.Success : ToolStatus.Error);
