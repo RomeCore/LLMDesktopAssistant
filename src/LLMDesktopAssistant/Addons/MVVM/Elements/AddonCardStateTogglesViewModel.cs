@@ -119,7 +119,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		/// <summary>
 		/// Re-reads the state from the owner and notifies the view.
 		/// </summary>
-		internal void Refresh()
+		public void Refresh()
 		{
 			RaisePropertyChanged(nameof(IsOn));
 			RaisePropertyChanged(nameof(CanEdit));

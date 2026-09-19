@@ -83,6 +83,7 @@ chat.models: Models
 chat.models.hint: Select the language models used for the chat, agentic routing, agentic tools and vision tasks.
 chat.prompts: Prompts
 chat.read: Read permissions
+chat.scripts: Scripts
 chat.skills: Skills
 chat.summarization: Auto-summarization
 chat.summarization.enabled: Enable chat auto-summarization
@@ -221,6 +222,15 @@ scope.agent: Agent profile
 scope.application: Application
 scope.profile: Chat profile
 
+scripts.available: Available Scripts
+scripts.available.hint: Scripts are discovered in addon packs and additional sources. Disabled scripts are not loaded into the Lua environment of the chat.
+scripts.empty: No scripts found. Configure the addon sources.
+scripts.enabled_by_default: Enable unchanged scripts by default
+scripts.enabled_by_default.hint: When enabled, scripts without an explicit override are enabled by default. Uncheck to disable all unchanged scripts.
+scripts.refresh: Refresh scripts list
+scripts.search.placeholder: Search by name, description or tags...
+scripts.set: Script set
+
 skills.available: Available Skills
 skills.available.hint: Skills discovered in skill directories. Only enabled skills are injected into agent prompts.
 skills.badge.tools: {0} tools
@@ -298,8 +308,11 @@ tool.behaviour_policy.default: Default
 tool.behaviour_policy.auto_approve: Auto-approve
 tool.behaviour_policy.ask: Ask
 tool.behaviour_policy.disallowed: Disallowed
+tools.available: Available Tools
+tools.available.hint: Tools are discovered in addon packs, application modules and MCP servers. Enabling and configuring tools is done per agent.
 tools.enable: Enable tools
 tools.empty: No tools found. Configure the addon sources.
+tools.refresh: Refresh tools list
 tools.search.placeholder: Search by name, description or tags...
 user.add.title: Add user
 user.clear_image: Clear

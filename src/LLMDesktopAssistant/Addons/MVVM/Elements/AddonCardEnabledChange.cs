@@ -9,26 +9,25 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 	/// </summary>
 	/// <typeparam name="TAddon">The type of the addon the element is bound to.</typeparam>
 	/// <typeparam name="TChange">The type of the change object created by the element.</typeparam>
-	public class AddonCardEnabledChange<TAddon, TChange> : AddonCardChange
+	public class AddonCardEnabledChange<TAddon, TChange> : AddonCardChange, IAddonCardEnabledChange
 		where TAddon : AddonChangedBase<TAddon, TChange>
 		where TChange : AddonChangeBase, new()
 	{
 		private readonly AddonCardContext<TAddon, TChange> _context;
+		private readonly AddonCardStateToggleViewModel _toggle;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AddonCardEnabledChange{TAddon, TChange}"/> class.
 		/// </summary>
-		/// <param name="addon">The addon the element is bound to.</param>
-		/// <param name="changes">The collection that stores the effective changes, or <see langword="null"/> for a read-only element.</param>
-		/// <param name="enabledByDefault">The default enabled state used while neither the definition nor a change specifies it.</param>
+		/// <param name="context">The context that stores the addon, its set configuration and its change object.</param>
 		public AddonCardEnabledChange(AddonCardContext<TAddon, TChange> context)
 		{
 			_context = context;
-			
-			Content = new AddonCardStateToggleViewModel(AddonCardStateToggleKind.Enabled,
+
+			Content = _toggle = new AddonCardStateToggleViewModel(AddonCardStateToggleKind.Enabled,
 				Locale.GetKey("card.state.enabled"), isThreeState: false,
 				get: () => IsEnabled,
-				set: value => IsEnabled = value,
+				set: value => { if (value is bool enabled) IsEnabled = enabled; },
 				canEdit: () => CanEdit);
 
 			if (CanEdit)
@@ -46,7 +45,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 
 			if (disposing)
 			{
-				(Content as IDisposable)?.Dispose();
+				_toggle.Dispose();
 
 				if (CanEdit)
 				{
@@ -62,6 +61,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			{
 				RaisePropertyChanged(nameof(IsEnabled));
 				SyncIsChanged();
+				_toggle.Refresh();
 			}
 		}
 
@@ -70,6 +70,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			if (e.PropertyName is nameof(AddonSetConfigurationBase<>.EnabledByDefault))
 			{
 				RaisePropertyChanged(nameof(IsEnabled));
+				_toggle.Refresh();
 			}
 		}
 
@@ -79,10 +80,10 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		/// Gets or sets the effective enabled state. Setting the reference value removes the override
 		/// instead of storing it.
 		/// </summary>
-		public bool? IsEnabled
+		public bool IsEnabled
 		{
 			get => _context.Addon.IsFixed ? true :
-				_context.Change?.Enabled ?? _context.Addon.Enabled ?? _context.SetConfig?.EnabledByDefault;
+				_context.Change?.Enabled ?? _context.Addon.Enabled ?? _context.SetConfig?.EnabledByDefault ?? true;
 			set
 			{
 				if (!CanEdit || IsEnabled == value)
@@ -91,6 +92,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 				var change = _context.EnsureChange();
 				change.Enabled = value;
 				RaisePropertyChanged(nameof(IsEnabled));
+				_toggle.Refresh();
 				IsChanged = true;
 			}
 		}
@@ -109,6 +111,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			{
 				_context.Change.Enabled = null;
 				RaisePropertyChanged(nameof(IsEnabled));
+				_toggle.Refresh();
 			}
 
 			SyncIsChanged();

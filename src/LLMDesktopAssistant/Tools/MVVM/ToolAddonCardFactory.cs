@@ -1,14 +1,15 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using Avalonia.Media;
 using LLMDesktopAssistant.Addons.MVVM;
 using LLMDesktopAssistant.Addons.MVVM.Elements;
-using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.LLM.MVVM.Settings;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools.MVVM.Elements;
 using Material.Icons;
-using System.Text.Json.Serialization.Metadata;
 
 namespace LLMDesktopAssistant.Tools.MVVM
 {
@@ -17,7 +18,8 @@ namespace LLMDesktopAssistant.Tools.MVVM
 	/// the approval level selector, the policy mask and the specifier editor blocks. The group cards
 	/// aggregate the approved level of their visible children with a "Mixed" selector.
 	/// </summary>
-	public class AddonToolCardFactory : AddonCardFactoryBase<ToolInfo, ToolChange>
+	[Service(typeof(IAddonCardFactory<ToolInfo, ToolChange>))]
+	public class ToolAddonCardFactory : AddonCardFactoryBase<ToolInfo, ToolChange>
 	{
 		private static readonly JsonSerializerOptions _argumentSchemaSerializationOptions = new()
 		{
@@ -31,11 +33,11 @@ namespace LLMDesktopAssistant.Tools.MVVM
 				new AddonCardSelectorOption<ToolApprovalLevel?>(item.Value, Locale.GetConstKey(item.DisplayName)))];
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AddonToolCardFactory"/> class.
+		/// Initializes a new instance of the <see cref="ToolAddonCardFactory"/> class.
 		/// </summary>
 		/// <param name="explorerOpener">The service used by the "show in explorer" action.</param>
 		/// <param name="toastService">The service used to report failures of the file actions.</param>
-		public AddonToolCardFactory(IExplorerOpener explorerOpener, IToastService toastService)
+		public ToolAddonCardFactory(IExplorerOpener explorerOpener, IToastService toastService)
 			: base(explorerOpener, toastService)
 		{
 		}

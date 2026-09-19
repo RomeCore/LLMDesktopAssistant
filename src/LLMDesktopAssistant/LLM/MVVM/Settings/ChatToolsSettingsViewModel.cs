@@ -1,25 +1,52 @@
-using LLMDesktopAssistant.LLM.Settings;
+using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Management;
+using LLMDesktopAssistant.Addons.MVVM;
+using LLMDesktopAssistant.Addons.Search;
+using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings;
 
 /// <summary>
-/// ViewModel for global chat tools settings (without agent-specific policy).
-/// The agent tool policy is configured in <see cref="Agents.AgentToolSettingsViewModel"/>.
+/// ViewModel for the chat-level tool settings: the available tools rendered by the reusable addon list
+/// (with the search box). The list is read-only here, since there is no chat-level toolset: enabling
+/// and configuring tools is done per agent in <see cref="Agents.AgentToolSettingsViewModel"/>.
 /// </summary>
 [ViewModelFor(typeof(ChatToolsSettingsView))]
 public class ChatToolsSettingsViewModel : ViewModelBase
 {
 	/// <summary>
-	/// Gets the underlying chat tool settings.
+	/// Gets the addon list that renders the available tools and searches over them.
 	/// </summary>
-	public ChatToolSettings ToolSettings { get; }
+	public AddonListViewModel List { get; }
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ChatToolsSettingsViewModel"/> class.
 	/// </summary>
-	/// <param name="settings">The chat tool settings to edit.</param>
-	public ChatToolsSettingsViewModel(ChatToolSettings settings)
+	/// <param name="toolsetCollector">The collector that provides the available tools.</param>
+	/// <param name="cardFactory">The factory that builds the tool cards.</param>
+	/// <param name="addonInvalidator">The invalidator used to reload the addons before building the list.</param>
+	/// <param name="searchService">The search service used to filter the list by the search query.</param>
+	public ChatToolsSettingsViewModel(IAddonSetCollector<ToolInfo> toolsetCollector,
+		IAddonCardFactory<ToolInfo, ToolChange> cardFactory,
+		IAddonManagerInvalidator addonInvalidator,
+		IAddonSearchService<ToolInfo> searchService)
 	{
-		ToolSettings = settings;
+		List = new AddonListViewModel<ToolInfo, ToolChange>(toolsetCollector, cardFactory, addonInvalidator,
+			AddonKind.Tool, searchService)
+		{
+			SearchPlaceholderKey = Locale.GetKey("settings.tools.search.placeholder"),
+			EmptyTextKey = Locale.GetKey("settings.tools.empty")
+		};
+		List.Update();
+	}
+
+	/// <inheritdoc/>
+	protected override void Dispose(bool disposing)
+	{
+		base.Dispose(disposing);
+
+		if (disposing)
+			List.Dispose();
 	}
 }

@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.Addons.MVVM;
 using LLMDesktopAssistant.Addons.MVVM.Elements;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools;
 using Material.Icons;
@@ -16,7 +17,8 @@ namespace LLMDesktopAssistant.Prompting.Skills
 	/// <see cref="AddonCardFactoryBase{TAddon, TChange}"/>. This factory only declares what a skill
 	/// card needs on top of that: the injection mode selector, the tool count chip and the tool lists.
 	/// </remarks>
-	public class AddonSkillCardFactory : AddonCardFactoryBase<SkillInfo, SkillChange>
+	[Service(typeof(IAddonCardFactory<SkillInfo, SkillChange>))]
+	public class SkillAddonCardFactory : AddonCardFactoryBase<SkillInfo, SkillChange>
 	{
 		private static readonly ImmutableList<AddonCardSelectorOption<SkillInjectionMode?>> InjectionModes =
 			[.. Enum.GetValues<SkillInjectionMode>()
@@ -25,11 +27,11 @@ namespace LLMDesktopAssistant.Prompting.Skills
 					Locale.GetKey($"card.skills.injection_mode.{mode.ToString().ToLowerInvariant()}")))];
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AddonSkillCardFactory"/> class.
+		/// Initializes a new instance of the <see cref="SkillAddonCardFactory"/> class.
 		/// </summary>
 		/// <param name="explorerOpener">The service used by the "show in explorer" action.</param>
 		/// <param name="toastService">The service used to report failures of the file actions.</param>
-		public AddonSkillCardFactory(IExplorerOpener explorerOpener, IToastService toastService)
+		public SkillAddonCardFactory(IExplorerOpener explorerOpener, IToastService toastService)
 			: base(explorerOpener, toastService)
 		{
 		}

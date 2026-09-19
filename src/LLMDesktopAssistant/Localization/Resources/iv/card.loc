@@ -73,6 +73,14 @@ sub_agents.links.sub_agent: Sub-agent {0} does not exist
 sub_agents.links.memory_block: Memory block {0} does not exist
 
 // =====================================================
+// === Scripts                                      ===
+// =====================================================
+scripts.native: Native
+scripts.namespace: Namespace
+scripts.namespace.global: Global
+scripts.manuals: Manuals
+
+// =====================================================
 // === Tools                                        ===
 // =====================================================
 tools.policy_mask: Policy mask

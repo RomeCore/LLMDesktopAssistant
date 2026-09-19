@@ -4,42 +4,39 @@ using LLMDesktopAssistant.Localization;
 namespace LLMDesktopAssistant.Addons.MVVM.Elements
 {
 	/// <summary>
-	/// The aggregate enabled/hidden change of a group card: two three-state toggles that show and edit
-	/// the joined state of the visible children of the group.
+	/// The aggregate enabled change of a group card: a three-state toggle that shows and edits the joined
+	/// enabled state of the visible children of the group. The element is the enabled-only counterpart of
+	/// <see cref="AddonCardGroupEnabledHiddenChange"/>, used by the addon types whose hidden state is
+	/// meaningless (the Lua scripts, for example).
 	/// </summary>
 	/// <remarks>
 	/// The element pairs itself with the state elements of the children by
-	/// <see cref="IAddonCardEnabledHiddenChange"/>. Every aggregate value is computed over the children
-	/// that are currently visible, a click writes the value only to the children whose effective value
-	/// differs, and fixed (or read-only) children are excluded from both the value and the write.
+	/// <see cref="IAddonCardEnabledChange"/>. The aggregate value is computed over the children that are
+	/// currently visible, a click writes the value only to the children whose effective value differs,
+	/// and fixed (or read-only) children are excluded from both the value and the write.
 	/// </remarks>
-	public class AddonCardGroupEnabledHiddenChange : AddonCardChange
+	public class AddonCardGroupEnabledChange : AddonCardChange
 	{
-		private readonly ImmutableList<(AddonCardViewModel Child, IAddonCardEnabledHiddenChange State)> _states;
+		private readonly ImmutableList<(AddonCardViewModel Child, IAddonCardEnabledChange State)> _states;
+		private readonly AddonCardStateToggleViewModel _toggle;
 		private bool _syncing;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AddonCardGroupEnabledHiddenChange"/> class.
+		/// Initializes a new instance of the <see cref="AddonCardGroupEnabledChange"/> class.
 		/// </summary>
 		/// <param name="children">The cards of the children of the group.</param>
-		public AddonCardGroupEnabledHiddenChange(ImmutableList<AddonCardViewModel> children)
+		public AddonCardGroupEnabledChange(ImmutableList<AddonCardViewModel> children)
 		{
 			_states = [.. children
-				.Select(child => (Child: child, State: child.Changes.OfType<IAddonCardEnabledHiddenChange>().FirstOrDefault()))
+				.Select(child => (Child: child, State: child.Changes.OfType<IAddonCardEnabledChange>().FirstOrDefault()))
 				.Where(pair => pair.State is not null)
 				.Select(pair => (pair.Child, pair.State!))];
 
-			Content = new AddonCardStateTogglesViewModel(this,
-				new AddonCardStateToggleViewModel(AddonCardStateToggleKind.Enabled,
-					Locale.GetKey("card.group.enabled"), isThreeState: true,
-					get: () => EnabledState,
-					set: value => EnabledState = value,
-					canEdit: () => CanToggle),
-				new AddonCardStateToggleViewModel(AddonCardStateToggleKind.Shown,
-					Locale.GetKey("card.group.hidden"), isThreeState: true,
-					get: () => ShownState,
-					set: value => ShownState = value,
-					canEdit: () => CanToggle));
+			Content = _toggle = new AddonCardStateToggleViewModel(AddonCardStateToggleKind.Enabled,
+				Locale.GetKey("card.group.enabled"), isThreeState: true,
+				get: () => EnabledState,
+				set: value => EnabledState = value,
+				canEdit: () => CanToggle);
 
 			foreach (var (child, state) in _states)
 			{
@@ -53,8 +50,8 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether any visible child can be edited, i.e. whether the toggles
-		/// are usable.
+		/// Gets a value indicating whether any visible child can be edited, i.e. whether the toggle
+		/// is usable.
 		/// </summary>
 		public bool CanToggle => _states.Any(pair => pair.Child.IsVisible && pair.State.CanEdit);
 
@@ -78,24 +75,6 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets the aggregate shown state (the inverse of the aggregate hidden state):
-		/// <see langword="true"/> when every editable visible child is shown, <see langword="false"/>
-		/// when all of them are hidden, and <see langword="null"/> when the states are mixed.
-		/// </summary>
-		public bool? ShownState
-		{
-			get => Aggregate(state => state.IsHidden) is bool hidden ? !hidden : null;
-			set
-			{
-				if (_syncing || !CanToggle)
-					return;
-
-				// The click cycles the group: an all-shown group gets hidden, everything else gets shown.
-				Apply(state => state.IsHidden, (state, target) => state.IsHidden = target, Aggregate(state => state.IsHidden) == false);
-			}
-		}
-
 		/// <inheritdoc/>
 		protected override void Dispose(bool disposing)
 		{
@@ -103,7 +82,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 
 			if (disposing)
 			{
-				(Content as IDisposable)?.Dispose();
+				_toggle.Dispose();
 
 				foreach (var (child, state) in _states)
 				{
@@ -129,7 +108,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			SyncIsChanged();
 		}
 
-		private bool? Aggregate(Func<IAddonCardEnabledHiddenChange, bool> selector)
+		private bool? Aggregate(Func<IAddonCardEnabledChange, bool> selector)
 		{
 			bool has = false, all = true, any = false;
 
@@ -150,8 +129,8 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 			return all ? true : any ? null : false;
 		}
 
-		private void Apply(Func<IAddonCardEnabledHiddenChange, bool> get,
-			Action<IAddonCardEnabledHiddenChange, bool> set, bool target)
+		private void Apply(Func<IAddonCardEnabledChange, bool> get,
+			Action<IAddonCardEnabledChange, bool> set, bool target)
 		{
 			_syncing = true;
 
@@ -177,7 +156,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 		{
 			RaisePropertyChanged(nameof(CanToggle));
 			RaisePropertyChanged(nameof(EnabledState));
-			RaisePropertyChanged(nameof(ShownState));
+			_toggle.Refresh();
 			SyncIsChanged();
 		}
 
@@ -189,7 +168,7 @@ namespace LLMDesktopAssistant.Addons.MVVM.Elements
 
 		private void State_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName is nameof(IAddonCardEnabledHiddenChange.IsEnabled) or nameof(IAddonCardEnabledHiddenChange.IsHidden))
+			if (e.PropertyName is nameof(IAddonCardEnabledChange.IsEnabled))
 				RaiseStateChanged();
 			else if (e.PropertyName is nameof(IAddonCardChange.IsChanged))
 				SyncIsChanged();

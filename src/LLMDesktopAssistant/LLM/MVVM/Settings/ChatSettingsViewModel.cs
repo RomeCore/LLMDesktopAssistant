@@ -18,6 +18,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Scripting;
+using LLMDesktopAssistant.Scripting.Lua;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
@@ -186,7 +187,11 @@ namespace LLMDesktopAssistant.LLM.Settings
 				[
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.tools"),
 						MaterialIconKind.Wrench,
-						() => new ChatToolsSettingsViewModel(Settings.Tools)),
+						() => new ChatToolsSettingsViewModel(
+							Chat.Services.GetRequiredService<IAddonSetCollector<ToolInfo>>(),
+							Chat.Services.GetRequiredService<IAddonCardFactory<ToolInfo, ToolChange>>(),
+							Chat.Services.GetRequiredService<IAddonManagerInvalidator>(),
+							Chat.Services.GetRequiredService<IAddonSearchService<ToolInfo>>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.skills"),
 						MaterialIconKind.Cards,
@@ -203,6 +208,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 							Chat.Services.GetRequiredService<IAddonCardFactory<SubAgentInfo, SubAgentChange>>(),
 							Chat.Services.GetRequiredService<IAddonManagerInvalidator>(),
 							Chat.Services.GetRequiredService<IAddonSearchService<SubAgentInfo>>())),
+
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.scripts"),
+						MaterialIconKind.ScriptTextOutline,
+						() => new ChatScriptsSettingsViewModel(Settings.Scripts,
+							Chat.Services.GetRequiredService<IAddonSetCollector<LuaScriptInfo>>(),
+							Chat.Services.GetRequiredService<IAddonCardFactory<LuaScriptInfo, LuaScriptChange>>(),
+							Chat.Services.GetRequiredService<IAddonManagerInvalidator>(),
+							Chat.Services.GetRequiredService<IAddonSearchService<LuaScriptInfo>>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.memory"),
 						MaterialIconKind.Database,

@@ -5,6 +5,7 @@ using LLMDesktopAssistant.Addons.MVVM.Elements;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting.Skills;
+using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
@@ -20,19 +21,20 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 	/// shows the model override, the counts of the resources the sub-agent uses, the broken references of the
 	/// sub-agent and the lists of those resources.
 	/// </remarks>
-	public class AddonSubAgentCardFactory : AddonCardFactoryBase<SubAgentInfo, SubAgentChange>
+	[Service(typeof(IAddonCardFactory<SubAgentInfo, SubAgentChange>))]
+	public class SubAgentAddonCardFactory : AddonCardFactoryBase<SubAgentInfo, SubAgentChange>
 	{
 		private readonly IAddonAccessor<SkillInfo> _skills;
 		private readonly IAddonAccessor<SubAgentInfo> _subAgents;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AddonSubAgentCardFactory"/> class.
+		/// Initializes a new instance of the <see cref="SubAgentAddonCardFactory"/> class.
 		/// </summary>
 		/// <param name="explorerOpener">The service used by the "show in explorer" action.</param>
 		/// <param name="toastService">The service used to report failures of the file actions.</param>
 		/// <param name="skills">The accessor used to check the skills referenced by a sub-agent.</param>
 		/// <param name="subAgents">The accessor used to check the sub-agents referenced by a sub-agent.</param>
-		public AddonSubAgentCardFactory(IExplorerOpener explorerOpener, IToastService toastService,
+		public SubAgentAddonCardFactory(IExplorerOpener explorerOpener, IToastService toastService,
 			IAddonAccessor<SkillInfo> skills, IAddonAccessor<SubAgentInfo> subAgents)
 			: base(explorerOpener, toastService)
 		{

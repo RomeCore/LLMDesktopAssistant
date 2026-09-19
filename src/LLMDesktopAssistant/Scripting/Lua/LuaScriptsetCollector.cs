@@ -22,7 +22,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 				{
 					Enabled = true,
 					IsNative = true,
-					Name = "$native+" + a.GetType().Name,
+					Name = "%native+" + a.GetType().Name,
 					Namespace = a.Namespace ?? string.Empty,
 					Manuals = a.Manuals,
 					Loader = (globals, ns, lua) =>

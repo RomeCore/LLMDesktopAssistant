@@ -83,6 +83,7 @@ chat.models: Модели
 chat.models.hint: Выберите языковые модели, используемые для чата, агентного роутинга, агентных инструментов и зрительных задач.
 chat.prompts: Промпты
 chat.read: Права чтения
+chat.scripts: Скрипты
 chat.skills: Навыки
 chat.summarization: Авто-суммаризация
 chat.summarization.enabled: Включить авто-суммаризацию чата
@@ -221,6 +222,15 @@ scope.agent: Профиль агента
 scope.application: Приложение
 scope.profile: Профиль чата
 
+scripts.available: Доступные скрипты
+scripts.available.hint: Скрипты загружаются из паков аддонов и дополнительных источников. Выключенные скрипты не загружаются в Lua-окружение чата.
+scripts.empty: Скрипты не найдены. Настройте источники аддонов.
+scripts.enabled_by_default: Включить неизменённые скрипты по умолчанию
+scripts.enabled_by_default.hint: При включении скрипты без явного переопределения включены по умолчанию. Снимите флажок, чтобы выключить все неизменённые скрипты.
+scripts.refresh: Обновить список скриптов
+scripts.search.placeholder: Поиск по имени, описанию или тегам...
+scripts.set: Набор скриптов
+
 skills.available: Доступные навыки
 skills.available.hint: Навыки, найденные в директориях. Только включённые навыки внедряются в промпт агента.
 skills.badge.tools: {0} инструментов
@@ -298,8 +308,11 @@ tool.behaviour_policy.default: По умолчанию
 tool.behaviour_policy.auto_approve: Авто-одобрение
 tool.behaviour_policy.ask: Спрашивать
 tool.behaviour_policy.disallowed: Запрещено
+tools.available: Доступные инструменты
+tools.available.hint: Инструменты загружаются из паков аддонов, модулей приложения и MCP-серверов. Включение и настройка выполняются для каждого агента отдельно.
 tools.enable: Включить инструменты
 tools.empty: Инструменты не найдены. Настройте источники аддонов.
+tools.refresh: Обновить список инструментов
 tools.search.placeholder: Поиск по имени, описанию или тегам...
 user.add.title: Добавить пользователя
 user.clear_image: Очистить
