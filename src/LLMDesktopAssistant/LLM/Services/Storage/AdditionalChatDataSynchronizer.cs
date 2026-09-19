@@ -14,6 +14,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 		private readonly ChatDatabase _database;
 		private readonly ChangeTracker _changeTracker;
 		private AdditionalChatDataModel? _model;
+		private int _order;
 
 		/// <summary>
 		/// Gets the target object that this synchronizer persists to the database on changes.
@@ -60,6 +61,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 					{
 						_model = new AdditionalChatDataModel
 						{
+							Order = _order,
 							ParentKind = parentKind,
 							ParentId = parentId,
 							Data = target
@@ -86,6 +88,24 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 			if (disposing)
 			{
 				_changeTracker.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Updates the order of the additional chat data item in the database.
+		/// Used for later correct ordering of additional chat data items when loading the chat history.
+		/// </summary>
+		/// <param name="order">The new order of the additional chat data.</param>
+		public void UpdateOrder(int order)
+		{
+			if (order != _order)
+			{
+				_order = order;
+				if (_model != null)
+				{
+					_model.Order = order;
+					_database.AdditionalChatData.Update(_model);
+				}
 			}
 		}
 

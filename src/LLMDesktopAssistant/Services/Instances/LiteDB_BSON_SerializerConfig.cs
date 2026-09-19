@@ -1,4 +1,4 @@
-﻿using LiteDB;
+using LiteDB;
 using LLMDesktopAssistant.Localization;
 
 namespace LLMDesktopAssistant.Services.Instances
@@ -8,6 +8,14 @@ namespace LLMDesktopAssistant.Services.Instances
 	{
 		public LiteDB_BSON_SerializerConfig()
 		{
+			// Вот блять...
+			// Вот нахуя эти ебанаты делают так, чтобы сериализация была нестабильной?
+			// Из-за вас, бляди, я проебал 500+ рублей на НЕКЕШИРОВАННЫЕ входные токены
+			// ибо ВЫ, БЛЯТЬ, ОБРЕЗАЕТЕ ВСЕ СТРОКИ НАХУЙ
+			// ПИСЬКИ ЛУЧШЕ СЕБЕ ПООБРЕЗАЙТЕ!!!
+			BsonMapper.Global.TrimWhitespace = false;
+			BsonMapper.Global.EmptyStringToNull = false;
+
 			BsonMapper.Global.RegisterType<LocaleKeyBase>(key =>
 			{
 				var doc = new BsonDocument();

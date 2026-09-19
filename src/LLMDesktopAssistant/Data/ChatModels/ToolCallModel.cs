@@ -17,6 +17,11 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		public int Id { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating the order of the tool call.
+		/// </summary>
+		public int Order { get; set; }
+
+		/// <summary>
 		/// Gets or sets the message ID that this tool call belongs to.
 		/// </summary>
 		public int MessageId { get; set; }

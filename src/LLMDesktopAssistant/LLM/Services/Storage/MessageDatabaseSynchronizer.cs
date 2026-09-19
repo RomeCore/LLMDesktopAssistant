@@ -44,7 +44,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 		
 		public static MessageDatabaseSynchronizer FromModel(ChatDatabase database, MessageModel model)
 		{
-			var toolCalls = database.ToolCalls.Find(t => t.MessageId == model.Id);
+			var toolCalls = database.ToolCalls.Find(t => t.MessageId == model.Id).OrderBy(d => d.Order).ThenBy(d => d.Id);
 			var toolCallSyncs = toolCalls.Select(t => ToolCallDatabaseSynchronizer.FromModel(database, t)).ToDictionary(t => t.Target);
 			var target = CreateFromModel(model);
 			target.ToolCalls.Reset(toolCallSyncs.Keys);
@@ -82,6 +82,11 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 			if (e.NewItems != null)
 				foreach (ToolCall newToolCall in e.NewItems)
 					_toolCallSyncs[newToolCall] = ToolCallDatabaseSynchronizer.FromTarget(_database, newToolCall, _model.Id);
+
+			int i = 0;
+			foreach (var toolCall in Target.ToolCalls)
+				if (_toolCallSyncs.TryGetValue(toolCall, out var sync))
+					sync.UpdateOrder(i++);
 		}
 
 		private static ChatMessage CreateFromModel(MessageModel model)
@@ -158,8 +163,6 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 					break;
 			}
 		}
-
-		
 
 		protected override void Dispose(bool disposing)
 		{

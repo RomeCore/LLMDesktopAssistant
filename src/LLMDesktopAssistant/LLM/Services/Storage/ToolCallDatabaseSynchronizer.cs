@@ -63,6 +63,20 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 			_database.ToolCalls.Update(_model);
 		}
 
+		/// <summary>
+		/// Updates the order of the tool call in the database.
+		/// Used for later correct ordering of tool calls when loading the chat history.
+		/// </summary>
+		/// <param name="order">The new order of the tool call.</param>
+		public void UpdateOrder(int order)
+		{
+			if (order != _model.Order)
+			{
+				_model.Order = order;
+				_database.ToolCalls.Update(_model);
+			}
+		}
+
 		private static ToolCall CreateFromModel(ToolCallModel model)
 		{
 			return new ToolCall

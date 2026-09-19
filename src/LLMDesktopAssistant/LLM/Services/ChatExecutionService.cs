@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Controls.Toasts;
@@ -11,6 +13,7 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools.Consents;
+using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Messages;
@@ -18,6 +21,8 @@ using RCLargeLanguageModels.Metadata;
 using RCLargeLanguageModels.Tasks;
 using RCLargeLanguageModels.Tools;
 using Serilog;
+
+#pragma warning disable CS9113 // Parameter has not been used.
 
 namespace LLMDesktopAssistant.LLM.Services
 {
@@ -42,7 +47,8 @@ namespace LLMDesktopAssistant.LLM.Services
 		IUsageStatsCollector usageStatsCollector,
 		IToastService toastService,
 		IChatExecutionStatusService executionStatusService,
-		IChatStatusService statusService
+		IChatStatusService statusService,
+		IPromptDumpService promptDumpService
 	) : IChatExecutionService
 	{
 		private readonly List<IChatExecutionHook> _executionHooks = executionHooks.OrderBy(h => h.Order).ToList();
@@ -205,7 +211,8 @@ namespace LLMDesktopAssistant.LLM.Services
 				// Lul, provider caching is fixed now!
 				var toolset = toolsetCache.ValidTools.Values.Where(t => !(t.Hidden ?? false))
 					.Select(t => t.NativeTool).OrderBy(t => t.Name);
-				// Reveal messages that are marked with 'RevealAfterSend' visibility
+
+				// promptDumpService.Dump(inputMessages, toolset);
 				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				var responseMessage = response.Message;
 
@@ -456,6 +463,7 @@ namespace LLMDesktopAssistant.LLM.Services
 					toolsetCache.Invalidate(agent);
 					toolset = toolsetCache.ValidTools.Values.Where(t => !(t.Hidden ?? false))
 						.Select(t => t.NativeTool).OrderBy(t => t.Name);
+					// promptDumpService.Dump(inputMessages, toolset);
 					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 					responseMessage = response.Message;
 				}

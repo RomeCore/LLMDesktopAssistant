@@ -46,7 +46,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 
 			foreach (var model in database.AdditionalChatData
 				.Find(d => d.ParentKind == parentKind && d.ParentId == parentId)
-				.OrderBy(d => d.Id))
+				.OrderBy(d => d.Order).ThenBy(d => d.Id))
 			{
 				var sync = AdditionalChatDataSynchronizer.FromModel(database, model);
 				syncs[sync.Target] = sync;
@@ -81,6 +81,11 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 				foreach (AdditionalChatData newData in e.NewItems)
 					if (!_syncs.ContainsKey(newData)) // idempotent: collection events can arrive deferred
 						_syncs[newData] = AdditionalChatDataSynchronizer.FromTarget(_database, newData, _parentKind, _parentId);
+
+			int i = 0;
+			foreach (var item in _collection)
+				if (_syncs.TryGetValue(item, out var sync))
+					sync.UpdateOrder(i++);
 		}
 
 		/// <summary>
