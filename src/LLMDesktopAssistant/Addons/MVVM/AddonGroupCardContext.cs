@@ -1,3 +1,5 @@
+using LLMDesktopAssistant.Addons.MVVM.Grouping;
+
 namespace LLMDesktopAssistant.Addons.MVVM
 {
 	/// <summary>

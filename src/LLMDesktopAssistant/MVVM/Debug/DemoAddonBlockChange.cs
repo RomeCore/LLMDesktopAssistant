@@ -37,8 +37,22 @@ public class DemoAddonBlockChange : ViewModelBase, IAddonCardBlockChange
 	/// <inheritdoc/>
 	public LocaleKeyBase? Title { get; set; }
 
-	/// <inheritdoc/>
-	public AddonCardBlockVisibility Visibility { get; set; }
+	/// <summary>
+	/// Where and when the block is rendered. Mirrors <see cref="AddonCardBlock.Visibility"/>: assigning
+	/// <see cref="AddonCardBlockVisibility.Collapsible"/> collapses the block (<see cref="IsExpanded"/>
+	/// is set to <see langword="false"/>).
+	/// </summary>
+	public AddonCardBlockVisibility Visibility
+	{
+		get;
+		set
+		{
+			field = value;
+
+			if (value == AddonCardBlockVisibility.Collapsible)
+				IsExpanded = false;
+		}
+	}
 
 	/// <inheritdoc/>
 	public object? Content { get; private set; }
@@ -53,7 +67,11 @@ public class DemoAddonBlockChange : ViewModelBase, IAddonCardBlockChange
 	public LocaleKeyBase? ToggleToolTip { get; set; }
 
 	/// <inheritdoc/>
-	public bool IsExpanded { get; set; }
+	public bool IsExpanded
+	{
+		get;
+		set => SetProperty(ref field, value);
+	} = true;
 
 	/// <summary>
 	/// Gets or sets the current (override) value. Setting a value different from the definition

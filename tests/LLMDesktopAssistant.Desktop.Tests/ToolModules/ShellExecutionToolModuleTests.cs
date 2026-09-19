@@ -1,4 +1,6 @@
 using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Loading;
 using LLMDesktopAssistant.Desktop.Execution;
 using LLMDesktopAssistant.Desktop.ToolModules;
 using LLMDesktopAssistant.LLM.Services;
@@ -31,7 +33,7 @@ public class ShellExecutionToolModuleTests
 		}
 	}
 
-	private sealed class StubSkillLocator : ISkillLocator
+	private sealed class StubSkillLocator : IAddonFileLocator
 	{
 		public IEnumerable<SkillFileInfo> LocateSkillFiles() => [];
 	}

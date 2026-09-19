@@ -2,7 +2,7 @@ using Avalonia.Media;
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
 
-namespace LLMDesktopAssistant.Addons.MVVM
+namespace LLMDesktopAssistant.Addons.MVVM.Grouping
 {
 	/// <summary>
 	/// The identity and the display data of one group of an addon list.

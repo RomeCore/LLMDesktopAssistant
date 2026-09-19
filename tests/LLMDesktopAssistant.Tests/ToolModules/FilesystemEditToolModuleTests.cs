@@ -1,8 +1,12 @@
 using System.Text.Json.Nodes;
+using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Addons.Loading;
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Implementations.Filesystem;
+using LLMDesktopAssistant.Utils.Files;
 using Xunit.Abstractions;
 
 namespace LLMDesktopAssistant.Tests.ToolModules;
@@ -58,6 +62,29 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 		}
 	}
 
+	private class StubAddonPathImpactDetector : IAddonPathImpactDetector
+	{
+		public AddonKind Detect(string path, bool? isFile, FileOperation operation = FileOperation.Create, string? existingAncestorDirectory = null)
+		{
+			return AddonKind.None;
+		}
+	}
+
+	private class StubAddonManagerInvalidator : IAddonManagerInvalidator
+	{
+		public void Invalidate(AddonKind kinds)
+		{
+		}
+
+		public void Reload(AddonKind kinds)
+		{
+		}
+
+		public void ReloadIfInvalid(AddonKind kinds)
+		{
+		}
+	}
+
 	private static JsonObject Patch(string match, string? replace = null, bool useRegex = false, bool ignoreCase = false)
 	{
 		var patch = new JsonObject
@@ -73,7 +100,7 @@ public class FilesystemEditToolModuleTests(ITestOutputHelper output)
 		return patch;
 	}
 
-	private static FilesystemEditToolModule CreateModule(string root) => new(new TempDirFileAccess(root));
+	private static FilesystemEditToolModule CreateModule(string root) => new(new TempDirFileAccess(root), new StubAddonPathImpactDetector(), new StubAddonManagerInvalidator());
 
 	private static ToolInfo GetFsEditTool(FilesystemEditToolModule module)
 		=> module.GetTools().Single(t => t.Name == "fs-edit");

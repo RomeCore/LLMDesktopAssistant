@@ -15,7 +15,9 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		LocaleKeyBase? Title { get; }
 
 		/// <summary>
-		/// Where and when this block is rendered.
+		/// Where and when this block is rendered. Assigning
+		/// <see cref="AddonCardBlockVisibility.Collapsible"/> collapses the block on creation
+		/// (see <see cref="IsExpanded"/>).
 		/// </summary>
 		AddonCardBlockVisibility Visibility { get; }
 
@@ -42,8 +44,10 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		LocaleKeyBase? ToggleToolTip { get; }
 
 		/// <summary>
-		/// Whether a <see cref="AddonCardBlockVisibility.Collapsible"/> block is currently expanded.
-		/// Ignored by other block kinds.
+		/// Whether the block is currently shown inside its slot: the common block template gates the
+		/// rendering of every block on this value. Defaults to <see langword="true"/>
+		/// (<see cref="AddonCardBlockVisibility.Collapsible"/> blocks are collapsed on creation) and is
+		/// toggled by the block's own button in the card action row afterwards.
 		/// </summary>
 		bool IsExpanded { get; set; }
 	}

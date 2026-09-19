@@ -41,17 +41,41 @@ public static class SpecifierEngine
 		ArgumentNullException.ThrowIfNull(analyzer);
 		ArgumentNullException.ThrowIfNull(context);
 
+		if (!Enum.IsDefined(mode))
+			throw new ArgumentOutOfRangeException(nameof(mode), mode, $"Invalid {nameof(SpecifierAggregationMode)} value.");
+
+		var parsedSpecifiers = specifiers
+			.Where(s => s.Enabled && !string.IsNullOrWhiteSpace(s.Pattern) && Enum.IsDefined(s.Decision))
+			.Select(s =>
+			{
+				return (Specifier: SpecifierParser.TryParse(s.Pattern, specifierParameters)!, s.Decision);
+			})
+			.Where(s => s.Specifier is not null)
+			.ToList();
+
+		if (mode is SpecifierAggregationMode.Prioritized)
+		{
+			parsedSpecifiers = parsedSpecifiers.GroupBy(s => s.Decision)
+				.OrderBy(g => g.Key switch
+				{
+					SpecifierDecision.Allow => 0,
+					SpecifierDecision.Ask => 1,
+					SpecifierDecision.Deny => 2,
+					_ => 0
+				})
+				.Select(g =>
+				{
+					var combined = Specifier.Combined(g.Select(s => s.Specifier));
+					return (Specifier: combined, Decision: g.Key);
+				})
+				.ToList();
+		}
+
 		var verdict = SpecifierVerdict.None;
 		string message = string.Empty;
 
-		foreach (var change in specifiers)
+		foreach (var (specifier, decision) in parsedSpecifiers)
 		{
-			if (string.IsNullOrWhiteSpace(change.Pattern))
-				continue;
-
-			if (SpecifierParser.TryParse(change.Pattern, specifierParameters) is not { } specifier)
-				continue;
-
 			SpecifierMatchResult match;
 			try
 			{
@@ -59,14 +83,14 @@ public static class SpecifierEngine
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Debug(ex, "Error analyzing specifier '{Pattern}': {ErrorMessage}", change.Pattern, ex.Message);
+				Serilog.Log.Debug(ex, "Error analyzing specifier '{Specifier}': {ErrorMessage}", specifier, ex.Message);
 				continue;
 			}
 
 			if (match == SpecifierMatchResult.NoMatch)
 				continue;
 
-			var current = change.Decision switch
+			var current = decision switch
 			{
 				SpecifierDecision.Allow => match == SpecifierMatchResult.FullMatch ? SpecifierVerdict.Allow : SpecifierVerdict.None,
 				SpecifierDecision.Ask => SpecifierVerdict.Ask,
@@ -77,24 +101,8 @@ public static class SpecifierEngine
 			if (current == SpecifierVerdict.None)
 				continue;
 
-			switch (mode)
-			{
-				case SpecifierAggregationMode.Sequential:
-					verdict = current;
-					message = $"Specifier '{change.Pattern}' matched with decision {change.Decision}.";
-					break;
-
-				case SpecifierAggregationMode.Prioritized:
-					if (current > verdict)
-					{
-						verdict = current;
-						message = $"Specifier '{change.Pattern}' matched with decision {change.Decision}.";
-					}
-					break;
-
-				default:
-					throw new ArgumentOutOfRangeException(nameof(mode), mode, "Invalid specifier aggregation mode.");
-			}
+			verdict = current;
+			message = $"Specifier '{specifier}' matched with decision {decision}.";
 		}
 
 		return new SpecifierVerdictResult(verdict, message);

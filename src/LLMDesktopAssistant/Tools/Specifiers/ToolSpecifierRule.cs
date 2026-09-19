@@ -5,23 +5,27 @@ namespace LLMDesktopAssistant.Tools.Specifiers;
 /// </summary>
 public class ToolSpecifierRule : NotifyPropertyChanged
 {
-	private string _pattern = string.Empty;
+	public bool Enabled
+	{
+		get;
+		set => SetProperty(ref field, value);
+	} = true;
+
 	/// <summary>
 	/// The specifier pattern (for example, <c>git status:*</c> or <c>fs-edit *</c>).
 	/// </summary>
 	public string Pattern
 	{
-		get => _pattern;
-		set => SetProperty(ref _pattern, value);
-	}
+		get;
+		set => SetProperty(ref field, value);
+	} = string.Empty;
 
-	private SpecifierDecision _decision = SpecifierDecision.Allow;
 	/// <summary>
 	/// The decision applied when <see cref="Pattern"/> matches the tool arguments.
 	/// </summary>
 	public SpecifierDecision Decision
 	{
-		get => _decision;
-		set => SetProperty(ref _decision, value);
-	}
+		get;
+		set => SetProperty(ref field, value);
+	} = SpecifierDecision.Allow;
 }

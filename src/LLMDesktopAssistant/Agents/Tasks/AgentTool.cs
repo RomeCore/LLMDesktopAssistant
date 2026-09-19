@@ -51,7 +51,7 @@ namespace LLMDesktopAssistant.Agents.Tasks
 		/// <summary>
 		/// The specifier aggregation mode of the tool.
 		/// </summary>
-		public SpecifierAggregationMode SpecifierAggregationMode { get; init; } = SpecifierAggregationMode.Sequential;
+		public SpecifierAggregationMode SpecifierAggregationMode { get; init; } = SpecifierAggregationMode.Prioritized;
 
 		/// <summary>
 		/// The specifier rules of the tool.

@@ -18,6 +18,11 @@ namespace LLMDesktopAssistant.Tools.Specifiers
 		/// The literal pattern value.
 		/// </summary>
 		public required string Value { get; init; }
+
+		public override string ToString()
+		{
+			return Value;
+		}
 	}
 
 	/// <summary>
@@ -30,6 +35,11 @@ namespace LLMDesktopAssistant.Tools.Specifiers
 		/// The name of the tool parameter this part is matched against.
 		/// </summary>
 		public required string Name { get; init; }
+
+		public override string ToString()
+		{
+			return $"{Name}:{Value}";
+		}
 	}
 
 	/// <summary>
@@ -42,6 +52,11 @@ namespace LLMDesktopAssistant.Tools.Specifiers
 		/// The literals that must all match for the group to match.
 		/// </summary>
 		public required ImmutableList<SpecifierLiteralPart> Parts { get; init; }
+
+		public override string ToString()
+		{
+			return string.Join(" && ", Parts.Select(p => p.ToString()));
+		}
 	}
 
 	/// <summary>
@@ -81,6 +96,11 @@ namespace LLMDesktopAssistant.Tools.Specifiers
 			{
 				Parts = [.. specifiers.SelectMany(s => s.Parts)]
 			};
+		}
+
+		public override string ToString()
+		{
+			return string.Join(" || ", Parts.Select(p => p.ToString()));
 		}
 	}
 }

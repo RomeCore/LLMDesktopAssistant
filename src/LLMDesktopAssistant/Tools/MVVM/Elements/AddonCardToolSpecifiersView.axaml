@@ -12,57 +12,58 @@
 
 	<StackPanel Orientation="Vertical" Spacing="6">
 
-		<Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+		<!-- Union and aggregation modes share a single row: each group owns half of the width. -->
+		<Grid ColumnDefinitions="*,*" ColumnSpacing="8">
 
-			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc card.tools.specifiers.union_mode}"
-								 VerticalAlignment="Center"
-								 Opacity="0.8"
-								 FontSize="12"/>
+			<StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
 
-			<ComboBox Grid.Column="1"
-								ItemsSource="{Binding UnionModes}"
-								SelectedItem="{Binding UnionMode, Mode=TwoWay}"
-								IsEnabled="{Binding IsSectionEnabled}"
-								MinWidth="180"
-								FontSize="12"
-								VerticalAlignment="Center">
+				<TextBlock Text="{loc:Loc card.tools.specifiers.union_mode}"
+									 VerticalAlignment="Center"
+									 Opacity="0.8"
+									 FontSize="12"/>
 
-				<ComboBox.ItemTemplate>
-					<DataTemplate x:DataType="ag:SpecifierUnionModeItem">
-						<TextBlock Text="{Binding DisplayName}"
-											 VerticalAlignment="Center"/>
-					</DataTemplate>
-				</ComboBox.ItemTemplate>
+				<ComboBox ItemsSource="{Binding UnionModes}"
+									SelectedItem="{Binding UnionMode, Mode=TwoWay}"
+									IsEnabled="{Binding IsSectionEnabled}"
+									MinWidth="180"
+									FontSize="12"
+									VerticalAlignment="Center">
 
-			</ComboBox>
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="ag:SpecifierUnionModeItem">
+							<TextBlock Text="{Binding DisplayName}"
+												 VerticalAlignment="Center"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
 
-		</Grid>
+				</ComboBox>
 
-		<Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+			</StackPanel>
 
-			<TextBlock Grid.Column="0"
-								 Text="{loc:Loc card.tools.specifiers.aggregation_mode}"
-								 VerticalAlignment="Center"
-								 Opacity="0.8"
-								 FontSize="12"/>
+			<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
 
-			<ComboBox Grid.Column="1"
-								ItemsSource="{Binding AggregationModes}"
-								SelectedItem="{Binding AggregationMode, Mode=TwoWay}"
-								IsEnabled="{Binding IsSectionEnabled}"
-								MinWidth="180"
-								FontSize="12"
-								VerticalAlignment="Center">
+				<TextBlock Text="{loc:Loc card.tools.specifiers.aggregation_mode}"
+									 VerticalAlignment="Center"
+									 Opacity="0.8"
+									 FontSize="12"/>
 
-				<ComboBox.ItemTemplate>
-					<DataTemplate x:DataType="ag:SpecifierAggregationModeItem">
-						<TextBlock Text="{Binding DisplayName}"
-											 VerticalAlignment="Center"/>
-					</DataTemplate>
-				</ComboBox.ItemTemplate>
+				<ComboBox ItemsSource="{Binding AggregationModes}"
+									SelectedItem="{Binding AggregationMode, Mode=TwoWay}"
+									IsEnabled="{Binding IsSectionEnabled}"
+									MinWidth="180"
+									FontSize="12"
+									VerticalAlignment="Center">
 
-			</ComboBox>
+					<ComboBox.ItemTemplate>
+						<DataTemplate x:DataType="ag:SpecifierAggregationModeItem">
+							<TextBlock Text="{Binding DisplayName}"
+												 VerticalAlignment="Center"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+
+				</ComboBox>
+
+			</StackPanel>
 
 		</Grid>
 
@@ -77,14 +78,17 @@
 
 			<ItemsControl.ItemTemplate>
 				<DataTemplate x:DataType="vm:ToolSpecifierRuleRowViewModel">
-					<Grid ColumnDefinitions="*,160,Auto" ColumnSpacing="4" Margin="0,2,0,2">
+					<Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="4" Margin="0,2,0,2">
 
-						<TextBox Grid.Column="0"
+						<CheckBox Grid.Column="0"
+											IsChecked="{Binding Enabled, Mode=TwoWay}"/>
+
+						<TextBox Grid.Column="1"
 										 Text="{Binding Pattern, Mode=TwoWay}"
 										 PlaceholderText="{loc:Loc card.tools.specifiers.pattern}"
 										 FontSize="12"/>
 
-						<ComboBox Grid.Column="1"
+						<ComboBox Grid.Column="2"
 											ItemsSource="{Binding Decisions}"
 											SelectedItem="{Binding Decision, Mode=TwoWay}"
 											MinWidth="120"
@@ -100,15 +104,13 @@
 
 						</ComboBox>
 
-						<Button Grid.Column="2"
+						<Button Grid.Column="3"
+										Classes="SmallIconButton"
 										Command="{Binding RemoveCommand}"
-										HorizontalAlignment="Left"
 										VerticalAlignment="Center"
-										Background="Transparent"
-										BorderThickness="0"
 										ToolTip.Tip="{loc:Loc common.delete}">
 
-							<ico:MaterialIcon Kind="Close" Width="14" Height="14"/>
+							<ico:MaterialIcon Kind="Close"/>
 						</Button>
 
 					</Grid>
@@ -117,10 +119,9 @@
 
 		</ItemsControl>
 
-		<Button Command="{Binding AddCommand}"
+		<Button Classes="SmallIconButton"
+						Command="{Binding AddCommand}"
 						HorizontalAlignment="Left"
-						Background="Transparent"
-						BorderThickness="0"
 						ToolTip.Tip="{loc:Loc tool.specifier.add}">
 
 			<ico:MaterialIcon Kind="Plus"/>

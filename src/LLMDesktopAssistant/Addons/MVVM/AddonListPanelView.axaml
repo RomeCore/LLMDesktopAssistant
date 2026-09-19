@@ -4,6 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:cards="using:LLMDesktopAssistant.Addons.MVVM"
+			 xmlns:group="using:LLMDesktopAssistant.Addons.MVVM.Grouping"
 			 xmlns:loc="using:LLMDesktopAssistant.Localization"
 			 xmlns:ico="using:Material.Icons.Avalonia"
 			 x:Class="LLMDesktopAssistant.Addons.MVVM.AddonListPanelView"
@@ -22,7 +23,7 @@
 					  VerticalAlignment="Center"
 					  MinWidth="150">
 				<ComboBox.ItemTemplate>
-					<DataTemplate x:DataType="cards:GroupingMode">
+					<DataTemplate x:DataType="group:GroupingMode">
 						<StackPanel Orientation="Horizontal" Spacing="6">
 							<ico:MaterialIcon Kind="{Binding Icon}"
 											  IsVisible="{Binding Icon, Converter={StaticResource NotnullToBooleanConverter}}"
@@ -44,31 +45,36 @@
 			</TextBox>
 		</Grid>
 
-		<!-- Empty state -->
-		<TextBlock Text="{loc:Loc {Binding EmptyTextKey}}"
-				   Opacity="0.5"
-				   TextWrapping="Wrap"
-				   IsVisible="{Binding !HasVisibleItems}"/>
-
 		<Border BorderBrush="{DynamicResource SecondaryAccentBrush}"
 				BorderThickness="1"
 				CornerRadius="4">
-			<ScrollViewer MaxHeight="600"
-						  VerticalScrollBarVisibility="Auto"
-						  HorizontalScrollBarVisibility="Disabled">
-				<ItemsControl ItemsSource="{Binding Items}">
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<StackPanel Orientation="Vertical" Spacing="8"/>
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-							<ContentControl Content="{Binding}"/>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
-			</ScrollViewer>
+			<Panel>
+				
+				<!-- Empty state -->
+				<TextBlock Text="{loc:Loc {Binding EmptyTextKey}}"
+						   Opacity="0.5"
+						   TextWrapping="Wrap"
+						   IsVisible="{Binding !HasVisibleItems}"
+							 Margin="10"/>
+
+				<ScrollViewer MaxHeight="600"
+							  VerticalScrollBarVisibility="Auto"
+							  HorizontalScrollBarVisibility="Disabled">
+					<ItemsControl ItemsSource="{Binding Items}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Vertical"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<ContentControl Content="{Binding}" IsVisible="{Binding IsVisible}"/>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</ScrollViewer>
+
+			</Panel>
 		</Border>
 
 	</StackPanel>

@@ -171,8 +171,10 @@ namespace LLMDesktopAssistant.Tools.MVVM.Elements
 		{
 			_context.EnsureChange().Specifiers.Reset(Rules.Select(row => new ToolSpecifierRule
 			{
+				Enabled = row.Enabled,
 				Pattern = row.Pattern,
-				Decision = row.Decision?.Value ?? SpecifierDecision.Allow
+				Decision = row.Decision?.Value ?? SpecifierDecision.Allow,
+				
 			}));
 
 			SyncIsChanged();
@@ -192,7 +194,7 @@ namespace LLMDesktopAssistant.Tools.MVVM.Elements
 
 		private void AddRule()
 		{
-			Rules.Add(new ToolSpecifierRuleRowViewModel(this, string.Empty, SpecifierDecision.Allow));
+			Rules.Add(new ToolSpecifierRuleRowViewModel(this, true, string.Empty, SpecifierDecision.Allow));
 			SyncSpecifiers();
 		}
 
@@ -202,7 +204,7 @@ namespace LLMDesktopAssistant.Tools.MVVM.Elements
 				? change.Specifiers
 				: _context.Addon.Specifiers;
 
-			Rules.Reset(source.Select(rule => new ToolSpecifierRuleRowViewModel(this, rule.Pattern, rule.Decision)));
+			Rules.Reset(source.Select(rule => new ToolSpecifierRuleRowViewModel(this, rule.Enabled, rule.Pattern, rule.Decision)));
 		}
 
 		private void SubscribeChange()
@@ -268,75 +270,5 @@ namespace LLMDesktopAssistant.Tools.MVVM.Elements
 					|| change.SpecifierAggregationMode is not null
 					|| change.Specifiers.Count > 0);
 		}
-	}
-
-	/// <summary>
-	/// The view model of a single specifier rule row of a tool card: the pattern, the decision and the
-	/// remove command. Every change is persisted to the tool change immediately.
-	/// </summary>
-	public class ToolSpecifierRuleRowViewModel : NotifyPropertyChanged
-	{
-		private readonly AddonCardToolSpecifiersBlock _owner;
-		private string _pattern;
-		private SpecifierDecisionItem? _decision;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ToolSpecifierRuleRowViewModel"/> class.
-		/// </summary>
-		/// <param name="owner">The block the row belongs to.</param>
-		/// <param name="pattern">The specifier pattern of the rule.</param>
-		/// <param name="decision">The decision applied when the pattern matches.</param>
-		public ToolSpecifierRuleRowViewModel(AddonCardToolSpecifiersBlock owner, string pattern, SpecifierDecision decision)
-		{
-			_owner = owner;
-			_pattern = pattern;
-			_decision = Decisions.FirstOrDefault(item => item.Value == decision) ?? Decisions.FirstOrDefault();
-
-			RemoveCommand = new RelayCommand(() => owner.RemoveRule(this));
-		}
-
-		/// <summary>
-		/// Gets or sets the specifier pattern. Changes are persisted to the tool change immediately.
-		/// </summary>
-		public string Pattern
-		{
-			get => _pattern;
-			set
-			{
-				if (_pattern == value)
-					return;
-
-				_pattern = value;
-				_owner.SyncSpecifiers();
-				RaisePropertyChanged();
-			}
-		}
-
-		/// <summary>
-		/// Gets all available specifier decisions with localized display names.
-		/// </summary>
-		public ImmutableList<SpecifierDecisionItem> Decisions { get; } = SpecifierDecisionItem.All;
-
-		/// <summary>
-		/// Gets or sets the decision applied when the pattern matches. Changes are persisted to the tool change immediately.
-		/// </summary>
-		public SpecifierDecisionItem? Decision
-		{
-			get => _decision;
-			set
-			{
-				if (value is null || _decision?.Value == value.Value)
-					return;
-
-				_decision = value;
-				_owner.SyncSpecifiers();
-				RaisePropertyChanged();
-			}
-		}
-
-		/// <summary>
-		/// Gets the command that removes this specifier rule from the tool.
-		/// </summary>
-		public ICommand RemoveCommand { get; }
 	}
 }

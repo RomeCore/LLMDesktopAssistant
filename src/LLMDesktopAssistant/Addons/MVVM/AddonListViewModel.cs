@@ -1,8 +1,10 @@
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Addons.Management;
+using LLMDesktopAssistant.Addons.MVVM.Grouping;
 using LLMDesktopAssistant.Addons.Search;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.Addons.MVVM
@@ -20,7 +22,6 @@ namespace LLMDesktopAssistant.Addons.MVVM
 	public abstract class AddonListViewModel : ViewModelBase
 	{
 		private string _searchText = string.Empty;
-		private ImmutableList<GroupingMode> _groupingModes = [];
 		private GroupingMode? _selectedGroupingMode;
 		private bool _hasVisibleItems;
 
@@ -63,10 +64,10 @@ namespace LLMDesktopAssistant.Addons.MVVM
 		/// </summary>
 		public ImmutableList<GroupingMode> GroupingModes
 		{
-			get => _groupingModes;
+			get => field;
 			set
 			{
-				if (!SetProperty(ref _groupingModes, value))
+				if (!SetProperty(ref field, value))
 					return;
 
 				var selected = SelectedGroupingMode;
@@ -75,7 +76,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 
 				RaisePropertyChanged(nameof(HasGroupingModes));
 			}
-		}
+		} = [];
 
 		/// <summary>
 		/// Gets or sets the grouping mode the list is currently built with.
@@ -199,6 +200,7 @@ namespace LLMDesktopAssistant.Addons.MVVM
 			_kind = kind;
 			_searchService = searchService;
 			_contextBuilder = contextBuilder;
+			GroupingModes = StandardGroupingModes.CreateDefault<TAddon>();
 		}
 
 		/// <inheritdoc/>

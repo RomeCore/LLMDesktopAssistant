@@ -12,7 +12,9 @@ namespace LLMDesktopAssistant.Addons.MVVM
 
 		/// <summary>
 		/// The block is collapsed by default and toggled by its own button in the card action row
-		/// (e.g. the skill/sub-agent parameters section).
+		/// (e.g. the skill/sub-agent parameters section). Creating a block with this value sets
+		/// <see cref="IAddonCardBlock.IsExpanded"/> to <see langword="false"/> automatically:
+		/// collapsible blocks always start collapsed.
 		/// </summary>
 		Collapsible,
 

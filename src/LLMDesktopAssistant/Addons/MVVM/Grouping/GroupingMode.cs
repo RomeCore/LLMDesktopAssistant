@@ -1,7 +1,7 @@
 using LLMDesktopAssistant.Localization;
 using Material.Icons;
 
-namespace LLMDesktopAssistant.Addons.MVVM
+namespace LLMDesktopAssistant.Addons.MVVM.Grouping
 {
 	/// <summary>
 	/// A way the cards of an addon list are grouped: 'no grouping' (a flat list), 'by category',

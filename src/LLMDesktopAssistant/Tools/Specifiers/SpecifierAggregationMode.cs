@@ -6,12 +6,12 @@ namespace LLMDesktopAssistant.Tools.Specifiers;
 public enum SpecifierAggregationMode
 {
 	/// <summary>
+	/// Specifiers are aggregated by strictness: Deny &gt; Ask &gt; Allow, regardless of the order.
+	/// </summary>
+	Prioritized,
+
+	/// <summary>
 	/// Specifiers are evaluated in order; the last matching specifier wins.
 	/// </summary>
 	Sequential,
-
-	/// <summary>
-	/// Specifiers are aggregated by strictness: Deny &gt; Ask &gt; Allow, regardless of the order.
-	/// </summary>
-	Prioritized
 }

@@ -1,16 +1,15 @@
 using System.ComponentModel;
-using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Addons.MVVM;
+using LLMDesktopAssistant.Addons.MVVM.Grouping;
 using LLMDesktopAssistant.Addons.Search;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Tools.Specifiers;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
@@ -228,7 +227,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					OnDeleted = list.Update
 				})
 			{
-				GroupingModes = StandardGroupingModes.CreateDefault<ToolInfo>(),
 				SearchPlaceholderKey = Locale.GetKey("settings.tools.search.placeholder"),
 				EmptyTextKey = Locale.GetKey("settings.tools.empty")
 			};

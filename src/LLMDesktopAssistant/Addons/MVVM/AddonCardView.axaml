@@ -17,9 +17,9 @@
 
 		<Style Selector="Border.addonCard">
 			<Setter Property="BorderBrush" Value="{DynamicResource SecondaryAccentBrush}"/>
-			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BorderThickness" Value="0,1"/>
 			<Setter Property="CornerRadius" Value="4"/>
-			<Setter Property="Padding" Value="8"/>
+			<Setter Property="Padding" Value="4"/>
 		</Style>
 
 		<!-- Display chip: a plain bordered label with an optional icon. -->
@@ -34,6 +34,7 @@
 		<!-- HasBorder == false → no outline at all (used by the source indicator). -->
 		<Style Selector="Border.cardChip.noBorder">
 			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Padding" Value="2"/>
 		</Style>
 
 		<!-- Tag chip: the same look, but clickable. -->
@@ -149,9 +150,10 @@
 			</StackPanel>
 		</DataTemplate>
 
-		<!-- A collapsible block renders its content only while expanded. The template of the block itself
-			 is resolved implicitly, so that block changes keep their reset marker. -->
-		<DataTemplate x:Key="AddonCardCollapsibleBlockTemplate" x:DataType="cards:IAddonCardBlock">
+		<!-- Common rendering of a block: the content is shown only while the block is expanded, so a
+			 collapsed block occupies no space. The plain and change block templates below compose this
+			 template explicitly, which keeps the implicit template resolution chain finite. -->
+		<DataTemplate x:Key="AddonCardBlockTemplate" x:DataType="cards:IAddonCardBlock">
 			<ContentControl IsVisible="{Binding IsExpanded}"
 											Content="{Binding}"
 											ContentTemplate="{StaticResource AddonCardBlockBodyTemplate}"/>
@@ -214,9 +216,12 @@
 			<ContentControl Content="{Binding Content}" VerticalAlignment="Center"/>
 		</DataTemplate>
 
-		<!-- Block that edits an override: the accent marker on the left resets the override when clicked. -->
+		<!-- Block that edits an override: the accent marker on the left resets the override when clicked.
+			 The marker and the body are gated by the block visibility flag, so a collapsed block
+			 (marker included) occupies no space. -->
 		<DataTemplate x:DataType="cards:IAddonCardBlockChange">
-			<Grid ColumnDefinitions="3,Auto" ColumnSpacing="6">
+			<Grid ColumnDefinitions="3,Auto" ColumnSpacing="6"
+						IsVisible="{Binding IsExpanded}">
 				<Button Grid.Column="0"
 								BorderBrush="{DynamicResource PrimaryAccentBrush}"
 								Background="{DynamicResource PrimaryAccentBrush}"
@@ -228,13 +233,13 @@
 								ToolTip.Tip="{loc:Loc common.reset}"/>
 				<ContentControl Grid.Column="1"
 											Content="{Binding}"
-											ContentTemplate="{StaticResource AddonCardBlockBodyTemplate}"/>
+											ContentTemplate="{StaticResource AddonCardBlockTemplate}"/>
 			</Grid>
 		</DataTemplate>
 
-		<!-- Block: the shared body is rendered by the template below. -->
+		<!-- Block: the common block template renders the body and owns the visibility gate. -->
 		<DataTemplate x:DataType="cards:IAddonCardBlock">
-			<ContentControl Content="{Binding}" ContentTemplate="{StaticResource AddonCardBlockBodyTemplate}"/>
+			<ContentControl Content="{Binding}" ContentTemplate="{StaticResource AddonCardBlockTemplate}"/>
 		</DataTemplate>
 
 		<!-- Action button. IsEnabled is driven by Command.CanExecute. -->
@@ -419,7 +424,6 @@
 			<!-- ============================================================ -->
 			<ItemsControl ItemsSource="{Binding CollapsibleBlocks}"
 										IsVisible="{Binding CollapsibleBlocks.Count}"
-										ItemTemplate="{StaticResource AddonCardCollapsibleBlockTemplate}"
 										Margin="28,0,0,0"/>
 
 			<!-- ============================================================ -->
@@ -434,18 +438,18 @@
 			<!-- ============================================================ -->
 			<Border IsVisible="{Binding IsChildrenExpanded}"
 							Margin="28,4,0,0"
-							Padding="10,2,0,2"
+							Padding="0,2,0,2"
 							BorderThickness="2,0,0,0"
 							BorderBrush="{DynamicResource SecondaryAccentBrush}">
 				<ItemsControl ItemsSource="{Binding Children}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
-							<StackPanel Orientation="Vertical" Spacing="8"/>
+							<StackPanel Orientation="Vertical"/>
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
-							<ContentControl Content="{Binding}"/>
+							<ContentControl Content="{Binding}" IsVisible="{Binding IsVisible}"/>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>

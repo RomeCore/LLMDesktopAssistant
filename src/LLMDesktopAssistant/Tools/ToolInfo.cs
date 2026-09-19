@@ -199,7 +199,7 @@ namespace LLMDesktopAssistant.Tools
 		{
 			get => field;
 			set => SetProperty(ref field, value);
-		} = SpecifierAggregationMode.Sequential;
+		} = SpecifierAggregationMode.Prioritized;
 
 		/// <summary>
 		/// The specifier rules of the tool.
