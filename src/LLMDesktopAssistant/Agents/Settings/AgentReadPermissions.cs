@@ -1,4 +1,4 @@
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	/// <summary>
 	/// Describes the mode in which an agent can read messages.

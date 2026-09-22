@@ -1,4 +1,4 @@
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	public class AgentInformation : AgentSettingsCategoryBase
 	{

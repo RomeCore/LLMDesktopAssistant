@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Settings;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents

@@ -1,7 +1,7 @@
 ﻿using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Settings;
 
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	public class MemoryBlockAttachment : NotifyPropertyChanged
 	{

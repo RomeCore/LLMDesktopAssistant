@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	public class SkillsetSettings : AddonSetConfigurationBase<SkillChange>
 	{

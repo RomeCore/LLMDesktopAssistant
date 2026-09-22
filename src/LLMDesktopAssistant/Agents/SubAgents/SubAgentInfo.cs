@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Addons;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.Tools;
 
 namespace LLMDesktopAssistant.Agents.SubAgents

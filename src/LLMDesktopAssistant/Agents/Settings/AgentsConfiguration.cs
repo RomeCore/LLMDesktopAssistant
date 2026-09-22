@@ -1,7 +1,7 @@
 ﻿using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	public class AgentsConfiguration : SettingsObject
 	{

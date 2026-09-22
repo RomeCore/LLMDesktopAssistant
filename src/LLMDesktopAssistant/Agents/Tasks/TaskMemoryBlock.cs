@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 

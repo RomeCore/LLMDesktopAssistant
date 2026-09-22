@@ -1,4 +1,5 @@
 using System.Text;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Prompting;

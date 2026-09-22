@@ -1,6 +1,7 @@
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Parsers;
 using LLMDesktopAssistant.Addons.Parsers.Frontmatter;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.Services;
 using LLMDesktopAssistant.Tools;
 

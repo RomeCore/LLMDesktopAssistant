@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.Addons;
-using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Services.Prompting;

@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.Prompting;
 
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	/// <summary>
 	/// Represents the specialization group of an agent prompt: the selection between a

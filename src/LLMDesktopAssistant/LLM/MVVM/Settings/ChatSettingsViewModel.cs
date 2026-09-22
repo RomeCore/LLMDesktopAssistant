@@ -3,7 +3,6 @@ using LLMDesktopAssistant.Addons.Loading;
 using LLMDesktopAssistant.Addons.MVVM;
 using LLMDesktopAssistant.Addons.Search;
 using LLMDesktopAssistant.Addons.Management;
-using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Memory;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.ApiKeys;
@@ -25,6 +24,7 @@ using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Scripting;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
+using LLMDesktopAssistant.Agents.Settings;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {

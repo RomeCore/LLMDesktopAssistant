@@ -1,5 +1,3 @@
-using RCLargeLanguageModels.Messages.Attachments;
-
 namespace LLMDesktopAssistant.LLM.MVVM.Additional
 {
 	/// <summary>
@@ -7,7 +5,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 	/// The file can be copied to the working directory so tools can access it by <see cref="LocalPath"/>,
 	/// and can provide a native attachment (<see cref="NativeAttachment"/>) that is sent to the LLM API.
 	/// </summary>
-	public class AttachmentMessagePart : AdditionalMessagePart
+	public class AttachmentMessagePart : NativeAttachmentMessagePart
 	{
 		private string? _title;
 		/// <summary>
@@ -50,16 +48,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Additional
 		{
 			get => _size;
 			set => SetProperty(ref _size, value);
-		}
-
-		private IAttachment? _nativeAttachment;
-		/// <summary>
-		/// Gets or sets the native attachment that can be sent directly to a large language model.
-		/// </summary>
-		public IAttachment? NativeAttachment
-		{
-			get => _nativeAttachment;
-			set => SetProperty(ref _nativeAttachment, value);
 		}
 	}
 }

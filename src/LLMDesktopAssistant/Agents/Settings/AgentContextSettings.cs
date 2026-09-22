@@ -1,4 +1,4 @@
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	/// <summary>
 	/// Represents the context group for an agent: how many rounds are visible

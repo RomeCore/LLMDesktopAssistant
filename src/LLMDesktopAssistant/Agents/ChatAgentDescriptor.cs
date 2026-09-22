@@ -1,4 +1,5 @@
 using System.Text.Json;
+using LLMDesktopAssistant.Agents.Settings;
 
 namespace LLMDesktopAssistant.Agents
 {

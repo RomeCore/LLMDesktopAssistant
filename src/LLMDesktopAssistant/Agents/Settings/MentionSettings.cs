@@ -1,4 +1,4 @@
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	/// <summary>
 	/// Represents the mention group of the agent execution conditions: whether the agent

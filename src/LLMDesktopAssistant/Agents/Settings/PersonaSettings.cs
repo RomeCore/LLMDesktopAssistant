@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.Prompting;
 
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	/// <summary>
 	/// Represents the persona group of an agent prompt: the agent's nickname and the persona

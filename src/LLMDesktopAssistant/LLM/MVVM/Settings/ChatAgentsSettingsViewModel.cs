@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.ExecutionStages;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Settings;

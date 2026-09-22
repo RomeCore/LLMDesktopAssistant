@@ -1,7 +1,7 @@
 using LLMDesktopAssistant.Settings;
 using LLMDesktopAssistant.Tools;
 
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	/// <summary>
 	/// Represents the toolset configuration for an agent: either a custom toolset stored locally

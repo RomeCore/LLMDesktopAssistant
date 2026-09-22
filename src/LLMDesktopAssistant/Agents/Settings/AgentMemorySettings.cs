@@ -1,4 +1,5 @@
 ﻿using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.SourceGenerators;
 using LLMDesktopAssistant.Utils;

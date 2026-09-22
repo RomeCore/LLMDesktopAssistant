@@ -1,3 +1,4 @@
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.SourceGenerators;
 using LLMDesktopAssistant.Utils;
 

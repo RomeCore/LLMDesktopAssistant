@@ -1,4 +1,4 @@
-namespace LLMDesktopAssistant.Agents
+namespace LLMDesktopAssistant.Agents.Settings
 {
 	/// <summary>
 	/// Describes how this agent's messages are exposed to other agents.

@@ -1,5 +1,5 @@
 using LLMDesktopAssistant.Addons;
-using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.StructuredValues;
 

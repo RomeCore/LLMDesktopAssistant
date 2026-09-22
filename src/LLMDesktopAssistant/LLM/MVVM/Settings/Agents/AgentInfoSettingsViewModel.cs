@@ -2,10 +2,10 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using System.ComponentModel;
-using LLMDesktopAssistant.Agents;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
+using LLMDesktopAssistant.Agents.Settings;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {

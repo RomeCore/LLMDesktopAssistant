@@ -6,6 +6,7 @@ using LLMDesktopAssistant.Addons.MVVM;
 using LLMDesktopAssistant.Addons.MVVM.Grouping;
 using LLMDesktopAssistant.Addons.Search;
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Settings;
