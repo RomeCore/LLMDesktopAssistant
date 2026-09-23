@@ -141,7 +141,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 		private string? SelectContext(AgentPreExecutionContext context)
 		{
 			var rounds = MessagesInterface.GroupMessagesIntoRounds(context.Chat.Messages, MaxVisibleRounds, TreatUserLikeAgentsAsUsers);
-			var promptBuilder = context.Services.GetRequiredService<IChatPromptBuilder>();
+			var quoteRenderer = context.Services.GetRequiredService<IChatMessageQuoteRenderer>();
 
 			var sb = new StringBuilder();
 
@@ -149,7 +149,7 @@ namespace LLMDesktopAssistant.Agents.ExecutionStages
 			{
 				foreach (var message in round)
 				{
-					sb.AppendLine(promptBuilder.RenderMessage(message.Message));
+					sb.AppendLine(quoteRenderer.RenderQuote(message.Message));
 				}
 			}
 

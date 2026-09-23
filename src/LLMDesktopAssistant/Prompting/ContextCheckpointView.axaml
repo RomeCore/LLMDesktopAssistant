@@ -1,0 +1,101 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="using:LLMDesktopAssistant.Prompting"
+			 xmlns:ctrl="using:LLMDesktopAssistant.Controls"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 x:Class="LLMDesktopAssistant.Prompting.ContextCheckpointView"
+			 x:DataType="local:ContextCheckpoint">
+
+	<StackPanel>
+
+		<!-- Context shield -->
+		<Border IsVisible="{Binding IsShield}"
+						Height="28"
+						Margin="20,0,20,8"
+						CornerRadius="4"
+						Background="#448BCC"
+						HorizontalAlignment="Stretch"
+						Padding="12,0">
+
+			<TextBlock Text="{loc:Loc message.context_shield}"
+								 Foreground="White"
+								 FontSize="12"
+								 VerticalAlignment="Center"
+								 HorizontalAlignment="Center"/>
+
+		</Border>
+
+		<!-- Summary -->
+		<Expander IsVisible="{Binding IsSummary}"
+							Header="{loc:Loc message.summary}"
+							Margin="20,0,20,8"
+							IsExpanded="False">
+
+			<Border Background="{DynamicResource ThemeAccentBrush4}"
+							CornerRadius="4"
+							Padding="8"
+							Margin="0,4,0,0">
+
+				<ctrl:MarkdownControl MarkdownText="{Binding Context}"/>
+
+			</Border>
+
+		</Expander>
+
+		<!-- Tool results compaction -->
+		<Border IsVisible="{Binding IsToolCompaction}"
+						Height="28"
+						Margin="20,0,20,8"
+						CornerRadius="4"
+						Background="#4CAA88"
+						HorizontalAlignment="Stretch"
+						Padding="12,0">
+
+			<TextBlock Text="{loc:Loc message.tool_compaction}"
+								 Foreground="White"
+								 FontSize="12"
+								 VerticalAlignment="Center"
+								 HorizontalAlignment="Center"/>
+
+		</Border>
+
+		<!-- Forced tool results compaction -->
+		<Border IsVisible="{Binding IsForcedToolCompaction}"
+						Height="28"
+						Margin="20,0,20,8"
+						CornerRadius="4"
+						Background="#AA7B44"
+						HorizontalAlignment="Stretch"
+						Padding="12,0">
+
+			<TextBlock Text="{loc:Loc message.forced_tool_compaction}"
+								 Foreground="White"
+								 FontSize="12"
+								 VerticalAlignment="Center"
+								 HorizontalAlignment="Center"/>
+
+		</Border>
+
+		<!-- Reasoning compaction -->
+		<Border IsVisible="{Binding IsReasoningCompaction}"
+						Height="28"
+						Margin="20,0,20,8"
+						CornerRadius="4"
+						Background="#8B5CCC"
+						HorizontalAlignment="Stretch"
+						Padding="12,0">
+
+			<TextBlock Text="{loc:Loc message.reasoning_compaction}"
+								 Foreground="White"
+								 FontSize="12"
+								 VerticalAlignment="Center"
+								 HorizontalAlignment="Center"/>
+
+		</Border>
+
+	</StackPanel>
+
+</UserControl>

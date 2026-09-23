@@ -3,7 +3,7 @@ using System.Text;
 using Avalonia.Threading;
 using LLMDesktopAssistant.Agents.Tasks;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
+
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.LLM.Services
 	public class ChatSummarizationService(
 		Chat chat,
 		IChatSettingsService chatSettings,
-		IChatPromptBuilder promptBuilder,
+		IChatMessageQuoteRenderer quoteRenderer,
 		ITemplateLibraryAccessor templates,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager
@@ -146,25 +146,30 @@ namespace LLMDesktopAssistant.LLM.Services
 					]
 				}, cancellationToken);
 
-				var viewModel = new SummaryViewModel
+				var checkpoint = message.AdditionalData.TryGet<ContextCheckpoint>();
+				if (checkpoint == null)
 				{
-					Summary = summarizationTask.LastGeneratedContent ?? string.Empty,
-					Completed = false
-				};
-				message.AdditionalData.TryReplace(viewModel);
+					checkpoint = new ContextCheckpoint();
+					message.AdditionalData.Add(checkpoint);
+				}
+
+				// Cut kinds are mutually exclusive: the summary replaces any shield on this message.
+				checkpoint.Kind = (checkpoint.Kind & ~ContextCheckpointKind.Shield) | ContextCheckpointKind.Summary;
+				checkpoint.Context = summarizationTask.LastGeneratedContent ?? string.Empty;
+				checkpoint.IsCompletedAndEnabled = false;
 				PropertyChangedEventHandler summaryChanged = (s, e) =>
 				{
 					if (e.PropertyName is nameof(summarizationTask.LastGeneratedContent))
 						Dispatcher.UIThread.Post(() =>
 						{
-							viewModel.Summary = summarizationTask.LastGeneratedContent ?? string.Empty;
+							checkpoint.Context = summarizationTask.LastGeneratedContent ?? string.Empty;
 						});
 				};
 				summarizationTask.PropertyChanged += summaryChanged;
 
 				await summarizationTask;
 				summarizationTask.PropertyChanged -= summaryChanged;
-				viewModel.Completed = true;
+				checkpoint.IsCompletedAndEnabled = true;
 			}
 			catch (Exception ex)
 			{
@@ -193,7 +198,9 @@ namespace LLMDesktopAssistant.LLM.Services
 						continue;
 				}
 
-				if (message.AdditionalData.Has<ContextShieldViewModel>())
+				if (message.AdditionalData.TryGet<ContextCheckpoint>(out var shieldCheckpoint) &&
+					shieldCheckpoint.IsCompletedAndEnabled &&
+					shieldCheckpoint.Kind.HasFlag(ContextCheckpointKind.Shield))
 					break;
 
 				if (message is Domain.UserMessage userMessage)
@@ -201,23 +208,24 @@ namespace LLMDesktopAssistant.LLM.Services
 					encounteredUserMessage = true;
 					if (latestSummary != null)
 					{
-						parts.Insert(0, promptBuilder.RenderMessage(message));
+						parts.Insert(0, quoteRenderer.RenderQuote(message));
 						break;
 					}
 				}
 
 				if (targetMessage != message &&
-					message.AdditionalData.TryGet<SummaryViewModel>(out var summaryViewModel) &&
-					summaryViewModel.Completed)
+					message.AdditionalData.TryGet<ContextCheckpoint>(out var summaryCheckpoint) &&
+					summaryCheckpoint.IsCompletedAndEnabled &&
+					summaryCheckpoint.Kind.HasFlag(ContextCheckpointKind.Summary))
 				{
-					latestSummary = summaryViewModel.Summary;
+					latestSummary = summaryCheckpoint.Context;
 					if (encounteredUserMessage)
 						break;
 				}
 
 				if (latestSummary == null)
 				{
-					parts.Insert(0, promptBuilder.RenderMessage(message));
+					parts.Insert(0, quoteRenderer.RenderQuote(message));
 				}
 			}
 

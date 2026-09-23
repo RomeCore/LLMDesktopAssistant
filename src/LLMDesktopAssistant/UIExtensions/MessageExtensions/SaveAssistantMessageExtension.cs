@@ -1,4 +1,4 @@
-﻿using Avalonia.Platform.Storage;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Messages;
 using Material.Icons;
@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		{
 			Icon = MaterialIconKind.ContentSave;
 
-			Tooltip = "save_markdown";
+			Tooltip = "message.save_markdown";
 
 			Command = new AsyncRelayCommand(async () =>
 			{

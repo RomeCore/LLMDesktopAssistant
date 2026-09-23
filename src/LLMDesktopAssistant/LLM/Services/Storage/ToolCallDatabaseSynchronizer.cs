@@ -1,12 +1,8 @@
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json.Nodes;
 using LLMDesktopAssistant.Data;
 using LLMDesktopAssistant.Data.ChatModels;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.MVVM.Additional;
-using LLMDesktopAssistant.Tools;
-using LLMDesktopAssistant.Utils;
 using RCLargeLanguageModels.Tasks;
 
 namespace LLMDesktopAssistant.LLM.Services.Storage
@@ -86,6 +82,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 				Title = model.Title,
 				Arguments = model.FunctionArguments,
 				ResultContent = model.ResultContent,
+				CanBeCompacted = model.CanBeCompacted,
 				UseMarkdown = model.UseMarkdown,
 				StructuredResult = string.IsNullOrEmpty(model.StructuredResult) ? null
 					: JsonNode.Parse(model.StructuredResult),
@@ -124,6 +121,7 @@ namespace LLMDesktopAssistant.LLM.Services.Storage
 			model.StatusTitle = from.StatusTitle;
 			model.ExpectedBehaviour = from.ExpectedBehaviour;
 			model.ResultContent = from.ResultContent;
+			model.CanBeCompacted = from.CanBeCompacted;
 			model.UseMarkdown = from.UseMarkdown;
 			model.StructuredResult = from.StructuredResult?.ToJsonString();
 		}

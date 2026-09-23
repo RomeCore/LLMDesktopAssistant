@@ -9,6 +9,7 @@ using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.Management;
+using LLMDesktopAssistant.Prompting.State;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
@@ -99,7 +100,7 @@ public class ComponentCategoryViewModel : NotifyPropertyChanged
 public class AgentPromptSettingsViewModel : ViewModelBase
 {
 	private readonly ChatSettings _chatSettings;
-	private readonly IChatPromptBuilder _promptBuilder;
+	private readonly IEnumerable<IPromptSection> _promptSections;
 	private readonly ChatAgentDescriptor _agent;
 	private readonly IPromptSlotElementManager _slotElementManager;
 	private readonly IPromptComponentManager _componentManager;
@@ -278,14 +279,14 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 	public AgentPromptSettingsViewModel(
 		AgentPromptSettings settings,
 		ChatSettings chatSettings,
-		IChatPromptBuilder promptBuilder,
+		IEnumerable<IPromptSection> promptSections,
 		ChatAgentDescriptor agent,
 		IPromptComponentManager componentManager,
 		IPromptSlotElementManager slotElementManager)
 	{
 		PromptSettings = settings;
 		_chatSettings = chatSettings;
-		_promptBuilder = promptBuilder;
+		_promptSections = promptSections;
 		_agent = agent;
 
 		_componentManager = componentManager;
@@ -372,13 +373,13 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 	}
 
 	/// <summary>
-	/// Regenerates the system prompt preview using <see cref="IChatPromptBuilder.RenderSystemPrompt"/>.
+	/// Regenerates the system prompt preview from the prompt sections.
 	/// </summary>
 	public void RegeneratePreview()
 	{
 		try
 		{
-			SystemPromptPreview = _promptBuilder.RenderSystemPrompt(_agent);
+			SystemPromptPreview = _promptSections.RenderHeader(_agent).Text;
 		}
 		catch (Exception ex)
 		{

@@ -56,6 +56,16 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _readSettings, value);
 		}
 
+		private AgentContextSettings _contextSettings = new();
+		/// <summary>
+		/// The context settings for this agent: visible rounds, checkpoint kinds and prompt mode.
+		/// </summary>
+		public AgentContextSettings Context
+		{
+			get => _contextSettings;
+			set => SetProperty(ref _contextSettings, value);
+		}
+
 		private AgentPromptSettings _promptSettings = new();
 		/// <summary>
 		/// The prompt settings for this agent.

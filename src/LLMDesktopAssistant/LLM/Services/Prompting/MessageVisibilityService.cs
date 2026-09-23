@@ -6,23 +6,17 @@ using LLMDesktopAssistant.LLM.Settings;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
-	/// <summary>
-	/// Determines whether chat messages are visible to a given agent, respecting the agent's
-	/// read permissions, the sender agent's exposure mode and the message visibility settings.
-	/// </summary>
-	public static class AgentMessageVisibility
+	/// <inheritdoc cref="IMessageVisibilityService"/>
+	[ChatService(typeof(IMessageVisibilityService))]
+	public class MessageVisibilityService(
+		IChatSettingsService chatSettings,
+		IAgentManagementService agentManager) : IMessageVisibilityService
 	{
-		/// <summary>
-		/// Determines whether the specified user message is visible to the given agent.
-		/// </summary>
-		/// <param name="message">The branched user message to check.</param>
-		/// <param name="agent">The agent to check visibility for.</param>
-		/// <param name="chatSettings">The chat settings used for read permission resolution.</param>
-		/// <returns><see langword="true"/> if the message is visible to the agent; otherwise, <see langword="false"/>.</returns>
-		public static bool IsUserMessageVisibleToAgent(BranchedMessage message, ChatAgentDescriptor agent, ChatSettings chatSettings)
+		/// <inheritdoc/>
+		public bool IsUserMessageVisibleToAgent(BranchedMessage message, ChatAgentDescriptor agent)
 		{
 			var userMessage = message.AsUserMessage();
-			var permissions = agent.Read.GetEffectiveReadPermissions(chatSettings);
+			var permissions = agent.Read.GetEffectiveReadPermissions(chatSettings.Settings);
 
 			if (!permissions.HasFlag(AgentReadPermissions.UserMessages))
 				return false;
@@ -46,22 +40,14 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			return true;
 		}
 
-		/// <summary>
-		/// Determines whether the specified assistant message is visible to the given agent.
-		/// </summary>
-		/// <param name="message">The branched assistant message to check.</param>
-		/// <param name="agent">The agent to check visibility for.</param>
-		/// <param name="agentManager">The agent management service used to resolve the sender agent descriptor.</param>
-		/// <param name="chatSettings">The chat settings used for permission and exposure resolution.</param>
-		/// <returns><see langword="true"/> if the message is visible to the agent; otherwise, <see langword="false"/>.</returns>
-		public static bool IsAssistantMessageVisibleToAgent(BranchedMessage message, ChatAgentDescriptor agent,
-			IAgentManagementService agentManager, ChatSettings chatSettings)
+		/// <inheritdoc/>
+		public bool IsAssistantMessageVisibleToAgent(BranchedMessage message, ChatAgentDescriptor agent)
 		{
 			var assistantMessage = message.AsAssistantMessage();
 			var messageAgentId = assistantMessage.SenderAgentId;
 			var agentDescriptor = agentManager.GetAgentDescriptor(assistantMessage.SenderAgentId);
-			var exposure = agentDescriptor.Read.GetEffectiveExposureMode(chatSettings); // What sender agent exposes
-			var permissions = agent.Read.GetEffectiveReadPermissions(chatSettings); // What current agent can see
+			var exposure = agentDescriptor.Read.GetEffectiveExposureMode(chatSettings.Settings); // What sender agent exposes
+			var permissions = agent.Read.GetEffectiveReadPermissions(chatSettings.Settings); // What current agent can see
 
 			// Own messages
 			if (messageAgentId == agent.Id)

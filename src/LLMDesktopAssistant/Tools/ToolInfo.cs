@@ -32,12 +32,21 @@ namespace LLMDesktopAssistant.Tools
 		}
 
 		/// <summary>
+		/// Whether the tool can be compacted.
+		/// </summary>
+		public bool CanBeCompacted
+		{
+			get;
+			set => SetProperty(ref field, value);
+		}
+
+		/// <summary>
 		/// A JSON object that defines the schema of the structured output for the tool.
 		/// Can be null if tool does not produces structured output.
 		/// </summary>
 		public JsonObject? OutputSchema
 		{
-			get => field;
+			get;
 			set => SetProperty(ref field, value);
 		}
 

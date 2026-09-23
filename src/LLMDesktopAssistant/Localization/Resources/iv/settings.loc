@@ -4,10 +4,7 @@
 %namespace: settings
 
 agent.add: Add new agent
-agent.allow_context_shields: Allow context shields
-agent.allow_context_shields.hint: If enabled, the agent will respect context shields and will not see messages placed after them.
-agent.allow_summaries: Allow summaries
-agent.allow_summaries.hint: If enabled, the agent will be able to see summaries of the earlier chat history and stop reading at summarized segments.
+
 agent.context: Context
 agent.copy_to_local: Copy to chat agents
 agent.exposure_mode: Exposure mode
@@ -20,6 +17,27 @@ agent.filter.whitelist: Whitelist
 agent.global: (global)
 agent.max_visible_rounds: Max visible rounds:
 agent.max_visible_rounds.hint: Limits how many recent conversation rounds (user message + assistant response) are visible to each agent. 0 means unlimited. Helps manage context window usage.
+agent.prompt_mode: Prompt context mode
+agent.prompt_mode.hint: How the system prompt is assembled: dynamic (live rebuild each request), hybrid (frozen snapshot + change announcements) or static (snapshot with manual refresh).
+agent.prompt_mode.dynamic: Dynamic
+agent.prompt_mode.hybrid: Hybrid
+agent.prompt_mode.static: Static
+agent.checkpoint.disabled_flags: Disabled checkpoints
+agent.checkpoint.disabled_flags.hint: Checkpoint kinds that this agent ignores.
+agent.checkpoint.shield: Context shields
+agent.checkpoint.shield.hint: Cut off the history until the shield message.
+agent.checkpoint.summary: Summaries
+agent.checkpoint.summary.hint: Replace the cut-off history with a summary.
+agent.checkpoint.tool_compaction: Tool compaction
+agent.checkpoint.tool_compaction.hint: Replace compactible tool results with placeholders.
+agent.checkpoint.forced_tool_compaction: Forced tool compaction
+agent.checkpoint.forced_tool_compaction.hint: Replace all tool results with placeholders, ignoring per-call compactibility.
+agent.checkpoint.reasoning_compaction: Reasoning compaction
+agent.checkpoint.reasoning_compaction.hint: Remove reasoning content entirely.
+agent.snapshot.title: Static snapshot
+agent.snapshot.hint: The frozen system prompt for the static mode. It is created lazily on first use and can be refreshed manually.
+agent.snapshot.refresh: Refresh snapshot
+chat.context: Context
 agent.memory.add_block: New block
 agent.memory.attach: Attach
 agent.memory.attach.placeholder: Existing block...

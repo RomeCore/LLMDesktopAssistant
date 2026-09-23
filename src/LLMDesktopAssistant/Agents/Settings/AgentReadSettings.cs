@@ -47,17 +47,6 @@ namespace LLMDesktopAssistant.Agents
 			set => SetProperty(ref _exposureMode, value);
 		}
 
-		private AgentContextSettings _context = new();
-		/// <summary>
-		/// Gets or sets the context group: visible rounds, context shields and summaries.
-		/// </summary>
-		[InheritedChatAgentSetting]
-		public AgentContextSettings Context
-		{
-			get => _context;
-			set => SetProperty(ref _context, value);
-		}
-
 		private readonly RangeObservableCollection<Guid> _agentIdsReadFilter = [];
 		/// <summary>
 		/// The list of agent IDs that the agent can read.

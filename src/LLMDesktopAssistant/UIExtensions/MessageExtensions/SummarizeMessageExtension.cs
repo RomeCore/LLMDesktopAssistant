@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Messages;
-using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
+using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.LLM.Services;
 using Material.Icons;
 using Serilog;
@@ -20,17 +20,16 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		{
 			Icon = MaterialIconKind.TextBoxSearchOutline;
 
-			Tooltip = "summarize_message";
+			Tooltip = "message.summarize_message";
 
 			Command = new AsyncRelayCommand(async () =>
 			{
 				try
 				{
-					var viewModels = viewModel.Message.AdditionalData;
-					var existing = viewModels.TryGet<SummaryViewModel>();
-					if (existing != null)
+					var existing = viewModel.Message.AdditionalData.TryGet<ContextCheckpoint>();
+					if (existing != null && existing.Kind.HasFlag(ContextCheckpointKind.Summary))
 					{
-						viewModels.Remove(existing);
+						MessageExtensionHelpers.ToggleCheckpoint(viewModel, ContextCheckpointKind.Summary);
 						return;
 					}
 

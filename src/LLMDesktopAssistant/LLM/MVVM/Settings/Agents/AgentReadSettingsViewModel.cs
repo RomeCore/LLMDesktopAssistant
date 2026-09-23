@@ -123,11 +123,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 		/// </summary>
 		public AgentExposureMode EffectiveExposureMode => ReadSettings.GetEffectiveExposureMode(_chatSettings);
 
-		/// <summary>
-		/// Gets the effective context group resolved by the current inheritance level.
-		/// </summary>
-		public AgentContextSettings EffectiveContext => ReadSettings.GetEffectiveContext(_chatSettings);
-
 		private InheritanceLevelItem _selectedReadPermissionsInheritance;
 		/// <summary>
 		/// Gets or sets the inheritance level for the read permissions.
@@ -153,20 +148,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 			{
 				if (SetProperty(ref _selectedExposureModeInheritance, value) && value != null)
 					ReadSettings.ExposureModeInheritance = value.Value;
-			}
-		}
-
-		private InheritanceLevelItem _selectedContextInheritance;
-		/// <summary>
-		/// Gets or sets the inheritance level for the context group.
-		/// </summary>
-		public InheritanceLevelItem SelectedContextInheritance
-		{
-			get => _selectedContextInheritance;
-			set
-			{
-				if (SetProperty(ref _selectedContextInheritance, value) && value != null)
-					ReadSettings.ContextInheritance = value.Value;
 			}
 		}
 
@@ -219,8 +200,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 			_selectedReadPermissionsInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.ReadPermissionsInheritance);
 			_selectedExposureModeInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.ExposureModeInheritance);
-			_selectedContextInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.ContextInheritance);
-
+			
 			settings.PropertyChanged += ReadSettings_PropertyChanged;
 
 			InitializePermissions();
@@ -247,12 +227,6 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 					RaisePropertyChanged(nameof(SelectedExposureModeInheritance));
 					RaisePropertyChanged(nameof(EffectiveExposureMode));
 					InitializeExposureMode();
-					break;
-
-				case nameof(AgentReadSettings.ContextInheritance):
-					_selectedContextInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == ReadSettings.ContextInheritance);
-					RaisePropertyChanged(nameof(SelectedContextInheritance));
-					RaisePropertyChanged(nameof(EffectiveContext));
 					break;
 			}
 		}

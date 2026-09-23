@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Messages;
-using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
+using LLMDesktopAssistant.Prompting;
 using Material.Icons;
 
 namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
@@ -18,21 +18,10 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		{
 			Icon = MaterialIconKind.ShieldOutline;
 
-			Tooltip = "toggle_context_shield";
+			Tooltip = "message.toggle_context_shield";
 
 			Command = new RelayCommand(() =>
-			{
-				var viewModels = viewModel.Message.AdditionalData;
-				var existing = viewModels.TryGet<ContextShieldViewModel>();
-				if (existing != null)
-				{
-					viewModels.Remove(existing);
-				}
-				else
-				{
-					viewModels.TryReplace(new ContextShieldViewModel());
-				}
-			});
+				MessageExtensionHelpers.ToggleCheckpoint(viewModel, ContextCheckpointKind.Shield));
 		}
 	}
 }

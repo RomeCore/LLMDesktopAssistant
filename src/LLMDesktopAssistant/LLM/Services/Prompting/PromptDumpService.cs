@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
 using LLMDesktopAssistant.Services;
@@ -11,7 +11,13 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 	[Service(typeof(IPromptDumpService))]
 	public class PromptDumpService : IPromptDumpService
 	{
-		public void Dump(IEnumerable<IMessage> messages, IEnumerable<ITool> tools)
+		/// <summary>
+		/// Gets or sets a value indicating whether prompt dumps are enabled (off by default).
+		/// </summary>
+		public static bool IsEnabled { get; set; }
+
+		/// <inheritdoc/>
+		public void Dump(IEnumerable<IMessage> messages, IEnumerable<ITool> tools, string? scmContext = null)
 		{
 			var dumpPath = Path.Combine(Directories.LocalAppData, "dumps");
 			Directory.CreateDirectory(dumpPath);
@@ -26,6 +32,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			var payload = new JsonObject
 			{
+				["scm"] = scmContext,
 				["messages"] = new JsonArray(messages.Select(FromMessage).ToArray()),
 				["tools"] = new JsonArray(tools.Select(FromTool).ToArray())
 			};

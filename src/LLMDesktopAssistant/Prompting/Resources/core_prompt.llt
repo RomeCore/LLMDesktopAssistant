@@ -1,4 +1,4 @@
-@template system_prompt
+@template core_prompt
 {
 	@metadata
 	{

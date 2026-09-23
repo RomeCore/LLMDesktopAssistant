@@ -116,6 +116,8 @@ namespace LLMDesktopAssistant.LLM.Services.Tools
 				return;
 			}
 
+			toolCall.CanBeCompacted = toolInfo.CanBeCompacted;
+
 			var syncSemaphore = toolInfo.SynchronizationGroup is string groupName ?
 				_synchronizationGroups.GetOrAdd(groupName, _ => new SemaphoreSlim(1)) :
 				null;

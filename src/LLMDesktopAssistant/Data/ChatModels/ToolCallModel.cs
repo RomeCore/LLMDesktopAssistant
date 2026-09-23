@@ -72,6 +72,11 @@ namespace LLMDesktopAssistant.Data.ChatModels
 		public string? ResultContent { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the tool call result can be compacted.
+		/// </summary>
+		public bool CanBeCompacted { get; set; }
+
+		/// <summary>
 		/// Gets or sets whether to use markdown for rendering the result content.
 		/// </summary>
 		public bool UseMarkdown { get; set; }

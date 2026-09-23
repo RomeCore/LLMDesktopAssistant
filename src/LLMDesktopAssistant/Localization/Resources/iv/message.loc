@@ -4,6 +4,16 @@
 %namespace: message
 
 context_shield: Context shield is active, the upper messages not visible to agents
+copy_markdown: Copy as Markdown
+save_markdown: Save as Markdown
+toggle_context_shield: Toggle context shield
+summarize_message: Summarize message
+toggle_tool_compaction: Toggle tool results compaction
+toggle_forced_tool_compaction: Toggle forced tool results compaction
+toggle_reasoning_compaction: Toggle reasoning compaction
+tool_compaction: Tool results of the upper messages are compacted for agents
+forced_tool_compaction: Tool results of the upper messages are force-compacted for agents
+reasoning_compaction: Reasoning of the upper messages is compacted for agents
 delete: Delete
 next_branch: Next branch
 previous_branch: Previous branch

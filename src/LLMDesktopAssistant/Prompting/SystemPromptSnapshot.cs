@@ -1,22 +1,30 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using RCLargeLanguageModels;
 
 namespace LLMDesktopAssistant.Prompting
 {
-	public readonly struct SystemPromptSnapshot : IEquatable<SystemPromptSnapshot>
+	public class SystemPromptSnapshot : IEquatable<SystemPromptSnapshot>
 	{
 		/// <summary>
 		/// The textual content of the system prompt.
 		/// </summary>
-		public required string Text { get; init; }
+		public string Text { get; init; } = string.Empty;
 
 		/// <summary>
 		/// A collection of tools that is injected into the system prompt by the provider.
 		/// </summary>
-		public required ImmutableArray<SerializableToolDefinition> Tools { get; init; }
+		public IReadOnlyList<SerializableToolDefinition> Tools { get; init; } = [];
 
-		public bool Equals(SystemPromptSnapshot other)
+		public static implicit operator SystemPromptSnapshot(string text) => new()
 		{
+			Text = text,
+			Tools = []
+		};
+
+		public bool Equals(SystemPromptSnapshot? other)
+		{
+			if (other is null)
+				return false;
 			return Text == other.Text && Tools.SequenceEqual(other.Tools);
 		}
 

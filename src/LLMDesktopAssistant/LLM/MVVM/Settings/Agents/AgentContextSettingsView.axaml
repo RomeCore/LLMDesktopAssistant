@@ -1,0 +1,154 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="using:LLMDesktopAssistant.LLM.MVVM.Settings.Agents"
+			 xmlns:set="using:LLMDesktopAssistant.LLM.Settings"
+			 xmlns:loc="using:LLMDesktopAssistant.Localization"
+			 x:Class="LLMDesktopAssistant.LLM.MVVM.Settings.Agents.AgentContextSettingsView"
+			 x:DataType="local:AgentContextSettingsViewModel">
+
+	<StackPanel Orientation="Vertical"
+							Margin="8" Spacing="8">
+
+		<!-- ===================== Prompt mode ===================== -->
+		<TextBlock Text="{loc:Loc settings.agent.prompt_mode}"
+							 FontWeight="Bold"
+							 FontSize="{DynamicResource FontSizeL}"
+							 Margin="0,5,0,0"/>
+
+		<TextBlock Text="{loc:Loc settings.agent.prompt_mode.hint}"
+							 Opacity="0.6"
+							 TextWrapping="Wrap"/>
+
+		<ComboBox SelectedIndex="{Binding PromptModeIndex, Mode=TwoWay}"
+							Width="220"
+							HorizontalAlignment="Left">
+			<ComboBox.Items>
+				<ComboBoxItem Content="{loc:Loc settings.agent.prompt_mode.hybrid}"/>
+				<ComboBoxItem Content="{loc:Loc settings.agent.prompt_mode.dynamic}"/>
+				<ComboBoxItem Content="{loc:Loc settings.agent.prompt_mode.static}"/>
+			</ComboBox.Items>
+		</ComboBox>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"
+							 Margin="0,10"/>
+
+		<!-- ===================== Max visible rounds ===================== -->
+		<Grid ColumnDefinitions="*,Auto"
+					IsEnabled="{Binding !IsHybridMode}">
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc settings.agent.max_visible_rounds}"
+								 FontWeight="Bold"
+								 FontSize="{DynamicResource FontSizeL}"
+								 VerticalAlignment="Center"
+								 Margin="0,5,0,0"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+								SelectedItem="{Binding SelectedMaxVisibleRoundsInheritance}"
+								VerticalAlignment="Center"
+								Margin="8,5,0,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
+
+		<NumericUpDown Value="{Binding MaxVisibleRounds, Mode=TwoWay}"
+									 Minimum="0"
+									 Maximum="999"
+									 Width="170"
+									 HorizontalAlignment="Left"
+									 IsEnabled="{Binding !IsHybridMode}"/>
+
+		<TextBlock Text="{loc:Loc settings.agent.max_visible_rounds.hint}"
+							 Opacity="0.5"
+							 FontSize="11"
+							 Margin="24,0,0,4"
+							 TextWrapping="Wrap"/>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"
+							 Margin="0,10"/>
+
+		<!-- ===================== Checkpoint kinds ===================== -->
+		<Grid ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+								 Text="{loc:Loc settings.agent.checkpoint.disabled_flags}"
+								 FontWeight="Bold"
+								 FontSize="{DynamicResource FontSizeL}"
+								 VerticalAlignment="Center"
+								 Margin="0,5,0,0"/>
+
+			<ComboBox Grid.Column="1"
+								ItemsSource="{x:Static set:InheritanceLevelItem.AllAgent}"
+								SelectedItem="{Binding SelectedDisabledFlagsInheritance}"
+								VerticalAlignment="Center"
+								Margin="8,5,0,0"
+								MinWidth="120">
+
+				<ComboBox.ItemTemplate>
+					<DataTemplate x:DataType="set:InheritanceLevelItem">
+						<TextBlock Text="{Binding DisplayName}"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+
+			</ComboBox>
+		</Grid>
+
+		<TextBlock Text="{loc:Loc settings.agent.checkpoint.disabled_flags.hint}"
+							 Opacity="0.6"
+							 TextWrapping="Wrap"/>
+
+		<ItemsControl ItemsSource="{Binding CheckpointKindItems}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="local:CheckpointKindItem">
+					<StackPanel Orientation="Vertical" Margin="0,2">
+						<CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+											Content="{loc:Loc {Binding Name}}"/>
+						<TextBlock Text="{loc:Loc {Binding Description}}"
+											 Opacity="0.5"
+											 FontSize="11"
+											 Margin="24,0,0,4"
+											 TextWrapping="Wrap"/>
+					</StackPanel>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<!-- Separator -->
+		<Rectangle Height="1"
+							 Fill="{DynamicResource DefaultForeground}"
+							 Opacity="0.2"
+							 Margin="0,10"/>
+
+		<!-- ===================== Static snapshot ===================== -->
+		<TextBlock Text="{loc:Loc settings.agent.snapshot.title}"
+							 FontWeight="Bold"
+							 FontSize="{DynamicResource FontSizeL}"
+							 Margin="0,5,0,0"/>
+
+		<TextBlock Text="{loc:Loc settings.agent.snapshot.hint}"
+							 Opacity="0.6"
+							 TextWrapping="Wrap"/>
+
+		<Button Content="{loc:Loc settings.agent.snapshot.refresh}"
+						Command="{Binding RefreshSnapshotCommand}"
+						IsEnabled="{Binding IsStaticMode}"
+						HorizontalAlignment="Left"/>
+
+	</StackPanel>
+
+</UserControl>

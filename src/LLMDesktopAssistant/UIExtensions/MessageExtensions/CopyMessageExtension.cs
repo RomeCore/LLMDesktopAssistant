@@ -1,4 +1,4 @@
-﻿using Avalonia.Input.Platform;
+using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.Input;
 using LLMDesktopAssistant.LLM.Messages;
 using Material.Icons;
@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.UIExtensions.MessageExtensions
 		{
 			Icon = MaterialIconKind.ContentCopy;
 
-			Tooltip = "copy_markdown";
+			Tooltip = "message.copy_markdown";
 
 			Command = new AsyncRelayCommand(async () =>
 			{

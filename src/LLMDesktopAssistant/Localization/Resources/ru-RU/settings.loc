@@ -4,10 +4,7 @@
 %namespace: settings
 
 agent.add: Добавить агента
-agent.allow_context_shields: Учитывать щиты контекста
-agent.allow_context_shields.hint: Если включено, агент будет уважать щиты контекста и не будет видеть сообщения, размещённые после них.
-agent.allow_summaries: Учитывать суммаризацию
-agent.allow_summaries.hint: Если включено, агент сможет видеть суммаризацию ранних сообщений чата и останавливаться на суммаризированных сегментах.
+
 agent.context: Контекст
 agent.copy_to_local: Скопировать в чат
 agent.exposure_mode: Режим видимости
@@ -20,6 +17,27 @@ agent.filter.whitelist: Белый список
 agent.global: (глобальный)
 agent.max_visible_rounds: Макс. видимых раундов:
 agent.max_visible_rounds.hint: Ограничивает количество последних раундов (сообщение пользователя + ответ ассистента), видимых каждому агенту. 0 — без лимита. Помогает экономить контекстное окно.
+agent.prompt_mode: Режим контекста промпта
+agent.prompt_mode.hint: Как собирается системный промпт: динамический (живая сборка на каждый запрос), гибридный (замороженный снапшот + анонсы изменений) или статический (снапшот с ручным обновлением).
+agent.prompt_mode.dynamic: Динамический
+agent.prompt_mode.hybrid: Гибридный
+agent.prompt_mode.static: Статический
+agent.checkpoint.disabled_flags: Отключённые чекпоинты
+agent.checkpoint.disabled_flags.hint: Типы чекпоинтов, которые агент игнорирует.
+agent.checkpoint.shield: Щиты контекста
+agent.checkpoint.shield.hint: Отрезать историю до сообщения-щита.
+agent.checkpoint.summary: Суммаризации
+agent.checkpoint.summary.hint: Заменять отрезанную историю суммаризацией.
+agent.checkpoint.tool_compaction: Компакция тулов
+agent.checkpoint.tool_compaction.hint: Заменять компактибильные результаты тулов заглушками.
+agent.checkpoint.forced_tool_compaction: Принудительная компакция тулов
+agent.checkpoint.forced_tool_compaction.hint: Заменять все результаты тулов заглушками, игнорируя компактибильность.
+agent.checkpoint.reasoning_compaction: Компакция рассуждений
+agent.checkpoint.reasoning_compaction.hint: Полностью убирать reasoning-контент.
+agent.snapshot.title: Статический снапшот
+agent.snapshot.hint: Замороженный системный промпт для статического режима. Создаётся лениво при первом использовании, обновляется вручную.
+agent.snapshot.refresh: Обновить снапшот
+chat.context: Контекст
 agent.memory.add_block: Новый блок
 agent.memory.attach: Прикрепить
 agent.memory.attach.placeholder: Существующий блок...

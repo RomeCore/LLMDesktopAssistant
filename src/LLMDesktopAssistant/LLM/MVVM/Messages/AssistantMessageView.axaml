@@ -114,13 +114,13 @@
 			<ItemsControl ItemsSource="{Binding Extensions}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<StackPanel Orientation="Horizontal" Spacing="4"/>
+						<StackPanel Orientation="Horizontal"/>
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
 						
-						<Panel IsVisible="{Binding IsVisible}">
+						<Panel IsVisible="{Binding IsVisible}" Margin="0,0,4,0">
 							
 							<ContentControl Content="{Binding ViewModel}"
 															IsVisible="{Binding ViewModel, Converter={StaticResource NotnullToBooleanConverter}}"/>

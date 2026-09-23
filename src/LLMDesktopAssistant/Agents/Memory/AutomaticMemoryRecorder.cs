@@ -21,7 +21,8 @@ namespace LLMDesktopAssistant.Agents.Memory
 		IMemoryLogStore memoryLogStore,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager,
-		ITemplateLibraryAccessor templates
+		ITemplateLibraryAccessor templates,
+		IMessageVisibilityService messageVisibility
 	) : IChatExecutionHook
 	{
 		/// <inheritdoc />
@@ -106,13 +107,12 @@ namespace LLMDesktopAssistant.Agents.Memory
 			await task;
 		}
 
-		private static string BuildRecordingInput(Chat chat, ChatAgentExecutionHookContext context)
+		private string BuildRecordingInput(Chat chat, ChatAgentExecutionHookContext context)
 		{
 			var rounds = MessagesInterface.GroupMessagesIntoRounds(chat.Messages, 1);
 			if (rounds.Count == 0)
 				return string.Empty;
 
-			var chatSettings = chat.Services.GetRequiredService<IChatSettingsService>().Settings;
 			var lastRound = rounds[^1];
 			var responseSet = context.Responses.ToHashSet();
 			var sb = new StringBuilder();
@@ -122,7 +122,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 				switch (branched.Message)
 				{
 					case UserMessage userMessage when !string.IsNullOrWhiteSpace(userMessage.Content)
-						&& AgentMessageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent, chatSettings):
+						&& messageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent):
 						sb.Append("User: ").AppendLine(userMessage.Content);
 						break;
 					case AssistantMessage assistantMessage when !string.IsNullOrWhiteSpace(assistantMessage.Content)

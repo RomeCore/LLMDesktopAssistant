@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Controls.Toasts;
@@ -13,7 +11,6 @@ using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Providers;
 using LLMDesktopAssistant.Services.Instances;
 using LLMDesktopAssistant.Tools.Consents;
-using LLMDesktopAssistant.Utils;
 using Material.Icons;
 using RCLargeLanguageModels;
 using RCLargeLanguageModels.Messages;
@@ -37,7 +34,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IAgentOrderingService agentOrderer,
 		IAgentManagementService agentManager,
 		IChatStorageService storage,
-		IChatPromptBuilder promptBuilder,
+		IAgentPromptComposer promptComposer,
 		IModelManager modelManager,
 		IToolExecutionService toolExecutor,
 		IToolMemorizationService toolMemorizer,
@@ -206,13 +203,10 @@ namespace LLMDesktopAssistant.LLM.Services
 				statusService.Icon = MaterialIconKind.ChatProcessing;
 				statusService.Text = LocalizationManager.LocalizeStatic("chat.status.waiting_for_first_response");
 
-				var inputMessages = promptBuilder.Build(agent);
-				toolsetCache.Invalidate(agent);
-				// Lul, provider caching is fixed now!
-				var toolset = toolsetCache.ValidTools.Values.Where(t => !(t.Hidden ?? false))
-					.Select(t => t.NativeTool).OrderBy(t => t.Name);
+				var promptBundle = promptComposer.Build(agent);
+				var inputMessages = promptBundle.Messages;
+				var toolset = promptBundle.Tools;
 
-				// promptDumpService.Dump(inputMessages, toolset);
 				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				var responseMessage = response.Message;
 
@@ -459,11 +453,9 @@ namespace LLMDesktopAssistant.LLM.Services
 					statusService.Icon = MaterialIconKind.ChatProcessing;
 					statusService.Text = LocalizationManager.LocalizeStatic("chat.status.waiting_for_first_response");
 
-					inputMessages = promptBuilder.Build(agent);
-					toolsetCache.Invalidate(agent);
-					toolset = toolsetCache.ValidTools.Values.Where(t => !(t.Hidden ?? false))
-						.Select(t => t.NativeTool).OrderBy(t => t.Name);
-					// promptDumpService.Dump(inputMessages, toolset);
+					promptBundle = promptComposer.Build(agent);
+					inputMessages = promptBundle.Messages;
+					toolset = promptBundle.Tools;
 					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 					responseMessage = response.Message;
 				}

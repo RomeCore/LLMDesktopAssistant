@@ -4,6 +4,16 @@
 %namespace: message
 
 context_shield: Контекстный щит активирован, сообщения выше не видны агентам
+copy_markdown: Скопировать как Markdown
+save_markdown: Сохранить как Markdown
+toggle_context_shield: Включить/выключить контекстный щит
+summarize_message: Суммаризировать сообщение
+toggle_tool_compaction: Включить/выключить компакцию результатов тулов
+toggle_forced_tool_compaction: Включить/выключить принудительную компакцию тулов
+toggle_reasoning_compaction: Включить/выключить компакцию рассуждений
+tool_compaction: Результаты тулов верхних сообщений компактируются для агентов
+forced_tool_compaction: Результаты тулов верхних сообщений принудительно компактируются для агентов
+reasoning_compaction: Рассуждения верхних сообщений компактируются для агентов
 delete: Удалить
 next_branch: Следующая ветка
 previous_branch: Предыдущая ветка

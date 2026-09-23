@@ -271,12 +271,20 @@ namespace LLMDesktopAssistant.LLM.Settings
 						() => new AgentReadSettingsViewModel(
 							descriptor.Read, Settings.Agents.ChatAgents, descriptor.Id, Settings)),
 
+					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.context"),
+						MaterialIconKind.Layers,
+						() => new AgentContextSettingsViewModel(
+							descriptor.Context,
+							Settings,
+							descriptor,
+							Chat.Services.GetRequiredService<IEnumerable<LLMDesktopAssistant.Prompting.State.IPromptSection>>())),
+
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.prompts"),
 						MaterialIconKind.Text,
 						() => new AgentPromptSettingsViewModel(
 							descriptor.Prompts,
 							Settings,
-							Chat.Services.GetRequiredService<IChatPromptBuilder>(),
+							Chat.Services.GetRequiredService<IEnumerable<LLMDesktopAssistant.Prompting.State.IPromptSection>>(),
 							descriptor,
 							Chat.Services.GetRequiredService<IPromptComponentManager>(),
 							Chat.Services.GetRequiredService<IPromptSlotElementManager>())),

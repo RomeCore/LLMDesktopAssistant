@@ -6,6 +6,7 @@ namespace LLMDesktopAssistant.Tests.Utils.Web;
 /// <summary>
 /// Tests for the <see cref="AutoEscalatingWebFetcher"/> decorator.
 /// </summary>
+[Collection("WebFetcher")]
 public class AutoEscalatingWebFetcherTests
 {
 	private sealed class FakeWebFetcher : IWebFetcher

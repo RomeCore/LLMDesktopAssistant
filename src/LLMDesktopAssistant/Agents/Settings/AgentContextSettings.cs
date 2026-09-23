@@ -1,39 +1,50 @@
+using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.SourceGenerators;
+
 namespace LLMDesktopAssistant.Agents.Settings
 {
 	/// <summary>
-	/// Represents the context group for an agent: how many rounds are visible
-	/// and whether context shields and summaries are allowed.
+	/// Agent context settings: visible rounds, disabled checkpoint kinds and prompt context mode.
 	/// </summary>
-	public class AgentContextSettings : NotifyPropertyChanged
+	[SettingsRoute(nameof(ChatAgentDescriptor.Context))]
+	public partial class AgentContextSettings : AgentSettingsCategoryBase
 	{
-		private int _maxVisibleRounds = 0;
 		/// <summary>
 		/// The maximum number of rounds that the agent can see in its context. If zero, there is no limit.
 		/// </summary>
+		[InheritedChatAgentSetting]
 		public int MaxVisibleRounds
 		{
-			get => _maxVisibleRounds;
-			set => SetProperty(ref _maxVisibleRounds, value);
-		}
+			get => field;
+			set => SetProperty(ref field, value);
+		} = 0;
 
-		private bool _allowContextShields = true;
 		/// <summary>
-		/// Whether the agent can use context shields to prevent seeing messages after shields.
+		/// Checkpoint kinds that are disabled (ignored) for this agent.
 		/// </summary>
-		public bool AllowContextShields
+		[InheritedChatAgentSetting]
+		public ContextCheckpointKind DisabledFlags
 		{
-			get => _allowContextShields;
-			set => SetProperty(ref _allowContextShields, value);
-		}
+			get => field;
+			set => SetProperty(ref field, value);
+		} = ContextCheckpointKind.None;
 
-		private bool _allowSummaries = true;
 		/// <summary>
-		/// Whether the agent is allowed to see summaries of messages in chat history and stop on them.
+		/// The prompt context mode that defines how the system prompt is assembled and cached.
 		/// </summary>
-		public bool AllowSummaries
+		public PromptContextMode PromptMode
 		{
-			get => _allowSummaries;
-			set => SetProperty(ref _allowSummaries, value);
+			get => field;
+			set => SetProperty(ref field, value);
+		} = PromptContextMode.Hybrid;
+
+		/// <summary>
+		/// The frozen system prompt snapshot (static prompt mode). Not inherited: per-agent only.
+		/// </summary>
+		public SystemPromptSnapshot? Snapshot
+		{
+			get => field;
+			set => SetProperty(ref field, value);
 		}
 	}
 }

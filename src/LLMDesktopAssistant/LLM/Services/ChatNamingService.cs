@@ -23,7 +23,7 @@ namespace LLMDesktopAssistant.LLM.Services
 		IChatSettingsService chatSettings,
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager,
-		IChatPromptBuilder promptBuilder,
+		IChatMessageQuoteRenderer quoteRenderer,
 		ITemplateLibraryAccessor templates,
 		MessagesInterface messagesInterface
 		) : IChatNamingService, IChatExecutionHook
@@ -145,7 +145,7 @@ namespace LLMDesktopAssistant.LLM.Services
 			{
 				foreach (var branched in round)
 				{
-					var rendered = promptBuilder.RenderMessage(branched.Message);
+					var rendered = quoteRenderer.RenderQuote(branched.Message);
 					if (!string.IsNullOrWhiteSpace(rendered))
 					{
 						sb.AppendLine(rendered);

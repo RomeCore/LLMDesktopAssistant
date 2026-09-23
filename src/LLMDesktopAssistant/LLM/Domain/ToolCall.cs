@@ -28,15 +28,14 @@ namespace LLMDesktopAssistant.LLM.Domain
 		/// </summary>
 		public required string ToolCallId { get; init; }
 
-		private string _arguments = "{}";
 		/// <summary>
 		/// Gets or sets the arguments passed to the tool. These are typically in JSON format.
 		/// </summary>
 		public string Arguments
 		{
-			get => _arguments;
-			set => SetProperty(ref _arguments, value);
-		}
+			get => field;
+			set => SetProperty(ref field, value);
+		} = "{}";
 
 		private ToolStatus _status;
 		/// <summary>
@@ -76,6 +75,15 @@ namespace LLMDesktopAssistant.LLM.Domain
 		{
 			get => _resultContent;
 			set => SetProperty(ref _resultContent, value);
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the tool call result can be compacted.
+		/// </summary>
+		public bool CanBeCompacted
+		{
+			get => field;
+			set => SetProperty(ref field, value);
 		}
 
 		private bool _useMarkdown = false;

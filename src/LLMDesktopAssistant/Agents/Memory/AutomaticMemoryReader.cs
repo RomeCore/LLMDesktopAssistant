@@ -27,7 +27,7 @@ namespace LLMDesktopAssistant.Agents.Memory
 		IAgentTaskExecutor agentTaskExecutor,
 		IModelManager modelManager,
 		ITemplateLibraryAccessor templates,
-		IAgentManagementService agentManager,
+		IMessageVisibilityService messageVisibility,
 		IChatStatusService statusService
 	) : IChatExecutionHook
 	{
@@ -138,18 +138,17 @@ namespace LLMDesktopAssistant.Agents.Memory
 			var rounds = MessagesInterface.GroupMessagesIntoRounds(chat.Messages, 2);
 			var sb = new StringBuilder();
 
-			var chatSettings = chat.Services.GetRequiredService<IChatSettingsService>().Settings;
 			foreach (var round in rounds)
 			{
 				foreach (var branched in round)
 				{
 					switch (branched.Message)
 					{
-						case UserMessage userMessage when AgentMessageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent, chatSettings):
+						case UserMessage userMessage when messageVisibility.IsUserMessageVisibleToAgent(branched, context.Agent):
 							sb.Append("User: ").AppendLine(userMessage.Content);
 							break;
 						case AssistantMessage assistantMessage when !string.IsNullOrEmpty(assistantMessage.Content)
-							&& AgentMessageVisibility.IsAssistantMessageVisibleToAgent(branched, context.Agent, agentManager, chatSettings):
+							&& messageVisibility.IsAssistantMessageVisibleToAgent(branched, context.Agent):
 							sb.Append("Assistant: ").AppendLine(assistantMessage.Content);
 							break;
 					}

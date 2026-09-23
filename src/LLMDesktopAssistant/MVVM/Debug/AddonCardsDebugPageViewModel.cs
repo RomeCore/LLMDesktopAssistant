@@ -64,7 +64,7 @@ public class AddonCardsDebugPageViewModel : ViewModelBase
 	private void ResetAll()
 	{
 		foreach (var card in Cards)
-			card.ResetCommand.Execute(null);
+			card.ResetCommand?.Execute(null);
 
 		Report("All overrides reset.");
 	}

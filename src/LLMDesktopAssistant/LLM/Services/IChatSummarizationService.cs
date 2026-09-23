@@ -1,5 +1,5 @@
-﻿using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.LLM.MVVM.Additional.Context;
+using LLMDesktopAssistant.LLM.Domain;
+using LLMDesktopAssistant.Prompting;
 using RCLargeLanguageModels.Metadata;
 
 namespace LLMDesktopAssistant.LLM.Services
@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.LLM.Services
 
 		/// <summary>
 		/// Summarizes the message with previous messages and summary.
-		/// Places summary into this message as <see cref="SummaryViewModel"/>.
+		/// Places summary into this message as <see cref="ContextCheckpoint"/>.
 		/// </summary>
 		/// <param name="message">The message to summarize. This will be updated with the summary if successful.</param>
 		/// <returns>True if the summary was successfully generated and placed into the message; otherwise, false.</returns>
