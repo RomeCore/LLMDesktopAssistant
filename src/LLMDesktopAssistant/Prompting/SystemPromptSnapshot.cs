@@ -3,7 +3,7 @@ using RCLargeLanguageModels;
 
 namespace LLMDesktopAssistant.Prompting
 {
-	public readonly struct SerializableSystemPrompt : IEquatable<SerializableSystemPrompt>
+	public readonly struct SystemPromptSnapshot : IEquatable<SystemPromptSnapshot>
 	{
 		/// <summary>
 		/// The textual content of the system prompt.
@@ -15,14 +15,14 @@ namespace LLMDesktopAssistant.Prompting
 		/// </summary>
 		public required ImmutableArray<SerializableToolDefinition> Tools { get; init; }
 
-		public bool Equals(SerializableSystemPrompt other)
+		public bool Equals(SystemPromptSnapshot other)
 		{
 			return Text == other.Text && Tools.SequenceEqual(other.Tools);
 		}
 
 		public override bool Equals([NotNullWhen(true)] object? obj)
 		{
-			return obj is SerializableSystemPrompt other && Equals(other);
+			return obj is SystemPromptSnapshot other && Equals(other);
 		}
 
 		public override int GetHashCode()
@@ -30,12 +30,12 @@ namespace LLMDesktopAssistant.Prompting
 			return HashCode.Combine(Text, Tools.GetSequenceHashCode());
 		}
 
-		public static bool operator ==(SerializableSystemPrompt left, SerializableSystemPrompt right)
+		public static bool operator ==(SystemPromptSnapshot left, SystemPromptSnapshot right)
 		{
 			return left.Equals(right);
 		}
 
-		public static bool operator !=(SerializableSystemPrompt left, SerializableSystemPrompt right)
+		public static bool operator !=(SystemPromptSnapshot left, SystemPromptSnapshot right)
 		{
 			return !(left == right);
 		}
