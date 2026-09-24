@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Prompting;
@@ -60,8 +61,9 @@ internal sealed class FakeSection(int order, string text, params SerializableToo
 		Tools = [..tools]
 	};
 
-	public PromptSectionDeltaBase? CalculateDelta(PromptSectionStateBase anchorState,
-		IEnumerable<PromptSectionDeltaBase> existingDeltas, PromptSectionStateBase actualState) => null;
+	public PromptSectionDeltaBase? CalculateDelta(PromptSectionStateBase? anchorState,
+		IEnumerable<PromptSectionDeltaBase> existingDeltas, PromptSectionStateBase? actualState,
+			EffectiveChatContext context) => null;
 
 	public string RenderDelta(PromptSectionDeltaBase delta) => string.Empty;
 }
@@ -112,6 +114,7 @@ internal static class PromptingTestHelpers
 	public static ChatAgentDescriptor CreateAgent()
 	{
 		var agent = new ChatAgentDescriptor();
+		agent.Context.PromptMode = PromptContextMode.Dynamic;
 		agent.Context.MaxVisibleRoundsInheritance = ChatSettingsInheritanceLevel.Agent;
 		agent.Context.DisabledFlagsInheritance = ChatSettingsInheritanceLevel.Agent;
 		return agent;

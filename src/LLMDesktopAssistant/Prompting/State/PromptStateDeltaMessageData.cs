@@ -8,5 +8,12 @@ namespace LLMDesktopAssistant.Prompting.State
 		public required int AnchorId { get; init; }
 
 		public RangeObservableCollection<PromptSectionDeltaBase> Sections { get; init; } = [];
+
+		public required string Snapshot { get; init; }
+
+		public PromptStateDeltaMessageData()
+		{
+			IsVisible = false;
+		}
 	}
 }

@@ -19,7 +19,7 @@ namespace LLMDesktopAssistant.Prompting.State
 		/// </summary>
 		public static IReadOnlyList<PromptSectionStateBase> CaptureStates(this IEnumerable<IPromptSection> sections,
 			ChatAgentDescriptor agent)
-			=> sections.Ordered().Select(s => s.CaptureState(agent)).ToList();
+			=> sections.Ordered().Select(s => s.CaptureState(agent)!).Where(s => s != null).ToList();
 
 		/// <summary>
 		/// Renders the merged system prompt header from the captured states:

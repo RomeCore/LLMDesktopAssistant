@@ -32,7 +32,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		IEnumerable<IPromptMessageContextExpander> promptMessageContextExpanders,
 		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins,
 		IToolsetCacheService toolsetCache,
-		IPromptStateStage promptStateStage,
+		IPromptStateProcessor promptStateStage,
 		IPromptDumpService promptDumpService
 		) : IAgentPromptComposer
 	{
@@ -46,34 +46,13 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var effective = effectiveMessagesProvider.GetEffectiveMessages(agent);
 
 			var hooks = promptBuildingHooks.OrderBy(h => h.Order).ToList();
-			var functions = GetTemplateFunctions();
+			var functions = new TemplateFunctionSet(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
 
-			List<IMessage> contextMessages = [];
+			List<IMessage> result = [];
 			var disabledCheckpoints = agent.Context.GetEffectiveDisabledFlags(chatSettings.Settings);
 
-			for (int i = 0; i < effective.Messages.Count; i++)
-			{
-				var branchedMessage = effective.Messages[i];
-				var compaction = MessageCompaction.ForMessage(effective.Checkpoints, i, disabledCheckpoints);
-
-				IEnumerable<IMessage> messages;
-				if (branchedMessage.Message is Domain.AssistantMessage assistantMessage && !assistantMessage.IsCompleted)
-					messages = [];
-				else
-					messages = ConvertMessageForAgent(branchedMessage, agent, functions, compaction);
-
-				foreach (var hook in hooks)
-				{
-					var editedMessages = hook.ModifyFinalContext(messages, branchedMessage, agent);
-					if (editedMessages != null)
-						messages = editedMessages;
-				}
-				contextMessages.AddRange(messages);
-			}
-
 			var promptMode = agent.Context.PromptMode;
-			var pendingResponse = effective.Messages.LastOrDefault(m => m.Message is Domain.AssistantMessage { IsCompleted: false });
-			var anchor = promptStateStage.Process(agent, effective, pendingResponse);
+			var anchor = promptStateStage.Process(agent, effective);
 
 			SystemPromptSnapshot header;
 			string headerSource;
@@ -100,7 +79,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var summaryCheckpoint = effective.Checkpoints.LastOrDefault(c =>
 				(c.Checkpoint.Kind & ~disabledCheckpoints).HasFlag(ContextCheckpointKind.Summary));
 
-			List<IMessage> result = [];
 			result.Add(new SystemMessage(header.Text));
 			if (summaryCheckpoint != null)
 				result.Add(new RCLargeLanguageModels.Messages.UserMessage(Senders.User, $"""
@@ -108,7 +86,39 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					{summaryCheckpoint.Checkpoint.Context}
 					</summary>
 					"""));
-			result.AddRange(contextMessages);
+
+			for (int i = 0; i < effective.Messages.Count; i++)
+			{
+				var branchedMessage = effective.Messages[i];
+				var compaction = MessageCompaction.ForMessage(effective.Checkpoints, i, disabledCheckpoints);
+
+				IEnumerable<IMessage> messages;
+				if (branchedMessage.Message is Domain.AssistantMessage assistantMessage && !assistantMessage.IsCompleted)
+					messages = [];
+				else
+					messages = ConvertMessageForAgent(branchedMessage, agent, functions, compaction);
+
+				foreach (var hook in hooks)
+				{
+					var editedMessages = hook.ModifyFinalContext(messages, branchedMessage, agent);
+					if (editedMessages != null)
+						messages = editedMessages;
+				}
+
+				// Process SCM deltas.
+				if (anchor is not null && branchedMessage.Message is Domain.AssistantMessage)
+				{
+					foreach (var delta in branchedMessage.Message.AdditionalData.OfType<PromptStateDeltaMessageData>())
+					{
+						if (delta.AnchorId != anchor.Id)
+							continue;
+
+						result.Add(new RCLargeLanguageModels.Messages.UserMessage(Senders.User, delta.Snapshot));
+					}
+				}
+
+				result.AddRange(messages);
+			}
 
 			List<FunctionTool> tools;
 			if (promptMode == PromptContextMode.Dynamic)
@@ -147,43 +157,17 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			return settings.Snapshot;
 		}
 
-		private TemplateFunctionSet GetTemplateFunctions()
-		{
-			return new(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
-		}
-
-		private static ToolResultStatus ConvertToolStatus(ToolStatus status)
-		{
-			return status switch
-			{
-				ToolStatus.None => ToolResultStatus.NoResult,
-				ToolStatus.WaitingForApproval => ToolResultStatus.NoResult,
-				ToolStatus.Executing => ToolResultStatus.NoResult,
-				ToolStatus.Success => ToolResultStatus.Success,
-				ToolStatus.Error => ToolResultStatus.Error,
-				ToolStatus.Cancelled => ToolResultStatus.Cancelled,
-				_ => ToolResultStatus.NoResult
-			};
-		}
-
-		/// <summary>
-		/// Formats a message timestamp with the local time zone offset, e.g. "2026-09-09 21:32:45 (UTC+03:00)".
-		/// The <see cref="DateTime"/> value itself does not carry the offset, so it is appended from the local time zone.
-		/// </summary>
-		private static string FormatSentTime(DateTime time)
-		{
-			if (time.Kind == DateTimeKind.Utc)
-				time = time.ToLocalTime();
-			var offset = TimeZoneInfo.Local.GetUtcOffset(time);
-			var sign = offset < TimeSpan.Zero ? "-" : "+";
-			return $"{time:yyyy-MM-dd HH:mm:ss} (UTC{sign}{offset.Duration():hh\\:mm})";
-		}
-
 		/// <summary>
 		/// Gets the attachment parts stored in the additional view models of a chat object (message or tool call).
 		/// </summary>
 		private static IEnumerable<AttachmentMessagePart> GetAttachmentParts(ChatObjectBase chatObject) =>
 			chatObject.AdditionalData.GetAll<AttachmentMessagePart>();
+
+		/// <summary>
+		/// Gets the attachment parts stored in the additional view models of a chat object (message or tool call).
+		/// </summary>
+		private static IEnumerable<IAttachment> GetNativeAttachments(ChatObjectBase chatObject) =>
+			chatObject.AdditionalData.GetAll<NativeAttachmentMessagePart>().Select(a => a.NativeAttachment!).Where(a => a != null);
 
 		private RCLargeLanguageModels.Messages.UserMessage BuildUserMessageForAgent(BranchedMessage message,
 			ChatAgentDescriptor agent, TemplateFunctionSet functions)
@@ -207,7 +191,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var result = template.Render(context, functions);
 			IEnumerable<IAttachment> attachments = [];
 			if (canReadAttachments)
-				attachments = GetAttachmentParts(userMessage).Select(a => a.NativeAttachment).Where(a => a != null)!;
+				attachments = GetNativeAttachments(userMessage);
 			return new RCLargeLanguageModels.Messages.UserMessage(userName, result, attachments);
 		}
 
@@ -244,7 +228,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				var result = template.Render(context, functions);
 				IEnumerable<IAttachment> attachments = [];
 				if (canReadAttachments)
-					attachments = GetAttachmentParts(assistantMessage).Select(a => a.NativeAttachment).Where(a => a != null)!;
+					attachments = GetNativeAttachments(assistantMessage);
 				return new RCLargeLanguageModels.Messages.UserMessage(agentName, result, attachments);
 			}
 			else
@@ -285,9 +269,22 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				var result = template.Render(context, functions);
 				IEnumerable<IAttachment> attachments = [];
 				if (canReadAttachments)
-					attachments = GetAttachmentParts(assistantMessage).Select(a => a.NativeAttachment).Where(a => a != null)!;
+					attachments = GetNativeAttachments(assistantMessage);
 				return new RCLargeLanguageModels.Messages.UserMessage(agentName, result, attachments);
 			}
+		}
+
+		/// <summary>
+		/// Formats a message timestamp with the local time zone offset, e.g. "2026-09-09 21:32:45 (UTC+03:00)".
+		/// The <see cref="DateTime"/> value itself does not carry the offset, so it is appended from the local time zone.
+		/// </summary>
+		private static string FormatSentTime(DateTime time)
+		{
+			if (time.Kind == DateTimeKind.Utc)
+				time = time.ToLocalTime();
+			var offset = TimeZoneInfo.Local.GetUtcOffset(time);
+			var sign = offset < TimeSpan.Zero ? "-" : "+";
+			return $"{time:yyyy-MM-dd HH:mm:ss} (UTC{sign}{offset.Duration():hh\\:mm})";
 		}
 
 		private IEnumerable<IMessage> ConvertMessageForAgent(BranchedMessage message,
@@ -338,7 +335,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					? MessageCompaction.GetCompactedToolResultContent(toolCall.Status)
 					: toolCall.ResultContent ?? string.Empty;
 				var toolResult = new ToolResult(status, resultContent,
-					GetAttachmentParts(toolCall).Select(a => a.NativeAttachment).Where(a => a != null)!);
+					GetNativeAttachments(toolCall));
 				messages.Add(new ToolMessage(toolResult, toolCall.ToolCallId, toolCall.ToolName));
 			}
 
@@ -346,10 +343,24 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				assistantMessage.Content ?? string.Empty,
 				compaction.CompactReasoning ? string.Empty : assistantMessage.ReasoningContent ?? string.Empty,
 				toolCalls: toolCalls,
-				attachments: GetAttachmentParts(assistantMessage).Select(a => a.NativeAttachment).Where(a => a != null)!);
+				attachments: GetNativeAttachments(assistantMessage));
 			messages.Insert(0, result);
 			
 			return messages;
+		}
+
+		private static ToolResultStatus ConvertToolStatus(ToolStatus status)
+		{
+			return status switch
+			{
+				ToolStatus.None => ToolResultStatus.NoResult,
+				ToolStatus.WaitingForApproval => ToolResultStatus.NoResult,
+				ToolStatus.Executing => ToolResultStatus.NoResult,
+				ToolStatus.Success => ToolResultStatus.Success,
+				ToolStatus.Error => ToolResultStatus.Error,
+				ToolStatus.Cancelled => ToolResultStatus.Cancelled,
+				_ => ToolResultStatus.NoResult
+			};
 		}
 	}
 }

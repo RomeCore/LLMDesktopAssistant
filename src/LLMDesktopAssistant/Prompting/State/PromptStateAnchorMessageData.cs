@@ -28,5 +28,10 @@ namespace LLMDesktopAssistant.Prompting.State
 		/// The frozen snapshot bytes: system prompt text and tool definitions.
 		/// </summary>
 		public required SystemPromptSnapshot Snapshot { get; init; }
+
+		public PromptStateAnchorMessageData()
+		{
+			IsVisible = false;
+		}
 	}
 }

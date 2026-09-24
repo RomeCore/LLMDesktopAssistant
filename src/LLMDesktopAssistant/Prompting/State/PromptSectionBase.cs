@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 
 namespace LLMDesktopAssistant.Prompting.State
 {
@@ -33,7 +34,7 @@ namespace LLMDesktopAssistant.Prompting.State
 		}
 
 		/// <inheritdoc/>
-		public PromptSectionStateBase CaptureState(ChatAgentDescriptor agent) => _stateProvider.GetState(agent);
+		public PromptSectionStateBase? CaptureState(ChatAgentDescriptor agent) => _stateProvider.GetState(agent);
 
 		/// <inheritdoc/>
 		public SystemPromptSnapshot RenderState(PromptSectionStateBase state) => _stateRenderer.Render((TState)state);
@@ -42,8 +43,9 @@ namespace LLMDesktopAssistant.Prompting.State
 		public string RenderDelta(PromptSectionDeltaBase delta) => _deltaRenderer.Render((TDelta)delta);
 
 		/// <inheritdoc/>
-		public PromptSectionDeltaBase? CalculateDelta(PromptSectionStateBase anchorState,
-			IEnumerable<PromptSectionDeltaBase> existingDeltas, PromptSectionStateBase actualState)
-			=> _deltaProvider.CalculateDelta((TState)anchorState, existingDeltas.Cast<TDelta>(), (TState)actualState);
+		public PromptSectionDeltaBase? CalculateDelta(PromptSectionStateBase? anchorState,
+			IEnumerable<PromptSectionDeltaBase> existingDeltas, PromptSectionStateBase? actualState,
+			EffectiveChatContext context)
+			=> _deltaProvider.CalculateDelta((TState?)anchorState, existingDeltas.Cast<TDelta>(), (TState?)actualState, context);
 	}
 }

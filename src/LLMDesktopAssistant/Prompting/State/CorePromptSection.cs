@@ -3,6 +3,7 @@ using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Management;
@@ -150,8 +151,9 @@ namespace LLMDesktopAssistant.Prompting.State
 	public class CorePromptDeltaProvider : IPromptSectionDeltaProvider<CorePromptSectionState, CorePromptSectionDelta>
 	{
 		/// <inheritdoc/>
-		public CorePromptSectionDelta? CalculateDelta(CorePromptSectionState anchorState,
-			IEnumerable<CorePromptSectionDelta> existingDeltas, CorePromptSectionState actualState) => null;
+		public CorePromptSectionDelta? CalculateDelta(CorePromptSectionState? anchorState,
+			IEnumerable<CorePromptSectionDelta> existingDeltas, CorePromptSectionState? actualState,
+			EffectiveChatContext context) => null;
 	}
 
 	/// <summary>

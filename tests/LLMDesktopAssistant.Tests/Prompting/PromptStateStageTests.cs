@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.Tests.Prompting;
 [Collection("Prompting")]
 public class PromptStateStageTests
 {
-	private static PromptStateStage CreateStage(Chat chat, params IPromptSection[] sections)
+	private static PromptStateProcessor CreateStage(Chat chat, params IPromptSection[] sections)
 		=> new(chat, sections);
 
 	private static ChatAgentDescriptor CreateHybridAgent()
@@ -33,7 +33,7 @@ public class PromptStateStageTests
 		var stage = CreateStage(chat, section);
 		var effective = new EffectiveChatContext([u0], [], -1);
 
-		var anchor = stage.Process(CreateHybridAgent(), effective, null);
+		var anchor = stage.Process(CreateHybridAgent(), effective);
 
 		Assert.NotNull(anchor);
 		Assert.Equal(1, anchor!.Id);
@@ -55,8 +55,8 @@ public class PromptStateStageTests
 		var agent = CreateHybridAgent();
 		var effective = new EffectiveChatContext([u0], [], -1);
 
-		var first = stage.Process(agent, effective, null);
-		var second = stage.Process(agent, effective, null);
+		var first = stage.Process(agent, effective);
+		var second = stage.Process(agent, effective);
 
 		Assert.NotNull(first);
 		Assert.Same(first, second);
@@ -74,14 +74,14 @@ public class PromptStateStageTests
 		var stage = CreateStage(chat, new FakeSection(0, "core"));
 		var agent = CreateHybridAgent();
 
-		var first = stage.Process(agent, new EffectiveChatContext([u0, u1], [], -1), null);
+		var first = stage.Process(agent, new EffectiveChatContext([u0, u1], [], -1));
 		Assert.NotNull(first);
 		Assert.Equal(1, first!.Id);
 
 		var cut = new ContextCheckpoint { Kind = ContextCheckpointKind.Shield };
 		var effectiveAfterCut = new EffectiveChatContext([u0, u1], [new EffectiveCheckpoint(cut, -1)], 0);
 
-		var second = stage.Process(agent, effectiveAfterCut, null);
+		var second = stage.Process(agent, effectiveAfterCut);
 
 		Assert.NotNull(second);
 		Assert.Equal(2, second!.Id);
@@ -100,8 +100,8 @@ public class PromptStateStageTests
 		var agentB = CreateHybridAgent();
 		var effective = new EffectiveChatContext([u0], [], -1);
 
-		var anchorA = stage.Process(agentA, effective, null);
-		var anchorB = stage.Process(agentB, effective, null);
+		var anchorA = stage.Process(agentA, effective);
+		var anchorB = stage.Process(agentB, effective);
 
 		Assert.NotNull(anchorA);
 		Assert.NotNull(anchorB);
@@ -121,7 +121,7 @@ public class PromptStateStageTests
 		var stage = CreateStage(chat, new FakeSection(0, "core"));
 		var effective = new EffectiveChatContext([u0], [], -1);
 
-		var anchor = stage.Process(PromptingTestHelpers.CreateAgent(), effective, null);
+		var anchor = stage.Process(PromptingTestHelpers.CreateAgent(), effective);
 
 		Assert.Null(anchor);
 		Assert.Empty(u0.Message.AdditionalData.GetAll<PromptStateAnchorMessageData>());
@@ -134,7 +134,7 @@ public class PromptStateStageTests
 		var chat = PromptingTestHelpers.CreateChat();
 		var stage = CreateStage(chat, new FakeSection(0, "core"));
 
-		var anchor = stage.Process(CreateHybridAgent(), new EffectiveChatContext([], [], -1), null);
+		var anchor = stage.Process(CreateHybridAgent(), new EffectiveChatContext([], [], -1));
 
 		Assert.Null(anchor);
 	}

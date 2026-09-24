@@ -142,23 +142,23 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 				!disabled.HasFlag(ContextCheckpointKind.Shield)));
 
 			CheckpointKindItems.Add(new CheckpointKindItem(this, ContextCheckpointKind.Summary,
-				Locale.GetKey("agent.checkpoint.summary"),
-				Locale.GetKey("agent.checkpoint.summary.hint"),
+				Locale.GetKey("settings.agent.checkpoint.summary"),
+				Locale.GetKey("settings.agent.checkpoint.summary.hint"),
 				!disabled.HasFlag(ContextCheckpointKind.Summary)));
 
 			CheckpointKindItems.Add(new CheckpointKindItem(this, ContextCheckpointKind.ToolCompaction,
-				Locale.GetKey("agent.checkpoint.tool_compaction"),
-				Locale.GetKey("agent.checkpoint.tool_compaction.hint"),
+				Locale.GetKey("settings.agent.checkpoint.tool_compaction"),
+				Locale.GetKey("settings.agent.checkpoint.tool_compaction.hint"),
 				!disabled.HasFlag(ContextCheckpointKind.ToolCompaction)));
 
 			CheckpointKindItems.Add(new CheckpointKindItem(this, ContextCheckpointKind.ForcedToolCompaction,
-				Locale.GetKey("agent.checkpoint.forced_tool_compaction"),
-				Locale.GetKey("agent.checkpoint.forced_tool_compaction.hint"),
+				Locale.GetKey("settings.agent.checkpoint.forced_tool_compaction"),
+				Locale.GetKey("settings.agent.checkpoint.forced_tool_compaction.hint"),
 				!disabled.HasFlag(ContextCheckpointKind.ForcedToolCompaction)));
 
 			CheckpointKindItems.Add(new CheckpointKindItem(this, ContextCheckpointKind.ReasoningCompaction,
-				Locale.GetKey("agent.checkpoint.reasoning_compaction"),
-				Locale.GetKey("agent.checkpoint.reasoning_compaction.hint"),
+				Locale.GetKey("settings.agent.checkpoint.reasoning_compaction"),
+				Locale.GetKey("settings.agent.checkpoint.reasoning_compaction.hint"),
 				!disabled.HasFlag(ContextCheckpointKind.ReasoningCompaction)));
 		}
 

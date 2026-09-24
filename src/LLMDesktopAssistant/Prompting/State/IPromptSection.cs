@@ -1,4 +1,5 @@
 using LLMDesktopAssistant.Agents;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 
 namespace LLMDesktopAssistant.Prompting.State
 {
@@ -26,14 +27,15 @@ namespace LLMDesktopAssistant.Prompting.State
 		/// <summary>
 		/// Captures the current state of this section for the given agent.
 		/// </summary>
-		PromptSectionStateBase CaptureState(ChatAgentDescriptor agent);
+		PromptSectionStateBase? CaptureState(ChatAgentDescriptor agent);
 
 		/// <summary>
 		/// Calculates the delta between the recorded state (anchor + deltas) and the actual state.
 		/// </summary>
 		/// <returns>The calculated delta, or null if no changes were detected.</returns>
-		PromptSectionDeltaBase? CalculateDelta(PromptSectionStateBase anchorState,
-			IEnumerable<PromptSectionDeltaBase> existingDeltas, PromptSectionStateBase actualState);
+		PromptSectionDeltaBase? CalculateDelta(PromptSectionStateBase? anchorState,
+			IEnumerable<PromptSectionDeltaBase> existingDeltas, PromptSectionStateBase? actualState,
+			EffectiveChatContext context);
 
 		/// <summary>
 		/// Renders the captured state into a system prompt snapshot fragment (text and/or tools).

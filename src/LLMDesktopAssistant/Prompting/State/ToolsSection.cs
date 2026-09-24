@@ -1,5 +1,6 @@
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Services;
+using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Services.Tools;
 
 namespace LLMDesktopAssistant.Prompting.State
@@ -71,8 +72,9 @@ namespace LLMDesktopAssistant.Prompting.State
 	public class ToolsDeltaProvider : IPromptSectionDeltaProvider<ToolsSectionState, ToolsSectionDelta>
 	{
 		/// <inheritdoc/>
-		public ToolsSectionDelta? CalculateDelta(ToolsSectionState anchorState,
-			IEnumerable<ToolsSectionDelta> existingDeltas, ToolsSectionState actualState) => null;
+		public ToolsSectionDelta? CalculateDelta(ToolsSectionState? anchorState,
+			IEnumerable<ToolsSectionDelta> existingDeltas, ToolsSectionState? actualState,
+			EffectiveChatContext context) => null;
 	}
 
 	/// <summary>
