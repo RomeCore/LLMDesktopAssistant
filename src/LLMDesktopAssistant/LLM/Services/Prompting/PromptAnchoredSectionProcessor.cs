@@ -7,30 +7,33 @@ using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
-	/// <inheritdoc cref="IPromptSectionProcessor"/>
-	[ChatService(typeof(IPromptSectionProcessor))]
-	public class PromptSectionProcessor(
-		Chat chat) : IPromptSectionProcessor
+	/// <inheritdoc cref="IPromptAnchoredSectionProcessor"/>
+	[ChatService(typeof(IPromptAnchoredSectionProcessor))]
+	public class PromptAnchoredSectionProcessor(
+		Chat chat
+	) : IPromptAnchoredSectionProcessor
 	{
 		/// <inheritdoc/>
 		public PromptStateAnchorMessageData? Process(ChatAgentDescriptor agent,
-			EffectiveChatContext effective, IEnumerable<IPromptContextProvider> providers)
+			EffectiveChatContext effectiveContext, IEnumerable<IPromptAnchoredSectionProvider> sections)
 		{
 			var promptMode = agent.Context.PromptMode;
 			if (promptMode != PromptContextMode.Hybrid)
 				return null;
 
-			var sections = providers.OfType<IPromptAnchoredSectionProvider>();
+			if (effectiveContext.Messages.Count == 0 ||
+				effectiveContext.Messages[^1].Message is not AssistantMessage { IsCompleted: false } pendingAssistantMessage)
+				throw new InvalidOperationException("Expected a pending assistant message, but none was found.");
 
 			PromptStateAnchorMessageData? anchor = null;
 			int messageWithAnchor = -1;
 
-			// Live anchor: the newest anchor of this agent positioned after the last cut.
+			// Live anchor: the newest anchor of this agent positioned after the last checkpoint.
 			// A single message may hold anchors of multiple agents — scan all of them.
-			for (int i = effective.Messages.Count - 1; i > effective.LastCutIndex; i--)
+			for (int i = effectiveContext.Messages.Count - 1; i > effectiveContext.LastCheckpointIndex; i--)
 			{
-				var message = effective.Messages[i];
-				foreach (var candidate in message.Message.AdditionalData.GetAll<PromptStateAnchorMessageData>())
+				var branchedMessage = effectiveContext.Messages[i];
+				foreach (var candidate in branchedMessage.Message.AdditionalData.GetAll<PromptStateAnchorMessageData>())
 				{
 					if (candidate.AgentId != agent.Id)
 						continue;
@@ -45,51 +48,42 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			if (anchor is not null)
 			{
-				if (messageWithAnchor + 1 < effective.Messages.Count)
+				if (messageWithAnchor + 1 < effectiveContext.Messages.Count)
 				{
-					var deltasPerAnchor = new Dictionary<Type, List<PromptSectionDeltaBase>>();
-					AssistantMessage? pendingAssistantMessage = null;
+					var deltasPerAnchor = new Dictionary<string, List<PromptSectionDeltaBase>>();
 
-					for (int i = messageWithAnchor + 1; i < effective.Messages.Count; i++)
+					for (int i = messageWithAnchor + 1; i < effectiveContext.Messages.Count; i++)
 					{
-						var message = effective.Messages[i];
-						if (message.Message is AssistantMessage assistantMessage && assistantMessage.SenderAgentId == agent.Id)
+						var branchedMessage = effectiveContext.Messages[i];
+						if (branchedMessage.Message is AssistantMessage assistantMessage && assistantMessage.SenderAgentId == agent.Id)
 						{
-							foreach (var deltaData in message.Message.AdditionalData.OfType<PromptStateDeltaMessageData>())
+							foreach (var deltaData in branchedMessage.Message.AdditionalData.OfType<PromptStateDeltaMessageData>())
 							{
 								if (deltaData.AnchorId != anchor.Id)
 									continue;
 
 								foreach (var delta in deltaData.Sections)
 								{
-									var deltaType = delta.GetType();
-									
-									if (!deltasPerAnchor.TryGetValue(deltaType, out var deltaList))
-										deltasPerAnchor.Add(deltaType, deltaList = []);
+									if (!deltasPerAnchor.TryGetValue(delta.Discriminator, out var deltaList))
+										deltasPerAnchor.Add(delta.Discriminator, deltaList = []);
 									deltaList.Add(delta);
 								}
 							}
-
-							if (i == effective.Messages.Count - 1 && !assistantMessage.IsCompleted)
-								pendingAssistantMessage = assistantMessage;
 						}
 					}
-
-					if (pendingAssistantMessage is null)
-						throw new InvalidOperationException("Expected a pending assistant message, but none was found.");
 
 					var deltas = new List<PromptSectionDeltaBase>();
 					var sb = new StringBuilder();
 
 					foreach (var section in sections)
 					{
-						var anchorState = anchor.Sections.FirstOrDefault(s => s.GetType() == section.StateType);
-						var existingDeltas = deltasPerAnchor.GetValueOrDefault(section.DeltaType) ?? [];
-						var actualState = section.CaptureState(agent);
+						var anchorState = anchor.Sections.FirstOrDefault(s => s.Discriminator == section.Discriminator);
+						var existingDeltas = deltasPerAnchor.GetValueOrDefault(section.Discriminator) ?? [];
 
-						var newDelta = section.CalculateDelta(anchorState, existingDeltas, actualState, effective);
+						var newDelta = section.CalculateDelta(anchorState, existingDeltas, effectiveContext);
 						if (newDelta is not null)
 						{
+							newDelta.Discriminator = section.Discriminator;
 							deltas.Add(newDelta);
 							var rendered = section.RenderDelta(newDelta);
 							sb.AppendLine(rendered);
@@ -113,16 +107,16 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				return anchor;
 			}
 
-			// Rebaseline: create a new anchor on the first message after the last cut.
-			int targetIndex = effective.LastCutIndex + 1;
-			if (targetIndex >= effective.Messages.Count)
+			// Rebaseline: create a new anchor on the first message after the last checkpoint.
+			int targetIndex = effectiveContext.LastCheckpointIndex + 1;
+			if (targetIndex >= effectiveContext.Messages.Count)
 			{
-				Log.Debug("Skipped prompt state anchor creation for agent {AgentId}: no target message after the last cut.",
+				Log.Debug("Skipped prompt state anchor creation for agent {AgentId}: no target message after the last checkpoint.",
 					agent.Id);
 				return null;
 			}
 
-			var target = effective.Messages[targetIndex];
+			var target = effectiveContext.Messages[targetIndex];
 			var states = sections.CaptureStates(agent);
 			var snapshot = sections.RenderHeader(states);
 

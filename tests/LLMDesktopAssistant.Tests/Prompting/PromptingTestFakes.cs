@@ -37,13 +37,14 @@ internal sealed class FakeSectionDelta : PromptSectionDeltaBase
 }
 
 /// <summary>
-/// An <see cref="IPromptContextProvider"/> fake rendering a fixed text and tools.
+/// An <see cref="IPromptAnchoredSectionProvider"/> fake rendering a fixed text and tools.
+/// The discriminator is derived from <paramref name="order"/> so that fakes stay distinguishable
+/// within a section set; the order itself is only a test-side ordering hint (the merge rules rely on
+/// the order of the incoming collection).
 /// </summary>
-internal sealed class FakeSection(int order, string text, params SerializableToolDefinition[] tools) : IPromptContextProvider
+internal sealed class FakeSection(int order, string text, params SerializableToolDefinition[] tools) : IPromptAnchoredSectionProvider
 {
-	public Type StateType => typeof(FakeSectionState);
-
-	public Type DeltaType => typeof(FakeSectionDelta);
+	public string Discriminator { get; } = $"fake-{order}";
 
 	public int Order => order;
 
@@ -62,8 +63,7 @@ internal sealed class FakeSection(int order, string text, params SerializableToo
 	};
 
 	public PromptSectionDeltaBase? CalculateDelta(PromptSectionStateBase? anchorState,
-		IEnumerable<PromptSectionDeltaBase> existingDeltas, PromptSectionStateBase? actualState,
-			EffectiveChatContext context) => null;
+		IEnumerable<PromptSectionDeltaBase> existingDeltas, EffectiveChatContext context) => null;
 
 	public string RenderDelta(PromptSectionDeltaBase delta) => string.Empty;
 }

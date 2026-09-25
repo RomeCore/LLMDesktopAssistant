@@ -11,27 +11,23 @@ namespace LLMDesktopAssistant.Scripting.Lua
 		IServiceProvider services
 	) : AddonSetCollectorBase<LuaScriptInfo, LuaScriptChange>(services)
 	{
-		// File-based scripts CANNOT override the behavior of native APIs
-		protected override bool AdditionalGoingFirst => false;
-		protected override bool AdditionalOverrides => true;
+		private readonly IReadOnlyList<LuaScriptInfo> _nativeApis = [..nativeApis.Select(a => new LuaScriptInfo
+		{
+			Enabled = true,
+			OverrideOrder = 1,
+			IsNative = true,
+			Name = "%native+" + a.GetType().Name,
+			Namespace = a.Namespace ?? string.Empty,
+			Manuals = a.Manuals,
+			Loader = (globals, ns, lua) =>
+			{
+				return a.Populate(globals, ns!, lua);
+			}
+		})];
 
 		protected override IEnumerable<LuaScriptInfo> GetAdditionalAddons()
 		{
-			return nativeApis.Select(a =>
-			{
-				return new LuaScriptInfo
-				{
-					Enabled = true,
-					IsNative = true,
-					Name = "%native+" + a.GetType().Name,
-					Namespace = a.Namespace ?? string.Empty,
-					Manuals = a.Manuals,
-					Loader = (globals, ns, lua) =>
-					{
-						return a.Populate(globals, ns!, lua);
-					}
-				};
-			});
+			return _nativeApis;
 		}
 
 		public override IEnumerable<LuaScriptInfo> GetAddonsForChat()

@@ -16,12 +16,6 @@ namespace LLMDesktopAssistant.Prompting.Context
 		private readonly IPromptSectionDeltaProvider<TState, TDelta> _deltaProvider;
 		private readonly IPromptSectionDeltaRenderer<TDelta> _deltaRenderer;
 
-		/// <inheritdoc/>
-		public Type StateType => typeof(TState);
-
-		/// <inheritdoc/>
-		public Type DeltaType => typeof(TDelta);
-
 		protected PromptAnchoredSectionBase(IServiceProvider services)
 		{
 			_stateProvider = services.GetRequiredService<IPromptSectionStateProvider<TState>>();
@@ -29,6 +23,8 @@ namespace LLMDesktopAssistant.Prompting.Context
 			_deltaProvider = services.GetRequiredService<IPromptSectionDeltaProvider<TState, TDelta>>();
 			_deltaRenderer = services.GetRequiredService<IPromptSectionDeltaRenderer<TDelta>>();
 		}
+
+		public abstract string Discriminator { get; }
 
 		/// <inheritdoc/>
 		public PromptSectionStateBase? CaptureState(ChatAgentDescriptor agent) => _stateProvider.CaptureState(agent);
@@ -41,8 +37,7 @@ namespace LLMDesktopAssistant.Prompting.Context
 
 		/// <inheritdoc/>
 		public PromptSectionDeltaBase? CalculateDelta(PromptSectionStateBase? anchorState,
-			IEnumerable<PromptSectionDeltaBase> existingDeltas, PromptSectionStateBase? actualState,
-			EffectiveChatContext context)
-			=> _deltaProvider.CalculateDelta((TState?)anchorState, existingDeltas.Cast<TDelta>(), (TState?)actualState, context);
+			IEnumerable<PromptSectionDeltaBase> existingDeltas, EffectiveChatContext context)
+			=> _deltaProvider.CalculateDelta((TState?)anchorState, existingDeltas.Cast<TDelta>(), context);
 	}
 }

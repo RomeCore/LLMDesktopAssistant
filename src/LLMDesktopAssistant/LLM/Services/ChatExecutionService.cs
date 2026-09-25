@@ -200,12 +200,12 @@ namespace LLMDesktopAssistant.LLM.Services
 					Cycle = cycle
 				}, cancellationToken);
 
-				statusService.Icon = MaterialIconKind.ChatProcessing;
-				statusService.Text = LocalizationManager.LocalizeStatic("chat.status.waiting_for_first_response");
-
 				var promptBundle = promptComposer.Build(agent);
 				var inputMessages = promptBundle.Messages;
 				var toolset = promptBundle.Tools;
+
+				statusService.Icon = MaterialIconKind.ChatProcessing;
+				statusService.Text = LocalizationManager.LocalizeStatic("chat.status.waiting_for_first_response");
 
 				var response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 				var responseMessage = response.Message;
@@ -450,12 +450,13 @@ namespace LLMDesktopAssistant.LLM.Services
 						Cycle = cycle
 					}, cancellationToken);
 
-					statusService.Icon = MaterialIconKind.ChatProcessing;
-					statusService.Text = LocalizationManager.LocalizeStatic("chat.status.waiting_for_first_response");
-
 					promptBundle = promptComposer.Build(agent);
 					inputMessages = promptBundle.Messages;
 					toolset = promptBundle.Tools;
+
+					statusService.Icon = MaterialIconKind.ChatProcessing;
+					statusService.Text = LocalizationManager.LocalizeStatic("chat.status.waiting_for_first_response");
+
 					response = await llm.ChatStreamingAsync(inputMessages, tools: toolset, cancellationToken: cancellationToken);
 					responseMessage = response.Message;
 				}

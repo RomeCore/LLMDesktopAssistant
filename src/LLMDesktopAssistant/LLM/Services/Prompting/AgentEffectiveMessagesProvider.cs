@@ -28,6 +28,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				.GroupMessagesIntoRounds(chat.Messages, maxRounds)
 				.SelectMany(g => g)
 				.ToList();
+			int effectiveMessagesStart = chat.Messages.Count - messagesToProcess.Count;
 
 			var chatIndices = new Dictionary<BranchedMessage, int>(messagesToProcess.Count);
 			for (int i = 0; i < messagesToProcess.Count; i++)
@@ -95,37 +96,29 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				resultIndices[result[i]] = i;
 
 			var checkpoints = new List<EffectiveCheckpoint>(candidates.Count);
-			BranchedMessage? newestCutCarrier = null;
+			int lastCutIndex = -1;
+			int lastCheckpointIndex = -1;
 
 			for (int i = candidates.Count - 1; i >= 0; i--)
 			{
 				var (carrier, candidate) = candidates[i];
 				var kind = candidate.Kind & ~disabledCheckpoints;
 
-				// Candidates are iterated oldest-to-newest here, so the last cut found is the newest one.
-				if (kind.HasFlag(ContextCheckpointKind.Shield) || kind.HasFlag(ContextCheckpointKind.Summary))
-					newestCutCarrier = carrier;
+				var index = GetRelativeIndex(carrier, result, resultIndices, chatIndices);
+				
+				if ((kind.HasFlag(ContextCheckpointKind.Shield) || kind.HasFlag(ContextCheckpointKind.Summary))
+					&& index > lastCutIndex)
+					lastCutIndex = index;
 
-				// Cut-only checkpoints are anchored at -1; checkpoints with compaction bits need a real index
-				// so that their coverage (messages up to and including the carrier) can be resolved.
-				bool hasCompactionBits = kind.HasFlag(ContextCheckpointKind.ToolCompaction)
-					|| kind.HasFlag(ContextCheckpointKind.ForcedToolCompaction)
-					|| kind.HasFlag(ContextCheckpointKind.ReasoningCompaction);
+				if (index > lastCheckpointIndex)
+					lastCheckpointIndex = index;
 
-				var index = hasCompactionBits
-					? GetRelativeIndex(carrier, result, resultIndices, chatIndices)
-					: -1;
 				checkpoints.Add(new EffectiveCheckpoint(candidate, index));
 			}
 
-			int lastCutIndex = newestCutCarrier != null
-				? GetRelativeIndex(newestCutCarrier, result, resultIndices, chatIndices)
-				: -1;
-
-			return new EffectiveChatContext(result, checkpoints, lastCutIndex);
+			return new EffectiveChatContext(result, checkpoints, effectiveMessagesStart, lastCutIndex, lastCheckpointIndex);
 		}
 
-		
 		/// <summary>
 		/// Effective index of a carrier: its own index when it is in the effective set,
 		/// otherwise the index of the nearest preceding visible message, otherwise -1.

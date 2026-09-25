@@ -3,7 +3,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Services.Tools;
 
-namespace LLMDesktopAssistant.Prompting.Context
+namespace LLMDesktopAssistant.Prompting.Context.Providers
 {
 	/// <summary>
 	/// The state of the tools section: the canonical tool definitions available to the agent.
@@ -73,8 +73,7 @@ namespace LLMDesktopAssistant.Prompting.Context
 	{
 		/// <inheritdoc/>
 		public ToolsSectionDelta? CalculateDelta(ToolsSectionState? anchorState,
-			IEnumerable<ToolsSectionDelta> existingDeltas, ToolsSectionState? actualState,
-			EffectiveChatContext context) => null;
+			IEnumerable<ToolsSectionDelta> existingDeltas, EffectiveChatContext context) => null;
 	}
 
 	/// <summary>
@@ -93,6 +92,7 @@ namespace LLMDesktopAssistant.Prompting.Context
 	public class ToolsSection(IServiceProvider services)
 		: PromptAnchoredSectionBase<ToolsSectionState, ToolsSectionDelta>(services)
 	{
+		public override string Discriminator => "tools";
 	}
 
 	[ChatService(typeof(PromptContextNativeProvider))]

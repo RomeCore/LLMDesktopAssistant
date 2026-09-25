@@ -1,3 +1,5 @@
+using System.Text;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Domain;
@@ -5,39 +7,42 @@ using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Tools;
 using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Prompting.Context;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Hooks;
 using LLMDesktopAssistant.Prompting.Plugins;
-using LLMDesktopAssistant.Prompting.Context;
 using LLMDesktopAssistant.Users;
 using LLTSharp;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Tools;
 using Serilog;
-using LLMDesktopAssistant.Addons;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
 	/// <inheritdoc cref="IAgentPromptComposer"/>
 	[ChatService(typeof(IAgentPromptComposer))]
 	public class AgentPromptComposer(
+		Chat chat,
 		IChatSettingsService chatSettings,
 		ITemplateLibraryAccessor templates,
 		IAgentManagementService agentManager,
 		IMessageVisibilityService messageVisibility,
 		IAgentEffectiveMessagesProvider effectiveMessagesProvider,
 		IUserManagementService userManager,
-		IEnumerable<IPromptContextProvider> promptSections,
 		IEnumerable<IPromptBuildingHook> promptBuildingHooks,
 		IEnumerable<IPromptMessageContextExpander> promptMessageContextExpanders,
 		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins,
 		IToolsetCacheService toolsetCache,
-		IPromptSectionProcessor promptSectionProcessor,
+		IPromptAnchoredSectionProcessor promptAnchoredSectionProcessor,
+		IPromptSupersedeContextProcessor promptSupersedeContextProcessor,
 		IAddonSetCollector<PromptContextInfo> promptContextCollector,
 		IPromptDumpService promptDumpService
 		) : IAgentPromptComposer
 	{
+		private const string summaryTag = "summary";
+		private const string systemReminderTag = "system-reminder";
+
 		/// <inheritdoc/>
 		public AgentPromptBundle Build(ChatAgentDescriptor agent)
 		{
@@ -45,7 +50,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			// and the tool call resolution performed by the execution service.
 			toolsetCache.Invalidate(agent);
 
-			var effective = effectiveMessagesProvider.GetEffectiveMessages(agent);
+			var effectiveContext = effectiveMessagesProvider.GetEffectiveMessages(agent);
 
 			var hooks = promptBuildingHooks.OrderBy(h => h.Order).ToList();
 			var functions = new TemplateFunctionSet(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
@@ -57,7 +62,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			var promptContextProviders = promptContextInfos.Select(i => i.Provider).ToArray();
 
 			var promptMode = agent.Context.PromptMode;
-			var anchor = promptSectionProcessor.Process(agent, effective, promptContextProviders);
+			var anchor = promptAnchoredSectionProcessor.Process(agent, effectiveContext, promptContextProviders.Anchored());
+			promptSupersedeContextProcessor.Process(agent, effectiveContext, promptContextProviders.Supersede());
 
 			SystemPromptSnapshot header;
 			string headerSource;
@@ -67,7 +73,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					var settings = agent.Context;
 					if (settings.Snapshot is null)
 					{
-						settings.Snapshot = promptSections.Anchored().RenderHeader(agent);
+						settings.Snapshot = promptContextProviders.Anchored().RenderHeader(agent);
 						Log.Information("Froze static system prompt snapshot for agent {AgentId}.", agent.Id);
 					}
 
@@ -88,27 +94,54 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 
 			Log.Debug("Prompt header for agent {AgentId}: mode={Mode}, source={Source}.", agent.Id, promptMode, headerSource);
 
-			var summaryCheckpoint = effective.Checkpoints.LastOrDefault(c =>
+			var summaryCheckpoint = effectiveContext.Checkpoints.LastOrDefault(c =>
 				(c.Checkpoint.Kind & ~disabledCheckpoints).HasFlag(ContextCheckpointKind.Summary));
 
 			result.Add(new SystemMessage(header.Text));
 			if (summaryCheckpoint != null)
 				result.Add(new RCLargeLanguageModels.Messages.UserMessage(Senders.User, $"""
-					<summary>
+					<{summaryTag}>
 					{summaryCheckpoint.Checkpoint.Context}
-					</summary>
+					</{summaryTag}>
 					"""));
 
-			for (int i = 0; i < effective.Messages.Count; i++)
+			// SCM stamps: walk up beyond effective message history (but including one effective message)
+			// to find the most recent stamp of each type.
+			Dictionary<string, (int MsgId, int Order, PromptSupersedeStampBase Stamp)>? seenStamps = [];
+			for (int i = effectiveContext.EffectiveMessagesStartIndex; i >= 0; i--)
 			{
-				var branchedMessage = effective.Messages[i];
-				var compaction = MessageCompaction.ForMessage(effective.Checkpoints, i, disabledCheckpoints);
+				var branchedMessage = chat.Messages[i];
+
+				if (branchedMessage.Message is not Domain.AssistantMessage assistantMessage || assistantMessage.SenderAgentId != agent.Id)
+					continue;
+				if (assistantMessage.AdditionalData.TryGet<PromptSupersedeStampMessageData>() is not { } stampData)
+					continue;
+
+				foreach (var stamp in stampData.Stamps)
+				{
+					if (seenStamps.ContainsKey(stamp.Discriminator))
+						continue;
+
+					seenStamps[stamp.Discriminator] = (i, seenStamps.Count, stamp);
+				}
+			}
+
+			for (int i = 0; i < effectiveContext.Messages.Count; i++)
+			{
+				var branchedMessage = effectiveContext.Messages[i];
+				var compaction = MessageCompaction.ForMessage(effectiveContext.Checkpoints, i, disabledCheckpoints);
 
 				IEnumerable<IMessage> messages;
+				bool isPendingAssistant = false;
 				if (branchedMessage.Message is Domain.AssistantMessage assistantMessage && !assistantMessage.IsCompleted)
+				{
+					isPendingAssistant = true;
 					messages = [];
+				}
 				else
+				{
 					messages = ConvertMessageForAgent(branchedMessage, agent, functions, compaction);
+				}
 
 				foreach (var hook in hooks)
 				{
@@ -117,15 +150,88 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						messages = editedMessages;
 				}
 
-				// Process SCM deltas.
-				if (anchor is not null && branchedMessage.Message is Domain.AssistantMessage)
+				if (branchedMessage.Message is Domain.AssistantMessage)
 				{
-					foreach (var delta in branchedMessage.Message.AdditionalData.OfType<PromptStateDeltaMessageData>())
+					var systemReminderSb = new StringBuilder();
+					systemReminderSb.AppendLine($"<{systemReminderTag}>");
+					int dataCounter = 0;
+
+					// Process SCM anchor deltas.
+					if (anchor is not null && branchedMessage.Message.AdditionalData.TryGet<PromptStateDeltaMessageData>() is { } deltas)
 					{
-						if (delta.AnchorId != anchor.Id)
+						if (deltas.AnchorId != anchor.Id)
 							continue;
 
-						result.Add(new RCLargeLanguageModels.Messages.UserMessage("system", delta.Snapshot));
+						if (!string.IsNullOrWhiteSpace(deltas.Snapshot))
+						{
+							systemReminderSb.AppendLine(deltas.Snapshot);
+							dataCounter++;
+						}
+					}
+
+					// Process SCM supersede stamps.
+					if (seenStamps != null)
+					{
+						// Render stamps if the message is the first message after cut.
+						// This should include the stamps before the cut.
+						foreach (var (_, _, stamp) in seenStamps.Values
+							.OrderBy(s => s.MsgId)
+							.ThenBy(s => s.Order))
+						{
+							systemReminderSb.AppendLine(stamp.Snapshot);
+							dataCounter++;
+						}
+						seenStamps = null;
+					}
+					else if (branchedMessage.Message.AdditionalData.TryGet<PromptSupersedeStampMessageData>() is { } stamps)
+					{
+						foreach (var stamp in stamps.Stamps)
+						{
+							systemReminderSb.AppendLine(stamp.Snapshot);
+							dataCounter++;
+						}
+					}
+
+					// Process SCM live tails.
+					if (isPendingAssistant)
+					{
+						var liveContextProviders = promptContextProviders.LiveTails().ToArray();
+						if (liveContextProviders.Length > 0)
+						{
+							var sb = new StringBuilder();
+							foreach (var provider in liveContextProviders)
+							{
+								var liveContext = provider.Provide(effectiveContext);
+								if (!string.IsNullOrWhiteSpace(liveContext))
+								{
+									systemReminderSb.AppendLine(liveContext);
+									dataCounter++;
+								}
+							}
+						}
+					}
+
+					systemReminderSb.Append($"</{systemReminderTag}>");
+
+					if (dataCounter > 0)
+					{
+						if (result.Count > 0 && result[^1] is IToolMessage lastToolMessage)
+						{
+							// Replace the last tool result with the new one, appending the system reminder.
+							// This helps to avoid interrupting the assistant's tool cycle.
+							var lastToolResult = lastToolMessage.Result;
+							var replacedToolResult = new RCLargeLanguageModels.Tools.ToolResult(lastToolResult.Status,
+								$"""
+								{lastToolResult.Content}
+								{systemReminderSb}
+								""", lastToolResult.Attachments);
+							result[^1] = new RCLargeLanguageModels.Messages.ToolMessage(replacedToolResult,
+								lastToolMessage.ToolCallId, lastToolMessage.ToolName);
+						}
+						else
+						{
+							result.Add(new RCLargeLanguageModels.Messages.UserMessage(systemReminderSb.ToString()));
+						}
 					}
 				}
 

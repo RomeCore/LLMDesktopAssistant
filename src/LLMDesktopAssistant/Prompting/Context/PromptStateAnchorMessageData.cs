@@ -22,7 +22,7 @@ namespace LLMDesktopAssistant.Prompting.Context
 		/// <summary>
 		/// The captured section states.
 		/// </summary>
-		public RangeObservableCollection<PromptSectionStateBase> Sections { get; init; } = [];
+		public IReadOnlyList<PromptSectionStateBase> Sections { get; init; } = [];
 
 		/// <summary>
 		/// The frozen snapshot bytes: system prompt text and tool definitions.

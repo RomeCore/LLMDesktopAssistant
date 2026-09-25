@@ -6,6 +6,8 @@ namespace LLMDesktopAssistant.Prompting.Context
 
 		protected void AddContext(PromptContextInfo context)
 		{
+			context.OverrideOrder = 1;
+			context.Freeze();
 			_contexts.Add(context);
 		}
 

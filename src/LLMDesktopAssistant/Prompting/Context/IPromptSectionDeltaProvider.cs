@@ -11,10 +11,9 @@ namespace LLMDesktopAssistant.Prompting.Context
 		/// </summary>
 		/// <param name="anchorState">The anchor state to compare against. This is the state before any deltas were applied.</param>
 		/// <param name="existingDeltas">The existing deltas to apply to the anchor state to get the current state.</param>
-		/// <param name="actualState">The actual state to compare against.</param>
-		/// 
+		/// <param name="context">The effective chat context to consider when calculating the delta.</param>
 		/// <returns>The calculated delta, or null if no changes were detected.</returns>
-		TDelta? CalculateDelta(TState? anchorState, IEnumerable<TDelta> existingDeltas,
-			TState? actualState, EffectiveChatContext context);
+		TDelta? CalculateDelta(TState? anchorState,
+			IEnumerable<TDelta> existingDeltas, EffectiveChatContext context);
 	}
 }

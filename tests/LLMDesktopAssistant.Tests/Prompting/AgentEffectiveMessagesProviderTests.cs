@@ -167,8 +167,10 @@ public class AgentEffectiveMessagesProviderTests
 		Assert.Equal(["u0", "a2"], effective.Messages.Select(m => m.Message.Content).ToArray());
 		var carried = Assert.Single(effective.Checkpoints);
 		Assert.Same(summary, carried.Checkpoint);
-		Assert.Equal(-1, carried.Index); // cut checkpoints are always anchored at -1
-		Assert.Equal(0, effective.LastCutIndex); // ...while the cut boundary accounts for the kept boundary message
+		// The cut carrier (a1) is invisible to the agent, so the checkpoint borrows the index
+		// of the nearest preceding visible message (u0) — the same rule as for non-cut checkpoints.
+		Assert.Equal(0, carried.Index);
+		Assert.Equal(0, effective.LastCutIndex); // ...and the cut boundary accounts for the kept boundary message
 	}
 
 	[Fact]

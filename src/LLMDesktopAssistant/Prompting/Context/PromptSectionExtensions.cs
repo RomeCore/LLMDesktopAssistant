@@ -4,7 +4,7 @@ using Serilog;
 namespace LLMDesktopAssistant.Prompting.Context
 {
 	/// <summary>
-	/// Merge rules for prompt sections: ordering, state capture and header rendering.
+	/// Merge rules for prompt sections: provider filtering, ordering, state capture and header rendering.
 	/// </summary>
 	public static class PromptSectionExtensions
 	{
@@ -15,11 +15,39 @@ namespace LLMDesktopAssistant.Prompting.Context
 			=> sections.OfType<IPromptAnchoredSectionProvider>();
 
 		/// <summary>
+		/// Filters sections to only include those that are supersede.
+		/// </summary>
+		public static IEnumerable<IPromptSupersedeContextProvider> Supersede(this IEnumerable<IPromptContextProvider> sections)
+			=> sections.OfType<IPromptSupersedeContextProvider>();
+
+		/// <summary>
+		/// Filters sections to only include those that are live-tail.
+		/// </summary>
+		public static IEnumerable<IPromptLiveTailContextProvider> LiveTails(this IEnumerable<IPromptContextProvider> sections)
+			=> sections.OfType<IPromptLiveTailContextProvider>();
+
+		/// <summary>
 		/// Captures the state of every section for the given agent (in section order).
+		/// The discriminator of the section is stamped onto the captured state, so that the state
+		/// can be matched back to its section later (header rendering and anchor rebaselining).
 		/// </summary>
 		public static IReadOnlyList<PromptSectionStateBase> CaptureStates(this IEnumerable<IPromptAnchoredSectionProvider> sections,
 			ChatAgentDescriptor agent)
-			=> sections.Select(s => s.CaptureState(agent)!).Where(s => s != null).ToList();
+		{
+			List<PromptSectionStateBase> result = [];
+
+			foreach (var section in sections)
+			{
+				var state = section.CaptureState(agent);
+				if (state == null)
+					continue;
+
+				state.Discriminator = section.Discriminator;
+				result.Add(state);
+			}
+
+			return result;
+		}
 
 		/// <summary>
 		/// Renders the merged system prompt header from the captured states:
@@ -33,11 +61,11 @@ namespace LLMDesktopAssistant.Prompting.Context
 
 			foreach (var section in sections)
 			{
-				var state = states.FirstOrDefault(s => s.GetType() == section.StateType);
+				var state = states.FirstOrDefault(s => s.Discriminator == section.Discriminator);
 				if (state == null)
 				{
-					Log.Debug("No captured state for prompt section {Section} (expected state type {StateType}).",
-						section.GetType().Name, section.StateType.Name);
+					Log.Debug("No captured state for prompt section {Section} (expected discriminator {Discriminator}).",
+						section.GetType().Name, section.Discriminator);
 					continue;
 				}
 

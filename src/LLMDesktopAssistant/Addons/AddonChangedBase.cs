@@ -9,6 +9,16 @@ namespace LLMDesktopAssistant.Addons
 		where Self : AddonBase<Self>
 		where TChange : AddonChangeBase
 	{
+		/// <summary>
+		/// The order that used when addons with same name is conflicting.
+		/// The addon with the higher <see cref="OverrideOrder"/> wins, others puts to <see cref="Overrides"/>.
+		/// </summary>
+		public int OverrideOrder
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = 0;
+
 		// ===================================
 		// === Variable state              ===
 		// ===================================

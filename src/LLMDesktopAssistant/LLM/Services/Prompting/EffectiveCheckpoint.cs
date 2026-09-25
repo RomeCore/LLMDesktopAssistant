@@ -9,10 +9,10 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 	/// <param name="Checkpoint">The underlying chat data checkpoint.</param>
 	/// <param name="Index">
 	/// Position relative to <see cref="EffectiveChatContext.Messages"/>:
-	/// <c>-1</c> for cut checkpoints (shield/summary);
-	/// for non-cut checkpoints — the effective index of the carrier message,
-	/// or the index of the nearest preceding visible message when the carrier is invisible,
-	/// or <c>-1</c> when there is no preceding visible message.
+	/// the effective index of the carrier message, or the index of the nearest preceding visible
+	/// message when the carrier is invisible, or <c>-1</c> when there is no preceding visible message.
+	/// The same rule applies to cut checkpoints (shield/summary): a cut that leaves no visible
+	/// message before it is carried at <c>-1</c>.
 	/// </param>
 	public record EffectiveCheckpoint(ContextCheckpoint Checkpoint, int Index);
 }

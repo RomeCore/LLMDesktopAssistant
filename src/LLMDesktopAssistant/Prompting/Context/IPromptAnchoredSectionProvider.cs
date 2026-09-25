@@ -10,27 +10,21 @@ namespace LLMDesktopAssistant.Prompting.Context
 	public interface IPromptAnchoredSectionProvider : IPromptContextProvider
 	{
 		/// <summary>
-		/// The type of the state captured by this section.
+		/// Gets the discriminator used to separate the state and delta data from other prompt contexts.
 		/// </summary>
-		Type StateType { get; }
+		string Discriminator { get; }
 
 		/// <summary>
-		/// The type of the delta produced by this section.
-		/// </summary>
-		Type DeltaType { get; }
-
-		/// <summary>
-		/// Captures the current state of this section for the given agent.
+		/// Captures the current, and initial state of this section for the given agent.
 		/// </summary>
 		PromptSectionStateBase? CaptureState(ChatAgentDescriptor agent);
 
 		/// <summary>
-		/// Calculates the delta between the recorded state (anchor + deltas) and the actual state.
+		/// Calculates the delta between the recorded state (anchor + deltas) and the actual state (should be calculated implicitly).
 		/// </summary>
 		/// <returns>The calculated delta, or null if no changes were detected.</returns>
 		PromptSectionDeltaBase? CalculateDelta(PromptSectionStateBase? anchorState,
-			IEnumerable<PromptSectionDeltaBase> existingDeltas, PromptSectionStateBase? actualState,
-			EffectiveChatContext context);
+			IEnumerable<PromptSectionDeltaBase> existingDeltas, EffectiveChatContext context);
 
 		/// <summary>
 		/// Renders the captured state into a system prompt snapshot fragment (text and/or tools).

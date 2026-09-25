@@ -21,12 +21,6 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 		IServiceProvider services
 	) : AddonSetCollectorBase<SubAgentInfo, SubAgentChange>(services)
 	{
-		/// <remarks>
-		/// File-system sub-agents are added after the template ones, so they override template sub-agents
-		/// with the same name (the last addon in a name group wins and the rest become overrides).
-		/// </remarks>
-		protected override bool AdditionalGoingFirst => true;
-
 		protected override IEnumerable<SubAgentInfo> GetAdditionalAddons()
 		{
 			List<SubAgentInfo> subAgents = [];
@@ -39,6 +33,7 @@ namespace LLMDesktopAssistant.Agents.SubAgents
 					return new SubAgentInfo
 					{
 						Name = sp.Name,
+						OverrideOrder = 1, // Template sub-agents have priority over file-system sub-agents.
 						Description = sp.Description ?? string.Empty,
 						BodyGetter = new(si =>
 						{

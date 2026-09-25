@@ -12,9 +12,6 @@ namespace LLMDesktopAssistant.Prompting.Context
 		IServiceProvider services
 	) : AddonSetCollectorBase<PromptContextInfo, PromptContextChange>(services)
 	{
-		protected override bool AdditionalGoingFirst => false;
-		protected override bool AdditionalOverrides => true;
-
 		protected override IEnumerable<PromptContextInfo> GetAdditionalAddons()
 		{
 			return nativeProviders.SelectMany(p => p.GetContexts());

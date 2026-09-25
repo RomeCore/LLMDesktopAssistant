@@ -227,9 +227,7 @@ namespace LLMDesktopAssistant
 
 		private static bool Equals<T>(T? x, T? y)
 		{
-			if (x is IEquatable<T> xE)
-				return xE.Equals(y);
-			return object.Equals(x, y);
+			return EqualityComparer<T>.Default.Equals(x, y);
 		}
 
 		/// <summary>

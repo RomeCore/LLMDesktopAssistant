@@ -4,7 +4,6 @@ using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.Context;
-using LLMDesktopAssistant.Tests.Storage;
 
 namespace LLMDesktopAssistant.Tests.Prompting;
 
@@ -14,8 +13,12 @@ namespace LLMDesktopAssistant.Tests.Prompting;
 [Collection("Prompting")]
 public class PromptStateStageTests
 {
-	private static PromptSectionProcessor CreateStage(Chat chat, params IPromptContextProvider[] sections)
-		=> new(chat, sections);
+	/// <summary>
+	/// Creates a stage. Sections are passed per <see cref="PromptAnchoredSectionProcessor.Process"/> call.
+	/// </summary>
+	private static PromptAnchoredSectionProcessor CreateStage(Chat chat) => new(chat);
+
+	private static FakeSection[] CreateSections() => [new FakeSection(0, "core")];
 
 	private static ChatAgentDescriptor CreateHybridAgent()
 	{
@@ -24,16 +27,21 @@ public class PromptStateStageTests
 		return agent;
 	}
 
+	/// <summary>
+	/// Creates an effective context of the given messages with no cuts and no checkpoints.
+	/// </summary>
+	private static EffectiveChatContext CreateEffectiveContext(params BranchedMessage[] messages)
+		=> new(messages, [], 0, -1, -1);
+
 	[Fact]
 	public void CreatesAnchor_OnFirstHybridPrep()
 	{
 		var u0 = PromptingTestHelpers.User("u0", 0);
-		var chat = PromptingTestHelpers.CreateChat(u0);
-		var section = new FakeSection(0, "core");
-		var stage = CreateStage(chat, section);
-		var effective = new EffectiveChatContext([u0], [], -1);
+		var pending = PromptingTestHelpers.Assistant(string.Empty, 1);
+		var chat = PromptingTestHelpers.CreateChat(u0, pending);
+		var stage = CreateStage(chat);
 
-		var anchor = stage.Process(CreateHybridAgent(), effective);
+		var anchor = stage.Process(CreateHybridAgent(), CreateEffectiveContext(u0, pending), CreateSections());
 
 		Assert.NotNull(anchor);
 		Assert.Equal(1, anchor!.Id);
@@ -50,13 +58,15 @@ public class PromptStateStageTests
 	public void ReusesAnchor_OnSecondPrep()
 	{
 		var u0 = PromptingTestHelpers.User("u0", 0);
-		var chat = PromptingTestHelpers.CreateChat(u0);
-		var stage = CreateStage(chat, new FakeSection(0, "core"));
+		var pending = PromptingTestHelpers.Assistant(string.Empty, 1);
+		var chat = PromptingTestHelpers.CreateChat(u0, pending);
+		var stage = CreateStage(chat);
 		var agent = CreateHybridAgent();
-		var effective = new EffectiveChatContext([u0], [], -1);
+		var effective = CreateEffectiveContext(u0, pending);
+		var sections = CreateSections();
 
-		var first = stage.Process(agent, effective);
-		var second = stage.Process(agent, effective);
+		var first = stage.Process(agent, effective, sections);
+		var second = stage.Process(agent, effective, sections);
 
 		Assert.NotNull(first);
 		Assert.Same(first, second);
@@ -70,18 +80,24 @@ public class PromptStateStageTests
 	{
 		var u0 = PromptingTestHelpers.User("u0", 0);
 		var u1 = PromptingTestHelpers.User("u1", 1);
-		var chat = PromptingTestHelpers.CreateChat(u0, u1);
-		var stage = CreateStage(chat, new FakeSection(0, "core"));
+		var pending = PromptingTestHelpers.Assistant(string.Empty, 2);
+		var chat = PromptingTestHelpers.CreateChat(u0, u1, pending);
+		var stage = CreateStage(chat);
 		var agent = CreateHybridAgent();
+		var sections = CreateSections();
 
-		var first = stage.Process(agent, new EffectiveChatContext([u0, u1], [], -1));
+		var first = stage.Process(agent, CreateEffectiveContext(u0, u1, pending), sections);
 		Assert.NotNull(first);
 		Assert.Equal(1, first!.Id);
+		Assert.Same(first, Assert.Single(u0.Message.AdditionalData.GetAll<PromptStateAnchorMessageData>()));
 
+		// The cut checkpoint is carried by the first message of the effective set (index 0),
+		// so the anchor pinned to it is now before the cut and must be rebaselined.
 		var cut = new ContextCheckpoint { Kind = ContextCheckpointKind.Shield };
-		var effectiveAfterCut = new EffectiveChatContext([u0, u1], [new EffectiveCheckpoint(cut, -1)], 0);
+		var effectiveAfterCut = new EffectiveChatContext([u0, u1, pending],
+			[new EffectiveCheckpoint(cut, 0)], 0, 0, 0);
 
-		var second = stage.Process(agent, effectiveAfterCut);
+		var second = stage.Process(agent, effectiveAfterCut, sections);
 
 		Assert.NotNull(second);
 		Assert.Equal(2, second!.Id);
@@ -94,14 +110,16 @@ public class PromptStateStageTests
 	public void AgentsDoNotShareAnchors()
 	{
 		var u0 = PromptingTestHelpers.User("u0", 0);
-		var chat = PromptingTestHelpers.CreateChat(u0);
-		var stage = CreateStage(chat, new FakeSection(0, "core"));
+		var pending = PromptingTestHelpers.Assistant(string.Empty, 1);
+		var chat = PromptingTestHelpers.CreateChat(u0, pending);
+		var stage = CreateStage(chat);
 		var agentA = CreateHybridAgent();
 		var agentB = CreateHybridAgent();
-		var effective = new EffectiveChatContext([u0], [], -1);
+		var effective = CreateEffectiveContext(u0, pending);
+		var sections = CreateSections();
 
-		var anchorA = stage.Process(agentA, effective);
-		var anchorB = stage.Process(agentB, effective);
+		var anchorA = stage.Process(agentA, effective, sections);
+		var anchorB = stage.Process(agentB, effective, sections);
 
 		Assert.NotNull(anchorA);
 		Assert.NotNull(anchorB);
@@ -117,11 +135,11 @@ public class PromptStateStageTests
 	public void NonHybridMode_ReturnsNull_AndCreatesNothing()
 	{
 		var u0 = PromptingTestHelpers.User("u0", 0);
-		var chat = PromptingTestHelpers.CreateChat(u0);
-		var stage = CreateStage(chat, new FakeSection(0, "core"));
-		var effective = new EffectiveChatContext([u0], [], -1);
+		var pending = PromptingTestHelpers.Assistant(string.Empty, 1);
+		var chat = PromptingTestHelpers.CreateChat(u0, pending);
+		var stage = CreateStage(chat);
 
-		var anchor = stage.Process(PromptingTestHelpers.CreateAgent(), effective);
+		var anchor = stage.Process(PromptingTestHelpers.CreateAgent(), CreateEffectiveContext(u0, pending), CreateSections());
 
 		Assert.Null(anchor);
 		Assert.Empty(u0.Message.AdditionalData.GetAll<PromptStateAnchorMessageData>());
@@ -129,13 +147,23 @@ public class PromptStateStageTests
 	}
 
 	[Fact]
-	public void EmptyMessages_ReturnsNull()
+	public void NoPendingAssistantMessage_Throws()
 	{
 		var chat = PromptingTestHelpers.CreateChat();
-		var stage = CreateStage(chat, new FakeSection(0, "core"));
+		var stage = CreateStage(chat);
 
-		var anchor = stage.Process(CreateHybridAgent(), new EffectiveChatContext([], [], -1));
+		Assert.Throws<InvalidOperationException>(() =>
+			stage.Process(CreateHybridAgent(), CreateEffectiveContext(), CreateSections()));
+	}
 
-		Assert.Null(anchor);
+	[Fact]
+	public void LastMessageIsNotPendingAssistant_Throws()
+	{
+		var u0 = PromptingTestHelpers.User("u0", 0);
+		var chat = PromptingTestHelpers.CreateChat(u0);
+		var stage = CreateStage(chat);
+
+		Assert.Throws<InvalidOperationException>(() =>
+			stage.Process(CreateHybridAgent(), CreateEffectiveContext(u0), CreateSections()));
 	}
 }

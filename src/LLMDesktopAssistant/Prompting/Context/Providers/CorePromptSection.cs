@@ -1,10 +1,8 @@
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Prompting;
-using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Plugins;
@@ -12,7 +10,7 @@ using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.StructuredValues.Converters;
 using LLTSharp;
 
-namespace LLMDesktopAssistant.Prompting.Context
+namespace LLMDesktopAssistant.Prompting.Context.Providers
 {
 	/// <summary>
 	/// The state of the core prompt section.
@@ -152,8 +150,7 @@ namespace LLMDesktopAssistant.Prompting.Context
 	{
 		/// <inheritdoc/>
 		public CorePromptSectionDelta? CalculateDelta(CorePromptSectionState? anchorState,
-			IEnumerable<CorePromptSectionDelta> existingDeltas, CorePromptSectionState? actualState,
-			EffectiveChatContext context) => null;
+			IEnumerable<CorePromptSectionDelta> existingDeltas, EffectiveChatContext context) => null;
 	}
 
 	/// <summary>
@@ -172,6 +169,7 @@ namespace LLMDesktopAssistant.Prompting.Context
 	public class CorePromptSection(IServiceProvider services)
 		: PromptAnchoredSectionBase<CorePromptSectionState, CorePromptSectionDelta>(services)
 	{
+		public override string Discriminator => "core";
 	}
 
 	[ChatService(typeof(PromptContextNativeProvider))]

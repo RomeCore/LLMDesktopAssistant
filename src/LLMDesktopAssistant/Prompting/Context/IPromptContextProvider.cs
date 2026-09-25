@@ -1,5 +1,3 @@
-using LLMDesktopAssistant.Localization;
-
 namespace LLMDesktopAssistant.Prompting.Context
 {
 	/// <summary>
@@ -7,10 +5,5 @@ namespace LLMDesktopAssistant.Prompting.Context
 	/// </summary>
 	public interface IPromptContextProvider
 	{
-	}
-
-	public interface IPromptSupersedeContextProvider : IPromptContextProvider
-	{
-
 	}
 }

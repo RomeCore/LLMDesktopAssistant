@@ -28,7 +28,7 @@ namespace LLMDesktopAssistant.Prompting.Context
 			base.ValidatePropertiesCore(errors);
 
 			if (Provider == null)
-				throw new InvalidOperationException("Provider is required.");
+				errors.Add("Provider is required.");
 		}
 	}
 }
