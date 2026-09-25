@@ -1,4 +1,4 @@
-using LLMDesktopAssistant.Prompting.State;
+using LLMDesktopAssistant.Prompting.Context;
 
 namespace LLMDesktopAssistant.Tests.Prompting;
 
@@ -11,7 +11,7 @@ public class PromptSectionExtensionsTests
 	[Fact]
 	public void RenderHeader_OrdersSections_AndJoinsNonEmptyTextFragments()
 	{
-		var sections = new IPromptSection[]
+		var sections = new IPromptContextProvider[]
 		{
 			new FakeSection(100, "second"),
 			new FakeSection(0, "first"),
@@ -27,7 +27,7 @@ public class PromptSectionExtensionsTests
 	[Fact]
 	public void RenderHeader_ConcatenatesTools_AndSortsByName()
 	{
-		var sections = new IPromptSection[]
+		var sections = new IPromptContextProvider[]
 		{
 			new FakeSection(100, "second", PromptingTestHelpers.Tool("a")),
 			new FakeSection(0, "first", PromptingTestHelpers.Tool("z"), PromptingTestHelpers.Tool("m"))
@@ -42,7 +42,7 @@ public class PromptSectionExtensionsTests
 	[Fact]
 	public void RenderHeader_IsByteStable_AcrossRepeatedRenders()
 	{
-		var sections = new IPromptSection[]
+		var sections = new IPromptContextProvider[]
 		{
 			new FakeSection(0, "first", PromptingTestHelpers.Tool("b")),
 			new FakeSection(100, "second", PromptingTestHelpers.Tool("a"))
@@ -61,7 +61,7 @@ public class PromptSectionExtensionsTests
 	{
 		var first = new FakeSection(0, "first");
 		var second = new FakeSection(100, "second");
-		var sections = new IPromptSection[] { first, second };
+		var sections = new IPromptContextProvider[] { first, second };
 		var agent = PromptingTestHelpers.CreateAgent();
 
 		var states = sections.CaptureStates(agent);
@@ -74,7 +74,7 @@ public class PromptSectionExtensionsTests
 	[Fact]
 	public void RenderHeader_NoSections_ReturnsEmptySnapshot()
 	{
-		var header = Array.Empty<IPromptSection>().RenderHeader(PromptingTestHelpers.CreateAgent());
+		var header = Array.Empty<IPromptContextProvider>().RenderHeader(PromptingTestHelpers.CreateAgent());
 
 		Assert.Equal(string.Empty, header.Text);
 		Assert.Empty(header.Tools);

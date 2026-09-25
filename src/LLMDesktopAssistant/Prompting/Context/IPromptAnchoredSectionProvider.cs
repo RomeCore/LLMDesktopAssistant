@@ -1,13 +1,13 @@
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 
-namespace LLMDesktopAssistant.Prompting.State
+namespace LLMDesktopAssistant.Prompting.Context
 {
 	/// <summary>
-	/// A prompt section: a part of the system prompt that captures its own state
+	/// An anchored prompt section: a part of the system prompt that captures its own state
 	/// and renders it into a text fragment and/or tool definitions.
 	/// </summary>
-	public interface IPromptSection
+	public interface IPromptAnchoredSectionProvider : IPromptContextProvider
 	{
 		/// <summary>
 		/// The type of the state captured by this section.
@@ -18,11 +18,6 @@ namespace LLMDesktopAssistant.Prompting.State
 		/// The type of the delta produced by this section.
 		/// </summary>
 		Type DeltaType { get; }
-
-		/// <summary>
-		/// The merge order of this section.
-		/// </summary>
-		int Order { get; }
 
 		/// <summary>
 		/// Captures the current state of this section for the given agent.

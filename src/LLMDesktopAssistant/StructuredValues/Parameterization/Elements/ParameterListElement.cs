@@ -48,7 +48,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 				{
 					var removed = arrayValue.Items[^1];
 					arrayValue.Items.RemoveAt(arrayValue.Items.Count - 1);
-					log.Append(new ParameterValidationLogEntry
+					log.Add(new ParameterValidationLogEntry
 					{
 						Status = ParameterValidationStatus.Fixed,
 						OriginalValue = removed.TakeValueSnapshot(),
@@ -59,7 +59,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 				return arrayValue;
 			}
 
-			log.Append(new ParameterValidationLogEntry
+			log.Add(new ParameterValidationLogEntry
 			{
 				Status = existing is null ? ParameterValidationStatus.Created : ParameterValidationStatus.Invalid,
 				OriginalValue = existing?.TakeValueSnapshot(),

@@ -18,8 +18,10 @@
 
 		Tool = 1 << 3,
 
-		Template = 1 << 4,
+		PromptContext = 1 << 4,
 
-		LuaScript = 1 << 5
+		Template = 1 << 5,
+
+		LuaScript = 1 << 6
 	}
 }

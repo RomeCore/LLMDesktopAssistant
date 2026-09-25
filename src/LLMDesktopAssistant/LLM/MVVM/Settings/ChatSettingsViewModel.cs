@@ -1,9 +1,10 @@
 using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Addons.Loading;
+using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Addons.MVVM;
 using LLMDesktopAssistant.Addons.Search;
-using LLMDesktopAssistant.Addons.Management;
 using LLMDesktopAssistant.Agents.Memory;
+using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.Agents.SubAgents;
 using LLMDesktopAssistant.ApiKeys;
 using LLMDesktopAssistant.Data.Connectors;
@@ -14,6 +15,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Localization;
+using LLMDesktopAssistant.Prompting.Context;
 using LLMDesktopAssistant.Prompting.Management;
 using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.Scripting;
@@ -24,7 +26,6 @@ using LLMDesktopAssistant.Tools;
 using LLMDesktopAssistant.Tools.Scripting;
 using LLMDesktopAssistant.Utils;
 using Material.Icons;
-using LLMDesktopAssistant.Agents.Settings;
 
 namespace LLMDesktopAssistant.LLM.Settings
 {
@@ -277,14 +278,14 @@ namespace LLMDesktopAssistant.LLM.Settings
 							descriptor.Context,
 							Settings,
 							descriptor,
-							Chat.Services.GetRequiredService<IEnumerable<LLMDesktopAssistant.Prompting.State.IPromptSection>>())),
+							Chat.Services.GetRequiredService<IAddonSetCollector<PromptContextInfo>>())),
 
 					new SettingsLeafNode(LocalizationManager.LocalizeStatic("settings.chat.prompts"),
 						MaterialIconKind.Text,
 						() => new AgentPromptSettingsViewModel(
 							descriptor.Prompts,
 							Settings,
-							Chat.Services.GetRequiredService<IEnumerable<LLMDesktopAssistant.Prompting.State.IPromptSection>>(),
+							Chat.Services.GetRequiredService<IAddonSetCollector<PromptContextInfo>>(),
 							descriptor,
 							Chat.Services.GetRequiredService<IPromptComponentManager>(),
 							Chat.Services.GetRequiredService<IPromptSlotElementManager>())),

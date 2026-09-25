@@ -2,14 +2,15 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
+using LLMDesktopAssistant.Prompting.Context;
 using LLMDesktopAssistant.Prompting.Management;
-using LLMDesktopAssistant.Prompting.State;
 using LLMDesktopAssistant.Utils;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents;
@@ -100,7 +101,7 @@ public class ComponentCategoryViewModel : NotifyPropertyChanged
 public class AgentPromptSettingsViewModel : ViewModelBase
 {
 	private readonly ChatSettings _chatSettings;
-	private readonly IEnumerable<IPromptSection> _promptSections;
+	private readonly IAddonSetCollector<PromptContextInfo> _promptContextCollector;
 	private readonly ChatAgentDescriptor _agent;
 	private readonly IPromptSlotElementManager _slotElementManager;
 	private readonly IPromptComponentManager _componentManager;
@@ -279,14 +280,14 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 	public AgentPromptSettingsViewModel(
 		AgentPromptSettings settings,
 		ChatSettings chatSettings,
-		IEnumerable<IPromptSection> promptSections,
+		IAddonSetCollector<PromptContextInfo> promptContextCollector,
 		ChatAgentDescriptor agent,
 		IPromptComponentManager componentManager,
 		IPromptSlotElementManager slotElementManager)
 	{
 		PromptSettings = settings;
 		_chatSettings = chatSettings;
-		_promptSections = promptSections;
+		_promptContextCollector = promptContextCollector;
 		_agent = agent;
 
 		_componentManager = componentManager;
@@ -379,7 +380,7 @@ public class AgentPromptSettingsViewModel : ViewModelBase
 	{
 		try
 		{
-			SystemPromptPreview = _promptSections.RenderHeader(_agent).Text;
+			SystemPromptPreview = _promptContextCollector.GetAddonsForAgent(_agent).Select(c => c.Provider).Anchored().RenderHeader(_agent).Text;
 		}
 		catch (Exception ex)
 		{

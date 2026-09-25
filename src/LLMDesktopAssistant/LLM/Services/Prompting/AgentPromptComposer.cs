@@ -8,13 +8,14 @@ using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.Prompting.ContextExpanders;
 using LLMDesktopAssistant.Prompting.Hooks;
 using LLMDesktopAssistant.Prompting.Plugins;
-using LLMDesktopAssistant.Prompting.State;
+using LLMDesktopAssistant.Prompting.Context;
 using LLMDesktopAssistant.Users;
 using LLTSharp;
 using RCLargeLanguageModels.Messages;
 using RCLargeLanguageModels.Messages.Attachments;
 using RCLargeLanguageModels.Tools;
 using Serilog;
+using LLMDesktopAssistant.Addons;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
@@ -27,12 +28,13 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		IMessageVisibilityService messageVisibility,
 		IAgentEffectiveMessagesProvider effectiveMessagesProvider,
 		IUserManagementService userManager,
-		IEnumerable<IPromptSection> promptSections,
+		IEnumerable<IPromptContextProvider> promptSections,
 		IEnumerable<IPromptBuildingHook> promptBuildingHooks,
 		IEnumerable<IPromptMessageContextExpander> promptMessageContextExpanders,
 		IEnumerable<IPromptTemplatePlugin> promptTemplatePlugins,
 		IToolsetCacheService toolsetCache,
-		IPromptStateProcessor promptStateStage,
+		IPromptSectionProcessor promptSectionProcessor,
+		IAddonSetCollector<PromptContextInfo> promptContextCollector,
 		IPromptDumpService promptDumpService
 		) : IAgentPromptComposer
 	{
@@ -51,15 +53,25 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			List<IMessage> result = [];
 			var disabledCheckpoints = agent.Context.GetEffectiveDisabledFlags(chatSettings.Settings);
 
+			var promptContextInfos = promptContextCollector.GetAddonsForAgent(agent);
+			var promptContextProviders = promptContextInfos.Select(i => i.Provider).ToArray();
+
 			var promptMode = agent.Context.PromptMode;
-			var anchor = promptStateStage.Process(agent, effective);
+			var anchor = promptSectionProcessor.Process(agent, effective, promptContextProviders);
 
 			SystemPromptSnapshot header;
 			string headerSource;
 			switch (promptMode)
 			{
 				case PromptContextMode.Static:
-					header = GetOrFreezeStaticSnapshot(agent);
+					var settings = agent.Context;
+					if (settings.Snapshot is null)
+					{
+						settings.Snapshot = promptSections.Anchored().RenderHeader(agent);
+						Log.Information("Froze static system prompt snapshot for agent {AgentId}.", agent.Id);
+					}
+
+					header = settings.Snapshot;
 					headerSource = "static";
 					break;
 
@@ -69,7 +81,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					break;
 
 				default:
-					header = promptSections.RenderHeader(agent);
+					header = promptContextProviders.Anchored().RenderHeader(agent);
 					headerSource = "live";
 					break;
 			}
@@ -113,7 +125,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 						if (delta.AnchorId != anchor.Id)
 							continue;
 
-						result.Add(new RCLargeLanguageModels.Messages.UserMessage(Senders.User, delta.Snapshot));
+						result.Add(new RCLargeLanguageModels.Messages.UserMessage("system", delta.Snapshot));
 					}
 				}
 
@@ -140,21 +152,6 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 				promptDumpService.Dump(result, tools, $"mode={promptMode}; header={headerSource}");
 
 			return new AgentPromptBundle(result, tools);
-		}
-
-		/// <summary>
-		/// Returns the static (frozen) system prompt snapshot of the agent, freezing it lazily on first use.
-		/// </summary>
-		private SystemPromptSnapshot GetOrFreezeStaticSnapshot(ChatAgentDescriptor agent)
-		{
-			var settings = agent.Context;
-			if (settings.Snapshot is null)
-			{
-				settings.Snapshot = promptSections.RenderHeader(agent);
-				Log.Information("Froze static system prompt snapshot for agent {AgentId}.", agent.Id);
-			}
-
-			return settings.Snapshot;
 		}
 
 		/// <summary>

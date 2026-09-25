@@ -12,7 +12,7 @@ using LLMDesktopAssistant.Prompting.Skills;
 using LLMDesktopAssistant.StructuredValues.Converters;
 using LLTSharp;
 
-namespace LLMDesktopAssistant.Prompting.State
+namespace LLMDesktopAssistant.Prompting.Context
 {
 	/// <summary>
 	/// The state of the core prompt section.
@@ -54,7 +54,7 @@ namespace LLMDesktopAssistant.Prompting.State
 		) : IPromptSectionStateProvider<CorePromptSectionState>
 	{
 		/// <inheritdoc/>
-		public CorePromptSectionState GetState(ChatAgentDescriptor agent)
+		public CorePromptSectionState CaptureState(ChatAgentDescriptor agent)
 		{
 			var template = templates.GetTextTemplate("core_prompt");
 			var functions = new TemplateFunctionSet(promptTemplatePlugins.SelectMany(p => p.GetTemplateFunctions()));
@@ -169,11 +169,24 @@ namespace LLMDesktopAssistant.Prompting.State
 	/// <summary>
 	/// The core prompt section (main part of the system prompt).
 	/// </summary>
-	[ChatService(typeof(IPromptSection))]
 	public class CorePromptSection(IServiceProvider services)
-		: PromptSectionBase<CorePromptSectionState, CorePromptSectionDelta>(services)
+		: PromptAnchoredSectionBase<CorePromptSectionState, CorePromptSectionDelta>(services)
 	{
-		/// <inheritdoc/>
-		public override int Order => 0;
+	}
+
+	[ChatService(typeof(PromptContextNativeProvider))]
+	public class CorePromptSectionProvider : PromptContextNativeProvider
+	{
+		public CorePromptSectionProvider(IServiceProvider services)
+		{
+			AddContext(new PromptContextInfo
+			{
+				Name = "core",
+				Order = 0,
+				Description = string.Empty,
+				IsFixed = true,
+				Provider = new CorePromptSection(services)
+			});
+		}
 	}
 }

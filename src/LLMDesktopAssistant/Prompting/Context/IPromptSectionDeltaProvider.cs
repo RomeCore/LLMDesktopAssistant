@@ -1,6 +1,6 @@
 ﻿using LLMDesktopAssistant.LLM.Services.Prompting;
 
-namespace LLMDesktopAssistant.Prompting.State
+namespace LLMDesktopAssistant.Prompting.Context
 {
 	public interface IPromptSectionDeltaProvider<TState, TDelta>
 		where TState : PromptSectionStateBase

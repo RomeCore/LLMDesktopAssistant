@@ -1,7 +1,7 @@
 ﻿using LLMDesktopAssistant.LLM.MVVM.Additional;
 using LLMDesktopAssistant.Utils;
 
-namespace LLMDesktopAssistant.Prompting.State
+namespace LLMDesktopAssistant.Prompting.Context
 {
 	public class PromptStateDeltaMessageData : AdditionalChatData
 	{

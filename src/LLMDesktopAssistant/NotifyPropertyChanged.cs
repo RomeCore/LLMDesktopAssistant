@@ -225,6 +225,13 @@ namespace LLMDesktopAssistant
 			return false;
 		}
 
+		private static bool Equals<T>(T? x, T? y)
+		{
+			if (x is IEquatable<T> xE)
+				return xE.Equals(y);
+			return object.Equals(x, y);
+		}
+
 		/// <summary>
 		/// The method that is called just before a property value changes.
 		/// </summary>

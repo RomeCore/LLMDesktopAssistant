@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 			if (existing is ReactiveNodeBooleanValue booleanValue)
 				return booleanValue;
 
-			log.Append(new ParameterValidationLogEntry
+			log.Add(new ParameterValidationLogEntry
 			{
 				Status = existing is null ? ParameterValidationStatus.Created : ParameterValidationStatus.Invalid,
 				OriginalValue = existing?.TakeValueSnapshot(),

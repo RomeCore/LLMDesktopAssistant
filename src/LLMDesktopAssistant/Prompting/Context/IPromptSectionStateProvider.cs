@@ -1,10 +1,10 @@
 using LLMDesktopAssistant.Agents;
 
-namespace LLMDesktopAssistant.Prompting.State
+namespace LLMDesktopAssistant.Prompting.Context
 {
 	public interface IPromptSectionStateProvider<TState>
 		where TState : PromptSectionStateBase
 	{
-		TState? GetState(ChatAgentDescriptor agent);
+		TState? CaptureState(ChatAgentDescriptor agent);
 	}
 }

@@ -5,6 +5,7 @@ using LiteDB;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.Prompting;
 using LLMDesktopAssistant.StructuredValues.Const;
+using LLMDesktopAssistant.Utils;
 using YamlDotNet.Serialization;
 
 namespace LLMDesktopAssistant.Addons
@@ -16,7 +17,6 @@ namespace LLMDesktopAssistant.Addons
 	/// The object will be frozen after full initialization. Any changes to the object after that will result in an exception.
 	/// </remarks>
 	/// <typeparam name="Self">The type of the derived class. Used for covariance.</typeparam>
-	/// <typeparam name="TChange">The type of change (configuration) object.</typeparam>
 	public abstract class AddonBase<Self> : AddonMetadata
 		where Self : AddonBase<Self>
 	{
@@ -29,6 +29,16 @@ namespace LLMDesktopAssistant.Addons
 			get;
 			set => SetProperty(ref field, value);
 		} = string.Empty;
+
+		/// <summary>
+		/// The order in which addons will be sorted and provided.
+		/// Addons are sorted by this property, then by <see cref="Name"/>.
+		/// </summary>
+		public int Order
+		{
+			get;
+			set => SetProperty(ref field, value);
+		} = 0;
 
 		/// <summary>
 		/// The aliases for the addon. These are alternative names that can be used to invoke the addon.
@@ -217,17 +227,26 @@ namespace LLMDesktopAssistant.Addons
 		/// Checks if the required properties of the addon are set. If not, it throws an <see cref="ArgumentException"/>.
 		/// </summary>
 		/// <exception cref="ArgumentException">Thrown when any of the required properties are not set.</exception>
-		public virtual void CheckRequiredProperties()
+		public void ValidateProperties()
 		{
-			List<string> errors = [];
+			AppendOnlyList<string> errors = [];
 
+			ValidatePropertiesCore(errors);
+
+			if (errors.Count > 0)
+				throw new ArgumentException(string.Join(Environment.NewLine, errors));
+		}
+
+		/// <summary>
+		/// Checks the required properties of the addon. This method can be overridden by derived classes to add additional checks.
+		/// </summary>
+		/// <param name="errors">The list of errors to add to. If any required properties are not set, their error message should be added to this list.</param>
+		protected virtual void ValidatePropertiesCore(AppendOnlyList<string> errors)
+		{
 			if (string.IsNullOrEmpty(Name))
 				errors.Add("Name is required.");
 			if (Description is null)
 				errors.Add("Description is required.");
-
-			if (errors.Count > 0)
-				throw new ArgumentException(string.Join(Environment.NewLine, errors));
 		}
 
 		// Interesting fact:

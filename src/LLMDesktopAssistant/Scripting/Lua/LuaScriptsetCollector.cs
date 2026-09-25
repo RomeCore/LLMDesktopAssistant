@@ -13,6 +13,7 @@ namespace LLMDesktopAssistant.Scripting.Lua
 	{
 		// File-based scripts CANNOT override the behavior of native APIs
 		protected override bool AdditionalGoingFirst => false;
+		protected override bool AdditionalOverrides => true;
 
 		protected override IEnumerable<LuaScriptInfo> GetAdditionalAddons()
 		{

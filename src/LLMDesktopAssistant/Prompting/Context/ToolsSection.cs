@@ -3,7 +3,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Services.Tools;
 
-namespace LLMDesktopAssistant.Prompting.State
+namespace LLMDesktopAssistant.Prompting.Context
 {
 	/// <summary>
 	/// The state of the tools section: the canonical tool definitions available to the agent.
@@ -37,7 +37,7 @@ namespace LLMDesktopAssistant.Prompting.State
 		IToolsetCacheService toolsetCache) : IPromptSectionStateProvider<ToolsSectionState>
 	{
 		/// <inheritdoc/>
-		public ToolsSectionState GetState(ChatAgentDescriptor agent)
+		public ToolsSectionState CaptureState(ChatAgentDescriptor agent)
 		{
 			var tools = toolsetCache.ValidTools.Values
 				.Where(t => !(t.Hidden ?? false))
@@ -90,11 +90,24 @@ namespace LLMDesktopAssistant.Prompting.State
 	/// <summary>
 	/// The tools section: provides the tool definitions for the system prompt.
 	/// </summary>
-	[ChatService(typeof(IPromptSection))]
 	public class ToolsSection(IServiceProvider services)
-		: PromptSectionBase<ToolsSectionState, ToolsSectionDelta>(services)
+		: PromptAnchoredSectionBase<ToolsSectionState, ToolsSectionDelta>(services)
 	{
-		/// <inheritdoc/>
-		public override int Order => 100;
+	}
+
+	[ChatService(typeof(PromptContextNativeProvider))]
+	public class ToolsSectionProvider : PromptContextNativeProvider
+	{
+		public ToolsSectionProvider(IServiceProvider services)
+		{
+			AddContext(new PromptContextInfo
+			{
+				Name = "tools",
+				Order = 100,
+				Description = string.Empty,
+				IsFixed = true,
+				Provider = new ToolsSection(services)
+			});
+		}
 	}
 }

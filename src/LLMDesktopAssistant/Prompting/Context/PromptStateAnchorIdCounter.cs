@@ -1,6 +1,6 @@
 using LLMDesktopAssistant.LLM.MVVM.Additional;
 
-namespace LLMDesktopAssistant.Prompting.State
+namespace LLMDesktopAssistant.Prompting.Context
 {
 	/// <summary>
 	/// The chat-level counter for prompt state anchor IDs (lazily created on the first anchor).

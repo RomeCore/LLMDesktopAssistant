@@ -2,13 +2,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LLMDesktopAssistant.Addons;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Localization;
 using LLMDesktopAssistant.MVVM;
 using LLMDesktopAssistant.Prompting;
-using LLMDesktopAssistant.Prompting.State;
+using LLMDesktopAssistant.Prompting.Context;
 
 namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 {
@@ -46,21 +47,20 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 	{
 		private readonly ChatSettings _chatSettings;
 		private readonly ChatAgentDescriptor _agent;
-		private readonly IEnumerable<IPromptSection> _promptSections;
+		private readonly IAddonSetCollector<PromptContextInfo> _promptContextCollector;
 
 		public AgentContextSettings Settings { get; }
 
 		public AgentContextSettingsViewModel(AgentContextSettings settings, ChatSettings chatSettings,
-			ChatAgentDescriptor agent, IEnumerable<IPromptSection> promptSections)
+			ChatAgentDescriptor agent, IAddonSetCollector<PromptContextInfo> promptContextCollector)
 		{
 			Settings = settings;
 			_chatSettings = chatSettings;
 			_agent = agent;
-			_promptSections = promptSections;
+			_promptContextCollector = promptContextCollector;
 
 			RefreshSnapshotCommand = new RelayCommand(RefreshSnapshot);
 
-			
 			_selectedMaxVisibleRoundsInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.MaxVisibleRoundsInheritance);
 			_selectedDisabledFlagsInheritance = InheritanceLevelItem.AllAgent.First(i => i.Value == settings.DisabledFlagsInheritance);
 
@@ -116,7 +116,7 @@ namespace LLMDesktopAssistant.LLM.MVVM.Settings.Agents
 
 		private void RefreshSnapshot()
 		{
-			Settings.Snapshot = _promptSections.RenderHeader(_agent);
+			Settings.Snapshot = _promptContextCollector.GetAddonsForAgent(_agent).Select(c => c.Provider).Anchored().RenderHeader(_agent);
 		}
 
 		public int MaxVisibleRounds

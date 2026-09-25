@@ -35,7 +35,7 @@ namespace LLMDesktopAssistant.Utils
 		/// Appends an item to the end of the list.
 		/// </summary>
 		/// <param name="item">The object to append to the list.</param>
-		public void Append(T item)
+		public void Add(T item)
 		{
 			_list.Add(item);
 		}

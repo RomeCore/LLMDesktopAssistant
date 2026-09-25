@@ -2,23 +2,25 @@ using System.Text;
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Prompting.State;
+using LLMDesktopAssistant.Prompting.Context;
 using Serilog;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
-	/// <inheritdoc cref="IPromptStateProcessor"/>
-	[ChatService(typeof(IPromptStateProcessor))]
-	public class PromptStateProcessor(
-		Chat chat,
-		IEnumerable<IPromptSection> promptSections) : IPromptStateProcessor
+	/// <inheritdoc cref="IPromptSectionProcessor"/>
+	[ChatService(typeof(IPromptSectionProcessor))]
+	public class PromptSectionProcessor(
+		Chat chat) : IPromptSectionProcessor
 	{
 		/// <inheritdoc/>
-		public PromptStateAnchorMessageData? Process(ChatAgentDescriptor agent, EffectiveChatContext effective)
+		public PromptStateAnchorMessageData? Process(ChatAgentDescriptor agent,
+			EffectiveChatContext effective, IEnumerable<IPromptContextProvider> providers)
 		{
 			var promptMode = agent.Context.PromptMode;
 			if (promptMode != PromptContextMode.Hybrid)
 				return null;
+
+			var sections = providers.OfType<IPromptAnchoredSectionProvider>();
 
 			PromptStateAnchorMessageData? anchor = null;
 			int messageWithAnchor = -1;
@@ -79,7 +81,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					var deltas = new List<PromptSectionDeltaBase>();
 					var sb = new StringBuilder();
 
-					foreach (var section in promptSections.Ordered())
+					foreach (var section in sections)
 					{
 						var anchorState = anchor.Sections.FirstOrDefault(s => s.GetType() == section.StateType);
 						var existingDeltas = deltasPerAnchor.GetValueOrDefault(section.DeltaType) ?? [];
@@ -121,8 +123,8 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 			}
 
 			var target = effective.Messages[targetIndex];
-			var states = promptSections.CaptureStates(agent);
-			var snapshot = promptSections.RenderHeader(states);
+			var states = sections.CaptureStates(agent);
+			var snapshot = sections.RenderHeader(states);
 
 			anchor = new PromptStateAnchorMessageData
 			{

@@ -5,7 +5,7 @@ using LLMDesktopAssistant.LLM.Services;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.LLM.Settings;
 using LLMDesktopAssistant.Prompting;
-using LLMDesktopAssistant.Prompting.State;
+using LLMDesktopAssistant.Prompting.Context;
 using RCLargeLanguageModels.Tasks;
 
 namespace LLMDesktopAssistant.Tests.Prompting;
@@ -37,9 +37,9 @@ internal sealed class FakeSectionDelta : PromptSectionDeltaBase
 }
 
 /// <summary>
-/// An <see cref="IPromptSection"/> fake rendering a fixed text and tools.
+/// An <see cref="IPromptContextProvider"/> fake rendering a fixed text and tools.
 /// </summary>
-internal sealed class FakeSection(int order, string text, params SerializableToolDefinition[] tools) : IPromptSection
+internal sealed class FakeSection(int order, string text, params SerializableToolDefinition[] tools) : IPromptContextProvider
 {
 	public Type StateType => typeof(FakeSectionState);
 

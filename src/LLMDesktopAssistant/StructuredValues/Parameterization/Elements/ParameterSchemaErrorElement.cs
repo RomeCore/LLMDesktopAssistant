@@ -18,7 +18,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 		public ParameterSchemaErrorElement(ParameterSchemaParsingError parsingError, AppendOnlyList<ParameterSchemaParsingError> errors)
 		{
 			ParsingError = parsingError;
-			errors.Append(ParsingError);
+			errors.Add(ParsingError);
 		}
 
 		public override ReactiveNodeValue CreateOrFixValue(ReactiveNodeValue? existing, AppendOnlyList<ParameterValidationLogEntry> log)

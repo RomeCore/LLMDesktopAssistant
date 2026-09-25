@@ -1,14 +1,13 @@
 using LLMDesktopAssistant.Agents;
-using LLMDesktopAssistant.LLM.Domain;
-using LLMDesktopAssistant.Prompting.State;
+using LLMDesktopAssistant.Prompting.Context;
 
 namespace LLMDesktopAssistant.LLM.Services.Prompting
 {
 	/// <summary>
-	/// The SCM stage: manages the prompt state anchors of an agent (hybrid prompt mode only).
+	/// The anchored SCM stage: manages the prompt state anchors of an agent (hybrid prompt mode only).
 	/// Called by the prompt composer between the effective messages provider and message conversion.
 	/// </summary>
-	public interface IPromptStateProcessor
+	public interface IPromptSectionProcessor
 	{
 		/// <summary>
 		/// Returns the live anchor of the agent for the given effective context,
@@ -16,7 +15,9 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 		/// </summary>
 		/// <param name="agent">The agent to process.</param>
 		/// <param name="effective">The effective chat context of the agent.</param>
+		/// <param name="providers">The providers of prompt context.</param>
 		/// <returns>The active anchor, or null outside of hybrid mode.</returns>
-		PromptStateAnchorMessageData? Process(ChatAgentDescriptor agent, EffectiveChatContext effective);
+		PromptStateAnchorMessageData? Process(ChatAgentDescriptor agent,
+			EffectiveChatContext effective, IEnumerable<IPromptContextProvider> providers);
 	}
 }

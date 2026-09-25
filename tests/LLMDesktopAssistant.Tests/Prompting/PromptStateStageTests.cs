@@ -3,7 +3,7 @@ using LLMDesktopAssistant.Agents.Settings;
 using LLMDesktopAssistant.LLM.Domain;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 using LLMDesktopAssistant.Prompting;
-using LLMDesktopAssistant.Prompting.State;
+using LLMDesktopAssistant.Prompting.Context;
 using LLMDesktopAssistant.Tests.Storage;
 
 namespace LLMDesktopAssistant.Tests.Prompting;
@@ -14,7 +14,7 @@ namespace LLMDesktopAssistant.Tests.Prompting;
 [Collection("Prompting")]
 public class PromptStateStageTests
 {
-	private static PromptStateProcessor CreateStage(Chat chat, params IPromptSection[] sections)
+	private static PromptSectionProcessor CreateStage(Chat chat, params IPromptContextProvider[] sections)
 		=> new(chat, sections);
 
 	private static ChatAgentDescriptor CreateHybridAgent()

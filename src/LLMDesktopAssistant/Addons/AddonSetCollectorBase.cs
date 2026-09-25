@@ -18,6 +18,8 @@ namespace LLMDesktopAssistant.Addons
 
 		protected virtual bool AdditionalGoingFirst => false;
 
+		protected virtual bool AdditionalOverrides => false;
+
 		protected virtual IEnumerable<TAddon> GetAdditionalAddons()
 		{
 			return [];
@@ -29,42 +31,88 @@ namespace LLMDesktopAssistant.Addons
 
 		public IEnumerable<TAddon> GetAvailableAddons()
 		{
-			List<TAddon> addons = [];
-
-			if (AdditionalGoingFirst)
+			if (AdditionalOverrides)
 			{
-				addons.AddRange(GetAdditionalAddons());
-				addons.AddRange(_accessor.Addons);
+				List<(TAddon Addon, bool IsAdditional)> addons = [];
+
+				if (AdditionalGoingFirst)
+				{
+					addons.AddRange(GetAdditionalAddons().Select(a => (a, true)));
+					addons.AddRange(_accessor.Addons.Select(a => (a, false)));
+				}
+				else
+				{
+					addons.AddRange(_accessor.Addons.Select(a => (a, false)));
+					addons.AddRange(GetAdditionalAddons().Select(a => (a, true)));
+				}
+
+				return addons
+					.GroupBy(s => s.Addon.Name)
+					.Select(g =>
+					{
+						ImmutableList<TAddon>.Builder? overridesBuilder = null;
+						TAddon? last = null;
+						foreach (var (addon, _) in g.OrderBy(a => a.IsAdditional ? 1 : 0))
+						{
+							addon.Freeze();
+							if (last is not null)
+							{
+								overridesBuilder ??= ImmutableList.CreateBuilder<TAddon>();
+								overridesBuilder.Add(last);
+							}
+							last = addon;
+						}
+						if (overridesBuilder == null)
+							return last!;
+						last = last!.Clone();
+						last.Overrides = overridesBuilder.ToImmutable();
+						last.Freeze();
+						return last;
+					})
+					.OrderBy(a => a.Order)
+					.ThenBy(a => a.Name);
 			}
 			else
 			{
-				addons.AddRange(_accessor.Addons);
-				addons.AddRange(GetAdditionalAddons());
-			}
+				List<TAddon> addons = [];
 
-			return addons
-				.GroupBy(s => s.Name)
-				.Select(g =>
+				if (AdditionalGoingFirst)
 				{
-					ImmutableList<TAddon>.Builder? overridesBuilder = null;
-					TAddon? last = null;
-					foreach (var addon in g)
+					addons.AddRange(GetAdditionalAddons());
+					addons.AddRange(_accessor.Addons);
+				}
+				else
+				{
+					addons.AddRange(_accessor.Addons);
+					addons.AddRange(GetAdditionalAddons());
+				}
+
+				return addons
+					.GroupBy(s => s.Name)
+					.Select(g =>
 					{
-						addon.Freeze();
-						if (last is not null)
+						ImmutableList<TAddon>.Builder? overridesBuilder = null;
+						TAddon? last = null;
+						foreach (var addon in g)
 						{
-							overridesBuilder ??= ImmutableList.CreateBuilder<TAddon>();
-							overridesBuilder.Add(last);
+							addon.Freeze();
+							if (last is not null)
+							{
+								overridesBuilder ??= ImmutableList.CreateBuilder<TAddon>();
+								overridesBuilder.Add(last);
+							}
+							last = addon;
 						}
-						last = addon;
-					}
-					if (overridesBuilder == null)
-						return last!;
-					last = last!.Clone();
-					last.Overrides = overridesBuilder.ToImmutable();
-					last.Freeze();
-					return last;
-				});
+						if (overridesBuilder == null)
+							return last!;
+						last = last!.Clone();
+						last.Overrides = overridesBuilder.ToImmutable();
+						last.Freeze();
+						return last;
+					})
+					.OrderBy(a => a.Order)
+					.ThenBy(a => a.Name);
+			}
 		}
 
 		public virtual IEnumerable<TAddon> GetAddonsForChat()
@@ -121,7 +169,9 @@ namespace LLMDesktopAssistant.Addons
 				}
 			}
 
-			return result;
+			return result
+				.OrderBy(a => a.Order)
+				.ThenBy(a => a.Name);
 		}
 	}
 }

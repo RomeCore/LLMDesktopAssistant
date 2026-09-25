@@ -1,4 +1,4 @@
-﻿namespace LLMDesktopAssistant.Prompting.State
+﻿namespace LLMDesktopAssistant.Prompting.Context
 {
 	public interface IPromptSectionStateRenderer<TState>
 		where TState : PromptSectionStateBase

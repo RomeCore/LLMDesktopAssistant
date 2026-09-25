@@ -46,5 +46,15 @@ namespace LLMDesktopAssistant.Agents.Settings
 			get => field;
 			set => SetProperty(ref field, value);
 		}
+
+		/// <summary>
+		/// Gets or sets the context-set settings for the agent.
+		/// </summary>
+		[InheritedChatAgentSetting]
+		public ContextSetSettings ContextSet
+		{
+			get => field ??= new();
+			set => SetProperty(ref field, value);
+		}
 	}
 }

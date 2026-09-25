@@ -215,7 +215,7 @@ namespace LLMDesktopAssistant.Addons.Parsers
 				{
 					diagnostic = diagnostic.Combine(new AddonDiagnostic
 					{
-						IsFatal = false,
+						IsFatal = descriptor.RequiresFrontmatter,
 						Codes = AddonDiagnosticCode.FrontmatterParsingError,
 						Exceptions = [ex]
 					});
@@ -244,7 +244,7 @@ namespace LLMDesktopAssistant.Addons.Parsers
 				result.AdditionalMetadata = metadata.AdditionalMetadata;
 				result.Tags = metadata.Tags;
 
-				// Apply common name and description from frontmatter.
+				// Apply common name.
 				var fmName = frontmatterDocument.Get<string>("name");
 				if (!string.IsNullOrWhiteSpace(fmName))
 				{
@@ -261,6 +261,12 @@ namespace LLMDesktopAssistant.Addons.Parsers
 					else if (!string.IsNullOrWhiteSpace(fallbackName))
 						result.Name = fallbackName;
 				}
+
+				if (frontmatterDocument.TryRequest("order", ref diagnostic, out int order))
+					result.Order = order;
+
+				if (frontmatterDocument.TryRequest("aliases", ref diagnostic, out ImmutableList<string> aliases))
+					result.Aliases = aliases;
 
 				var fmDescription = frontmatterDocument.Get<string>("description");
 				if (!string.IsNullOrWhiteSpace(fmDescription))
@@ -286,9 +292,6 @@ namespace LLMDesktopAssistant.Addons.Parsers
 
 				if (frontmatterDocument.TryRequest("category", ref diagnostic, out string category) && !string.IsNullOrWhiteSpace(category))
 					result.CategoryKey = Locale.GetConstKey(category.Trim());
-
-				if (frontmatterDocument.TryRequest("aliases", ref diagnostic, out ImmutableList<string> aliases))
-					result.Aliases = aliases;
 
 				result.AdditionalProperties = frontmatterDocument.GetAdditionalProperties();
 			}
@@ -350,7 +353,7 @@ namespace LLMDesktopAssistant.Addons.Parsers
 		{
 			result.Name ??= "unknown";
 			result.Description ??= string.Empty;
-			result.CheckRequiredProperties();
+			result.ValidateProperties();
 			result.Freeze();
 			return [result];
 		}

@@ -31,7 +31,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 				return dictValue;
 			}
 
-			log.Append(new ParameterValidationLogEntry
+			log.Add(new ParameterValidationLogEntry
 			{
 				Status = existing is null ? ParameterValidationStatus.Created : ParameterValidationStatus.Invalid,
 				OriginalValue = existing?.TakeValueSnapshot(),

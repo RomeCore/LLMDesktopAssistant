@@ -52,7 +52,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 			if (existing is null)
 			{
 				var final = TryToInteger(Default);
-				log.Append(new ParameterValidationLogEntry
+				log.Add(new ParameterValidationLogEntry
 				{
 					Status = ParameterValidationStatus.Created,
 					OriginalValue = null,
@@ -67,7 +67,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 			if (existing is not ReactiveNodeNumberValue numberValue)
 			{
 				var final = TryToInteger(Default);
-				log.Append(new ParameterValidationLogEntry
+				log.Add(new ParameterValidationLogEntry
 				{
 					Status = ParameterValidationStatus.Invalid,
 					OriginalValue = existing.TakeValueSnapshot(),
@@ -82,7 +82,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 			if (numberValue.Value < Min || numberValue.Value > Max)
 			{
 				var final = TryToInteger(Math.Clamp(numberValue.Value, Min, Max));
-				log.Append(new ParameterValidationLogEntry
+				log.Add(new ParameterValidationLogEntry
 				{
 					Status = ParameterValidationStatus.Fixed,
 					OriginalValue = numberValue.Value,
@@ -97,7 +97,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 			if (IsInteger && numberValue.Value != Math.Round(numberValue.Value))
 			{
 				var final = Math.Round(numberValue.Value);
-				log.Append(new ParameterValidationLogEntry
+				log.Add(new ParameterValidationLogEntry
 				{
 					Status = ParameterValidationStatus.Fixed,
 					OriginalValue = numberValue.Value,

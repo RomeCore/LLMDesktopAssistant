@@ -1,13 +1,13 @@
 using LLMDesktopAssistant.Agents;
 using LLMDesktopAssistant.LLM.Services.Prompting;
 
-namespace LLMDesktopAssistant.Prompting.State
+namespace LLMDesktopAssistant.Prompting.Context
 {
 	/// <summary>
 	/// Base class for prompt sections: delegates all work to the four typed services:
 	/// state provider, state renderer, delta provider and delta renderer.
 	/// </summary>
-	public abstract class PromptSectionBase<TState, TDelta> : IPromptSection
+	public abstract class PromptAnchoredSectionBase<TState, TDelta> : IPromptAnchoredSectionProvider
 		where TState : PromptSectionStateBase
 		where TDelta : PromptSectionDeltaBase
 	{
@@ -17,15 +17,12 @@ namespace LLMDesktopAssistant.Prompting.State
 		private readonly IPromptSectionDeltaRenderer<TDelta> _deltaRenderer;
 
 		/// <inheritdoc/>
-		public abstract int Order { get; }
-
-		/// <inheritdoc/>
 		public Type StateType => typeof(TState);
 
 		/// <inheritdoc/>
 		public Type DeltaType => typeof(TDelta);
 
-		protected PromptSectionBase(IServiceProvider services)
+		protected PromptAnchoredSectionBase(IServiceProvider services)
 		{
 			_stateProvider = services.GetRequiredService<IPromptSectionStateProvider<TState>>();
 			_stateRenderer = services.GetRequiredService<IPromptSectionStateRenderer<TState>>();
@@ -34,7 +31,7 @@ namespace LLMDesktopAssistant.Prompting.State
 		}
 
 		/// <inheritdoc/>
-		public PromptSectionStateBase? CaptureState(ChatAgentDescriptor agent) => _stateProvider.GetState(agent);
+		public PromptSectionStateBase? CaptureState(ChatAgentDescriptor agent) => _stateProvider.CaptureState(agent);
 
 		/// <inheritdoc/>
 		public SystemPromptSnapshot RenderState(PromptSectionStateBase state) => _stateRenderer.Render((TState)state);

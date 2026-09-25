@@ -43,7 +43,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 					return numberValue;
 
 				var final = double.TryParse(Default, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : 0;
-				log.Append(new ParameterValidationLogEntry
+				log.Add(new ParameterValidationLogEntry
 				{
 					Status = existing is null ? ParameterValidationStatus.Created : ParameterValidationStatus.Invalid,
 					OriginalValue = existing?.TakeValueSnapshot(),
@@ -59,7 +59,7 @@ namespace LLMDesktopAssistant.StructuredValues.Parameterization.Elements
 				return stringValue;
 
 			var finalString = Default ?? string.Empty;
-			log.Append(new ParameterValidationLogEntry
+			log.Add(new ParameterValidationLogEntry
 			{
 				Status = existing is null ? ParameterValidationStatus.Created : ParameterValidationStatus.Invalid,
 				OriginalValue = existing?.TakeValueSnapshot(),
