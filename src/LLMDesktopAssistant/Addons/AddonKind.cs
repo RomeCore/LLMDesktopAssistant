@@ -5,7 +5,7 @@
 	{
 		None = 0,
 
-		All = Pack | Skill | SubAgent | Tool | Template | LuaScript,
+		All = Pack | Skill | SubAgent | Tool | MemoryBlock | PromptContext | Command | Template | LuaScript,
 
 		/// <summary>
 		/// The addon pack itself, used in the invalidation methods to invalidate packs along with other addon types.
@@ -18,10 +18,16 @@
 
 		Tool = 1 << 3,
 
-		PromptContext = 1 << 4,
+		// TODO: Reserved for future use
+		MemoryBlock = 1 << 4,
 
-		Template = 1 << 5,
+		PromptContext = 1 << 5,
 
-		LuaScript = 1 << 6
+		// TODO: Reserved for future use
+		Command = 1 << 6,
+
+		Template = 1 << 7,
+
+		LuaScript = 1 << 8
 	}
 }
