@@ -1,3 +1,4 @@
+using System.Text;
 using LLMDesktopAssistant.Agents;
 using Serilog;
 
@@ -56,7 +57,7 @@ namespace LLMDesktopAssistant.Prompting.Context
 		public static SystemPromptSnapshot RenderHeader(this IEnumerable<IPromptAnchoredSectionProvider> sections,
 			IReadOnlyList<PromptSectionStateBase> states)
 		{
-			var texts = new List<string>();
+			var sb = new StringBuilder();
 			var tools = new List<SerializableToolDefinition>();
 
 			foreach (var section in sections)
@@ -70,15 +71,18 @@ namespace LLMDesktopAssistant.Prompting.Context
 				}
 
 				var snapshot = section.RenderState(state);
-				if (!string.IsNullOrEmpty(snapshot.Text))
-					texts.Add(snapshot.Text);
+				if (!string.IsNullOrWhiteSpace(snapshot.Text))
+					sb.AppendLine(snapshot.Text);
 				if (snapshot.Tools.Count > 0)
 					tools.AddRange(snapshot.Tools);
 			}
 
+			while (sb.Length > 0 && char.IsWhiteSpace(sb[^1]))
+				sb.Length--;
+
 			return new SystemPromptSnapshot
 			{
-				Text = string.Join("\n", texts),
+				Text = sb.ToString(),
 				Tools = [.. tools.OrderBy(t => t.Name, StringComparer.Ordinal)]
 			};
 		}
