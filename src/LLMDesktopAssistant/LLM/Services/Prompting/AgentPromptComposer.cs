@@ -159,10 +159,7 @@ namespace LLMDesktopAssistant.LLM.Services.Prompting
 					// Process SCM anchor deltas.
 					if (anchor is not null && branchedMessage.Message.AdditionalData.TryGet<PromptStateDeltaMessageData>() is { } deltas)
 					{
-						if (deltas.AnchorId != anchor.Id)
-							continue;
-
-						if (!string.IsNullOrWhiteSpace(deltas.Snapshot))
+						if (deltas.AnchorId == anchor.Id && !string.IsNullOrWhiteSpace(deltas.Snapshot))
 						{
 							systemReminderSb.AppendLine(deltas.Snapshot);
 							dataCounter++;
